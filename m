@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2139C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69434C47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244864AbiDEJLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
+        id S245143AbiDEJLe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239564AbiDEIUO (ORCPT
+        with ESMTP id S239560AbiDEIUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD4E630A;
-        Tue,  5 Apr 2022 01:16:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2C52601;
+        Tue,  5 Apr 2022 01:16:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 457A2B81A37;
-        Tue,  5 Apr 2022 08:16:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5BD9C385A0;
-        Tue,  5 Apr 2022 08:16:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C011260B0A;
+        Tue,  5 Apr 2022 08:16:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C95CDC385A1;
+        Tue,  5 Apr 2022 08:16:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146586;
-        bh=+lPkEmTh0UrKktg1kbRpn6s/1134Ya/hkpaW+uEH4nA=;
+        s=korg; t=1649146575;
+        bh=OlZgfNfWqUL2kkWzmZuqYmPzg9dSfeyZHARzCMt+jF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JUBbrCjrQIINjcd2uhV36Z0Dr8gMx67xQhJcLcsDZBYFNbu60JzXxjo6B8jMAgYwB
-         LdmGIoiyJY1dBE3LGTnijAcr4VFR0hPrIFVMR2hzrPBphVItX6faEQvbSyjn5mNkBj
-         4QoFPcwdbB0xyHPP7jb+u2sAD7R5oSow99O28r0c=
+        b=gIUJjZPD/3ImHcvScAY0DPcDwwqDM+PNvBr+m6eNujOmxak3NdhtNgh5Y6ULUPPeP
+         zFC2SMj9CEc14YzoPFqaRu7rXppeOI3BONZ0+d/DXAYsjS1nIN8kgqF6ZvHwI/FAqX
+         dek76Fxg1hi934kSbkpZCvjiHRe3RA8bgg0wIjlY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Li <lipeng321@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0817/1126] net: hns3: clean residual vf config after disable sriov
-Date:   Tue,  5 Apr 2022 09:26:04 +0200
-Message-Id: <20220405070431.545481730@linuxfoundation.org>
+Subject: [PATCH 5.17 0796/1126] NFSv4.1: dont retry BIND_CONN_TO_SESSION on session error
+Date:   Tue,  5 Apr 2022 09:25:43 +0200
+Message-Id: <20220405070430.936067121@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,151 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 671cb8cbb9c9e24b681d21b1bfae991e2386ac73 ]
+[ Upstream commit 1d15d121cc2ad4d016a7dc1493132a9696f91fc5 ]
 
-After disable sriov, VF still has some config and info need to be
-cleaned, which configured by PF. This patch clean the HW config
-and SW struct vport->vf_info.
+There is no reason to retry the operation if a session error had
+occurred in such case result structure isn't filled out.
 
-Fixes: fa8d82e853e8 ("net: hns3: Add support of .sriov_configure in HNS3 driver")
-Signed-off-by: Peng Li<lipeng321@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: dff58530c4ca ("NFSv4.1: fix handling of backchannel binding in BIND_CONN_TO_SESSION")
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  3 ++
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 18 +++++++
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 50 +++++++++++++++++++
- 3 files changed, 71 insertions(+)
+ fs/nfs/nfs4proc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 9298fbecb31a..adea528d79ad 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -536,6 +536,8 @@ struct hnae3_ae_dev {
-  *   Get 1588 rx hwstamp
-  * get_ts_info
-  *   Get phc info
-+ * clean_vf_config
-+ *   Clean residual vf info after disable sriov
-  */
- struct hnae3_ae_ops {
- 	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
-@@ -729,6 +731,7 @@ struct hnae3_ae_ops {
- 			   struct ethtool_ts_info *info);
- 	int (*get_link_diagnosis_info)(struct hnae3_handle *handle,
- 				       u32 *status_code);
-+	void (*clean_vf_config)(struct hnae3_ae_dev *ae_dev, int num_vfs);
- };
- 
- struct hnae3_dcb_ops {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 214d88cd8dbb..f6082be7481c 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2992,6 +2992,21 @@ static int hns3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	return ret;
- }
- 
-+/**
-+ * hns3_clean_vf_config
-+ * @pdev: pointer to a pci_dev structure
-+ * @num_vfs: number of VFs allocated
-+ *
-+ * Clean residual vf config after disable sriov
-+ **/
-+static void hns3_clean_vf_config(struct pci_dev *pdev, int num_vfs)
-+{
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(pdev);
-+
-+	if (ae_dev->ops->clean_vf_config)
-+		ae_dev->ops->clean_vf_config(ae_dev, num_vfs);
-+}
-+
- /* hns3_remove - Device removal routine
-  * @pdev: PCI device information struct
-  */
-@@ -3030,7 +3045,10 @@ static int hns3_pci_sriov_configure(struct pci_dev *pdev, int num_vfs)
- 		else
- 			return num_vfs;
- 	} else if (!pci_vfs_assigned(pdev)) {
-+		int num_vfs_pre = pci_num_vf(pdev);
-+
- 		pci_disable_sriov(pdev);
-+		hns3_clean_vf_config(pdev, num_vfs_pre);
- 	} else {
- 		dev_warn(&pdev->dev,
- 			 "Unable to free VFs because some are assigned to VMs.\n");
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 1fa13ae8c651..7bc18483a8c3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -12717,6 +12717,55 @@ static int hclge_get_link_diagnosis_info(struct hnae3_handle *handle,
- 	return 0;
- }
- 
-+/* After disable sriov, VF still has some config and info need clean,
-+ * which configed by PF.
-+ */
-+static void hclge_clear_vport_vf_info(struct hclge_vport *vport, int vfid)
-+{
-+	struct hclge_dev *hdev = vport->back;
-+	struct hclge_vlan_info vlan_info;
-+	int ret;
-+
-+	/* after disable sriov, clean VF rate configured by PF */
-+	ret = hclge_tm_qs_shaper_cfg(vport, 0);
-+	if (ret)
-+		dev_err(&hdev->pdev->dev,
-+			"failed to clean vf%d rate config, ret = %d\n",
-+			vfid, ret);
-+
-+	vlan_info.vlan_tag = 0;
-+	vlan_info.qos = 0;
-+	vlan_info.vlan_proto = ETH_P_8021Q;
-+	ret = hclge_update_port_base_vlan_cfg(vport,
-+					      HNAE3_PORT_BASE_VLAN_DISABLE,
-+					      &vlan_info);
-+	if (ret)
-+		dev_err(&hdev->pdev->dev,
-+			"failed to clean vf%d port base vlan, ret = %d\n",
-+			vfid, ret);
-+
-+	ret = hclge_set_vf_spoofchk_hw(hdev, vport->vport_id, false);
-+	if (ret)
-+		dev_err(&hdev->pdev->dev,
-+			"failed to clean vf%d spoof config, ret = %d\n",
-+			vfid, ret);
-+
-+	memset(&vport->vf_info, 0, sizeof(vport->vf_info));
-+}
-+
-+static void hclge_clean_vport_config(struct hnae3_ae_dev *ae_dev, int num_vfs)
-+{
-+	struct hclge_dev *hdev = ae_dev->priv;
-+	struct hclge_vport *vport;
-+	int i;
-+
-+	for (i = 0; i < num_vfs; i++) {
-+		vport = &hdev->vport[i + HCLGE_VF_VPORT_START_NUM];
-+
-+		hclge_clear_vport_vf_info(vport, i);
-+	}
-+}
-+
- static const struct hnae3_ae_ops hclge_ops = {
- 	.init_ae_dev = hclge_init_ae_dev,
- 	.uninit_ae_dev = hclge_uninit_ae_dev,
-@@ -12818,6 +12867,7 @@ static const struct hnae3_ae_ops hclge_ops = {
- 	.get_rx_hwts = hclge_ptp_get_rx_hwts,
- 	.get_ts_info = hclge_ptp_get_ts_info,
- 	.get_link_diagnosis_info = hclge_get_link_diagnosis_info,
-+	.clean_vf_config = hclge_clean_vport_config,
- };
- 
- static struct hnae3_ae_algo ae_algo = {
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index 0e0db6c27619..c36fa0d0d438 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -8333,6 +8333,7 @@ nfs4_bind_one_conn_to_session_done(struct rpc_task *task, void *calldata)
+ 	case -NFS4ERR_DEADSESSION:
+ 		nfs4_schedule_session_recovery(clp->cl_session,
+ 				task->tk_status);
++		return;
+ 	}
+ 	if (args->dir == NFS4_CDFC4_FORE_OR_BOTH &&
+ 			res->dir != NFS4_CDFS4_BOTH) {
 -- 
 2.34.1
 
