@@ -2,163 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B850BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F096C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229491AbiDEBwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 21:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42002 "EHLO
+        id S229529AbiDEB6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 21:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiDEBws (ORCPT
+        with ESMTP id S229527AbiDEB6B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 21:52:48 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FA9386347;
-        Mon,  4 Apr 2022 18:07:47 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KXTf92gnvz4xXK;
-        Tue,  5 Apr 2022 10:53:21 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649120003;
-        bh=yWJj/XDly7PKBcBsIePwdijaqceEq7HoP2lgWDGUzjE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=oZySHRRqJoqMe0goHMP66Ql+m2+0q3c8gww/7QVi+MZFoTWHqTeBgi9TpY2eRnnm6
-         wp2Zn47wayZsgwnh6hqJQb7jtrfKpnEMLgANRZ1CAJlvXDF1qla1k5jjpcgM0UFMqm
-         98/q8uvVAQcYMUjDwVgXpMV8uihbFemo3f3JS11wrre2Pf6dwZa5gnQoMLbzgiKmbT
-         D4oybWFSxPZukv+gOxkpYc8BhDyeaCJOURTFjOL/dOMY6uD5Js/r/xKA7fKXJOh2VM
-         YpqyAqNFeCda1qywMI2OHQIQSw2DY69ls+hPgCRQ01fy9p+2VzVA3uHBXMSCnxEmMp
-         KUBE7+uoUPvAA==
-Date:   Tue, 5 Apr 2022 10:53:19 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>
-Cc:     Juha-Pekka =?UTF-8?B?SGVpa2tpbMOk?= 
-        <juha-pekka.heikkila@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Ramalingam C <ramalingam.c@intel.com>,
-        Robert Beckett <bob.beckett@collabora.com>,
-        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
-Subject: linux-next: manual merge of the drm-intel tree with Linus' tree
-Message-ID: <20220405105319.2eb47e9d@canb.auug.org.au>
+        Mon, 4 Apr 2022 21:58:01 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F192D0FF7
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:13:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=g3/9ifIMe8499bJjqwtI6WMMgnnCdftgJ1sOXpFYRfY=; b=c7/E1W/TluDz3qbEGO7TtEdECf
+        xdUiwylYxLnkjRVUhmmMUbUKeYVj6Wi6CDiTqMOt29O9v/cC9wk3GllU1k7jNEbOpyplvaukLBRpS
+        0zGzm1+qdBqAImKIdMQHEKZ37pbM88sNerMTS53Ydg73AW9Mta9neNrciHWO4Ken0lWq+22Uktff9
+        RkUKyfpYyjfbOFB8537CAl5RGjwQyy/IJqsslFTl6KsYzLyNnFyQ8aT90oJC+KeGk2AjAyMHmnuWj
+        DnsohtaZo34vTipUNBEfPkmD31QpJ73PYfwcxTgroBQCkrw73zMzqRJHcvTbdLJHheCVhplb8wPfC
+        aJDGKFvA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbWx6-006CUN-Sv; Tue, 05 Apr 2022 00:21:45 +0000
+Message-ID: <008aae79-4a6c-721f-7ef5-7b73f6d7e000@infradead.org>
+Date:   Mon, 4 Apr 2022 17:21:39 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/j==zcLUSd_ZwS9jYUrBZVK3";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] ARM: vexpress/spc: Fix doxygen comments
+Content-Language: en-US
+To:     Sudeep Holla <sudeep.holla@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Liviu Dudau <liviu.dudau@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        kernel test robot <lkp@intel.com>
+References: <20220404130207.1162445-1-sudeep.holla@arm.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220404130207.1162445-1-sudeep.holla@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/j==zcLUSd_ZwS9jYUrBZVK3
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi--
 
-Hi all,
+On 4/4/22 06:02, Sudeep Holla wrote:
+> Kbuild bot reported the following doxygen build warning:
+> 
+>   |  arch/arm/mach-versatile/spc.c:231: warning: This comment starts with
+>   |		'/**', but isn't a kernel-doc comment.
+>   |		Refer Documentation/doc-guide/kernel-doc.rst
+>   |  		* ve_spc_cpu_in_wfi(u32 cpu, u32 cluster)
+> 
+> Fix the issue by dropping the parameters specified in the kernel doc.
+> 
+> Cc: Liviu Dudau <liviu.dudau@arm.com>
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Link: https://lore.kernel.org/linux-doc/202204031026.4ogKxt89-lkp@intel.com
+> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+> ---
+>  arch/arm/mach-vexpress/spc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
+> index 1c6500c4e6a1..8f99d47d4b89 100644
+> --- a/arch/arm/mach-vexpress/spc.c
+> +++ b/arch/arm/mach-vexpress/spc.c
+> @@ -228,7 +228,7 @@ static u32 standbywfi_cpu_mask(u32 cpu, u32 cluster)
+>  }
+>  
+>  /**
+> - * ve_spc_cpu_in_wfi(u32 cpu, u32 cluster)
+> + * ve_spc_cpu_in_wfi()
 
-Today's linux-next merge of the drm-intel tree got a conflict in:
+This line still needs a "function short description," e.g.
 
-  drivers/gpu/drm/i915/i915_pci.c
++ * ve_spc_cpu_in_wfi() - fooble the barfloppity
 
-between commit:
+similar to what you did in patch 2/2.
 
-  132aaaf01788 ("drm/i915: add needs_compact_pt flag")
+>   *
+>   * @cpu: mpidr[7:0] bitfield describing CPU affinity level within cluster
+>   * @cluster: mpidr[15:8] bitfield describing cluster affinity level
 
-from Linus' tree and commits:
+and I would s/doxygen/kernel-doc/ for both patches.
 
-  072ce4164f97 ("drm/i915/dg2: Tile 4 plane format support")
-  412c942bdfae ("drm/i915/ats-m: add ATS-M platform info")
-
-from the drm-intel tree.
-
-I fixed it up (I think, see below) and can carry the fix as necessary.
-This is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/gpu/drm/i915/i915_pci.c
-index c32c0c6661c8,8e321d300e0c..000000000000
---- a/drivers/gpu/drm/i915/i915_pci.c
-+++ b/drivers/gpu/drm/i915/i915_pci.c
-@@@ -1040,25 -1038,35 +1040,36 @@@ static const struct intel_device_info x
-  	.require_force_probe =3D 1,
-  };
- =20
-+ #define DG2_FEATURES \
-+ 	XE_HP_FEATURES, \
-+ 	XE_HPM_FEATURES, \
-+ 	DGFX_FEATURES, \
-+ 	.graphics.rel =3D 55, \
-+ 	.media.rel =3D 55, \
-+ 	PLATFORM(INTEL_DG2), \
-+ 	.has_4tile =3D 1, \
-+ 	.has_64k_pages =3D 1, \
-++	.needs_compact_pt =3D 1, \
-+ 	.has_guc_deprivilege =3D 1, \
-+ 	.platform_engine_mask =3D \
-+ 		BIT(RCS0) | BIT(BCS0) | \
-+ 		BIT(VECS0) | BIT(VECS1) | \
-+ 		BIT(VCS0) | BIT(VCS2)
-+=20
-  __maybe_unused
-  static const struct intel_device_info dg2_info =3D {
-- 	XE_HP_FEATURES,
-- 	XE_HPM_FEATURES,
-+ 	DG2_FEATURES,
-  	XE_LPD_FEATURES,
-- 	DGFX_FEATURES,
-- 	.graphics.rel =3D 55,
-- 	.media.rel =3D 55,
-- 	PLATFORM(INTEL_DG2),
-- 	.has_guc_deprivilege =3D 1,
-- 	.has_64k_pages =3D 1,
-- 	.needs_compact_pt =3D 1,
-- 	.platform_engine_mask =3D
-- 		BIT(RCS0) | BIT(BCS0) |
-- 		BIT(VECS0) | BIT(VECS1) |
-- 		BIT(VCS0) | BIT(VCS2),
-- 	.require_force_probe =3D 1,
-  	.display.cpu_transcoder_mask =3D BIT(TRANSCODER_A) | BIT(TRANSCODER_B) |
-  			       BIT(TRANSCODER_C) | BIT(TRANSCODER_D),
-+ 	.require_force_probe =3D 1,
-+ };
-+=20
-+ __maybe_unused
-+ static const struct intel_device_info ats_m_info =3D {
-+ 	DG2_FEATURES,
-+ 	.display =3D { 0 },
-+ 	.require_force_probe =3D 1,
-  };
- =20
-  #undef PLATFORM
-
---Sig_/j==zcLUSd_ZwS9jYUrBZVK3
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJLkwAACgkQAVBC80lX
-0GwCmwf/YLukNlv4VfvGolLJqjb0d4+V3vRIOgWor4TZgbiIvKvEI7wcYjf1Xotp
-hw7jpLNt7ameGWV5+pKmYmUybFgjJJofMSI0cQaYkByRfT7Yml3Ov29TbNV3Pfu+
-lSCt7asqLuubKGMfov41OxfkDtKK6aaCbAOPmO0yORo6rHVWkce1hRHSCXTfBGKX
-nNrqGYiHCZud8k8V7he8P3Zf2tBqz4FJ1o5nzoKled5MT8mSux8NyFTinbDdwIAe
-3hbbWcOgqQqlROVkTcjLWbDP4F4xFMUFTofnZzaS1nBRpmK+ZN3a8dbRzaP/jISD
-B0q4OkRNTVifbgmONUvcm9I+VX65uw==
-=R9kd
------END PGP SIGNATURE-----
-
---Sig_/j==zcLUSd_ZwS9jYUrBZVK3--
+thanks.
+-- 
+~Randy
