@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0CAC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F41BBC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243971AbiDEJk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
+        id S243936AbiDEJkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239330AbiDEIT6 (ORCPT
+        with ESMTP id S239311AbiDEIT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:19:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CC385BEB;
-        Tue,  5 Apr 2022 01:11:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7422E6D874;
+        Tue,  5 Apr 2022 01:11:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B18EDB81B92;
-        Tue,  5 Apr 2022 08:11:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F66C385A1;
-        Tue,  5 Apr 2022 08:11:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9779460B0E;
+        Tue,  5 Apr 2022 08:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A540DC385A1;
+        Tue,  5 Apr 2022 08:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146272;
-        bh=DbvDUCjs6PJjOYcbBZnASjkLrK3/Xw+n/fw/88LNon8=;
+        s=korg; t=1649146261;
+        bh=zYiHsEhlIcmeHaD0lpcJfRsV30tPxcj1wTYs8dxpyFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v81NYQq11gaLjJZ7dJAAx9tWs1WI4wlYQdKqVlyhDtsJJ22YkFhDJV06GoTkehuWb
-         PiLmZ4fC7Kn4Shxl5UQWiqcfbFAdVVtbRW+mjcHv7jqUOXmDnt1wijrRkNN5n/aMcl
-         QJS7G/6ez8lGz9vMm95GHiooVnw/8CoSOT4uaBYI=
+        b=b9ZtZgqKU6ouOaKJ9dr9AI1x8wSaz3leR1SGhzqtq4DSqamxG7ExjciRHXJXML5ma
+         ZBax/KIwOiThnYGsMApTXpU5a0BqsXOmpBx3Vy+yo+1jflHk8nkTvbXJEJTYKvXBCl
+         OF1UStouQtZKBZeX1k86sXkHJFSDHIfc4w5Yo8BA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0703/1126] net: dsa: fix panic on shutdown if multi-chip tree failed to probe
-Date:   Tue,  5 Apr 2022 09:24:10 +0200
-Message-Id: <20220405070428.239374191@linuxfoundation.org>
+Subject: [PATCH 5.17 0700/1126] net: bcmgenet: Use stronger register read/writes to assure ordering
+Date:   Tue,  5 Apr 2022 09:24:07 +0200
+Message-Id: <20220405070428.153944226@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,62 +51,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Jeremy Linton <jeremy.linton@arm.com>
 
-[ Upstream commit 8fd36358ce82382519b50b05f437493e1e00c4a9 ]
+[ Upstream commit 8d3ea3d402db94b61075617e71b67459a714a502 ]
 
-DSA probing is atypical because a tree of devices must probe all at
-once, so out of N switches which call dsa_tree_setup_routing_table()
-during probe, for (N - 1) of them, "complete" will return false and they
-will exit probing early. The Nth switch will set up the whole tree on
-their behalf.
+GCC12 appears to be much smarter about its dependency tracking and is
+aware that the relaxed variants are just normal loads and stores and
+this is causing problems like:
 
-The implication is that for (N - 1) switches, the driver binds to the
-device successfully, without doing anything. When the driver is bound,
-the ->shutdown() method may run. But if the Nth switch has failed to
-initialize the tree, there is nothing to do for the (N - 1) driver
-instances, since the slave devices have not been created, etc. Moreover,
-dsa_switch_shutdown() expects that the calling @ds has been in fact
-initialized, so it jumps at dereferencing the various data structures,
-which is incorrect.
+[  210.074549] ------------[ cut here ]------------
+[  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
+[  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
+[  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
+[  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
+[  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
+[  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
+[  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
+[  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  210.161358] pc : dev_watchdog+0x234/0x240
+[  210.161364] lr : dev_watchdog+0x234/0x240
+[  210.161368] sp : ffff8000080a3a40
+[  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
+[  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
+[  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
+[  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
+[  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
+[  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
+[  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
+[  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
+[  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
+[  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
+[  210.269682] Call trace:
+[  210.272133]  dev_watchdog+0x234/0x240
+[  210.275811]  call_timer_fn+0x3c/0x15c
+[  210.279489]  __run_timers.part.0+0x288/0x310
+[  210.283777]  run_timer_softirq+0x48/0x80
+[  210.287716]  __do_softirq+0x128/0x360
+[  210.291392]  __irq_exit_rcu+0x138/0x140
+[  210.295243]  irq_exit_rcu+0x1c/0x30
+[  210.298745]  el1_interrupt+0x38/0x54
+[  210.302334]  el1h_64_irq_handler+0x18/0x24
+[  210.306445]  el1h_64_irq+0x7c/0x80
+[  210.309857]  arch_cpu_idle+0x18/0x2c
+[  210.313445]  default_idle_call+0x4c/0x140
+[  210.317470]  cpuidle_idle_call+0x14c/0x1a0
+[  210.321584]  do_idle+0xb0/0x100
+[  210.324737]  cpu_startup_entry+0x30/0x8c
+[  210.328675]  secondary_start_kernel+0xe4/0x110
+[  210.333138]  __secondary_switched+0x94/0x98
 
-Avoid the ensuing NULL pointer dereferences by simply checking whether
-the Nth switch has previously set "ds->setup = true" for the switch
-which is currently shutting down. The entire setup is serialized under
-dsa2_mutex which we already hold.
+The assumption when these were relaxed seems to be that device memory
+would be mapped non reordering, and that other constructs
+(spinlocks/etc) would provide the barriers to assure that packet data
+and in memory rings/queues were ordered with respect to device
+register reads/writes. This itself seems a bit sketchy, but the real
+problem with GCC12 is that it is moving the actual reads/writes around
+at will as though they were independent operations when in truth they
+are not, but the compiler can't know that. When looking at the
+assembly dumps for many of these routines its possible to see very
+clean, but not strictly in program order operations occurring as the
+compiler would be free to do if these weren't actually register
+reads/write operations.
 
-Fixes: 0650bf52b31f ("net: dsa: be compatible with masters which unregister on shutdown")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220318195443.275026-1-vladimir.oltean@nxp.com
+Its possible to suppress the timeout with a liberal bit of dma_mb()'s
+sprinkled around but the device still seems unable to reliably
+send/receive data. A better plan is to use the safer readl/writel
+everywhere.
+
+Since this partially reverts an older commit, which notes the use of
+the relaxed variants for performance reasons. I would suggest that
+any performance problems with this commit are targeted at relaxing only
+the performance critical code paths after assuring proper barriers.
+
+Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
+Reported-by: Peter Robinson <pbrobinson@gmail.com>
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Acked-by: Peter Robinson <pbrobinson@gmail.com>
+Tested-by: Peter Robinson <pbrobinson@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220310045358.224350-1-jeremy.linton@arm.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/dsa2.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 88e2808019b4..a39bbed77f87 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1722,6 +1722,10 @@ void dsa_switch_shutdown(struct dsa_switch *ds)
- 	struct dsa_port *dp;
- 
- 	mutex_lock(&dsa2_mutex);
-+
-+	if (!ds->setup)
-+		goto out;
-+
- 	rtnl_lock();
- 
- 	dsa_switch_for_each_user_port(dp, ds) {
-@@ -1738,6 +1742,7 @@ void dsa_switch_shutdown(struct dsa_switch *ds)
- 		dp->master->dsa_ptr = NULL;
- 
- 	rtnl_unlock();
-+out:
- 	mutex_unlock(&dsa2_mutex);
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 2da804f84b48..bd5998012a87 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		__raw_writel(value, offset);
+ 	else
+-		writel_relaxed(value, offset);
++		writel(value, offset);
  }
- EXPORT_SYMBOL_GPL(dsa_switch_shutdown);
+ 
+ static inline u32 bcmgenet_readl(void __iomem *offset)
+@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		return __raw_readl(offset);
+ 	else
+-		return readl_relaxed(offset);
++		return readl(offset);
+ }
+ 
+ static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
 -- 
 2.34.1
 
