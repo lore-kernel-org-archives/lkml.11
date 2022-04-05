@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E846BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B615AC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbiDEHuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55680 "EHLO
+        id S232381AbiDEHuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiDEHqf (ORCPT
+        with ESMTP id S232269AbiDEHq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:46:35 -0400
+        Tue, 5 Apr 2022 03:46:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF869232A;
-        Tue,  5 Apr 2022 00:42:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A3B99693;
+        Tue,  5 Apr 2022 00:41:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A385616C2;
-        Tue,  5 Apr 2022 07:42:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 472FFC340EE;
-        Tue,  5 Apr 2022 07:42:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3296E6164B;
+        Tue,  5 Apr 2022 07:41:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41BADC34110;
+        Tue,  5 Apr 2022 07:41:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144537;
-        bh=baIIUl0pgpGJEPx8RwPn551PnuHYveXQFnVQUiQciBA=;
+        s=korg; t=1649144515;
+        bh=svZuOa8pDq3zAWgG/cti6ctsXMEigFytM+QrFm9Cwm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=exLlX5qdQwh3x2DEtCDO1CAj/BsTgjSWsUoqTuutJ0mVeFc1IMSvZ1zJ8A3BgvMLD
-         8IOW4Q5WEWdGd6PzGeUTEKnKk1LWEL60dyecjBxDX9isNukJqtnw7oslzU9CYmIa/4
-         CH+CU+WUr/BKlZ/ajchb4QHqxAP+M1TBUQeIk8ak=
+        b=uYr9XR+dS+gkWL5sfBysD2okkqv3WqVUGrDj9cvDC31MpbuwQdry+ZZNVPCERXk4C
+         tDl6Ww0scR+WwEpzDe1z0CAVfG6WiZmrJzrVOn37vVX2L1XtaifEY70hcKMeGjnsrD
+         RigJFEQ9/WiCcDgxEyTlo2MDmInpz9TIYNjtelsc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 0080/1126] mempolicy: mbind_range() set_policy() after vma_merge()
-Date:   Tue,  5 Apr 2022 09:13:47 +0200
-Message-Id: <20220405070409.918037488@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 0073/1126] jffs2: fix use-after-free in jffs2_clear_xattr_subsystem
+Date:   Tue,  5 Apr 2022 09:13:40 +0200
+Message-Id: <20220405070409.712666054@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,79 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugh Dickins <hughd@google.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 4e0906008cdb56381638aa17d9c32734eae6d37a upstream.
+commit 4c7c44ee1650677fbe89d86edbad9497b7679b5c upstream.
 
-v2.6.34 commit 9d8cebd4bcd7 ("mm: fix mbind vma merge problem") introduced
-vma_merge() to mbind_range(); but unlike madvise, mlock and mprotect, it
-put a "continue" to next vma where its precedents go to update flags on
-current vma before advancing: that left vma with the wrong setting in the
-infamous vma_merge() case 8.
+When we mount a jffs2 image, assume that the first few blocks of
+the image are normal and contain at least one xattr-related inode,
+but the next block is abnormal. As a result, an error is returned
+in jffs2_scan_eraseblock(). jffs2_clear_xattr_subsystem() is then
+called in jffs2_build_filesystem() and then again in
+jffs2_do_fill_super().
 
-v3.10 commit 1444f92c8498 ("mm: merging memory blocks resets mempolicy")
-tried to fix that in vma_adjust(), without fully understanding the issue.
+Finally we can observe the following report:
+ ==================================================================
+ BUG: KASAN: use-after-free in jffs2_clear_xattr_subsystem+0x95/0x6ac
+ Read of size 8 at addr ffff8881243384e0 by task mount/719
 
-v3.11 commit 3964acd0dbec ("mm: mempolicy: fix mbind_range() &&
-vma_adjust() interaction") reverted that, and went about the fix in the
-right way, but chose to optimize out an unnecessary mpol_dup() with a
-prior mpol_equal() test.  But on tmpfs, that also pessimized out the vital
-call to its ->set_policy(), leaving the new mbind unenforced.
+ Call Trace:
+  dump_stack+0x115/0x16b
+  jffs2_clear_xattr_subsystem+0x95/0x6ac
+  jffs2_do_fill_super+0x84f/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+  mtd_get_sb+0x254/0x400
+  mtd_get_sb_by_nr+0x4f/0xd0
+  get_tree_mtd+0x498/0x840
+  jffs2_get_tree+0x25/0x30
+  vfs_get_tree+0x8d/0x2e0
+  path_mount+0x50f/0x1e50
+  do_mount+0x107/0x130
+  __se_sys_mount+0x1c5/0x2f0
+  __x64_sys_mount+0xc7/0x160
+  do_syscall_64+0x45/0x70
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-The user visible effect was that the pages got allocated on the local
-node (happened to be 0), after the mbind() caller had specifically
-asked for them to be allocated on node 1.  There was not any page
-migration involved in the case reported: the pages simply got allocated
-on the wrong node.
+ Allocated by task 719:
+  kasan_save_stack+0x23/0x60
+  __kasan_kmalloc.constprop.0+0x10b/0x120
+  kasan_slab_alloc+0x12/0x20
+  kmem_cache_alloc+0x1c0/0x870
+  jffs2_alloc_xattr_ref+0x2f/0xa0
+  jffs2_scan_medium.cold+0x3713/0x4794
+  jffs2_do_mount_fs.cold+0xa7/0x2253
+  jffs2_do_fill_super+0x383/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+ [...]
 
-Just delete that optimization now (though it could be made conditional on
-vma not having a set_policy).  Also remove the "next" variable: it turned
-out to be blameless, but also pointless.
+ Freed by task 719:
+  kmem_cache_free+0xcc/0x7b0
+  jffs2_free_xattr_ref+0x78/0x98
+  jffs2_clear_xattr_subsystem+0xa1/0x6ac
+  jffs2_do_mount_fs.cold+0x5e6/0x2253
+  jffs2_do_fill_super+0x383/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+ [...]
 
-Link: https://lkml.kernel.org/r/319e4db9-64ae-4bca-92f0-ade85d342ff@google.com
-Fixes: 3964acd0dbec ("mm: mempolicy: fix mbind_range() && vma_adjust() interaction")
-Signed-off-by: Hugh Dickins <hughd@google.com>
-Acked-by: Oleg Nesterov <oleg@redhat.com>
-Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+ The buggy address belongs to the object at ffff8881243384b8
+  which belongs to the cache jffs2_xattr_ref of size 48
+ The buggy address is located 40 bytes inside of
+  48-byte region [ffff8881243384b8, ffff8881243384e8)
+ [...]
+ ==================================================================
+
+The triggering of the BUG is shown in the following stack:
+-----------------------------------------------------------
+jffs2_fill_super
+  jffs2_do_fill_super
+    jffs2_do_mount_fs
+      jffs2_build_filesystem
+        jffs2_scan_medium
+          jffs2_scan_eraseblock        <--- ERROR
+        jffs2_clear_xattr_subsystem    <--- free
+    jffs2_clear_xattr_subsystem        <--- free again
+-----------------------------------------------------------
+
+An error is returned in jffs2_do_mount_fs(). If the error is returned
+by jffs2_sum_init(), the jffs2_clear_xattr_subsystem() does not need to
+be executed. If the error is returned by jffs2_build_filesystem(), the
+jffs2_clear_xattr_subsystem() also does not need to be executed again.
+So move jffs2_clear_xattr_subsystem() from 'out_inohash' to 'out_root'
+to fix this UAF problem.
+
+Fixes: aa98d7cf59b5 ("[JFFS2][XATTR] XATTR support on JFFS2 (version. 5)")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mempolicy.c |    8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ fs/jffs2/fs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -786,7 +786,6 @@ static int vma_replace_policy(struct vm_
- static int mbind_range(struct mm_struct *mm, unsigned long start,
- 		       unsigned long end, struct mempolicy *new_pol)
- {
--	struct vm_area_struct *next;
- 	struct vm_area_struct *prev;
- 	struct vm_area_struct *vma;
- 	int err = 0;
-@@ -801,8 +800,7 @@ static int mbind_range(struct mm_struct
- 	if (start > vma->vm_start)
- 		prev = vma;
- 
--	for (; vma && vma->vm_start < end; prev = vma, vma = next) {
--		next = vma->vm_next;
-+	for (; vma && vma->vm_start < end; prev = vma, vma = vma->vm_next) {
- 		vmstart = max(start, vma->vm_start);
- 		vmend   = min(end, vma->vm_end);
- 
-@@ -817,10 +815,6 @@ static int mbind_range(struct mm_struct
- 				 anon_vma_name(vma));
- 		if (prev) {
- 			vma = prev;
--			next = vma->vm_next;
--			if (mpol_equal(vma_policy(vma), new_pol))
--				continue;
--			/* vma_merge() joined vma && vma->next, case 8 */
- 			goto replace;
- 		}
- 		if (vma->vm_start != vmstart) {
+--- a/fs/jffs2/fs.c
++++ b/fs/jffs2/fs.c
+@@ -603,8 +603,8 @@ out_root:
+ 	jffs2_free_ino_caches(c);
+ 	jffs2_free_raw_node_refs(c);
+ 	kvfree(c->blocks);
+- out_inohash:
+ 	jffs2_clear_xattr_subsystem(c);
++ out_inohash:
+ 	kfree(c->inocache_list);
+  out_wbuf:
+ 	jffs2_flash_cleanup(c);
 
 
