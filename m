@@ -2,101 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC79C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4723C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbiDEGcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
+        id S229965AbiDEGfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230209AbiDEGbx (ORCPT
+        with ESMTP id S229892AbiDEGfH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:31:53 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C16652E40;
-        Mon,  4 Apr 2022 23:29:54 -0700 (PDT)
-Received: from mail-wm1-f50.google.com ([209.85.128.50]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MyK5K-1nwLS02Y5k-00yixP; Tue, 05 Apr 2022 08:29:52 +0200
-Received: by mail-wm1-f50.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so885267wmb.4;
-        Mon, 04 Apr 2022 23:29:52 -0700 (PDT)
-X-Gm-Message-State: AOAM533c1kU5UG6Dgl6fglDxiVSp1JJjXvxLcczK4SI/xToN5JmuqTQh
-        83Pa6gYmQXpqI1hFhegKEkNUrvjiH402fcfij5s=
-X-Google-Smtp-Source: ABdhPJwsEWf6Kh9ZmIXYYN/M9onvtdd1lx+p5bH1oV2EAH9/3o2ZPWJZ3zKpIpvz66ZNFBOP57JnZalCuJjU3V4Z5Fo=
-X-Received: by 2002:a05:600c:4e11:b0:38c:bd19:e72c with SMTP id
- b17-20020a05600c4e1100b0038cbd19e72cmr1618846wmq.174.1649140192243; Mon, 04
- Apr 2022 23:29:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-9-masahiroy@kernel.org> <Ykqh3mEy5uY8spe8@infradead.org>
- <CAK8P3a07ZdqA0UBC_qkqzMsZWLUK=Rti3AkFe2VVEWLivuZAqA@mail.gmail.com> <YkvVOLj/Rv4yPf5K@infradead.org>
-In-Reply-To: <YkvVOLj/Rv4yPf5K@infradead.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 5 Apr 2022 08:29:36 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0FjfSyUtv9a9dM7ixsK2oY9VF7WZPvDctn2JRi7A0YyQ@mail.gmail.com>
-Message-ID: <CAK8P3a0FjfSyUtv9a9dM7ixsK2oY9VF7WZPvDctn2JRi7A0YyQ@mail.gmail.com>
-Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
- exported header
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization list <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:97ZUr0yfSVQstYUK4F5LrqXuvIwLfKa2qugu5/vkLljAk+jZE3Z
- h9QkhZuVeQyXBlfEi4q9m8OVXmLRYqaxQCFw5HHBlvfab6AWEGHjT0HM63Gnqz7WXk4LkJF
- MSGz5EvcUPfbD6RtI9I6stN00PRHvGRhHsQ84odKVMpXiC10UwHc//DgYEbqYJ/AWG1yJAq
- I+e8n0XFZzdVmRhw7BA4w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Uoldei0PfR8=:J0+2DU1VyzsYAC1pEJIh0C
- ExQcvuPLetSen3D/9Uptd41/9OP0paBB/B48ZUfbQqnuV5cvZ9UckFInzwl0FMFxo0G6arrs4
- jvC/9zngMkzG6zQeTirlGZx4SwqnYfm2aJAfzjUU+U76MxcH92vXhLlXTepzRO0u9D2ZdmMkO
- ivPEv10nwwkbmlOM0BLc/27vdiQ2ild8IVz5CaNUcaIe2HH7uDbqjpJR82wlC3YziHG2n/i7n
- UzXDiqi7xTTw6Dw4rlkNRitScDienSUDbtoQ7iZhmpKEVSfI7l41C+USDdpydU32IjPXevcyJ
- jLZHBAEbvnmEg86aUt8u6JHyK9CLsITT2SbJc00AEAGbdxWep/Kqc/D2Bl8bwtrZU3y2YlN8z
- ARrCs3YF8brwxZqNEX2caVzMmGPLUsoqm9Ms7CP3UYUdzOkQxjLC8AiW6hGijg1ttPER3aP6C
- nZt055ehRAo+cZP+jZbsjY2HkkOI/UGaEkkAGAM29NuboAng/tIrzSkZKK9enagRBJjDdvTlS
- NwbJzpvxA5OupNjhy6OX6u2wySUTnHvaAF2dZPHLyY7vyZT31qtaprBjXEzglUuLufCyqnsS1
- q8z5EHN942LPNo9FNODjXbuM8a6QZzdyShu8TvaXTojaQONpJ8Rw92Bn+ziI5EZ0DjOUG8AgW
- fnvgIlLUYfIzrkpaAT4bCP/D47tdFxNaJbwjHWPoeeV3F0ILP4NC7vChVqK/NpUFbAco=
+        Tue, 5 Apr 2022 02:35:07 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBCCB33E04;
+        Mon,  4 Apr 2022 23:33:09 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id A823B1F38A;
+        Tue,  5 Apr 2022 06:33:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649140388; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JcfhvICtJKCeKtW0oDjbSh0bSoohtfR7AsJWT9Fe+Qk=;
+        b=TCf1NmCD9p71no+4W81Ap0MxKs2S06umdVz2r7Ctc5x/gVLAFQQL7/Ir+p1587/+0lbhQn
+        ciAUmhG5gz66/BH5CWz8y+scggh8LZoejV3OBaUvLtng80XsaW1CEh1PjPvpfmYGdLWqDJ
+        dHHbxZOUrUcRcEJ1KLlwe2Zen2IIH5A=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649140388;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JcfhvICtJKCeKtW0oDjbSh0bSoohtfR7AsJWT9Fe+Qk=;
+        b=x+47IxFd44rN4kifJgGsO/zhoXSz8FiCMndz9YlJNs2QSun4oAkhMhu27773xlrnWC/j3+
+        qyI6WMuT3vNwLpCg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 90777A3B82;
+        Tue,  5 Apr 2022 06:33:08 +0000 (UTC)
+Date:   Tue, 05 Apr 2022 08:33:08 +0200
+Message-ID: <s5hee2c82fv.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Mohan Kumar D <mkumard@nvidia.com>
+Cc:     tiwai@suse.com, perex@perex.cz, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, spujar@nvidia.com,
+        alsa-devel@alsa-project.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: hda/tegra: Fix hda Jack detection
+In-Reply-To: <a6964809-ad10-aca8-0776-011c9e6b318d@nvidia.com>
+References: <20220405032607.8489-1-mkumard@nvidia.com>
+        <s5hfsms843u.wl-tiwai@suse.de>
+        <a6964809-ad10-aca8-0776-011c9e6b318d@nvidia.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 7:35 AM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Mon, Apr 04, 2022 at 10:04:02AM +0200, Arnd Bergmann wrote:
-> > The header is shared between kernel and other projects using virtio, such as
-> > qemu and any boot loaders booting from virtio devices. It's not technically a
-> > /kernel/ ABI, but it is an ABI and for practical reasons the kernel version is
-> > maintained as the master copy if I understand it correctly.
->
-> Besides that fact that as you correctly states these are not a UAPI at
-> all, qemu and bootloades are not specific to Linux and can't require a
-> specific kernel version.  So the same thing we do for file system
-> formats or network protocols applies here:  just copy the damn header.
-> And as stated above any reasonably portable userspace needs to have a
-> copy anyway.
+On Tue, 05 Apr 2022 08:05:03 +0200,
+Mohan Kumar D wrote:
+> 
+> 
+> On 4/5/2022 11:27 AM, Takashi Iwai wrote:
+> > External email: Use caution opening links or attachments
+> >
+> >
+> > On Tue, 05 Apr 2022 05:26:07 +0200,
+> > Mohan Kumar wrote:
+> >> Tegra HDA Jack detection logic doesn't work when the HDACODEC
+> >> in runtime suspended state as unsol event won't be triggered
+> >> during D3 state. As pulseaudio server in userspace rely on the
+> >> jack mixer control status to show the audio devices in gui and
+> >> any display sink device hotplug event during D3 state will never
+> >> updates the jack status which will result in no audio device option
+> >> available in userspace settings.
+> >>
+> >> The possible option available to resolve this issue for multiple
+> >> tegra platforms is to use Jack polling method for every 5 seconds.
+> >> Also to make Jack detection work seamlessly the Jack worker thread
+> >> needs to run continuously after HDA sound card registered
+> >> irrespective of whether HDMI sink device connected or not, but the
+> >> Jack state update call happens only when Codec is not powered on.
+> >>
+> >> Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
+> > Hmm, any reason not to use the standard jackpoll stuff that is already
+> > implemented in HD-audio controller side?  That is, doesn't the
+> > following oneliner work instead?
+> The reason is, the Jack poll thread implemented in hda_codec.c runs
+> only when HDACODEC is in runtime resume state. But the problem trying
+> resolve here is something opposite, bcaz when hdacodec is in runtime
+> resume state unsol event would work but not during suspend state. So
+> either need to make some changes on hda_codec.c specific to tegra or
+> make it on tegra specific driver. So I went with second option.
 
-I think the users all have their own copies, at least the ones I could
-find on codesearch.debian.org. However, there are 27 virtio_*.h
-files in include/uapi/linux that probably should stay together for
-the purpose of defining the virtio protocol, and some others might
-be uapi relevant.
+Well, the current behavior of jackpoll is intentional, so that it
+avoids the unnecessary power up at the runtime PM suspend.  And your
+requirement is rather opposite, and it's not Tegra-specific at all --
+you just prefer the jack notification over the power saving.
 
-I see that at least include/uapi/linux/vhost.h has ioctl() definitions
-in it, and includes the virtio_ring.h header indirectly.
+So, implementing the feature in HD-audio core side would make more
+sense (and it's simpler), something like below.
 
-Adding the virtio maintainers to Cc to see if they can provide
-more background on this.
+BTW, which codec needs this?  If it's about HDMI, doesn't the audio
+component work?  At least nouveau has it, and I thought Nvidia binary
+driver does poke the driver at hotplug by opening the proc file or
+such.
 
-> If it is just as a "master copy" it can live in drivers/virtio/, just
-> like we do for other formats.
 
-It has to be in include/linux/ at least because it's used by a number
-of drivers outside of drivers/virtio/.
+Takashi
 
-        Arnd
+-- 8< --
+--- a/include/sound/hda_codec.h
++++ b/include/sound/hda_codec.h
+@@ -59,6 +59,7 @@ struct hda_bus {
+ 	unsigned int no_response_fallback:1; /* don't fallback at RIRB error */
+ 	unsigned int bus_probing :1;	/* during probing process */
+ 	unsigned int keep_power:1;	/* keep power up for notification */
++	unsigned int jackpoll_in_suspend:1; /* keep jack polling during runtime suspend */
+ 
+ 	int primary_dig_out_type;	/* primary digital out PCM type */
+ 	unsigned int mixer_assigned;	/* codec addr for mixer name */
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -2935,7 +2935,9 @@ static int hda_codec_runtime_suspend(struct device *dev)
+ 	if (!codec->card)
+ 		return 0;
+ 
+-	cancel_delayed_work_sync(&codec->jackpoll_work);
++	if (!codec->bus->jackpoll_in_suspend &&
++	    dev->power.power_state != PMSG_ON)
++		cancel_delayed_work_sync(&codec->jackpoll_work);
+ 	state = hda_call_codec_suspend(codec);
+ 	if (codec->link_down_at_suspend ||
+ 	    (codec_has_clkstop(codec) && codec_has_epss(codec) &&
+--- a/sound/pci/hda/hda_tegra.c
++++ b/sound/pci/hda/hda_tegra.c
+@@ -421,6 +421,8 @@ static int hda_tegra_create(struct snd_card *card,
+ 	chip->driver_type = driver_caps & 0xff;
+ 	chip->dev_index = 0;
+ 	INIT_LIST_HEAD(&chip->pcm_list);
++	chip->jackpoll_interval = msecs_to_jiffies(5000);
++	chip->jackpoll_in_resume = 1;
+ 
+ 	chip->codec_probe_mask = -1;
+ 
