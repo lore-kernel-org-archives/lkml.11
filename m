@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CB4C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D82C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441829AbiDENw6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
+        id S234609AbiDENxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347348AbiDEJ0M (ORCPT
+        with ESMTP id S1347393AbiDEJ0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:26:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0563DE93A;
-        Tue,  5 Apr 2022 02:15:23 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7673C9682D;
+        Tue,  5 Apr 2022 02:15:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 794426164E;
-        Tue,  5 Apr 2022 09:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83CA3C385A0;
-        Tue,  5 Apr 2022 09:15:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5694861576;
+        Tue,  5 Apr 2022 09:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61FA4C385A0;
+        Tue,  5 Apr 2022 09:15:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150121;
-        bh=ILBucAii6L59KbluEJs9UfkSEPcuI0aO3O8zzJAmlug=;
+        s=korg; t=1649150110;
+        bh=uJf7pj87pn7mUSWMH3sAg8R4hUfURYzVn3VcFRGN990=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vap5HGclvTVNBJ4j3sLXsnnrwQ5498yRBhg1x6+fVqJ8loxHRh9syOvFxbxqvMTn5
-         JGXt8+SrW5VM6xZYsR6iw2WSbr3lFkjDRDLYf8CszFQmwBAVk/lLaeZ8D9guBWri3y
-         i70wukyzrKhW7pLpoqncdhCgArj2z5K5zKADTFps=
+        b=V1C4j26T7gnyJA8QLDh/4cv3NGCO3yyQKF66ikTrb/JGvxI7D9ZEQtjo7Z24E/AGy
+         JFSF4CmTVRtqN4N7HWlPWTmiSxR16dfjSWvMCIu1T8924kr2eSR0Alk51UEB8c0/Ix
+         kZMUhgECtqe399Urav8e7ojDHy+5NKLZRVLo8WK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.16 0923/1017] can: mcba_usb: mcba_usb_start_xmit(): fix double dev_kfree_skb in error path
-Date:   Tue,  5 Apr 2022 09:30:36 +0200
-Message-Id: <20220405070421.615707346@linuxfoundation.org>
+        stable@vger.kernel.org, Anirudh Rayabharam <mail@anirudhrb.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH 5.16 0956/1017] vhost: handle error while adding split ranges to iotlb
+Date:   Tue,  5 Apr 2022 09:31:09 +0200
+Message-Id: <20220405070422.586330529@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,32 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Anirudh Rayabharam <mail@anirudhrb.com>
 
-commit 04c9b00ba83594a29813d6b1fb8fdc93a3915174 upstream.
+commit 03a91c9af2c42ae14afafb829a4b7e6589ab5892 upstream.
 
-There is no need to call dev_kfree_skb() when usb_submit_urb() fails
-because can_put_echo_skb() deletes original skb and
-can_free_echo_skb() deletes the cloned skb.
+vhost_iotlb_add_range_ctx() handles the range [0, ULONG_MAX] by
+splitting it into two ranges and adding them separately. The return
+value of adding the first range to the iotlb is currently ignored.
+Check the return value and bail out in case of an error.
 
-Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
-Link: https://lore.kernel.org/all/20220311080208.45047-1-hbh25y@gmail.com
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+Link: https://lore.kernel.org/r/20220312141121.4981-1-mail@anirudhrb.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Fixes: e2ae38cf3d91 ("vhost: fix hung thread due to erroneous iotlb entries")
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/mcba_usb.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/vhost/iotlb.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/net/can/usb/mcba_usb.c
-+++ b/drivers/net/can/usb/mcba_usb.c
-@@ -368,7 +368,6 @@ static netdev_tx_t mcba_usb_start_xmit(s
- xmit_failed:
- 	can_free_echo_skb(priv->netdev, ctx->ndx, NULL);
- 	mcba_usb_free_ctx(ctx);
--	dev_kfree_skb(skb);
- 	stats->tx_dropped++;
+--- a/drivers/vhost/iotlb.c
++++ b/drivers/vhost/iotlb.c
+@@ -62,8 +62,12 @@ int vhost_iotlb_add_range_ctx(struct vho
+ 	 */
+ 	if (start == 0 && last == ULONG_MAX) {
+ 		u64 mid = last / 2;
++		int err = vhost_iotlb_add_range_ctx(iotlb, start, mid, addr,
++				perm, opaque);
++
++		if (err)
++			return err;
  
- 	return NETDEV_TX_OK;
+-		vhost_iotlb_add_range_ctx(iotlb, start, mid, addr, perm, opaque);
+ 		addr += mid + 1;
+ 		start = mid + 1;
+ 	}
 
 
