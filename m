@@ -2,141 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77123C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 853ACC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbiDEUhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36216 "EHLO
+        id S235036AbiDEUhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442020AbiDEPgw (ORCPT
+        with ESMTP id S1356150AbiDEKXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:36:52 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03563A76F7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:50:23 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id a11so11017016qtb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:50:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oBw5C4mAzYHBqkIcJSiLqZdE6/dGN4RirBfflfNZeZw=;
-        b=cwod/pqZb/ZZ50J1wzA7SUpmhcqJ/4OQWOhBMvOgpobzAzK96fSaGe5d+kvm2ZMQYX
-         qbZ6Dy9RtuWeFQrkKYdrNG/Py4GeymojXrVYVNuGlvWGVjiJfefwCxoLF9mOUIeAG8R7
-         VzI5xSlVBgs99NqOxcCMknPsb6fSsu4UGL8qG3Isb8QN/BRfT68nedIEImfnc3lImVEs
-         zNBtLUyjF4/+15PtRVLawLIhI27HL7LT1TtIMIWP9m58z/ILmvarq4SjnRvuGECOHPPB
-         rC1YmWIJz7KB+vpaaad4x/RYT37HH6tEbLFb3Q5qG6nUxliDEgehez27PMolJ2AxXHHi
-         Z3zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oBw5C4mAzYHBqkIcJSiLqZdE6/dGN4RirBfflfNZeZw=;
-        b=HSNj6p7KpF92t11WXeMaHbzNiedkPe4QYmsZWMEEYBh1Okav9P+dzVazQZrOf73Kuz
-         GysRk79RA3uilSAOxH9XtYZhYJNH68lJyCwxgk03CtXpdxHywx/Io1itQ6azAR+Ia2cO
-         0hNWH1q4MHsG1Ncd1ag2FiilrCERf2/rNB7x+8H/hXVyGi7Qn/cmQwgbixe2FSd2MoCG
-         NMF6oIJ86j/UnuRdnHosVCmYYKXw6YezpnJimd+MyrdFbi/XY6B3Rmct8mu1GpYxxLEi
-         V+TQWeWHRgMHiGtkBH86lC9VzAVWr88+l32ZcScRTpDXEg6gE/uz+0HNGMLFzFN06SLY
-         WLrg==
-X-Gm-Message-State: AOAM531biRnIPKXCmPLZzormSX3PzESbhckaJyPMWsrQCqvK7Qgg8UkE
-        2zNRDp/a7J7GKLbJ3C6KFIjZQRt+oIXItgDd1/ohjw==
-X-Google-Smtp-Source: ABdhPJx4nj8M6K2gqZ2dD5wk8/mQwDX1/nbJ753mxmKM2qXGWJofvIUyTWtEx4xZ45vVyB8zzm8S/EPG0Xnnxqt2c8I=
-X-Received: by 2002:ac8:4e52:0:b0:2e1:dad8:5141 with SMTP id
- e18-20020ac84e52000000b002e1dad85141mr3024119qtw.62.1649166622826; Tue, 05
- Apr 2022 06:50:22 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC8CBA316;
+        Tue,  5 Apr 2022 03:07:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65FA6B81C98;
+        Tue,  5 Apr 2022 10:07:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4549C385A1;
+        Tue,  5 Apr 2022 10:07:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153224;
+        bh=BcSDo9r3IFVheWMF8RqV0FJSBjYtjvRasfb3M1YVooo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wXnKDTTBAUycApl018fTHgrcjZ9XBdFBP1idxk3RyGf5jhf4YnuCRZ+VDxW3ct98l
+         GW/oh3Wiek/Y+vrE2ooZfwerl7fTaGTqy6c2k8hxtYETrkIeahIJNVgiredmqAbdx3
+         4rt2CqC1ECJMnYRpINtLoeAvC2w8zELoyQp4B2fI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 146/599] nvme: cleanup __nvme_check_ids
+Date:   Tue,  5 Apr 2022 09:27:20 +0200
+Message-Id: <20220405070303.187179042@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <1649166091-18032-1-git-send-email-quic_vpolimer@quicinc.com> <1649166091-18032-2-git-send-email-quic_vpolimer@quicinc.com>
-In-Reply-To: <1649166091-18032-2-git-send-email-quic_vpolimer@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Tue, 5 Apr 2022 16:50:11 +0300
-Message-ID: <CAA8EJpri3MdWjGJfhSLAQwKSF-iyT-XMTxen4iu_iM68Wxp=zw@mail.gmail.com>
-Subject: Re: [PATCH v7 1/2] drm/msm/disp/dpu1: add inline function to validate
- format support
-To:     Vinod Polimera <quic_vpolimer@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, quic_kalyant@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 at 16:41, Vinod Polimera <quic_vpolimer@quicinc.com> wrote:
->
-> Check if the dpu format is supported or not using dpu_find_format.
->
-> Co-developed-by: Kalyan Thota <quic_kalyant@quicinc.com>
-> Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
-> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+From: Christoph Hellwig <hch@lst.de>
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+[ Upstream commit fd8099e7918cd2df39ef306dd1d1af7178a15b81 ]
 
-> ---
->  drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h | 22 ++++++++++++++++++++++
->  drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c   | 10 +++-------
->  2 files changed, 25 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-> index 418f5ae..84b8b32 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
-> @@ -21,6 +21,28 @@ const struct dpu_format *dpu_get_dpu_format_ext(
->  #define dpu_get_dpu_format(f) dpu_get_dpu_format_ext(f, 0)
->
->  /**
-> + * dpu_find_format - validate if the pixel format is supported
-> + * @format:            dpu format
-> + * @supported_formats: supported formats by dpu HW
-> + * @num_formatss:      total number of formats
-> + *
-> + * Return: false if not valid format, true on success
-> + */
-> +static inline bool dpu_find_format(u32 format, const u32 *supported_formats,
-> +                                       size_t num_formats)
-> +{
-> +       int i;
-> +
-> +       for (i = 0; i < num_formats; i++) {
-> +               /* check for valid formats supported */
-> +               if (format == supported_formats[i])
-> +                       return true;
-> +       }
-> +
-> +       return false;
-> +}
-> +
-> +/**
->   * dpu_get_msm_format - get an dpu_format by its msm_format base
->   *                     callback function registers with the msm_kms layer
->   * @kms:             kms driver
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-> index 6565682..3216cda 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
-> @@ -1411,13 +1411,9 @@ static bool dpu_plane_format_mod_supported(struct drm_plane *plane,
->         if (modifier == DRM_FORMAT_MOD_LINEAR)
->                 return true;
->
-> -       if (modifier == DRM_FORMAT_MOD_QCOM_COMPRESSED) {
-> -               int i;
-> -               for (i = 0; i < ARRAY_SIZE(qcom_compressed_supported_formats); i++) {
-> -                       if (format == qcom_compressed_supported_formats[i])
-> -                               return true;
-> -               }
-> -       }
-> +       if (modifier == DRM_FORMAT_MOD_QCOM_COMPRESSED)
-> +               return dpu_find_format(format, qcom_compressed_supported_formats,
-> +                               ARRAY_SIZE(qcom_compressed_supported_formats));
->
->         return false;
->  }
-> --
-> 2.7.4
->
+Pass the actual nvme_ns_ids used for the comparison instead of the
+ns_head that isn't needed and use a more descriptive function name.
 
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/nvme/host/core.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 71c85c99e86c..853b9a24f744 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3681,16 +3681,15 @@ static struct nvme_ns_head *nvme_find_ns_head(struct nvme_subsystem *subsys,
+ 	return NULL;
+ }
+ 
+-static int __nvme_check_ids(struct nvme_subsystem *subsys,
+-		struct nvme_ns_head *new)
++static int nvme_subsys_check_duplicate_ids(struct nvme_subsystem *subsys,
++		struct nvme_ns_ids *ids)
+ {
+ 	struct nvme_ns_head *h;
+ 
+ 	lockdep_assert_held(&subsys->lock);
+ 
+ 	list_for_each_entry(h, &subsys->nsheads, entry) {
+-		if (nvme_ns_ids_valid(&new->ids) &&
+-		    nvme_ns_ids_equal(&new->ids, &h->ids))
++		if (nvme_ns_ids_valid(ids) && nvme_ns_ids_equal(ids, &h->ids))
+ 			return -EINVAL;
+ 	}
+ 
+@@ -3724,7 +3723,7 @@ static struct nvme_ns_head *nvme_alloc_ns_head(struct nvme_ctrl *ctrl,
+ 	head->ids = *ids;
+ 	kref_init(&head->ref);
+ 
+-	ret = __nvme_check_ids(ctrl->subsys, head);
++	ret = nvme_subsys_check_duplicate_ids(ctrl->subsys, &head->ids);
+ 	if (ret) {
+ 		dev_err(ctrl->device,
+ 			"duplicate IDs for nsid %d\n", nsid);
 -- 
-With best wishes
-Dmitry
+2.34.1
+
+
+
