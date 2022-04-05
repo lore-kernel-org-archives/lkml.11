@@ -2,52 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4855BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A92CC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839372AbiDFBBf (ORCPT
+        id S1839396AbiDFBC6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33866 "EHLO
+        Tue, 5 Apr 2022 21:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243699AbiDEKhg (ORCPT
+        with ESMTP id S1343827AbiDEKjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F4E554B7;
-        Tue,  5 Apr 2022 03:22:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 031D6B81B96;
-        Tue,  5 Apr 2022 10:22:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651BFC385A1;
-        Tue,  5 Apr 2022 10:22:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154170;
-        bh=nRX1Wu2/+YAtMyzPMZeE+GdOQkX46HrpTm9oLo9V1w0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WL/Klu1TiSdwSm09o3Q8rEywqU4gqBO0svHDkAqUlHhi09m9CWBqG8KTr61ph/IcQ
-         sVc9pBi8XvKGLR+dLNYC3Z2fuNTwtGzKjX3LaXTxrZEtslaI+5+5ZIBD+Wq2zQJ1Qw
-         LNrXBhW3igWHpJldI5oBeBgiH7G81ZUeBzx1VWXw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 482/599] ASoC: SOF: Intel: hda: Remove link assignment limitation
-Date:   Tue,  5 Apr 2022 09:32:56 +0200
-Message-Id: <20220405070313.171496065@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 06:39:41 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311B3220F6;
+        Tue,  5 Apr 2022 03:24:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649154288; x=1680690288;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=J5OhItcfZ7s0QhVBdaUU7HK9am4d/gzJWy/eu7nY64Y=;
+  b=aFrbyF588NqioHnv9max5BgVlxQyR5SMBFf0EAaDQAn5TDyEB5ocK6q2
+   wgLq7ECcK5AsS3QOUZGQbFUyL3v91EkxSR/KYmdsG7Y4jsUsGEqA+exUR
+   lhBIBaXfo43rojydNGjJK9zMrrcHGIEqWc3JrB8PpaJk8ZNfLHBLVb/kL
+   Jpr+In3MVweSbNce/03vqGeBejxY4m3EQumS7z6LLkF96DGL7sb+2d42o
+   EekJcC9WI+6/q1i3dkk/g3GMlVo+MAE7G4hPzKClLyh5fprSDKRC+aDh4
+   999Z/RUiKvDKPy6O8+ZOB+zj5sMBmd5KjhBHJQmeHEB8u5CuDRginvXxV
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="321409175"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="321409175"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 03:24:47 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="569821958"
+Received: from ksprzacz-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.41.245])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 03:24:44 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/2] tty/serial: Process XON/XOFF robustly
+Date:   Tue,  5 Apr 2022 13:24:35 +0300
+Message-Id: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -55,65 +57,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+XON/XOFF are used for software flow-control on serial lines.
+XON and XOFF appear as characters within the stream but should
+be processed as soon as possible.
 
-[ Upstream commit 2ce0d008dcc59f9c01f43277b9f9743af7b01dad ]
+The characters received by the UART drivers are in intermediate
+buffers until TTY receives them. In the case where the TTY is
+not read from, the characters may get stuck into those
+intermediate buffers until user-space reads from the TTY. Among
+the characters stuck in the buffers, can also be those XON/XOFF
+flow control characters. A stuck flow-control character is not
+very useful. 
 
-The limitation to assign a link DMA channel for a BE iff the
-corresponding host DMA channel is assigned to a connected FE is only
-applicable if the PROCEN_FMT_QUIRK is set. So, remove it for platforms
-that do not enable the quirk.
+This patch series addresses the issue by checking if TTY is slow
+to process characters, that is, eats less than the given amount.
+If TTY is slow, a lookahead is invoked for the characters that
+remain in the intermediate buffer(s).
 
-Complements: a792bfc1c2bc ("ASoC: SOF: Intel: hda-stream: limit PROCEN workaround")
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220128130017.28508-1-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/sof/intel/hda-dai.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Then at a later time, receive_buf needs to ensure the
+flow-control actions are not retaken when those same characters
+get pushed to TTY. The necessary guards for that are added by
+the first patch of the series.
 
-diff --git a/sound/soc/sof/intel/hda-dai.c b/sound/soc/sof/intel/hda-dai.c
-index ef316311e959..99e62cb3a051 100644
---- a/sound/soc/sof/intel/hda-dai.c
-+++ b/sound/soc/sof/intel/hda-dai.c
-@@ -58,6 +58,8 @@ static struct hdac_ext_stream *
- {
- 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
- 	struct sof_intel_hda_stream *hda_stream;
-+	const struct sof_intel_dsp_desc *chip;
-+	struct snd_sof_dev *sdev;
- 	struct hdac_ext_stream *res = NULL;
- 	struct hdac_stream *stream = NULL;
- 
-@@ -76,9 +78,20 @@ static struct hdac_ext_stream *
- 			continue;
- 
- 		hda_stream = hstream_to_sof_hda_stream(hstream);
-+		sdev = hda_stream->sdev;
-+		chip = get_chip_info(sdev->pdata);
- 
- 		/* check if link is available */
- 		if (!hstream->link_locked) {
-+			/*
-+			 * choose the first available link for platforms that do not have the
-+			 * PROCEN_FMT_QUIRK set.
-+			 */
-+			if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
-+				res = hstream;
-+				break;
-+			}
-+
- 			if (stream->opened) {
- 				/*
- 				 * check if the stream tag matches the stream
+This patch series fixes an issue but I'm not able to pinpoint to
+a specific commit id to provide a Fixes tag.
+
+Ilpo Järvinen (2):
+  tty: Add lookahead param to receive_buf
+  tty: Implement lookahead to process XON/XOFF timely
+
+ drivers/accessibility/speakup/spk_ttyio.c |  2 +-
+ drivers/bluetooth/hci_ldisc.c             |  2 +-
+ drivers/char/pcmcia/synclink_cs.c         |  2 +-
+ drivers/input/serio/serport.c             |  2 +-
+ drivers/isdn/capi/capi.c                  |  2 +-
+ drivers/misc/ti-st/st_core.c              |  2 +-
+ drivers/net/caif/caif_serial.c            |  4 +-
+ drivers/net/can/slcan.c                   |  2 +-
+ drivers/net/hamradio/6pack.c              |  2 +-
+ drivers/net/hamradio/mkiss.c              |  2 +-
+ drivers/net/mctp/mctp-serial.c            |  2 +-
+ drivers/net/ppp/ppp_async.c               |  2 +-
+ drivers/net/ppp/ppp_synctty.c             |  2 +-
+ drivers/net/slip/slip.c                   |  2 +-
+ drivers/tty/n_gsm.c                       |  2 +-
+ drivers/tty/n_hdlc.c                      |  2 +-
+ drivers/tty/n_null.c                      |  2 +-
+ drivers/tty/n_tty.c                       | 85 ++++++++++++++++-------
+ drivers/tty/serdev/serdev-ttyport.c       |  3 +-
+ drivers/tty/synclink_gt.c                 |  2 +-
+ drivers/tty/tty_buffer.c                  | 68 ++++++++++++++----
+ drivers/tty/tty_io.c                      |  2 +-
+ drivers/tty/tty_port.c                    | 27 ++++++-
+ drivers/tty/vt/selection.c                |  2 +-
+ include/linux/tty_buffer.h                |  1 +
+ include/linux/tty_flip.h                  |  2 +-
+ include/linux/tty_ldisc.h                 |  6 +-
+ include/linux/tty_port.h                  |  3 +-
+ net/nfc/nci/uart.c                        |  2 +-
+ sound/soc/codecs/cx20442.c                |  2 +-
+ sound/soc/ti/ams-delta.c                  |  2 +-
+ 31 files changed, 174 insertions(+), 69 deletions(-)
+
 -- 
-2.34.1
-
-
+2.30.2
 
