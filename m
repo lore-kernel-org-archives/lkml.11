@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9811FC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B17BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390378AbiDENiW (ORCPT
+        id S1354995AbiDENko (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:38:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43640 "EHLO
+        Tue, 5 Apr 2022 09:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344353AbiDEJTe (ORCPT
+        with ESMTP id S1345149AbiDEJWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E0419C;
-        Tue,  5 Apr 2022 02:07:47 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A32E1CB3C;
+        Tue,  5 Apr 2022 02:09:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A467161571;
-        Tue,  5 Apr 2022 09:07:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27F1C385A1;
-        Tue,  5 Apr 2022 09:07:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52E6BB81A22;
+        Tue,  5 Apr 2022 09:09:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F05AC385A0;
+        Tue,  5 Apr 2022 09:09:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149666;
-        bh=6gpvLMzBnjn0DjTfgIKa+rsrDplZXOu7OHD95azo03s=;
+        s=korg; t=1649149752;
+        bh=K8wp9f7c8DZjl995t5b4YxLYOq6G3UpjgyQ/0uJK0k4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=faEPtxQiN5i2y8M5KOB19e5wOHiEEPCcgsZOsAKFYTAkj0bS42BjZZt7fgsWD/LX7
-         wzlad35UShsyyEnrnVwOq+d+MwZwR5cQORfq7u0TfdjIirl+tIpKNReZ5mXN9nZ8xh
-         FLZp+QSWg+DWSw4dC44YvMG61w6TlPq3mC+89oCk=
+        b=iKAp5CqosOyfSAxHNA1OdLAkBw49H9EdAfrZsOIz5MfSQ69tk8MdMY5Fn7fn4e/nN
+         nJVulUtk19kd800mXyPuTnWFXHxRbnj4VLBlxPKmA/Iq0APY0Hgx+8uckyw11/LxUF
+         g6PbLLS7h8MUUm+5kvmypLcaklS2yFYTXoiPKUTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ning Li <lining2020x@163.com>,
-        Tejun Heo <tj@kernel.org>, Chunguang Xu <brookxu@tencent.com>,
-        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Abel Vesa <abel.vesa@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0758/1017] block: throttle split bio in case of iops limit
-Date:   Tue,  5 Apr 2022 09:27:51 +0200
-Message-Id: <20220405070416.758774397@linuxfoundation.org>
+Subject: [PATCH 5.16 0827/1017] ARM: dts: imx7: Use audio_mclk_post_div instead audio_mclk_root_clk
+Date:   Tue,  5 Apr 2022 09:29:00 +0200
+Message-Id: <20220405070418.794118902@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,104 +50,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Abel Vesa <abel.vesa@nxp.com>
 
-[ Upstream commit 9f5ede3c01f9951b0ae7d68b28762ad51d9bacc8 ]
+[ Upstream commit 4cb7df64c732b2b9918424095c11660c2a8c4a33 ]
 
-Commit 111be8839817 ("block-throttle: avoid double charge") marks bio as
-BIO_THROTTLED unconditionally if __blk_throtl_bio() is called on this bio,
-then this bio won't be called into __blk_throtl_bio() any more. This way
-is to avoid double charge in case of bio splitting. It is reasonable for
-read/write throughput limit, but not reasonable for IOPS limit because
-block layer provides io accounting against split bio.
+The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
+but according to the reference manual, there is no such gate. Moreover,
+the consumer driver of the mentioned clock might gate it and leave
+the ECSPI2 (the true owner of that gate) hanging. So lets use the
+audio_mclk_post_div, which is the parent.
 
-Chunguang Xu has already observed this issue and fixed it in commit
-4f1e9630afe6 ("blk-throtl: optimize IOPS throttle for large IO scenarios").
-However, that patch only covers bio splitting in __blk_queue_split(), and
-we have other kind of bio splitting, such as bio_split() &
-submit_bio_noacct() and other ways.
-
-This patch tries to fix the issue in one generic way by always charging
-the bio for iops limit in blk_throtl_bio(). This way is reasonable:
-re-submission & fast-cloned bio is charged if it is submitted to same
-disk/queue, and BIO_THROTTLED will be cleared if bio->bi_bdev is changed.
-
-This new approach can get much more smooth/stable iops limit compared with
-commit 4f1e9630afe6 ("blk-throtl: optimize IOPS throttle for large IO
-scenarios") since that commit can't throttle current split bios actually.
-
-Also this way won't cause new double bio iops charge in
-blk_throtl_dispatch_work_fn() in which blk_throtl_bio() won't be called
-any more.
-
-Reported-by: Ning Li <lining2020x@163.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Cc: Chunguang Xu <brookxu@tencent.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220216044514.2903784-7-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-merge.c    |  2 --
- block/blk-throttle.c | 10 +++++++---
- block/blk-throttle.h |  2 --
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ arch/arm/boot/dts/imx7-colibri.dtsi     | 4 ++--
+ arch/arm/boot/dts/imx7-mba7.dtsi        | 2 +-
+ arch/arm/boot/dts/imx7d-nitrogen7.dts   | 2 +-
+ arch/arm/boot/dts/imx7d-pico-hobbit.dts | 4 ++--
+ arch/arm/boot/dts/imx7d-pico-pi.dts     | 4 ++--
+ arch/arm/boot/dts/imx7d-sdb.dts         | 4 ++--
+ arch/arm/boot/dts/imx7s-warp.dts        | 4 ++--
+ 7 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/block/blk-merge.c b/block/blk-merge.c
-index a5b73bad9462..09bf679dc132 100644
---- a/block/blk-merge.c
-+++ b/block/blk-merge.c
-@@ -367,8 +367,6 @@ void __blk_queue_split(struct request_queue *q, struct bio **bio,
- 		trace_block_split(split, (*bio)->bi_iter.bi_sector);
- 		submit_bio_noacct(*bio);
- 		*bio = split;
--
--		blk_throtl_charge_bio_split(*bio);
- 	}
- }
+diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
+index 62b771c1d5a9..f1c60b0cb143 100644
+--- a/arch/arm/boot/dts/imx7-colibri.dtsi
++++ b/arch/arm/boot/dts/imx7-colibri.dtsi
+@@ -40,7 +40,7 @@
  
-diff --git a/block/blk-throttle.c b/block/blk-throttle.c
-index 39bb6e68a9a2..96573fa4edf2 100644
---- a/block/blk-throttle.c
-+++ b/block/blk-throttle.c
-@@ -807,7 +807,8 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
- 	unsigned long jiffy_elapsed, jiffy_wait, jiffy_elapsed_rnd;
- 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 		dailink_master: simple-audio-card,codec {
+ 			sound-dai = <&codec>;
+-			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		};
+ 	};
+ };
+@@ -293,7 +293,7 @@
+ 		compatible = "fsl,sgtl5000";
+ 		#sound-dai-cells = <0>;
+ 		reg = <0x0a>;
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_sai1_mclk>;
+ 		VDDA-supply = <&reg_module_3v3_avdd>;
+diff --git a/arch/arm/boot/dts/imx7-mba7.dtsi b/arch/arm/boot/dts/imx7-mba7.dtsi
+index 49086c6b6a0a..3df6dff7734a 100644
+--- a/arch/arm/boot/dts/imx7-mba7.dtsi
++++ b/arch/arm/boot/dts/imx7-mba7.dtsi
+@@ -302,7 +302,7 @@
+ 	tlv320aic32x4: audio-codec@18 {
+ 		compatible = "ti,tlv320aic32x4";
+ 		reg = <0x18>;
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		clock-names = "mclk";
+ 		ldoin-supply = <&reg_audio_3v3>;
+ 		iov-supply = <&reg_audio_3v3>;
+diff --git a/arch/arm/boot/dts/imx7d-nitrogen7.dts b/arch/arm/boot/dts/imx7d-nitrogen7.dts
+index e0751e6ba3c0..a31de900139d 100644
+--- a/arch/arm/boot/dts/imx7d-nitrogen7.dts
++++ b/arch/arm/boot/dts/imx7d-nitrogen7.dts
+@@ -288,7 +288,7 @@
+ 	codec: wm8960@1a {
+ 		compatible = "wlf,wm8960";
+ 		reg = <0x1a>;
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		clock-names = "mclk";
+ 		wlf,shared-lrclk;
+ 	};
+diff --git a/arch/arm/boot/dts/imx7d-pico-hobbit.dts b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
+index 7b2198a9372c..d917dc4f2f22 100644
+--- a/arch/arm/boot/dts/imx7d-pico-hobbit.dts
++++ b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
+@@ -31,7 +31,7 @@
  
--	if (bps_limit == U64_MAX) {
-+	/* no need to throttle if this bio's bytes have been accounted */
-+	if (bps_limit == U64_MAX || bio_flagged(bio, BIO_THROTTLED)) {
- 		if (wait)
- 			*wait = 0;
- 		return true;
-@@ -919,9 +920,12 @@ static void throtl_charge_bio(struct throtl_grp *tg, struct bio *bio)
- 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 		dailink_master: simple-audio-card,codec {
+ 			sound-dai = <&sgtl5000>;
+-			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		};
+ 	};
+ };
+@@ -41,7 +41,7 @@
+ 		#sound-dai-cells = <0>;
+ 		reg = <0x0a>;
+ 		compatible = "fsl,sgtl5000";
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		VDDA-supply = <&reg_2p5v>;
+ 		VDDIO-supply = <&reg_vref_1v8>;
+ 	};
+diff --git a/arch/arm/boot/dts/imx7d-pico-pi.dts b/arch/arm/boot/dts/imx7d-pico-pi.dts
+index 70bea95c06d8..f263e391e24c 100644
+--- a/arch/arm/boot/dts/imx7d-pico-pi.dts
++++ b/arch/arm/boot/dts/imx7d-pico-pi.dts
+@@ -31,7 +31,7 @@
  
- 	/* Charge the bio to the group */
--	tg->bytes_disp[rw] += bio_size;
-+	if (!bio_flagged(bio, BIO_THROTTLED)) {
-+		tg->bytes_disp[rw] += bio_size;
-+		tg->last_bytes_disp[rw] += bio_size;
-+	}
-+
- 	tg->io_disp[rw]++;
--	tg->last_bytes_disp[rw] += bio_size;
- 	tg->last_io_disp[rw]++;
+ 		dailink_master: simple-audio-card,codec {
+ 			sound-dai = <&sgtl5000>;
+-			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		};
+ 	};
+ };
+@@ -41,7 +41,7 @@
+ 		#sound-dai-cells = <0>;
+ 		reg = <0x0a>;
+ 		compatible = "fsl,sgtl5000";
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		VDDA-supply = <&reg_2p5v>;
+ 		VDDIO-supply = <&reg_vref_1v8>;
+ 	};
+diff --git a/arch/arm/boot/dts/imx7d-sdb.dts b/arch/arm/boot/dts/imx7d-sdb.dts
+index 7813ef960f6e..f053f5122741 100644
+--- a/arch/arm/boot/dts/imx7d-sdb.dts
++++ b/arch/arm/boot/dts/imx7d-sdb.dts
+@@ -385,14 +385,14 @@
+ 	codec: wm8960@1a {
+ 		compatible = "wlf,wm8960";
+ 		reg = <0x1a>;
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		clock-names = "mclk";
+ 		wlf,shared-lrclk;
+ 		wlf,hp-cfg = <2 2 3>;
+ 		wlf,gpio-cfg = <1 3>;
+ 		assigned-clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_SRC>,
+ 				  <&clks IMX7D_PLL_AUDIO_POST_DIV>,
+-				  <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++				  <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		assigned-clock-parents = <&clks IMX7D_PLL_AUDIO_POST_DIV>;
+ 		assigned-clock-rates = <0>, <884736000>, <12288000>;
+ 	};
+diff --git a/arch/arm/boot/dts/imx7s-warp.dts b/arch/arm/boot/dts/imx7s-warp.dts
+index 569bbd84e371..558b064da743 100644
+--- a/arch/arm/boot/dts/imx7s-warp.dts
++++ b/arch/arm/boot/dts/imx7s-warp.dts
+@@ -75,7 +75,7 @@
  
- 	/*
-diff --git a/block/blk-throttle.h b/block/blk-throttle.h
-index 175f03abd9e4..cb43f4417d6e 100644
---- a/block/blk-throttle.h
-+++ b/block/blk-throttle.h
-@@ -170,8 +170,6 @@ static inline bool blk_throtl_bio(struct bio *bio)
- {
- 	struct throtl_grp *tg = blkg_to_tg(bio->bi_blkg);
- 
--	if (bio_flagged(bio, BIO_THROTTLED))
--		return false;
- 	if (!tg->has_rules[bio_data_dir(bio)])
- 		return false;
- 
+ 		dailink_master: simple-audio-card,codec {
+ 			sound-dai = <&codec>;
+-			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		};
+ 	};
+ };
+@@ -232,7 +232,7 @@
+ 		#sound-dai-cells = <0>;
+ 		reg = <0x0a>;
+ 		compatible = "fsl,sgtl5000";
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_sai1_mclk>;
+ 		VDDA-supply = <&vgen4_reg>;
 -- 
 2.34.1
 
