@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B435C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452233AbiDEWbk (ORCPT
+        id S1452468AbiDEWb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
+        Tue, 5 Apr 2022 18:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349107AbiDEJtI (ORCPT
+        with ESMTP id S1349448AbiDEJtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD65AA015;
-        Tue,  5 Apr 2022 02:40:59 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A4427B10;
+        Tue,  5 Apr 2022 02:46:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C781EB81B14;
-        Tue,  5 Apr 2022 09:40:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B72DC385A3;
-        Tue,  5 Apr 2022 09:40:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C6B3B81B14;
+        Tue,  5 Apr 2022 09:46:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B7CC385A2;
+        Tue,  5 Apr 2022 09:46:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151656;
-        bh=XSoG/BV4wxZLDa+MVNXRC/TkMgI/vWCpsX4YdueLI9c=;
+        s=korg; t=1649151970;
+        bh=nFAlM8SC4bGfTFPK+QEVwKUwAblEGofTTZTQdXpBBfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qfKZLfeZ2KrUBl6o5JVvE4pKYnWwxY5OJd2nKPj2/wL0vAbmam4U517SKgIwlUigU
-         RVETHxcKgibH+wZerJ7XdSf9fef/rfXsDIElbf1d/zN9iNI9f4yRRRscIijykjgF9Q
-         5PgeyJMuXcOpLusacHsI9tUEZEbxctTVctwVXaLs=
+        b=kviBrTfCTgmLbk9rbpCK1iRl/F5z+ueQ8A6NlN9K09WCv3JGEAvjZLa3XEMNqURcG
+         0PPV6IDiIVYVQtDZRJt0Cj8x1WuVDcVjRbT3PetgQn9cZDjivoho/mxGJ5YFjpJgmn
+         PPxq0Ja4xnL/aEpq6Dy75+ekKU1MZ3hjZIwgaqZc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yiqing Yao <yiqing.yao@amd.com>,
-        Monk Liu <Monk.liu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 456/913] drm/amd/pm: enable pm sysfs write for one VF mode
-Date:   Tue,  5 Apr 2022 09:25:18 +0200
-Message-Id: <20220405070353.517909734@linuxfoundation.org>
+Subject: [PATCH 5.15 606/913] NFS: Return valid errors from nfs2/3_decode_dirent()
+Date:   Tue,  5 Apr 2022 09:27:48 +0200
+Message-Id: <20220405070358.006637322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,40 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yiqing Yao <yiqing.yao@amd.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit e610941c45bad75aa839af015c27d236ab6749e5 ]
+[ Upstream commit 64cfca85bacde54caa64e0ab855c48734894fa37 ]
 
-[why]
-pm sysfs should be writable in one VF mode as is in passthrough
+Valid return values for decode_dirent() callback functions are:
+ 0: Success
+ -EBADCOOKIE: End of directory
+ -EAGAIN: End of xdr_stream
 
-[how]
-do not remove write access on pm sysfs if device is in one VF mode
+All errors need to map into one of those three values.
 
-Fixes: 11c9cc95f818 ("amdgpu/pm: Make sysfs pm attributes as read-only for VFs")
-Signed-off-by: Yiqing Yao <yiqing.yao@amd.com>
-Reviewed-by: Monk Liu <Monk.liu@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 573c4e1ef53a ("NFS: Simplify ->decode_dirent() calling sequence")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/amdgpu_pm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/nfs/nfs2xdr.c |  2 +-
+ fs/nfs/nfs3xdr.c | 21 ++++++---------------
+ 2 files changed, 7 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/amdgpu_pm.c b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-index 640db5020ccc..6aaf1230655f 100644
---- a/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-+++ b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-@@ -2117,8 +2117,8 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
- 		}
- 	}
+diff --git a/fs/nfs/nfs2xdr.c b/fs/nfs/nfs2xdr.c
+index 7fba7711e6b3..3d5ba43f44bb 100644
+--- a/fs/nfs/nfs2xdr.c
++++ b/fs/nfs/nfs2xdr.c
+@@ -949,7 +949,7 @@ int nfs2_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
  
--	/* setting should not be allowed from VF */
--	if (amdgpu_sriov_vf(adev)) {
-+	/* setting should not be allowed from VF if not in one VF mode */
-+	if (amdgpu_sriov_vf(adev) && !amdgpu_sriov_is_pp_one_vf(adev)) {
- 		dev_attr->attr.mode &= ~S_IWUGO;
- 		dev_attr->store = NULL;
+ 	error = decode_filename_inline(xdr, &entry->name, &entry->len);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	/*
+ 	 * The type (size and byte order) of nfscookie isn't defined in
+diff --git a/fs/nfs/nfs3xdr.c b/fs/nfs/nfs3xdr.c
+index 54a1d21cbcc6..7ab60ad98776 100644
+--- a/fs/nfs/nfs3xdr.c
++++ b/fs/nfs/nfs3xdr.c
+@@ -1967,7 +1967,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 		       bool plus)
+ {
+ 	struct user_namespace *userns = rpc_userns(entry->server->client);
+-	struct nfs_entry old = *entry;
+ 	__be32 *p;
+ 	int error;
+ 	u64 new_cookie;
+@@ -1987,15 +1986,15 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 
+ 	error = decode_fileid3(xdr, &entry->ino);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	error = decode_inline_filename3(xdr, &entry->name, &entry->len);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	error = decode_cookie3(xdr, &new_cookie);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	entry->d_type = DT_UNKNOWN;
+ 
+@@ -2003,7 +2002,7 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 		entry->fattr->valid = 0;
+ 		error = decode_post_op_attr(xdr, entry->fattr, userns);
+ 		if (unlikely(error))
+-			return error;
++			return -EAGAIN;
+ 		if (entry->fattr->valid & NFS_ATTR_FATTR_V3)
+ 			entry->d_type = nfs_umode_to_dtype(entry->fattr->mode);
+ 
+@@ -2018,11 +2017,8 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 			return -EAGAIN;
+ 		if (*p != xdr_zero) {
+ 			error = decode_nfs_fh3(xdr, entry->fh);
+-			if (unlikely(error)) {
+-				if (error == -E2BIG)
+-					goto out_truncated;
+-				return error;
+-			}
++			if (unlikely(error))
++				return -EAGAIN;
+ 		} else
+ 			zero_nfs_fh3(entry->fh);
  	}
+@@ -2031,11 +2027,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 	entry->cookie = new_cookie;
+ 
+ 	return 0;
+-
+-out_truncated:
+-	dprintk("NFS: directory entry contains invalid file handle\n");
+-	*entry = old;
+-	return -EAGAIN;
+ }
+ 
+ /*
 -- 
 2.34.1
 
