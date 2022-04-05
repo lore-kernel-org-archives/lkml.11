@@ -2,88 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A51C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF24DC352A8
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456474AbiDEWp6 (ORCPT
+        id S1456513AbiDEWqG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        Tue, 5 Apr 2022 18:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572991AbiDERm0 (ORCPT
+        with ESMTP id S1457467AbiDEQDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:42:26 -0400
-Received: from 1.mo560.mail-out.ovh.net (1.mo560.mail-out.ovh.net [46.105.63.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE597B91A9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:40:27 -0700 (PDT)
-Received: from player691.ha.ovh.net (unknown [10.108.4.183])
-        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 9372423A32
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:40:26 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player691.ha.ovh.net (Postfix) with ESMTPSA id 271F5293C8F1F;
-        Tue,  5 Apr 2022 17:40:21 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-101G004618b8f4f-e2e9-40cb-b8ab-e15530b48acd,
-                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     patches@opensource.cirrus.com, Wolfram Sang <wsa@kernel.org>,
-        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH v2] ASoC: wm8731: use simple i2c probe function
-Date:   Tue,  5 Apr 2022 19:39:52 +0200
-Message-Id: <20220405173952.2180743-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Tue, 5 Apr 2022 12:03:16 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCB73B295;
+        Tue,  5 Apr 2022 08:48:57 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id p26-20020a05600c1d9a00b0038ccbff1951so1497822wms.1;
+        Tue, 05 Apr 2022 08:48:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=A0FjBEpfdUc2aMXGxH1WIchkePURSO+P+PD9Wm9NGP0=;
+        b=de+iQACJDntQIFyVxDxW4OrrQwlo2Zxp5d8eJLvzPHLzA1KwtwhbnT+AeX8F/vuAMb
+         j+xXSO5fTCnXuBxXlckCplXKHUyx2ysLrYClJJhuveU++JdqQTh/N/PxSIMYMBFWjVys
+         3/rG49+/l85lGHJt9RUBZ0WgUs1hk/OSjwYvgBOY+U1HI4Pxq5xr1G8ekWeDFVAWl5U3
+         dNCmy7j3DObCw4y7RgevyioB4XBRhZkerg2aLSLPgSN2HyF01a+SJKHsGIrAEXTgoMH+
+         Pg/D0Y5b8skQuuGBcE5bkSIomGh0bL/rJ5ZR9BX+duwyIN1eZf0nJtNhhzKpo/424zAw
+         sEmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=A0FjBEpfdUc2aMXGxH1WIchkePURSO+P+PD9Wm9NGP0=;
+        b=G7zjliX79bkSMGG1oU773ELhoDFSfuo9MZKPZkBcbmD1FhTKycUNUwc843beOxIFvb
+         wGxSjuFSEsTMyIo8OPGd/aO269uRkgp2ksK+eT0OAP+lm6Q90gdpIbx1sMtxsIq3gO8z
+         bGryGOtCMLyQnrL32xuMoE6lyybn4+HOVxnH/fQ3hIh07zmZgMQ2UQMnrLnfZcK2f8xm
+         yp6Hbr7+RDcycFReCsCevglGJg5OX10w7jsUo4786b9c+wieQgqo4PfKPOBVxwi2OsaD
+         RUUb1UT2GCV/qjhw1ZQ3FxRUu90M3+w6W2cF59WWNlFJLU/2B/bmdskP/O/o0iwa9l/P
+         nPIA==
+X-Gm-Message-State: AOAM531B8p15pnRnh8fu9/90E24y6rbNWC+EEiNM/JvqErHmSfklK9mG
+        PjeHxFNfQqh4LYpbng32070=
+X-Google-Smtp-Source: ABdhPJy4G3ivTYsyI2foaN8va9EG3/g2rVGg49E9xdhQxUpyfj3gymEsoseDyfjIMGb2kqNEYIh6Fg==
+X-Received: by 2002:a05:600c:4f43:b0:38c:b270:f9af with SMTP id m3-20020a05600c4f4300b0038cb270f9afmr3761818wmq.36.1649173735827;
+        Tue, 05 Apr 2022 08:48:55 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id a11-20020a056000188b00b00204109f7826sm14041183wri.28.2022.04.05.08.48.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 08:48:55 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <efbe06a7-3624-2a5a-c1c4-be86f63951e3@redhat.com>
+Date:   Tue, 5 Apr 2022 17:48:54 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 9154129193012921990
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgudduvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepteegudfgleekieekteeggeetveefueefteeugfduieeitdfhhedtfeefkedvfeefnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrieeluddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 101/104] KVM: TDX: Silently ignore INIT/SIPI
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <d0eb8fa53e782a244397168df856f9f904e4d1cd.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <d0eb8fa53e782a244397168df856f9f904e4d1cd.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+> +		if (kvm_init_sipi_unsupported(vcpu->kvm))
+> +			/*
+> +			 * TDX doesn't support INIT.  Ignore INIT event.  In the
+> +			 * case of SIPI, the callback of
+> +			 * vcpu_deliver_sipi_vector ignores it.
+> +			 */
+>   			vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
+> -		else
+> -			vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
+> +		else {
+> +			kvm_vcpu_reset(vcpu, true);
+> +			if (kvm_vcpu_is_bsp(apic->vcpu))
+> +				vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
+> +			else
+> +				vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
+> +		}
 
-This avoids scanning the identifier tables during probes.
+Should you check vcpu->arch.guest_state_protected instead of 
+special-casing TDX?  KVM_APIC_INIT is not valid for SEV-ES either, if I 
+remember correctly.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
-Changes since v1:
-  - rebased on sound/for-next instead of v5.18-rc1
----
- sound/soc/codecs/wm8731-i2c.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/sound/soc/codecs/wm8731-i2c.c b/sound/soc/codecs/wm8731-i2c.c
-index c70f5db891e7..fdf03bf91606 100644
---- a/sound/soc/codecs/wm8731-i2c.c
-+++ b/sound/soc/codecs/wm8731-i2c.c
-@@ -23,8 +23,7 @@ static const struct of_device_id wm8731_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, wm8731_of_match);
- 
--static int wm8731_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int wm8731_i2c_probe(struct i2c_client *i2c)
- {
- 	struct wm8731_priv *wm8731;
- 	int ret;
-@@ -58,7 +57,7 @@ static struct i2c_driver wm8731_i2c_driver = {
- 		.name = "wm8731",
- 		.of_match_table = wm8731_of_match,
- 	},
--	.probe =    wm8731_i2c_probe,
-+	.probe_new = wm8731_i2c_probe,
- 	.id_table = wm8731_i2c_id,
- };
- 
-
-base-commit: b66751b6e3591eafe5c9cbabd68a45731b0083e3
--- 
-2.27.0
-
+Paolo
