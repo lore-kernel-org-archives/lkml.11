@@ -2,106 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E536BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EC4C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385059AbiDEVs5 (ORCPT
+        id S1384983AbiDEVsu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
+        Tue, 5 Apr 2022 17:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243531AbiDEKgv (ORCPT
+        with ESMTP id S1355853AbiDELz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:36:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C323954FA9;
-        Tue,  5 Apr 2022 03:22:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 519A7617CC;
-        Tue,  5 Apr 2022 10:22:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66C0BC385A1;
-        Tue,  5 Apr 2022 10:22:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154148;
-        bh=3m/KIQ3dfU4W25SXZqENH+2s+cwiIgEtA775dYS6wko=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=po2NxxiQlzd/qTf00P+HSd5b9VeHRLgwHYC0fKQNFyzw5j889sSOn11KNASkt8BeU
-         5naJkC0/5Etenqc8188uUAcxIJP3EXR6sPuQK6HSqJoZ2UDku+sUbHdDCdEePDmiX2
-         OIVFpMeYEop8dwI13u31OLlyalS37vIeX4pLxsG8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fedor Pchelkin <aissur0002@gmail.com>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Christian Brauner <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 448/599] fs: fix fd table size alignment properly
-Date:   Tue,  5 Apr 2022 09:32:22 +0200
-Message-Id: <20220405070312.161043627@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:55:26 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914A7BF4C;
+        Tue,  5 Apr 2022 04:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649157203; x=1680693203;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=2ycaIj5IxG/RksZqMGqbZm+02qMbVViUT0wyO9DwMe4=;
+  b=YMZc2pKgWT58kbxPwEqV3CURgBKT0HvzluLxsNsSX83mKNyefP6UaVfA
+   j1Wru3wCiTcNSpv5jB3lW2al55GPWLbildF79CodME88fZSKTpQF6q+AV
+   T9x0fX8nVad16FdDBm+e0zcy9SYwQeuK7xSpaP5kklzJqc5yRLMWqVS1I
+   E=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 04:13:23 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:13:09 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 04:13:09 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 04:13:04 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohitkr@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v6 1/2] arm64: dts: qcom: sc7280: Add pinmux for I2S speaker and Headset
+Date:   Tue, 5 Apr 2022 16:42:46 +0530
+Message-ID: <1649157167-29106-2-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649157167-29106-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1649157167-29106-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+Add AMP enable node and pinmux for primary and secondary I2S
+for SC7280 based platforms.
 
-[ Upstream commit d888c83fcec75194a8a48ccd283953bdba7b2550 ]
-
-Jason Donenfeld reports that my commit 1c24a186398f ("fs: fd tables have
-to be multiples of BITS_PER_LONG") doesn't work, and the reason is an
-embarrassing brown-paper-bag bug.
-
-Yes, we want to align the number of fds to BITS_PER_LONG, and yes, the
-reason they might not be aligned is because the incoming 'max_fd'
-argument might not be aligned.
-
-But aligining the argument - while simple - will cause a "infinitely
-big" maxfd (eg NR_OPEN_MAX) to just overflow to zero.  Which most
-definitely isn't what we want either.
-
-The obvious fix was always just to do the alignment last, but I had
-moved it earlier just to make the patch smaller and the code look
-simpler.  Duh.  It certainly made _me_ look simple.
-
-Fixes: 1c24a186398f ("fs: fd tables have to be multiples of BITS_PER_LONG")
-Reported-and-tested-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: Fedor Pchelkin <aissur0002@gmail.com>
-Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Cc: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 ---
- fs/file.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 34 +++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       | 20 +++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi           | 41 ++++++++++++++++++++++++++
+ 3 files changed, 95 insertions(+)
 
-diff --git a/fs/file.c b/fs/file.c
-index a47a1edb9404..8431dfde036c 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -301,10 +301,9 @@ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
- 	unsigned int count;
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+index dc17f20..de646d9 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+@@ -530,6 +530,26 @@ ap_ec_spi: &spi10 {
+ 	drive-strength = <2>;
+ };
  
- 	count = count_open_files(fdt);
--	max_fds = ALIGN(max_fds, BITS_PER_LONG);
- 	if (max_fds < NR_OPEN_DEFAULT)
- 		max_fds = NR_OPEN_DEFAULT;
--	return min(count, max_fds);
-+	return ALIGN(min(count, max_fds), BITS_PER_LONG);
- }
++&pri_mi2s_data0 {
++	drive-strength = <6>;
++};
++
++&pri_mi2s_data1 {
++	drive-strength = <6>;
++};
++
++&pri_mi2s_mclk {
++	drive-strength = <6>;
++};
++
++&pri_mi2s_sclk {
++	drive-strength = <6>;
++};
++
++&pri_mi2s_ws {
++	drive-strength = <6>;
++};
++
+ &qspi_cs0 {
+ 	bias-disable;
+ 	drive-strength = <8>;
+@@ -610,6 +630,20 @@ ap_ec_spi: &spi10 {
+ 	drive-strength = <10>;
+ };
  
- /*
++&sec_mi2s_data0 {
++	drive-strength = <6>;
++	bias-disable;
++};
++
++&sec_mi2s_sclk {
++	drive-strength = <6>;
++	bias-disable;
++};
++
++&sec_mi2s_ws {
++	drive-strength = <6>;
++};
++
+ /* PINCTRL - board-specific pinctrl */
+ 
+ &pm7325_gpios {
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index ecbf2b8..2afbbe3 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -462,7 +462,27 @@
+ 	drive-strength = <10>;
+ };
+ 
++&sec_mi2s_data0 {
++	drive-strength = <6>;
++	bias-disable;
++};
++
++&sec_mi2s_sclk {
++	drive-strength = <6>;
++	bias-disable;
++};
++
++&sec_mi2s_ws {
++	drive-strength = <6>;
++};
++
+ &tlmm {
++	amp_en: amp-en {
++		pins = "gpio63";
++		bias-pull-down;
++		drive-strength = <2>;
++	};
++
+ 	bt_en: bt-en {
+ 		pins = "gpio85";
+ 		function = "gpio";
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index f0b64be..8d8cec5 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -3527,6 +3527,31 @@
+ 				function = "pcie1_clkreqn";
+ 			};
+ 
++			pri_mi2s_data0: pri-mi2s-data0 {
++				pins = "gpio98";
++				function = "mi2s0_data0";
++			};
++
++			pri_mi2s_data1: pri-mi2s-data1 {
++				pins = "gpio99";
++				function = "mi2s0_data1";
++			};
++
++			pri_mi2s_mclk: pri-mi2s-mclk {
++				pins = "gpio96";
++				function = "pri_mi2s";
++			};
++
++			pri_mi2s_sclk: pri-mi2s-sclk {
++				pins = "gpio97";
++				function = "mi2s0_sck";
++			};
++
++			pri_mi2s_ws: pri-mi2s-ws {
++				pins = "gpio100";
++				function = "mi2s0_ws";
++			};
++
+ 			qspi_clk: qspi-clk {
+ 				pins = "gpio14";
+ 				function = "qspi_clk";
+@@ -4261,6 +4286,22 @@
+ 				drive-strength = <2>;
+ 				bias-bus-hold;
+ 			};
++
++			sec_mi2s_data0: sec-mi2s-data0 {
++				pins = "gpio107";
++				function = "mi2s1_data0";
++			};
++
++			sec_mi2s_sclk: sec-mi2s-sclk {
++				pins = "gpio106";
++				function = "mi2s1_sck";
++			};
++
++			sec_mi2s_ws: sec-mi2s-ws {
++				pins = "gpio108";
++				function = "mi2s1_ws";
++			};
++
+ 		};
+ 
+ 		imem@146a5000 {
 -- 
-2.34.1
-
-
+2.7.4
 
