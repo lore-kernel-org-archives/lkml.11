@@ -2,169 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BFDC47082
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2776AC47084
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442897AbiDEWT7 (ORCPT
+        id S1443003AbiDEWUF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48554 "EHLO
+        Tue, 5 Apr 2022 18:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573246AbiDEScj (ORCPT
+        with ESMTP id S1354194AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:32:39 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6A813F81
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:30:40 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so275147pjk.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:30:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=G8+4mXlfXEhZHOhFIRvGTNgBOyulQouXw+I2k4OPfSs=;
-        b=JEAiwwWf8T9LZvKvUJKSgjehqTRQAgWTmIg0Kl3BSYJYTC+v/3bm2x1/9Hy8KfSmg+
-         cHSPWpCpQx/B9uyWSDx7KDa583awqWBLkdvoEKwQ/QBUVRp4lZ6Cj73ZO0l8R1jsuMTu
-         f4CTIP1KefeADG3WAL+m7kzbPsENWR2ewqxk3Vv6zcy974PyQLpH4p1GEvsWlPaOBnDD
-         BG/d5Cparj8Y2vpN7tIW/k4gGVthNC5Ac8769ebux1ZwYDdSobMpJ6R2kheemPJpQheC
-         Hjen7QcB7kjlOMvcpc1sK+TrMXslHzsMWklqEGe8pGwPZ2paBwziGZrdbb+U0gJgoIyn
-         aHEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=G8+4mXlfXEhZHOhFIRvGTNgBOyulQouXw+I2k4OPfSs=;
-        b=hcEj6KZ6e/i+rZPKeKjNZk5us24nzCkBCwPbndVzCRaGLDlcptwqqFHtJv1kEKmnwh
-         2QSFr5OqkXF98LbG8rRKE265xwLyEtn534MrSf+F4giIENqXTEercm618g3EvCJfE4oO
-         9btpGo+MN3M5F+soYBFspSMzzfXnwdkZzn09h+iSL5qD4l6CIwIZXD+dxaMokT1R5Lkl
-         qsmVftKqHcuoFFyjCOauHw4i3sM21z6qI43yFOiG5DDtoog1vTigTSppre9wsFJ/x9ag
-         SZNU1Za+z+axrl5BXR7B3vhYy9mgRg0KIGQbBzpwP2aZZ2KqSOsB4opZb57q1Ni+GhUp
-         mKoQ==
-X-Gm-Message-State: AOAM532XWeM+ogalsLU8/lEHDG/q/xwWYMAY/uTrHXI0d0RZKfQgfktR
-        CGaxog8ZZDvD8YJlvadvMPxt1A==
-X-Google-Smtp-Source: ABdhPJyua072a4AGX8ZFGYAQtmIMqiU1fY+N03i9KlJ21rU1Sdp03j8ltrsaSuySC/JcuYQKVUW/ZQ==
-X-Received: by 2002:a17:902:8217:b0:156:9c4f:90eb with SMTP id x23-20020a170902821700b001569c4f90ebmr4788820pln.121.1649183440130;
-        Tue, 05 Apr 2022 11:30:40 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id i7-20020a628707000000b004fa6eb33b02sm16131023pfe.49.2022.04.05.11.30.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 11:30:39 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 18:30:35 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Quentin Perret <qperret@google.com>,
-        Steven Price <steven.price@arm.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        kvm list <kvm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Nakajima, Jun" <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>,
-        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <YkyKywkQYbr9U0CA@google.com>
-References: <YkQzfjgTQaDd2E2T@google.com>
- <YkSaUQX89ZEojsQb@google.com>
- <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
- <YkcTTY4YjQs5BRhE@google.com>
- <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
- <YksIQYdG41v3KWkr@google.com>
- <Ykslo2eo2eRXrpFR@google.com>
- <eefc3c74-acca-419c-8947-726ce2458446@www.fastmail.com>
- <Ykwbqv90C7+8K+Ao@google.com>
- <54acbba9-f4fd-48c1-9028-d596d9f63069@www.fastmail.com>
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C76F452E71;
+        Tue,  5 Apr 2022 02:58:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E0F9B81B18;
+        Tue,  5 Apr 2022 09:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC77FC385A2;
+        Tue,  5 Apr 2022 09:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152699;
+        bh=SdJxWAh9cn5SWer6yPvtQ51y31r12iq2Iow3hSkJTFM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HcDPce86J1ynSyI3KI0ggXMVX8YkMqGEjBtKBhVed2+O2MuH48kfz2h5v2Zkjy75A
+         aFMmdgrFYFTHufZM08B+2eO+O7g4eTxJML3eGO0+Ld7R4661PlT97yhxm5ZX4mAEkC
+         0jtLOcDN4cBvxLD8Ch9EDob2kHJ0yVn5KrP+pd+4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chengsong Ke <kechengsong@huawei.com>,
+        Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 823/913] ubifs: Fix read out-of-bounds in ubifs_wbuf_write_nolock()
+Date:   Tue,  5 Apr 2022 09:31:25 +0200
+Message-Id: <20220405070404.499878464@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54acbba9-f4fd-48c1-9028-d596d9f63069@www.fastmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022, Andy Lutomirski wrote:
-> On Tue, Apr 5, 2022, at 3:36 AM, Quentin Perret wrote:
-> > On Monday 04 Apr 2022 at 15:04:17 (-0700), Andy Lutomirski wrote:
-> >> The best I can come up with is a special type of shared page that is not
-> >> GUP-able and maybe not even mmappable, having a clear option for
-> >> transitions to fail, and generally preventing the nasty cases from
-> >> happening in the first place.
-> >
-> > Right, that sounds reasonable to me.
-> 
-> At least as a v1, this is probably more straightforward than allowing mmap().
-> Also, there's much to be said for a simpler, limited API, to be expanded if
-> genuinely needed, as opposed to starting out with a very featureful API.
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-Regarding "genuinely needed", IMO the same applies to supporting this at all.
-Without numbers from something at least approximating a real use case, we're just
-speculating on which will be the most performant approach.
+commit 4f2262a334641e05f645364d5ade1f565c85f20b upstream.
 
-> >> Maybe there could be a special mode for the private memory fds in which
-> >> specific pages are marked as "managed by this fd but actually shared".
-> >> pread() and pwrite() would work on those pages, but not mmap().  (Or maybe
-> >> mmap() but the resulting mappings would not permit GUP.)  And
-> >> transitioning them would be a special operation on the fd that is specific
-> >> to pKVM and wouldn't work on TDX or SEV.
-> >
-> > Aha, didn't think of pread()/pwrite(). Very interesting.
-> 
-> There are plenty of use cases for which pread()/pwrite()/splice() will be as
-> fast or even much faster than mmap()+memcpy().
+Function ubifs_wbuf_write_nolock() may access buf out of bounds in
+following process:
 
-...
+ubifs_wbuf_write_nolock():
+  aligned_len = ALIGN(len, 8);   // Assume len = 4089, aligned_len = 4096
+  if (aligned_len <= wbuf->avail) ... // Not satisfy
+  if (wbuf->used) {
+    ubifs_leb_write()  // Fill some data in avail wbuf
+    len -= wbuf->avail;   // len is still not 8-bytes aligned
+    aligned_len -= wbuf->avail;
+  }
+  n = aligned_len >> c->max_write_shift;
+  if (n) {
+    n <<= c->max_write_shift;
+    err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+                          wbuf->offs, n);
+    // n > len, read out of bounds less than 8(n-len) bytes
+  }
 
-> resume guest
-> *** host -> hypervisor -> guest ***
-> Guest unshares the page.
-> *** guest -> hypervisor ***
-> Hypervisor removes PTE.  TLBI.
-> *** hypervisor -> guest ***
-> 
-> Obviously considerable cleverness is needed to make a virt IOMMU like this
-> work well, but still.
-> 
-> Anyway, my suggestion is that the fd backing proposal get slightly modified
-> to get it ready for multiple subtypes of backing object, which should be a
-> pretty minimal change.  Then, if someone actually needs any of this
-> cleverness, it can be added later.  In the mean time, the
-> pread()/pwrite()/splice() scheme is pretty good.
+, which can be catched by KASAN:
+  =========================================================
+  BUG: KASAN: slab-out-of-bounds in ecc_sw_hamming_calculate+0x1dc/0x7d0
+  Read of size 4 at addr ffff888105594ff8 by task kworker/u8:4/128
+  Workqueue: writeback wb_workfn (flush-ubifs_0_0)
+  Call Trace:
+    kasan_report.cold+0x81/0x165
+    nand_write_page_swecc+0xa9/0x160
+    ubifs_leb_write+0xf2/0x1b0 [ubifs]
+    ubifs_wbuf_write_nolock+0x421/0x12c0 [ubifs]
+    write_head+0xdc/0x1c0 [ubifs]
+    ubifs_jnl_write_inode+0x627/0x960 [ubifs]
+    wb_workfn+0x8af/0xb80
 
-Tangentially related to getting private-fd ready for multiple things, what about
-implementing the pread()/pwrite()/splice() scheme in pKVM itself?  I.e. read() on
-the VM fd, with the offset corresponding to gfn in some way.
+Function ubifs_wbuf_write_nolock() accepts that parameter 'len' is not 8
+bytes aligned, the 'len' represents the true length of buf (which is
+allocated in 'ubifs_jnl_xxx', eg. ubifs_jnl_write_inode), so
+ubifs_wbuf_write_nolock() must handle the length read from 'buf' carefully
+to write leb safely.
 
-Ditto for mmap() on the VM fd, though that would require additional changes outside
-of pKVM.
+Fetch a reproducer in [Link].
 
-That would allow pKVM to support in-place conversions without the private-fd having
-to differentiate between the type of protected VM, and without having to provide
-new APIs from the private-fd.  TDX, SNP, etc... Just Work by not supporting the pKVM
-APIs.
+Fixes: 1e51764a3c2ac0 ("UBIFS: add new flash file system")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214785
+Reported-by: Chengsong Ke <kechengsong@huawei.com>
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ubifs/io.c |   34 ++++++++++++++++++++++++++++++----
+ 1 file changed, 30 insertions(+), 4 deletions(-)
 
-And assuming we get multiple consumers down the road, pKVM will need to be able to
-communicate the "true" state of a page to other consumers, because in addition to
-being a consumer, pKVM is also an owner/enforcer analogous to the TDX Module and
-the SEV PSP.
+--- a/fs/ubifs/io.c
++++ b/fs/ubifs/io.c
+@@ -833,16 +833,42 @@ int ubifs_wbuf_write_nolock(struct ubifs
+ 	 */
+ 	n = aligned_len >> c->max_write_shift;
+ 	if (n) {
+-		n <<= c->max_write_shift;
++		int m = n - 1;
++
+ 		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
+ 		       wbuf->offs);
+-		err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+-				      wbuf->offs, n);
++
++		if (m) {
++			/* '(n-1)<<c->max_write_shift < len' is always true. */
++			m <<= c->max_write_shift;
++			err = ubifs_leb_write(c, wbuf->lnum, buf + written,
++					      wbuf->offs, m);
++			if (err)
++				goto out;
++			wbuf->offs += m;
++			aligned_len -= m;
++			len -= m;
++			written += m;
++		}
++
++		/*
++		 * The non-written len of buf may be less than 'n' because
++		 * parameter 'len' is not 8 bytes aligned, so here we read
++		 * min(len, n) bytes from buf.
++		 */
++		n = 1 << c->max_write_shift;
++		memcpy(wbuf->buf, buf + written, min(len, n));
++		if (n > len) {
++			ubifs_assert(c, n - len < 8);
++			ubifs_pad(c, wbuf->buf + len, n - len);
++		}
++
++		err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, n);
+ 		if (err)
+ 			goto out;
+ 		wbuf->offs += n;
+ 		aligned_len -= n;
+-		len -= n;
++		len -= min(len, n);
+ 		written += n;
+ 	}
+ 
+
+
