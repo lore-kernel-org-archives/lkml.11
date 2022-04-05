@@ -2,152 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537C9C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC64DC41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380431AbiDEUEk (ORCPT
+        id S1379837AbiDEUEe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
+        Tue, 5 Apr 2022 16:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573044AbiDERsk (ORCPT
+        with ESMTP id S1351381AbiDEKCV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:48:40 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0675D1110
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:46:41 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id b18-20020a63d812000000b0037e1aa59c0bso424pgh.12
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:46:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=cMTfDoOyyWLXLeBs6Ru7ToFxgfyCJggJkw0OXJMsEV8=;
-        b=nMfcorGlUtXECOW5K6EgdcUsQAcrop5tc3p5tTcoHcmFQiM5G5UW0zRhxr26er4OAr
-         s5v6PQmrcXR71vJMJDEVfVEi6/BGDusf+GDkbu49tMPrbowlSFMgbHig8rD6DZQZmHS/
-         gTgnI4kYoSwt8c9IAifAu8FjUB03lSAsOwDTfv4kzBKiHU0OL9rQtUzoK2zqYD2KA11X
-         nFbw2gOlMW++pZybJgMCWKH5eIObGH2WsSttfM4SljNf6flXef8ppdyyjRZcy6syqETb
-         Qz+OoSYfRbFJuVp2fxQw2x7mz/1KezSRobYkumFfNg+k6O320lkst6vJRzOrzHfYxTYo
-         fojQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=cMTfDoOyyWLXLeBs6Ru7ToFxgfyCJggJkw0OXJMsEV8=;
-        b=tyRR/Uv0t2b8/mYPBoK7E8rgyQ2jeL26tVlgX0ZubKawS62oS1Q8ymM9Hh1yEdNRoM
-         eqPYyyVv4zDrLV2I3yh8pYA2OWTr3eo5jdV+H7FFfiepV1as8AAYzm0LdOh8Z9caJivz
-         dh0CUrzsZt4SnxRec4buFbCyZP9EZ/3W6o1elhYkLl69taB7v3dJpIjCNsfncNxO/Upf
-         ws6VvNLzs2PztYe2tHF72mXosMqqL0nSRbPUizS8NPi1uVyh3H+n6dKlttqIydg/Sgsj
-         RIESeMRBWHR/lKwAf/O848DF18XBlW81R3PtxS8DdRL/NKVgz96fzXm7dbdujRAnHanJ
-         joOQ==
-X-Gm-Message-State: AOAM5330zdGDbHCKuqhubGaHxwIrniV3V7QYsCst7cFAXTnm6C4RaEXU
-        uuRysbRsVE9mtjjNcZdm4LzSbN3aU/g=
-X-Google-Smtp-Source: ABdhPJyyh/3pCquJqcSiGkL89OJvx9V1mCcnl2ur+7wPBn4VOBCz5evBX3VHphcCk3xlVaHFHjDW5vPwJhk=
-X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:9f5c:353e:771c:7686])
- (user=pgonda job=sendgmr) by 2002:a05:6a00:8c5:b0:4fe:134d:30d3 with SMTP id
- s5-20020a056a0008c500b004fe134d30d3mr4801602pfu.3.1649180801244; Tue, 05 Apr
- 2022 10:46:41 -0700 (PDT)
-Date:   Tue,  5 Apr 2022 10:46:37 -0700
-Message-Id: <20220405174637.2074319-1-pgonda@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH v2] KVM: SEV: Mark nested locking of vcpu->mutex
-From:   Peter Gonda <pgonda@google.com>
-To:     kvm@vger.kernel.org
-Cc:     Peter Gonda <pgonda@google.com>,
-        John Sperbeck <jsperbeck@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 5 Apr 2022 06:02:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6296D3AA;
+        Tue,  5 Apr 2022 02:51:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC9FB81B14;
+        Tue,  5 Apr 2022 09:51:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F45C385A2;
+        Tue,  5 Apr 2022 09:51:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152295;
+        bh=aduOYBaXcm3bJGU5ljNOOCD1XxWS7V29veFoK8jq2cw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wod6/og0FzU0XumkeDhBnPSqVU1C9eoqifwxzN1Bd1BMvaSxW4oHLYgy4Qm/Z04m0
+         0nFXLPa3IPrcmDy4kYskjqi3PRnA0TpwwDjLkADZJdZaA/0i3FFQaHnbxM/ZEFTmOd
+         cYBXFLJOi0ZTvg1z5b31QXDgvWR8EhBrJP1Y2gAY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 725/913] media: staging: media: zoran: move videodev alloc
+Date:   Tue,  5 Apr 2022 09:29:47 +0200
+Message-Id: <20220405070401.564171738@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
-source and target vcpu->mutex. Mark the nested subclasses to avoid false
-positives from lockdep.
+From: Corentin Labbe <clabbe@baylibre.com>
 
-Warning example:
-============================================
-WARNING: possible recursive locking detected
-5.17.0-dbg-DEV #15 Tainted: G           O
---------------------------------------------
-sev_migrate_tes/18859 is trying to acquire lock:
-ffff8d672d484238 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
-but task is already holding lock:
-ffff8d67703f81f8 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
-other info that might help us debug this:
- Possible unsafe locking scenario:
-       CPU0
-       ----
-  lock(&vcpu->mutex);
-  lock(&vcpu->mutex);
- *** DEADLOCK ***
- May be due to missing lock nesting notation
-3 locks held by sev_migrate_tes/18859:
- #0: ffff9302f91323b8 (&kvm->lock){+.+.}-{3:3}, at: sev_vm_move_enc_context_from+0x96/0x740
- #1: ffff9302f906a3b8 (&kvm->lock/1){+.+.}-{3:3}, at: sev_vm_move_enc_context_from+0xae/0x740
- #2: ffff8d67703f81f8 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
+[ Upstream commit 82e3a496eb56da0b9f29fdc5b63cedb3289e91de ]
 
-Fixes: b56639318bb2b ("KVM: SEV: Add support for SEV intra host migration")
-Reported-by: John Sperbeck<jsperbeck@google.com>
-Suggested-by: David Rientjes <rientjes@google.com>
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Peter Gonda <pgonda@google.com>
+Move some code out of zr36057_init() and create new functions for handling
+zr->video_dev. This permit to ease code reading and fix a zr->video_dev
+memory leak.
 
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/staging/media/zoran/zoran.h        |  2 +-
+ drivers/staging/media/zoran/zoran_card.c   | 80 ++++++++++++++--------
+ drivers/staging/media/zoran/zoran_driver.c |  5 +-
+ 3 files changed, 54 insertions(+), 33 deletions(-)
 
-Tested by running sev_migrate_tests with lockdep enabled. Before we see
-a warning from sev_lock_vcpus_for_migration(). After we get no warnings.
-
----
- arch/x86/kvm/svm/sev.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 75fa6dd268f0..673e1ee2cfc9 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -1591,14 +1591,21 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
- 	atomic_set_release(&src_sev->migration_in_progress, 0);
+diff --git a/drivers/staging/media/zoran/zoran.h b/drivers/staging/media/zoran/zoran.h
+index b1ad2a2b914c..50d5a7acfab6 100644
+--- a/drivers/staging/media/zoran/zoran.h
++++ b/drivers/staging/media/zoran/zoran.h
+@@ -313,6 +313,6 @@ static inline struct zoran *to_zoran(struct v4l2_device *v4l2_dev)
+ 
+ #endif
+ 
+-int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq);
++int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir);
+ void zoran_queue_exit(struct zoran *zr);
+ int zr_set_buf(struct zoran *zr);
+diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
+index c578ef3c32f5..a83314b16548 100644
+--- a/drivers/staging/media/zoran/zoran_card.c
++++ b/drivers/staging/media/zoran/zoran_card.c
+@@ -803,6 +803,52 @@ int zoran_check_jpg_settings(struct zoran *zr,
+ 	return 0;
  }
  
-+#define SEV_MIGRATION_SOURCE 0
-+#define SEV_MIGRATION_TARGET 1
- 
--static int sev_lock_vcpus_for_migration(struct kvm *kvm)
-+/*
-+ * To avoid lockdep warnings callers should pass @vm argument with either
-+ * SEV_MIGRATION_SOURCE or SEV_MIGRATE_TARGET. This allows subclassing of all
-+ * vCPU mutex locks.
-+ */
-+static int sev_lock_vcpus_for_migration(struct kvm *kvm, int vm)
++static int zoran_init_video_device(struct zoran *zr, struct video_device *video_dev, int dir)
++{
++	int err;
++
++	/* Now add the template and register the device unit. */
++	*video_dev = zoran_template;
++	video_dev->v4l2_dev = &zr->v4l2_dev;
++	video_dev->lock = &zr->lock;
++	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
++
++	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
++	/*
++	 * It's not a mem2mem device, but you can both capture and output from one and the same
++	 * device. This should really be split up into two device nodes, but that's a job for
++	 * another day.
++	 */
++	video_dev->vfl_dir = VFL_DIR_M2M;
++	zoran_queue_init(zr, &zr->vq, V4L2_BUF_TYPE_VIDEO_CAPTURE);
++
++	err = video_register_device(video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
++	if (err < 0)
++		return err;
++	video_set_drvdata(video_dev, zr);
++	return 0;
++}
++
++static void zoran_exit_video_devices(struct zoran *zr)
++{
++	video_unregister_device(zr->video_dev);
++	kfree(zr->video_dev);
++}
++
++static int zoran_init_video_devices(struct zoran *zr)
++{
++	int err;
++
++	zr->video_dev = video_device_alloc();
++	if (!zr->video_dev)
++		return -ENOMEM;
++
++	err = zoran_init_video_device(zr, zr->video_dev, V4L2_CAP_VIDEO_CAPTURE);
++	if (err)
++		kfree(zr->video_dev);
++	return err;
++}
++
+ void zoran_open_init_params(struct zoran *zr)
  {
- 	struct kvm_vcpu *vcpu;
- 	unsigned long i, j;
+ 	int i;
+@@ -874,17 +920,11 @@ static int zr36057_init(struct zoran *zr)
+ 	zoran_open_init_params(zr);
  
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
--		if (mutex_lock_killable(&vcpu->mutex))
-+		if (mutex_lock_killable_nested(&vcpu->mutex, i * 2 + vm))
- 			goto out_unlock;
+ 	/* allocate memory *before* doing anything to the hardware in case allocation fails */
+-	zr->video_dev = video_device_alloc();
+-	if (!zr->video_dev) {
+-		err = -ENOMEM;
+-		goto exit;
+-	}
+ 	zr->stat_com = dma_alloc_coherent(&zr->pci_dev->dev,
+ 					  BUZ_NUM_STAT_COM * sizeof(u32),
+ 					  &zr->p_sc, GFP_KERNEL);
+ 	if (!zr->stat_com) {
+-		err = -ENOMEM;
+-		goto exit_video;
++		return -ENOMEM;
+ 	}
+ 	for (j = 0; j < BUZ_NUM_STAT_COM; j++)
+ 		zr->stat_com[j] = cpu_to_le32(1); /* mark as unavailable to zr36057 */
+@@ -897,26 +937,9 @@ static int zr36057_init(struct zoran *zr)
+ 		goto exit_statcom;
  	}
  
-@@ -1745,10 +1752,10 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
- 		charged = true;
- 	}
+-	/* Now add the template and register the device unit. */
+-	*zr->video_dev = zoran_template;
+-	zr->video_dev->v4l2_dev = &zr->v4l2_dev;
+-	zr->video_dev->lock = &zr->lock;
+-	zr->video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_CAPTURE;
+-
+-	strscpy(zr->video_dev->name, ZR_DEVNAME(zr), sizeof(zr->video_dev->name));
+-	/*
+-	 * It's not a mem2mem device, but you can both capture and output from one and the same
+-	 * device. This should really be split up into two device nodes, but that's a job for
+-	 * another day.
+-	 */
+-	zr->video_dev->vfl_dir = VFL_DIR_M2M;
+-
+-	zoran_queue_init(zr, &zr->vq);
+-
+-	err = video_register_device(zr->video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
+-	if (err < 0)
++	err = zoran_init_video_devices(zr);
++	if (err)
+ 		goto exit_statcomb;
+-	video_set_drvdata(zr->video_dev, zr);
  
--	ret = sev_lock_vcpus_for_migration(kvm);
-+	ret = sev_lock_vcpus_for_migration(kvm, SEV_MIGRATION_SOURCE);
- 	if (ret)
- 		goto out_dst_cgroup;
--	ret = sev_lock_vcpus_for_migration(source_kvm);
-+	ret = sev_lock_vcpus_for_migration(source_kvm, SEV_MIGRATION_TARGET);
- 	if (ret)
- 		goto out_dst_vcpu;
+ 	zoran_init_hardware(zr);
+ 	if (!pass_through) {
+@@ -931,9 +954,6 @@ static int zr36057_init(struct zoran *zr)
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
+ exit_statcom:
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32), zr->stat_com, zr->p_sc);
+-exit_video:
+-	kfree(zr->video_dev);
+-exit:
+ 	return err;
+ }
  
+@@ -965,7 +985,7 @@ static void zoran_remove(struct pci_dev *pdev)
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
+ 	pci_release_regions(pdev);
+ 	pci_disable_device(zr->pci_dev);
+-	video_unregister_device(zr->video_dev);
++	zoran_exit_video_devices(zr);
+ exit_free:
+ 	v4l2_ctrl_handler_free(&zr->hdl);
+ 	v4l2_device_unregister(&zr->v4l2_dev);
+diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
+index 46382e43f1bf..551db338c7f7 100644
+--- a/drivers/staging/media/zoran/zoran_driver.c
++++ b/drivers/staging/media/zoran/zoran_driver.c
+@@ -1008,7 +1008,7 @@ static const struct vb2_ops zr_video_qops = {
+ 	.wait_finish            = vb2_ops_wait_finish,
+ };
+ 
+-int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
++int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
+ {
+ 	int err;
+ 
+@@ -1016,7 +1016,8 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
+ 	INIT_LIST_HEAD(&zr->queued_bufs);
+ 
+ 	vq->dev = &zr->pci_dev->dev;
+-	vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
++	vq->type = dir;
++
+ 	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
+ 	vq->drv_priv = zr;
+ 	vq->buf_struct_size = sizeof(struct zr_buffer);
 -- 
-2.35.1.1094.g7c7d902a7c-goog
+2.34.1
+
+
 
