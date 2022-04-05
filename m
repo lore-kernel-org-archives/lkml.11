@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A73C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:51:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66197C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353002AbiDENwF (ORCPT
+        id S1346846AbiDENv1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
+        Tue, 5 Apr 2022 09:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345480AbiDEJWo (ORCPT
+        with ESMTP id S1345522AbiDEJWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434154A90E;
-        Tue,  5 Apr 2022 02:11:03 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51EAC4C7B8;
+        Tue,  5 Apr 2022 02:11:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6FC7B81A12;
-        Tue,  5 Apr 2022 09:11:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43A12C385A2;
-        Tue,  5 Apr 2022 09:11:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E62F8B81A12;
+        Tue,  5 Apr 2022 09:11:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C54AC385A2;
+        Tue,  5 Apr 2022 09:11:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149860;
-        bh=Ytr58gnACPtIgX8wj6A+Rgu50Y/LfhHdm8jAbP6A5yc=;
+        s=korg; t=1649149868;
+        bh=/l/iLNcIVgBl6tLCGjPlH9RZNhMIyV8EQX/3Y4TFIDo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RcxMYV5R1vW91LLzVJb7JMvIGWVYBDuQRjOUKt4rL0ChwnTN2wUlCq6usXEIk5JCv
-         MtXU8LAkmrq3zFjGbB8Vx8SGoR9OYhlUA7YRBvEyjRwZwbVd9ip1EadABb5hRKfahM
-         5mnMIxsjWwna+BCFAZvGgzx/3VY1pfpA/Y9u+7EA=
+        b=ud390YaoTGTVy/NtgXt3n5IksjXeINsMV5l98jgv6cqILSwVyYuQYo9Y53D0ZBz8M
+         4p4OhlK2o/9alfhJLLEtTvt/rB0oBeugzq+WPxwqYfiOlWyWQAgPbVUbyri7d+LUWC
+         2eV+hpgZUBsmTP4/N/b8QUvbnm5OiWlnhCxpRnnc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Jingwen <chenjingwen6@huawei.com>,
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Russell Currey <ruscur@russell.cc>,
         Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 0866/1017] powerpc/kasan: Fix early region not updated correctly
-Date:   Tue,  5 Apr 2022 09:29:39 +0200
-Message-Id: <20220405070419.941854990@linuxfoundation.org>
+Subject: [PATCH 5.16 0869/1017] powerpc: Add set_memory_{p/np}() and remove set_memory_attr()
+Date:   Tue,  5 Apr 2022 09:29:42 +0200
+Message-Id: <20220405070420.031451125@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,86 +51,178 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Jingwen <chenjingwen6@huawei.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit dd75080aa8409ce10d50fb58981c6b59bf8707d3 upstream.
+commit f222ab83df92acf72691a2021e1f0d99880dcdf1 upstream.
 
-The shadow's page table is not updated when PTE_RPN_SHIFT is 24
-and PAGE_SHIFT is 12. It not only causes false positives but
-also false negative as shown the following text.
+set_memory_attr() was implemented by commit 4d1755b6a762 ("powerpc/mm:
+implement set_memory_attr()") because the set_memory_xx() couldn't
+be used at that time to modify memory "on the fly" as explained it
+the commit.
 
-Fix it by bringing the logic of kasan_early_shadow_page_entry here.
+But set_memory_attr() uses set_pte_at() which leads to warnings when
+CONFIG_DEBUG_VM is selected, because set_pte_at() is unexpected for
+updating existing page table entries.
 
-1. False Positive:
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in pcpu_alloc+0x508/0xa50
-Write of size 16 at addr f57f3be0 by task swapper/0/1
+The check could be bypassed by using __set_pte_at() instead,
+as it was the case before commit c988cfd38e48 ("powerpc/32:
+use set_memory_attr()") but since commit 9f7853d7609d ("powerpc/mm:
+Fix set_memory_*() against concurrent accesses") it is now possible
+to use set_memory_xx() functions to update page table entries
+"on the fly" because the update is now atomic.
 
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.0-12267-gdebe436e77c7 #1
-Call Trace:
-[c80d1c20] [c07fe7b8] dump_stack_lvl+0x4c/0x6c (unreliable)
-[c80d1c40] [c02ff668] print_address_description.constprop.0+0x88/0x300
-[c80d1c70] [c02ff45c] kasan_report+0x1ec/0x200
-[c80d1cb0] [c0300b20] kasan_check_range+0x160/0x2f0
-[c80d1cc0] [c03018a4] memset+0x34/0x90
-[c80d1ce0] [c0280108] pcpu_alloc+0x508/0xa50
-[c80d1d40] [c02fd7bc] __kmem_cache_create+0xfc/0x570
-[c80d1d70] [c0283d64] kmem_cache_create_usercopy+0x274/0x3e0
-[c80d1db0] [c2036580] init_sd+0xc4/0x1d0
-[c80d1de0] [c00044a0] do_one_initcall+0xc0/0x33c
-[c80d1eb0] [c2001624] kernel_init_freeable+0x2c8/0x384
-[c80d1ef0] [c0004b14] kernel_init+0x24/0x170
-[c80d1f10] [c001b26c] ret_from_kernel_thread+0x5c/0x64
+For DEBUG_PAGEALLOC we need to clear and set back _PAGE_PRESENT.
+Add set_memory_np() and set_memory_p() for that.
 
-Memory state around the buggy address:
- f57f3a80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- f57f3b00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->f57f3b80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-                                               ^
- f57f3c00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- f57f3c80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-==================================================================
+Replace all uses of set_memory_attr() by the relevant set_memory_xx()
+and remove set_memory_attr().
 
-2. False Negative (with KASAN tests):
-==================================================================
-Before fix:
-    ok 45 - kmalloc_double_kzfree
-    # vmalloc_oob: EXPECTATION FAILED at lib/test_kasan.c:1039
-    KASAN failure expected in "((volatile char *)area)[3100]", but none occurred
-    not ok 46 - vmalloc_oob
-    not ok 1 - kasan
-
-==================================================================
-After fix:
-    ok 1 - kasan
-
-Fixes: cbd18991e24fe ("powerpc/mm: Fix an Oops in kasan_mmu_init()")
-Cc: stable@vger.kernel.org # 5.4.x
-Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Fixes: c988cfd38e48 ("powerpc/32: use set_memory_attr()")
+Cc: stable@vger.kernel.org
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Tested-by: Maxime Bizon <mbizon@freebox.fr>
+Reviewed-by: Russell Currey <ruscur@russell.cc>
+Depends-on: 9f7853d7609d ("powerpc/mm: Fix set_memory_*() against concurrent accesses")
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211229035226.59159-1-chenjingwen6@huawei.com
+Link: https://lore.kernel.org/r/cda2b44b55c96f9ac69fa92e68c01084ec9495c5.1640344012.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/mm/kasan/kasan_init_32.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/powerpc/include/asm/set_memory.h |   12 +++++++++-
+ arch/powerpc/mm/pageattr.c            |   39 +++++-----------------------------
+ arch/powerpc/mm/pgtable_32.c          |   24 +++++++++-----------
+ 3 files changed, 28 insertions(+), 47 deletions(-)
 
---- a/arch/powerpc/mm/kasan/kasan_init_32.c
-+++ b/arch/powerpc/mm/kasan/kasan_init_32.c
-@@ -83,13 +83,12 @@ void __init
- kasan_update_early_region(unsigned long k_start, unsigned long k_end, pte_t pte)
- {
- 	unsigned long k_cur;
--	phys_addr_t pa = __pa(kasan_early_shadow_page);
+--- a/arch/powerpc/include/asm/set_memory.h
++++ b/arch/powerpc/include/asm/set_memory.h
+@@ -6,6 +6,8 @@
+ #define SET_MEMORY_RW	1
+ #define SET_MEMORY_NX	2
+ #define SET_MEMORY_X	3
++#define SET_MEMORY_NP	4	/* Set memory non present */
++#define SET_MEMORY_P	5	/* Set memory present */
  
- 	for (k_cur = k_start; k_cur != k_end; k_cur += PAGE_SIZE) {
- 		pmd_t *pmd = pmd_off_k(k_cur);
- 		pte_t *ptep = pte_offset_kernel(pmd, k_cur);
+ int change_memory_attr(unsigned long addr, int numpages, long action);
  
--		if ((pte_val(*ptep) & PTE_RPN_MASK) != pa)
-+		if (pte_page(*ptep) != virt_to_page(lm_alias(kasan_early_shadow_page)))
- 			continue;
+@@ -29,6 +31,14 @@ static inline int set_memory_x(unsigned
+ 	return change_memory_attr(addr, numpages, SET_MEMORY_X);
+ }
  
- 		__set_pte_at(&init_mm, k_cur, ptep, pte, 0);
+-int set_memory_attr(unsigned long addr, int numpages, pgprot_t prot);
++static inline int set_memory_np(unsigned long addr, int numpages)
++{
++	return change_memory_attr(addr, numpages, SET_MEMORY_NP);
++}
++
++static inline int set_memory_p(unsigned long addr, int numpages)
++{
++	return change_memory_attr(addr, numpages, SET_MEMORY_P);
++}
+ 
+ #endif
+--- a/arch/powerpc/mm/pageattr.c
++++ b/arch/powerpc/mm/pageattr.c
+@@ -48,6 +48,12 @@ static int change_page_attr(pte_t *ptep,
+ 	case SET_MEMORY_X:
+ 		pte = pte_mkexec(pte);
+ 		break;
++	case SET_MEMORY_NP:
++		pte_update(&init_mm, addr, ptep, _PAGE_PRESENT, 0, 0);
++		break;
++	case SET_MEMORY_P:
++		pte_update(&init_mm, addr, ptep, 0, _PAGE_PRESENT, 0);
++		break;
+ 	default:
+ 		WARN_ON_ONCE(1);
+ 		break;
+@@ -96,36 +102,3 @@ int change_memory_attr(unsigned long add
+ 	return apply_to_existing_page_range(&init_mm, start, size,
+ 					    change_page_attr, (void *)action);
+ }
+-
+-/*
+- * Set the attributes of a page:
+- *
+- * This function is used by PPC32 at the end of init to set final kernel memory
+- * protection. It includes changing the maping of the page it is executing from
+- * and data pages it is using.
+- */
+-static int set_page_attr(pte_t *ptep, unsigned long addr, void *data)
+-{
+-	pgprot_t prot = __pgprot((unsigned long)data);
+-
+-	spin_lock(&init_mm.page_table_lock);
+-
+-	set_pte_at(&init_mm, addr, ptep, pte_modify(*ptep, prot));
+-	flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
+-
+-	spin_unlock(&init_mm.page_table_lock);
+-
+-	return 0;
+-}
+-
+-int set_memory_attr(unsigned long addr, int numpages, pgprot_t prot)
+-{
+-	unsigned long start = ALIGN_DOWN(addr, PAGE_SIZE);
+-	unsigned long sz = numpages * PAGE_SIZE;
+-
+-	if (numpages <= 0)
+-		return 0;
+-
+-	return apply_to_existing_page_range(&init_mm, start, sz, set_page_attr,
+-					    (void *)pgprot_val(prot));
+-}
+--- a/arch/powerpc/mm/pgtable_32.c
++++ b/arch/powerpc/mm/pgtable_32.c
+@@ -135,10 +135,12 @@ void mark_initmem_nx(void)
+ 	unsigned long numpages = PFN_UP((unsigned long)_einittext) -
+ 				 PFN_DOWN((unsigned long)_sinittext);
+ 
+-	if (v_block_mapped((unsigned long)_sinittext))
++	if (v_block_mapped((unsigned long)_sinittext)) {
+ 		mmu_mark_initmem_nx();
+-	else
+-		set_memory_attr((unsigned long)_sinittext, numpages, PAGE_KERNEL);
++	} else {
++		set_memory_nx((unsigned long)_sinittext, numpages);
++		set_memory_rw((unsigned long)_sinittext, numpages);
++	}
+ }
+ 
+ #ifdef CONFIG_STRICT_KERNEL_RWX
+@@ -152,18 +154,14 @@ void mark_rodata_ro(void)
+ 		return;
+ 	}
+ 
+-	numpages = PFN_UP((unsigned long)_etext) -
+-		   PFN_DOWN((unsigned long)_stext);
+-
+-	set_memory_attr((unsigned long)_stext, numpages, PAGE_KERNEL_ROX);
+ 	/*
+-	 * mark .rodata as read only. Use __init_begin rather than __end_rodata
+-	 * to cover NOTES and EXCEPTION_TABLE.
++	 * mark .text and .rodata as read only. Use __init_begin rather than
++	 * __end_rodata to cover NOTES and EXCEPTION_TABLE.
+ 	 */
+ 	numpages = PFN_UP((unsigned long)__init_begin) -
+-		   PFN_DOWN((unsigned long)__start_rodata);
++		   PFN_DOWN((unsigned long)_stext);
+ 
+-	set_memory_attr((unsigned long)__start_rodata, numpages, PAGE_KERNEL_RO);
++	set_memory_ro((unsigned long)_stext, numpages);
+ 
+ 	// mark_initmem_nx() should have already run by now
+ 	ptdump_check_wx();
+@@ -179,8 +177,8 @@ void __kernel_map_pages(struct page *pag
+ 		return;
+ 
+ 	if (enable)
+-		set_memory_attr(addr, numpages, PAGE_KERNEL);
++		set_memory_p(addr, numpages);
+ 	else
+-		set_memory_attr(addr, numpages, __pgprot(0));
++		set_memory_np(addr, numpages);
+ }
+ #endif /* CONFIG_DEBUG_PAGEALLOC */
 
 
