@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ACD1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FC3C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345908AbiDELA7 (ORCPT
+        id S1345172AbiDELA0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48464 "EHLO
+        Tue, 5 Apr 2022 07:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235505AbiDEIjy (ORCPT
+        with ESMTP id S234124AbiDEIjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:39:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D066B78;
-        Tue,  5 Apr 2022 01:33:36 -0700 (PDT)
+        Tue, 5 Apr 2022 04:39:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB2A1FA68;
+        Tue,  5 Apr 2022 01:32:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40016B81B13;
-        Tue,  5 Apr 2022 08:33:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A297EC385A0;
-        Tue,  5 Apr 2022 08:33:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE3C960FFC;
+        Tue,  5 Apr 2022 08:32:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFD7C385A1;
+        Tue,  5 Apr 2022 08:32:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147614;
-        bh=S5JSbPs7QsysBWhnR3G8MjqokpkFfZdd3XOVDP5puGs=;
+        s=korg; t=1649147575;
+        bh=y4HzoPUx0g/Wg4u5UKwImFP7XoKjSKux0f3xg0dQGf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=slGYqOvdnKruYiWPeixrrGS+PuHkCNfh5kbjRCh3p8AZ/c/swW+yIogg5mBE17d/K
-         saAnNsbWa2mDl0esMmTaW00ppi20hbKEc+e1GWylshKGEpuP+1xHgAS4+CWyWv23/t
-         gZ/G1/c/aIfdOJ3bFiCJZ1e+mAEAOYmBWmR0hUtE=
+        b=aAgEL+VLvNLPk+0tFHVheKoyAYLh2Joc9mCIi7nm5w7nEC5PDlB5wReM2qZWTsoqL
+         Zp7Tgdf3HvdCDYrb+KLJq0pIHstOFUC7gdtWy7+P31etuSbxDpfuaMWDCcD77TkT8c
+         9Ebo7s+T/3Fe3cJRdeX/erM+slxn2ncuAw5FYQw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
-        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Vitaly Chikunov <vt@altlinux.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.16 0058/1017] KEYS: asymmetric: enforce that sig algo matches key algo
-Date:   Tue,  5 Apr 2022 09:16:11 +0200
-Message-Id: <20220405070355.907534859@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Konstantin Klubnichkin <kitsok@yandex-team.ru>,
+        Billy Tsai <billy_tsai@aspeedtech.com>,
+        Joel Stanley <joel@jms.id.au>, Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.16 0046/1017] iio: adc: aspeed: Add divider flag to fix incorrect voltage reading.
+Date:   Tue,  5 Apr 2022 09:15:59 +0200
+Message-Id: <20220405070355.549917210@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,97 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Billy Tsai <billy_tsai@aspeedtech.com>
 
-commit 2abc9c246e0548e52985b10440c9ea3e9f65f793 upstream.
+commit 571426631acf46e2999c7ecd1e9d048172969a43 upstream.
 
-Most callers of public_key_verify_signature(), including most indirect
-callers via verify_signature() as well as pkcs7_verify_sig_chain(),
-don't check that public_key_signature::pkey_algo matches
-public_key::pkey_algo.  These should always match.  However, a malicious
-signature could intentionally declare an unintended algorithm.  It is
-essential that such signatures be rejected outright, or that the
-algorithm of the *key* be used -- not the algorithm of the signature as
-that would allow attackers to choose the algorithm used.
+The formula for the ADC sampling period in ast2400/ast2500 is:
+ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0])
+When ADC0C[9:0] is set to 0 the sampling voltage will be lower than
+expected, because the hardware may not have enough time to
+charge/discharge to a stable voltage. This patch use the flag
+CLK_DIVIDER_ONE_BASED which will use the raw value read from the
+register, with the value of zero considered invalid to conform to the
+corrected formula.
 
-Currently, public_key_verify_signature() correctly uses the key's
-algorithm when deciding which akcipher to allocate.  That's good.
-However, it uses the signature's algorithm when deciding whether to do
-the first step of SM2, which is incorrect.  Also, v4.19 and older
-kernels used the signature's algorithm for the entire process.
-
-Prevent such errors by making public_key_verify_signature() enforce that
-the signature's algorithm (if given) matches the key's algorithm.
-
-Also remove two checks of this done by callers, which are now redundant.
-
-Cc: stable@vger.kernel.org
-Tested-by: Stefan Berger <stefanb@linux.ibm.com>
-Tested-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Vitaly Chikunov <vt@altlinux.org>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: 573803234e72 ("iio: Aspeed ADC")
+Reported-by: Konstantin Klubnichkin <kitsok@yandex-team.ru>
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+Link: https://lore.kernel.org/r/20220221012705.22008-1-billy_tsai@aspeedtech.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/asymmetric_keys/pkcs7_verify.c    |    6 ------
- crypto/asymmetric_keys/public_key.c      |   15 +++++++++++++++
- crypto/asymmetric_keys/x509_public_key.c |    6 ------
- 3 files changed, 15 insertions(+), 12 deletions(-)
+ drivers/iio/adc/aspeed_adc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/crypto/asymmetric_keys/pkcs7_verify.c
-+++ b/crypto/asymmetric_keys/pkcs7_verify.c
-@@ -174,12 +174,6 @@ static int pkcs7_find_key(struct pkcs7_m
- 		pr_devel("Sig %u: Found cert serial match X.509[%u]\n",
- 			 sinfo->index, certix);
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -539,7 +539,9 @@ static int aspeed_adc_probe(struct platf
+ 	data->clk_scaler = devm_clk_hw_register_divider(
+ 		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
+ 		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
+-		data->model_data->scaler_bit_width, 0, &data->clk_lock);
++		data->model_data->scaler_bit_width,
++		data->model_data->need_prescaler ? CLK_DIVIDER_ONE_BASED : 0,
++		&data->clk_lock);
+ 	if (IS_ERR(data->clk_scaler))
+ 		return PTR_ERR(data->clk_scaler);
  
--		if (strcmp(x509->pub->pkey_algo, sinfo->sig->pkey_algo) != 0) {
--			pr_warn("Sig %u: X.509 algo and PKCS#7 sig algo don't match\n",
--				sinfo->index);
--			continue;
--		}
--
- 		sinfo->signer = x509;
- 		return 0;
- 	}
---- a/crypto/asymmetric_keys/public_key.c
-+++ b/crypto/asymmetric_keys/public_key.c
-@@ -325,6 +325,21 @@ int public_key_verify_signature(const st
- 	BUG_ON(!sig);
- 	BUG_ON(!sig->s);
- 
-+	/*
-+	 * If the signature specifies a public key algorithm, it *must* match
-+	 * the key's actual public key algorithm.
-+	 *
-+	 * Small exception: ECDSA signatures don't specify the curve, but ECDSA
-+	 * keys do.  So the strings can mismatch slightly in that case:
-+	 * "ecdsa-nist-*" for the key, but "ecdsa" for the signature.
-+	 */
-+	if (sig->pkey_algo) {
-+		if (strcmp(pkey->pkey_algo, sig->pkey_algo) != 0 &&
-+		    (strncmp(pkey->pkey_algo, "ecdsa-", 6) != 0 ||
-+		     strcmp(sig->pkey_algo, "ecdsa") != 0))
-+			return -EKEYREJECTED;
-+	}
-+
- 	ret = software_key_determine_akcipher(sig->encoding,
- 					      sig->hash_algo,
- 					      pkey, alg_name);
---- a/crypto/asymmetric_keys/x509_public_key.c
-+++ b/crypto/asymmetric_keys/x509_public_key.c
-@@ -128,12 +128,6 @@ int x509_check_for_self_signed(struct x5
- 			goto out;
- 	}
- 
--	ret = -EKEYREJECTED;
--	if (strcmp(cert->pub->pkey_algo, cert->sig->pkey_algo) != 0 &&
--	    (strncmp(cert->pub->pkey_algo, "ecdsa-", 6) != 0 ||
--	     strcmp(cert->sig->pkey_algo, "ecdsa") != 0))
--		goto out;
--
- 	ret = public_key_verify_signature(cert->pub, cert->sig);
- 	if (ret < 0) {
- 		if (ret == -ENOPKG) {
 
 
