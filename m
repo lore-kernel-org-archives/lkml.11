@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA16C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 274EFC35294
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381067AbiDEVhj (ORCPT
+        id S1381772AbiDEViO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
+        Tue, 5 Apr 2022 17:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358203AbiDEK2F (ORCPT
+        with ESMTP id S1349333AbiDEJtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:05 -0400
+        Tue, 5 Apr 2022 05:49:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2EEDF11;
-        Tue,  5 Apr 2022 03:17:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332005FD3;
+        Tue,  5 Apr 2022 02:44:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF73361777;
-        Tue,  5 Apr 2022 10:17:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C198C385A0;
-        Tue,  5 Apr 2022 10:17:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BD1B615E5;
+        Tue,  5 Apr 2022 09:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65FA1C385A1;
+        Tue,  5 Apr 2022 09:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153821;
-        bh=4aZGSueq1nni+HIWlZFJGt9xx0C6ejjiA6qyw9yZHqA=;
+        s=korg; t=1649151845;
+        bh=WsW6LYCcpbPQgKzCuxo3ZJJAg7nrkIEDruFN5ptLGag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ze3dA1yRCQ7R3ZMHmahNmNm/NOZgIBdG7VjxOZtqklT9+e5mpL/1JHxbL01Zt4n+p
-         XfT69Ms9Rvykda8YFfKZBP5YTP1eMj8Q8q+5uZp5xvU1lI09eVWeVXaKFgFOhccfDK
-         74AYOmsfyuu1OY8fEF/XR6zCG8Cp6bNPzxsbGBb4=
+        b=xjqXxcB8ykg3qrypjRYLMaimJxe+X2sZjjBSp++2OBFqGvm5urkZuX2jM+3+CxjSm
+         5+Jy9G4c0VMub8O/UroZCtoURmHUbNGQvICn813PtKvJzhYv5i2skNTpGoKeqfMC8X
+         pF4WqLHOIZ/GH8mkbgs50M0VHoGsZYKsA5EE3keY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
+        stable@vger.kernel.org, Phil Sutter <phil@nwl.cc>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 358/599] bpf, sockmap: Fix double uncharge the mem of sk_msg
-Date:   Tue,  5 Apr 2022 09:30:52 +0200
-Message-Id: <20220405070309.485312156@linuxfoundation.org>
+Subject: [PATCH 5.15 562/913] netfilter: conntrack: Add and use nf_ct_set_auto_assign_helper_warned()
+Date:   Tue,  5 Apr 2022 09:27:04 +0200
+Message-Id: <20220405070356.691019707@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,70 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Phil Sutter <phil@nwl.cc>
 
-[ Upstream commit 2486ab434b2c2a14e9237296db00b1e1b7ae3273 ]
+[ Upstream commit 31d0bb9763efad30377505f3467f958d1ebe1e3d ]
 
-If tcp_bpf_sendmsg is running during a tear down operation, psock may be
-freed.
+The function sets the pernet boolean to avoid the spurious warning from
+nf_ct_lookup_helper() when assigning conntrack helpers via nftables.
 
-tcp_bpf_sendmsg()
- tcp_bpf_send_verdict()
-  sk_msg_return()
-  tcp_bpf_sendmsg_redir()
-   unlikely(!psock))
-     sk_msg_free()
-
-The mem of msg has been uncharged in tcp_bpf_send_verdict() by
-sk_msg_return(), and would be uncharged by sk_msg_free() again. When psock
-is null, we can simply returning an error code, this would then trigger
-the sk_msg_free_nocharge in the error path of __SK_REDIRECT and would have
-the side effect of throwing an error up to user space. This would be a
-slight change in behavior from user side but would look the same as an
-error if the redirect on the socket threw an error.
-
-This issue can cause the following info:
-WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
-Call Trace:
- <TASK>
- __sk_destruct+0x24/0x1f0
- sk_psock_destroy+0x19b/0x1c0
- process_one_work+0x1b3/0x3c0
- worker_thread+0x30/0x350
- ? process_one_work+0x3c0/0x3c0
- kthread+0xe6/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
- </TASK>
-
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220304081145.2037182-5-wangyufen@huawei.com
+Fixes: 1a64edf54f55 ("netfilter: nft_ct: add helper set support")
+Signed-off-by: Phil Sutter <phil@nwl.cc>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_bpf.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ include/net/netfilter/nf_conntrack_helper.h | 1 +
+ net/netfilter/nf_conntrack_helper.c         | 6 ++++++
+ net/netfilter/nft_ct.c                      | 3 +++
+ 3 files changed, 10 insertions(+)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index c089e8166fa9..eaf2308c355a 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -218,10 +218,9 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
- 	struct sk_psock *psock = sk_psock_get(sk);
- 	int ret;
+diff --git a/include/net/netfilter/nf_conntrack_helper.h b/include/net/netfilter/nf_conntrack_helper.h
+index 37f0fbefb060..9939c366f720 100644
+--- a/include/net/netfilter/nf_conntrack_helper.h
++++ b/include/net/netfilter/nf_conntrack_helper.h
+@@ -177,4 +177,5 @@ void nf_nat_helper_unregister(struct nf_conntrack_nat_helper *nat);
+ int nf_nat_helper_try_module_get(const char *name, u16 l3num,
+ 				 u8 protonum);
+ void nf_nat_helper_put(struct nf_conntrack_helper *helper);
++void nf_ct_set_auto_assign_helper_warned(struct net *net);
+ #endif /*_NF_CONNTRACK_HELPER_H*/
+diff --git a/net/netfilter/nf_conntrack_helper.c b/net/netfilter/nf_conntrack_helper.c
+index ae4488a13c70..ceb38a7b37cb 100644
+--- a/net/netfilter/nf_conntrack_helper.c
++++ b/net/netfilter/nf_conntrack_helper.c
+@@ -556,6 +556,12 @@ static const struct nf_ct_ext_type helper_extend = {
+ 	.id	= NF_CT_EXT_HELPER,
+ };
  
--	if (unlikely(!psock)) {
--		sk_msg_free(sk, msg);
--		return 0;
--	}
-+	if (unlikely(!psock))
-+		return -EPIPE;
++void nf_ct_set_auto_assign_helper_warned(struct net *net)
++{
++	nf_ct_pernet(net)->auto_assign_helper_warned = true;
++}
++EXPORT_SYMBOL_GPL(nf_ct_set_auto_assign_helper_warned);
 +
- 	ret = ingress ? bpf_tcp_ingress(sk, psock, msg, bytes, flags) :
- 			tcp_bpf_push_locked(sk, msg, bytes, flags, false);
- 	sk_psock_put(sk, psock);
+ void nf_conntrack_helper_pernet_init(struct net *net)
+ {
+ 	struct nf_conntrack_net *cnet = nf_ct_pernet(net);
+diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
+index 99b1de14ff7e..54ecb9fbf2de 100644
+--- a/net/netfilter/nft_ct.c
++++ b/net/netfilter/nft_ct.c
+@@ -1040,6 +1040,9 @@ static int nft_ct_helper_obj_init(const struct nft_ctx *ctx,
+ 	if (err < 0)
+ 		goto err_put_helper;
+ 
++	/* Avoid the bogus warning, helper will be assigned after CT init */
++	nf_ct_set_auto_assign_helper_warned(ctx->net);
++
+ 	return 0;
+ 
+ err_put_helper:
 -- 
 2.34.1
 
