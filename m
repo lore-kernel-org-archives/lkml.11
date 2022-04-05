@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD9ADC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 985BDC35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239986AbiDEVHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40450 "EHLO
+        id S238089AbiDEVGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352798AbiDEKFJ (ORCPT
+        with ESMTP id S1358436AbiDEK2Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:05:09 -0400
+        Tue, 5 Apr 2022 06:28:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F88BC87C;
-        Tue,  5 Apr 2022 02:53:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDB2B247C;
+        Tue,  5 Apr 2022 03:18:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBA12616DC;
-        Tue,  5 Apr 2022 09:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3542C385A3;
-        Tue,  5 Apr 2022 09:53:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5D60617AA;
+        Tue,  5 Apr 2022 10:18:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C49D2C385A0;
+        Tue,  5 Apr 2022 10:17:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152431;
-        bh=hrfyozcs/WLlhiA2+tZKYGqLQASHhpJD8gwcdsqB+ks=;
+        s=korg; t=1649153880;
+        bh=9HMECe3u2F6DkVfQDRSfxWSlqpn77kHqRP3q+B9jlqY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HqV3XAvOsAeJtooPtO49nSLP/EMow/S3Iibtg5ClfnSrSuyKJjCQdw9MfLPkM/gc8
-         Im4JLCCw//TNi5aqRDse4PPRFU3UhS6Jwz/3b9uqenNVpy3fb6Tmsl7vNBpKBhreki
-         hPUPVpAf1/FNzFOpCoDR6yEuEWO1YOQJIb8KNMB0=
+        b=YpuYuQriD/wu2AiBQR6ClOtHpG5mTa+7usHtfxyndkCSn80yQvn3H7tLlbTHywgGC
+         9WlaRpiYi7xn6uUoruxudm5BWUglniRWyaAzki/TDkxe20yyhlKmGreZZxc9YepzsR
+         CdHzsornobh0yFCQSxnXi6yw4/aJEVvipCqBMHB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 773/913] KVM: x86/mmu: Check for present SPTE when clearing dirty bit in TDP MMU
-Date:   Tue,  5 Apr 2022 09:30:35 +0200
-Message-Id: <20220405070403.002794639@linuxfoundation.org>
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 381/599] fsi: Aspeed: Fix a potential double free
+Date:   Tue,  5 Apr 2022 09:31:15 +0200
+Message-Id: <20220405070310.169388127@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,39 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 3354ef5a592d219364cf442c2f784ce7ad7629fd upstream.
+[ Upstream commit 83ba7e895debc529803a7a258653f2fe9bf3bf40 ]
 
-Explicitly check for present SPTEs when clearing dirty bits in the TDP
-MMU.  This isn't strictly required for correctness, as setting the dirty
-bit in a defunct SPTE will not change the SPTE from !PRESENT to PRESENT.
-However, the guarded MMU_WARN_ON() in spte_ad_need_write_protect() would
-complain if anyone actually turned on KVM's MMU debugging.
+A struct device can never be devm_alloc()'ed.
+Here, it is embedded in "struct fsi_master", and "struct fsi_master" is
+embedded in "struct fsi_master_aspeed".
 
-Fixes: a6a0b05da9f3 ("kvm: x86/mmu: Support dirty logging for the TDP MMU")
-Cc: Ben Gardon <bgardon@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Ben Gardon <bgardon@google.com>
-Message-Id: <20220226001546.360188-3-seanjc@google.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Since "struct device" is embedded, the data structure embedding it must be
+released with the release function, as is already done here.
+
+So use kzalloc() instead of devm_kzalloc() when allocating "aspeed" and
+update all error handling branches accordingly.
+
+This prevent a potential double free().
+
+This also fix another issue if opb_readl() fails. Instead of a direct
+return, it now jumps in the error handling path.
+
+Fixes: 606397d67f41 ("fsi: Add ast2600 master driver")
+Suggested-by: Greg KH <gregkh@linuxfoundation.org>
+Suggested-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/2c123f8b0a40dc1a061fae982169fe030b4f47e6.1641765339.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/fsi/fsi-master-aspeed.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1316,6 +1316,9 @@ retry:
- 		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, true))
- 			continue;
+diff --git a/drivers/fsi/fsi-master-aspeed.c b/drivers/fsi/fsi-master-aspeed.c
+index 5d2469d44607..87edc77260d2 100644
+--- a/drivers/fsi/fsi-master-aspeed.c
++++ b/drivers/fsi/fsi-master-aspeed.c
+@@ -534,25 +534,28 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 		return rc;
+ 	}
  
-+		if (!is_shadow_present_pte(iter.old_spte))
-+			continue;
-+
- 		if (spte_ad_need_write_protect(iter.old_spte)) {
- 			if (is_writable_pte(iter.old_spte))
- 				new_spte = iter.old_spte & ~PT_WRITABLE_MASK;
+-	aspeed = devm_kzalloc(&pdev->dev, sizeof(*aspeed), GFP_KERNEL);
++	aspeed = kzalloc(sizeof(*aspeed), GFP_KERNEL);
+ 	if (!aspeed)
+ 		return -ENOMEM;
+ 
+ 	aspeed->dev = &pdev->dev;
+ 
+ 	aspeed->base = devm_platform_ioremap_resource(pdev, 0);
+-	if (IS_ERR(aspeed->base))
+-		return PTR_ERR(aspeed->base);
++	if (IS_ERR(aspeed->base)) {
++		rc = PTR_ERR(aspeed->base);
++		goto err_free_aspeed;
++	}
+ 
+ 	aspeed->clk = devm_clk_get(aspeed->dev, NULL);
+ 	if (IS_ERR(aspeed->clk)) {
+ 		dev_err(aspeed->dev, "couldn't get clock\n");
+-		return PTR_ERR(aspeed->clk);
++		rc = PTR_ERR(aspeed->clk);
++		goto err_free_aspeed;
+ 	}
+ 	rc = clk_prepare_enable(aspeed->clk);
+ 	if (rc) {
+ 		dev_err(aspeed->dev, "couldn't enable clock\n");
+-		return rc;
++		goto err_free_aspeed;
+ 	}
+ 
+ 	rc = setup_cfam_reset(aspeed);
+@@ -587,7 +590,7 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 	rc = opb_readl(aspeed, ctrl_base + FSI_MVER, &raw);
+ 	if (rc) {
+ 		dev_err(&pdev->dev, "failed to read hub version\n");
+-		return rc;
++		goto err_release;
+ 	}
+ 
+ 	reg = be32_to_cpu(raw);
+@@ -626,6 +629,8 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 
+ err_release:
+ 	clk_disable_unprepare(aspeed->clk);
++err_free_aspeed:
++	kfree(aspeed);
+ 	return rc;
+ }
+ 
+-- 
+2.34.1
+
 
 
