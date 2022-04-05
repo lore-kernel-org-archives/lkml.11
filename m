@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46997C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391955AbiDEWSX (ORCPT
+        id S1389870AbiDEWRp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
+        Tue, 5 Apr 2022 18:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353975AbiDEKKQ (ORCPT
+        with ESMTP id S1455533AbiDEQAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C87C4E3A;
-        Tue,  5 Apr 2022 02:56:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:00:08 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055D169CFE
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:16:21 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1609D616D7;
-        Tue,  5 Apr 2022 09:56:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25859C385A1;
-        Tue,  5 Apr 2022 09:56:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152561;
-        bh=g+BIlF8aVqHMQOFVwronpp1v3eo4iKq0jRClRPv6cIg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zMtrH3WbshfEJzOckV4BYePrkSOFzjt+4xNDSiiJ5CynqJAWLbSZo3aXNDscl+FZ5
-         UY+P8SADv0sauejqLRn96HATyGpd0hEqjfNiqakJ/og8ajyrrUsjF40qZj6qUu6GER
-         +rFilZiwegn4KALMVSD7fDBzcg0ryCWfZvyohXCw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.15 820/913] ubifs: Fix ui->dirty race between do_tmpfile() and writeback work
-Date:   Tue,  5 Apr 2022 09:31:22 +0200
-Message-Id: <20220405070404.410883696@linuxfoundation.org>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A85A31EC04AD;
+        Tue,  5 Apr 2022 17:16:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649171775;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UGJa0G6U1JecsWznE/utyL4y2G3RA/n/MPX3Y999g1s=;
+        b=Vv89Iy1RDuMgx2vBuJ6aiufMexPWUh3MwGTqNBEOMUUhvHSB0y8l2i69tK9QwFOTtuNDJM
+        YhHKXgrhnLfqWafTqbUHa+rJKTyO/uE+N20XydbXc8BMlMkux0OrZIvNSwNf7URINzmz/1
+        0AGyqz6lX0GmQs7bIP+Sz5dGRRy6VmQ=
+From:   Borislav Petkov <bp@alien8.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH 11/11] drm/i915: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue,  5 Apr 2022 17:15:17 +0200
+Message-Id: <20220405151517.29753-12-bp@alien8.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
+References: <20220405151517.29753-1-bp@alien8.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,157 +53,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Borislav Petkov <bp@suse.de>
 
-commit 60eb3b9c9f11206996f57cb89521824304b305ad upstream.
+Fix:
 
-'ui->dirty' is not protected by 'ui_mutex' in function do_tmpfile() which
-may race with ubifs_write_inode[wb_workfn] to access/update 'ui->dirty',
-finally dirty space is released twice.
+  In file included from <command-line>:0:0:
+  drivers/gpu/drm/i915/gt/uc/intel_guc.c: In function ‘intel_guc_send_mmio’:
+  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_1047’ \
+  declared with attribute error: FIELD_PREP: mask is not constant
+    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
 
-	open(O_TMPFILE)                wb_workfn
-do_tmpfile
-  ubifs_budget_space(ino_req = { .dirtied_ino = 1})
-  d_tmpfile // mark inode(tmpfile) dirty
-  ubifs_jnl_update // without holding tmpfile's ui_mutex
-    mark_inode_clean(ui)
-      if (ui->dirty)
-        ubifs_release_dirty_inode_budget(ui)  // release first time
-                                   ubifs_write_inode
-				     mutex_lock(&ui->ui_mutex)
-                                     ubifs_release_dirty_inode_budget(ui)
-				     // release second time
-				     mutex_unlock(&ui->ui_mutex)
-      ui->dirty = 0
+and other build errors due to shift overflowing values.
 
-Run generic/476 can reproduce following message easily
-(See reproducer in [Link]):
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
 
-  UBIFS error (ubi0:0 pid 2578): ubifs_assert_failed [ubifs]: UBIFS assert
-  failed: c->bi.dd_growth >= 0, in fs/ubifs/budget.c:554
-  UBIFS warning (ubi0:0 pid 2578): ubifs_ro_mode [ubifs]: switched to
-  read-only mode, error -22
-  Workqueue: writeback wb_workfn (flush-ubifs_0_0)
-  Call Trace:
-    ubifs_ro_mode+0x54/0x60 [ubifs]
-    ubifs_assert_failed+0x4b/0x80 [ubifs]
-    ubifs_release_budget+0x468/0x5a0 [ubifs]
-    ubifs_release_dirty_inode_budget+0x53/0x80 [ubifs]
-    ubifs_write_inode+0x121/0x1f0 [ubifs]
-    ...
-    wb_workfn+0x283/0x7b0
-
-Fix it by holding tmpfile ubifs inode lock during ubifs_jnl_update().
-Similar problem exists in whiteout renaming, but previous fix("ubifs:
-Rename whiteout atomically") has solved the problem.
-
-Fixes: 474b93704f32163 ("ubifs: Implement O_TMPFILE")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214765
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: intel-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
 ---
- fs/ubifs/dir.c |   60 ++++++++++++++++++++++++++++-----------------------------
- 1 file changed, 30 insertions(+), 30 deletions(-)
+ .../gpu/drm/i915/gt/uc/abi/guc_actions_abi.h   |  2 +-
+ .../i915/gt/uc/abi/guc_communication_ctb_abi.h |  2 +-
+ .../gpu/drm/i915/gt/uc/abi/guc_messages_abi.h  |  2 +-
+ drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h     |  2 +-
+ drivers/gpu/drm/i915/i915_reg.h                | 18 +++++++++---------
+ 5 files changed, 13 insertions(+), 13 deletions(-)
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -397,6 +397,32 @@ out_free:
- 	return ERR_PTR(err);
- }
+diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
+index 7afdadc7656f..e835f28c0020 100644
+--- a/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
++++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
+@@ -50,7 +50,7 @@
  
-+/**
-+ * lock_2_inodes - a wrapper for locking two UBIFS inodes.
-+ * @inode1: first inode
-+ * @inode2: second inode
-+ *
-+ * We do not implement any tricks to guarantee strict lock ordering, because
-+ * VFS has already done it for us on the @i_mutex. So this is just a simple
-+ * wrapper function.
-+ */
-+static void lock_2_inodes(struct inode *inode1, struct inode *inode2)
-+{
-+	mutex_lock_nested(&ubifs_inode(inode1)->ui_mutex, WB_MUTEX_1);
-+	mutex_lock_nested(&ubifs_inode(inode2)->ui_mutex, WB_MUTEX_2);
-+}
-+
-+/**
-+ * unlock_2_inodes - a wrapper for unlocking two UBIFS inodes.
-+ * @inode1: first inode
-+ * @inode2: second inode
-+ */
-+static void unlock_2_inodes(struct inode *inode1, struct inode *inode2)
-+{
-+	mutex_unlock(&ubifs_inode(inode2)->ui_mutex);
-+	mutex_unlock(&ubifs_inode(inode1)->ui_mutex);
-+}
-+
- static int ubifs_tmpfile(struct user_namespace *mnt_userns, struct inode *dir,
- 			 struct dentry *dentry, umode_t mode)
- {
-@@ -404,7 +430,7 @@ static int ubifs_tmpfile(struct user_nam
- 	struct ubifs_info *c = dir->i_sb->s_fs_info;
- 	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1};
- 	struct ubifs_budget_req ino_req = { .dirtied_ino = 1 };
--	struct ubifs_inode *ui, *dir_ui = ubifs_inode(dir);
-+	struct ubifs_inode *ui;
- 	int err, instantiated = 0;
- 	struct fscrypt_name nm;
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_LEN		(GUC_HXG_REQUEST_MSG_MIN_LEN + 3u)
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_0_MBZ		GUC_HXG_REQUEST_MSG_0_DATA0
+-#define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_KEY		(0xffff << 16)
++#define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_KEY		(0xffffU << 16)
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_1_KLV_LEN		(0xffff << 0)
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_2_VALUE32		GUC_HXG_REQUEST_MSG_n_DATAn
+ #define HOST2GUC_SELF_CFG_REQUEST_MSG_3_VALUE64		GUC_HXG_REQUEST_MSG_n_DATAn
+diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
+index c9086a600bce..df83c1cc7c7a 100644
+--- a/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
++++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_ctb_abi.h
+@@ -82,7 +82,7 @@ static_assert(sizeof(struct guc_ct_buffer_desc) == 64);
+ #define GUC_CTB_HDR_LEN				1u
+ #define GUC_CTB_MSG_MIN_LEN			GUC_CTB_HDR_LEN
+ #define GUC_CTB_MSG_MAX_LEN			256u
+-#define GUC_CTB_MSG_0_FENCE			(0xffff << 16)
++#define GUC_CTB_MSG_0_FENCE			(0xffffU << 16)
+ #define GUC_CTB_MSG_0_FORMAT			(0xf << 12)
+ #define   GUC_CTB_FORMAT_HXG			0u
+ #define GUC_CTB_MSG_0_RESERVED			(0xf << 8)
+diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
+index 29ac823acd4c..7d5ba4d97d70 100644
+--- a/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
++++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_messages_abi.h
+@@ -40,7 +40,7 @@
+  */
  
-@@ -452,18 +478,18 @@ static int ubifs_tmpfile(struct user_nam
- 	instantiated = 1;
- 	mutex_unlock(&ui->ui_mutex);
+ #define GUC_HXG_MSG_MIN_LEN			1u
+-#define GUC_HXG_MSG_0_ORIGIN			(0x1 << 31)
++#define GUC_HXG_MSG_0_ORIGIN			(0x1U << 31)
+ #define   GUC_HXG_ORIGIN_HOST			0u
+ #define   GUC_HXG_ORIGIN_GUC			1u
+ #define GUC_HXG_MSG_0_TYPE			(0x7 << 28)
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h b/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
+index 66027a42cda9..ad570fa002a6 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
++++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h
+@@ -28,7 +28,7 @@
+ #define   GS_MIA_HALT_REQUESTED		  (0x02 << GS_MIA_SHIFT)
+ #define   GS_MIA_ISR_ENTRY		  (0x04 << GS_MIA_SHIFT)
+ #define   GS_AUTH_STATUS_SHIFT		30
+-#define   GS_AUTH_STATUS_MASK		  (0x03 << GS_AUTH_STATUS_SHIFT)
++#define   GS_AUTH_STATUS_MASK		  (0x03U << GS_AUTH_STATUS_SHIFT)
+ #define   GS_AUTH_STATUS_BAD		  (0x01 << GS_AUTH_STATUS_SHIFT)
+ #define   GS_AUTH_STATUS_GOOD		  (0x02 << GS_AUTH_STATUS_SHIFT)
  
--	mutex_lock(&dir_ui->ui_mutex);
-+	lock_2_inodes(dir, inode);
- 	err = ubifs_jnl_update(c, dir, &nm, inode, 1, 0);
- 	if (err)
- 		goto out_cancel;
--	mutex_unlock(&dir_ui->ui_mutex);
-+	unlock_2_inodes(dir, inode);
+diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
+index 3c87d77d2cf6..f3ba3d0a430b 100644
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -7555,19 +7555,19 @@ enum skl_power_gate {
+ #define  PORT_CLK_SEL_LCPLL_810		(2 << 29)
+ #define  PORT_CLK_SEL_SPLL		(3 << 29)
+ #define  PORT_CLK_SEL_WRPLL(pll)	(((pll) + 4) << 29)
+-#define  PORT_CLK_SEL_WRPLL1		(4 << 29)
+-#define  PORT_CLK_SEL_WRPLL2		(5 << 29)
+-#define  PORT_CLK_SEL_NONE		(7 << 29)
+-#define  PORT_CLK_SEL_MASK		(7 << 29)
++#define  PORT_CLK_SEL_WRPLL1		(4U << 29)
++#define  PORT_CLK_SEL_WRPLL2		(5U << 29)
++#define  PORT_CLK_SEL_NONE		(7U << 29)
++#define  PORT_CLK_SEL_MASK		(7U << 29)
  
- 	ubifs_release_budget(c, &req);
+ /* On ICL+ this is the same as PORT_CLK_SEL, but all bits change. */
+ #define DDI_CLK_SEL(port)		PORT_CLK_SEL(port)
+ #define  DDI_CLK_SEL_NONE		(0x0 << 28)
+-#define  DDI_CLK_SEL_MG			(0x8 << 28)
+-#define  DDI_CLK_SEL_TBT_162		(0xC << 28)
+-#define  DDI_CLK_SEL_TBT_270		(0xD << 28)
+-#define  DDI_CLK_SEL_TBT_540		(0xE << 28)
+-#define  DDI_CLK_SEL_TBT_810		(0xF << 28)
++#define  DDI_CLK_SEL_MG			(0x8U << 28)
++#define  DDI_CLK_SEL_TBT_162		(0xCU << 28)
++#define  DDI_CLK_SEL_TBT_270		(0xDU << 28)
++#define  DDI_CLK_SEL_TBT_540		(0xEU << 28)
++#define  DDI_CLK_SEL_TBT_810		(0xFU << 28)
+ #define  DDI_CLK_SEL_MASK		(0xF << 28)
  
- 	return 0;
- 
- out_cancel:
--	mutex_unlock(&dir_ui->ui_mutex);
-+	unlock_2_inodes(dir, inode);
- out_inode:
- 	make_bad_inode(inode);
- 	if (!instantiated)
-@@ -690,32 +716,6 @@ static int ubifs_dir_release(struct inod
- 	return 0;
- }
- 
--/**
-- * lock_2_inodes - a wrapper for locking two UBIFS inodes.
-- * @inode1: first inode
-- * @inode2: second inode
-- *
-- * We do not implement any tricks to guarantee strict lock ordering, because
-- * VFS has already done it for us on the @i_mutex. So this is just a simple
-- * wrapper function.
-- */
--static void lock_2_inodes(struct inode *inode1, struct inode *inode2)
--{
--	mutex_lock_nested(&ubifs_inode(inode1)->ui_mutex, WB_MUTEX_1);
--	mutex_lock_nested(&ubifs_inode(inode2)->ui_mutex, WB_MUTEX_2);
--}
--
--/**
-- * unlock_2_inodes - a wrapper for unlocking two UBIFS inodes.
-- * @inode1: first inode
-- * @inode2: second inode
-- */
--static void unlock_2_inodes(struct inode *inode1, struct inode *inode2)
--{
--	mutex_unlock(&ubifs_inode(inode2)->ui_mutex);
--	mutex_unlock(&ubifs_inode(inode1)->ui_mutex);
--}
--
- static int ubifs_link(struct dentry *old_dentry, struct inode *dir,
- 		      struct dentry *dentry)
- {
-
+ /* Transcoder clock selection */
+-- 
+2.35.1
 
