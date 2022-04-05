@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87542C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FCAC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360145AbiDFD0e (ORCPT
+        id S2360123AbiDFDZn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
+        Tue, 5 Apr 2022 23:25:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850053AbiDFCrJ (ORCPT
+        with ESMTP id S1850059AbiDFCrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 22:47:09 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881C5294A18;
-        Tue,  5 Apr 2022 16:48:50 -0700 (PDT)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FBF58E68;
+        Tue,  5 Apr 2022 16:48:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649202530; x=1680738530;
+  t=1649202539; x=1680738539;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/1nyzn7F+fmd6VP9tbO0wCXT9G8b1V0YmZnfceU20K8=;
-  b=i7/cXMMo92lbsvtXoUsW6tBxxVWYyu8FXPuLa0T2pN8VBwLJcCCcrrJA
-   iQZByeL80GAVM1/eFz5AyydWcv2Xu8BUtz7pezmvR0iTWpVlWixlROKD7
-   eT2f4iW7KrK8TW0bvD1F8QJJC1+XCMqdGweX7yyC9jz7oTjdpiX2ngrg+
-   mPp9Oajv19Rb4UCDDdTt0NF8EkinLdOtTntS9jkTVWScUhtCMPo4vcn8P
-   IeYWwiQu4owsE37EaxDK/koFmYS+gHeB9f/1dY2RxyrqshPqPTp8zK77n
-   Pnkt3791vr5744n5QIa63kM32TIbTaRcItMVSq7auICBZgzCkL6mbrVZw
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="248417456"
+  bh=RyShgqLY7MIPXh/I0xSRyqWdn3IGjezVnvsj+/bA36c=;
+  b=IxyomQOvNhLCXl+F2I43x8415ZOs1Sv5NnbMp7BjDiaWGC3B6jdEB0mo
+   pg18Bn8YfObGGlzbqJg00vRn2zOqFaaFMkpd82i9HE/U4G0pMLQXo8FXB
+   YfAgrVz7uFpA0nyq4960iNLK0OSc+MXOcWlew3sFNUt2Sphkj+DA2PmGz
+   e82X4N8/F6p3zAotK+CjtvE6byzqMmTj/PJSDtqu/Xpea9O7j5OyKuZY5
+   X65NZDEgPvG4idF0cHnAQJwaG67iEpZXj4Ke9gbYzwTX5Sa8C+L2JBIn+
+   C86lrPMXPQ36B5673h+4RSxHB0UtifuhG8lHNJ/whUqRNpX8VbK2PIQsC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260888338"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="248417456"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:48:48 -0700
+   d="scan'208";a="260888338"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:48:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="588141278"
+   d="scan'208";a="641817585"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 05 Apr 2022 16:48:41 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 05 Apr 2022 16:48:41 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id C1FE05AA; Wed,  6 Apr 2022 02:43:47 +0300 (EEST)
+        id E93DB62E; Wed,  6 Apr 2022 02:43:47 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
         Sean Christopherson <seanjc@google.com>,
@@ -65,11 +65,10 @@ Cc:     Andi Kleen <ak@linux.intel.com>,
         David Hildenbrand <david@redhat.com>, x86@kernel.org,
         linux-mm@kvack.org, linux-coco@lists.linux.dev,
         linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: [PATCHv4 5/8] x86/mm: Reserve unaccepted memory bitmap
-Date:   Wed,  6 Apr 2022 02:43:40 +0300
-Message-Id: <20220405234343.74045-6-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 8/8] mm/vmstat: Add counter for memory accepting
+Date:   Wed,  6 Apr 2022 02:43:43 +0300
+Message-Id: <20220405234343.74045-9-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
 References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
@@ -79,48 +78,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A given page of memory can only be accepted once.  The kernel has a need
-to accept memory both in the early decompression stage and during normal
-runtime.
+The counter increased every time kernel accepts a memory region.
 
-A bitmap used to communicate the acceptance state of each page between the
-decompression stage and normal runtime.  This eliminates the possibility of
-attempting to double-accept a page.
-
-The bitmap is allocated in EFI stub, decompression stage updates the state
-of pages used for the kernel and initrd and hands the bitmap over to the
-main kernel image via boot_params.
-
-In the runtime kernel, reserve the bitmap's memory to ensure nothing
-overwrites it.
+The counter allows to see if memory acceptation is still ongoing and
+contributes to memory allocation latency.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- arch/x86/kernel/e820.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/x86/mm/unaccepted_memory.c | 1 +
+ include/linux/vm_event_item.h   | 3 +++
+ mm/vmstat.c                     | 3 +++
+ 3 files changed, 7 insertions(+)
 
-diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
-index f267205f2d5a..22d1fe48dcba 100644
---- a/arch/x86/kernel/e820.c
-+++ b/arch/x86/kernel/e820.c
-@@ -1316,6 +1316,16 @@ void __init e820__memblock_setup(void)
- 	int i;
- 	u64 end;
- 
-+	/* Mark unaccepted memory bitmap reserved */
-+	if (boot_params.unaccepted_memory) {
-+		unsigned long size;
-+
-+		/* One bit per 2MB */
-+		size = DIV_ROUND_UP(e820__end_of_ram_pfn() * PAGE_SIZE,
-+				    PMD_SIZE * BITS_PER_BYTE);
-+		memblock_reserve(boot_params.unaccepted_memory, size);
-+	}
-+
- 	/*
- 	 * The bootstrap memblock region count maximum is 128 entries
- 	 * (INIT_MEMBLOCK_REGIONS), but EFI might pass us more E820 entries
+diff --git a/arch/x86/mm/unaccepted_memory.c b/arch/x86/mm/unaccepted_memory.c
+index 2f1c3c0375cd..7cfe0bd8d2be 100644
+--- a/arch/x86/mm/unaccepted_memory.c
++++ b/arch/x86/mm/unaccepted_memory.c
+@@ -32,6 +32,7 @@ void accept_memory(phys_addr_t start, phys_addr_t end)
+ 		else
+ 			panic("Cannot accept memory");
+ 		bitmap_clear(unaccepted_memory, rs, re - rs);
++		count_vm_events(ACCEPT_MEMORY, PMD_SIZE / PAGE_SIZE);
+ 	}
+ 	spin_unlock_irqrestore(&unaccepted_memory_lock, flags);
+ }
+diff --git a/include/linux/vm_event_item.h b/include/linux/vm_event_item.h
+index 16a0a4fd000b..6a468164a2f9 100644
+--- a/include/linux/vm_event_item.h
++++ b/include/linux/vm_event_item.h
+@@ -136,6 +136,9 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
+ #ifdef CONFIG_X86
+ 		DIRECT_MAP_LEVEL2_SPLIT,
+ 		DIRECT_MAP_LEVEL3_SPLIT,
++#endif
++#ifdef CONFIG_UNACCEPTED_MEMORY
++		ACCEPT_MEMORY,
+ #endif
+ 		NR_VM_EVENT_ITEMS
+ };
+diff --git a/mm/vmstat.c b/mm/vmstat.c
+index b75b1a64b54c..4c9197f32406 100644
+--- a/mm/vmstat.c
++++ b/mm/vmstat.c
+@@ -1397,6 +1397,9 @@ const char * const vmstat_text[] = {
+ 	"direct_map_level2_splits",
+ 	"direct_map_level3_splits",
+ #endif
++#ifdef CONFIG_UNACCEPTED_MEMORY
++	"accept_memory",
++#endif
+ #endif /* CONFIG_VM_EVENT_COUNTERS || CONFIG_MEMCG */
+ };
+ #endif /* CONFIG_PROC_FS || CONFIG_SYSFS || CONFIG_NUMA || CONFIG_MEMCG */
 -- 
 2.35.1
 
