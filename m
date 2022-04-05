@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 843BAC4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4834EC4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840031AbiDFBG4 (ORCPT
+        id S1840053AbiDFBHB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
+        Tue, 5 Apr 2022 21:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455471AbiDEQAE (ORCPT
+        with ESMTP id S1358173AbiDEK2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:04 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0707B580DF
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:15:47 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 06:28:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF2F9E9CF;
+        Tue,  5 Apr 2022 03:16:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 90B3D1EC0502;
-        Tue,  5 Apr 2022 17:15:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649171742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=A4rj24jI/yUMyg0PeqD763DeKOQodwsJYuc20fV3sUw=;
-        b=CD0Bl5S4CUevZqWeAW+t0LZQ3sYvhujWzzjaduwde9Va4TUFNZ4EB9b76qzGjsrqOkp/0/
-        1teXwyV66I5PiUvgs/OxTkvOQwZaUPhdM+k6gcfs1n64tuSx+2eDFhzHJ1ib52/R1RehGZ
-        KQZ32meI6r9mYnOmXzTG54DgGaMmrrQ=
-From:   Borislav Petkov <bp@alien8.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH 04/11] drm/r128: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue,  5 Apr 2022 17:15:10 +0200
-Message-Id: <20220405151517.29753-5-bp@alien8.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 272A2617AA;
+        Tue,  5 Apr 2022 10:16:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30612C385A1;
+        Tue,  5 Apr 2022 10:16:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153773;
+        bh=iQbWa7FkDzKDrqRhKmG28GLMHXByK/y1EroL37HmjqY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dqOHoq/rIKrETsZGjgHXPsCZE5QXRuBVl2FO2L9MlGmSG44MBSSw2Vx8kDbYO21Z3
+         uSSvbRyAa2yjs9AVlpvjx0IIdCVcl3dQiY6rIpVsDf4cJvXHEn5aynQMdJJDFhiklC
+         5IhELSdVsloa5GtlLryzIhPYPFEMzle0Kl2uB/1w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
+        Xiang Chen <chenxiang66@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 325/599] scsi: hisi_sas: Change permission of parameter prot_mask
+Date:   Tue,  5 Apr 2022 09:30:19 +0200
+Message-Id: <20220405070308.504847406@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
-References: <20220405151517.29753-1-bp@alien8.de>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,45 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-Fix:
+[ Upstream commit c4e070457a93705e56ed06b3910d9e5fe56d3be3 ]
 
-  drivers/gpu/drm/r128/r128_cce.c: In function ‘r128_do_init_cce’:
-  drivers/gpu/drm/r128/r128_cce.c:417:2: error: case label does not reduce to an integer constant
-    case R128_PM4_64BM_64VCBM_64INDBM:
-    ^~~~
-  drivers/gpu/drm/r128/r128_cce.c:418:2: error: case label does not reduce to an integer constant
-    case R128_PM4_64PIO_64VCPIO_64INDPIO:
-    ^~~~
+Currently the permission of parameter prot_mask is 0x0, which means that
+the member does not appear in sysfs. Change it as other module parameters
+to 0444 for world-readable.
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
+[mkp: s/v3/v2/]
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: dri-devel@lists.freedesktop.org
+Link: https://lore.kernel.org/r/1645703489-87194-2-git-send-email-john.garry@huawei.com
+Fixes: d6a9000b81be ("scsi: hisi_sas: Add support for DIF feature for v2 hw")
+Reported-by: Yihang Li <liyihang6@hisilicon.com>
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/r128/r128_drv.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/r128/r128_drv.h b/drivers/gpu/drm/r128/r128_drv.h
-index 2e1bc01aa5c9..970e192b0d51 100644
---- a/drivers/gpu/drm/r128/r128_drv.h
-+++ b/drivers/gpu/drm/r128/r128_drv.h
-@@ -300,8 +300,8 @@ extern long r128_compat_ioctl(struct file *filp, unsigned int cmd,
- #	define R128_PM4_64PIO_128INDBM		(5  << 28)
- #	define R128_PM4_64BM_128INDBM		(6  << 28)
- #	define R128_PM4_64PIO_64VCBM_64INDBM	(7  << 28)
--#	define R128_PM4_64BM_64VCBM_64INDBM	(8  << 28)
--#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15 << 28)
-+#	define R128_PM4_64BM_64VCBM_64INDBM	(8U  << 28)
-+#	define R128_PM4_64PIO_64VCPIO_64INDPIO	(15U << 28)
- #	define R128_PM4_BUFFER_CNTL_NOUPDATE	(1  << 27)
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 50a1c3478a6e..a8998b016b86 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -514,7 +514,7 @@ MODULE_PARM_DESC(intr_conv, "interrupt converge enable (0-1)");
  
- #define R128_PM4_BUFFER_WM_CNTL		0x0708
+ /* permit overriding the host protection capabilities mask (EEDP/T10 PI) */
+ static int prot_mask;
+-module_param(prot_mask, int, 0);
++module_param(prot_mask, int, 0444);
+ MODULE_PARM_DESC(prot_mask, " host protection capabilities mask, def=0x0 ");
+ 
+ static bool auto_affine_msi_experimental;
 -- 
-2.35.1
+2.34.1
+
+
 
