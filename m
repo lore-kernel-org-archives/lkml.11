@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FE0C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 994B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350116AbiDELDm (ORCPT
+        id S1350235AbiDELDq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45584 "EHLO
+        Tue, 5 Apr 2022 07:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236588AbiDEIlX (ORCPT
+        with ESMTP id S236922AbiDEIlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:41:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBBAE70;
-        Tue,  5 Apr 2022 01:33:45 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85C310E5;
+        Tue,  5 Apr 2022 01:34:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA45609D0;
-        Tue,  5 Apr 2022 08:33:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56096C385A1;
-        Tue,  5 Apr 2022 08:33:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23972B81B13;
+        Tue,  5 Apr 2022 08:34:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83974C385A0;
+        Tue,  5 Apr 2022 08:34:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147624;
-        bh=AIwGneCgQREljoh3n2S10EY9Q3wkZzrK2N0v2FayM6A=;
+        s=korg; t=1649147643;
+        bh=HKZ2APyN8Q6yQ6rOSEX8CU6i+12Lcl92XlYYntOj588=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VvKrbTE7t3CBNOFYSKc0hh2vwpVjTjM12bSud2p1/A3kc5vPPuEnL3yi6hKhZRWZJ
-         R/JYj8ADtLZr/GNHdBZvyLz5b/g9oVgtqPntK0HC8xBG+Kbrv4jU/8tHOwwjv06+kc
-         5LYKnY6qSH9pKIpm6pZQDqw5ziOs0m8OGpZrYhNo=
+        b=z4v2wpzNUk2N0OmVDb2uvT7bl6Aw+G7YM4PJ7Bc/sZgzTSDojk3a9CVz7VCkwBdWC
+         64dIGfn6Q9GZYoCIGTh0xqtCfmD4aO8vTIEM9nHxMCA+Ulg/sDQ6heZ27SHLoftQj3
+         HPdQ4Yq5ZDaT5rc4Lf5tXlCZpyeQfEafnx+jUNmw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ang Tien Sung <tien.sung.ang@intel.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.16 0062/1017] firmware: stratix10-svc: add missing callback parameter on RSU
-Date:   Tue,  5 Apr 2022 09:16:15 +0200
-Message-Id: <20220405070356.026249360@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.16 0068/1017] NFSD: prevent underflow in nfssvc_decode_writeargs()
+Date:   Tue,  5 Apr 2022 09:16:21 +0200
+Message-Id: <20220405070356.207622361@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,35 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ang Tien Sung <tien.sung.ang@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit b850b7a8b369322adf699ef48ceff4d902525c8c upstream.
+commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
 
-Fix a bug whereby, the return response of parameter a1 from an
-SMC call is not properly set to the callback data during an
-INTEL_SIP_SMC_RSU_ERROR command.
+Smatch complains:
 
-Link: https://lore.kernel.org/lkml/20220216081513.28319-1-tien.sung.ang@intel.com
-Fixes: 6b50d882d38d ("firmware: add remote status update client support")
+	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
+	warn: no lower bound on 'args->len'
+
+Change the type to unsigned to prevent this issue.
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Link: https://lore.kernel.org/r/20220223144146.399263-1-dinguyen@kernel.org
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/stratix10-svc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfsd/nfsproc.c |    2 +-
+ fs/nfsd/xdr.h     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -477,7 +477,7 @@ static int svc_normal_to_secure_thread(v
- 		case INTEL_SIP_SMC_RSU_ERROR:
- 			pr_err("%s: STATUS_ERROR\n", __func__);
- 			cbdata->status = BIT(SVC_STATUS_ERROR);
--			cbdata->kaddr1 = NULL;
-+			cbdata->kaddr1 = &res.a1;
- 			cbdata->kaddr2 = NULL;
- 			cbdata->kaddr3 = NULL;
- 			pdata->chan->scl->receive_cb(pdata->chan->scl, cbdata);
+--- a/fs/nfsd/nfsproc.c
++++ b/fs/nfsd/nfsproc.c
+@@ -230,7 +230,7 @@ nfsd_proc_write(struct svc_rqst *rqstp)
+ 	unsigned long cnt = argp->len;
+ 	unsigned int nvecs;
+ 
+-	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
++	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
+ 		SVCFH_fmt(&argp->fh),
+ 		argp->len, argp->offset);
+ 
+--- a/fs/nfsd/xdr.h
++++ b/fs/nfsd/xdr.h
+@@ -32,7 +32,7 @@ struct nfsd_readargs {
+ struct nfsd_writeargs {
+ 	svc_fh			fh;
+ 	__u32			offset;
+-	int			len;
++	__u32			len;
+ 	struct xdr_buf		payload;
+ };
+ 
 
 
