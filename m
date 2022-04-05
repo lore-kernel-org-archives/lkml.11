@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD119C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 841F8C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456619AbiDEWq1 (ORCPT
+        id S1456846AbiDEWqr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
+        Tue, 5 Apr 2022 18:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356137AbiDEKW7 (ORCPT
+        with ESMTP id S1349898AbiDEJv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD59B7C6C;
-        Tue,  5 Apr 2022 03:06:34 -0700 (PDT)
+        Tue, 5 Apr 2022 05:51:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95372E08C;
+        Tue,  5 Apr 2022 02:50:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C9F96176C;
-        Tue,  5 Apr 2022 10:06:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67FFCC385A2;
-        Tue,  5 Apr 2022 10:06:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C1F61577;
+        Tue,  5 Apr 2022 09:50:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E6D9C385A1;
+        Tue,  5 Apr 2022 09:49:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153193;
-        bh=+wLlyC9LKuDGwI7yL9rGWrb0r1NuK/aUtCI4Q8IbSAs=;
+        s=korg; t=1649152199;
+        bh=4iVXIPkT3ePxCznX2ZMKrI8so8HKS+0aauaqn24SB9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ykdVknljmILF+45ZJKLWCHaKTsWUFt8Jzyu0jSBtNhw3XbAxQBemHIv6a4Rj7+b3T
-         U6TOXx5c+OZM09Zl20vMlxxEDT41azJa0P7g3ffAcB28zTUR6sgMnb8wLbLrMedeCe
-         iWbfQuZgcYKTLMNw+zxjjjloD7uc5t5Y98q+HJ0w=
+        b=yAuVgwe53/xlbGYREHj6tplk0C8A2Yh3HJXFgDQd6PTbbemsAe3CuK5HuGvC1tHG4
+         V47jSh0V0liNk3j49+IE1djrr1ImaNIcxZMMuWVEpM/+h0O2n5ajR0rRb/GBArvZ07
+         g4+9FZh834EWr/yNJJ5VkN7hnrLlN0AluFwyH7+Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Kai Ye <yekai13@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 136/599] spi: tegra114: Add missing IRQ check in tegra_spi_probe
-Date:   Tue,  5 Apr 2022 09:27:10 +0200
-Message-Id: <20220405070302.888146683@linuxfoundation.org>
+Subject: [PATCH 5.15 690/913] crypto: hisilicon/sec - not need to enable sm4 extra mode at HW V3
+Date:   Tue,  5 Apr 2022 09:29:12 +0200
+Message-Id: <20220405070400.517367958@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Kai Ye <yekai13@huawei.com>
 
-[ Upstream commit 4f92724d4b92c024e721063f520d66e11ca4b54b ]
+[ Upstream commit f8a2652826444d13181061840b96a5d975d5b6c6 ]
 
-This func misses checking for platform_get_irq()'s call and may passes the
-negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
-causing it to fail with -EINVAL, overriding an original error code.
-Stop calling request_threaded_irq() with invalid IRQ #s.
+It is not need to enable sm4 extra mode in at HW V3. Here is fix it.
 
-Fixes: f333a331adfa ("spi/tegra114: add spi driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220128165238.25615-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-tegra114.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/crypto/hisilicon/sec2/sec_main.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
-index a2e5907276e7..ed42665b1224 100644
---- a/drivers/spi/spi-tegra114.c
-+++ b/drivers/spi/spi-tegra114.c
-@@ -1353,6 +1353,10 @@ static int tegra_spi_probe(struct platform_device *pdev)
- 	tspi->phys = r->start;
+diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
+index 90551bf38b52..03d239cfdf8c 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_main.c
++++ b/drivers/crypto/hisilicon/sec2/sec_main.c
+@@ -443,9 +443,11 @@ static int sec_engine_init(struct hisi_qm *qm)
  
- 	spi_irq = platform_get_irq(pdev, 0);
-+	if (spi_irq < 0) {
-+		ret = spi_irq;
-+		goto exit_free_master;
-+	}
- 	tspi->irq = spi_irq;
+ 	writel(SEC_SAA_ENABLE, qm->io_base + SEC_SAA_EN_REG);
  
- 	tspi->clk = devm_clk_get(&pdev->dev, "spi");
+-	/* Enable sm4 extra mode, as ctr/ecb */
+-	writel_relaxed(SEC_BD_ERR_CHK_EN0,
+-		       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
++	/* HW V2 enable sm4 extra mode, as ctr/ecb */
++	if (qm->ver < QM_HW_V3)
++		writel_relaxed(SEC_BD_ERR_CHK_EN0,
++			       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
++
+ 	/* Enable sm4 xts mode multiple iv */
+ 	writel_relaxed(SEC_BD_ERR_CHK_EN1,
+ 		       qm->io_base + SEC_BD_ERR_CHK_EN_REG1);
 -- 
 2.34.1
 
