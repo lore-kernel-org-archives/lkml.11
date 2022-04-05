@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC85C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0929C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574738AbiDEXA5 (ORCPT
+        id S1574822AbiDEXBR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34318 "EHLO
+        Tue, 5 Apr 2022 19:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354878AbiDEKQ1 (ORCPT
+        with ESMTP id S1349057AbiDEJtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:27 -0400
+        Tue, 5 Apr 2022 05:49:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021C26CA52;
-        Tue,  5 Apr 2022 03:03:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20050A94EC;
+        Tue,  5 Apr 2022 02:39:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9DECB81B7A;
-        Tue,  5 Apr 2022 10:03:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1821CC385A2;
-        Tue,  5 Apr 2022 10:03:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C721AB818F3;
+        Tue,  5 Apr 2022 09:39:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12FF6C385A2;
+        Tue,  5 Apr 2022 09:39:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152999;
-        bh=+Rq5kr++CHOFLK889vTt2MZZI3piacdfiSHz+bWCC4M=;
+        s=korg; t=1649151564;
+        bh=WuRlOwtrRvuEhnjGzamlA5fZhPSxTgvN2dXTvL/ROmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ELeuAKEKl+RD4bfE0Lq1+NUaL3GtRTf2dVayasZy9oJgWEzOGP+abPYVoXF7KKEZF
-         /LlGY3oAYE5DRdBnNrjt3J7rQxX9nEqr3JddBbpns5rh63Djj0vaekYhq9ZNaQrn/m
-         L81VZzaYEuwf1ImcSlcrAC86Ynmp52Sp05RApLTY=
+        b=CIH4+l+QUQbQFXC8Ud9+pKBnKzIYvfPrEKuVxbd9cEsgrMHUghT6k0rZ15WCTvk+I
+         Yr2tph9yxgNBOI0gF7Nz+8HPonbFaBMaAjqnC4H/jFWPmIreN4PkqagREc64WHbCYK
+         xgrlMb33oQ4jB1opz7a+4wDuqx6BlXWeRBtJn61g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manish Chopra <manishc@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 064/599] qed: validate and restrict untrusted VFs vlan promisc mode
-Date:   Tue,  5 Apr 2022 09:25:58 +0200
-Message-Id: <20220405070300.732695358@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 462/913] iwlwifi: mvm: Dont call iwl_mvm_sta_from_mac80211() with NULL sta
+Date:   Tue,  5 Apr 2022 09:25:24 +0200
+Message-Id: <20220405070353.697190655@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,108 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit cbcc44db2cf7b836896733acc0e5ea966136ed22 upstream.
+[ Upstream commit 30d17c12b0895e15ce22ebc1f52a4ff02df6dbc6 ]
 
-Today when VFs are put in promiscuous mode, they can request PF
-to configure device for them to receive all VLANs traffic regardless
-of what vlan is configured by the PF (via ip link) and PF allows this
-config request regardless of whether VF is trusted or not.
+The recent fix for NULL sta in iwl_mvm_get_tx_rate() still has a call
+of iwl_mvm_sta_from_mac80211() that may be called with NULL sta.
+Although this practically only points to the address and the actual
+access doesn't happen due to the conditional evaluation at a later
+point, it looks a bit flaky.
 
->From security POV, when VLAN is configured for VF through PF (via ip link),
-honour such config requests from VF only when they are configured to be
-trusted, otherwise restrict such VFs vlan promisc mode config.
+This patch drops the temporary variable above and evaluates
+iwm_mvm_sta_from_mac80211() directly for avoiding confusions.
 
-Cc: stable@vger.kernel.org
-Fixes: f990c82c385b ("qed*: Add support for ndo_set_vf_trust")
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d599f714b73e ("iwlwifi: mvm: don't crash on invalid rate w/o STA")
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Link: https://lore.kernel.org/r/20220121114024.10454-1-tiwai@suse.de
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_sriov.c |   28 ++++++++++++++++++++++++++--
- drivers/net/ethernet/qlogic/qed/qed_sriov.h |    1 +
- 2 files changed, 27 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/tx.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -2982,12 +2982,16 @@ static int qed_iov_pre_update_vport(stru
- 	u8 mask = QED_ACCEPT_UCAST_UNMATCHED | QED_ACCEPT_MCAST_UNMATCHED;
- 	struct qed_filter_accept_flags *flags = &params->accept_flags;
- 	struct qed_public_vf_info *vf_info;
-+	u16 tlv_mask;
-+
-+	tlv_mask = BIT(QED_IOV_VP_UPDATE_ACCEPT_PARAM) |
-+		   BIT(QED_IOV_VP_UPDATE_ACCEPT_ANY_VLAN);
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
+index 06fbd9ab37df..b5368cb57ca8 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
+@@ -271,15 +271,14 @@ static u32 iwl_mvm_get_tx_rate(struct iwl_mvm *mvm,
  
- 	/* Untrusted VFs can't even be trusted to know that fact.
- 	 * Simply indicate everything is configured fine, and trace
- 	 * configuration 'behind their back'.
- 	 */
--	if (!(*tlvs & BIT(QED_IOV_VP_UPDATE_ACCEPT_PARAM)))
-+	if (!(*tlvs & tlv_mask))
- 		return 0;
+ 	/* info->control is only relevant for non HW rate control */
+ 	if (!ieee80211_hw_check(mvm->hw, HAS_RATE_CONTROL)) {
+-		struct iwl_mvm_sta *mvmsta = iwl_mvm_sta_from_mac80211(sta);
+-
+ 		/* HT rate doesn't make sense for a non data frame */
+ 		WARN_ONCE(info->control.rates[0].flags & IEEE80211_TX_RC_MCS &&
+ 			  !ieee80211_is_data(fc),
+ 			  "Got a HT rate (flags:0x%x/mcs:%d/fc:0x%x/state:%d) for a non data frame\n",
+ 			  info->control.rates[0].flags,
+ 			  info->control.rates[0].idx,
+-			  le16_to_cpu(fc), sta ? mvmsta->sta_state : -1);
++			  le16_to_cpu(fc),
++			  sta ? iwl_mvm_sta_from_mac80211(sta)->sta_state : -1);
  
- 	vf_info = qed_iov_get_public_vf_info(hwfn, vfid, true);
-@@ -3004,6 +3008,13 @@ static int qed_iov_pre_update_vport(stru
- 			flags->tx_accept_filter &= ~mask;
+ 		rate_idx = info->control.rates[0].idx;
  	}
- 
-+	if (params->update_accept_any_vlan_flg) {
-+		vf_info->accept_any_vlan = params->accept_any_vlan;
-+
-+		if (vf_info->forced_vlan && !vf_info->is_trusted_configured)
-+			params->accept_any_vlan = false;
-+	}
-+
- 	return 0;
- }
- 
-@@ -5121,6 +5132,12 @@ static void qed_iov_handle_trust_change(
- 
- 		params.update_ctl_frame_check = 1;
- 		params.mac_chk_en = !vf_info->is_trusted_configured;
-+		params.update_accept_any_vlan_flg = 0;
-+
-+		if (vf_info->accept_any_vlan && vf_info->forced_vlan) {
-+			params.update_accept_any_vlan_flg = 1;
-+			params.accept_any_vlan = vf_info->accept_any_vlan;
-+		}
- 
- 		if (vf_info->rx_accept_mode & mask) {
- 			flags->update_rx_mode_config = 1;
-@@ -5136,13 +5153,20 @@ static void qed_iov_handle_trust_change(
- 		if (!vf_info->is_trusted_configured) {
- 			flags->rx_accept_filter &= ~mask;
- 			flags->tx_accept_filter &= ~mask;
-+			params.accept_any_vlan = false;
- 		}
- 
- 		if (flags->update_rx_mode_config ||
- 		    flags->update_tx_mode_config ||
--		    params.update_ctl_frame_check)
-+		    params.update_ctl_frame_check ||
-+		    params.update_accept_any_vlan_flg) {
-+			DP_VERBOSE(hwfn, QED_MSG_IOV,
-+				   "vport update config for %s VF[abs 0x%x rel 0x%x]\n",
-+				   vf_info->is_trusted_configured ? "trusted" : "untrusted",
-+				   vf->abs_vf_id, vf->relative_vf_id);
- 			qed_sp_vport_update(hwfn, &params,
- 					    QED_SPQ_MODE_EBLOCK, NULL);
-+		}
- 	}
- }
- 
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-@@ -62,6 +62,7 @@ struct qed_public_vf_info {
- 	bool is_trusted_request;
- 	u8 rx_accept_mode;
- 	u8 tx_accept_mode;
-+	bool accept_any_vlan;
- };
- 
- struct qed_iov_vf_init_params {
+-- 
+2.34.1
+
 
 
