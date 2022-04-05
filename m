@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF48C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8B3C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243363AbiDEJjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
+        id S243394AbiDEJju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:39:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239345AbiDEIT7 (ORCPT
+        with ESMTP id S239333AbiDEIT7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:19:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9757BBBE16;
-        Tue,  5 Apr 2022 01:11:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B32026E284;
+        Tue,  5 Apr 2022 01:11:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F003B81B90;
-        Tue,  5 Apr 2022 08:11:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9698CC385A1;
-        Tue,  5 Apr 2022 08:11:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 754EAB81A32;
+        Tue,  5 Apr 2022 08:11:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C328EC385A0;
+        Tue,  5 Apr 2022 08:11:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146297;
-        bh=azqboIJ5y0Yr5IvR820dxE9/va/K/Mt0d4vP8SsaK2I=;
+        s=korg; t=1649146275;
+        bh=h5Nq70pcGsqPB021TQrxeMRcJuiRv7B5yH9iGD2+nD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o9SzDsGxkfcRNmtP3+Kbo3chSyKYieXCP350NYf4guZup2FMRuGGWr9nP3G5OpHY/
-         KUB8n6/L/q7knQ679vxbLpZ6ntv6oCTEcy4FcxQhiAsaLXNNUlw/FR3PisYjkUiyKu
-         r+BnXKhbzJcaUi656rvwhO+SnP9u9eNa7hbkygL8=
+        b=vdtPQsf/9V4D1mGJIB1B/S/GeUXnDcWfmSXext7yxb0DSmcu0G2EASas1pmJqkQQD
+         V0w58rZ4dHXgzskgYgUQ2joyNpLZaRSjhLMooKPQ0bCQhZ5anZgMYZmnylMFWcLMiT
+         FIqbGlq2tp/Xq9snqlzLcXX32bcq42UMRdYwH7Cw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0711/1126] clk: renesas: r9a07g044: Update multiplier and divider values for PLL2/3
-Date:   Tue,  5 Apr 2022 09:24:18 +0200
-Message-Id: <20220405070428.469608014@linuxfoundation.org>
+Subject: [PATCH 5.17 0704/1126] net: wwan: qcom_bam_dmux: fix wrong pointer passed to IS_ERR()
+Date:   Tue,  5 Apr 2022 09:24:11 +0200
+Message-Id: <20220405070428.268770560@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,42 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit b289cdecc7c3e25e001cde260c882e4d9a8b0772 ]
+[ Upstream commit 6b3c74550224c3be24c4cf6ab8c333602b458bff ]
 
-As per the HW manual (Rev.1.00 Sep, 2021) PLL2 and PLL3 should be
-1600 MHz, but with current multiplier and divider values this resulted
-to 1596 MHz.
+It should check dmux->tx after calling dma_request_chan().
 
-This patch updates the multiplier and divider values for PLL2 and PLL3
-so that we get the exact (1600 MHz) values.
-
-Fixes: 17f0ff3d49ff1 ("clk: renesas: Add support for R9A07G044 SoC")
-Suggested-by: Biju Das <biju.das.jz@bp.renesas.com>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20211223093223.4725-1-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Fixes: 21a0ffd9b38c ("net: wwan: Add Qualcomm BAM-DMUX WWAN network driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+Link: https://lore.kernel.org/r/20220319032450.3288224-1-yangyingliang@huawei.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/renesas/r9a07g044-cpg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wwan/qcom_bam_dmux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/renesas/r9a07g044-cpg.c b/drivers/clk/renesas/r9a07g044-cpg.c
-index 79042bf46fe8..46359afef0d4 100644
---- a/drivers/clk/renesas/r9a07g044-cpg.c
-+++ b/drivers/clk/renesas/r9a07g044-cpg.c
-@@ -88,8 +88,8 @@ static const struct cpg_core_clk r9a07g044_core_clks[] __initconst = {
- 	DEF_FIXED(".osc", R9A07G044_OSCCLK, CLK_EXTAL, 1, 1),
- 	DEF_FIXED(".osc_div1000", CLK_OSC_DIV1000, CLK_EXTAL, 1, 1000),
- 	DEF_SAMPLL(".pll1", CLK_PLL1, CLK_EXTAL, PLL146_CONF(0)),
--	DEF_FIXED(".pll2", CLK_PLL2, CLK_EXTAL, 133, 2),
--	DEF_FIXED(".pll3", CLK_PLL3, CLK_EXTAL, 133, 2),
-+	DEF_FIXED(".pll2", CLK_PLL2, CLK_EXTAL, 200, 3),
-+	DEF_FIXED(".pll3", CLK_PLL3, CLK_EXTAL, 200, 3),
- 	DEF_FIXED(".pll3_400", CLK_PLL3_400, CLK_PLL3, 1, 4),
- 	DEF_FIXED(".pll3_533", CLK_PLL3_533, CLK_PLL3, 1, 3),
+diff --git a/drivers/net/wwan/qcom_bam_dmux.c b/drivers/net/wwan/qcom_bam_dmux.c
+index 5dfa2eba6014..17d46f4d2913 100644
+--- a/drivers/net/wwan/qcom_bam_dmux.c
++++ b/drivers/net/wwan/qcom_bam_dmux.c
+@@ -755,7 +755,7 @@ static int __maybe_unused bam_dmux_runtime_resume(struct device *dev)
+ 		return 0;
  
+ 	dmux->tx = dma_request_chan(dev, "tx");
+-	if (IS_ERR(dmux->rx)) {
++	if (IS_ERR(dmux->tx)) {
+ 		dev_err(dev, "Failed to request TX DMA channel: %pe\n", dmux->tx);
+ 		dmux->tx = NULL;
+ 		bam_dmux_runtime_suspend(dev);
 -- 
 2.34.1
 
