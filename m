@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B525C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF0AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385511AbiDEVtq (ORCPT
+        id S1385302AbiDEVt3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
+        Tue, 5 Apr 2022 17:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348932AbiDEJst (ORCPT
+        with ESMTP id S1355358AbiDEKTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:49 -0400
+        Tue, 5 Apr 2022 06:19:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE89798F76;
-        Tue,  5 Apr 2022 02:37:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B926D13F4F;
+        Tue,  5 Apr 2022 03:04:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90006B818F3;
-        Tue,  5 Apr 2022 09:37:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D441FC385A2;
-        Tue,  5 Apr 2022 09:37:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2621BB81BC0;
+        Tue,  5 Apr 2022 10:04:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ED03C385A1;
+        Tue,  5 Apr 2022 10:04:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151477;
-        bh=jqWhiNEuxzqJJdkO6Zr2C7vC3Glh0GLN0fChM3HRWgQ=;
+        s=korg; t=1649153078;
+        bh=eIHtbjrdsYsyO9vjQmEJzlYHgDTIqtUdRD6j/Q59o9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JZf3aA9/OljTrt1OQRe5gQ7aAVF+juJUuenxLn/IZFEW+nXmCOAXtk0g6HDx6lfV4
-         iSTPqXIdteZcrmU8sn23FW4w5lIaw/9gCGYP4dLjeLj49idlZYpPRbl/E3G/EEFhku
-         Y7QzYjp2HZhbL5sisjkqQPstBzAPTrGd1WLI2n00=
+        b=lPjcY0BM4ZDsw+RrJ+nCdbXd0iRmhmK3j6QGDYSq9RbDkUUBVkdB6B52X1YwL11uJ
+         vjbKDM5D2ouKFM6/xBto6hQq+uv8UHB6wNd4LOEF+ZgNFRyw27oISPJzz5of6nP0DL
+         WVxNRn+d/8Jo6vf3WD9A8vxuMcmG9uTWQH5ov7qY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 412/913] igc: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:24:34 +0200
-Message-Id: <20220405070352.195960180@linuxfoundation.org>
+        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mel Gorman <mgorman@suse.de>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 077/599] mm,hwpoison: unmap poisoned page before invalidation
+Date:   Tue,  5 Apr 2022 09:26:11 +0200
+Message-Id: <20220405070301.117379793@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,66 +55,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Rik van Riel <riel@surriel.com>
 
-[ Upstream commit f9e61d365bafdee40fe2586fc6be490c3e824dad ]
+commit 3149c79f3cb0e2e3bafb7cfadacec090cbd250d3 upstream.
 
-{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
-+ NET_IP_ALIGN for any skb.
-OTOH, igc_construct_skb_zc() currently allocates and reserves
-additional `xdp->data_meta - xdp->data_hard_start`, which is about
-XDP_PACKET_HEADROOM for XSK frames.
-There's no need for that at all as the frame is post-XDP and will
-go only to the networking stack core.
-Pass the size of the actual data only (+ meta) to
-__napi_alloc_skb() and don't reserve anything. This will give
-enough headroom for stack processing.
-Also, net_prefetch() xdp->data_meta and align the copy size to
-speed-up memcpy() a little and better match igc_construct_skb().
+In some cases it appears the invalidation of a hwpoisoned page fails
+because the page is still mapped in another process.  This can cause a
+program to be continuously restarted and die when it page faults on the
+page that was not invalidated.  Avoid that problem by unmapping the
+hwpoisoned page when we find it.
 
-Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Another issue is that sometimes we end up oopsing in finish_fault, if
+the code tries to do something with the now-NULL vmf->page.  I did not
+hit this error when submitting the previous patch because there are
+several opportunities for alloc_set_pte to bail out before accessing
+vmf->page, and that apparently happened on those systems, and most of
+the time on other systems, too.
+
+However, across several million systems that error does occur a handful
+of times a day.  It can be avoided by returning VM_FAULT_NOPAGE which
+will cause do_read_fault to return before calling finish_fault.
+
+Link: https://lkml.kernel.org/r/20220325161428.5068d97e@imladris.surriel.com
+Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Tested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ mm/memory.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index c7fa978cdf02..a514cfc6c8a0 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -2434,19 +2434,20 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
- 					    struct xdp_buff *xdp)
- {
-+	unsigned int totalsize = xdp->data_end - xdp->data_meta;
- 	unsigned int metasize = xdp->data - xdp->data_meta;
--	unsigned int datasize = xdp->data_end - xdp->data;
--	unsigned int totalsize = metasize + datasize;
- 	struct sk_buff *skb;
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3676,14 +3676,18 @@ static vm_fault_t __do_fault(struct vm_f
+ 		return ret;
  
--	skb = __napi_alloc_skb(&ring->q_vector->napi,
--			       xdp->data_end - xdp->data_hard_start,
-+	net_prefetch(xdp->data_meta);
-+
-+	skb = __napi_alloc_skb(&ring->q_vector->napi, totalsize,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	skb_reserve(skb, xdp->data_meta - xdp->data_hard_start);
--	memcpy(__skb_put(skb, totalsize), xdp->data_meta, totalsize);
-+	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
-+	       ALIGN(totalsize, sizeof(long)));
-+
- 	if (metasize) {
- 		skb_metadata_set(skb, metasize);
- 		__skb_pull(skb, metasize);
--- 
-2.34.1
-
+ 	if (unlikely(PageHWPoison(vmf->page))) {
++		struct page *page = vmf->page;
+ 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
+ 		if (ret & VM_FAULT_LOCKED) {
++			if (page_mapped(page))
++				unmap_mapping_pages(page_mapping(page),
++						    page->index, 1, false);
+ 			/* Retry if a clean page was removed from the cache. */
+-			if (invalidate_inode_page(vmf->page))
+-				poisonret = 0;
+-			unlock_page(vmf->page);
++			if (invalidate_inode_page(page))
++				poisonret = VM_FAULT_NOPAGE;
++			unlock_page(page);
+ 		}
+-		put_page(vmf->page);
++		put_page(page);
+ 		vmf->page = NULL;
+ 		return poisonret;
+ 	}
 
 
