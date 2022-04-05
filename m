@@ -2,108 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A90EBC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FA3C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384472AbiDEUz6 (ORCPT
+        id S1384362AbiDEUzs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
+        Tue, 5 Apr 2022 16:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358767AbiDELR1 (ORCPT
+        with ESMTP id S1381268AbiDELnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:17:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470912FFC0;
-        Tue,  5 Apr 2022 03:20:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 07:43:39 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BA6114FC3;
+        Tue,  5 Apr 2022 04:09:06 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF54BB81C6C;
-        Tue,  5 Apr 2022 10:20:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6154CC385A0;
-        Tue,  5 Apr 2022 10:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154021;
-        bh=ryI4nmnWCITwgMxyxAhVGbPtmN7Hf4iB4cJjnuFKMfs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R8EJIWeXCNVZw5tK3PoWprHeqCAeGj0IgbPTrJfaFzKw5uw0d50u0/SF30vVvWZP7
-         tb8B45aLnxx5ASbJl8dm4NwMg3CcpkVDGfoUU9YfPnsZZVD2M9dD6ao8wrPh/TyRlZ
-         xdQEjWNfZHy96pbxgQyvJ2CsgFzuTjse4Zjgehd4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        anton ivanov <anton.ivanov@cambridgegreys.com>,
-        Julius Werner <jwerner@chromium.org>,
-        David Gow <davidgow@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 429/599] firmware: google: Properly state IOMEM dependency
-Date:   Tue,  5 Apr 2022 09:32:03 +0200
-Message-Id: <20220405070311.599379148@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 65CC922247;
+        Tue,  5 Apr 2022 13:09:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649156944;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HhCRNMxeN/GjO55RvomQG0xoJmMvvbdrMDnAktj+ZOw=;
+        b=cNqMfgmXtFPvgEEwbWq+VnwdvMuscRpK20137u0iJSnBDLVHoJFUu5w4qyLSMk8UBd8eum
+        0HMbGVUDIyLdMdlDNStBDi+KY7vBSzta24pjZddLL/yJGIlyoEPC3VL3TgfKTOY12IUtu8
+        hkJrB7ZhYGB9P1u1D5xx4Y+a7XRIo5o=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
+Date:   Tue, 05 Apr 2022 13:09:04 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Codrin.Ciubotariu@microchip.com
+Cc:     Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
+        Claudiu.Beznea@microchip.com, sumit.semwal@linaro.org,
+        christian.koenig@amd.com, linux-i2c@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, stable@vger.kernel.org
+Subject: Re: [PATCH] i2c: at91: use dma safe buffers
+In-Reply-To: <360914ee-594c-86bc-2436-aa863a67953a@microchip.com>
+References: <20220303161724.3324948-1-michael@walle.cc>
+ <46e1be55-9377-75b7-634d-9eadbebc98d7@microchip.com>
+ <bc32f1107786ebcbfb4952e1a6142304@walle.cc>
+ <360914ee-594c-86bc-2436-aa863a67953a@microchip.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <27f124c9adaf8a4fbdfb7a38456c4a2e@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+Am 2022-04-05 12:02, schrieb Codrin.Ciubotariu@microchip.com:
+> On 05.04.2022 12:38, Michael Walle wrote:
+>> Am 2022-04-05 11:23, schrieb Codrin.Ciubotariu@microchip.com:
+>>>> +       if (dev->use_dma) {
+>>>> +               dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
+>>> 
+>>> If you want, you could just dev->buf = i2c_get_dma_safe...
+>> 
+>> But where is the error handling in that case? dev->buf will
+>> be NULL, which is eventually passed to dma_map_single().
+>> 
+>> Also, I need the dma_buf for the i2c_put_dma_safe_msg_buf()
+>> call anyway, because dev->buf will be modified during
+>> processing.
+> 
+> You still:
+> 	if (!dev->buf) {
+> 		ret = -ENOMEM;
+> 		goto out;
+> 	}
+> 
+> So, at91_do_twi_transfer()/dma_map_single() will not be called.
 
-[ Upstream commit 37fd83916da2e4cae03d350015c82a67b1b334c4 ]
+Ahh, I misunderstood you. Yes, but as I said, I need the dma_buf
+temporary variable anyway, because dev->buf is modified, eg. see
+at91_twi_read_data_dma_callback().
 
-The Google Coreboot implementation requires IOMEM functions
-(memmremap, memunmap, devm_memremap), but does not specify this is its
-Kconfig. This results in build errors when HAS_IOMEM is not set, such as
-on some UML configurations:
-
-/usr/bin/ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
-coreboot_table.c:(.text+0x311): undefined reference to `memremap'
-/usr/bin/ld: coreboot_table.c:(.text+0x34e): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
-memconsole-coreboot.c:(.text+0x12d): undefined reference to `memremap'
-/usr/bin/ld: memconsole-coreboot.c:(.text+0x17e): undefined reference to `devm_memremap'
-/usr/bin/ld: memconsole-coreboot.c:(.text+0x191): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
-vpd.c:(.text+0x300): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
-vpd.c:(.text+0x382): undefined reference to `memremap'
-/usr/bin/ld: vpd.c:(.text+0x459): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
-vpd.c:(.text+0x59d): undefined reference to `memremap'
-/usr/bin/ld: vpd.c:(.text+0x5d3): undefined reference to `memunmap'
-collect2: error: ld returned 1 exit status
-
-Fixes: a28aad66da8b ("firmware: coreboot: Collapse platform drivers into bus core")
-Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
-Acked-By: Julius Werner <jwerner@chromium.org>
-Signed-off-by: David Gow <davidgow@google.com>
-Link: https://lore.kernel.org/r/20220225041502.1901806-1-davidgow@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/firmware/google/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/firmware/google/Kconfig b/drivers/firmware/google/Kconfig
-index 931544c9f63d..983e07dc022e 100644
---- a/drivers/firmware/google/Kconfig
-+++ b/drivers/firmware/google/Kconfig
-@@ -21,7 +21,7 @@ config GOOGLE_SMI
- 
- config GOOGLE_COREBOOT_TABLE
- 	tristate "Coreboot Table Access"
--	depends on ACPI || OF
-+	depends on HAS_IOMEM && (ACPI || OF)
- 	help
- 	  This option enables the coreboot_table module, which provides other
- 	  firmware modules access to the coreboot table. The coreboot table
--- 
-2.34.1
-
-
-
+-michael
