@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BB7C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93664C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453009AbiDEWcf (ORCPT
+        id S1453227AbiDEWcq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
+        Tue, 5 Apr 2022 18:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357129AbiDEKZm (ORCPT
+        with ESMTP id S1355365AbiDEKTd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:25:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503D595A18;
-        Tue,  5 Apr 2022 03:09:35 -0700 (PDT)
+        Tue, 5 Apr 2022 06:19:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A700327FEC;
+        Tue,  5 Apr 2022 03:04:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E30ADB81C98;
-        Tue,  5 Apr 2022 10:09:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F844C385A2;
-        Tue,  5 Apr 2022 10:09:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38758B81BC0;
+        Tue,  5 Apr 2022 10:04:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CEDFC385A2;
+        Tue,  5 Apr 2022 10:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153372;
-        bh=Wp0hPJ9IukXcUIGFX8IaXuqKEfhpodXZOqo2dOyyxsg=;
+        s=korg; t=1649153086;
+        bh=Cw2NlYAm/sub3uTEA3b2qIyrR3JDeMkKrC26amsoKtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2G8gDvgpsZnH9KCR9hrfYD7ow3HFT+NQodm7z2EDoTEo4o3SEjIxsw/cUb46ZgKNg
-         5wb2YVbwCS7+sHi+GunXOj85y8kliF8PY7JSlyD5DPrQtW4BgOcgaNRYA+mTDbBJAd
-         q0Tcvd9COxzzvOxffQfRcPOWLD6nwEz7lLrngRnM=
+        b=oHAJy/+PL51AzoM/nN/TOBZmwl/pMjG3u2J+3waXchDLT4BF3+Xkz/WUVQCjvJBad
+         /uLI/rAHmHXnoYQAzr0HqhdXf6s4kt4800yKn+4529B/4tEaq5RupOeEanG4VroTQ4
+         48mr4uFudAR+p/Jo8BT5Z4O4xtAz9IsNhLXR3uRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
-        John Allen <john.allen@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 162/599] crypto: ccp - ccp_dmaengine_unregister release dma channels
-Date:   Tue,  5 Apr 2022 09:27:36 +0200
-Message-Id: <20220405070303.661964995@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.10 097/599] video: fbdev: sm712fb: Fix crash in smtcfb_read()
+Date:   Tue,  5 Apr 2022 09:26:31 +0200
+Message-Id: <20220405070301.717839647@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -52,66 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dāvis Mosāns <davispuh@gmail.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 54cce8ecb9254f971b40a72911c6da403720a2d2 ]
+commit bd771cf5c4254511cc4abb88f3dab3bd58bdf8e8 upstream.
 
-ccp_dmaengine_register adds dma_chan->device_node to dma_dev->channels list
-but ccp_dmaengine_unregister didn't remove them.
-That can cause crashes in various dmaengine methods that tries to use dma_dev->channels
+Zheyu Ma reported this crash in the sm712fb driver when reading
+three bytes from the framebuffer:
 
-Fixes: 58ea8abf4904 ("crypto: ccp - Register the CCP as a DMA...")
-Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
-Acked-by: John Allen <john.allen@amd.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ BUG: unable to handle page fault for address: ffffc90001ffffff
+ RIP: 0010:smtcfb_read+0x230/0x3e0
+ Call Trace:
+  vfs_read+0x198/0xa00
+  ? do_sys_openat2+0x27d/0x350
+  ? __fget_light+0x54/0x340
+  ksys_read+0xce/0x190
+  do_syscall_64+0x43/0x90
+
+Fix it by removing the open-coded endianess fixup-code and
+by moving the pointer post decrement out the fb_readl() function.
+
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Tested-by: Zheyu Ma <zheyuma97@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/ccp/ccp-dmaengine.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/video/fbdev/sm712fb.c |   25 +++++++------------------
+ 1 file changed, 7 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/crypto/ccp/ccp-dmaengine.c b/drivers/crypto/ccp/ccp-dmaengine.c
-index 0770a83bf1a5..b3eea329f840 100644
---- a/drivers/crypto/ccp/ccp-dmaengine.c
-+++ b/drivers/crypto/ccp/ccp-dmaengine.c
-@@ -633,6 +633,20 @@ static int ccp_terminate_all(struct dma_chan *dma_chan)
- 	return 0;
- }
+--- a/drivers/video/fbdev/sm712fb.c
++++ b/drivers/video/fbdev/sm712fb.c
+@@ -1047,7 +1047,7 @@ static ssize_t smtcfb_read(struct fb_inf
+ 	if (count + p > total_size)
+ 		count = total_size - p;
  
-+static void ccp_dma_release(struct ccp_device *ccp)
-+{
-+	struct ccp_dma_chan *chan;
-+	struct dma_chan *dma_chan;
-+	unsigned int i;
+-	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
++	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
+@@ -1059,25 +1059,14 @@ static ssize_t smtcfb_read(struct fb_inf
+ 	while (count) {
+ 		c = (count > PAGE_SIZE) ? PAGE_SIZE : count;
+ 		dst = buffer;
+-		for (i = c >> 2; i--;) {
+-			*dst = fb_readl(src++);
+-			*dst = big_swap(*dst);
++		for (i = (c + 3) >> 2; i--;) {
++			u32 val;
 +
-+	for (i = 0; i < ccp->cmd_q_count; i++) {
-+		chan = ccp->ccp_dma_chan + i;
-+		dma_chan = &chan->dma_chan;
-+		tasklet_kill(&chan->cleanup_tasklet);
-+		list_del_rcu(&dma_chan->device_node);
-+	}
-+}
-+
- int ccp_dmaengine_register(struct ccp_device *ccp)
- {
- 	struct ccp_dma_chan *chan;
-@@ -737,6 +751,7 @@ int ccp_dmaengine_register(struct ccp_device *ccp)
- 	return 0;
++			val = fb_readl(src);
++			*dst = big_swap(val);
++			src++;
+ 			dst++;
+ 		}
+-		if (c & 3) {
+-			u8 *dst8 = (u8 *)dst;
+-			u8 __iomem *src8 = (u8 __iomem *)src;
+-
+-			for (i = c & 3; i--;) {
+-				if (i & 1) {
+-					*dst8++ = fb_readb(++src8);
+-				} else {
+-					*dst8++ = fb_readb(--src8);
+-					src8 += 2;
+-				}
+-			}
+-			src = (u32 __iomem *)src8;
+-		}
  
- err_reg:
-+	ccp_dma_release(ccp);
- 	kmem_cache_destroy(ccp->dma_desc_cache);
- 
- err_cache:
-@@ -753,6 +768,7 @@ void ccp_dmaengine_unregister(struct ccp_device *ccp)
- 		return;
- 
- 	dma_async_device_unregister(dma_dev);
-+	ccp_dma_release(ccp);
- 
- 	kmem_cache_destroy(ccp->dma_desc_cache);
- 	kmem_cache_destroy(ccp->dma_cmd_cache);
--- 
-2.34.1
-
+ 		if (copy_to_user(buf, buffer, c)) {
+ 			err = -EFAULT;
 
 
