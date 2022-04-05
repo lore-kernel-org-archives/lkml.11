@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34835C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B546C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238766AbiDEJdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33156 "EHLO
+        id S239021AbiDEJeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:34:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239487AbiDEIUI (ORCPT
+        with ESMTP id S239466AbiDEIUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78765FA0;
-        Tue,  5 Apr 2022 01:14:16 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A08AAC93A;
+        Tue,  5 Apr 2022 01:13:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CB10609AD;
-        Tue,  5 Apr 2022 08:14:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A8ADC385A0;
-        Tue,  5 Apr 2022 08:14:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAAC960B0A;
+        Tue,  5 Apr 2022 08:13:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0155C385A0;
+        Tue,  5 Apr 2022 08:13:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146455;
-        bh=nRqe1qlcYUQNgbazDz0Sc2U/enVv6QmbhOHOSE1R3PQ=;
+        s=korg; t=1649146432;
+        bh=6tQ1SmCuXGWeuod34frKtsQaqkmflRErCJOG0nxktR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bvUrwODzQ/GwjuBlkb5IzkfGulM9dN5EynqmosayTgWhE2f7PiSs2y6Tfyf2CBtYc
-         3enJGjZEnt9zurwT9NgMvWxx3l5VnuKhR1yCJwIMy/A7AGVwCq4eKJBg4CvYomDZLZ
-         ElXwtT23tcYNvHuH4ynZHOH/J9I8cSd/wfy0ecbA=
+        b=pMfDM2+9AhgObbrFZlj4rNVRbWUDpAscwetchkkgHqMcimQ6A7x7byoy+vL+UwALc
+         ahbKQy+Bpj65POiU/jGTC1UdeNCDFd/PHMx1+qEPwykZe3W3XsJhf2YnWBr0ONu99y
+         pdcbMH9iF/r4efM9FnaPpMG68pJBykVhXYFafm0o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0771/1126] pinctrl: mediatek: paris: Fix "argument" argument type for mtk_pinconf_get()
-Date:   Tue,  5 Apr 2022 09:25:18 +0200
-Message-Id: <20220405070430.211808787@linuxfoundation.org>
+Subject: [PATCH 5.17 0763/1126] staging: mt7621-dts: fix LEDs and pinctrl on GB-PC1 devicetree
+Date:   Tue,  5 Apr 2022 09:25:10 +0200
+Message-Id: <20220405070429.979017287@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,42 +50,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-[ Upstream commit 19bce7ce0a593c7024030a0cda9e23facea3c93d ]
+[ Upstream commit 6256e18686158fa49e019297f990f1c1817aabf1 ]
 
-For mtk_pinconf_get(), the "argument" argument is typically returned by
-pinconf_to_config_argument(), which holds the value for a given pinconf
-parameter. It certainly should not have the type of "enum pin_config_param",
-which describes the type of the pinconf parameter itself.
+Fix LED and pinctrl definitions on the GB-PC1 devicetree. Refer to the
+schematics of the device for more information.
 
-Change the type to u32, which matches the return type of
-pinconf_to_config_argument().
+LED fixes:
+- Change GPIO6 LED label from system to power as GPIO6 is connected to
+PLED.
+- Add default-on default-trigger to power LED.
+- Change GPIO8 LED label from status to system as GPIO8 is connected to
+SYS_LED.
+- Add disk-activity default-trigger to system LED.
+- Switch to the color:function naming scheme.
+- Remove lan1 and lan2 LEDs as they don't exist.
 
-Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-4-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Pinctrl fixes:
+- Claim state_default node under pinctrl node.
+- Change pinctrl0 node name to state-default.
+- Change gpio node name to gpio-pinmux to respect
+Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinmux.yaml.
+- Sort pin groups alphabetically.
+
+Misc fixes:
+- Fix formatting.
+- Use the status value "okay".
+- Define hexadecimal addresses in lower case.
+- Make hexadecimal addresses for memory easier to read.
+
+Link: https://github.com/ngiger/GnuBee_Docs/blob/master/GB-PCx/Documents/GB-PC1_V1.0_Schematic.pdf
+Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220311090320.3068-1-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/staging/mt7621-dts/gbpc1.dts | 40 +++++++++++++---------------
+ 1 file changed, 18 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
-index 7037560ecda9..c668191933a0 100644
---- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-@@ -184,8 +184,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
- }
+diff --git a/drivers/staging/mt7621-dts/gbpc1.dts b/drivers/staging/mt7621-dts/gbpc1.dts
+index e38a083811e5..5ae94b1ad599 100644
+--- a/drivers/staging/mt7621-dts/gbpc1.dts
++++ b/drivers/staging/mt7621-dts/gbpc1.dts
+@@ -12,7 +12,8 @@
  
- static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
--			   enum pin_config_param param,
--			   enum pin_config_param arg)
-+			   enum pin_config_param param, u32 arg)
- {
- 	struct mtk_pinctrl *hw = pinctrl_dev_get_drvdata(pctldev);
- 	const struct mtk_pin_desc *desc;
+ 	memory@0 {
+ 		device_type = "memory";
+-		reg = <0x0 0x1c000000>, <0x20000000 0x4000000>;
++		reg = <0x00000000 0x1c000000>,
++		      <0x20000000 0x04000000>;
+ 	};
+ 
+ 	chosen {
+@@ -38,24 +39,16 @@
+ 	gpio-leds {
+ 		compatible = "gpio-leds";
+ 
+-		system {
+-			label = "gb-pc1:green:system";
++		power {
++			label = "green:power";
+ 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "default-on";
+ 		};
+ 
+-		status {
+-			label = "gb-pc1:green:status";
++		system {
++			label = "green:system";
+ 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
+-		};
+-
+-		lan1 {
+-			label = "gb-pc1:green:lan1";
+-			gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
+-		};
+-
+-		lan2 {
+-			label = "gb-pc1:green:lan2";
+-			gpios = <&gpio 25 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "disk-activity";
+ 		};
+ 	};
+ };
+@@ -95,9 +88,8 @@
+ 
+ 		partition@50000 {
+ 			label = "firmware";
+-			reg = <0x50000 0x1FB0000>;
++			reg = <0x50000 0x1fb0000>;
+ 		};
+-
+ 	};
+ };
+ 
+@@ -106,9 +98,12 @@
+ };
+ 
+ &pinctrl {
+-	state_default: pinctrl0 {
+-		default_gpio: gpio {
+-			groups = "wdt", "rgmii2", "uart3";
++	pinctrl-names = "default";
++	pinctrl-0 = <&state_default>;
++
++	state_default: state-default {
++		gpio-pinmux {
++			groups = "rgmii2", "uart3", "wdt";
+ 			function = "gpio";
+ 		};
+ 	};
+@@ -117,12 +112,13 @@
+ &switch0 {
+ 	ports {
+ 		port@0 {
++			status = "okay";
+ 			label = "ethblack";
+-			status = "ok";
+ 		};
++
+ 		port@4 {
++			status = "okay";
+ 			label = "ethblue";
+-			status = "ok";
+ 		};
+ 	};
+ };
 -- 
 2.34.1
 
