@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 549C5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 442E2C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240869AbiDEJGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S240852AbiDEJGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238941AbiDEITc (ORCPT
+        with ESMTP id S238860AbiDEIT1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:32 -0400
+        Tue, 5 Apr 2022 04:19:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECA37563A;
-        Tue,  5 Apr 2022 01:09:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DCA74DD6;
+        Tue,  5 Apr 2022 01:09:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64E2FB81B18;
-        Tue,  5 Apr 2022 08:09:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFDC7C385A1;
-        Tue,  5 Apr 2022 08:09:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD3EEB81A37;
+        Tue,  5 Apr 2022 08:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 229C2C385A1;
+        Tue,  5 Apr 2022 08:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146188;
-        bh=4kehsUoFuHZvf+v386mFHnSayBJJEsioJWxUk8t19Es=;
+        s=korg; t=1649146174;
+        bh=rl/MI6WofjkOvqKQtyXDowqRNhShvVly0bYkFmUdOUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iLPkSAPAqHbqqM5LTeaxVNcovjo4S6lHFuTJBwz7mzSriNQ/MSDBw3NCm92JiMisc
-         IcEpnVw3yyzxWBpilHe2dUuyUnbijpc3CxTFQMd8vNxgz9zVLEuDVFshiApZHYV/FR
-         EKAifcCXq+0jMrlzTLKsbPS4JQeMTetkK7DVWEig=
+        b=xnqsK0/VF31RPw++eBtS8V7ElCeNjrylWu9XAocGbXg+ykiH5Q6Kt14Vm28o5TLQO
+         kuo06pyaDRJbueOOr3dPEb0iNyRDr4qeRTcuDdLn63lnntWAo01oWUyHmMCFxCzFPL
+         npOdFbbkgwcYROE2+Yjk7/yQrAHIF2b/xV1KgabQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Scott Branden <scott.branden@broadcom.com>,
+        stable@vger.kernel.org, Bob Pearson <rpearsonhpe@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0635/1126] PCI: Reduce warnings on possible RW1C corruption
-Date:   Tue,  5 Apr 2022 09:23:02 +0200
-Message-Id: <20220405070426.276000207@linuxfoundation.org>
+Subject: [PATCH 5.17 0668/1126] RDMA/rxe: Fix ref error in rxe_av.c
+Date:   Tue,  5 Apr 2022 09:23:35 +0200
+Message-Id: <20220405070427.234421231@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,69 +49,300 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+From: Bob Pearson <rpearsonhpe@gmail.com>
 
-[ Upstream commit 92c45b63ce22c8898aa41806e8d6692bcd577510 ]
+[ Upstream commit 63221acb0c63141cc7650f8eefb148337061e6db ]
 
-For hardware that only supports 32-bit writes to PCI there is the
-possibility of clearing RW1C (write-one-to-clear) bits. A rate-limited
-messages was introduced by fb2659230120, but rate-limiting is not the best
-choice here. Some devices may not show the warnings they should if another
-device has just produced a bunch of warnings. Also, the number of messages
-can be a nuisance on devices which are otherwise working fine.
+The commit referenced below can take a reference to the AH which is never
+dropped. This only happens in the UD request path. This patch optionally
+passes that AH back to the caller so that it can hold the reference while
+the AV is being accessed and then drop it. Code to do this is added to
+rxe_req.c. The AV is also passed to rxe_prepare in rxe_net.c as an
+optimization.
 
-Change the ratelimit to a single warning per bus. This ensures no bus is
-'starved' of emitting a warning and also that there isn't a continuous
-stream of warnings. It would be preferable to have a warning per device,
-but the pci_dev structure is not available here, and a lookup from devfn
-would be far too slow.
-
-Suggested-by: Bjorn Helgaas <helgaas@kernel.org>
-Fixes: fb2659230120 ("PCI: Warn on possible RW1C corruption for sub-32 bit config writes")
-Link: https://lore.kernel.org/r/20200806041455.11070-1-mark.tomlinson@alliedtelesis.co.nz
-Signed-off-by: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Scott Branden <scott.branden@broadcom.com>
+Fixes: e2fe06c90806 ("RDMA/rxe: Lookup kernel AH from ah index in UD WQEs")
+Link: https://lore.kernel.org/r/20220304000808.225811-2-rpearsonhpe@gmail.com
+Signed-off-by: Bob Pearson <rpearsonhpe@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/access.c | 9 ++++++---
- include/linux/pci.h  | 1 +
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ drivers/infiniband/sw/rxe/rxe_av.c   | 19 +++++++++-
+ drivers/infiniband/sw/rxe/rxe_loc.h  |  5 ++-
+ drivers/infiniband/sw/rxe/rxe_net.c  | 17 +++++----
+ drivers/infiniband/sw/rxe/rxe_req.c  | 55 +++++++++++++++++-----------
+ drivers/infiniband/sw/rxe/rxe_resp.c |  2 +-
+ 5 files changed, 63 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/pci/access.c b/drivers/pci/access.c
-index 0d9f6b21babb..708c7529647f 100644
---- a/drivers/pci/access.c
-+++ b/drivers/pci/access.c
-@@ -159,9 +159,12 @@ int pci_generic_config_write32(struct pci_bus *bus, unsigned int devfn,
- 	 * write happen to have any RW1C (write-one-to-clear) bits set, we
- 	 * just inadvertently cleared something we shouldn't have.
- 	 */
--	dev_warn_ratelimited(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
--			     size, pci_domain_nr(bus), bus->number,
--			     PCI_SLOT(devfn), PCI_FUNC(devfn), where);
-+	if (!bus->unsafe_warn) {
-+		dev_warn(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
-+			 size, pci_domain_nr(bus), bus->number,
-+			 PCI_SLOT(devfn), PCI_FUNC(devfn), where);
-+		bus->unsafe_warn = 1;
+diff --git a/drivers/infiniband/sw/rxe/rxe_av.c b/drivers/infiniband/sw/rxe/rxe_av.c
+index 38c7b6fb39d7..360a567159fe 100644
+--- a/drivers/infiniband/sw/rxe/rxe_av.c
++++ b/drivers/infiniband/sw/rxe/rxe_av.c
+@@ -99,11 +99,14 @@ void rxe_av_fill_ip_info(struct rxe_av *av, struct rdma_ah_attr *attr)
+ 	av->network_type = type;
+ }
+ 
+-struct rxe_av *rxe_get_av(struct rxe_pkt_info *pkt)
++struct rxe_av *rxe_get_av(struct rxe_pkt_info *pkt, struct rxe_ah **ahp)
+ {
+ 	struct rxe_ah *ah;
+ 	u32 ah_num;
+ 
++	if (ahp)
++		*ahp = NULL;
++
+ 	if (!pkt || !pkt->qp)
+ 		return NULL;
+ 
+@@ -117,10 +120,22 @@ struct rxe_av *rxe_get_av(struct rxe_pkt_info *pkt)
+ 	if (ah_num) {
+ 		/* only new user provider or kernel client */
+ 		ah = rxe_pool_get_index(&pkt->rxe->ah_pool, ah_num);
+-		if (!ah || ah->ah_num != ah_num || rxe_ah_pd(ah) != pkt->qp->pd) {
++		if (!ah) {
+ 			pr_warn("Unable to find AH matching ah_num\n");
+ 			return NULL;
+ 		}
++
++		if (rxe_ah_pd(ah) != pkt->qp->pd) {
++			pr_warn("PDs don't match for AH and QP\n");
++			rxe_drop_ref(ah);
++			return NULL;
++		}
++
++		if (ahp)
++			*ahp = ah;
++		else
++			rxe_drop_ref(ah);
++
+ 		return &ah->av;
+ 	}
+ 
+diff --git a/drivers/infiniband/sw/rxe/rxe_loc.h b/drivers/infiniband/sw/rxe/rxe_loc.h
+index b1e174afb1d4..b92bb7a15290 100644
+--- a/drivers/infiniband/sw/rxe/rxe_loc.h
++++ b/drivers/infiniband/sw/rxe/rxe_loc.h
+@@ -19,7 +19,7 @@ void rxe_av_to_attr(struct rxe_av *av, struct rdma_ah_attr *attr);
+ 
+ void rxe_av_fill_ip_info(struct rxe_av *av, struct rdma_ah_attr *attr);
+ 
+-struct rxe_av *rxe_get_av(struct rxe_pkt_info *pkt);
++struct rxe_av *rxe_get_av(struct rxe_pkt_info *pkt, struct rxe_ah **ahp);
+ 
+ /* rxe_cq.c */
+ int rxe_cq_chk_attr(struct rxe_dev *rxe, struct rxe_cq *cq,
+@@ -102,7 +102,8 @@ void rxe_mw_cleanup(struct rxe_pool_elem *arg);
+ /* rxe_net.c */
+ struct sk_buff *rxe_init_packet(struct rxe_dev *rxe, struct rxe_av *av,
+ 				int paylen, struct rxe_pkt_info *pkt);
+-int rxe_prepare(struct rxe_pkt_info *pkt, struct sk_buff *skb);
++int rxe_prepare(struct rxe_av *av, struct rxe_pkt_info *pkt,
++		struct sk_buff *skb);
+ int rxe_xmit_packet(struct rxe_qp *qp, struct rxe_pkt_info *pkt,
+ 		    struct sk_buff *skb);
+ const char *rxe_parent_name(struct rxe_dev *rxe, unsigned int port_num);
+diff --git a/drivers/infiniband/sw/rxe/rxe_net.c b/drivers/infiniband/sw/rxe/rxe_net.c
+index be72bdbfb4ba..580cfd742dd2 100644
+--- a/drivers/infiniband/sw/rxe/rxe_net.c
++++ b/drivers/infiniband/sw/rxe/rxe_net.c
+@@ -289,13 +289,13 @@ static void prepare_ipv6_hdr(struct dst_entry *dst, struct sk_buff *skb,
+ 	ip6h->payload_len = htons(skb->len - sizeof(*ip6h));
+ }
+ 
+-static int prepare4(struct rxe_pkt_info *pkt, struct sk_buff *skb)
++static int prepare4(struct rxe_av *av, struct rxe_pkt_info *pkt,
++		    struct sk_buff *skb)
+ {
+ 	struct rxe_qp *qp = pkt->qp;
+ 	struct dst_entry *dst;
+ 	bool xnet = false;
+ 	__be16 df = htons(IP_DF);
+-	struct rxe_av *av = rxe_get_av(pkt);
+ 	struct in_addr *saddr = &av->sgid_addr._sockaddr_in.sin_addr;
+ 	struct in_addr *daddr = &av->dgid_addr._sockaddr_in.sin_addr;
+ 
+@@ -315,11 +315,11 @@ static int prepare4(struct rxe_pkt_info *pkt, struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-static int prepare6(struct rxe_pkt_info *pkt, struct sk_buff *skb)
++static int prepare6(struct rxe_av *av, struct rxe_pkt_info *pkt,
++		    struct sk_buff *skb)
+ {
+ 	struct rxe_qp *qp = pkt->qp;
+ 	struct dst_entry *dst;
+-	struct rxe_av *av = rxe_get_av(pkt);
+ 	struct in6_addr *saddr = &av->sgid_addr._sockaddr_in6.sin6_addr;
+ 	struct in6_addr *daddr = &av->dgid_addr._sockaddr_in6.sin6_addr;
+ 
+@@ -340,16 +340,17 @@ static int prepare6(struct rxe_pkt_info *pkt, struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-int rxe_prepare(struct rxe_pkt_info *pkt, struct sk_buff *skb)
++int rxe_prepare(struct rxe_av *av, struct rxe_pkt_info *pkt,
++		struct sk_buff *skb)
+ {
+ 	int err = 0;
+ 
+ 	if (skb->protocol == htons(ETH_P_IP))
+-		err = prepare4(pkt, skb);
++		err = prepare4(av, pkt, skb);
+ 	else if (skb->protocol == htons(ETH_P_IPV6))
+-		err = prepare6(pkt, skb);
++		err = prepare6(av, pkt, skb);
+ 
+-	if (ether_addr_equal(skb->dev->dev_addr, rxe_get_av(pkt)->dmac))
++	if (ether_addr_equal(skb->dev->dev_addr, av->dmac))
+ 		pkt->mask |= RXE_LOOPBACK_MASK;
+ 
+ 	return err;
+diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
+index b28036a7a3b8..204e31bbd61f 100644
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -358,6 +358,7 @@ static inline int get_mtu(struct rxe_qp *qp)
+ }
+ 
+ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
++				       struct rxe_av *av,
+ 				       struct rxe_send_wqe *wqe,
+ 				       int opcode, u32 payload,
+ 				       struct rxe_pkt_info *pkt)
+@@ -365,7 +366,6 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
+ 	struct rxe_dev		*rxe = to_rdev(qp->ibqp.device);
+ 	struct sk_buff		*skb;
+ 	struct rxe_send_wr	*ibwr = &wqe->wr;
+-	struct rxe_av		*av;
+ 	int			pad = (-payload) & 0x3;
+ 	int			paylen;
+ 	int			solicited;
+@@ -374,21 +374,9 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
+ 
+ 	/* length from start of bth to end of icrc */
+ 	paylen = rxe_opcode[opcode].length + payload + pad + RXE_ICRC_SIZE;
+-
+-	/* pkt->hdr, port_num and mask are initialized in ifc layer */
+-	pkt->rxe	= rxe;
+-	pkt->opcode	= opcode;
+-	pkt->qp		= qp;
+-	pkt->psn	= qp->req.psn;
+-	pkt->mask	= rxe_opcode[opcode].mask;
+-	pkt->paylen	= paylen;
+-	pkt->wqe	= wqe;
++	pkt->paylen = paylen;
+ 
+ 	/* init skb */
+-	av = rxe_get_av(pkt);
+-	if (!av)
+-		return NULL;
+-
+ 	skb = rxe_init_packet(rxe, av, paylen, pkt);
+ 	if (unlikely(!skb))
+ 		return NULL;
+@@ -447,13 +435,13 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
+ 	return skb;
+ }
+ 
+-static int finish_packet(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
+-		       struct rxe_pkt_info *pkt, struct sk_buff *skb,
+-		       u32 paylen)
++static int finish_packet(struct rxe_qp *qp, struct rxe_av *av,
++			 struct rxe_send_wqe *wqe, struct rxe_pkt_info *pkt,
++			 struct sk_buff *skb, u32 paylen)
+ {
+ 	int err;
+ 
+-	err = rxe_prepare(pkt, skb);
++	err = rxe_prepare(av, pkt, skb);
+ 	if (err)
+ 		return err;
+ 
+@@ -608,6 +596,7 @@ static int rxe_do_local_ops(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
+ int rxe_requester(void *arg)
+ {
+ 	struct rxe_qp *qp = (struct rxe_qp *)arg;
++	struct rxe_dev *rxe = to_rdev(qp->ibqp.device);
+ 	struct rxe_pkt_info pkt;
+ 	struct sk_buff *skb;
+ 	struct rxe_send_wqe *wqe;
+@@ -619,6 +608,8 @@ int rxe_requester(void *arg)
+ 	struct rxe_send_wqe rollback_wqe;
+ 	u32 rollback_psn;
+ 	struct rxe_queue *q = qp->sq.queue;
++	struct rxe_ah *ah;
++	struct rxe_av *av;
+ 
+ 	rxe_add_ref(qp);
+ 
+@@ -705,14 +696,28 @@ int rxe_requester(void *arg)
+ 		payload = mtu;
+ 	}
+ 
+-	skb = init_req_packet(qp, wqe, opcode, payload, &pkt);
++	pkt.rxe = rxe;
++	pkt.opcode = opcode;
++	pkt.qp = qp;
++	pkt.psn = qp->req.psn;
++	pkt.mask = rxe_opcode[opcode].mask;
++	pkt.wqe = wqe;
++
++	av = rxe_get_av(&pkt, &ah);
++	if (unlikely(!av)) {
++		pr_err("qp#%d Failed no address vector\n", qp_num(qp));
++		wqe->status = IB_WC_LOC_QP_OP_ERR;
++		goto err_drop_ah;
 +	}
++
++	skb = init_req_packet(qp, av, wqe, opcode, payload, &pkt);
+ 	if (unlikely(!skb)) {
+ 		pr_err("qp#%d Failed allocating skb\n", qp_num(qp));
+ 		wqe->status = IB_WC_LOC_QP_OP_ERR;
+-		goto err;
++		goto err_drop_ah;
+ 	}
  
- 	mask = ~(((1 << (size * 8)) - 1) << ((where & 0x3) * 8));
- 	tmp = readl(addr) & mask;
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 8253a5413d7c..678fecdf6b81 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -668,6 +668,7 @@ struct pci_bus {
- 	struct bin_attribute	*legacy_io;	/* Legacy I/O for this bus */
- 	struct bin_attribute	*legacy_mem;	/* Legacy mem */
- 	unsigned int		is_added:1;
-+	unsigned int		unsafe_warn:1;	/* warned about RW1C config write */
- };
+-	ret = finish_packet(qp, wqe, &pkt, skb, payload);
++	ret = finish_packet(qp, av, wqe, &pkt, skb, payload);
+ 	if (unlikely(ret)) {
+ 		pr_debug("qp#%d Error during finish packet\n", qp_num(qp));
+ 		if (ret == -EFAULT)
+@@ -720,9 +725,12 @@ int rxe_requester(void *arg)
+ 		else
+ 			wqe->status = IB_WC_LOC_QP_OP_ERR;
+ 		kfree_skb(skb);
+-		goto err;
++		goto err_drop_ah;
+ 	}
  
- #define to_pci_bus(n)	container_of(n, struct pci_bus, dev)
++	if (ah)
++		rxe_drop_ref(ah);
++
+ 	/*
+ 	 * To prevent a race on wqe access between requester and completer,
+ 	 * wqe members state and psn need to be set before calling
+@@ -751,6 +759,9 @@ int rxe_requester(void *arg)
+ 
+ 	goto next_wqe;
+ 
++err_drop_ah:
++	if (ah)
++		rxe_drop_ref(ah);
+ err:
+ 	wqe->state = wqe_state_error;
+ 	__rxe_do_task(&qp->comp.task);
+diff --git a/drivers/infiniband/sw/rxe/rxe_resp.c b/drivers/infiniband/sw/rxe/rxe_resp.c
+index 380934e38923..192cb9a096a1 100644
+--- a/drivers/infiniband/sw/rxe/rxe_resp.c
++++ b/drivers/infiniband/sw/rxe/rxe_resp.c
+@@ -632,7 +632,7 @@ static struct sk_buff *prepare_ack_packet(struct rxe_qp *qp,
+ 	if (ack->mask & RXE_ATMACK_MASK)
+ 		atmack_set_orig(ack, qp->resp.atomic_orig);
+ 
+-	err = rxe_prepare(ack, skb);
++	err = rxe_prepare(&qp->pri_av, ack, skb);
+ 	if (err) {
+ 		kfree_skb(skb);
+ 		return NULL;
 -- 
 2.34.1
 
