@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9ABC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1138C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574757AbiDEXBC (ORCPT
+        id S1574837AbiDEXBW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
+        Tue, 5 Apr 2022 19:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354622AbiDEKO4 (ORCPT
+        with ESMTP id S1348974AbiDEJsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:56 -0400
+        Tue, 5 Apr 2022 05:48:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3509A6BDC6;
-        Tue,  5 Apr 2022 03:01:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836DE21AC;
+        Tue,  5 Apr 2022 02:38:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C69D4B81C83;
-        Tue,  5 Apr 2022 10:01:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2594CC385A1;
-        Tue,  5 Apr 2022 10:01:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DE2CB818F3;
+        Tue,  5 Apr 2022 09:38:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FBE1C385A3;
+        Tue,  5 Apr 2022 09:38:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152891;
-        bh=ScwmD875nfYCsSx5Q9hrMEVZYdEQUwoF7X66WEA/Ibk=;
+        s=korg; t=1649151512;
+        bh=a4PdAOU8SZBWxNOgvOfdb9z+k5GvR5/1CHmDF+qaoz4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gpi9csjRb+ncSjGxf500Dmi4ClIkBE8cF/7+wV22r+lF1bVqyPnEkvIrNDveTDb+3
-         WBcf0RmuOsPwFQuv1nRfwAj9CA2ayah9G0Tax5o09U3N7j4UXm82zt3bcvodOvbPlt
-         hVR/hPUtYKNScXWoSeNBi3JsP/BUK7yS307rZsyg=
+        b=cTKOOQw5cLJCvAD2zfj6cUTMPOPmC/qQsJgsJ+Vme/jHqFJ38PSeSoXJH0JdvMNgN
+         LaKHjG/Qj9vmwAx6sCVbHvlhhKcPI5m9fiO87+8Ij9CRf0dOBGnOHD/VAFT39gVE3Z
+         beEPyIxQ3EibC+1XHVjilCxevFOVkWEgcOSetH34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.10 026/599] xhci: fix garbage USBSTS being logged in some cases
-Date:   Tue,  5 Apr 2022 09:25:20 +0200
-Message-Id: <20220405070259.597723405@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 441/913] PCI: aardvark: Fix reading MSI interrupt number
+Date:   Tue,  5 Apr 2022 09:25:03 +0200
+Message-Id: <20220405070353.064998569@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anssi Hannula <anssi.hannula@bitwise.fi>
+From: Pali Rohár <pali@kernel.org>
 
-commit 3105bc977d7cbf2edc35e24cc7e009686f6e4a56 upstream.
+[ Upstream commit 805dfc18dd3d4dd97a987d4406593b5a225b1253 ]
 
-xhci_decode_usbsts() is expected to return a zero-terminated string by
-its only caller, xhci_stop_endpoint_command_watchdog(), which directly
-logs the return value:
+In advk_pcie_handle_msi() it is expected that when bit i in the W1C
+register PCIE_MSI_STATUS_REG is cleared, the PCIE_MSI_PAYLOAD_REG is
+updated to contain the MSI number corresponding to index i.
 
-  xhci_warn(xhci, "USBSTS:%s\n", xhci_decode_usbsts(str, usbsts));
+Experiments show that this is not so, and instead PCIE_MSI_PAYLOAD_REG
+always contains the number of the last received MSI, overall.
 
-However, if no recognized bits are set in usbsts, the function will
-return without having called any sprintf() and therefore return an
-untouched non-zero-terminated caller-provided buffer, causing garbage
-to be output to log.
+Do not read PCIE_MSI_PAYLOAD_REG register for determining MSI interrupt
+number. Since Aardvark already forbids more than 32 interrupts and uses
+own allocated hwirq numbers, the msi_idx already corresponds to the
+received MSI number.
 
-Fix that by always including the raw value in the output.
-
-Note that before commit 4843b4b5ec64 ("xhci: fix even more unsafe memory
-usage in xhci tracing") the result effect in the failure case was different
-as a static buffer was used here, but the code still worked incorrectly.
-
-Fixes: 9c1aa36efdae ("xhci: Show host status when watchdog triggers and host is assumed dead.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220303110903.1662404-3-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220110015018.26359-3-kabel@kernel.org
+Fixes: 8c39d710363c ("PCI: aardvark: Add Aardvark PCI host controller driver")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci.h |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/pci/controller/pci-aardvark.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
---- a/drivers/usb/host/xhci.h
-+++ b/drivers/usb/host/xhci.h
-@@ -2612,8 +2612,11 @@ static inline const char *xhci_decode_us
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index b2217e2b3efd..7aa6d6336223 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1381,7 +1381,6 @@ static void advk_pcie_remove_irq_domain(struct advk_pcie *pcie)
+ static void advk_pcie_handle_msi(struct advk_pcie *pcie)
  {
- 	int ret = 0;
+ 	u32 msi_val, msi_mask, msi_status, msi_idx;
+-	u16 msi_data;
  
-+	ret = sprintf(str, " 0x%08x", usbsts);
-+
- 	if (usbsts == ~(u32)0)
--		return " 0xffffffff";
-+		return str;
-+
- 	if (usbsts & STS_HALT)
- 		ret += sprintf(str + ret, " HCHalted");
- 	if (usbsts & STS_FATAL)
+ 	msi_mask = advk_readl(pcie, PCIE_MSI_MASK_REG);
+ 	msi_val = advk_readl(pcie, PCIE_MSI_STATUS_REG);
+@@ -1391,13 +1390,9 @@ static void advk_pcie_handle_msi(struct advk_pcie *pcie)
+ 		if (!(BIT(msi_idx) & msi_status))
+ 			continue;
+ 
+-		/*
+-		 * msi_idx contains bits [4:0] of the msi_data and msi_data
+-		 * contains 16bit MSI interrupt number
+-		 */
+ 		advk_writel(pcie, BIT(msi_idx), PCIE_MSI_STATUS_REG);
+-		msi_data = advk_readl(pcie, PCIE_MSI_PAYLOAD_REG) & PCIE_MSI_DATA_MASK;
+-		generic_handle_irq(msi_data);
++		if (generic_handle_domain_irq(pcie->msi_inner_domain, msi_idx) == -EINVAL)
++			dev_err_ratelimited(&pcie->pdev->dev, "unexpected MSI 0x%02x\n", msi_idx);
+ 	}
+ 
+ 	advk_writel(pcie, PCIE_ISR0_MSI_INT_PENDING,
+-- 
+2.34.1
+
 
 
