@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3BA8C47082
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D81C38162
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244085AbiDEKh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51070 "EHLO
+        id S244186AbiDEKiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241466AbiDEIdm (ORCPT
+        with ESMTP id S240727AbiDEIc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:33:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AD7C4;
-        Tue,  5 Apr 2022 01:31:45 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000757DA98;
+        Tue,  5 Apr 2022 01:24:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0C1460FFC;
-        Tue,  5 Apr 2022 08:31:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FFFFC385A0;
-        Tue,  5 Apr 2022 08:31:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EC760FF7;
+        Tue,  5 Apr 2022 08:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 570A5C385A0;
+        Tue,  5 Apr 2022 08:24:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147504;
-        bh=iwUeLQxCDC7OEVPT2rElS4J+zZ+Rdy4pMjpsoROH3zg=;
+        s=korg; t=1649147090;
+        bh=LTilDw4wQFbAgRvgcQ9qqIkL948aoZ4wDVrlgzRerzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=or76U1zCcPTgSJpi/fj2g8M/CVROHbxmiTJc2XaEoCANJ8wjt7D1h6BOqhoV16OCW
-         XFWSWNwp5g0Ud9T2rJQf6s1mGNtOojoaAQsZRcE44MHDXbd6HKjaM0qXYN24VjPUnI
-         ECroj1ZBN8Smns/JEP0b3R7ZYYcpBWOeSj8sGHwQ=
+        b=qPc05iZdW0X7aw9LdFlajnPwIhCWnP6J6rikTO6p0g4Xu7XO5NzEFLk0eY56hGFm8
+         RMza5wAvXZCCFp5cJ78mXqZjGzEiL6sLbrcEMn/Qphb8QOu7j7pjXdqgKHcHI1AQKc
+         0O7wovevmI8LJdC9uPSSZSN1Y7PUOupwUCviU7eM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
-        Haimin Zhang <tcs_kernel@tencent.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0021/1017] af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-Date:   Tue,  5 Apr 2022 09:15:34 +0200
-Message-Id: <20220405070354.804367282@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.17 0997/1126] KVM: x86: Avoid theoretical NULL pointer dereference in kvm_irq_delivery_to_apic_fast()
+Date:   Tue,  5 Apr 2022 09:29:04 +0200
+Message-Id: <20220405070436.757394444@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit 9a564bccb78a76740ea9d75a259942df8143d02c ]
+commit 00b5f37189d24ac3ed46cb7f11742094778c46ce upstream.
 
-Add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-to initialize the buffer of supp_skb to fix a kernel-info-leak issue.
-1) Function pfkey_register calls compose_sadb_supported to request
-a sk_buff. 2) compose_sadb_supported calls alloc_sbk to allocate
-a sk_buff, but it doesn't zero it. 3) If auth_len is greater 0, then
-compose_sadb_supported treats the memory as a struct sadb_supported and
-begins to initialize. But it just initializes the field sadb_supported_len
-and field sadb_supported_exttype without field sadb_supported_reserved.
+When kvm_irq_delivery_to_apic_fast() is called with APIC_DEST_SELF
+shorthand, 'src' must not be NULL. Crash the VM with KVM_BUG_ON()
+instead of crashing the host.
 
-Reported-by: TCS Robot <tcs_robot@tencent.com>
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-3-vkuznets@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/key/af_key.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/lapic.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 9bf52a09b5ff..fd51db3be91c 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1699,7 +1699,7 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -992,6 +992,10 @@ bool kvm_irq_delivery_to_apic_fast(struc
+ 	*r = -1;
  
- 	xfrm_probe_algs();
- 
--	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL);
-+	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
- 	if (!supp_skb) {
- 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
- 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
--- 
-2.34.1
-
+ 	if (irq->shorthand == APIC_DEST_SELF) {
++		if (KVM_BUG_ON(!src, kvm)) {
++			*r = 0;
++			return true;
++		}
+ 		*r = kvm_apic_set_irq(src->vcpu, irq, dest_map);
+ 		return true;
+ 	}
 
 
