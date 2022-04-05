@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD018C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFC4C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232930AbiDEIEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57164 "EHLO
+        id S232936AbiDEIE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232311AbiDEHvB (ORCPT
+        with ESMTP id S232424AbiDEHuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D129D631F;
-        Tue,  5 Apr 2022 00:47:18 -0700 (PDT)
+        Tue, 5 Apr 2022 03:50:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DCB939DB;
+        Tue,  5 Apr 2022 00:47:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74C33B81B98;
-        Tue,  5 Apr 2022 07:47:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2757C340EE;
-        Tue,  5 Apr 2022 07:47:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35A4E616BF;
+        Tue,  5 Apr 2022 07:47:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 429C1C340EE;
+        Tue,  5 Apr 2022 07:47:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144836;
-        bh=dlYk8rC60OvZeHn5CTD5I6a5wqwswMluROqrjoBv3YU=;
+        s=korg; t=1649144830;
+        bh=jdhV1ARZqjVBNBTFdsNBzGc69eetyP1wwgKMcVbjsh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rPWt1r8E6QBsUP6SPiKo/PBcgm/b9jyTd9mZGhhwbpRp6ADk3UpDaCemSHUuhZvzk
-         wy8u3RGa7cG96SVFh7/+1jKPczWorNY7FNfWiBw6ZJO8yecSg2S5eDjhO0EeTK7ftL
-         iMklNIIJ0n5jdLeYW8rLKdBUInKSRR3ZRkhCStAw=
+        b=lt0aslHgdDAz1QO2VcPeH12djGowNJiFlWZTJwvjnNSJMb8JqZAyqHzxQQMv2/YOl
+         TrbxK1RBGuVRV8WhRn7Ir6eHO3c5hlnF2HzKLJylPjBEpC4hAfPzs2KiY/McOUu2rS
+         e4kHbAhhpu5gOPYzPkvNGchus+WPQ7/plRWVrWWc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.17 0189/1126] brcmfmac: pcie: Declare missing firmware files in pcie.c
-Date:   Tue,  5 Apr 2022 09:15:36 +0200
-Message-Id: <20220405070413.154598067@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.17 0179/1126] xtensa: define update_mmu_tlb function
+Date:   Tue,  5 Apr 2022 09:15:26 +0200
+Message-Id: <20220405070412.859138892@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,51 +47,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-commit 6d766d8cb505ec1fae63da8faef4fc5712c3d794 upstream.
+commit 1c4664faa38923330d478f046dc743a00c1e2dec upstream.
 
-Move one of the declarations from sdio.c to pcie.c, since it makes no
-sense in the former (SDIO support is optional), and add missing ones.
+Before the commit f9ce0be71d1f ("mm: Cleanup faultaround and finish_fault()
+codepaths") there was a call to update_mmu_cache in alloc_set_pte that
+used to invalidate TLB entry caching invalid PTE that caused a page
+fault. That commit removed that call so now invalid TLB entry survives
+causing repetitive page faults on the CPU that took the initial fault
+until that TLB entry is occasionally evicted. This issue is spotted by
+the xtensa TLB sanity checker.
 
-Fixes: 75729e110e68 ("brcmfmac: expose firmware config files through modinfo")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-5-marcan@marcan.st
+Fix this issue by defining update_mmu_tlb function that flushes TLB entry
+for the faulting address.
+
+Cc: stable@vger.kernel.org # 5.12+
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |    7 +++++++
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c |    1 -
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ arch/xtensa/include/asm/pgtable.h |    4 ++++
+ arch/xtensa/mm/tlb.c              |    6 ++++++
+ 2 files changed, 10 insertions(+)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -59,6 +59,13 @@ BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie"
- BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
- BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
+--- a/arch/xtensa/include/asm/pgtable.h
++++ b/arch/xtensa/include/asm/pgtable.h
+@@ -411,6 +411,10 @@ extern  void update_mmu_cache(struct vm_
  
-+/* firmware config files */
-+MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.txt");
-+MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
+ typedef pte_t *pte_addr_t;
+ 
++void update_mmu_tlb(struct vm_area_struct *vma,
++		    unsigned long address, pte_t *ptep);
++#define __HAVE_ARCH_UPDATE_MMU_TLB
 +
-+/* per-board firmware binaries */
-+MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.bin");
+ #endif /* !defined (__ASSEMBLY__) */
+ 
+ #define __HAVE_ARCH_PTEP_TEST_AND_CLEAR_YOUNG
+--- a/arch/xtensa/mm/tlb.c
++++ b/arch/xtensa/mm/tlb.c
+@@ -162,6 +162,12 @@ void local_flush_tlb_kernel_range(unsign
+ 	}
+ }
+ 
++void update_mmu_tlb(struct vm_area_struct *vma,
++		    unsigned long address, pte_t *ptep)
++{
++	local_flush_tlb_page(vma, address);
++}
 +
- static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_43602_CHIP_ID, 0xFFFFFFFF, 43602),
- 	BRCMF_FW_ENTRY(BRCM_CC_43465_CHIP_ID, 0xFFFFFFF0, 4366C),
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -629,7 +629,6 @@ BRCMF_FW_CLM_DEF(43752, "brcmfmac43752-s
+ #ifdef CONFIG_DEBUG_TLB_SANITY
  
- /* firmware config files */
- MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.txt");
--MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
- 
- /* per-board firmware binaries */
- MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.bin");
+ static unsigned get_pte_for_vaddr(unsigned vaddr)
 
 
