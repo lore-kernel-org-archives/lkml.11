@@ -2,97 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E33E5C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AE5C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242177AbiDEIhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
+        id S242247AbiDEIhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235546AbiDEH7u (ORCPT
+        with ESMTP id S235621AbiDEH7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374E93F8B4;
-        Tue,  5 Apr 2022 00:55:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6B6E615CD;
-        Tue,  5 Apr 2022 07:55:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1A8FC340EE;
-        Tue,  5 Apr 2022 07:55:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145320;
-        bh=/9Zl6SwhKKLl2eqmGV3+M5EBkUz2ZL2+HLu0YTX6/TU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M5yZeWU7ZvhASS2kbkZbGmEiRO1gwxkxxHeQ3l0DRz49+ImVciFBbx51g3Bbkhb53
-         DWK07bEutVSpatQlbK/j7dKLFBt3z9T+2KQGiGhxCr15GbuILf/HV1YVjR7NeGjA4w
-         zihiw46U8dCNOat4kngsIa0lsZxKT0dpLkC9/u7Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0362/1126] ASoC: codecs: wcd938x: fix kcontrol max values
-Date:   Tue,  5 Apr 2022 09:18:29 +0200
-Message-Id: <20220405070418.253807700@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 03:59:53 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 315BC65A4;
+        Tue,  5 Apr 2022 00:56:25 -0700 (PDT)
+Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
+  by mx.socionext.com with ESMTP; 05 Apr 2022 16:56:24 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id A27D22058443;
+        Tue,  5 Apr 2022 16:56:24 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:56:24 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 13550B6389;
+        Tue,  5 Apr 2022 16:56:24 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH] dt-bindings: reset: uniphier-glue: Clean up clocks, resets, and their names using compatible string
+Date:   Tue,  5 Apr 2022 16:56:18 +0900
+Message-Id: <1649145378-30358-1-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
+resets, and their names that can be taken by the compatible string.
 
-[ Upstream commit b0217519236924f77a8382b4004e43ef8fd0dcbb ]
+The order of clock-names and reset-names doesn't change here.
 
-set "HPH Type" Kcontrol max value of WCD_MBHC_HPH_STEREO instead of UINT_MAX.
-set "HPHL/R Impedance" Kcontrols max value to INT_MAX instead of UINT_MAX as
-max field is integer type.
-
-Without this patch amixer for these controls will show -1 as max value to userspace.
-
-Fixes: bcee7ed09b8e ("ASoC: codecs: wcd938x: add Multi Button Headset Control support")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220222183212.11580-8-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 ---
- sound/soc/codecs/wcd938x.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ .../reset/socionext,uniphier-glue-reset.yaml  | 52 ++++++++++++++-----
+ 1 file changed, 38 insertions(+), 14 deletions(-)
 
-diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
-index 33d5403d4e62..9ae65cbabb1a 100644
---- a/sound/soc/codecs/wcd938x.c
-+++ b/sound/soc/codecs/wcd938x.c
-@@ -3575,14 +3575,14 @@ static int wcd938x_hph_impedance_get(struct snd_kcontrol *kcontrol,
- }
+diff --git a/Documentation/devicetree/bindings/reset/socionext,uniphier-glue-reset.yaml b/Documentation/devicetree/bindings/reset/socionext,uniphier-glue-reset.yaml
+index bfbd3e9b4186..0a2c13e1e230 100644
+--- a/Documentation/devicetree/bindings/reset/socionext,uniphier-glue-reset.yaml
++++ b/Documentation/devicetree/bindings/reset/socionext,uniphier-glue-reset.yaml
+@@ -38,25 +38,49 @@ properties:
+     minItems: 1
+     maxItems: 2
  
- static const struct snd_kcontrol_new hph_type_detect_controls[] = {
--	SOC_SINGLE_EXT("HPH Type", 0, 0, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPH Type", 0, 0, WCD_MBHC_HPH_STEREO, 0,
- 		       wcd938x_get_hph_type, NULL),
- };
+-  clock-names:
+-    oneOf:
+-      - items:           # for Pro4, Pro5
+-          - const: gio
+-          - const: link
+-      - items:           # for others
+-          - const: link
++  clock-names: true
  
- static const struct snd_kcontrol_new impedance_detect_controls[] = {
--	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, INT_MAX, 0,
- 		       wcd938x_hph_impedance_get, NULL),
--	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, INT_MAX, 0,
- 		       wcd938x_hph_impedance_get, NULL),
- };
+   resets:
+     minItems: 1
+     maxItems: 2
+ 
+-  reset-names:
+-    oneOf:
+-      - items:           # for Pro4, Pro5
+-          - const: gio
+-          - const: link
+-      - items:           # for others
+-          - const: link
++  reset-names: true
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - socionext,uniphier-pro4-usb3-reset
++              - socionext,uniphier-pro5-usb3-reset
++              - socionext,uniphier-pro4-ahci-reset
++    then:
++      properties:
++        clocks:
++          minItems: 2
++          maxItems: 2
++        clock-names:
++          items:
++            - const: gio
++            - const: link
++        resets:
++          minItems: 2
++          maxItems: 2
++        reset-names:
++          items:
++            - const: gio
++            - const: link
++    else:
++      properties:
++        clocks:
++          maxItems: 1
++        clock-names:
++          const: link
++        resets:
++          maxItems: 1
++        reset-names:
++          const: link
+ 
+ additionalProperties: false
  
 -- 
-2.34.1
-
-
+2.25.1
 
