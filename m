@@ -2,131 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0174CC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C91DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:11:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846981AbiDFCLc (ORCPT
+        id S1846998AbiDFCLx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        Tue, 5 Apr 2022 22:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349198AbiDEJt0 (ORCPT
+        with ESMTP id S1354820AbiDELOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65584C29;
-        Tue,  5 Apr 2022 02:42:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22D2BB81B14;
-        Tue,  5 Apr 2022 09:42:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A8C8C385A2;
-        Tue,  5 Apr 2022 09:42:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151727;
-        bh=nt0P5PwaV4eV2/k32xMWQtKBrmy1jnzvbGj/CcjZ0BM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rggby9WN1Ub1rowhjQZSYIBug9s0fSSkjnd8Tg8mWXS0XsSaE4uYr/QM2JOf9PW/i
-         2q3r9Mt3UB8woyt/MaqGrQeY3PY4Ory+cGF8Gr1YtDdup7DleEEmignazK1Fu++dg/
-         6fuFVHvIBlWvzz3kGzEZmfgJ359yxmER3lrGRqvw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Paul Burton <paulburton@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        linux-mips@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 520/913] mips: DEC: honor CONFIG_MIPS_FP_SUPPORT=n
-Date:   Tue,  5 Apr 2022 09:26:22 +0200
-Message-Id: <20220405070355.440958448@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:14:34 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA7534645
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:34:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649154848; x=1680690848;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wE7WnuflTy23S/MzwsasqatqGxi2PSOTMG99EoSFEkA=;
+  b=XsUYguQX9Ge/gYJHknl+2zHzcHzx2vNbdHkTJh4EE92N9vAXNMuPmsQe
+   3sPG4l4A7Up5ZX7Fzx+IaEhSb3eRg4vsWC8krPfgfKUIWauAR/Edrt3+x
+   LJz5YHB80/FZpuHREFKeLmp3T7pw3SaBe7Vx16jhGbopYoT7+pHZhJ+Ih
+   qNUwBOSYh33JvMiJwkyPnnxFAgl61UbB4MfZWOKg6oof/LuezsWdZrAD/
+   Zb24FzvV5RKnyuPThsD3LE+i1m2wlh7OuVwJa49hMTtlOnMiMfunZh2u+
+   tq7Y01BpYETDGcc0h6k0+thLQdyLJP70N55QHFchKgdUpOLR7/XV9d57t
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260413622"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="260413622"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 03:34:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="657886107"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2022 03:34:02 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbgVd-000347-TY;
+        Tue, 05 Apr 2022 10:34:01 +0000
+Date:   Tue, 5 Apr 2022 18:33:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] RISC-V: fix semicolon.cocci warnings
+Message-ID: <Ykwa7goC59ZOVumR@289769a4d63e>
+References: <202204051806.SNUnP4eo-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202204051806.SNUnP4eo-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: kernel test robot <lkp@intel.com>
 
-[ Upstream commit 97bf0395c226907e1a9b908511a35192bf1e09bb ]
+arch/riscv/kernel/smp.c:120:2-3: Unneeded semicolon
 
-Include the DECstation interrupt handler in opting out of
-FPU support.
 
-Fixes a linker error:
+ Remove unneeded semicolon.
 
-mips-linux-ld: arch/mips/dec/int-handler.o: in function `fpu':
-(.text+0x148): undefined reference to `handle_fpe_int'
+Generated by: scripts/coccinelle/misc/semicolon.cocci
 
-Fixes: 183b40f992c8 ("MIPS: Allow FP support to be disabled")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+CC: Anup Patel <apatel@ventanamicro.com>
 Reported-by: kernel test robot <lkp@intel.com>
-Cc: Paul Burton <paulburton@kernel.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: linux-mips@vger.kernel.org
-Acked-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: kernel test robot <lkp@intel.com>
 ---
- arch/mips/dec/int-handler.S | 6 +++---
- arch/mips/dec/setup.c       | 3 ++-
- 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/arch/mips/dec/int-handler.S b/arch/mips/dec/int-handler.S
-index ea5b5a83f1e1..011d1d678840 100644
---- a/arch/mips/dec/int-handler.S
-+++ b/arch/mips/dec/int-handler.S
-@@ -131,7 +131,7 @@
- 		 */
- 		mfc0	t0,CP0_CAUSE		# get pending interrupts
- 		mfc0	t1,CP0_STATUS
--#ifdef CONFIG_32BIT
-+#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
- 		lw	t2,cpu_fpu_mask
- #endif
- 		andi	t0,ST0_IM		# CAUSE.CE may be non-zero!
-@@ -139,7 +139,7 @@
- 
- 		beqz	t0,spurious
- 
--#ifdef CONFIG_32BIT
-+#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
- 		 and	t2,t0
- 		bnez	t2,fpu			# handle FPU immediately
- #endif
-@@ -280,7 +280,7 @@ handle_it:
- 		j	dec_irq_dispatch
- 		 nop
- 
--#ifdef CONFIG_32BIT
-+#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
- fpu:
- 		lw	t0,fpu_kstat_irq
- 		nop
-diff --git a/arch/mips/dec/setup.c b/arch/mips/dec/setup.c
-index eaad0ed4b523..99b9b29750db 100644
---- a/arch/mips/dec/setup.c
-+++ b/arch/mips/dec/setup.c
-@@ -746,7 +746,8 @@ void __init arch_init_irq(void)
- 		dec_interrupt[DEC_IRQ_HALT] = -1;
- 
- 	/* Register board interrupts: FPU and cascade. */
--	if (dec_interrupt[DEC_IRQ_FPU] >= 0 && cpu_has_fpu) {
-+	if (IS_ENABLED(CONFIG_MIPS_FP_SUPPORT) &&
-+	    dec_interrupt[DEC_IRQ_FPU] >= 0 && cpu_has_fpu) {
- 		struct irq_desc *desc_fpu;
- 		int irq_fpu;
- 
--- 
-2.34.1
+tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
+head:   dab41b5c8f55fb8e864a5e10fd181dd0d4443778
+commit: 9951f846b51d68f916cfa08140171cbcc8c0d02b [9/29] RISC-V: Treat IPIs as normal Linux IRQs
+:::::: branch date: 29 hours ago
+:::::: commit date: 29 hours ago
 
+ arch/riscv/kernel/smp.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
+--- a/arch/riscv/kernel/smp.c
++++ b/arch/riscv/kernel/smp.c
+@@ -117,7 +117,7 @@ static irqreturn_t handle_IPI(int irq, v
+ 	default:
+ 		pr_warn("CPU%d: unhandled IPI%d\n", smp_processor_id(), ipi);
+ 		break;
+-	};
++	}
+ 
+ 	return IRQ_HANDLED;
+ }
