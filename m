@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97938C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD188C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234662AbiDEINu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
+        id S234689AbiDEINy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234525AbiDEH6h (ORCPT
+        with ESMTP id S234543AbiDEH6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028DCA206F;
-        Tue,  5 Apr 2022 00:52:41 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3074A76D6;
+        Tue,  5 Apr 2022 00:52:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D79E3615CD;
-        Tue,  5 Apr 2022 07:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1F4CC340EE;
-        Tue,  5 Apr 2022 07:52:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52E2EB81B90;
+        Tue,  5 Apr 2022 07:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A02BEC34110;
+        Tue,  5 Apr 2022 07:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145160;
-        bh=GOCjvPSffRKuugb0uITMfSMEobaooJl1sG41hMr87RY=;
+        s=korg; t=1649145163;
+        bh=iWedxj7YTagci/gi3EDpl5fIirs9sNJC96Xu5blLHW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DFjhrFndNTtwnk9KW9LX0ih3vi6b+agwKBbRi4jbCrthXkvHpDUpIn24CAj0HuxIJ
-         f+dUn8PXaCnG4uQrYxQTWsTcfpeeP0CVl5p8D04bpeDlnZ4QBzzTwMUH0hKtH6fT3Z
-         nB2VzQktOazP7NKJgsR0Iur/LbePWCrYddS9rnGY=
+        b=nlMQGiIvJl95DezofkwY5Hn+hPNuduPhzsySkjwNeuoDsjGvMhP0olSMYImpMrCF5
+         RIr3snBAlk+RF+rXv5VHTofNQZuWMak8FDXj0q+rcxg1te4axtOx/n3ORb2DkYhsSi
+         82Zq8VvpkNIzby4p/IuMVZ60HbERscGizrcvdmYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0299/1126] media: mtk-vcodec: potential dereference of null pointer
-Date:   Tue,  5 Apr 2022 09:17:26 +0200
-Message-Id: <20220405070416.391840149@linuxfoundation.org>
+Subject: [PATCH 5.17 0308/1126] memory: tegra20-emc: Correct memory device mask
+Date:   Tue,  5 Apr 2022 09:17:35 +0200
+Message-Id: <20220405070416.654889034@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,36 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Dmitry Osipenko <digetx@gmail.com>
 
-[ Upstream commit e25a89f743b18c029bfbe5e1663ae0c7190912b0 ]
+[ Upstream commit 9ff684342ee7d3ea2755c6e9b60bc43085baa3ad ]
 
-The return value of devm_kzalloc() needs to be checked.
-To avoid use of null pointer in case of thefailure of alloc.
+Memory chip select is swapped when we read mode register, correct it.
+We didn't have devices that use a single LPDDR chip and both chips are
+always identical, hence this change is just a minor improvement.
 
-Fixes: 46233e91fa24 ("media: mtk-vcodec: move firmware implementations into their own files")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 131dd9a436d8 ("memory: tegra20-emc: Support matching timings by LPDDR2 configuration")
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Link: https://lore.kernel.org/r/20211222043215.28237-2-digetx@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/memory/tegra/tegra20-emc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-index cd27f637dbe7..cfc7ebed8fb7 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
-@@ -102,6 +102,8 @@ struct mtk_vcodec_fw *mtk_vcodec_fw_vpu_init(struct mtk_vcodec_dev *dev,
- 	vpu_wdt_reg_handler(fw_pdev, mtk_vcodec_vpu_reset_handler, dev, rst_id);
+diff --git a/drivers/memory/tegra/tegra20-emc.c b/drivers/memory/tegra/tegra20-emc.c
+index 497b6edbf3ca..25ba3c5e4ad6 100644
+--- a/drivers/memory/tegra/tegra20-emc.c
++++ b/drivers/memory/tegra/tegra20-emc.c
+@@ -540,7 +540,7 @@ static int emc_read_lpddr_mode_register(struct tegra_emc *emc,
+ 					unsigned int register_addr,
+ 					unsigned int *register_data)
+ {
+-	u32 memory_dev = emem_dev + 1;
++	u32 memory_dev = emem_dev ? 1 : 2;
+ 	u32 val, mr_mask = 0xff;
+ 	int err;
  
- 	fw = devm_kzalloc(&dev->plat_dev->dev, sizeof(*fw), GFP_KERNEL);
-+	if (!fw)
-+		return ERR_PTR(-ENOMEM);
- 	fw->type = VPU;
- 	fw->ops = &mtk_vcodec_vpu_msg;
- 	fw->pdev = fw_pdev;
 -- 
 2.34.1
 
