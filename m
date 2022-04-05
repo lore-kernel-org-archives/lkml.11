@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CEBFC3527A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:05:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C64AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345718AbiDELAq (ORCPT
+        id S1346099AbiDELBI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48444 "EHLO
+        Tue, 5 Apr 2022 07:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235475AbiDEIjx (ORCPT
+        with ESMTP id S235503AbiDEIjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:39:53 -0400
+        Tue, 5 Apr 2022 04:39:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B928647A;
-        Tue,  5 Apr 2022 01:33:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90D21BB;
+        Tue,  5 Apr 2022 01:33:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12AAAB81B92;
-        Tue,  5 Apr 2022 08:33:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7181CC385A0;
-        Tue,  5 Apr 2022 08:33:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EC34B81C14;
+        Tue,  5 Apr 2022 08:33:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D85A1C385A0;
+        Tue,  5 Apr 2022 08:33:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147605;
-        bh=4YZvBY0mns0pA0OpwTjHs7wx4nUfBNRycY/uSHjyi7M=;
+        s=korg; t=1649147611;
+        bh=c04I7xSLn2X3v4DHKriGZ3PkJ9qQh69X1RKAjzC5s9M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a2hzNNNKami/DAmGayujLMih7UKqdVnOjC+jxVGb4gTtJMUkkjpFN+XxLSDto3ZYj
-         TYP6nNgww6YppxqCkAoNqp3c6PbQCdtCENouvZlW+d1yk0UhC1HzC2pfoUFYY149Je
-         AxBRIUXHPaTCjDw8CW420bRT5xyisJI2pi46g8lc=
+        b=F9OuOpystmZwaXX+ei8PjXP8YsAOYMlIHzfFDtToBAllZhjRVjfC6ssJTe0jM+GoQ
+         ye4ypyGNzYYqRNq4b49y4zVNmWYWYnJSc0WExqQ+/yQESMBAV2ZJj+ZslkwnUAg6Kz
+         TnYINRJsY35CPnImZ7C+Z/hcNs/hR9k9+qvRIplY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.16 0056/1017] cifs: we do not need a spinlock around the tree access during umount
-Date:   Tue,  5 Apr 2022 09:16:09 +0200
-Message-Id: <20220405070355.847749692@linuxfoundation.org>
+        stable@vger.kernel.org, Song Liu <songliubraving@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Song Liu <song@kernel.org>
+Subject: [PATCH 5.16 0031/1017] block: flush plug based on hardware and software queue order
+Date:   Tue,  5 Apr 2022 09:15:44 +0200
+Message-Id: <20220405070355.102575591@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,71 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 9a14b65d590105d393b63f5320e1594edda7c672 upstream.
+commit 26fed4ac4eab09c27fbae1859696cc38f0536407 upstream.
 
-Remove the spinlock around the tree traversal as we are calling possibly
-sleeping functions.
-We do not need a spinlock here as there will be no modifications to this
-tree at this point.
+We used to sort the plug list if we had multiple queues before dispatching
+requests to the IO scheduler. This usually isn't needed, but for certain
+workloads that interleave requests to disks, it's a less efficient to
+process the plug list one-by-one if everything is interleaved.
 
-This prevents warnings like this to occur in dmesg:
-[  653.774996] BUG: sleeping function called from invalid context at kernel/loc\
-king/mutex.c:280
-[  653.775088] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1827, nam\
-e: umount
-[  653.775152] preempt_count: 1, expected: 0
-[  653.775191] CPU: 0 PID: 1827 Comm: umount Tainted: G        W  OE     5.17.0\
--rc7-00006-g4eb628dd74df #135
-[  653.775195] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-\
-1.fc33 04/01/2014
-[  653.775197] Call Trace:
-[  653.775199]  <TASK>
-[  653.775202]  dump_stack_lvl+0x34/0x44
-[  653.775209]  __might_resched.cold+0x13f/0x172
-[  653.775213]  mutex_lock+0x75/0xf0
-[  653.775217]  ? __mutex_lock_slowpath+0x10/0x10
-[  653.775220]  ? _raw_write_lock_irq+0xd0/0xd0
-[  653.775224]  ? dput+0x6b/0x360
-[  653.775228]  cifs_kill_sb+0xff/0x1d0 [cifs]
-[  653.775285]  deactivate_locked_super+0x85/0x130
-[  653.775289]  cleanup_mnt+0x32c/0x4d0
-[  653.775292]  ? path_umount+0x228/0x380
-[  653.775296]  task_work_run+0xd8/0x180
-[  653.775301]  exit_to_user_mode_loop+0x152/0x160
-[  653.775306]  exit_to_user_mode_prepare+0x89/0xd0
-[  653.775315]  syscall_exit_to_user_mode+0x12/0x30
-[  653.775322]  do_syscall_64+0x48/0x90
-[  653.775326]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+Don't sort the list, but skip through it and flush out entries that have
+the same target at the same time.
 
-Fixes: 187af6e98b44e5d8f25e1d41a92db138eb54416f ("cifs: fix handlecache and multiuser")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: df87eb0fce8f ("block: get rid of plug list sorting")
+Reported-and-tested-by: Song Liu <song@kernel.org>
+Reviewed-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/cifsfs.c |    2 --
- 1 file changed, 2 deletions(-)
+ block/blk-mq.c |   60 +++++++++++++++++++++++++--------------------------------
+ 1 file changed, 27 insertions(+), 33 deletions(-)
 
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -265,7 +265,6 @@ static void cifs_kill_sb(struct super_bl
- 		dput(cifs_sb->root);
- 		cifs_sb->root = NULL;
- 	}
--	spin_lock(&cifs_sb->tlink_tree_lock);
- 	node = rb_first(root);
- 	while (node != NULL) {
- 		tlink = rb_entry(node, struct tcon_link, tl_rbnode);
-@@ -279,7 +278,6 @@ static void cifs_kill_sb(struct super_bl
- 		mutex_unlock(&cfid->fid_mutex);
- 		node = rb_next(node);
- 	}
--	spin_unlock(&cifs_sb->tlink_tree_lock);
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2244,13 +2244,35 @@ static void blk_mq_plug_issue_direct(str
+ 		blk_mq_commit_rqs(hctx, &queued, from_schedule);
+ }
  
- 	kill_anon_super(sb);
- 	cifs_umount(cifs_sb);
+-void blk_mq_flush_plug_list(struct blk_plug *plug, bool from_schedule)
++static void blk_mq_dispatch_plug_list(struct blk_plug *plug, bool from_sched)
+ {
+-	struct blk_mq_hw_ctx *this_hctx;
+-	struct blk_mq_ctx *this_ctx;
+-	unsigned int depth;
++	struct blk_mq_hw_ctx *this_hctx = NULL;
++	struct blk_mq_ctx *this_ctx = NULL;
++	struct request *requeue_list = NULL;
++	unsigned int depth = 0;
+ 	LIST_HEAD(list);
+ 
++	do {
++		struct request *rq = rq_list_pop(&plug->mq_list);
++
++		if (!this_hctx) {
++			this_hctx = rq->mq_hctx;
++			this_ctx = rq->mq_ctx;
++		} else if (this_hctx != rq->mq_hctx || this_ctx != rq->mq_ctx) {
++			rq_list_add(&requeue_list, rq);
++			continue;
++		}
++		list_add_tail(&rq->queuelist, &list);
++		depth++;
++	} while (!rq_list_empty(plug->mq_list));
++
++	plug->mq_list = requeue_list;
++	trace_block_unplug(this_hctx->queue, depth, !from_sched);
++	blk_mq_sched_insert_requests(this_hctx, this_ctx, &list, from_sched);
++}
++
++void blk_mq_flush_plug_list(struct blk_plug *plug, bool from_schedule)
++{
+ 	if (rq_list_empty(plug->mq_list))
+ 		return;
+ 	plug->rq_count = 0;
+@@ -2261,37 +2283,9 @@ void blk_mq_flush_plug_list(struct blk_p
+ 			return;
+ 	}
+ 
+-	this_hctx = NULL;
+-	this_ctx = NULL;
+-	depth = 0;
+ 	do {
+-		struct request *rq;
+-
+-		rq = rq_list_pop(&plug->mq_list);
+-
+-		if (!this_hctx) {
+-			this_hctx = rq->mq_hctx;
+-			this_ctx = rq->mq_ctx;
+-		} else if (this_hctx != rq->mq_hctx || this_ctx != rq->mq_ctx) {
+-			trace_block_unplug(this_hctx->queue, depth,
+-						!from_schedule);
+-			blk_mq_sched_insert_requests(this_hctx, this_ctx,
+-						&list, from_schedule);
+-			depth = 0;
+-			this_hctx = rq->mq_hctx;
+-			this_ctx = rq->mq_ctx;
+-
+-		}
+-
+-		list_add(&rq->queuelist, &list);
+-		depth++;
++		blk_mq_dispatch_plug_list(plug, from_schedule);
+ 	} while (!rq_list_empty(plug->mq_list));
+-
+-	if (!list_empty(&list)) {
+-		trace_block_unplug(this_hctx->queue, depth, !from_schedule);
+-		blk_mq_sched_insert_requests(this_hctx, this_ctx, &list,
+-						from_schedule);
+-	}
+ }
+ 
+ static void blk_mq_bio_to_request(struct request *rq, struct bio *bio,
 
 
