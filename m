@@ -2,102 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0991C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02382C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1589118AbiDFASl (ORCPT
+        id S1589156AbiDFASu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        Tue, 5 Apr 2022 20:18:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348976AbiDEJsv (ORCPT
+        with ESMTP id S1350074AbiDEJwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838A521BF;
-        Tue,  5 Apr 2022 02:38:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 05:52:40 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C3F4889C;
+        Tue,  5 Apr 2022 02:50:42 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DFF161576;
-        Tue,  5 Apr 2022 09:38:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4491BC385A2;
-        Tue,  5 Apr 2022 09:38:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151515;
-        bh=JYxTO2rIP6G3utofM/I3wsvMma8X+tPaET/r2PEszRU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aAbb63CXTQT85VZR3i9LA40CpcL8+aV2y11ocVhswXbRUuBgIvINk95zdjNBcD92r
-         JfjA5QK3j4Fa/6c88aDjuItRP73LDZtWInq7fYawQhSTDYfLJ1BcWnqH0+YtU1k6pt
-         Ygu3v91fR6qxnFjOEkiGXqp7IyqpS9hR7mCrLqso=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 442/913] PCI: aardvark: Fix reading PCI_EXP_RTSTA_PME bit on emulated bridge
-Date:   Tue,  5 Apr 2022 09:25:04 +0200
-Message-Id: <20220405070353.095303188@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 961E91EC03D2;
+        Tue,  5 Apr 2022 11:50:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649152237;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:in-reply-to:
+         references; bh=DH5S/er9X11ZTTBEd8YblMTm3IG7JzpUoyr29PRpMNs=;
+        b=VIf0HM2jX1YdtVb5hTAEgk5DFZTyEuqB0Pr2VtXo15eB3Lg0QQ7MuRjsaRQs136zI4aywp
+        bSprUvF1W0ywkt8M/DAHxjVwZ+OtKoJp/xTcidpsqD7LVltVOQHQBZxqKj78+xD2NEhT1J
+        QCKGfo65e4Bz0Y2TF92Xu4qJHDWsF9A=
+Date:   Tue, 5 Apr 2022 11:50:35 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     linux-toolchains@vger.kernel.org
+Cc:     Michael Matz <matz@suse.de>, Richard Biener <rguenther@suse.de>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: older gccs and case labels producing integer constants
+Message-ID: <YkwQ6+tIH8GQpuct@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+Hi folks,
 
-[ Upstream commit 735f5ae49e1b44742cc63ca9b5c1ffde3e94ba91 ]
+I'm starting to see failures like this on allmodconfig builds:
 
-The emulated bridge returns incorrect value for PCI_EXP_RTSTA register
-during readout in advk_pci_bridge_emul_pcie_conf_read() function: the
-correct bit is BIT(16), but we are setting BIT(23), because the code
-does
-  *value = (isr0 & PCIE_MSG_PM_PME_MASK) << 16
-where
-  PCIE_MSG_PM_PME_MASK
-is
-  BIT(7).
+sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
+sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
+  case (((0xfc08) << 16) | (0x0101)):
+  ^~~~
 
-The code should probably have been something like
-  *value = (!!(isr0 & PCIE_MSG_PM_PME_MASK)) << 16,
-but we are better of using an if() and using the proper macro for this
-bit.
+(The case statement is a macro but it evaluates to what I have there)
 
-Link: https://lore.kernel.org/r/20220110015018.26359-15-kabel@kernel.org
-Fixes: 8a3ebd8de328 ("PCI: aardvark: Implement emulated root PCI bridge config space")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pci/controller/pci-aardvark.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+and that thing fails with
 
-diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
-index 7aa6d6336223..a924564fdbbc 100644
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -844,7 +844,9 @@ advk_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
- 	case PCI_EXP_RTSTA: {
- 		u32 isr0 = advk_readl(pcie, PCIE_ISR0_REG);
- 		u32 msglog = advk_readl(pcie, PCIE_MSG_LOG_REG);
--		*value = (isr0 & PCIE_MSG_PM_PME_MASK) << 16 | (msglog >> 16);
-+		*value = msglog >> 16;
-+		if (isr0 & PCIE_MSG_PM_PME_MASK)
-+			*value |= PCI_EXP_RTSTA_PME;
- 		return PCI_BRIDGE_EMUL_HANDLED;
- 	}
- 
+$ gcc --version
+gcc (SUSE Linux) 7.5.0
+
+although it doesn't have any problems building with newer compilers.
+
+I'm presuming older gccs consider those case statements signed ints and
+the following fixes it:
+
+  case ((((unsigned int)0xfc08) << 16) | (0x0101)):
+
+and I guess we can whack the couple of occurrences but what I'm
+wondering is why does this work with newer gccs?
+
+Thx.
+
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
