@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88CC2C38162
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5196AC38A05
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242348AbiDEKs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
+        id S1347460AbiDEKtR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240531AbiDEIcG (ORCPT
+        with ESMTP id S241696AbiDEIfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A524E73060;
-        Tue,  5 Apr 2022 01:24:32 -0700 (PDT)
+        Tue, 5 Apr 2022 04:35:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF7413D24;
+        Tue,  5 Apr 2022 01:32:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1DCA60FF7;
-        Tue,  5 Apr 2022 08:24:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BCB8C385A2;
-        Tue,  5 Apr 2022 08:24:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53D25B81B13;
+        Tue,  5 Apr 2022 08:32:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB2AC385A0;
+        Tue,  5 Apr 2022 08:32:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147071;
-        bh=Vsh+HEtCiPguM+o61XlDzjkagD1hYteDwNcaJuONtvk=;
+        s=korg; t=1649147528;
+        bh=uLyYd0uHzhSFJRh2HuZqwzNik1WL39MUA9/Bf0wUzQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K5v3PPQ4SexbWujKjUq85TMR1s7Xqegy7+w2SpYg3sgDhdBJp0oiO4ELsmBg29/uM
-         L3RPkgImyLq47KFsv66BWrLuHD/FlCrRfM8vCvUgtQgw2/ItQS669oT/3Dq3BF1Tah
-         eo67JdO4PKmYrwIdtl6zCzBD+NZAOA/hmwYaA8+s=
+        b=fdydisje7Op3GrMZA29QaqAIKoeiz85vNsMllGzoBKXOHIdmQW59WfKbRa3h6ETd8
+         U/A6MISkzBhQjYQMnu0o3zescKOZzjCsO25O4TOU+4YfsrFwwzf6tUmZxDhKjF05LY
+         RvydfZsZrEtCkSaYPVJszxDFTgwsHxmr1jlGoVzw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 0990/1126] scsi: qla2xxx: Fix N2N inconsistent PLOGI
-Date:   Tue,  5 Apr 2022 09:28:57 +0200
-Message-Id: <20220405070436.553346977@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 5.16 0003/1017] dt-bindings: usb: hcd: correct usb-device path
+Date:   Tue,  5 Apr 2022 09:15:16 +0200
+Message-Id: <20220405070354.268784670@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,57 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-commit c13ce47c64ea8f14e77eecb40d1e7c2ac667f898 upstream.
+commit 801109b1a37ad99784e6370cc7e462596f505ea3 upstream.
 
-For N2N topology, ELS Passthrough is used to send PLOGI. On failure of ELS
-pass through PLOGI, driver flipped over to using LLIOCB PLOGI for N2N. This
-is not consistent. Delete the session to restart the connection where ELS
-pass through PLOGI would be used consistently.
+The usb-device.yaml reference is absolute so it should use /schemas part
+in path.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-7-njavali@marvell.com
-Fixes: c76ae845ea83 ("scsi: qla2xxx: Add error handling for PLOGI ELS passthrough")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 23bf6fc7046c ("dt-bindings: usb: convert usb-device.txt to YAML schema")
+Cc: <stable@vger.kernel.org>
+Reported-by: Rob Herring <robh@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220314181830.245853-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_iocb.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ Documentation/devicetree/bindings/usb/usb-hcd.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/qla2xxx/qla_iocb.c
-+++ b/drivers/scsi/qla2xxx/qla_iocb.c
-@@ -2943,6 +2943,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
- 					set_bit(ISP_ABORT_NEEDED,
- 					    &vha->dpc_flags);
- 					qla2xxx_wake_dpc(vha);
-+					break;
- 				}
- 				fallthrough;
- 			default:
-@@ -2952,9 +2953,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
- 				    fw_status[0], fw_status[1], fw_status[2]);
+--- a/Documentation/devicetree/bindings/usb/usb-hcd.yaml
++++ b/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+@@ -33,7 +33,7 @@ patternProperties:
+   "^.*@[0-9a-f]{1,2}$":
+     description: The hard wired USB devices
+     type: object
+-    $ref: /usb/usb-device.yaml
++    $ref: /schemas/usb/usb-device.yaml
  
- 				fcport->flags &= ~FCF_ASYNC_SENT;
--				qla2x00_set_fcport_disc_state(fcport,
--				    DSC_LOGIN_FAILED);
--				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
-+				qlt_schedule_sess_for_deletion(fcport);
- 				break;
- 			}
- 			break;
-@@ -2966,8 +2965,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
- 			    fw_status[0], fw_status[1], fw_status[2]);
- 
- 			sp->fcport->flags &= ~FCF_ASYNC_SENT;
--			qla2x00_set_fcport_disc_state(fcport, DSC_LOGIN_FAILED);
--			set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
-+			qlt_schedule_sess_for_deletion(fcport);
- 			break;
- 		}
+ additionalProperties: true
  
 
 
