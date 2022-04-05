@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B990C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 919DDC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388681AbiDENc4 (ORCPT
+        id S1388722AbiDENc5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
+        Tue, 5 Apr 2022 09:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345972AbiDEJXN (ORCPT
+        with ESMTP id S1346025AbiDEJXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6415A7741;
-        Tue,  5 Apr 2022 02:12:40 -0700 (PDT)
+        Tue, 5 Apr 2022 05:23:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D93A94EF;
+        Tue,  5 Apr 2022 02:12:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F36161527;
-        Tue,  5 Apr 2022 09:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AFF3C385A3;
-        Tue,  5 Apr 2022 09:12:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10FCBB80DA1;
+        Tue,  5 Apr 2022 09:12:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73BBDC385A0;
+        Tue,  5 Apr 2022 09:12:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149959;
-        bh=uwEM9yJd8yQV8YVnMIu1YlcaI8etPYsnFYaOdz+jFvI=;
+        s=korg; t=1649149967;
+        bh=uvlY6re4qRA42gcweeLvEonqNIH1YFuQWJrOL96quZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gR8awXETXVzoAu9p/kaKR7LEyXcRkTpYAxZ03i3VmBQBkS4Gr4xgAocCzE50+AT60
-         ZBC4ZJvrOzEiNPMOSpn+IxvTdW/xaFXclN5BkbwwvpKKHqBm2DQlSoHu5tbV1SCtHJ
-         jcIFle8jV7QahPAd+/FtyrIM44iHTPL6Ac0zHKl8=
+        b=P3XX0+0HhRtkDXdWU/tgVqPYTVaNKnccsJKmUo3Ei6SAXWHw3RvsqS07zEyaN0X+k
+         scM195kCzRk1qNlepxQEYdq1ICr3kWGNJ0+THc0rnEPq/5UcIKT11AOznbPvBlHv6W
+         Zzge30qT2+XbLteaihYhSKQKJAt7QJcvyb1upvdU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        stable@vger.kernel.org, Li RongQing <lirongqing@baidu.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0903/1017] KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasnt activated
-Date:   Tue,  5 Apr 2022 09:30:16 +0200
-Message-Id: <20220405070421.029396714@linuxfoundation.org>
+Subject: [PATCH 5.16 0905/1017] KVM: x86: fix sending PV IPI
+Date:   Tue,  5 Apr 2022 09:30:18 +0200
+Message-Id: <20220405070421.088309561@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,66 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Li RongQing <lirongqing@baidu.com>
 
-commit b1e34d325397a33d97d845e312d7cf2a8b646b44 upstream.
+commit c15e0ae42c8e5a61e9aca8aac920517cf7b3e94e upstream.
 
-Setting non-zero values to SYNIC/STIMER MSRs activates certain features,
-this should not happen when KVM_CAP_HYPERV_SYNIC{,2} was not activated.
+If apic_id is less than min, and (max - apic_id) is greater than
+KVM_IPI_CLUSTER_SIZE, then the third check condition is satisfied but
+the new apic_id does not fit the bitmask.  In this case __send_ipi_mask
+should send the IPI.
 
-Note, it would've been better to forbid writing anything to SYNIC/STIMER
-MSRs, including zeroes, however, at least QEMU tries clearing
-HV_X64_MSR_STIMER0_CONFIG without SynIC. HV_X64_MSR_EOM MSR is somewhat
-'special' as writing zero there triggers an action, this also should not
-happen when SynIC wasn't activated.
+This is mostly theoretical, but it can happen if the apic_ids on three
+iterations of the loop are for example 1, KVM_IPI_CLUSTER_SIZE, 0.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220325132140.25650-4-vkuznets@redhat.com>
+Fixes: aaffcfd1e82 ("KVM: X86: Implement PV IPIs in linux guest")
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Message-Id: <1646814944-51801-1-git-send-email-lirongqing@baidu.com>
 Cc: stable@vger.kernel.org
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/hyperv.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/x86/kernel/kvm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -236,7 +236,7 @@ static int synic_set_msr(struct kvm_vcpu
- 	struct kvm_vcpu *vcpu = hv_synic_to_vcpu(synic);
- 	int ret;
- 
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || data))
- 		return 1;
- 
- 	trace_kvm_hv_synic_set_msr(vcpu->vcpu_id, msr, data, host);
-@@ -282,6 +282,9 @@ static int synic_set_msr(struct kvm_vcpu
- 	case HV_X64_MSR_EOM: {
- 		int i;
- 
-+		if (!synic->active)
-+			break;
-+
- 		for (i = 0; i < ARRAY_SIZE(synic->sint); i++)
- 			kvm_hv_notify_acked_sint(vcpu, i);
- 		break;
-@@ -661,7 +664,7 @@ static int stimer_set_config(struct kvm_
- 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
- 	struct kvm_vcpu_hv_synic *synic = to_hv_synic(vcpu);
- 
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || config))
- 		return 1;
- 
- 	if (unlikely(!host && hv_vcpu->enforce_cpuid && new_config.direct_mode &&
-@@ -690,7 +693,7 @@ static int stimer_set_count(struct kvm_v
- 	struct kvm_vcpu *vcpu = hv_stimer_to_vcpu(stimer);
- 	struct kvm_vcpu_hv_synic *synic = to_hv_synic(vcpu);
- 
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || count))
- 		return 1;
- 
- 	trace_kvm_hv_stimer_set_count(hv_stimer_to_vcpu(stimer)->vcpu_id,
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -515,7 +515,7 @@ static void __send_ipi_mask(const struct
+ 		} else if (apic_id < min && max - apic_id < KVM_IPI_CLUSTER_SIZE) {
+ 			ipi_bitmap <<= min - apic_id;
+ 			min = apic_id;
+-		} else if (apic_id < min + KVM_IPI_CLUSTER_SIZE) {
++		} else if (apic_id > min && apic_id < min + KVM_IPI_CLUSTER_SIZE) {
+ 			max = apic_id < max ? max : apic_id;
+ 		} else {
+ 			ret = kvm_hypercall4(KVM_HC_SEND_IPI, (unsigned long)ipi_bitmap,
 
 
