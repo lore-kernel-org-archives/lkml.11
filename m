@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 299A9C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 498E6C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358457AbiDENJR (ORCPT
+        id S1359044AbiDENKB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
+        Tue, 5 Apr 2022 09:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344140AbiDEJSV (ORCPT
+        with ESMTP id S1344159AbiDEJS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EB63EF0F;
-        Tue,  5 Apr 2022 02:04:28 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2620B5B3D3;
+        Tue,  5 Apr 2022 02:04:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15AED61003;
-        Tue,  5 Apr 2022 09:04:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26178C385A0;
-        Tue,  5 Apr 2022 09:04:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B51F8614E4;
+        Tue,  5 Apr 2022 09:04:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE5F8C385A1;
+        Tue,  5 Apr 2022 09:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149467;
-        bh=PO+v1NGDZSFuCJOfKRhcwLT/UGuZnCflCoV+NHjU9mY=;
+        s=korg; t=1649149484;
+        bh=2R99bVrCP0tjVddYJvZrWRKY00NA2/UxWhsgD5k3QFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MPP+tPqOE8DD9U2o8ZE/vr/N7aUJH9UTcOSeZrcBF4n38XrsGDiNZ1CqUq3k3fysp
-         pYcNdLmEvFlsL+4L5N/Mz3m8rPcjGjLS9ok5JIumEZ+xRkPL9OGnag8G5u/7pRpzXM
-         BQvELyEllQLVSjIKLlbldyHXe99GQ77NmaR/ANH4=
+        b=F0FrIYhx+Adn3mY7QlmwD2sTvkDkJV96Eq4ClnbzRWNLFQeggb4fM2vwTOP/lmmZM
+         ih3s9/2UwvbF6JrBt9doYozq10obfCGDKKrEoap2Q85jwQyLMB+esszluQLCc43Ou8
+         4nFXk/JIAE62dKZs37elvxbWDccFCayEVz4qbnVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0726/1017] clk: Initialize orphan req_rate
-Date:   Tue,  5 Apr 2022 09:27:19 +0200
-Message-Id: <20220405070415.816060836@linuxfoundation.org>
+Subject: [PATCH 5.16 0731/1017] net: hns3: add vlan list lock to protect vlan list
+Date:   Tue,  5 Apr 2022 09:27:24 +0200
+Message-Id: <20220405070415.965539838@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,66 +51,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit 5f7e2af00807f2117650e711a58b7f0e986ce1df ]
+[ Upstream commit 1932a624ab88ff407d1a1d567fe581faa15dc725 ]
 
-When registering a clock that doesn't have a recalc_rate implementation,
-and doesn't have its parent registered yet, we initialize the clk_core
-rate and 'req_rate' fields to 0.
+When adding port base VLAN, vf VLAN need to remove from HW and modify
+the vlan state in vf VLAN list as false. If the periodicity task is
+freeing the same node, it may cause "use after free" error.
+This patch adds a vlan list lock to protect the vlan list.
 
-The rate field is later updated when the parent is registered in
-clk_core_reparent_orphans_nolock() using __clk_recalc_rates(), but the
-'req_rate' field is never updated.
-
-This leads to an issue in clk_set_rate_range() and clk_put(), since
-those functions will call clk_set_rate() with the content of 'req_rate'
-to provide drivers with the opportunity to change the rate based on the
-new boundaries. In this case, we would call clk_set_rate() with a rate
-of 0, effectively enforcing the minimum allowed for this clock whenever
-we would call one of those two functions, even though the actual rate
-might be within range.
-
-Let's fix this by setting 'req_rate' in
-clk_core_reparent_orphans_nolock() with the rate field content just
-updated by the call to __clk_recalc_rates().
-
-Fixes: 1c8e600440c7 ("clk: Add rate constraints to clocks")
-Reported-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com> # T30 Nexus7
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220325161144.1901695-2-maxime@cerno.tech
-[sboyd@kernel.org: Reword comment]
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: c6075b193462 ("net: hns3: Record VF vlan tables")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 38 +++++++++++++++++--
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  1 +
+ 2 files changed, 35 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index e55ddc12ed53..2c5db2df9d42 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -3413,6 +3413,19 @@ static void clk_core_reparent_orphans_nolock(void)
- 			__clk_set_parent_after(orphan, parent, NULL);
- 			__clk_recalc_accuracies(orphan);
- 			__clk_recalc_rates(orphan, 0);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 0338b4ffa003..3ba24c6d004d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -10237,19 +10237,28 @@ static void hclge_add_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 				       bool writen_to_tbl)
+ {
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
++	struct hclge_dev *hdev = vport->back;
+ 
+-	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node)
+-		if (vlan->vlan_id == vlan_id)
++	mutex_lock(&hdev->vport_lock);
 +
-+			/*
-+			 * __clk_init_parent() will set the initial req_rate to
-+			 * 0 if the clock doesn't have clk_ops::recalc_rate and
-+			 * is an orphan when it's registered.
-+			 *
-+			 * 'req_rate' is used by clk_set_rate_range() and
-+			 * clk_put() to trigger a clk_set_rate() call whenever
-+			 * the boundaries are modified. Let's make sure
-+			 * 'req_rate' is set to something non-zero so that
-+			 * clk_set_rate_range() doesn't drop the frequency.
-+			 */
-+			orphan->req_rate = orphan->rate;
++	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
++		if (vlan->vlan_id == vlan_id) {
++			mutex_unlock(&hdev->vport_lock);
+ 			return;
++		}
++	}
+ 
+ 	vlan = kzalloc(sizeof(*vlan), GFP_KERNEL);
+-	if (!vlan)
++	if (!vlan) {
++		mutex_unlock(&hdev->vport_lock);
+ 		return;
++	}
+ 
+ 	vlan->hd_tbl_status = writen_to_tbl;
+ 	vlan->vlan_id = vlan_id;
+ 
+ 	list_add_tail(&vlan->node, &vport->vlan_list);
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+@@ -10258,6 +10267,8 @@ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+ 	struct hclge_dev *hdev = vport->back;
+ 	int ret;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (!vlan->hd_tbl_status) {
+ 			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
+@@ -10267,12 +10278,16 @@ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+ 				dev_err(&hdev->pdev->dev,
+ 					"restore vport vlan list failed, ret=%d\n",
+ 					ret);
++
++				mutex_unlock(&hdev->vport_lock);
+ 				return ret;
+ 			}
+ 		}
+ 		vlan->hd_tbl_status = true;
+ 	}
+ 
++	mutex_unlock(&hdev->vport_lock);
++
+ 	return 0;
+ }
+ 
+@@ -10282,6 +10297,8 @@ static void hclge_rm_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
+ 	struct hclge_dev *hdev = vport->back;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (vlan->vlan_id == vlan_id) {
+ 			if (is_write_tbl && vlan->hd_tbl_status)
+@@ -10296,6 +10313,8 @@ static void hclge_rm_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 			break;
  		}
  	}
++
++	mutex_unlock(&hdev->vport_lock);
  }
+ 
+ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+@@ -10303,6 +10322,8 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
+ 	struct hclge_dev *hdev = vport->back;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (vlan->hd_tbl_status)
+ 			hclge_set_vlan_filter_hw(hdev,
+@@ -10318,6 +10339,7 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+ 		}
+ 	}
+ 	clear_bit(vport->vport_id, hdev->vf_vlan_full);
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+@@ -10326,6 +10348,8 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+ 	struct hclge_vport *vport;
+ 	int i;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	for (i = 0; i < hdev->num_alloc_vport; i++) {
+ 		vport = &hdev->vport[i];
+ 		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+@@ -10333,6 +10357,8 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+ 			kfree(vlan);
+ 		}
+ 	}
++
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ void hclge_restore_vport_port_base_vlan_config(struct hclge_dev *hdev)
+@@ -10372,6 +10398,8 @@ void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
+ 	struct hclge_dev *hdev = vport->back;
+ 	int ret;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	if (vport->port_base_vlan_cfg.state == HNAE3_PORT_BASE_VLAN_DISABLE) {
+ 		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
+@@ -10382,6 +10410,8 @@ void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
+ 			vlan->hd_tbl_status = true;
+ 		}
+ 	}
++
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ /* For global reset and imp reset, hardware will clear the mac table,
+@@ -12279,8 +12309,8 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	hclge_misc_irq_uninit(hdev);
+ 	hclge_devlink_uninit(hdev);
+ 	hclge_pci_uninit(hdev);
+-	mutex_destroy(&hdev->vport_lock);
+ 	hclge_uninit_vport_vlan_table(hdev);
++	mutex_destroy(&hdev->vport_lock);
+ 	ae_dev->priv = NULL;
+ }
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 801268b61e96..c841cce2d025 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -1087,6 +1087,7 @@ struct hclge_vport {
+ 	spinlock_t mac_list_lock; /* protect mac address need to add/detele */
+ 	struct list_head uc_mac_list;   /* Store VF unicast table */
+ 	struct list_head mc_mac_list;   /* Store VF multicast table */
++
+ 	struct list_head vlan_list;     /* Store VF vlan table */
+ };
+ 
 -- 
 2.34.1
 
