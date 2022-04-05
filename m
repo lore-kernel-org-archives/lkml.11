@@ -2,84 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4E6C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 799C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847109AbiDFCM7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
+        id S235133AbiDFCNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 22:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354178AbiDEKMP (ORCPT
+        with ESMTP id S245710AbiDEUNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EA3527EF;
-        Tue,  5 Apr 2022 02:58:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64A186167E;
-        Tue,  5 Apr 2022 09:58:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C16C385A2;
-        Tue,  5 Apr 2022 09:58:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152682;
-        bh=957SGL9KQznzdENY4XdnryY6MFqclkMVRwcwl8CH+qQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BPzGdoFltwH3TGxMYYISUNdT1MGvpNTAdn5rkS0aPav1NbM/Q7sFjO7YB0trJpvrm
-         /wbPwzwcsDab8zU1/AMB+7wTvQujVUpvlb+q+KhBgRCuk4lV0QCuUueuZTRs5dPBdq
-         1EDH6ttxuhVAfZ4bTE9/v2iTsyqo+5ErMHQduQqc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        Zeal Robot <zealci@zte.com.cn>, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 863/913] proc: bootconfig: Add null pointer check
-Date:   Tue,  5 Apr 2022 09:32:05 +0200
-Message-Id: <20220405070405.693718564@linuxfoundation.org>
+        Tue, 5 Apr 2022 16:13:33 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9317FF94FD;
+        Tue,  5 Apr 2022 12:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=TFVjDpMBzikmsOPbftDhPL/vuxdtl+pABOZRs13meDI=; b=on2i/12safI584EKtjB+2mXflF
+        RCUdyDig4wDPF1t5RxfXOvodcEQHARZFV9YAvk4Tf2Jgid1N9zL6YFukmjNl5u2qaSNnlvXx+w4Xs
+        YLpsVKUhteCxx3RgspyKDIxRkl32bHTYJFe1gtT0ALVifAXNhChYe0iWa6EPOvfMbFv0=;
+Received: from p200300daa70ef200456864e8b8d10029.dip0.t-ipconnect.de ([2003:da:a70e:f200:4568:64e8:b8d1:29] helo=Maecks.lan)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nbpJQ-00035V-HQ; Tue, 05 Apr 2022 21:58:00 +0200
+From:   Felix Fietkau <nbd@nbd.name>
+To:     netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 03/14] arm64: dts: mediatek: mt7622: add support for coherent DMA
+Date:   Tue,  5 Apr 2022 21:57:44 +0200
+Message-Id: <20220405195755.10817-4-nbd@nbd.name>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405195755.10817-1-nbd@nbd.name>
+References: <20220405195755.10817-1-nbd@nbd.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+It improves performance by eliminating the need for a cache flush on rx and tx
 
-commit bed5b60bf67ccd8957b8c0558fead30c4a3f5d3f upstream.
-
-kzalloc is a memory allocation function which can return NULL when some
-internal memory errors happen. It is safer to add null pointer check.
-
-Link: https://lkml.kernel.org/r/20220329104004.2376879-1-lv.ruyi@zte.com.cn
-
-Cc: stable@vger.kernel.org
-Fixes: c1a3c36017d4 ("proc: bootconfig: Add /proc/bootconfig to show boot config list")
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- fs/proc/bootconfig.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt7622.dtsi | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/fs/proc/bootconfig.c
-+++ b/fs/proc/bootconfig.c
-@@ -32,6 +32,8 @@ static int __init copy_xbc_key_value_lis
- 	int ret = 0;
+diff --git a/arch/arm64/boot/dts/mediatek/mt7622.dtsi b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
+index 6f8cb3ad1e84..a2257ec6d256 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7622.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
+@@ -357,7 +357,7 @@ cci_control1: slave-if@4000 {
+ 		};
  
- 	key = kzalloc(XBC_KEYLEN_MAX, GFP_KERNEL);
-+	if (!key)
-+		return -ENOMEM;
- 
- 	xbc_for_each_key_value(leaf, val) {
- 		ret = xbc_node_compose_key(leaf, key, XBC_KEYLEN_MAX);
-
+ 		cci_control2: slave-if@5000 {
+-			compatible = "arm,cci-400-ctrl-if";
++			compatible = "arm,cci-400-ctrl-if", "syscon";
+ 			interface-type = "ace";
+ 			reg = <0x5000 0x1000>;
+ 		};
+@@ -945,6 +945,8 @@ eth: ethernet@1b100000 {
+ 		power-domains = <&scpsys MT7622_POWER_DOMAIN_ETHSYS>;
+ 		mediatek,ethsys = <&ethsys>;
+ 		mediatek,sgmiisys = <&sgmiisys>;
++		mediatek,cci-control = <&cci_control2>;
++		dma-coherent;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 		status = "disabled";
+-- 
+2.35.1
 
