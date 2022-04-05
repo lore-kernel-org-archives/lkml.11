@@ -2,142 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05460C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0880C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:38:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383056AbiDEVjU (ORCPT
+        id S1383494AbiDEVjm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        Tue, 5 Apr 2022 17:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349477AbiDEJtz (ORCPT
+        with ESMTP id S1358862AbiDELRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99EC10B6;
-        Tue,  5 Apr 2022 02:47:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A961B81B14;
-        Tue,  5 Apr 2022 09:47:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D91D9C385A1;
-        Tue,  5 Apr 2022 09:47:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152027;
-        bh=oYKkbZrm7pxnfDKheAyX3y1/Hm+QiAx86q2QPbVeBdo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QV5g18gKkeW3IxWjsFhy2eLXmP+fzKJYgjLpYzPnBvVpevPQVxnVoZgEGXIo6jwPw
-         uyd3l61nZSmHjMi46Q2x2y5E/0OZPdorq8W+yaEwnsLgV1sxt5ctc3E7NgG2pCNqIj
-         eyfTqYtTAapWARbAgAeowKauH7haz/drs/Dz0AuY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 629/913] staging: mt7621-dts: fix pinctrl properties for ethernet
-Date:   Tue,  5 Apr 2022 09:28:11 +0200
-Message-Id: <20220405070358.692961623@linuxfoundation.org>
+        Tue, 5 Apr 2022 07:17:39 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8B5890B6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:49:26 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bg10so25873759ejb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 03:49:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7577hiEEV60XWnU+gm9ig1vjqa65ibu1AZU+K7+N5IQ=;
+        b=E+cn+nYJ0eiXQPg7n4oHQaZOzpWn0DzsXu6Eyo8UPMxYDv6mVqQAQ7PPnro/TdPijA
+         FB1YZYILpwko9Q603p48/DJrOPcBcCeYTQ1UrV8uvnGf8Qucx/2jh63VT2P/ouJudb3I
+         I8mXgcTc9T0+Cm5E8ug6Kwn5INkDW2q1bP93Qvigi9QClBrc7nDrxhKPVKQtZVUZWEiB
+         P4yLWkpWOfLcwXk+dj6s8iIJf+D/mY31Y7nQaFBefs/LxtcstHiq13dkfdiaEo8NAIeL
+         9P87QqFuF8mH9xpKuQ0yql9arUlaCMOPWvOKgYhpyVaooeRb8dp5W0Sw6RKNYr655mz6
+         DfhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7577hiEEV60XWnU+gm9ig1vjqa65ibu1AZU+K7+N5IQ=;
+        b=komZRqmWZBxlCjfEFf+l/EZGP4p5xYH+qA9E6yqzJ8ouUgY+L2Bt5GPN3Q310/WsXK
+         T9bDXbWDV+zMeg84VacGBOv02c2mP/J9+eu1fuO9v+7ixQXv+TTqGq6Kk1BXNKxPQFYg
+         rXCT5ZQCmswSiFAvTUk0kneqreV6GANv8+xwRbvciVhVLDoU/d81UId6PwxTeZO82VkE
+         PqLPQ+qZQLH6C/iQ11hgVjnzkCtxCLdIRUcEVzZJpDLBk14MyvBdy5EgV6OjUdxNq0BU
+         Y+GVAf0cknPXilLB4/IaBTh4j8noT03wRNK8idA4BQwz03hnvWimq8av3pw8habcTFB2
+         YTHQ==
+X-Gm-Message-State: AOAM531fkC4XgJ5x/dmgbeF+Mb5BldxT1oNQ/HJwE5h7shMiYzuFhTSW
+        LPVjPIh+t1c4CGfPTECv/c+i9QbVwFY=
+X-Google-Smtp-Source: ABdhPJzlWvczrjaKZjKGrm8PwiUl7ri7bCRqBl55s3ADRN2o7JLvUjYq6wkv+QrsdJTIEZtmGbh2Qw==
+X-Received: by 2002:a17:906:9b8f:b0:6db:ab62:4713 with SMTP id dd15-20020a1709069b8f00b006dbab624713mr2905921ejc.738.1649155765362;
+        Tue, 05 Apr 2022 03:49:25 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm2436702edl.28.2022.04.05.03.49.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 03:49:24 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH v2 0/4] staging: r8188eu: remove GetHalDefVar8188EUsb()
+Date:   Tue,  5 Apr 2022 12:49:06 +0200
+Message-Id: <20220405104910.9769-1-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+This series removes the function GetHalDefVar8188EUsb(). This is part
+of the ongoing effort to get rid of the unwanted hal layer.
 
-[ Upstream commit 0a93c0d75809582893e82039143591b9265b520e ]
+Tested on x86_64 with Inter-Tech DMG-02.
 
-Add pinctrl properties with rgmii1 & mdio pins under ethernet node which
-was wrongfully put under an external phy node.
-GMAC1 will start working with this fix.
+v2:
+- remove dead code first
+- use better function names
+- make one function static
 
-Link: https://lore.kernel.org/netdev/02ecce91-7aad-4392-c9d7-f45ca1b31e0b@arinc9.com/T/
+Michael Straube (4):
+  staging: r8188eu: cur_ant is set but never used
+  staging: r8188eu: remove HAL_DEF_IS_SUPPORT_ANT_DIV
+  staging: r8188eu: remove HAL_DEF_CURRENT_ANTENNA
+  staging: r8188eu: remove GetHalDefVar8188EUsb()
 
-Move GB-PC2 specific phy_external node to its own device tree.
+ drivers/staging/r8188eu/core/rtw_cmd.c       | 11 ++++++++---
+ drivers/staging/r8188eu/core/rtw_mlme.c      | 19 ++++++++++---------
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c  |  2 +-
+ drivers/staging/r8188eu/hal/usb_halinit.c    | 20 --------------------
+ drivers/staging/r8188eu/include/hal_intf.h   |  3 ---
+ drivers/staging/r8188eu/include/rtw_mlme.h   |  2 ++
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c |  8 +-------
+ 7 files changed, 22 insertions(+), 43 deletions(-)
 
-Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220125153903.1469-5-arinc.unal@arinc9.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/staging/mt7621-dts/gbpc2.dts   | 16 +++++++++++-----
- drivers/staging/mt7621-dts/mt7621.dtsi | 13 +++----------
- 2 files changed, 14 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/drivers/staging/mt7621-dts/gbpc2.dts
-index 52760e7351f6..f9b69091bfc0 100644
---- a/drivers/staging/mt7621-dts/gbpc2.dts
-+++ b/drivers/staging/mt7621-dts/gbpc2.dts
-@@ -12,10 +12,16 @@
- 	function = "gpio";
- };
- 
--&gmac1 {
--	status = "ok";
--};
-+&ethernet {
-+	gmac1: mac@1 {
-+		status = "ok";
-+		phy-handle = <&phy_external>;
-+	};
- 
--&phy_external {
--	status = "ok";
-+	mdio-bus {
-+		phy_external: ethernet-phy@5 {
-+			reg = <5>;
-+			phy-mode = "rgmii-rxid";
-+		};
-+	};
- };
-diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
-index eca384cdec39..99b0eef1f3e2 100644
---- a/drivers/staging/mt7621-dts/mt7621.dtsi
-+++ b/drivers/staging/mt7621-dts/mt7621.dtsi
-@@ -391,6 +391,9 @@
- 
- 		mediatek,ethsys = <&sysc>;
- 
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
-+
- 		gmac0: mac@0 {
- 			compatible = "mediatek,eth-mac";
- 			reg = <0>;
-@@ -408,22 +411,12 @@
- 			reg = <1>;
- 			status = "off";
- 			phy-mode = "rgmii-rxid";
--			phy-handle = <&phy_external>;
- 		};
- 
- 		mdio-bus {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 
--			phy_external: ethernet-phy@5 {
--				status = "off";
--				reg = <5>;
--				phy-mode = "rgmii-rxid";
--
--				pinctrl-names = "default";
--				pinctrl-0 = <&rgmii2_pins>;
--			};
--
- 			switch0: switch0@0 {
- 				compatible = "mediatek,mt7621";
- 				#address-cells = <1>;
 -- 
-2.34.1
-
-
+2.35.1
 
