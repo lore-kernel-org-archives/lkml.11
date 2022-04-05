@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABE1C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 236F9C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356766AbiDENIO (ORCPT
+        id S1354412AbiDENH2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
+        Tue, 5 Apr 2022 09:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344026AbiDEJQw (ORCPT
+        with ESMTP id S1344005AbiDEJQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5B71EED8;
-        Tue,  5 Apr 2022 02:03:44 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFDA103A;
+        Tue,  5 Apr 2022 02:03:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0FEE61003;
-        Tue,  5 Apr 2022 09:03:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF58BC385A1;
-        Tue,  5 Apr 2022 09:03:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87582B81B75;
+        Tue,  5 Apr 2022 09:03:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4957C385A0;
+        Tue,  5 Apr 2022 09:03:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149423;
-        bh=/vXsamBdSnO41BjFWNF63X0LjmmtbeaDPUrPjiNI93w=;
+        s=korg; t=1649149401;
+        bh=qvusbBPuYdsN3sqfRvkht8fOdx3soLx1h8Yr8dGBKSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dtYM2HmN25vmPdUgzWHPKq0m5bbYLsycqePUX8O4uKXiVPq6BPlYarFMSxirWb3/Y
-         R1yr2gBhmE5y6O53O+nSTXUCMEiCuH6TiXjtc44S6XxurzoJNIqKvnLGTgNP6IIpwA
-         jcAUZzrBwRP7t1H8gEN87ACK5ukvDIfsIukzGeEA=
+        b=JncPV428CrXCmeDR8UvYT6+0/PlnKL0OYHvvmdDImP7YucuItyIUdq+aAiouZ3jBV
+         rWGRrw6OrCH8FQ0rM4eWfic4zMA0fAEwExBZmHQsRAV7iTL0H8t4p+4XFXsmH/Ow84
+         V2PqasxtMJMy0eCUVvEdlS7OHGe0A4PIq4K983L4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>,
-        Fei Li <fei1.li@intel.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0708/1017] virt: acrn: fix a memory leak in acrn_dev_ioctl()
-Date:   Tue,  5 Apr 2022 09:27:01 +0200
-Message-Id: <20220405070415.286563038@linuxfoundation.org>
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0700/1017] pinctrl: mediatek: paris: Skip custom extra pin config dump for virtual GPIOs
+Date:   Tue,  5 Apr 2022 09:26:53 +0200
+Message-Id: <20220405070415.050113867@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,74 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaolong Huang <butterflyhuangxx@gmail.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit ecd1735f14d6ac868ae5d8b7a2bf193fa11f388b ]
+[ Upstream commit 1763933d377ecb05454f8d20e3c8922480db2ac0 ]
 
-The vm_param and cpu_regs need to be freed via kfree()
-before return -EINVAL error.
+Virtual GPIOs do not have any hardware state associated with them. Any
+attempt to read back hardware state for these pins result in error
+codes.
 
-Fixes: 9c5137aedd11 ("virt: acrn: Introduce VM management interfaces")
-Fixes: 2ad2aaee1bc9 ("virt: acrn: Introduce an ioctl to set vCPU registers state")
-Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
-Signed-off-by: Fei Li <fei1.li@intel.com>
-Link: https://lore.kernel.org/r/20220308092047.1008409-1-butterflyhuangxx@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Skip dumping extra pin config information for these virtual GPIOs.
+
+Fixes: 184d8e13f9b1 ("pinctrl: mediatek: Add support for pin configuration dump via debugfs.")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-7-wenst@chromium.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virt/acrn/hsm.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+ drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/virt/acrn/hsm.c b/drivers/virt/acrn/hsm.c
-index 5419794fccf1..423ea888d79a 100644
---- a/drivers/virt/acrn/hsm.c
-+++ b/drivers/virt/acrn/hsm.c
-@@ -136,8 +136,10 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
- 		if (IS_ERR(vm_param))
- 			return PTR_ERR(vm_param);
+diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
+index faf11c9e1db3..154d55a239e8 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -581,6 +581,9 @@ ssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,
+ 	if (gpio >= hw->soc->npins)
+ 		return -EINVAL;
  
--		if ((vm_param->reserved0 | vm_param->reserved1) != 0)
-+		if ((vm_param->reserved0 | vm_param->reserved1) != 0) {
-+			kfree(vm_param);
- 			return -EINVAL;
-+		}
- 
- 		vm = acrn_vm_create(vm, vm_param);
- 		if (!vm) {
-@@ -182,21 +184,29 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
- 			return PTR_ERR(cpu_regs);
- 
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->reserved); i++)
--			if (cpu_regs->reserved[i])
-+			if (cpu_regs->reserved[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
- 
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_32); i++)
--			if (cpu_regs->vcpu_regs.reserved_32[i])
-+			if (cpu_regs->vcpu_regs.reserved_32[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
- 
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_64); i++)
--			if (cpu_regs->vcpu_regs.reserved_64[i])
-+			if (cpu_regs->vcpu_regs.reserved_64[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
- 
- 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.gdt.reserved); i++)
- 			if (cpu_regs->vcpu_regs.gdt.reserved[i] |
--			    cpu_regs->vcpu_regs.idt.reserved[i])
-+			    cpu_regs->vcpu_regs.idt.reserved[i]) {
-+				kfree(cpu_regs);
- 				return -EINVAL;
-+			}
- 
- 		ret = hcall_set_vcpu_regs(vm->vmid, virt_to_phys(cpu_regs));
- 		if (ret < 0)
++	if (mtk_is_virt_gpio(hw, gpio))
++		return -EINVAL;
++
+ 	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
+ 	pinmux = mtk_pctrl_get_pinmux(hw, gpio);
+ 	if (pinmux >= hw->soc->nfuncs)
 -- 
 2.34.1
 
