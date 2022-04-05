@@ -2,185 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CFDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 827FBC35295
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442458AbiDEWTU (ORCPT
+        id S1442730AbiDEWTf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
+        Tue, 5 Apr 2022 18:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573646AbiDET30 (ORCPT
+        with ESMTP id S1356861AbiDEKZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:29:26 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF8BBE9FD;
-        Tue,  5 Apr 2022 12:27:27 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 19:27:24 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649186846;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Tue, 5 Apr 2022 06:25:00 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA89C12EB;
+        Tue,  5 Apr 2022 03:09:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 4B8321F745;
+        Tue,  5 Apr 2022 10:09:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649153348; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Apj1WNSGkjJ8qBld0G1fRhqZVHswRua50ugsNNzGKZA=;
-        b=QPqFejLM6vWh5deYEFxaZoFIBFKWHoVyPGm85w6i7iuyvsSRDwtbqrivldew8s14epXpRO
-        AmIt6LPMpBS9YhYCnf12zzcRyvVubo0G1rfg52HgHjzQYeuHeLiKuop+5wETPAnq2nnnf1
-        d3YHJQSL5o71KwFZbuEuAqLABbsRE2WwHJobqN7o1dsgla+VQOaMJjJ51d39TCUBa5l2nE
-        O4SsX7eUofQEKU241+pTSWLG1bMCVdjkJu6jdzzfjTxOcmShZ8VBtMxM4U3oIXydtlG9Jq
-        E+6YhZdyANBwc2d9tbMygOvo29Qv40trnKzT+w8elvNr8lcuVzHqBccLp94nPA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649186846;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Apj1WNSGkjJ8qBld0G1fRhqZVHswRua50ugsNNzGKZA=;
-        b=ClPuWOqOgjfUWaEacCw4zTvpCV5dZvv9YBZ3flIzRVJMPq4KC9Codtf7GaJI4RXocIs4D5
-        pNJWGQ/gyOq+IZCw==
-From:   "tip-bot2 for Muralidhara M K" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/misc] x86/amd_nb: Unexport amd_cache_northbridges()
-Cc:     Muralidhara M K <muralimk@amd.com>,
-        Naveen Krishna Chatradhi <nchatrad@amd.com>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220324122729.221765-1-nchatrad@amd.com>
-References: <20220324122729.221765-1-nchatrad@amd.com>
+        bh=s2JAhA7wRXjstDGSBxsda1XlMcvrnOLvDvnRGSGBhWQ=;
+        b=VUzkhbo1IP8rBXBSTb+xi5+IO+JKiwE8GKiq1RV8GvLLp621TtLgWINmac+lMjA3AxHC7/
+        U+KDroTz7bzqhgUsS1Gvm4ACqI7ELwJOUTcIP0zkEutls9EakN7ohOic0E9tlWNymY7qr2
+        xEeaJnx+CzP6OJK8UrMwCtA0b8swnf8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0023613A04;
+        Tue,  5 Apr 2022 10:09:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Bx79OkMVTGI0SQAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Tue, 05 Apr 2022 10:09:07 +0000
+Date:   Tue, 5 Apr 2022 12:09:06 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Wei Xu <weixugc@google.com>, Johannes Weiner <hannes@cmpxchg.org>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Cgroups <cgroups@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Thelen <gthelen@google.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+Message-ID: <20220405100906.GB13806@blackbody.suse.cz>
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+ <CAAPL-u8g2qkhdTQtFtBS3GNYz0WnyahWEXvR4g_OSaKv+7EozA@mail.gmail.com>
+ <YkcYq8F6MYlMi+yS@cmpxchg.org>
+ <CAAPL-u-za-TTyyC5uMVev9eQyhxZS7q3pVqaUxCFjqk+Sv9+ig@mail.gmail.com>
+ <CALvZod4-fKfv6vbZPZ3nCE=Bue4FUnC+9t27wsznmyd+JKgDbg@mail.gmail.com>
 MIME-Version: 1.0
-Message-ID: <164918684484.389.10138844403913568515.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALvZod4-fKfv6vbZPZ3nCE=Bue4FUnC+9t27wsznmyd+JKgDbg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/misc branch of tip:
+On Mon, Apr 04, 2022 at 10:08:43AM -0700, Shakeel Butt <shakeelb@google.com> wrote:
+> What would be the challenge on returning the number of bytes reclaimed
+> through cgroup interface?
 
-Commit-ID:     e1907d37514b8564ba18b4a768a35beee71cb011
-Gitweb:        https://git.kernel.org/tip/e1907d37514b8564ba18b4a768a35beee71cb011
-Author:        Muralidhara M K <muralimk@amd.com>
-AuthorDate:    Thu, 24 Mar 2022 17:57:29 +05:30
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 05 Apr 2022 19:22:27 +02:00
+You'd need an object that represents the write size:
 
-x86/amd_nb: Unexport amd_cache_northbridges()
+> bfd = open("/sys/kernel/mm/reclaim/balloon", O_RDWR);
+> dprintf(bfd, "type=file nodemask=1-2 timeout=30\n")
+> 
+> fd = open("/sys/kernel/fs/cgroup/foo/memory.reclaim", O_WRONLY);
+> reclaimed = splice(bfd, NULL, fd, NULL, reclaim_size);
 
-amd_cache_northbridges() is exported by amd_nb.c and is called by
-amd64-agp.c and amd64_edac.c modules at module_init() time so that NB
-descriptors are properly cached before those drivers can use them.
+(I'm joking with this API but it is a resembling concept.)
 
-However, the init_amd_nbs() initcall already does call
-amd_cache_northbridges() unconditionally and thus makes sure the NB
-descriptors are enumerated.
-
-That initcall is a fs_initcall type which is on the 5th group (starting
-from 0) of initcalls that gets run in increasing numerical order by the
-init code.
-
-The module_init() call is turned into an __initcall() in the MODULE=n
-case and those are device-level initcalls, i.e., group 6.
-
-Therefore, the northbridges caching is already finished by the time
-module initialization starts and thus the correct initialization order
-is retained.
-
-Unexport amd_cache_northbridges(), update dependent modules to
-call amd_nb_num() instead. While at it, simplify the checks in
-amd_cache_northbridges().
-
-  [ bp: Heavily massage and *actually* explain why the change is ok. ]
-
-Signed-off-by: Muralidhara M K <muralimk@amd.com>
-Signed-off-by: Naveen Krishna Chatradhi <nchatrad@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220324122729.221765-1-nchatrad@amd.com
----
- arch/x86/include/asm/amd_nb.h | 1 -
- arch/x86/kernel/amd_nb.c      | 7 +++----
- drivers/char/agp/amd64-agp.c  | 2 +-
- drivers/edac/amd64_edac.c     | 2 +-
- 4 files changed, 5 insertions(+), 7 deletions(-)
-
-diff --git a/arch/x86/include/asm/amd_nb.h b/arch/x86/include/asm/amd_nb.h
-index 00d1a40..ed0eaf6 100644
---- a/arch/x86/include/asm/amd_nb.h
-+++ b/arch/x86/include/asm/amd_nb.h
-@@ -16,7 +16,6 @@ extern const struct amd_nb_bus_dev_range amd_nb_bus_dev_ranges[];
- 
- extern bool early_is_amd_nb(u32 value);
- extern struct resource *amd_get_mmconfig_range(struct resource *res);
--extern int amd_cache_northbridges(void);
- extern void amd_flush_garts(void);
- extern int amd_numa_init(void);
- extern int amd_get_subcaches(int);
-diff --git a/arch/x86/kernel/amd_nb.c b/arch/x86/kernel/amd_nb.c
-index 020c906..190e0f7 100644
---- a/arch/x86/kernel/amd_nb.c
-+++ b/arch/x86/kernel/amd_nb.c
-@@ -188,7 +188,7 @@ int amd_smn_write(u16 node, u32 address, u32 value)
- EXPORT_SYMBOL_GPL(amd_smn_write);
- 
- 
--int amd_cache_northbridges(void)
-+static int amd_cache_northbridges(void)
- {
- 	const struct pci_device_id *misc_ids = amd_nb_misc_ids;
- 	const struct pci_device_id *link_ids = amd_nb_link_ids;
-@@ -210,14 +210,14 @@ int amd_cache_northbridges(void)
- 	}
- 
- 	misc = NULL;
--	while ((misc = next_northbridge(misc, misc_ids)) != NULL)
-+	while ((misc = next_northbridge(misc, misc_ids)))
- 		misc_count++;
- 
- 	if (!misc_count)
- 		return -ENODEV;
- 
- 	root = NULL;
--	while ((root = next_northbridge(root, root_ids)) != NULL)
-+	while ((root = next_northbridge(root, root_ids)))
- 		root_count++;
- 
- 	if (root_count) {
-@@ -290,7 +290,6 @@ int amd_cache_northbridges(void)
- 
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(amd_cache_northbridges);
- 
- /*
-  * Ignores subdevice/subvendor but as far as I can figure out
-diff --git a/drivers/char/agp/amd64-agp.c b/drivers/char/agp/amd64-agp.c
-index dc78a4f..84a4aa9 100644
---- a/drivers/char/agp/amd64-agp.c
-+++ b/drivers/char/agp/amd64-agp.c
-@@ -327,7 +327,7 @@ static int cache_nbs(struct pci_dev *pdev, u32 cap_ptr)
- {
- 	int i;
- 
--	if (amd_cache_northbridges() < 0)
-+	if (!amd_nb_num())
- 		return -ENODEV;
- 
- 	if (!amd_nb_has_feature(AMD_NB_GART))
-diff --git a/drivers/edac/amd64_edac.c b/drivers/edac/amd64_edac.c
-index 812baa4..2f854fe 100644
---- a/drivers/edac/amd64_edac.c
-+++ b/drivers/edac/amd64_edac.c
-@@ -4336,7 +4336,7 @@ static int __init amd64_edac_init(void)
- 	if (!x86_match_cpu(amd64_cpuids))
- 		return -ENODEV;
- 
--	if (amd_cache_northbridges() < 0)
-+	if (!amd_nb_num())
- 		return -ENODEV;
- 
- 	opstate_init();
+Michal
