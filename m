@@ -2,125 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CD6C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC27C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356761AbiDEVZK (ORCPT
+        id S1357261AbiDEVZQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
+        Tue, 5 Apr 2022 17:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457413AbiDEQDM (ORCPT
+        with ESMTP id S1573451AbiDETLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:12 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81BA39BADA
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:42:43 -0700 (PDT)
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B8F943F825
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:42:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1649173361;
-        bh=7GZo70Jkx4ortmGAZXr0kZLiNDeCCFGRN/cOmY89S9A=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Type:In-Reply-To;
-        b=umvMb90loEvm5RM6Cw1CYa1JDq7Kky2Ei+/X+Kmxfy/eB0Ke/4Azx8kRD7d0F+KFG
-         HdmqdPDhgFa471jZcLvI44CAGP9AEdo5Knwz0DcfLV/Z1ei7fAlqCSIKQ61PmBxQT4
-         IV6jMsFv2GYcZ05kiMUE/8aVo0ubPeDlMNBITrUjFBcdi+9Gp3RFVQNfNRu7aDGn2o
-         LmBrDYrPz3fwNh3n2CAhXFavwVxzks3gvPOCw3mvxWqexruyWuNXfq8qgBT6/OigB6
-         66vtLDOu3x9cMrMeWXSIiV7SHkqSLvEzZu7aLeVPHSKK8/0/WE/ldcI7LDO9JY4kuL
-         0aij2fGbxzWKQ==
-Received: by mail-io1-f70.google.com with SMTP id e27-20020a056602045b00b00645bd576184so8642305iov.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:42:41 -0700 (PDT)
+        Tue, 5 Apr 2022 15:11:08 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18D8C15
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:09:07 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id v75so115611oie.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:09:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=+2fqXM8JUf5DwDQtzJxsOwkBtwJFw5Gqvt+WmQEX/uI=;
+        b=Veprx3ttQggks5cQbO8i0KUCPvNxmYkyfrcSQ+dlu3r2KMUxM/prPRRkNKK5FkgA2R
+         c4CMJOLTqifeczv3jis31FaBbFJr2bIqERUgorEjNOU0V2V+N4ZvmF+nHzXQ5CnyEMc8
+         RDmXuuwu8EOiCntCCDni1oO9KhooSgBPnYRIw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=7GZo70Jkx4ortmGAZXr0kZLiNDeCCFGRN/cOmY89S9A=;
-        b=0zvL6xGQOdNVDWtB0LISkalkC0vdG10b3DkGcAHhdZFSoQWrIq8X0OW8aQdFEK7r6e
-         ot1JudAhBCumR28Z2tqCDd2DOsbX0aOeK2V8j9jDr97iF9kjIGTdhS/CHJUtdXhUEh+g
-         QHy1F42lktmY6UKY+SDazuAaNTFePBfrFRvSppnXcDK1PHOe4Opfz6KdCjeVOoy2Bhdt
-         p2RU2KWspDHAUhy5LHqYgYbRJcSZ1BC+S4RLaA7DOnPrx1SDSAY+qBGf4e1fo3mqkYX4
-         RqE/bwK9OyQ1ynfK+/jTkVEPHm2ii1ZMcaSGVrcAXoWi0DwUY9qtbiKJSGWQkAwJ//kK
-         cRDA==
-X-Gm-Message-State: AOAM533HW/CFjwd9ps9/N2DCFA+kP9hzv9xlrPkU3TmNZ48vH8ZFaJLf
-        +U9IDoVFsvQcirgAGbnujTbVZ28fa5rCYo4zw/VYzcDyxBEGLY23SECtLZSpzPGXotZHBEQ8V7n
-        +p2bcLcvotE741XFCXWfskkf00lZktM+6OehJM2QC1A==
-X-Received: by 2002:a02:cb4a:0:b0:323:5e9a:255c with SMTP id k10-20020a02cb4a000000b003235e9a255cmr2250782jap.12.1649173360736;
-        Tue, 05 Apr 2022 08:42:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzG1CiHUIYRegMsFTGUVXr2Te/jPu6rIoOR95h9XYPxdlcZ8BM13OWSDEv0JghT9pe8e2TG/A==
-X-Received: by 2002:a02:cb4a:0:b0:323:5e9a:255c with SMTP id k10-20020a02cb4a000000b003235e9a255cmr2250763jap.12.1649173360498;
-        Tue, 05 Apr 2022 08:42:40 -0700 (PDT)
-Received: from xps13.dannf (c-73-14-97-161.hsd1.co.comcast.net. [73.14.97.161])
-        by smtp.gmail.com with ESMTPSA id i12-20020a92c94c000000b002ca56c2cf67sm1508389ilq.28.2022.04.05.08.42.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 08:42:39 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 09:42:37 -0600
-From:   dann frazier <dann.frazier@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Toan Le <toan@os.amperecomputing.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>
-Subject: Re: [PATCH 5.16 0199/1017] PCI: xgene: Revert "PCI: xgene: Fix IB
- window setup"
-Message-ID: <YkxjbVp3W2LeVIeL@xps13.dannf>
-References: <20220405070354.155796697@linuxfoundation.org>
- <20220405070400.156176848@linuxfoundation.org>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=+2fqXM8JUf5DwDQtzJxsOwkBtwJFw5Gqvt+WmQEX/uI=;
+        b=eZvdcxcJ4HmUZg1dGTUGnkWv4N/v6MEbxdqSC4ZnpQjeUpME0pocPJdmpkWywMSDGI
+         InVAVHEkWyhcMObAldaz0kFpI6hSebx9ju6T/36yAfKjmynepBSp+2KV3lYD/3qGm0Il
+         bNNRNV8EdMV6x48WcrzyCEN1a6ryu1BBdPzGeoV++bla2eu2smkrLv4zpwAWxq6y7efb
+         Xw/NbaF0lrU9dU6WnNK/Mxee3kGY0MosBACRfe6eLceIVHyrLP8klIL9219eKu1IjYqu
+         F8ghIXDqVTI9rSPkCZozNQnj5jkfHdl0oYV0WMjEgnrWjgmiD2ccTBQYMPrnaaLDgLnd
+         2yWA==
+X-Gm-Message-State: AOAM530tObdd+2Tcwr7f06I3yvmft9UKfCsa6O8VjIx3vGnPeNc2f2R8
+        R4QDpMzaPACShQPcDZCutyhDU+XpAq32DpnKsebtfQ==
+X-Google-Smtp-Source: ABdhPJxVQrIJEEsLECgeyAlKa1nOMAx8Ihqi51fqzaMW25crPXGyzU/YYh2XyyOqf5FeQzVxwuGnAmkOZ7o/RtTL9XY=
+X-Received: by 2002:aca:a9c8:0:b0:2da:45b6:b796 with SMTP id
+ s191-20020acaa9c8000000b002da45b6b796mr1993155oie.193.1649185747131; Tue, 05
+ Apr 2022 12:09:07 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 5 Apr 2022 14:09:06 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220405070400.156176848@linuxfoundation.org>
+In-Reply-To: <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com> <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 5 Apr 2022 14:09:06 -0500
+Message-ID: <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008 PMIC
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
+        quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 09:18:32AM +0200, Greg Kroah-Hartman wrote:
-> From: Marc Zyngier <maz@kernel.org>
-> 
-> commit 825da4e9cec68713fbb02dc6f71fe1bf65fe8050 upstream.
-> 
-> Commit c7a75d07827a ("PCI: xgene: Fix IB window setup") tried to
-> fix the damages that 6dce5aa59e0b ("PCI: xgene: Use inbound resources
-> for setup") caused, but actually didn't improve anything for some
-> plarforms (at least Mustang and m400 are still broken).
-> 
-> Given that 6dce5aa59e0b has been reverted, revert this patch as well,
-> restoring the PCIe support on XGene to its pre-5.5, working state.
-> 
-> Link: https://lore.kernel.org/r/YjN8pT5e6/8cRohQ@xps13.dannf
-> Link: https://lore.kernel.org/r/20220321104843.949645-3-maz@kernel.org
-> Fixes: c7a75d07827a ("PCI: xgene: Fix IB window setup")
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: stable@vger.kernel.org
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Toan Le <toan@os.amperecomputing.com>
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Krzysztof Wilczyński <kw@linux.com>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Stéphane Graber <stgraber@ubuntu.com>
-> Cc: dann frazier <dann.frazier@canonical.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  drivers/pci/controller/pci-xgene.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Quoting Satya Priya (2022-04-05 06:50:31)
+> diff --git a/drivers/regulator/qcom-pm8008-regulator.c b/drivers/regulator/qcom-pm8008-regulator.c
+> new file mode 100644
+> index 0000000..0f6d5cb
+> --- /dev/null
+> +++ b/drivers/regulator/qcom-pm8008-regulator.c
+> @@ -0,0 +1,205 @@
+[...]
+> +
+> +static struct platform_driver pm8008_regulator_driver = {
 
-Hi Greg,
+Why isn't this an i2c driver?
 
-  I don't think it makes sense to apply this to 5.10.y, 5.15.y &
-5.16.y w/o also applying a backport of 1874b6d7ab1, because without
-that we will regress support for Stéphane's X-Gene2-based systems. The
-backport of 1874b6d7ab1 was rejected for these trees because it doesn't
-apply cleanly, but I've just submitted new versions that do.
-
-  -dann
+> +       .driver = {
+> +               .name           = "qcom,pm8008-regulators",
+> +       },
+> +       .probe  = pm8008_regulator_probe,
+> +};
