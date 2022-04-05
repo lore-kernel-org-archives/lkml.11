@@ -2,184 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D48C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 753C9C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451376AbiDFBho (ORCPT
+        id S1843060AbiDFBjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
+        Tue, 5 Apr 2022 21:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347253AbiDENKo (ORCPT
+        with ESMTP id S1354167AbiDEKMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:10:44 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D1BA6E37
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:12:19 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KXmjY3Stqz9sTJ;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id XwgVdGL26zT2; Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KXmjY2RwLz9sT7;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3B5928B779;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id ZJexvocFpr6n; Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0CF288B774;
-        Tue,  5 Apr 2022 14:12:17 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 235CCBIV352496
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 5 Apr 2022 14:12:11 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 235CCB6d352495;
-        Tue, 5 Apr 2022 14:12:11 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 4/5] powerpc/8xx: Remove mpc8xx_pics_init()
-Date:   Tue,  5 Apr 2022 14:12:03 +0200
-Message-Id: <58300782fe882417695235d42e5fbdeeb6f3cea2.1649160685.git.christophe.leroy@csgroup.eu>
+        Tue, 5 Apr 2022 06:12:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C03D517F1;
+        Tue,  5 Apr 2022 02:57:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FD7BB81B18;
+        Tue,  5 Apr 2022 09:57:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87D86C385A2;
+        Tue,  5 Apr 2022 09:57:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152668;
+        bh=uJf7pj87pn7mUSWMH3sAg8R4hUfURYzVn3VcFRGN990=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hjzXSrNaGFXKvodrd3Ic7S0X2gADiqEjWLPPyTicETdsPNI87QdRyEPL168w+YYBI
+         rTxbHIi8Q0wnVO72GDp4iAvIorC/kP3FzAJA8a6LnlfdvRqVifETwwO0hug26QVQ57
+         A0ddh/bJidhaMoBQc1/Tbf1INdPp3mOwNfpUrAnE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Anirudh Rayabharam <mail@anirudhrb.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH 5.15 859/913] vhost: handle error while adding split ranges to iotlb
+Date:   Tue,  5 Apr 2022 09:32:01 +0200
+Message-Id: <20220405070405.575603365@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649160685.git.christophe.leroy@csgroup.eu>
-References: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649160685.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1649160722; l=4798; s=20211009; h=from:subject:message-id; bh=pY1fhlB4drjwk/3+pxQE7CefbR+wPtLpYYs8Ip+Getc=; b=cnwhGRM1PoqJ4/7lR965xpIoTBOZKzsRUaeO3R2kujou6NOwDmd07g2hhNk2MeOMOgVuKi2uI/7W faJDjc5VCaPvYOmA1cDXB8ndKTNGG1NqnLHEWr4kSPaK/4sGqQ8h
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mpc8xx_pics_init() is now only a trampoline to
-mpc8xx_pic_init().
+From: Anirudh Rayabharam <mail@anirudhrb.com>
 
-Remove mpc8xx_pics_init() and use mpc8xx_pic_init()
-directly.
+commit 03a91c9af2c42ae14afafb829a4b7e6589ab5892 upstream.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+vhost_iotlb_add_range_ctx() handles the range [0, ULONG_MAX] by
+splitting it into two ranges and adding them separately. The return
+value of adding the first range to the iotlb is currently ignored.
+Check the return value and bail out in case of an error.
+
+Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+Link: https://lore.kernel.org/r/20220312141121.4981-1-mail@anirudhrb.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Fixes: e2ae38cf3d91 ("vhost: fix hung thread due to erroneous iotlb entries")
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/8xx/adder875.c        |  2 +-
- arch/powerpc/platforms/8xx/ep88xc.c          |  2 +-
- arch/powerpc/platforms/8xx/m8xx_setup.c      | 14 --------------
- arch/powerpc/platforms/8xx/mpc86xads_setup.c |  2 +-
- arch/powerpc/platforms/8xx/mpc885ads_setup.c |  2 +-
- arch/powerpc/platforms/8xx/mpc8xx.h          |  1 -
- arch/powerpc/platforms/8xx/tqm8xx_setup.c    |  2 +-
- 7 files changed, 5 insertions(+), 20 deletions(-)
+ drivers/vhost/iotlb.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/8xx/adder875.c b/arch/powerpc/platforms/8xx/adder875.c
-index 651486acb896..9b5c0c181fa3 100644
---- a/arch/powerpc/platforms/8xx/adder875.c
-+++ b/arch/powerpc/platforms/8xx/adder875.c
-@@ -104,7 +104,7 @@ define_machine(adder875) {
- 	.name = "Adder MPC875",
- 	.probe = adder875_probe,
- 	.setup_arch = adder875_setup,
--	.init_IRQ = mpc8xx_pics_init,
-+	.init_IRQ = mpc8xx_pic_init,
- 	.get_irq = mpc8xx_get_irq,
- 	.restart = mpc8xx_restart,
- 	.calibrate_decr = generic_calibrate_decr,
-diff --git a/arch/powerpc/platforms/8xx/ep88xc.c b/arch/powerpc/platforms/8xx/ep88xc.c
-index ebcf34a14789..7526ef88bd33 100644
---- a/arch/powerpc/platforms/8xx/ep88xc.c
-+++ b/arch/powerpc/platforms/8xx/ep88xc.c
-@@ -166,7 +166,7 @@ define_machine(ep88xc) {
- 	.name = "Embedded Planet EP88xC",
- 	.probe = ep88xc_probe,
- 	.setup_arch = ep88xc_setup_arch,
--	.init_IRQ = mpc8xx_pics_init,
-+	.init_IRQ = mpc8xx_pic_init,
- 	.get_irq	= mpc8xx_get_irq,
- 	.restart = mpc8xx_restart,
- 	.calibrate_decr = mpc8xx_calibrate_decr,
-diff --git a/arch/powerpc/platforms/8xx/m8xx_setup.c b/arch/powerpc/platforms/8xx/m8xx_setup.c
-index a03ba0ad7312..15a09b15aaa4 100644
---- a/arch/powerpc/platforms/8xx/m8xx_setup.c
-+++ b/arch/powerpc/platforms/8xx/m8xx_setup.c
-@@ -204,17 +204,3 @@ void __noreturn mpc8xx_restart(char *cmd)
- 	in_8(&clk_r->res[0]);
- 	panic("Restart failed\n");
- }
--
--/* Initialize the internal interrupt controllers.  The number of
-- * interrupts supported can vary with the processor type, and the
-- * 82xx family can have up to 64.
-- * External interrupts can be either edge or level triggered, and
-- * need to be initialized by the appropriate driver.
-- */
--void __init mpc8xx_pics_init(void)
--{
--	if (mpc8xx_pic_init()) {
--		printk(KERN_ERR "Failed interrupt 8xx controller  initialization\n");
--		return;
--	}
--}
-diff --git a/arch/powerpc/platforms/8xx/mpc86xads_setup.c b/arch/powerpc/platforms/8xx/mpc86xads_setup.c
-index 8d02f5ff4481..a82d69e8bb01 100644
---- a/arch/powerpc/platforms/8xx/mpc86xads_setup.c
-+++ b/arch/powerpc/platforms/8xx/mpc86xads_setup.c
-@@ -140,7 +140,7 @@ define_machine(mpc86x_ads) {
- 	.name			= "MPC86x ADS",
- 	.probe			= mpc86xads_probe,
- 	.setup_arch		= mpc86xads_setup_arch,
--	.init_IRQ		= mpc8xx_pics_init,
-+	.init_IRQ		= mpc8xx_pic_init,
- 	.get_irq		= mpc8xx_get_irq,
- 	.restart		= mpc8xx_restart,
- 	.calibrate_decr		= mpc8xx_calibrate_decr,
-diff --git a/arch/powerpc/platforms/8xx/mpc885ads_setup.c b/arch/powerpc/platforms/8xx/mpc885ads_setup.c
-index a0c83c1905c6..e02290175a19 100644
---- a/arch/powerpc/platforms/8xx/mpc885ads_setup.c
-+++ b/arch/powerpc/platforms/8xx/mpc885ads_setup.c
-@@ -216,7 +216,7 @@ define_machine(mpc885_ads) {
- 	.name			= "Freescale MPC885 ADS",
- 	.probe			= mpc885ads_probe,
- 	.setup_arch		= mpc885ads_setup_arch,
--	.init_IRQ		= mpc8xx_pics_init,
-+	.init_IRQ		= mpc8xx_pic_init,
- 	.get_irq		= mpc8xx_get_irq,
- 	.restart		= mpc8xx_restart,
- 	.calibrate_decr		= mpc8xx_calibrate_decr,
-diff --git a/arch/powerpc/platforms/8xx/mpc8xx.h b/arch/powerpc/platforms/8xx/mpc8xx.h
-index 31cc2ecace42..79fae3324866 100644
---- a/arch/powerpc/platforms/8xx/mpc8xx.h
-+++ b/arch/powerpc/platforms/8xx/mpc8xx.h
-@@ -15,7 +15,6 @@ extern void __noreturn mpc8xx_restart(char *cmd);
- extern void mpc8xx_calibrate_decr(void);
- extern int mpc8xx_set_rtc_time(struct rtc_time *tm);
- extern void mpc8xx_get_rtc_time(struct rtc_time *tm);
--extern void mpc8xx_pics_init(void);
- extern unsigned int mpc8xx_get_irq(void);
+--- a/drivers/vhost/iotlb.c
++++ b/drivers/vhost/iotlb.c
+@@ -62,8 +62,12 @@ int vhost_iotlb_add_range_ctx(struct vho
+ 	 */
+ 	if (start == 0 && last == ULONG_MAX) {
+ 		u64 mid = last / 2;
++		int err = vhost_iotlb_add_range_ctx(iotlb, start, mid, addr,
++				perm, opaque);
++
++		if (err)
++			return err;
  
- #endif /* __MPC8xx_H */
-diff --git a/arch/powerpc/platforms/8xx/tqm8xx_setup.c b/arch/powerpc/platforms/8xx/tqm8xx_setup.c
-index 4cea8b1afa44..7f1131545da1 100644
---- a/arch/powerpc/platforms/8xx/tqm8xx_setup.c
-+++ b/arch/powerpc/platforms/8xx/tqm8xx_setup.c
-@@ -142,7 +142,7 @@ define_machine(tqm8xx) {
- 	.name			= "TQM8xx",
- 	.probe			= tqm8xx_probe,
- 	.setup_arch		= tqm8xx_setup_arch,
--	.init_IRQ		= mpc8xx_pics_init,
-+	.init_IRQ		= mpc8xx_pic_init,
- 	.get_irq		= mpc8xx_get_irq,
- 	.restart		= mpc8xx_restart,
- 	.calibrate_decr		= mpc8xx_calibrate_decr,
--- 
-2.35.1
+-		vhost_iotlb_add_range_ctx(iotlb, start, mid, addr, perm, opaque);
+ 		addr += mid + 1;
+ 		start = mid + 1;
+ 	}
+
 
