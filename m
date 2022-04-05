@@ -2,185 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2FFC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC1AC4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588950AbiDFARy (ORCPT
+        id S1588967AbiDFAR4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
+        Tue, 5 Apr 2022 20:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242984AbiDEKfX (ORCPT
+        with ESMTP id S1573283AbiDESoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5888A522E9;
-        Tue,  5 Apr 2022 03:21:23 -0700 (PDT)
+        Tue, 5 Apr 2022 14:44:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658464665D;
+        Tue,  5 Apr 2022 11:42:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9D0D616D7;
-        Tue,  5 Apr 2022 10:21:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01264C385A1;
-        Tue,  5 Apr 2022 10:21:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154082;
-        bh=bKRvKT2uwprwwaMIb8ZYBT1jQu/BM5mAlsaR5Zha8cE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F6c3Jl+grs+bG33J0stIRGkoQH8Y4hWB+vEZFtH2dP1bLmpGTpUOQNFDEejvNaqQZ
-         oXu7Lzxb0r9dYrVb8akYBy85+Bx/RZQGIp6rPNrPGVn1vdFlJEkVyZWzMWbISUDchc
-         EzkMWojh9V8s9mGgFwUcFoT65G5Q9qROO6Qkl1/s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 414/599] staging: mt7621-dts: fix LEDs and pinctrl on GB-PC1 devicetree
-Date:   Tue,  5 Apr 2022 09:31:48 +0200
-Message-Id: <20220405070311.152289517@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11B8EB81B96;
+        Tue,  5 Apr 2022 18:42:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 531FFC385A1;
+        Tue,  5 Apr 2022 18:42:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649184150;
+        bh=mvmeqellZ7AaVX6VtMeym2zkFjPuHDmY40DOFQO7lfM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=tR+IxCxWCoiQvHe8Cgma6S5S8B7nJicGKA4dX+azos97LSyLku3xwIs/QMDK0IQG5
+         wy6/34DtwvSWrmRbHhOhDcUG/Oth/4/TAXwgk/qNlMAY8TkBdZNKerNGWawMtksxTm
+         6r81YvWOVEjI+4r8VU6bXplBN3cM+cV33LRowXoDxXryUKcfin1bad40+x7LSHrtEr
+         rmuNGZCwCCcCbUeYfEQK0l52KOondHsj8goVnoc8/6WtRiIX3pCgUgSkksaR05XUYq
+         BSBvqT3npvApJymP6iMxePAUTbevbEQYBCWioPkq1umK5OONCYsLmk07tHpwevxMmA
+         LOUiT4yqKZULQ==
+Message-ID: <539fa318941debfe757874c4fb067f6018777045.camel@kernel.org>
+Subject: Re: [PATCH V3 21/30] selftests/sgx: Add test for EPCM permission
+ changes
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 05 Apr 2022 21:43:40 +0300
+In-Reply-To: <5ea8d567-5d82-6815-013a-70f4e3f913b9@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+         <b2304ac0322d945b4bfdce36d3aae654f6ed35a0.1648847675.git.reinette.chatre@intel.com>
+         <Ykvpi6HRL9cLorw6@kernel.org>
+         <5ea8d567-5d82-6815-013a-70f4e3f913b9@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+On Tue, 2022-04-05 at 10:28 -0700, Reinette Chatre wrote:
+> Hi Jarkko,
+>=20
+> On 4/5/2022 12:02 AM, Jarkko Sakkinen wrote:
+> > Lacking:
+> >=20
+> > KERNEL SELFTEST FRAMEWORK
+> > M:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Shuah Khan <shuah@kernel.org>
+> > M:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Shuah Khan <skhan@linuxfoundation=
+.org>
+> > L:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0linux-kselftest@vger.kernel.org
+> > S:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Maintained
+> > Q:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0https://patchwork.kernel.org/proj=
+ect/linux-kselftest/list/
+> > T:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0git git://git.kernel.org/pub/scm/=
+linux/kernel/git/shuah/linux-kselftest.git
+> > F:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Documentation/dev-tools/kselftest=
+*
+> > F:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0tools/testing/selftests/
+> >=20
+>=20
+> My apologies. I'll add the kselftest folks to the next version.
+>=20
+> Reinette
 
-[ Upstream commit 6256e18686158fa49e019297f990f1c1817aabf1 ]
+No worries, just reminding that now is a good time, since the different
+parts of the patch set are settling.=20
 
-Fix LED and pinctrl definitions on the GB-PC1 devicetree. Refer to the
-schematics of the device for more information.
-
-LED fixes:
-- Change GPIO6 LED label from system to power as GPIO6 is connected to
-PLED.
-- Add default-on default-trigger to power LED.
-- Change GPIO8 LED label from status to system as GPIO8 is connected to
-SYS_LED.
-- Add disk-activity default-trigger to system LED.
-- Switch to the color:function naming scheme.
-- Remove lan1 and lan2 LEDs as they don't exist.
-
-Pinctrl fixes:
-- Claim state_default node under pinctrl node.
-- Change pinctrl0 node name to state-default.
-- Change gpio node name to gpio-pinmux to respect
-Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinmux.yaml.
-- Sort pin groups alphabetically.
-
-Misc fixes:
-- Fix formatting.
-- Use the status value "okay".
-- Define hexadecimal addresses in lower case.
-- Make hexadecimal addresses for memory easier to read.
-
-Link: https://github.com/ngiger/GnuBee_Docs/blob/master/GB-PCx/Documents/GB-PC1_V1.0_Schematic.pdf
-Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220311090320.3068-1-arinc.unal@arinc9.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/staging/mt7621-dts/gbpc1.dts | 40 +++++++++++++---------------
- 1 file changed, 18 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/staging/mt7621-dts/gbpc1.dts b/drivers/staging/mt7621-dts/gbpc1.dts
-index a7c0d3115d72..d48ca5a25c2c 100644
---- a/drivers/staging/mt7621-dts/gbpc1.dts
-+++ b/drivers/staging/mt7621-dts/gbpc1.dts
-@@ -11,7 +11,8 @@
- 
- 	memory@0 {
- 		device_type = "memory";
--		reg = <0x0 0x1c000000>, <0x20000000 0x4000000>;
-+		reg = <0x00000000 0x1c000000>,
-+		      <0x20000000 0x04000000>;
- 	};
- 
- 	chosen {
-@@ -37,24 +38,16 @@
- 	gpio-leds {
- 		compatible = "gpio-leds";
- 
--		system {
--			label = "gb-pc1:green:system";
-+		power {
-+			label = "green:power";
- 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
-+			linux,default-trigger = "default-on";
- 		};
- 
--		status {
--			label = "gb-pc1:green:status";
-+		system {
-+			label = "green:system";
- 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
--		};
--
--		lan1 {
--			label = "gb-pc1:green:lan1";
--			gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
--		};
--
--		lan2 {
--			label = "gb-pc1:green:lan2";
--			gpios = <&gpio 25 GPIO_ACTIVE_LOW>;
-+			linux,default-trigger = "disk-activity";
- 		};
- 	};
- };
-@@ -94,9 +87,8 @@
- 
- 		partition@50000 {
- 			label = "firmware";
--			reg = <0x50000 0x1FB0000>;
-+			reg = <0x50000 0x1fb0000>;
- 		};
--
- 	};
- };
- 
-@@ -122,9 +114,12 @@
- };
- 
- &pinctrl {
--	state_default: pinctrl0 {
--		default_gpio: gpio {
--			groups = "wdt", "rgmii2", "uart3";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&state_default>;
-+
-+	state_default: state-default {
-+		gpio-pinmux {
-+			groups = "rgmii2", "uart3", "wdt";
- 			function = "gpio";
- 		};
- 	};
-@@ -133,12 +128,13 @@
- &switch0 {
- 	ports {
- 		port@0 {
-+			status = "okay";
- 			label = "ethblack";
--			status = "ok";
- 		};
-+
- 		port@4 {
-+			status = "okay";
- 			label = "ethblue";
--			status = "ok";
- 		};
- 	};
- };
--- 
-2.34.1
-
-
+BR, Jarkko
 
