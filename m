@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E47EBC4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352231AbiDEKEI (ORCPT
+        id S1351834AbiDEKDY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51078 "EHLO
+        Tue, 5 Apr 2022 06:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236882AbiDEI2r (ORCPT
+        with ESMTP id S235707AbiDEI1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:28:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01A7183B2;
-        Tue,  5 Apr 2022 01:21:08 -0700 (PDT)
+        Tue, 5 Apr 2022 04:27:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6742167DD;
+        Tue,  5 Apr 2022 01:21:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CA29B81BB1;
-        Tue,  5 Apr 2022 08:21:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8B23C385A0;
-        Tue,  5 Apr 2022 08:21:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EC4761001;
+        Tue,  5 Apr 2022 08:21:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F3F9C385A1;
+        Tue,  5 Apr 2022 08:21:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146866;
-        bh=giM/BAivgxJrob6NYPSr1zOqqdEG4sFSemV5nmzN4OM=;
+        s=korg; t=1649146860;
+        bh=5nOGKtgpol4HH0aS7da21FiBsfZ6f7q17pZgOMqxNIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SpEgah5t9XXUemirCRANolQiBqdjFX9DjLKIWMRnwtdZlFFhg1orovDM8y9DL6/Kw
-         JoSuiAGYupsLJlurkr1PHrxxOOh9fD7W255ugyGIDa3dOe0/l14FwETiPBCaQNbM6R
-         10LprArtBXOzZ0CXmZG/dlvbgR0T/XfkQ+gmXwdY=
+        b=d8SsrEL5O+F29AS2vi/RbjqyZNv8u4od47MSw9IizZu6S+gGvEEuGROKpGIg9+3mq
+         6bcbL5fvk2OlX3i/srGBbZLdZDn0ukBowGKc3jGxq7r1S9Ve3y9vaiVJ9FF9jRMc91
+         c2wyraZ907CQenLN0Rm1Owk67msEIFgcZmT64d9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0916/1126] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
-Date:   Tue,  5 Apr 2022 09:27:43 +0200
-Message-Id: <20220405070434.408610570@linuxfoundation.org>
+Subject: [PATCH 5.17 0914/1126] arm64: defconfig: build imx-sdma as a module
+Date:   Tue,  5 Apr 2022 09:27:41 +0200
+Message-Id: <20220405070434.351596403@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,42 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
+[ Upstream commit e95622289f263662240544a9f0009b25c19e64d4 ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+This avoids firmware load error and sysfs fallback reported as follows:
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+[    0.199448] imx-sdma 302c0000.dma-controller: Direct firmware load
+ for imx/sdma/sdma-imx7d.bin failed with error -2
+[    0.199487] imx-sdma 302c0000.dma-controller: Falling back to sysfs
+ fallback for: imx/sdma/sdma-imx7d.bin
+
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/configs/defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-index afac1d9445aa..57b7d1f49096 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-@@ -169,7 +169,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
-+	return sysfs_emit(buf, "%d\n", ddata->vmirror);
- }
- 
- static ssize_t tpo_td043_vmirror_store(struct device *dev,
-@@ -199,7 +199,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
-+	return sysfs_emit(buf, "%d\n", ddata->mode);
- }
- 
- static ssize_t tpo_td043_mode_store(struct device *dev,
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 30516dc0b70e..7411e4f9b554 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -939,7 +939,7 @@ CONFIG_DMADEVICES=y
+ CONFIG_DMA_BCM2835=y
+ CONFIG_DMA_SUN6I=m
+ CONFIG_FSL_EDMA=y
+-CONFIG_IMX_SDMA=y
++CONFIG_IMX_SDMA=m
+ CONFIG_K3_DMA=y
+ CONFIG_MV_XOR=y
+ CONFIG_MV_XOR_V2=y
 -- 
 2.34.1
 
