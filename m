@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5E9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 803D9C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578474AbiDEXXh (ORCPT
+        id S1578501AbiDEXXm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        Tue, 5 Apr 2022 19:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348964AbiDEJsu (ORCPT
+        with ESMTP id S1354630AbiDEKO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE79A0BD3;
-        Tue,  5 Apr 2022 02:38:19 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88376BDCA;
+        Tue,  5 Apr 2022 03:01:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E00B7B81B7F;
-        Tue,  5 Apr 2022 09:38:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E060C385A2;
-        Tue,  5 Apr 2022 09:38:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45B3A61676;
+        Tue,  5 Apr 2022 10:01:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 520BDC385A2;
+        Tue,  5 Apr 2022 10:01:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151496;
-        bh=QwLQUT2Jw7vwffeh6OOnj7GZe0N18ZdeXGnosRVYSSY=;
+        s=korg; t=1649152899;
+        bh=TOHOU80nAEDJOHOVA9Ggqo7X+R5Neb+VHBK7nnlSFOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lGNkXHpS534sPY4Q13kyXMIIoEHDGbOdLxWE9CZ5DR3SO7cK2mteHbG6I36dG2If/
-         hyZKhI8lBcIdh7c3YPvHQmALB9BzOujVt0Rwwwve8t0iCV7g8WEq0eaCm1hC+ndoBC
-         IqNfGWxwBZwHraI7jgQlUNFHPa8R/sAM1/53CW6w=
+        b=fmzBSymc2f13GiJzw/EQ13ujlJ8Acuz0t2KCDR8Are6ww1yhbS0xrNJLN8h/MplD/
+         lTtiFvXSoMvM/iMPjZWwP6FwgUDg4WsCnSdc0uDAZiTflWZ5gO276XgA8tmVxnYcAE
+         j+5rciAHdzGe0Jb3gPSNLHA9J/yLs0ZGmxtxiqLM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 436/913] i2c: bcm2835: Fix the error handling in bcm2835_i2c_probe()
-Date:   Tue,  5 Apr 2022 09:24:58 +0200
-Message-Id: <20220405070352.915051749@linuxfoundation.org>
+        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.10 029/599] xhci: fix uninitialized string returned by xhci_decode_ctrl_ctx()
+Date:   Tue,  5 Apr 2022 09:25:23 +0200
+Message-Id: <20220405070259.689734553@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,77 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Anssi Hannula <anssi.hannula@bitwise.fi>
 
-[ Upstream commit b205f5850263632b6897d8f0bfaeeea4955f8663 ]
+commit 05519b8589a679edb8fa781259893d20bece04ad upstream.
 
-Some resource should be released if an error occurs in
-'bcm2835_i2c_probe()'.
-Add an error handling path and the needed 'clk_disable_unprepare()' and
-'clk_rate_exclusive_put()' calls.
+xhci_decode_ctrl_ctx() returns the untouched buffer as-is if both "drop"
+and "add" parameters are zero.
 
-While at it, rework the bottom of the function to use this newly added
-error handling path and have an explicit and more standard "return 0;" at
-the end of the normal path.
+Fix the function to return an empty string in that case.
 
-Fixes: bebff81fb8b9 ("i2c: bcm2835: Model Divider in CCF")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-[wsa: rebased]
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+It was not immediately clear from the possible call chains whether this
+issue is currently actually triggerable or not.
+
+Note that before commit 4843b4b5ec64 ("xhci: fix even more unsafe memory
+usage in xhci tracing") the result effect in the failure case was different
+as a static buffer was used here, but the code still worked incorrectly.
+
+Fixes: 90d6d5731da7 ("xhci: Add tracing for input control context")
+Cc: stable@vger.kernel.org
+Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+commit 4843b4b5ec64 ("xhci: fix even more unsafe memory usage in xhci tracing")
+Link: https://lore.kernel.org/r/20220303110903.1662404-4-mathias.nyman@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-bcm2835.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ drivers/usb/host/xhci.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
-index 5149454eef4a..f72c6576d8a3 100644
---- a/drivers/i2c/busses/i2c-bcm2835.c
-+++ b/drivers/i2c/busses/i2c-bcm2835.c
-@@ -454,18 +454,20 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(i2c_dev->bus_clk);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Couldn't prepare clock");
--		return ret;
-+		goto err_put_exclusive_rate;
- 	}
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -2458,6 +2458,8 @@ static inline const char *xhci_decode_ct
+ 	unsigned int	bit;
+ 	int		ret = 0;
  
- 	i2c_dev->irq = platform_get_irq(pdev, 0);
--	if (i2c_dev->irq < 0)
--		return i2c_dev->irq;
-+	if (i2c_dev->irq < 0) {
-+		ret = i2c_dev->irq;
-+		goto err_disable_unprepare_clk;
-+	}
- 
- 	ret = request_irq(i2c_dev->irq, bcm2835_i2c_isr, IRQF_SHARED,
- 			  dev_name(&pdev->dev), i2c_dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Could not request IRQ\n");
--		return -ENODEV;
-+		goto err_disable_unprepare_clk;
- 	}
- 
- 	adap = &i2c_dev->adapter;
-@@ -489,7 +491,16 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
- 
- 	ret = i2c_add_adapter(adap);
- 	if (ret)
--		free_irq(i2c_dev->irq, i2c_dev);
-+		goto err_free_irq;
++	str[0] = '\0';
 +
-+	return 0;
-+
-+err_free_irq:
-+	free_irq(i2c_dev->irq, i2c_dev);
-+err_disable_unprepare_clk:
-+	clk_disable_unprepare(i2c_dev->bus_clk);
-+err_put_exclusive_rate:
-+	clk_rate_exclusive_put(i2c_dev->bus_clk);
- 
- 	return ret;
- }
--- 
-2.34.1
-
+ 	if (drop) {
+ 		ret = sprintf(str, "Drop:");
+ 		for_each_set_bit(bit, &drop, 32)
 
 
