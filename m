@@ -2,101 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 596CDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A05C35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384036AbiDEUzc (ORCPT
+        id S1384629AbiDEU4I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
+        Tue, 5 Apr 2022 16:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384133AbiDEM1M (ORCPT
+        with ESMTP id S1356675AbiDEKYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:27:12 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21C357B0E;
-        Tue,  5 Apr 2022 04:35:19 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 235BYCGq000464;
-        Tue, 5 Apr 2022 20:34:15 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGq000464
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649158455;
-        bh=yB8mBxh6zgfFkl1vR4ponG9HVyr7i/FNMeStWHFyu/w=;
+        Tue, 5 Apr 2022 06:24:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72604BF024;
+        Tue,  5 Apr 2022 03:08:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25A25B81C88;
+        Tue,  5 Apr 2022 10:08:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85AF0C385A1;
+        Tue,  5 Apr 2022 10:08:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153326;
+        bh=n3jyOXKYxe6u5mjO/HkPB5eTqSSy5dyknXVWnH6VdXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h0WQLw9dcMALq734ybEzZQq76OeHfQxuob6gpI5eh80gF2Uz9pGzrXICIkcRUStAS
-         K25/8dKR9NZGr0vc0fC/nS68dzZca6mYfVasGPxgZkQqkGfoIVyo5KtEbO3Ev4XUGt
-         pFq5V07TpDITzwvO3b80w1jkFQI8gYbF9tdOTwftw3UvyiSrlJm8aNI3ipxfu8K0q0
-         3WWKcRUZDPrbI8pUPhS7xx1tDmOz7k/xTldK1szWZab7Izbs7rlrPBmNc4wJRFtA34
-         VakyuWNidnh86Yb+lmI3yVGw1ZxyowpWwNuSxjsskejHC6ySAp4SIK+toeONLl114D
-         k9n4B7BiatM+Q==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Michal Marek <michal.lkml@markovi.net>
-Subject: [PATCH v2 04/10] modpost: move export_from_secname() call to more relevant place
-Date:   Tue,  5 Apr 2022 20:33:52 +0900
-Message-Id: <20220405113359.2880241-5-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
+        b=Eq2aZJor10n/KTYECP5bi8N52CL0uCz7kf11Qz3g5h6POmdhyzn80WeVpmcEoQ5ZD
+         H4ksBUWwbrD14w6TFMppKWM9QxmeDTDZSX2ITX06Lu0/ngP3KR0200nab3RLIe82YA
+         /asQ46WZIuNknsN0l94KUmd5ep2BsP3yk/cGaKN0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fengnan Chang <changfengnan@vivo.com>,
+        Chao Yu <yuchao0@huawei.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 183/599] f2fs: compress: remove unneeded read when rewrite whole cluster
+Date:   Tue,  5 Apr 2022 09:27:57 +0200
+Message-Id: <20220405070304.287127761@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The assigned 'export' is only used when
+From: Fengnan Chang <changfengnan@vivo.com>
 
-    if (strstarts(symname, "__ksymtab_"))
+[ Upstream commit 7eab7a6968278c735b1ca6387056a408f7960265 ]
 
-is met. The else-part of the assignment is the dead code.
+when we overwrite the whole page in cluster, we don't need read original
+data before write, because after write_end(), writepages() can help to
+load left data in that cluster.
 
-Move the export_from_secname() call to where it is used.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Fengnan Chang <changfengnan@vivo.com>
+Signed-off-by: Chao Yu <yuchao0@huawei.com>
+Acked-by: Chao Yu <yuchao0@huawei.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ fs/f2fs/data.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-(no changes since v1)
-
- scripts/mod/modpost.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index eebb32689816..f9e54247ae1d 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -684,14 +684,8 @@ static void handle_modversion(const struct module *mod,
- static void handle_symbol(struct module *mod, struct elf_info *info,
- 			  const Elf_Sym *sym, const char *symname)
- {
--	enum export export;
- 	const char *name;
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index d27a92a54447..04e980c58319 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -3461,6 +3461,9 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
  
--	if (strstarts(symname, "__ksymtab"))
--		export = export_from_secname(info, get_secindex(info, sym));
--	else
--		export = export_unknown;
--
- 	switch (sym->st_shndx) {
- 	case SHN_COMMON:
- 		if (strstarts(symname, "__gnu_lto_")) {
-@@ -726,7 +720,11 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
- 	default:
- 		/* All exported symbols */
- 		if (strstarts(symname, "__ksymtab_")) {
-+			enum export export;
+ 		*fsdata = NULL;
+ 
++		if (len == PAGE_SIZE)
++			goto repeat;
 +
- 			name = symname + strlen("__ksymtab_");
-+			export = export_from_secname(info,
-+						     get_secindex(info, sym));
- 			sym_add_exported(name, mod, export);
- 		}
- 		if (strcmp(symname, "init_module") == 0)
+ 		ret = f2fs_prepare_compress_overwrite(inode, pagep,
+ 							index, fsdata);
+ 		if (ret < 0) {
 -- 
-2.32.0
+2.34.1
+
+
 
