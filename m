@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 246FAC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86773C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244002AbiDEJJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
+        id S244436AbiDEJJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239494AbiDEIUI (ORCPT
+        with ESMTP id S239527AbiDEIUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288B6B18;
-        Tue,  5 Apr 2022 01:14:32 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE03F22;
+        Tue,  5 Apr 2022 01:15:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4AD7B81B92;
-        Tue,  5 Apr 2022 08:14:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CBFDC385A0;
-        Tue,  5 Apr 2022 08:14:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1CBE609AD;
+        Tue,  5 Apr 2022 08:15:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F61C385A1;
+        Tue,  5 Apr 2022 08:15:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146469;
-        bh=dVgbqXFyIJgEUdV3/rc2N+Kowlljr3pdXtg4KzLOn70=;
+        s=korg; t=1649146516;
+        bh=GEZrR1AaIsfF8Burel1HSK4o2bOQp7VB+6HmqiyFV2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZFA6ljSorXmXZjANlhPFUZBDqhDqfBRoylZmfnGbyAE94v++PB8WplOf9MzHQdkDb
-         wLM6OkkUP6oVFsHDcaFGFpAdonaUgrxbLs6y/KWE/oGFOOMMcPDEOESotqgueoxNgK
-         1Bk+wJrLU4wg80u2DqQKfthNDRNY0fGC+J5EyAeY=
+        b=iu8ywZT5dKzaMby38F71O9jS/j1cZW5WODJzPSneDgmvuZkGA7jzQ+5UIPOL8z+Pm
+         LU5hRtb8GTvkxuspAYKoPbPDpwGdWPZ9oU3qqhleuWpkMJy9+wjLnO+fGvb5EGNPiL
+         OwAiST1GAFF0Nv6P6hDcX5Eg5gryogI93aqIi/mg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Enrico Scholz <enrico.scholz@sigma-chemnitz.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0775/1126] pinctrl: microchip-sgpio: lock RMW access
-Date:   Tue,  5 Apr 2022 09:25:22 +0200
-Message-Id: <20220405070430.327838901@linuxfoundation.org>
+Subject: [PATCH 5.17 0791/1126] SUNRPC: Dont call connect() more than once on a TCP socket
+Date:   Tue,  5 Apr 2022 09:25:38 +0200
+Message-Id: <20220405070430.789950324@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,108 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 7996c5f5ec7a20b3f6b8fae93fcf3cb8f1c01743 ]
+[ Upstream commit 89f42494f92f448747bd8a7ab1ae8b5d5520577d ]
 
-Protect any RMW access to the registers by a spinlock.
+Avoid socket state races due to repeated calls to ->connect() using the
+same socket. If connect() returns 0 due to the connection having
+completed, but we are in fact in a closing state, then we may leave the
+XPRT_CONNECTING flag set on the transport.
 
-Fixes: 7e5ea974e61c ("pinctrl: pinctrl-microchip-sgpio: Add pinctrl driver for Microsemi Serial GPIO")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220226204507.2511633-2-michael@walle.cc
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reported-by: Enrico Scholz <enrico.scholz@sigma-chemnitz.de>
+Fixes: 3be232f11a3c ("SUNRPC: Prevent immediate close+reconnect")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-microchip-sgpio.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ include/linux/sunrpc/xprtsock.h |  1 +
+ net/sunrpc/xprtsock.c           | 22 ++++++++++++----------
+ 2 files changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-index 639f1130e989..666f1e3889e0 100644
---- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
-+++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-@@ -19,6 +19,7 @@
- #include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/reset.h>
-+#include <linux/spinlock.h>
+diff --git a/include/linux/sunrpc/xprtsock.h b/include/linux/sunrpc/xprtsock.h
+index 3c1423ee74b4..fed813ffe7db 100644
+--- a/include/linux/sunrpc/xprtsock.h
++++ b/include/linux/sunrpc/xprtsock.h
+@@ -88,5 +88,6 @@ struct sock_xprt {
+ #define XPRT_SOCK_WAKE_WRITE	(5)
+ #define XPRT_SOCK_WAKE_PENDING	(6)
+ #define XPRT_SOCK_WAKE_DISCONNECT	(7)
++#define XPRT_SOCK_CONNECT_SENT	(8)
  
- #include "core.h"
- #include "pinconf.h"
-@@ -116,6 +117,7 @@ struct sgpio_priv {
- 	u32 clock;
- 	struct regmap *regs;
- 	const struct sgpio_properties *properties;
-+	spinlock_t lock;
- };
+ #endif /* _LINUX_SUNRPC_XPRTSOCK_H */
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index 5f22671b8abd..11eab0f0333b 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2257,10 +2257,15 @@ static void xs_tcp_setup_socket(struct work_struct *work)
  
- struct sgpio_port_addr {
-@@ -229,6 +231,7 @@ static void sgpio_output_set(struct sgpio_priv *priv,
- 			     int value)
- {
- 	unsigned int bit = SGPIO_SRC_BITS * addr->bit;
-+	unsigned long flags;
- 	u32 clr, set;
- 
- 	switch (priv->properties->arch) {
-@@ -247,7 +250,10 @@ static void sgpio_output_set(struct sgpio_priv *priv,
- 	default:
- 		return;
- 	}
+ 	if (atomic_read(&xprt->swapper))
+ 		current->flags |= PF_MEMALLOC;
+-	if (!sock) {
+-		sock = xs_create_sock(xprt, transport,
+-				xs_addr(xprt)->sa_family, SOCK_STREAM,
+-				IPPROTO_TCP, true);
 +
-+	spin_lock_irqsave(&priv->lock, flags);
- 	sgpio_clrsetbits(priv, REG_PORT_CONFIG, addr->port, clr, set);
-+	spin_unlock_irqrestore(&priv->lock, flags);
- }
++	if (xprt_connected(xprt))
++		goto out;
++	if (test_and_clear_bit(XPRT_SOCK_CONNECT_SENT,
++			       &transport->sock_state) ||
++	    !sock) {
++		xs_reset_transport(transport);
++		sock = xs_create_sock(xprt, transport, xs_addr(xprt)->sa_family,
++				      SOCK_STREAM, IPPROTO_TCP, true);
+ 		if (IS_ERR(sock)) {
+ 			xprt_wake_pending_tasks(xprt, PTR_ERR(sock));
+ 			goto out;
+@@ -2284,6 +2289,7 @@ static void xs_tcp_setup_socket(struct work_struct *work)
+ 		fallthrough;
+ 	case -EINPROGRESS:
+ 		/* SYN_SENT! */
++		set_bit(XPRT_SOCK_CONNECT_SENT, &transport->sock_state);
+ 		if (xprt->reestablish_timeout < XS_TCP_INIT_REEST_TO)
+ 			xprt->reestablish_timeout = XS_TCP_INIT_REEST_TO;
+ 		fallthrough;
+@@ -2345,13 +2351,9 @@ static void xs_connect(struct rpc_xprt *xprt, struct rpc_task *task)
  
- static int sgpio_output_get(struct sgpio_priv *priv,
-@@ -575,10 +581,13 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
- 	struct sgpio_bank *bank = gpiochip_get_data(chip);
- 	unsigned int gpio = irqd_to_hwirq(data);
- 	struct sgpio_port_addr addr;
-+	unsigned long flags;
- 	u32 ena;
+ 	WARN_ON_ONCE(!xprt_lock_connect(xprt, task, transport));
  
- 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
+-	if (transport->sock != NULL && !xprt_connecting(xprt)) {
++	if (transport->sock != NULL) {
+ 		dprintk("RPC:       xs_connect delayed xprt %p for %lu "
+-				"seconds\n",
+-				xprt, xprt->reestablish_timeout / HZ);
+-
+-		/* Start by resetting any existing state */
+-		xs_reset_transport(transport);
++			"seconds\n", xprt, xprt->reestablish_timeout / HZ);
  
-+	spin_lock_irqsave(&bank->priv->lock, flags);
-+
- 	/* Disable interrupt while changing type */
- 	ena = sgpio_readl(bank->priv, REG_INT_ENABLE, addr.bit);
- 	sgpio_writel(bank->priv, ena & ~BIT(addr.port), REG_INT_ENABLE, addr.bit);
-@@ -595,6 +604,8 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
- 
- 	/* Possibly re-enable interrupts */
- 	sgpio_writel(bank->priv, ena, REG_INT_ENABLE, addr.bit);
-+
-+	spin_unlock_irqrestore(&bank->priv->lock, flags);
- }
- 
- static void microchip_sgpio_irq_setreg(struct irq_data *data,
-@@ -605,13 +616,16 @@ static void microchip_sgpio_irq_setreg(struct irq_data *data,
- 	struct sgpio_bank *bank = gpiochip_get_data(chip);
- 	unsigned int gpio = irqd_to_hwirq(data);
- 	struct sgpio_port_addr addr;
-+	unsigned long flags;
- 
- 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
- 
-+	spin_lock_irqsave(&bank->priv->lock, flags);
- 	if (clear)
- 		sgpio_clrsetbits(bank->priv, reg, addr.bit, BIT(addr.port), 0);
- 	else
- 		sgpio_clrsetbits(bank->priv, reg, addr.bit, 0, BIT(addr.port));
-+	spin_unlock_irqrestore(&bank->priv->lock, flags);
- }
- 
- static void microchip_sgpio_irq_mask(struct irq_data *data)
-@@ -833,6 +847,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	priv->dev = dev;
-+	spin_lock_init(&priv->lock);
- 
- 	reset = devm_reset_control_get_optional_shared(&pdev->dev, "switch");
- 	if (IS_ERR(reset))
+ 		delay = xprt_reconnect_delay(xprt);
+ 		xprt_reconnect_backoff(xprt, XS_TCP_INIT_REEST_TO);
 -- 
 2.34.1
 
