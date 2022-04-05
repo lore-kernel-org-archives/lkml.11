@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5DCC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7B5C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239248AbiDEIbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
+        id S239943AbiDEIbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234394AbiDEH6M (ORCPT
+        with ESMTP id S236042AbiDEIBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8BE3A1456;
-        Tue,  5 Apr 2022 00:52:24 -0700 (PDT)
+        Tue, 5 Apr 2022 04:01:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D534D49FB3;
+        Tue,  5 Apr 2022 00:59:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37F83615CD;
-        Tue,  5 Apr 2022 07:52:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42447C34110;
-        Tue,  5 Apr 2022 07:52:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97CBDB81B14;
+        Tue,  5 Apr 2022 07:59:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07AD2C340EE;
+        Tue,  5 Apr 2022 07:59:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145143;
-        bh=fR0LPZAFW7MV+r5mifjCwMPbuQwjL9+Zm/J+XCY09io=;
+        s=korg; t=1649145551;
+        bh=qSRtZs8fsrIr02MXwnR3kLZ0JfjKLDShlPPya3X3rpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rd31HzG7dpvwZqVsV2dShX0bKnKeTTwnj8CoVPMUHujjtD/m9iUlGU0afVxE5/PB6
-         3qejTbvJIw4BRul5l9C18lwMFlqxq55fLcw+bsPWaTHzfixchsO1kfrJyTNiTKfrS3
-         WM/DDbA78CgKCMgp/MiJo6ehrwfbfkJBD7TLGhHw=
+        b=lahQKRQwDol25M2vYwKcB3BHukvAdbvN7t1A7Jy4T5Xo/RQ1w16lWRQVm9Ya2q2If
+         hfGPwFrd+KWC3CeQ8iTpMYRBz0GBBW3tNQRMdXmWXdA0oOtlisAGCN0s6qTOpFoEPB
+         jK8KymI+nWx61rCUu+v5xI/dWTOSPSf6eUBz75Ps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brandon Wyman <bjwyman@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Mark Chen <mark-yw.chen@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0262/1126] hwmon: (pmbus) Add Vin unit off handling
-Date:   Tue,  5 Apr 2022 09:16:49 +0200
-Message-Id: <20220405070415.301141553@linuxfoundation.org>
+Subject: [PATCH 5.17 0446/1126] Bluetooth: mt7921s: fix firmware coredump retrieve
+Date:   Tue,  5 Apr 2022 09:19:53 +0200
+Message-Id: <20220405070420.715508964@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,59 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brandon Wyman <bjwyman@gmail.com>
+From: Mark Chen <mark-yw.chen@mediatek.com>
 
-[ Upstream commit a5436af598779219b375c1977555c82def1c35d0 ]
+[ Upstream commit 2fc967cc0dadad6735448cfbcbc77fe0ea30203d ]
 
-If there is an input undervoltage fault, reported in STATUS_INPUT
-command response, there is quite likely a "Unit Off For Insufficient
-Input Voltage" condition as well.
+According to the MCU firmware behavior, as the driver is aware of the
+notification of the interrupt source FW_MAILBOX_INT that shows the MCU
+completed delivered a core dump piece to the host, the driver must
+acknowledge the MCU with the register PH2DSM0R bit PH2DSM0R_DRIVER_OWN
+to notify the MCU to handle the next core dump piece.
 
-Add a constant for bit 3 of STATUS_INPUT. Update the Vin limit
-attributes to include both bits in the mask for clearing faults.
-
-If an input undervoltage fault occurs, causing a unit off for
-insufficient input voltage, but the unit is off bit is not cleared, the
-STATUS_WORD will not be updated to clear the input fault condition.
-Including the unit is off bit (bit 3) allows for the input fault
-condition to completely clear.
-
-Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
-Link: https://lore.kernel.org/r/20220317232123.2103592-1-bjwyman@gmail.com
-Fixes: b4ce237b7f7d3 ("hwmon: (pmbus) Introduce infrastructure to detect sensors and limit registers")
-[groeck: Dropped unnecessary ()]
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: db57b625912a ("Bluetooth: btmtksdio: add support of processing firmware coredump and log")
+Co-developed-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Mark Chen <mark-yw.chen@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/pmbus/pmbus.h      | 1 +
- drivers/hwmon/pmbus/pmbus_core.c | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/bluetooth/btmtksdio.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
-index e0aa8aa46d8c..ef3a8ecde4df 100644
---- a/drivers/hwmon/pmbus/pmbus.h
-+++ b/drivers/hwmon/pmbus/pmbus.h
-@@ -319,6 +319,7 @@ enum pmbus_fan_mode { percent = 0, rpm };
- /*
-  * STATUS_VOUT, STATUS_INPUT
-  */
-+#define PB_VOLTAGE_VIN_OFF		BIT(3)
- #define PB_VOLTAGE_UV_FAULT		BIT(4)
- #define PB_VOLTAGE_UV_WARNING		BIT(5)
- #define PB_VOLTAGE_OV_WARNING		BIT(6)
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index b1386a4df4cc..ca0bfaf2f691 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -1373,7 +1373,7 @@ static const struct pmbus_limit_attr vin_limit_attrs[] = {
- 		.reg = PMBUS_VIN_UV_FAULT_LIMIT,
- 		.attr = "lcrit",
- 		.alarm = "lcrit_alarm",
--		.sbit = PB_VOLTAGE_UV_FAULT,
-+		.sbit = PB_VOLTAGE_UV_FAULT | PB_VOLTAGE_VIN_OFF,
- 	}, {
- 		.reg = PMBUS_VIN_OV_WARN_LIMIT,
- 		.attr = "max",
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index b5ea8d3bffaa..d4e2541a4873 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -87,8 +87,12 @@ MODULE_DEVICE_TABLE(sdio, btmtksdio_table);
+ #define RX_DONE_INT		BIT(1)
+ #define TX_EMPTY		BIT(2)
+ #define TX_FIFO_OVERFLOW	BIT(8)
++#define FW_MAILBOX_INT		BIT(15)
+ #define RX_PKT_LEN		GENMASK(31, 16)
+ 
++#define MTK_REG_PH2DSM0R	0xc4
++#define PH2DSM0R_DRIVER_OWN	BIT(0)
++
+ #define MTK_REG_CTDR		0x18
+ 
+ #define MTK_REG_CRDR		0x1c
+@@ -481,6 +485,12 @@ static void btmtksdio_txrx_work(struct work_struct *work)
+ 		 */
+ 		sdio_writel(bdev->func, int_status, MTK_REG_CHISR, NULL);
+ 
++		if ((int_status & FW_MAILBOX_INT) &&
++		    bdev->data->chipid == 0x7921) {
++			sdio_writel(bdev->func, PH2DSM0R_DRIVER_OWN,
++				    MTK_REG_PH2DSM0R, 0);
++		}
++
+ 		if (int_status & FW_OWN_BACK_INT)
+ 			bt_dev_dbg(bdev->hdev, "Get fw own back");
+ 
 -- 
 2.34.1
 
