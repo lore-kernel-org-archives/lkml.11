@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F28BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEA5C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387919AbiDENUD (ORCPT
+        id S1356540AbiDENIK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34300 "EHLO
+        Tue, 5 Apr 2022 09:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344284AbiDEJTE (ORCPT
+        with ESMTP id S1344025AbiDEJQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:04 -0400
+        Tue, 5 Apr 2022 05:16:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5D122BE9;
-        Tue,  5 Apr 2022 02:07:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C13B2603;
+        Tue,  5 Apr 2022 02:03:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08B3A614E4;
-        Tue,  5 Apr 2022 09:07:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F187C385A0;
-        Tue,  5 Apr 2022 09:07:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBCDB614E4;
+        Tue,  5 Apr 2022 09:03:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97B08C385A1;
+        Tue,  5 Apr 2022 09:03:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149627;
-        bh=cCkzTuHVbIYO3xWJxG7pG5NEV84ox2pqEC8ctSG62fk=;
+        s=korg; t=1649149426;
+        bh=pLIQlGkUzPkW36H+QN7RfbIl6w439D/LXITrrVw3+x8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=akzIaV/2OH9eRtRzcUgcQj82PzacPGO7KNR2wvqyHOchAkWKvEujI5Kpk1oJ/bRoA
-         p2XReKw/43Nb4lLZoGRRXQaBsG8NO4Dp50OjUEGrFxrEI51amgnR/V7S5u2zCiZv4G
-         Mhj2y4JUURu/91fp8PkUBjF7sAW51PnbqsLQynd8=
+        b=TmwrsoVh2l2NNPAGjykVdX8sg8wNB9SJhWK7PZL7rs9iqw0G+ASG5kEuPlc9rSlOr
+         t0sjhxIMHOLrXlYCVZuZ+q/NKrCpnIKPrNmwxlgGrHu6DlOfUG02g3yoIplBPqzzs3
+         pN6V+QG6p016pSbqUiJjV6j28u62A8Y/nTj5NTfE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0782/1017] spi: tegra20: Use of_device_get_match_data()
-Date:   Tue,  5 Apr 2022 09:28:15 +0200
-Message-Id: <20220405070417.468449376@linuxfoundation.org>
+Subject: [PATCH 5.16 0709/1017] kgdbts: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:27:02 +0200
+Message-Id: <20220405070415.316309603@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,41 +55,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
+[ Upstream commit 96c9e802c64014a7716865332d732cc9c7f24593 ]
 
-Use of_device_get_match_data() to simplify the code.
+__setup() handlers should return 1 to indicate that the boot option
+has been handled. A return of 0 causes the boot option/value to be
+listed as an Unknown kernel parameter and added to init's (limited)
+environment strings. So return 1 from kgdbts_option_setup().
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
+  kgdboc=kbd kgdbts=", will be passed to user space.
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc7
+     kgdboc=kbd
+     kgdbts=
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: e8d31c204e36 ("kgdb: add kgdb internal test suite")
+Cc: kgdb-bugreport@lists.sourceforge.net
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220308033255.22118-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-tegra20-slink.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/misc/kgdbts.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
-index e8204e155484..746bbafa1378 100644
---- a/drivers/spi/spi-tegra20-slink.c
-+++ b/drivers/spi/spi-tegra20-slink.c
-@@ -1003,14 +1003,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
- 	struct resource		*r;
- 	int ret, spi_irq;
- 	const struct tegra_slink_chip_data *cdata = NULL;
--	const struct of_device_id *match;
+diff --git a/drivers/misc/kgdbts.c b/drivers/misc/kgdbts.c
+index 67c5b452dd35..88b91ad8e541 100644
+--- a/drivers/misc/kgdbts.c
++++ b/drivers/misc/kgdbts.c
+@@ -1070,10 +1070,10 @@ static int kgdbts_option_setup(char *opt)
+ {
+ 	if (strlen(opt) >= MAX_CONFIG_LEN) {
+ 		printk(KERN_ERR "kgdbts: config string too long\n");
+-		return -ENOSPC;
++		return 1;
+ 	}
+ 	strcpy(config, opt);
+-	return 0;
++	return 1;
+ }
  
--	match = of_match_device(tegra_slink_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "Error: No device match found\n");
--		return -ENODEV;
--	}
--	cdata = match->data;
-+	cdata = of_device_get_match_data(&pdev->dev);
- 
- 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
- 	if (!master) {
+ __setup("kgdbts=", kgdbts_option_setup);
 -- 
 2.34.1
 
