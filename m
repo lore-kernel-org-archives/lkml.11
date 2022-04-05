@@ -2,81 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE879C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF970C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455596AbiDEWkw (ORCPT
+        id S1455640AbiDEWk5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60210 "EHLO
+        Tue, 5 Apr 2022 18:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446407AbiDEPof (ORCPT
+        with ESMTP id S1348902AbiDEJsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:44:35 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9FF1F55EC;
-        Tue,  5 Apr 2022 07:15:07 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8D38723A;
-        Tue,  5 Apr 2022 07:15:07 -0700 (PDT)
-Received: from bogus (unknown [10.57.43.163])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4847D3F5A1;
-        Tue,  5 Apr 2022 07:15:03 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 15:15:00 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Hubert Feurstein <hubert.feurstein@contec.at>,
-        Lukasz Majewski <lukma@denx.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Imre Kaloz <kaloz@openwrt.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Simtec Linux Team <linux@simtec.co.uk>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, patches@opensource.cirrus.com
-Subject: Re: [PATCH 01/12] ARM: versatile: move integrator/realview/vexpress
- to versatile
-Message-ID: <20220405141500.ixjl6qsy4cczghgt@bogus>
-References: <20220405091750.3076973-1-arnd@kernel.org>
- <20220405091750.3076973-2-arnd@kernel.org>
+        Tue, 5 Apr 2022 05:48:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222AAECB14;
+        Tue,  5 Apr 2022 02:37:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2D0161368;
+        Tue,  5 Apr 2022 09:37:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C771EC385A0;
+        Tue,  5 Apr 2022 09:37:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151424;
+        bh=cx+9DuQm7ggC+82XW4jTWuP85l/QRF2PKc9DxovvWRo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0OqChbwzdrktv0aGZHTYSfcVZcbPnKkv3T0H+kvA8YDqkLFO3MqPYnht5zMnoKvSf
+         RNnfHxm03RGwo5U8TPAhTNUBkaAklbt3W2cmCwih4mslpffr6B836va2s1U5Ui7nZL
+         8Prejg2ufca6YKKWrim74sIURhOvuR/v2AOTmlHY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 408/913] KVM: PPC: Fix vmx/vsx mixup in mmio emulation
+Date:   Tue,  5 Apr 2022 09:24:30 +0200
+Message-Id: <20220405070352.076081080@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405091750.3076973-2-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 11:17:39AM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> These are all fairly small platforms by now, and they are
-> closely related. Just move them all into a single directory.
-> 
+From: Fabiano Rosas <farosas@linux.ibm.com>
 
-I had forgotten about this. When do you plan to merge this ? I guess for
-v5.19. The reason I ask is that one of the branch triggered loads of
-kernel-doc warning[1] and I was bit confused with the file path. I did post
-the fix[2] for kernel-doc and was planning to send it as fix for v5.18, but
-let me know what do you prefer as it conflicts with this patch.
+[ Upstream commit b99234b918c6e36b9aa0a5b2981e86b6bd11f8e2 ]
 
+The MMIO emulation code for vector instructions is duplicated between
+VSX and VMX. When emulating VMX we should check the VMX copy size
+instead of the VSX one.
+
+Fixes: acc9eb9305fe ("KVM: PPC: Reimplement LOAD_VMX/STORE_VMX instruction ...")
+Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220125215655.1026224-3-farosas@linux.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/kvm/powerpc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/powerpc/kvm/powerpc.c b/arch/powerpc/kvm/powerpc.c
+index b4e6f70b97b9..ee305455bd8d 100644
+--- a/arch/powerpc/kvm/powerpc.c
++++ b/arch/powerpc/kvm/powerpc.c
+@@ -1507,7 +1507,7 @@ int kvmppc_handle_vmx_load(struct kvm_vcpu *vcpu,
+ {
+ 	enum emulation_result emulated = EMULATE_DONE;
+ 
+-	if (vcpu->arch.mmio_vsx_copy_nums > 2)
++	if (vcpu->arch.mmio_vmx_copy_nums > 2)
+ 		return EMULATE_FAIL;
+ 
+ 	while (vcpu->arch.mmio_vmx_copy_nums) {
+@@ -1604,7 +1604,7 @@ int kvmppc_handle_vmx_store(struct kvm_vcpu *vcpu,
+ 	unsigned int index = rs & KVM_MMIO_REG_MASK;
+ 	enum emulation_result emulated = EMULATE_DONE;
+ 
+-	if (vcpu->arch.mmio_vsx_copy_nums > 2)
++	if (vcpu->arch.mmio_vmx_copy_nums > 2)
+ 		return EMULATE_FAIL;
+ 
+ 	vcpu->arch.io_gpr = rs;
 -- 
-Regards,
-Sudeep
+2.34.1
 
-[1] https://lore.kernel.org/linux-doc/202204031026.4ogKxt89-lkp@intel.com/
-[2] https://lore.kernel.org/all/20220404130207.1162445-1-sudeep.holla@arm.com/
+
 
