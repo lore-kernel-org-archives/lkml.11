@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355308AbiDEO4c (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
+        id S238127AbiDEO6X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344477AbiDEJmF (ORCPT
+        with ESMTP id S1344633AbiDEJmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:42:05 -0400
+        Tue, 5 Apr 2022 05:42:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F16BE9C7;
-        Tue,  5 Apr 2022 02:27:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BF8BE9E9;
+        Tue,  5 Apr 2022 02:27:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0CB2B81C6E;
-        Tue,  5 Apr 2022 09:27:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37BB6C385A0;
-        Tue,  5 Apr 2022 09:27:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2CBAB81C9A;
+        Tue,  5 Apr 2022 09:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CD7FC385A2;
+        Tue,  5 Apr 2022 09:27:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150863;
-        bh=XQzzdibhL0otRHSkdbIMNyKyXU70t8rbk4JAHgEy2QE=;
+        s=korg; t=1649150866;
+        bh=OZyYgrz1VCHrilKgZnyeOPJvQBaO39yx7428M/0XhW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZhvooKbzbUQx943pCD5TtNdk8IXIAiys6v0E3/Db5nvZn2lP49jKJcHb0pAa8V2S4
-         1UXayNxAygKWbAbeUmPWjTbmQU7EhVuP8aM1xRstVdGlqUJGke2WUTBgdQDx+DaNIr
-         WlfYWRxj+YE/FNilEO7u6l1YG6Nhr14mJE/ynt0A=
+        b=Xi7VMrbP+RO8uDm3JFKMaNrWQ9kBSfVnuP076E7TaQfI7fJFHwaT60p9EhVEcE7+B
+         kPvdxuEOqqNm4T5q10cYFsEWClyieKRgkqcYO+WNgWTo+P+XdCR4yDbGJCr45AYJG3
+         OTW+U9iO1gAUfsR8uuFxxJApsvsmyShW5tBfprVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
         Karol Herbst <kherbst@redhat.com>
-Subject: [PATCH 5.15 176/913] drm/nouveau/backlight: Fix LVDS backlight detection on some laptops
-Date:   Tue,  5 Apr 2022 09:20:38 +0200
-Message-Id: <20220405070345.127736150@linuxfoundation.org>
+Subject: [PATCH 5.15 177/913] drm/nouveau/backlight: Just set all backlight types as RAW
+Date:   Tue,  5 Apr 2022 09:20:39 +0200
+Message-Id: <20220405070345.158603494@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,39 +50,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lyude Paul <lyude@redhat.com>
 
-commit 6b0076540faffd47f5a899bf12f3528c4f0e726b upstream.
+commit b21a142fd2055d8276169efcc95b624ff908a341 upstream.
 
-It seems that some laptops will report having both an eDP and LVDS
-connector, even though only the LVDS connector is actually hooked up. This
-can lead to issues with backlight registration if the eDP connector ends up
-getting registered before the LVDS connector, as the backlight device will
-then be registered to the eDP connector instead of the LVDS connector.
+Currently we can get a warning on systems with eDP backlights like so:
 
-So, fix this by only registering the backlight on connectors that are
-reported as being connected.
+  nv_backlight: invalid backlight type
+  WARNING: CPU: 4 PID: 454 at drivers/video/backlight/backlight.c:420
+    backlight_device_register+0x226/0x250
+
+This happens as a result of us not filling out props.type for the eDP
+backlight, even though we do it for all other backlight types.
+
+Since nothing in our driver uses anything but BACKLIGHT_RAW, let's take the
+props\.type assignments out of the codepaths for individual backlight types
+and just set it unconditionally to prevent this from happening again.
 
 Signed-off-by: Lyude Paul <lyude@redhat.com>
 Fixes: 6eca310e8924 ("drm/nouveau/kms/nv50-: Add basic DPCD backlight support for nouveau")
-Bugzilla: https://gitlab.freedesktop.org/drm/nouveau/-/issues/137
 Cc: <stable@vger.kernel.org> # v5.15+
 Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220204180504.328999-1-lyude@redhat.com
+Link: https://patchwork.freedesktop.org/patch/msgid/20220204193319.451119-1-lyude@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_backlight.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nouveau_backlight.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 --- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-@@ -294,7 +294,8 @@ nv50_backlight_init(struct nouveau_backl
- 	struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
- 	struct nvif_object *device = &drm->client.device.object;
- 
--	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)))
-+	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
-+	    nv_conn->base.status != connector_status_connected)
+@@ -101,7 +101,6 @@ nv40_backlight_init(struct nouveau_encod
+ 	if (!(nvif_rd32(device, NV40_PMC_BACKLIGHT) & NV40_PMC_BACKLIGHT_MASK))
  		return -ENODEV;
  
- 	if (nv_conn->type == DCB_CONNECTOR_eDP) {
+-	props->type = BACKLIGHT_RAW;
+ 	props->max_brightness = 31;
+ 	*ops = &nv40_bl_ops;
+ 	return 0;
+@@ -340,7 +339,6 @@ nv50_backlight_init(struct nouveau_backl
+ 	else
+ 		*ops = &nva3_bl_ops;
+ 
+-	props->type = BACKLIGHT_RAW;
+ 	props->max_brightness = 100;
+ 
+ 	return 0;
+@@ -408,6 +406,7 @@ nouveau_backlight_init(struct drm_connec
+ 		goto fail_alloc;
+ 	}
+ 
++	props.type = BACKLIGHT_RAW;
+ 	bl->dev = backlight_device_register(backlight_name, connector->kdev,
+ 					    nv_encoder, ops, &props);
+ 	if (IS_ERR(bl->dev)) {
 
 
