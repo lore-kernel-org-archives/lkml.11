@@ -2,227 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E519EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15872C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241582AbiDFCmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
+        id S1457338AbiDFCoO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 22:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577842AbiDEXRF (ORCPT
+        with ESMTP id S1577997AbiDEXR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 19:17:05 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9C719C11
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:45:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649195144; x=1680731144;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vuRVGptGWizo7YvjlGmSMHRbnTRmFRpIy9aEIdwsDjg=;
-  b=hAE7BTe6TOdYH+Yvgt11h68UyU6t7/atRYhsHEpZM/aKqO/mJpxL46Es
-   4yPoj8INh2V2WcOZU4SD3yN/FYN0HAN+XYCzZaWX5qYFMsgWC55dUdVL+
-   gS8urdhQNn5mLADwjWpg8kdVQE3I/rgEneV5X1FVQZct0zacnichgL6CH
-   l3dv5jzMyCJNu5eYWkt13Ewg1hGxlMOQz4DPsMSlIiA7OMRGx6Klrnfib
-   Daer7DQO9veqsrsWoSVyLEQ74szY0j+LnVdqItX+RBfpaDuiBysCfXQx5
-   uqNgdHPwXABL6HPXSv7e1Kv9n7/tyd0TNSdc865yfC2cp/ZPz7WxZE32b
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261045821"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="261045821"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 14:45:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="524173790"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 14:45:35 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbqzW-0003mh-M2;
-        Tue, 05 Apr 2022 21:45:34 +0000
-Date:   Wed, 06 Apr 2022 05:44:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:locking/urgent] BUILD SUCCESS
- 273ba85b5e8b971ed28eb5c17e1638543be9237d
-Message-ID: <624cb847.fPFxn35C8KW7vX+K%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 5 Apr 2022 19:17:58 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2082.outbound.protection.outlook.com [40.107.236.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94139167D4
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:49:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nTGAnDuL4UsbyZdRjjnwED7YOAGjqEOKG0r/6M5uEHlXQHcKbRevrtCr8xYCXHP6AApfJ6b/ffjp7KDqAHIq5oyx2Y6hoI6veRNQOQUTePkiWW+es4BHgvY4/i9oM9jubDlpLKgmH/pSux90y2I+JjkMmrXtQr/ZhjKTc4wlA5iwA9NxKYDAZSpYj+NYpjTgl+ztYN8AqkvvRalnEbDETkoR2drykBl8VJBSLfGpP9P1X4LUGIuUX6PUP8hSFvlEVUGiUJUBO/rnz7vi3CYz0kPL+QgorR8P0K7LKpjzsIhMwMwpJCmMYJt5iOZGluL5Mr+m8hFvvjWW8BHJxxC6sg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xVpfZuUJIB2V2KWjS+a2VU/2DxljJHa4UpGxFx3VnzY=;
+ b=QrVcEfzef32hEY1NvFiugMqiYO6UE7oz0eJkyX/qtvfY0HPsBV/VAhl3XczcLW2CyxjHvUl3ZEoYWi9M1d3v4cB567YyX5Cc30IHA0WrXBsYpe+uXRa5ESv9OMCIiQhRigVFQFcgabOVItV3uqJ5qmtQHbPK5keCV+RwsjpG/ig6z8t/UPb4jwi6T1vplHU+VC5vgK0921ZtAixSq/twcs5fAizMPQdaWsPOIZ4PmbClLg+BpkbeRjZjWrnmqCBuYZ7Ci8z+hFY4yYsWn1I1Buu5Zjc3ipU25sxQVZMUFCaHifHxxMGiFGw0oiV4FzXztPfbwo8BXW4ZImeytZXlIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xVpfZuUJIB2V2KWjS+a2VU/2DxljJHa4UpGxFx3VnzY=;
+ b=mZQQd7hCkjOySgiCCArLcDG1xJYpbBDAB4KYbfJXuw5wshOLFQW3D/8OLbE52mwQiI5vltmeHV8aNIG4K8Ib/DtKOn2a6zgqV7uab0WzaUWT6hfpAZN3xmgA1YTlUUfPQj/h8uhHNlIBrtT4NhYneMIIsEgNuceMREXTf4Ogl8o=
+Received: from MN2PR12MB3949.namprd12.prod.outlook.com (2603:10b6:208:167::22)
+ by BY5PR12MB3777.namprd12.prod.outlook.com (2603:10b6:a03:1a9::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 21:49:28 +0000
+Received: from MN2PR12MB3949.namprd12.prod.outlook.com
+ ([fe80::e0a5:a02d:154c:bb05]) by MN2PR12MB3949.namprd12.prod.outlook.com
+ ([fe80::e0a5:a02d:154c:bb05%6]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
+ 21:49:27 +0000
+From:   "Carroll, Lewis" <Lewis.Carroll@amd.com>
+To:     Borislav Petkov <bp@alien8.de>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "Karny, Wyes" <Wyes.Karny@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        "Shenoy, Gautham Ranjal" <gautham.shenoy@amd.com>,
+        "Narayan, Ananth" <Ananth.Narayan@amd.com>,
+        "Rao, Bharata Bhasker" <bharata@amd.com>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "metze@samba.org" <metze@samba.org>,
+        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+Subject: RE: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+Thread-Topic: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+Thread-Index: AQHYSO0snhd1lCdhiU2/pwc3sV/c0KzhWp+AgABmXzCAAAdvgIAAEKCA
+Date:   Tue, 5 Apr 2022 21:49:27 +0000
+Message-ID: <MN2PR12MB394969DC4BAF9B91A0E8A560FAE49@MN2PR12MB3949.namprd12.prod.outlook.com>
+References: <20220405130021.557880-1-wyes.karny@amd.com>
+ <YkxMtx9zdk+nH33r@zn.tnic>
+ <MN2PR12MB3949923BCD8B368F8269565BFAE49@MN2PR12MB3949.namprd12.prod.outlook.com>
+ <Ykyo00r8aIibvLpP@zn.tnic>
+In-Reply-To: <Ykyo00r8aIibvLpP@zn.tnic>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Enabled=true;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SetDate=2022-04-05T21:49:25Z;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Method=Privileged;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Name=Public-AIP 2.0;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ActionId=197c5a53-db3d-43ef-99a4-3c8f0f7d130d;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ContentBits=1
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f18c2143-78d2-4e1d-c18c-08da174e2817
+x-ms-traffictypediagnostic: BY5PR12MB3777:EE_
+x-microsoft-antispam-prvs: <BY5PR12MB3777CC6E5A3D8AB924A12AF0FAE49@BY5PR12MB3777.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vUaLcbFMmHoJgNLb8FD2X9wYiGNRoacFNh2zwACYJuZHU0oxTa4AW7Ein9cEgY0vb8TIQmG/rBnJ/SCf+/F5NEbM3WqMK+p2HRds/4hUlHA55MycEkAGD6LHe90/oFGojYlzOKc6XW3b/8MPBlKkukGwQkL1QSBVDZGLtSfJK1Z0vpqbZ8cSInMJcI6lv5sZEONE0XgztuCRioaVBqCtiUXLMNd2jPrq0A1ODZ7EYOcn+rtGSBBWq0PRUzxPaqzuQyuu3LgTBy1+Uq/w7DO1z1zq0xYJzvuirfZuMdMRZKc9iHVMi472/l8pS9DV7JZ5L+akyhcljQy3xN+s7jJkNc2MayRpVGs6gN03y9XP7vZ0sLtTQI9vImuGcdFBzhGPHTEcsxrhhh30x/ZhSu4cq2iT4VaFif5Xyxhe1nrHHdE0pLp0tIHnvXwSChSQBjO2HAir2nOLjYytg2ExYr+wyUd7JHQsv7tXz+X4ZcEq3DB9vXnIUNXtEFpwyXmcgocCsBNKVC6FlKTiSudZif6grgkCA5OU4GN5+M9TpmTRItrNVto/5YfLfV/fg4t46NXKXPkXYWUzRzUrs/u/6dgmUoXDvQ/gRIvgokg720riM5WpzbdPF7OjJvD7D0jERfG7UtVtLXPMS13eQTMEa2IzoNFHK8mOSg0FQUAIiUc5v2xZEZHYnnWsajBD7gMNc4nIQdft79laoTewgA/LDdAPkg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3949.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(53546011)(66556008)(9686003)(316002)(83380400001)(7696005)(508600001)(6506007)(4326008)(66476007)(66446008)(64756008)(8676002)(33656002)(76116006)(54906003)(38100700002)(71200400001)(52536014)(122000001)(2906002)(86362001)(55016003)(6916009)(7416002)(26005)(38070700005)(8936002)(186003)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?UM5nDxPOACNPTab7oLzottYZGOn347jrIqDngyECC27y8O5ka03C4UgXK9F1?=
+ =?us-ascii?Q?93fwvY83f1dQLq6Y/mR4nhzKUX89S+xvl2qu1z7k+AX/LricpdHa6iPh51HJ?=
+ =?us-ascii?Q?Ltb0Ywtvy8GK+fzaDdXVwE8TJZMWzFG+qn7CWuexaulz1AaBjsk2sYm1jPv+?=
+ =?us-ascii?Q?jn/Ouob5bOVmC+GU2abCsq/6PdkKxzHX6W1lHbYcvqiQfOJlJ9vTlwwEJynD?=
+ =?us-ascii?Q?DJaqfDVGT1WKQM+ktzru7a/+QTsZ3497wt0fLPI/YsMDmsRaM9BxX4mWcTBO?=
+ =?us-ascii?Q?l5+2r1uKqrekxwzi09udlY0DVQkFpj7X9P2nX6yJM7DmkGc5TjYItDyFTS+M?=
+ =?us-ascii?Q?Y1Md6Rp94GDeHFh7G/z27h10FsO15qxAyKDiA7RXKTH3Ncj5JK4dZdmLzgw6?=
+ =?us-ascii?Q?QXEKrDwjBXoCVv2t0cyWr4MOjSFMmYPULdxtZ14TB5GpLZBfL5we5SgPdW4j?=
+ =?us-ascii?Q?Le2FEIoIM4zYmlMabEAT+JVPYBetcz5F+WO3GvwqCElAgPcxkKWsNd15v37M?=
+ =?us-ascii?Q?SDOgHij3pjmwJnMNjTh1EluP0VdefsBo6MrTsjMTGAqJdDLJqTVNipSTywGa?=
+ =?us-ascii?Q?CSMNnDgEp+dJ96Fo/4yLy6DmYHxFlfoMs/E//r3oKAa5f9gy7skyHx674A3v?=
+ =?us-ascii?Q?b564Sj/vkiOJQMjDPxzSaPueSgPtcCw1GLTa6hZD62wwIV/DEY8Pik2kWS69?=
+ =?us-ascii?Q?QGL/5/sv44mTWeTBdc3YI9Q217rziLeDAhpniQoUOC2yYLLBAaZb97HyAb0f?=
+ =?us-ascii?Q?avVyeXcroj5/4ro10yNOmWbwj5uzv55vKkt4HsROoYHGqlUGgznW4Dw70dK8?=
+ =?us-ascii?Q?4GExYg7kPKdehpGWcs1p1hJPHDP3f/gsfsrEk49Ulxi0FI8RerF1aJQJ8qDL?=
+ =?us-ascii?Q?cJ60KD9KyKBUi6KEOvfZuDOnJH8CEWvy4K1+G0MgQn7zG8eaog+q7II/FxUc?=
+ =?us-ascii?Q?G/eh3iOT9po6reMSO+QaVBKhx8FD/I9VHJq7BbPmJp31frDCmTD55nm9X8P2?=
+ =?us-ascii?Q?RIu3ZtpyTC1UEI5ukW80ndEhB1r40FV3qs9iOB+64OkYuH7FONjohAwe8oqI?=
+ =?us-ascii?Q?6g6D8lYblGT9UIQr4NIoVk1SYL2SZUjJKze4l0IhebPXy+g/2Fi3RDTlpsUq?=
+ =?us-ascii?Q?00B9WC3qQcjjmTKU/imcX0CNZ/4RrfEJKK6wH5aHtYODMRrMQhtm346fCAkG?=
+ =?us-ascii?Q?L/NIXA87Sldr4QWZ7A3GQktJI1Gyk6H2X1vEOuv9FVh/btSS/u+7suTHW/MR?=
+ =?us-ascii?Q?TV/0RF5gTmu5SABZD+edXPvSTKxxaWvKR99iaOsOxYn++IdhABER4rnVYGMk?=
+ =?us-ascii?Q?031iE6b3dof8EyQz+/vk4FzXwacohBQ4q/4nHrYzlhkPhUuG+goHOBXI+K7P?=
+ =?us-ascii?Q?LqT7+JB3ANPim1Rkf+mv7T9foFIQ4YjRgEBfI6DeJEBEqszUl+YItg3226ET?=
+ =?us-ascii?Q?F99NfCS3Gntaq8FZ2r+rY7MlP3Sc+gE1Dvi1O+zz0S0H1tA/Uhoislo41/7t?=
+ =?us-ascii?Q?3W9eKkl0NaPdLnLUBcsaThk3fa14cFOIGcOw6HwXxw82PFuaCNaFNl9QiZXd?=
+ =?us-ascii?Q?nbjcEugy6zlE9LyYSWef/7xrPZqX4hI9zHZB81WIplLTKMuj3jxoToypbKqZ?=
+ =?us-ascii?Q?9oEYGBVUxUIaZkZehjdLQKVxqQtTNC0UHaIoVFNOUhfsevJcfuKpw/6/PV2b?=
+ =?us-ascii?Q?Ytf+OuaKFmnQu5v04FviMzE7xgsLjkw9sqbotskFQzxOfxJHqHZjXnruw/Ez?=
+ =?us-ascii?Q?iAMI9GteMQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3949.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f18c2143-78d2-4e1d-c18c-08da174e2817
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Apr 2022 21:49:27.2005
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NSxvgBPVJ9CoWzd7nvCo+p/07nk8H5E8AbiNIOSUZ/ozlAc8b1ygnI2tS4Y1j01IEbrDJrwd7EjynDh6fjCOiw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3777
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking/urgent
-branch HEAD: 273ba85b5e8b971ed28eb5c17e1638543be9237d  Revert "mm/page_alloc: mark pagesets as __maybe_unused"
+[Public]
 
-elapsed time: 720m
+> -----Original Message-----
+> From: Borislav Petkov <bp@alien8.de>
+> Sent: Tuesday, April 5, 2022 4:39 PM
+> To: Carroll, Lewis <Lewis.Carroll@amd.com>
+> Cc: linux-kernel@vger.kernel.org; peterz@infradead.org;
+> dave.hansen@linux.intel.com; Karny, Wyes <Wyes.Karny@amd.com>; Limonciell=
+o,
+> Mario <Mario.Limonciello@amd.com>; Shenoy, Gautham Ranjal
+> <gautham.shenoy@amd.com>; Narayan, Ananth <Ananth.Narayan@amd.com>; Rao,
+> Bharata Bhasker <bharata@amd.com>; len.brown@intel.com; x86@kernel.org;
+> tglx@linutronix.de; mingo@redhat.com; hpa@zytor.com;
+> chang.seok.bae@intel.com; keescook@chromium.org; metze@samba.org;
+> zhengqi.arch@bytedance.com; mark.rutland@arm.com
+> Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+>=20
+> [CAUTION: External Email]
+>=20
+> On Tue, Apr 05, 2022 at 08:26:53PM +0000, Carroll, Lewis wrote:
+> > This happens when:
+> >  * User disables global C-states in BIOS
+> >  * User disables cpuidle (e.g. idle=3Doff or processor.max_cstate=3D0)
+> >  * Kernel does not have CONFIG_ACPI_PROCESSOR_IDLE
+>=20
+> All three or any one of those?
 
-configs tested: 148
-configs skipped: 4
+Just when I thought I was being thorough. Any of the above will block the
+cpuidle driver from loading. As will absence of _CST ACPI methods (add that
+as a fourth cause). Brings back memories of code comments about a certain
+idle driver being created to work around broken BIOSes...
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+>=20
+> > Genesis of this patch is customer performance observations.
+>=20
+> Please add that explanation to the changelog - it is important when looki=
+ng
+> back, trying to figure out why this was done.
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-arm                         s3c6400_defconfig
-mips                         db1xxx_defconfig
-openrisc                 simple_smp_defconfig
-arm                         at91_dt_defconfig
-m68k                        m5407c3_defconfig
-powerpc                     pq2fads_defconfig
-sparc64                          alldefconfig
-sparc                       sparc32_defconfig
-powerpc                  storcenter_defconfig
-arc                            hsdk_defconfig
-riscv                    nommu_k210_defconfig
-arm                      jornada720_defconfig
-arm                       imx_v6_v7_defconfig
-sh                     magicpanelr2_defconfig
-openrisc                  or1klitex_defconfig
-mips                        vocore2_defconfig
-mips                         cobalt_defconfig
-arc                      axs103_smp_defconfig
-ia64                            zx1_defconfig
-arm                         lpc18xx_defconfig
-sh                           se7343_defconfig
-sh                         ap325rxa_defconfig
-sh                           se7722_defconfig
-powerpc                      tqm8xx_defconfig
-powerpc                     tqm8548_defconfig
-sh                             sh03_defconfig
-powerpc                         wii_defconfig
-arm                             ezx_defconfig
-mips                  maltasmvp_eva_defconfig
-m68k                       m5249evb_defconfig
-ia64                        generic_defconfig
-arm                           viper_defconfig
-arm                           stm32_defconfig
-powerpc                 mpc837x_mds_defconfig
-powerpc                     tqm8541_defconfig
-xtensa                    smp_lx200_defconfig
-arm                          exynos_defconfig
-openrisc                            defconfig
-h8300                            allyesconfig
-powerpc                     stx_gp3_defconfig
-nios2                         10m50_defconfig
-arm                            hisi_defconfig
-arm                        keystone_defconfig
-powerpc                         ps3_defconfig
-arm                        realview_defconfig
-m68k                          multi_defconfig
-xtensa                       common_defconfig
-sh                        edosk7760_defconfig
-sparc                       sparc64_defconfig
-arm                          iop32x_defconfig
-riscv             nommu_k210_sdcard_defconfig
-s390                                defconfig
-ia64                          tiger_defconfig
-arm                       multi_v4t_defconfig
-powerpc                        warp_defconfig
-xtensa                          iss_defconfig
-arm                            qcom_defconfig
-m68k                        mvme147_defconfig
-ia64                             allyesconfig
-arm                             pxa_defconfig
-mips                  decstation_64_defconfig
-h8300                       h8s-sim_defconfig
-arm                           sama5_defconfig
-mips                           xway_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220405
-ia64                             allmodconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+We will have to see what we can sanitize. The original performance observat=
+ion
+(packet loss in a networking application) led to discovery of lots of cycle=
+s
+in the various go-to-sleep-via-halt and wake-from-halt-via-IPI functions. W=
+yes
+collected the raw data on the relative idle+wake-up latency and included th=
+at
+in the commit msg. Think of that delta as the root cause of the performance
+regression in this case.
 
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220405
-riscv                randconfig-c006-20220405
-mips                 randconfig-c004-20220405
-arm                  randconfig-c002-20220405
-arm                          moxart_defconfig
-powerpc                        icon_defconfig
-powerpc                   bluestone_defconfig
-arm                      tct_hammer_defconfig
-powerpc                  mpc885_ads_defconfig
-arm                     am200epdkit_defconfig
-arm                       aspeed_g4_defconfig
-arm                            mmp2_defconfig
-arm                              alldefconfig
-riscv                    nommu_virt_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220405
-riscv                randconfig-r042-20220405
-hexagon              randconfig-r041-20220405
+>=20
+> > Yes. We felt the code more readable with the prefer_mwait_c1_over_halt =
+fn.
+> > Hygon CPU init indeed sets X86_FEATURE ZEN.
+> > AMD CPU init sets X86_FEATURE_ZEN for family >=3D 17h (not only 17h).
+>=20
+> Yes, but this new logic you're adding, basically says, use MWAIT on all Z=
+en
+> uarch CPUs, right?
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Yes we are saying use MWAIT instead of HLT on all known (as of today) Zen
+uarch CPUs (AMD >=3D 17h and Hygon).
+
+>=20
+> So why not write exactly that?
+>=20
+> The simpler the logic and the clearer the code, the better.
+>=20
+> > Cleanest solution might be a new CPU feature (e.g.
+> > X86_PREFER_MWAIT_IDLE) that gets set appropriately, but that would
+> > require touching more files.
+>=20
+> Yes, I thought about it too.
+>=20
+> Not really necessary if what I wrote above fits.
+>=20
+> And while you're touching files, pls add that change too:
+>=20
+> ---
+> diff --git a/arch/x86/include/asm/cpufeatures.h
+> b/arch/x86/include/asm/cpufeatures.h
+> index 73e643ae94b6..c1091f78f104 100644
+> --- a/arch/x86/include/asm/cpufeatures.h
+> +++ b/arch/x86/include/asm/cpufeatures.h
+> @@ -219,7 +219,7 @@
+>  #define X86_FEATURE_IBRS               ( 7*32+25) /* Indirect Branch
+> Restricted Speculation */
+>  #define X86_FEATURE_IBPB               ( 7*32+26) /* Indirect Branch
+> Prediction Barrier */
+>  #define X86_FEATURE_STIBP              ( 7*32+27) /* Single Thread Indir=
+ect
+> Branch Predictors */
+> -#define X86_FEATURE_ZEN                        ( 7*32+28) /* "" CPU is A=
+MD
+> family 0x17 or above (Zen) */
+> +#define X86_FEATURE_ZEN                        ( 7*32+28) /* "" Set on C=
+PUs
+> of the Zen uarch */
+>  #define X86_FEATURE_L1TF_PTEINV                ( 7*32+29) /* "" L1TF
+> workaround PTE inversion */
+>  #define X86_FEATURE_IBRS_ENHANCED      ( 7*32+30) /* Enhanced IBRS */
+>  #define X86_FEATURE_MSR_IA32_FEAT_CTL  ( 7*32+31) /* "" MSR IA32_FEAT_CT=
+L
+> configured */
+>=20
+> so that dhansen and peterz are not confused anymore. :-)
+=20
+Ack.
+
+>=20
+> Thx.
+>=20
+> --
+> Regards/Gruss,
+>     Boris.
