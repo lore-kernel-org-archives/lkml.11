@@ -2,166 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7244BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81BDFC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356755AbiDEVO7 (ORCPT
+        id S1356882AbiDEVPG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
+        Tue, 5 Apr 2022 17:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350555AbiDEJ6w (ORCPT
+        with ESMTP id S1457760AbiDEQm4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:58:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4565765434;
-        Tue,  5 Apr 2022 02:51:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A66F561673;
-        Tue,  5 Apr 2022 09:51:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF372C385A1;
-        Tue,  5 Apr 2022 09:51:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152272;
-        bh=/I26JbtONVAeteWoFQTGjczew1GeyEqS2guztUZ+bYY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=04Seav4LI5W6Ivb0OG+LK5bKQZs3UaQ+MiQJnx/bon1MI00y/bNZjYmzZ8Ov/KAbb
-         hksyjgnHMgbZPFAcgXk+VpmGg/44Kg7H4gUfCND/nKX+zpEUrKGauMWvEjzdJmYjo7
-         59x1eCfLWO2kACSmlDqpM82bgkF2BbErmrMJk+UY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 718/913] f2fs: dont get FREEZE lock in f2fs_evict_inode in frozen fs
-Date:   Tue,  5 Apr 2022 09:29:40 +0200
-Message-Id: <20220405070401.355238370@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:42:56 -0400
+X-Greylist: delayed 312 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 09:40:56 PDT
+Received: from 5.mo583.mail-out.ovh.net (5.mo583.mail-out.ovh.net [87.98.173.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48BDDFFBD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:40:56 -0700 (PDT)
+Received: from player715.ha.ovh.net (unknown [10.108.20.144])
+        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 6067823F18
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:40:54 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player715.ha.ovh.net (Postfix) with ESMTPSA id F12DC2900AE2A;
+        Tue,  5 Apr 2022 16:40:48 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-98R002e7e3a593-6777-45c4-9110-c0244ab646ae,
+                    8BB3F008109FF1ACF458F8D30695C50246D29715) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Fabio Estevam <festevam@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ASoC: sgtl5000: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:40:31 +0200
+Message-Id: <20220405164031.2160888-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8148700579943122566
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddttdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepteegudfgleekieekteeggeetveefueefteeugfduieeitdfhhedtfeefkedvfeefnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeduhedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-[ Upstream commit ba900534f807f0b327c92d5141c85d2313e2d55c ]
+This avoids scanning the identifier tables during probes.
 
-Let's purge inode cache in order to avoid the below deadlock.
-
-[freeze test]                         shrinkder
-freeze_super
- - pwercpu_down_write(SB_FREEZE_FS)
-                                       - super_cache_scan
-                                         - down_read(&sb->s_umount)
-                                           - prune_icache_sb
-                                            - dispose_list
-                                             - evict
-                                              - f2fs_evict_inode
-thaw_super
- - down_write(&sb->s_umount);
-                                              - __percpu_down_read(SB_FREEZE_FS)
-
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- Documentation/ABI/testing/sysfs-fs-f2fs | 1 +
- fs/f2fs/debug.c                         | 1 +
- fs/f2fs/f2fs.h                          | 1 +
- fs/f2fs/inode.c                         | 6 ++++--
- fs/f2fs/super.c                         | 4 ++++
- 5 files changed, 11 insertions(+), 2 deletions(-)
+ sound/soc/codecs/sgtl5000.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-fs-f2fs b/Documentation/ABI/testing/sysfs-fs-f2fs
-index f627e705e663..48d41b669627 100644
---- a/Documentation/ABI/testing/sysfs-fs-f2fs
-+++ b/Documentation/ABI/testing/sysfs-fs-f2fs
-@@ -425,6 +425,7 @@ Description:	Show status of f2fs superblock in real time.
- 		0x800  SBI_QUOTA_SKIP_FLUSH  skip flushing quota in current CP
- 		0x1000 SBI_QUOTA_NEED_REPAIR quota file may be corrupted
- 		0x2000 SBI_IS_RESIZEFS       resizefs is in process
-+		0x4000 SBI_IS_FREEZING       freefs is in process
- 		====== ===================== =================================
- 
- What:		/sys/fs/f2fs/<disk>/ckpt_thread_ioprio
-diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
-index 8c50518475a9..07ad0d81f0c5 100644
---- a/fs/f2fs/debug.c
-+++ b/fs/f2fs/debug.c
-@@ -338,6 +338,7 @@ static char *s_flag[] = {
- 	[SBI_QUOTA_SKIP_FLUSH]	= " quota_skip_flush",
- 	[SBI_QUOTA_NEED_REPAIR]	= " quota_need_repair",
- 	[SBI_IS_RESIZEFS]	= " resizefs",
-+	[SBI_IS_FREEZING]	= " freezefs",
- };
- 
- static int stat_show(struct seq_file *s, void *v)
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index c68817d83a53..0a0fa1a64d06 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -1253,6 +1253,7 @@ enum {
- 	SBI_QUOTA_SKIP_FLUSH,			/* skip flushing quota in current CP */
- 	SBI_QUOTA_NEED_REPAIR,			/* quota file may be corrupted */
- 	SBI_IS_RESIZEFS,			/* resizefs is in process */
-+	SBI_IS_FREEZING,			/* freezefs is in process */
- };
- 
- enum {
-diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
-index 6488f5ff250c..2272000fb10b 100644
---- a/fs/f2fs/inode.c
-+++ b/fs/f2fs/inode.c
-@@ -769,7 +769,8 @@ void f2fs_evict_inode(struct inode *inode)
- 	f2fs_remove_ino_entry(sbi, inode->i_ino, UPDATE_INO);
- 	f2fs_remove_ino_entry(sbi, inode->i_ino, FLUSH_INO);
- 
--	sb_start_intwrite(inode->i_sb);
-+	if (!is_sbi_flag_set(sbi, SBI_IS_FREEZING))
-+		sb_start_intwrite(inode->i_sb);
- 	set_inode_flag(inode, FI_NO_ALLOC);
- 	i_size_write(inode, 0);
- retry:
-@@ -800,7 +801,8 @@ void f2fs_evict_inode(struct inode *inode)
- 		if (dquot_initialize_needed(inode))
- 			set_sbi_flag(sbi, SBI_QUOTA_NEED_REPAIR);
+diff --git a/sound/soc/codecs/sgtl5000.c b/sound/soc/codecs/sgtl5000.c
+index 8eebf27d0ea2..2aa48aef6a97 100644
+--- a/sound/soc/codecs/sgtl5000.c
++++ b/sound/soc/codecs/sgtl5000.c
+@@ -1579,8 +1579,7 @@ static void sgtl5000_fill_defaults(struct i2c_client *client)
  	}
--	sb_end_intwrite(inode->i_sb);
-+	if (!is_sbi_flag_set(sbi, SBI_IS_FREEZING))
-+		sb_end_intwrite(inode->i_sb);
- no_delete:
- 	dquot_drop(inode);
- 
-diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-index 7b744ceb17a5..6dc66b7bc1f5 100644
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -1663,11 +1663,15 @@ static int f2fs_freeze(struct super_block *sb)
- 	/* ensure no checkpoint required */
- 	if (!llist_empty(&F2FS_SB(sb)->cprc_info.issue_list))
- 		return -EINVAL;
-+
-+	/* to avoid deadlock on f2fs_evict_inode->SB_FREEZE_FS */
-+	set_sbi_flag(F2FS_SB(sb), SBI_IS_FREEZING);
- 	return 0;
  }
  
- static int f2fs_unfreeze(struct super_block *sb)
+-static int sgtl5000_i2c_probe(struct i2c_client *client,
+-			      const struct i2c_device_id *id)
++static int sgtl5000_i2c_probe(struct i2c_client *client)
  {
-+	clear_sbi_flag(F2FS_SB(sb), SBI_IS_FREEZING);
- 	return 0;
- }
- 
+ 	struct sgtl5000_priv *sgtl5000;
+ 	int ret, reg, rev;
+@@ -1821,7 +1820,7 @@ static struct i2c_driver sgtl5000_i2c_driver = {
+ 		.name = "sgtl5000",
+ 		.of_match_table = sgtl5000_dt_ids,
+ 	},
+-	.probe = sgtl5000_i2c_probe,
++	.probe_new = sgtl5000_i2c_probe,
+ 	.remove = sgtl5000_i2c_remove,
+ 	.id_table = sgtl5000_id,
+ };
 -- 
-2.34.1
-
-
+2.27.0
 
