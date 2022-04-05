@@ -2,141 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6043DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50409C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382388AbiDEX3S (ORCPT
+        id S1349451AbiDEX2m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        Tue, 5 Apr 2022 19:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392125AbiDENtf (ORCPT
+        with ESMTP id S1386287AbiDEOTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:49:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A2F718B3C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:50:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649163035;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=A5b+w65mVbXKq6dEAbOyYZM+EvVbPrS55cyS76jwFZE=;
-        b=JqE4R7Yede/Zvd1xeIGmsGPR7eMnfBZqvb5HCX5jR4thS1siVOQbRUlxLSk1zVzvn9Arge
-        QA7ksmQM1n+MZSRS27Gw8hQ6T5OKMQAed2+sznk2KRXL1zJwsjlRry5l1OGGNLIoE+A1Fs
-        yWTl6kcMvvql9cs3udBlyr98yFHKz5I=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-277-qMo7XcNxOuW47UQLqqfJNw-1; Tue, 05 Apr 2022 08:50:33 -0400
-X-MC-Unique: qMo7XcNxOuW47UQLqqfJNw-1
-Received: by mail-qv1-f72.google.com with SMTP id kj4-20020a056214528400b0044399a9bb4cso10725599qvb.15
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:50:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=A5b+w65mVbXKq6dEAbOyYZM+EvVbPrS55cyS76jwFZE=;
-        b=cptC3llHibJKRA7pjYB7MdrIq0Z+l4kCkrBalQww3rIegpSEd1W3QtMiy63hNmBtxv
-         y2CQFfFG8+Goa8O3BpD/PBV0oKgXExZLRNDgSOct18brFj0cwLfvV7szcori4SaKGIQi
-         3/9gZDsmy4k0FCFNdL5XK+Hq9a8OMnEaaC7118rcKrp34NyTWl5MDqsF3yN876KZUpAF
-         akK4z90lZzpcLrsx9mcwXQJ6pU52LSWSFSB/PQk2p0eGIki5082HbQoWcXNwW3jwtfmC
-         3a6J+7O5AzLRBCXSlhH8nXj3vr3psS0xoo4B8lOPYQxA9cLjhEf8WdjBzcRokvrWFlkf
-         knwg==
-X-Gm-Message-State: AOAM5337wceL8d8eP1TYp9mqSbHlcPlSQ6cW1p5Lio9+aIXCwz/scObU
-        1xVwoDaJzJlDZl62A8B3fuRL4TvNAKw8Wcycd2PHGFghV02htYKxq8npXlgdXvjBkKHqNr4151Z
-        ZRgkZJvurGYIhOto5NaKnLdcg
-X-Received: by 2002:a05:622a:110c:b0:2e1:fe6b:2f26 with SMTP id e12-20020a05622a110c00b002e1fe6b2f26mr2688573qty.201.1649163033062;
-        Tue, 05 Apr 2022 05:50:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy9rs3iZkx6SjlmcZnhmwryofOpCAR7v1nmWCw1NRcHMbAcvtV6PD8wIxzqdnAPm55RFYl7Fg==
-X-Received: by 2002:a05:622a:110c:b0:2e1:fe6b:2f26 with SMTP id e12-20020a05622a110c00b002e1fe6b2f26mr2688551qty.201.1649163032773;
-        Tue, 05 Apr 2022 05:50:32 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id r21-20020a37a815000000b0067d15afb9ebsm8178681qke.90.2022.04.05.05.50.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 05:50:32 -0700 (PDT)
-Message-ID: <9c6e6892-7c0c-124c-b534-8b7c3c6dafb5@redhat.com>
-Date:   Tue, 5 Apr 2022 14:50:29 +0200
+        Tue, 5 Apr 2022 10:19:19 -0400
+Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.47.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6666512758
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:08:47 -0700 (PDT)
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 246C6115946
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:08:47 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id bivOn93CTHnotbivOnsOwH; Tue, 05 Apr 2022 08:08:47 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xz6VufNI4MnHhml5UwvXhoCvcF0yDshQWHa/HM/YqoA=; b=GqIHGIW2UMCJm1lZnmUjI7G1KT
+        5236zPjF59olbyzrTlyR57lC81eHcbU4XrSyA4o67ts9zDsg+y9lxc7tc/bcl4C+YIva53hNcLIMp
+        dSFv785YbqteL/2ibwlp7W3Z6qgFfEcGOTlrH7tsUxhAh33G+7iGE04TOABvusVHyQMebpb5f8hfZ
+        IhQ6I2QD3YFezPkSA5AGGTHMxruDvPqYQcBf4NGKno7TQVKkhcRHWUn8oE/NjBfe/5mvsCQiNwtFt
+        J6tPe7l6QiZOuObL2N4eKAb/MFi1Lpsxu8zj+IrSp0BQcgD4WYPUIRwZiEBmVgLUGPQgNElDMD2qe
+        rLqeUkQQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54728)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nbivO-002i6Y-7O; Tue, 05 Apr 2022 13:08:46 +0000
+Message-ID: <e80a3eb4-335c-5f8c-dc22-e33176b225da@roeck-us.net>
+Date:   Tue, 5 Apr 2022 06:08:44 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 025/104] KVM: TDX: Add place holder for TDX VM
- specific mem_enc_op ioctl
+Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
 Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <156ab9c6979c4b70e3d0d76e55e3aba370f58cea.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <156ab9c6979c4b70e3d0d76e55e3aba370f58cea.1646422845.git.isaku.yamahata@intel.com>
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220405070258.802373272@linuxfoundation.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nbivO-002i6Y-7O
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54728
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 12
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
+On 4/5/22 00:24, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.110 release.
+> There are 599 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Add a place holder function for TDX specific VM-scoped ioctl as mem_enc_op.
-> TDX specific sub-commands will be added to retrieve/pass TDX specific
-> parameters.
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
 > 
-> KVM_MEMORY_ENCRYPT_OP was introduced for VM-scoped operations specific for
-> guest state-protected VM.  It defined subcommands for technology-specific
-> operations under KVM_MEMORY_ENCRYPT_OP.  Despite its name, the subcommands
-> are not limited to memory encryption, but various technology-specific
-> operations are defined.  It's natural to repurpose KVM_MEMORY_ENCRYPT_OP
-> for TDX specific operations and define subcommands.
-> 
-> TDX requires VM-scoped, and VCPU-scoped TDX-specific operations for device
-> model, for example, qemu.  Getting system-wide parameters, TDX-specific VM
-> initialization, and TDX-specific vCPU initialization.  Which requires KVM
-> vCPU-scoped operations in addition to the existing VM-scoped operations.
-> 
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->   arch/x86/include/uapi/asm/kvm.h       | 11 +++++++++++
->   arch/x86/kvm/vmx/main.c               | 10 ++++++++++
->   arch/x86/kvm/vmx/tdx.c                | 24 ++++++++++++++++++++++++
->   arch/x86/kvm/vmx/x86_ops.h            |  4 ++++
->   tools/arch/x86/include/uapi/asm/kvm.h | 11 +++++++++++
->   5 files changed, 60 insertions(+)
-> 
-> diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-> index 71a5851475e7..2ad61caf4e0b 100644
-> --- a/arch/x86/include/uapi/asm/kvm.h
-> +++ b/arch/x86/include/uapi/asm/kvm.h
-> @@ -528,4 +528,15 @@ struct kvm_pmu_event_filter {
->   #define KVM_X86_DEFAULT_VM	0
->   #define KVM_X86_TDX_VM		1
->   
-> +/* Trust Domain eXtension sub-ioctl() commands. */
-> +enum kvm_tdx_cmd_id {
-> +	KVM_TDX_CMD_NR_MAX,
-> +};
-> +
-> +struct kvm_tdx_cmd {
-> +	__u32 id;
-> +	__u32 metadata;
-> +	__u64 data;
-> +};
 
-Please include some initial documentation here already, for example it 
-is not clear what "metadata" is.
+Building um:defconfig ... failed
+Building csky:defconfig ... failed
+Building microblaze:mmu_defconfig ... failed
+------
+Error log:
 
-Also please add
+fs/binfmt_elf.c: In function 'fill_note_info':
+fs/binfmt_elf.c:2050:45: error: 'siginfo' undeclared (first use in this function)
+  2050 |                 sz = elf_dump_thread_status(siginfo->si_signo, ets);
+       |                                             ^~~~~~~
+fs/binfmt_elf.c:2050:45: note: each undeclared identifier is reported only once for each function it appears in
+fs/binfmt_elf.c:2056:53: error: 'regs' undeclared (first use in this function)
+  2056 |         elf_core_copy_regs(&info->prstatus->pr_reg, regs);
+       |                                                     ^~~~
 
-	u32 error;
-	u32 unused;
+Build just started, so there are likely going to be more failures.
 
-for two reasons: 1) consistency with kvm_sev_cmd 2) error codes should 
-be returned to userspace and not just sent through pr_tdx_error.
-
-Paolo
-
+Guenter
