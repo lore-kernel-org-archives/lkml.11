@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3407C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F11C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233179AbiDEIFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
+        id S233171AbiDEIGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiDEHxV (ORCPT
+        with ESMTP id S232465AbiDEHxW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:53:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0451CFFD;
-        Tue,  5 Apr 2022 00:49:02 -0700 (PDT)
+        Tue, 5 Apr 2022 03:53:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976E01DA44;
+        Tue,  5 Apr 2022 00:48:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74DB0B81BAD;
-        Tue,  5 Apr 2022 07:49:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D29E7C340EE;
-        Tue,  5 Apr 2022 07:48:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DC22B81B98;
+        Tue,  5 Apr 2022 07:48:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B344C340EE;
+        Tue,  5 Apr 2022 07:48:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144940;
-        bh=y/dOPOyA4dfPlcTmnZf/Hbni5qykNSUEa1ZZchx0lKs=;
+        s=korg; t=1649144934;
+        bh=YieYlB7YlBu+iFUivAZxGhvRELcFenEmof40d3ij6O8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WHkhjDA/kSoBT/9DHw+z/3TU298bCVyzXhGEzJuvcWXCZmTCweujZ1wpfBugEoZEE
-         xNSzzcA+ooY5rMtCEOuxYAUgn59xws7gMn+L+gX+ShgWpyvltHV40jipIWpUi70eEo
-         02f754Tajmn2SV+0oEJYjY4728PMkea532TgHNVE=
+        b=dOKa6TIDm70CrGyfkixVe8GQVjt3D5LT4YcA+75CB2ZrKujLJE1fofM4ljYb8ILTu
+         E2FfTbCiRl8hjQDcM7K5bC7VyY2OeDHTjMlHNvEqnrw1v/TJuXX1qrdy1tRsQmv6El
+         fkdRQ+fccHAKEUyn4hvn+J/eEDVGXaF6cQooFHAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0227/1126] block: update io_ticks when io hang
-Date:   Tue,  5 Apr 2022 09:16:14 +0200
-Message-Id: <20220405070414.271720515@linuxfoundation.org>
+Subject: [PATCH 5.17 0225/1126] selftests/sgx: Treat CC as one argument
+Date:   Tue,  5 Apr 2022 09:16:12 +0200
+Message-Id: <20220405070414.213103155@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,74 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-[ Upstream commit 86d7331299fda7634b11c1b7c911432679d525a5 ]
+[ Upstream commit 6170abb21e2380477080b25145da9747ad467d3d ]
 
-When the inflight IOs are slow and no new IOs are issued, we expect
-iostat could manifest the IO hang problem. However after
-commit 5b18b5a73760 ("block: delete part_round_stats and switch to less
-precise counting"), io_tick and time_in_queue will not be updated until
-the end of IO, and the avgqu-sz and %util columns of iostat will be zero.
+CC can have multiple sub-strings like "ccache gcc". For check_cc.sh,
+CC needs to be treated like one argument. Put double quotes around it to
+make CC one string and hence one argument.
 
-Because it has using stat.nsecs accumulation to express time_in_queue
-which is not suitable to change, and may %util will express the status
-better when io hang occur. To fix io_ticks, we use update_io_ticks and
-inflight to update io_ticks when diskstats_show and part_stat_show
-been called.
-
-Fixes: 5b18b5a73760 ("block: delete part_round_stats and switch to less precise counting")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220217064247.4041435-1-zhangwensheng5@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 2adcba79e69d ("selftests/x86: Add a selftest for SGX")
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220214184109.3739179-3-usama.anjum@collabora.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/genhd.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ tools/testing/selftests/sgx/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/block/genhd.c b/block/genhd.c
-index 9eca1f7d35c9..6fa8b2068cc2 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -927,12 +927,17 @@ ssize_t part_stat_show(struct device *dev,
- 	struct disk_stats stat;
- 	unsigned int inflight;
+diff --git a/tools/testing/selftests/sgx/Makefile b/tools/testing/selftests/sgx/Makefile
+index 2956584e1e37..75af864e07b6 100644
+--- a/tools/testing/selftests/sgx/Makefile
++++ b/tools/testing/selftests/sgx/Makefile
+@@ -4,7 +4,7 @@ include ../lib.mk
  
--	part_stat_read_all(bdev, &stat);
- 	if (queue_is_mq(q))
- 		inflight = blk_mq_in_flight(q, bdev);
- 	else
- 		inflight = part_in_flight(bdev);
+ .PHONY: all clean
  
-+	if (inflight) {
-+		part_stat_lock();
-+		update_io_ticks(bdev, jiffies, true);
-+		part_stat_unlock();
-+	}
-+	part_stat_read_all(bdev, &stat);
- 	return sprintf(buf,
- 		"%8lu %8lu %8llu %8u "
- 		"%8lu %8lu %8llu %8u "
-@@ -1188,12 +1193,17 @@ static int diskstats_show(struct seq_file *seqf, void *v)
- 	xa_for_each(&gp->part_tbl, idx, hd) {
- 		if (bdev_is_partition(hd) && !bdev_nr_sectors(hd))
- 			continue;
--		part_stat_read_all(hd, &stat);
- 		if (queue_is_mq(gp->queue))
- 			inflight = blk_mq_in_flight(gp->queue, hd);
- 		else
- 			inflight = part_in_flight(hd);
+-CAN_BUILD_X86_64 := $(shell ../x86/check_cc.sh $(CC) \
++CAN_BUILD_X86_64 := $(shell ../x86/check_cc.sh "$(CC)" \
+ 			    ../x86/trivial_64bit_program.c)
  
-+		if (inflight) {
-+			part_stat_lock();
-+			update_io_ticks(hd, jiffies, true);
-+			part_stat_unlock();
-+		}
-+		part_stat_read_all(hd, &stat);
- 		seq_printf(seqf, "%4d %7d %pg "
- 			   "%lu %lu %lu %u "
- 			   "%lu %lu %lu %u "
+ ifndef OBJCOPY
 -- 
 2.34.1
 
