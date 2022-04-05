@@ -2,154 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D56BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2C2C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391207AbiDEWFA (ORCPT
+        id S1391322AbiDEWFN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        Tue, 5 Apr 2022 18:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573213AbiDESY1 (ORCPT
+        with ESMTP id S1348786AbiDEJsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:24:27 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A260419A4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:22:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649182948; x=1680718948;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YCQkJ0iRM6TI/iB59VjFGfFcnXrCeNHW0pUNSI++j60=;
-  b=NIFAMvX+dUXsZbm5CRL1je+YuXZyD3EPZYTV8Fa4nRfLngFtouF9S3eU
-   +PtX3lJ68thj0Srv6uarlimQvohGbi2uJi0DpauLyd1bLNZItSXf/XVMC
-   RTMLgT/iRO9sRFH/oaMfHm2j81xMP20LfqhQt4cQ4zqgcq87Gc7UG5slj
-   q/gte5GKZlSqF1wEr/BDza+1NaE7BBlF4WvXlUwhe14h7oRXi4W3MtDC0
-   bqwXajqPDZ1LjqGe8IkPUiuVHUBqENJLQ4tQQ6tFSd9Kv7O3Bq1epobl0
-   nsVlMBuvsfCxvhq6mC4PBq8gtSOjkoTvoU51lJ2Cv0HkVGo990cF/nCTP
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258416608"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="258416608"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 11:22:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="524115047"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 11:22:25 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbnov-0003et-0b;
-        Tue, 05 Apr 2022 18:22:25 +0000
-Date:   Wed, 6 Apr 2022 02:21:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ben Widawsky <ben.widawsky@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: drivers/cxl/pci.c:439:7: warning: Local variable 'rc' shadows outer
- variable [shadowVariable]
-Message-ID: <202204060228.GdRDR2Xx-lkp@intel.com>
+        Tue, 5 Apr 2022 05:48:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105F87520B;
+        Tue,  5 Apr 2022 02:35:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 720D261675;
+        Tue,  5 Apr 2022 09:35:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AA5C385A0;
+        Tue,  5 Apr 2022 09:35:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151316;
+        bh=kCf7i8CQ070ihBCpclSD5ljJByxCnKbymjN2NjY2v3o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nbP3NrpzPaIKjo+X8Eq6SO6GNUpjFN1YaGZdVdoYZrxjcrXfbvA8Qc1DX2M0CXo71
+         7ImbaNiuxFqVtAchuLfPBm/MtqaCsbNxgxJn5iCsloLP49RoYLW0kKQj91z9950hjl
+         DAiHtuj+HXqQNXL8xjQaNtqIYAJwr4QV74OcWhF8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 333/913] ASoC: ti: davinci-i2s: Add check for clk_enable()
+Date:   Tue,  5 Apr 2022 09:23:15 +0200
+Message-Id: <20220405070349.830628838@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   3123109284176b1532874591f7c81f3837bbdc17
-commit: 523e594d9cc03db962c741ce02c8a58aab58a123 cxl/pci: Implement wait for media active
-date:   8 weeks ago
-config: mips-randconfig-p001-20220404 (https://download.01.org/0day-ci/archive/20220406/202204060228.GdRDR2Xx-lkp@intel.com/config)
-compiler: mips64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=523e594d9cc03db962c741ce02c8a58aab58a123
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 523e594d9cc03db962c741ce02c8a58aab58a123
-        # save the config file to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross ARCH=mips 
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[ Upstream commit ed7c9fef11931fc5d32a83d68017ff390bf5c280 ]
 
-All errors (new ones prefixed by >>):
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-   mips64-linux-ld: arch/mips/kernel/signal.o: in function `restore_hw_fp_context':
-   signal.c:(.text+0x1d8): undefined reference to `_restore_fp_context'
-   mips64-linux-ld: arch/mips/kernel/signal.o: in function `save_hw_fp_context':
-   signal.c:(.text+0x200): undefined reference to `_save_fp_context'
-   mips64-linux-ld: arch/mips/kernel/traps.o: in function `trap_init':
->> (.init.text+0x4f8): undefined reference to `handle_fpe'
-   mips64-linux-ld: (.init.text+0x504): undefined reference to `handle_fpe'
-   mips64-linux-ld: (.init.text+0x510): undefined reference to `handle_fpe'
+Fixes: 5f9a50c3e55e ("ASoC: Davinci: McBSP: add device tree support for McBSP")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Link: https://lore.kernel.org/r/20220228031540.3571959-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/ti/davinci-i2s.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-
-cppcheck warnings: (new ones prefixed by >>)
->> drivers/cxl/pci.c:439:7: warning: Local variable 'rc' shadows outer variable [shadowVariable]
-     int rc;
-         ^
-   drivers/cxl/pci.c:431:6: note: Shadowed declaration
-    int rc, i;
-        ^
-   drivers/cxl/pci.c:439:7: note: Shadow variable
-     int rc;
-         ^
-
-vim +/rc +439 drivers/cxl/pci.c
-
-   420	
-   421	/*
-   422	 * Wait up to @mbox_ready_timeout for the device to report memory
-   423	 * active.
-   424	 */
-   425	static int wait_for_media_ready(struct cxl_dev_state *cxlds)
-   426	{
-   427		struct pci_dev *pdev = to_pci_dev(cxlds->dev);
-   428		int d = cxlds->cxl_dvsec;
-   429		bool active = false;
-   430		u64 md_status;
-   431		int rc, i;
-   432	
-   433		rc = wait_for_valid(cxlds);
-   434		if (rc)
-   435			return rc;
-   436	
-   437		for (i = mbox_ready_timeout; i; i--) {
-   438			u32 temp;
- > 439			int rc;
-   440	
-   441			rc = pci_read_config_dword(
-   442				pdev, d + CXL_DVSEC_RANGE_SIZE_LOW(0), &temp);
-   443			if (rc)
-   444				return rc;
-   445	
-   446			active = FIELD_GET(CXL_DVSEC_MEM_ACTIVE, temp);
-   447			if (active)
-   448				break;
-   449			msleep(1000);
-   450		}
-   451	
-   452		if (!active) {
-   453			dev_err(&pdev->dev,
-   454				"timeout awaiting memory active after %d seconds\n",
-   455				mbox_ready_timeout);
-   456			return -ETIMEDOUT;
-   457		}
-   458	
-   459		md_status = readq(cxlds->regs.memdev + CXLMDEV_STATUS_OFFSET);
-   460		if (!CXLMDEV_READY(md_status))
-   461			return -EIO;
-   462	
-   463		return 0;
-   464	}
-   465	
-
+diff --git a/sound/soc/ti/davinci-i2s.c b/sound/soc/ti/davinci-i2s.c
+index 6dca51862dd7..0363a088d2e0 100644
+--- a/sound/soc/ti/davinci-i2s.c
++++ b/sound/soc/ti/davinci-i2s.c
+@@ -708,7 +708,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+ 	dev->clk = clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(dev->clk))
+ 		return -ENODEV;
+-	clk_enable(dev->clk);
++	ret = clk_enable(dev->clk);
++	if (ret)
++		goto err_put_clk;
+ 
+ 	dev->dev = &pdev->dev;
+ 	dev_set_drvdata(&pdev->dev, dev);
+@@ -730,6 +732,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+ 	snd_soc_unregister_component(&pdev->dev);
+ err_release_clk:
+ 	clk_disable(dev->clk);
++err_put_clk:
+ 	clk_put(dev->clk);
+ 	return ret;
+ }
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
+
+
