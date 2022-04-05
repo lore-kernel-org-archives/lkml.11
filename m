@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D439EC3E8A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:04:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6524C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350626AbiDEJ7J (ORCPT
+        id S1350653AbiDEJ7U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
+        Tue, 5 Apr 2022 05:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238009AbiDEISg (ORCPT
+        with ESMTP id S237996AbiDEISg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:18:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5833EB82C2;
-        Tue,  5 Apr 2022 01:07:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BC9B8234;
+        Tue,  5 Apr 2022 01:07:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7B7AB81B90;
-        Tue,  5 Apr 2022 08:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F4C3C385A1;
-        Tue,  5 Apr 2022 08:07:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC381B81BB1;
+        Tue,  5 Apr 2022 08:07:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41063C385B3;
+        Tue,  5 Apr 2022 08:07:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146074;
-        bh=7Hx+qRXd0CrtR87QMOgKP65BTtVs3ZkoBfh5NpUkhhg=;
+        s=korg; t=1649146071;
+        bh=rGr6vuXVboyo80Fw1TUoe9tzXEz4B4m9CD9ZjDVUClI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dxYgwsTESIW3fxi7Exl7Ib6Aw7lmoHtr/cKM8TJtcaVY+5NWzmmDHdDobWV/Kf5FN
-         h2LM1qPj81kzlMxZr4mlA+VbyaQNOIBxpGMs8MqMexARxCIzOHt4C5lhLQHz2gpZEG
-         5tDTzSx6InVOlP2LndrBUtfIsp6vFnc5Cck9GYDY=
+        b=PXhj7y1fIRxQRzEmxPkGvQKH1wCJ+defIUMYxgbKHqrMdo5Y1YHkcne3UQUcgfGWK
+         d0MxBlGsbLPrswuOslT22Gbm9zmd0zJDOBFGEDhyP2GHvEF6l/8YbQE10YEBfaxH6f
+         M0aNOdz63ea07NdXQDoozIml4KKDD1ST/QqMXjlw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Leon Yen <Leon.Yen@mediatek.com>,
-        Deren Wu <deren.wu@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0595/1126] mt76: mt7921s: fix missing fc type/sub-type for 802.11 pkts
-Date:   Tue,  5 Apr 2022 09:22:22 +0200
-Message-Id: <20220405070425.098877195@linuxfoundation.org>
+Subject: [PATCH 5.17 0594/1126] mt76: fix endianness errors in reverse_frag0_hdr_trans
+Date:   Tue,  5 Apr 2022 09:22:21 +0200
+Message-Id: <20220405070425.069979982@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,62 +49,244 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Deren Wu <deren.wu@mediatek.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 355c060d5f38a784822d544e969121a273bcf545 ]
+[ Upstream commit d0c0cefb87e283b5000121989f3c10c9915a2787 ]
 
-For non-mmio devices, should set fc values to proper txwi config
+Fix ht ctl field size in mt{7615,7915,7921}_reverse_frag0_hdr_trans.
+Fix the following endianness warnings in mt{7615,7915,7921}_reverse_frag0_hdr_trans:
 
-Fixes: 48fab5bbef40 ("mt76: mt7921: introduce mt7921s support")
-Tested-by: Sean Wang <sean.wang@mediatek.com>
-Co-developed-by: Leon Yen <Leon.Yen@mediatek.com>
-Signed-off-by: Leon Yen <Leon.Yen@mediatek.com>
-Signed-off-by: Deren Wu <deren.wu@mediatek.com>
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:417:29: warning: cast to restricted __le32
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:417:29: warning: restricted __le32 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:417:29: warning: restricted __le32 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:417:27: warning: incorrect type in assignment (different base types)
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:417:27:    expected restricted __le16 [usertype] frame_control
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:417:27:    got unsigned long
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:418:24: warning: cast to restricted __le32
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:418:24: warning: restricted __le32 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:418:24: warning: restricted __le32 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:418:22: warning: incorrect type in assignment (different base types)
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:418:22:    expected restricted __le16 [usertype] seq_ctrl
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:418:22:    got unsigned long
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:419:20: warning: cast to restricted __le32
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:419:20: warning: restricted __le32 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:419:20: warning: restricted __le32 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:419:18: warning: incorrect type in assignment (different base types)
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:419:18:    expected restricted __le32 [usertype] qos_ctrl
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:419:18:    got unsigned long
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:420:19: warning: cast to restricted __le32
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:420:19: warning: restricted __le32 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:420:19: warning: restricted __le32 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:420:17: warning: incorrect type in assignment (different base types)
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:420:17:    expected restricted __le32 [usertype] ht_ctrl
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:420:17:    got unsigned long
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:448:25: warning: restricted __be16 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:448:38: warning: restricted __be16 degrades to integer
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:1450:23: warning: incorrect type in assignment (different base types)
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:1450:23:    expected unsigned int [usertype] *cur_info
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:1450:23:    got restricted __le32 *
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:1451:34: warning: cast to restricted __le32
+
+Fixes: dc5399a50b45f ("mt76: reverse the first fragmented frame to 802.11")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 12 +++++++++---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.h |  3 +++
- 2 files changed, 12 insertions(+), 3 deletions(-)
+ .../net/wireless/mediatek/mt76/mt7615/mac.c   | 31 ++++++++++++-------
+ .../net/wireless/mediatek/mt76/mt7915/mac.c   | 30 +++++++++++-------
+ .../net/wireless/mediatek/mt76/mt7921/mac.c   | 30 +++++++++++-------
+ 3 files changed, 55 insertions(+), 36 deletions(-)
 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 21941e7873d8..ba31bb7caaf9 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -259,7 +259,7 @@ static int mt7615_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	struct ieee80211_sta *sta;
+ 	struct ieee80211_vif *vif;
+ 	struct ieee80211_hdr hdr;
+-	__le32 qos_ctrl, ht_ctrl;
++	u16 frame_control;
+ 
+ 	if (FIELD_GET(MT_RXD1_NORMAL_ADDR_TYPE, le32_to_cpu(rxd[1])) !=
+ 	    MT_RXD1_NORMAL_U2M)
+@@ -275,16 +275,15 @@ static int mt7615_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
+ 
+ 	/* store the info from RXD and ethhdr to avoid being overridden */
+-	hdr.frame_control = FIELD_GET(MT_RXD4_FRAME_CONTROL, rxd[4]);
+-	hdr.seq_ctrl = FIELD_GET(MT_RXD6_SEQ_CTRL, rxd[6]);
+-	qos_ctrl = FIELD_GET(MT_RXD6_QOS_CTL, rxd[6]);
+-	ht_ctrl = FIELD_GET(MT_RXD7_HT_CONTROL, rxd[7]);
+-
++	frame_control = le32_get_bits(rxd[4], MT_RXD4_FRAME_CONTROL);
++	hdr.frame_control = cpu_to_le16(frame_control);
++	hdr.seq_ctrl = cpu_to_le16(le32_get_bits(rxd[6], MT_RXD6_SEQ_CTRL));
+ 	hdr.duration_id = 0;
++
+ 	ether_addr_copy(hdr.addr1, vif->addr);
+ 	ether_addr_copy(hdr.addr2, sta->addr);
+-	switch (le16_to_cpu(hdr.frame_control) &
+-		(IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS)) {
++	switch (frame_control & (IEEE80211_FCTL_TODS |
++				 IEEE80211_FCTL_FROMDS)) {
+ 	case 0:
+ 		ether_addr_copy(hdr.addr3, vif->bss_conf.bssid);
+ 		break;
+@@ -306,15 +305,23 @@ static int mt7615_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	if (eth_hdr->h_proto == cpu_to_be16(ETH_P_AARP) ||
+ 	    eth_hdr->h_proto == cpu_to_be16(ETH_P_IPX))
+ 		ether_addr_copy(skb_push(skb, ETH_ALEN), bridge_tunnel_header);
+-	else if (eth_hdr->h_proto >= cpu_to_be16(ETH_P_802_3_MIN))
++	else if (be16_to_cpu(eth_hdr->h_proto) >= ETH_P_802_3_MIN)
+ 		ether_addr_copy(skb_push(skb, ETH_ALEN), rfc1042_header);
+ 	else
+ 		skb_pull(skb, 2);
+ 
+ 	if (ieee80211_has_order(hdr.frame_control))
+-		memcpy(skb_push(skb, 2), &ht_ctrl, 2);
+-	if (ieee80211_is_data_qos(hdr.frame_control))
+-		memcpy(skb_push(skb, 2), &qos_ctrl, 2);
++		memcpy(skb_push(skb, IEEE80211_HT_CTL_LEN), &rxd[7],
++		       IEEE80211_HT_CTL_LEN);
++
++	if (ieee80211_is_data_qos(hdr.frame_control)) {
++		__le16 qos_ctrl;
++
++		qos_ctrl = cpu_to_le16(le32_get_bits(rxd[6], MT_RXD6_QOS_CTL));
++		memcpy(skb_push(skb, IEEE80211_QOS_CTL_LEN), &qos_ctrl,
++		       IEEE80211_QOS_CTL_LEN);
++	}
++
+ 	if (ieee80211_has_a4(hdr.frame_control))
+ 		memcpy(skb_push(skb, sizeof(hdr)), &hdr, sizeof(hdr));
+ 	else
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index bca340cf8dcc..12567b653607 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -397,7 +397,7 @@ static int mt7915_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	struct ieee80211_sta *sta;
+ 	struct ieee80211_vif *vif;
+ 	struct ieee80211_hdr hdr;
+-	__le32 qos_ctrl, ht_ctrl;
++	u16 frame_control;
+ 
+ 	if (FIELD_GET(MT_RXD3_NORMAL_ADDR_TYPE, le32_to_cpu(rxd[3])) !=
+ 	    MT_RXD3_NORMAL_U2M)
+@@ -413,16 +413,15 @@ static int mt7915_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
+ 
+ 	/* store the info from RXD and ethhdr to avoid being overridden */
+-	hdr.frame_control = FIELD_GET(MT_RXD6_FRAME_CONTROL, rxd[6]);
+-	hdr.seq_ctrl = FIELD_GET(MT_RXD8_SEQ_CTRL, rxd[8]);
+-	qos_ctrl = FIELD_GET(MT_RXD8_QOS_CTL, rxd[8]);
+-	ht_ctrl = FIELD_GET(MT_RXD9_HT_CONTROL, rxd[9]);
+-
++	frame_control = le32_get_bits(rxd[6], MT_RXD6_FRAME_CONTROL);
++	hdr.frame_control = cpu_to_le16(frame_control);
++	hdr.seq_ctrl = cpu_to_le16(le32_get_bits(rxd[8], MT_RXD8_SEQ_CTRL));
+ 	hdr.duration_id = 0;
++
+ 	ether_addr_copy(hdr.addr1, vif->addr);
+ 	ether_addr_copy(hdr.addr2, sta->addr);
+-	switch (le16_to_cpu(hdr.frame_control) &
+-		(IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS)) {
++	switch (frame_control & (IEEE80211_FCTL_TODS |
++				 IEEE80211_FCTL_FROMDS)) {
+ 	case 0:
+ 		ether_addr_copy(hdr.addr3, vif->bss_conf.bssid);
+ 		break;
+@@ -444,15 +443,22 @@ static int mt7915_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	if (eth_hdr->h_proto == cpu_to_be16(ETH_P_AARP) ||
+ 	    eth_hdr->h_proto == cpu_to_be16(ETH_P_IPX))
+ 		ether_addr_copy(skb_push(skb, ETH_ALEN), bridge_tunnel_header);
+-	else if (eth_hdr->h_proto >= cpu_to_be16(ETH_P_802_3_MIN))
++	else if (be16_to_cpu(eth_hdr->h_proto) >= ETH_P_802_3_MIN)
+ 		ether_addr_copy(skb_push(skb, ETH_ALEN), rfc1042_header);
+ 	else
+ 		skb_pull(skb, 2);
+ 
+ 	if (ieee80211_has_order(hdr.frame_control))
+-		memcpy(skb_push(skb, 2), &ht_ctrl, 2);
+-	if (ieee80211_is_data_qos(hdr.frame_control))
+-		memcpy(skb_push(skb, 2), &qos_ctrl, 2);
++		memcpy(skb_push(skb, IEEE80211_HT_CTL_LEN), &rxd[9],
++		       IEEE80211_HT_CTL_LEN);
++	if (ieee80211_is_data_qos(hdr.frame_control)) {
++		__le16 qos_ctrl;
++
++		qos_ctrl = cpu_to_le16(le32_get_bits(rxd[8], MT_RXD8_QOS_CTL));
++		memcpy(skb_push(skb, IEEE80211_QOS_CTL_LEN), &qos_ctrl,
++		       IEEE80211_QOS_CTL_LEN);
++	}
++
+ 	if (ieee80211_has_a4(hdr.frame_control))
+ 		memcpy(skb_push(skb, sizeof(hdr)), &hdr, sizeof(hdr));
+ 	else
 diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index f8d95d64fe46..84f72dd1bf93 100644
+index 2b6bbe0682c0..f8d95d64fe46 100644
 --- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
 +++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -919,9 +919,15 @@ mt7921_mac_write_txwi_80211(struct mt7921_dev *dev, __le32 *txwi,
- 		txwi[3] |= cpu_to_le32(val);
- 	}
+@@ -408,7 +408,7 @@ static int mt7921_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	struct ieee80211_sta *sta;
+ 	struct ieee80211_vif *vif;
+ 	struct ieee80211_hdr hdr;
+-	__le32 qos_ctrl, ht_ctrl;
++	u16 frame_control;
  
--	val = FIELD_PREP(MT_TXD7_TYPE, fc_type) |
--	      FIELD_PREP(MT_TXD7_SUB_TYPE, fc_stype);
--	txwi[7] |= cpu_to_le32(val);
-+	if (mt76_is_mmio(&dev->mt76)) {
-+		val = FIELD_PREP(MT_TXD7_TYPE, fc_type) |
-+		      FIELD_PREP(MT_TXD7_SUB_TYPE, fc_stype);
-+		txwi[7] |= cpu_to_le32(val);
-+	} else {
-+		val = FIELD_PREP(MT_TXD8_L_TYPE, fc_type) |
-+		      FIELD_PREP(MT_TXD8_L_SUB_TYPE, fc_stype);
-+		txwi[8] |= cpu_to_le32(val);
-+	}
- }
+ 	if (FIELD_GET(MT_RXD3_NORMAL_ADDR_TYPE, le32_to_cpu(rxd[3])) !=
+ 	    MT_RXD3_NORMAL_U2M)
+@@ -424,16 +424,15 @@ static int mt7921_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
  
- void mt7921_mac_write_txwi(struct mt7921_dev *dev, __le32 *txwi,
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.h b/drivers/net/wireless/mediatek/mt76/mt7921/mac.h
-index 544a1c33126a..12e1cf8abe6e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.h
-@@ -284,6 +284,9 @@ enum tx_mcu_port_q_idx {
- #define MT_TXD7_HW_AMSDU		BIT(10)
- #define MT_TXD7_TX_TIME			GENMASK(9, 0)
- 
-+#define MT_TXD8_L_TYPE			GENMASK(5, 4)
-+#define MT_TXD8_L_SUB_TYPE		GENMASK(3, 0)
+ 	/* store the info from RXD and ethhdr to avoid being overridden */
+-	hdr.frame_control = FIELD_GET(MT_RXD6_FRAME_CONTROL, rxd[6]);
+-	hdr.seq_ctrl = FIELD_GET(MT_RXD8_SEQ_CTRL, rxd[8]);
+-	qos_ctrl = FIELD_GET(MT_RXD8_QOS_CTL, rxd[8]);
+-	ht_ctrl = FIELD_GET(MT_RXD9_HT_CONTROL, rxd[9]);
+-
++	frame_control = le32_get_bits(rxd[6], MT_RXD6_FRAME_CONTROL);
++	hdr.frame_control = cpu_to_le16(frame_control);
++	hdr.seq_ctrl = cpu_to_le16(le32_get_bits(rxd[8], MT_RXD8_SEQ_CTRL));
+ 	hdr.duration_id = 0;
 +
- #define MT_TX_RATE_STBC			BIT(13)
- #define MT_TX_RATE_NSS			GENMASK(12, 10)
- #define MT_TX_RATE_MODE			GENMASK(9, 6)
+ 	ether_addr_copy(hdr.addr1, vif->addr);
+ 	ether_addr_copy(hdr.addr2, sta->addr);
+-	switch (le16_to_cpu(hdr.frame_control) &
+-		(IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS)) {
++	switch (frame_control & (IEEE80211_FCTL_TODS |
++				 IEEE80211_FCTL_FROMDS)) {
+ 	case 0:
+ 		ether_addr_copy(hdr.addr3, vif->bss_conf.bssid);
+ 		break;
+@@ -455,15 +454,22 @@ static int mt7921_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
+ 	if (eth_hdr->h_proto == cpu_to_be16(ETH_P_AARP) ||
+ 	    eth_hdr->h_proto == cpu_to_be16(ETH_P_IPX))
+ 		ether_addr_copy(skb_push(skb, ETH_ALEN), bridge_tunnel_header);
+-	else if (eth_hdr->h_proto >= cpu_to_be16(ETH_P_802_3_MIN))
++	else if (be16_to_cpu(eth_hdr->h_proto) >= ETH_P_802_3_MIN)
+ 		ether_addr_copy(skb_push(skb, ETH_ALEN), rfc1042_header);
+ 	else
+ 		skb_pull(skb, 2);
+ 
+ 	if (ieee80211_has_order(hdr.frame_control))
+-		memcpy(skb_push(skb, 2), &ht_ctrl, 2);
+-	if (ieee80211_is_data_qos(hdr.frame_control))
+-		memcpy(skb_push(skb, 2), &qos_ctrl, 2);
++		memcpy(skb_push(skb, IEEE80211_HT_CTL_LEN), &rxd[9],
++		       IEEE80211_HT_CTL_LEN);
++	if (ieee80211_is_data_qos(hdr.frame_control)) {
++		__le16 qos_ctrl;
++
++		qos_ctrl = cpu_to_le16(le32_get_bits(rxd[8], MT_RXD8_QOS_CTL));
++		memcpy(skb_push(skb, IEEE80211_QOS_CTL_LEN), &qos_ctrl,
++		       IEEE80211_QOS_CTL_LEN);
++	}
++
+ 	if (ieee80211_has_a4(hdr.frame_control))
+ 		memcpy(skb_push(skb, sizeof(hdr)), &hdr, sizeof(hdr));
+ 	else
 -- 
 2.34.1
 
