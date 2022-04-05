@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E891C47086
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 089DAC47085
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379691AbiDELlZ (ORCPT
+        id S1379636AbiDELlX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50986 "EHLO
+        Tue, 5 Apr 2022 07:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244811AbiDEIwl (ORCPT
+        with ESMTP id S244826AbiDEIwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564A836174;
-        Tue,  5 Apr 2022 01:44:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF4F22528;
+        Tue,  5 Apr 2022 01:44:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E698060FFC;
-        Tue,  5 Apr 2022 08:44:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDFC0C385A1;
-        Tue,  5 Apr 2022 08:44:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8739760FFC;
+        Tue,  5 Apr 2022 08:44:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9987CC385A1;
+        Tue,  5 Apr 2022 08:44:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148257;
-        bh=gG8eDeiLHdbGmjfnhHzEjTSMOBgG5ThmJ0w75W4cvCA=;
+        s=korg; t=1649148263;
+        bh=IsYGMWcOLC2kDDO8OFJfhbKJ+skf8w8cVCluqFXU9Jw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k18XH3Tm9BxlKFDvRN2NS1ZDgycRj6Yoi1ytgTEDy0hJMsRotEkHaeYC+9l8eAgNb
-         Nfy+LqKbIrxw5CcbQ6FJgoO3gn/tXEZ4SqX1Vw2BTstFzH4it4FiTM+EzcJGwWMCTw
-         RHvXZxuaY615jRCGwmzzO6arfcL9C3c357ROGGn8=
+        b=N2gJBzn9z2qPR21dMBgniY17Egk0Ib4iIrNse67xfP1jYigjUNmANOm3Cyk4D874w
+         sarwzSu3a5v/zuOg4T+8Fx4v7Hfw9XGoOCZCBNqXikKUXZc9oXLFVf61P+/YrkOaNy
+         UyfJ2x2Eiz+PXmD+fvoidS2wSunfu7HBLBTQIROI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0290/1017] ASoC: sh: rz-ssi: Drop calling rz_ssi_pio_recv() recursively
-Date:   Tue,  5 Apr 2022 09:20:03 +0200
-Message-Id: <20220405070402.879901845@linuxfoundation.org>
+Subject: [PATCH 5.16 0292/1017] ASoC: xilinx: xlnx_formatter_pcm: Handle sysclk setting
+Date:   Tue,  5 Apr 2022 09:20:05 +0200
+Message-Id: <20220405070402.941268358@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,121 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 6570f991582e32b7992601d0497c61962a2c5dcc ]
+[ Upstream commit 1c5091fbe7e0d0804158200b7feac5123f7b4fbd ]
 
-Instead of recursively calling rz_ssi_pio_recv() use a while loop
-to read the samples from RX fifo.
+This driver did not set the MM2S Fs Multiplier Register to the proper
+value for playback streams. This needs to be set to the sample rate to
+MCLK multiplier, or random stream underflows can occur on the downstream
+I2S transmitter.
 
-This also fixes an issue where the return value of rz_ssi_pio_recv()
-was ignored when called recursively.
+Store the sysclk value provided via the set_sysclk callback and use that
+in conjunction with the sample rate in the hw_params callback to calculate
+the proper value to set for this register.
 
-Fixes: 03e786bd4341 ("ASoC: sh: Add RZ/G2L SSIF-2 driver")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220110094711.8574-2-prabhakar.mahadev-lad.rj@bp.renesas.com
+Fixes: 6f6c3c36f091 ("ASoC: xlnx: add pcm formatter platform driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Link: https://lore.kernel.org/r/20220120195832.1742271-2-robert.hancock@calian.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 68 ++++++++++++++++++++++---------------------
- 1 file changed, 35 insertions(+), 33 deletions(-)
+ sound/soc/xilinx/xlnx_formatter_pcm.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index fa0cc08f70ec..37466f65c2b0 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -411,54 +411,56 @@ static int rz_ssi_pio_recv(struct rz_ssi_priv *ssi, struct rz_ssi_stream *strm)
- {
- 	struct snd_pcm_substream *substream = strm->substream;
- 	struct snd_pcm_runtime *runtime;
-+	bool done = false;
- 	u16 *buf;
- 	int fifo_samples;
- 	int frames_left;
--	int samples = 0;
-+	int samples;
- 	int i;
+diff --git a/sound/soc/xilinx/xlnx_formatter_pcm.c b/sound/soc/xilinx/xlnx_formatter_pcm.c
+index ce19a6058b27..5c4158069a5a 100644
+--- a/sound/soc/xilinx/xlnx_formatter_pcm.c
++++ b/sound/soc/xilinx/xlnx_formatter_pcm.c
+@@ -84,6 +84,7 @@ struct xlnx_pcm_drv_data {
+ 	struct snd_pcm_substream *play_stream;
+ 	struct snd_pcm_substream *capture_stream;
+ 	struct clk *axi_clk;
++	unsigned int sysclk;
+ };
  
- 	if (!rz_ssi_stream_is_valid(ssi, strm))
+ /*
+@@ -314,6 +315,15 @@ static irqreturn_t xlnx_s2mm_irq_handler(int irq, void *arg)
+ 	return IRQ_NONE;
+ }
+ 
++static int xlnx_formatter_set_sysclk(struct snd_soc_component *component,
++				     int clk_id, int source, unsigned int freq, int dir)
++{
++	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
++
++	adata->sysclk = freq;
++	return 0;
++}
++
+ static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
+ 				   struct snd_pcm_substream *substream)
+ {
+@@ -450,11 +460,25 @@ static int xlnx_formatter_pcm_hw_params(struct snd_soc_component *component,
+ 	u64 size;
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct xlnx_pcm_stream_param *stream_data = runtime->private_data;
++	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
+ 
+ 	active_ch = params_channels(params);
+ 	if (active_ch > stream_data->ch_limit)
  		return -EINVAL;
  
- 	runtime = substream->runtime;
--	/* frames left in this period */
--	frames_left = runtime->period_size - (strm->buffer_pos %
--					      runtime->period_size);
--	if (frames_left == 0)
--		frames_left = runtime->period_size;
- 
--	/* Samples in RX FIFO */
--	fifo_samples = (rz_ssi_reg_readl(ssi, SSIFSR) >>
--			SSIFSR_RDC_SHIFT) & SSIFSR_RDC_MASK;
--
--	/* Only read full frames at a time */
--	while (frames_left && (fifo_samples >= runtime->channels)) {
--		samples += runtime->channels;
--		fifo_samples -= runtime->channels;
--		frames_left--;
--	}
-+	while (!done) {
-+		/* frames left in this period */
-+		frames_left = runtime->period_size -
-+			      (strm->buffer_pos % runtime->period_size);
-+		if (!frames_left)
-+			frames_left = runtime->period_size;
++	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
++	    adata->sysclk) {
++		unsigned int mclk_fs = adata->sysclk / params_rate(params);
 +
-+		/* Samples in RX FIFO */
-+		fifo_samples = (rz_ssi_reg_readl(ssi, SSIFSR) >>
-+				SSIFSR_RDC_SHIFT) & SSIFSR_RDC_MASK;
-+
-+		/* Only read full frames at a time */
-+		samples = 0;
-+		while (frames_left && (fifo_samples >= runtime->channels)) {
-+			samples += runtime->channels;
-+			fifo_samples -= runtime->channels;
-+			frames_left--;
++		if (adata->sysclk % params_rate(params) != 0) {
++			dev_warn(component->dev, "sysclk %u not divisible by rate %u\n",
++				 adata->sysclk, params_rate(params));
++			return -EINVAL;
 +		}
- 
--	/* not enough samples yet */
--	if (samples == 0)
--		return 0;
-+		/* not enough samples yet */
-+		if (!samples)
-+			break;
- 
--	/* calculate new buffer index */
--	buf = (u16 *)(runtime->dma_area);
--	buf += strm->buffer_pos * runtime->channels;
-+		/* calculate new buffer index */
-+		buf = (u16 *)(runtime->dma_area);
-+		buf += strm->buffer_pos * runtime->channels;
- 
--	/* Note, only supports 16-bit samples */
--	for (i = 0; i < samples; i++)
--		*buf++ = (u16)(rz_ssi_reg_readl(ssi, SSIFRDR) >> 16);
-+		/* Note, only supports 16-bit samples */
-+		for (i = 0; i < samples; i++)
-+			*buf++ = (u16)(rz_ssi_reg_readl(ssi, SSIFRDR) >> 16);
- 
--	rz_ssi_reg_mask_setl(ssi, SSIFSR, SSIFSR_RDF, 0);
--	rz_ssi_pointer_update(strm, samples / runtime->channels);
-+		rz_ssi_reg_mask_setl(ssi, SSIFSR, SSIFSR_RDF, 0);
-+		rz_ssi_pointer_update(strm, samples / runtime->channels);
- 
--	/*
--	 * If we finished this period, but there are more samples in
--	 * the RX FIFO, call this function again
--	 */
--	if (frames_left == 0 && fifo_samples >= runtime->channels)
--		rz_ssi_pio_recv(ssi, strm);
-+		/* check if there are no more samples in the RX FIFO */
-+		if (!(!frames_left && fifo_samples >= runtime->channels))
-+			done = true;
++
++		writel(mclk_fs, stream_data->mmio + XLNX_AUD_FS_MULTIPLIER);
 +	}
++
+ 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
+ 	    stream_data->xfer_mode == AES_TO_PCM) {
+ 		val = readl(stream_data->mmio + XLNX_AUD_STS);
+@@ -552,6 +576,7 @@ static int xlnx_formatter_pcm_new(struct snd_soc_component *component,
  
- 	return 0;
- }
+ static const struct snd_soc_component_driver xlnx_asoc_component = {
+ 	.name		= DRV_NAME,
++	.set_sysclk	= xlnx_formatter_set_sysclk,
+ 	.open		= xlnx_formatter_pcm_open,
+ 	.close		= xlnx_formatter_pcm_close,
+ 	.hw_params	= xlnx_formatter_pcm_hw_params,
 -- 
 2.34.1
 
