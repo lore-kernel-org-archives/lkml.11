@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CADE8C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B11C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376993AbiDELZK (ORCPT
+        id S1376904AbiDELYp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
+        Tue, 5 Apr 2022 07:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242712AbiDEItY (ORCPT
+        with ESMTP id S241543AbiDEIsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:49:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB176CA70;
-        Tue,  5 Apr 2022 01:37:36 -0700 (PDT)
+        Tue, 5 Apr 2022 04:48:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B082A246;
+        Tue,  5 Apr 2022 01:36:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C010B81C6F;
-        Tue,  5 Apr 2022 08:37:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6511DC385A0;
-        Tue,  5 Apr 2022 08:37:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4F43B81C6D;
+        Tue,  5 Apr 2022 08:36:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F2C5C385A4;
+        Tue,  5 Apr 2022 08:36:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147842;
-        bh=7tVjNvhlua8fZ0QUBSai+fyZERuHx1vR367XmYNWQwI=;
+        s=korg; t=1649147803;
+        bh=QcVwkp7O9+jJeRmlPsB9ykrIZBzzp/L241o1BMnZ4n8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mVoO/3CilPrIac5o4fnQSi8HVvUAPToDzDmYI03LNJv/KMZtHnu1sIc4xLdyDKNgs
-         RMyWweuIYmiuvziIbR/AN0RKYJUhV7QVw6p9uOb0T8maaOvH/vPsNVOhG2Gvk4Td9J
-         YzcdPnZy+HjLRwQ3R22X6GSqv4hmebX1nO/a/idw=
+        b=WQZV1NfMu/CwaNNLJM2lykfbqOEDCC4CY4E9m5PBUANk1DwJ5fRrtOB4uZfZrEcCv
+         xBFbLPk7LRJgbkljrR79rUQdnitIumUAvEkf7PfH3BucndDKQQLk7ImrfWXCWws9ah
+         /FctNpZGrSoU/76mAzD/JcXmmgnhnxyLFgOhemz0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Rientjes <rientjes@google.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Minchan Kim <minchan@kernel.org>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 0114/1017] mm: madvise: return correct bytes advised with process_madvise
-Date:   Tue,  5 Apr 2022 09:17:07 +0200
-Message-Id: <20220405070357.580777313@linuxfoundation.org>
+        Vijay Balakrishna <vijayb@linux.microsoft.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.16 0128/1017] arm64: Do not defer reserve_crashkernel() for platforms with no DMA memory zones
+Date:   Tue,  5 Apr 2022 09:17:21 +0200
+Message-Id: <20220405070357.999565698@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -58,64 +51,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+From: Vijay Balakrishna <vijayb@linux.microsoft.com>
 
-commit 5bd009c7c9a9e888077c07535dc0c70aeab242c3 upstream.
+commit 031495635b4668f94e964e037ca93d0d38bfde58 upstream.
 
-Patch series "mm: madvise: return correct bytes processed with
-process_madvise", v2.  With the process_madvise(), always choose to return
-non zero processed bytes over an error.  This can help the user to know on
-which VMA, passed in the 'struct iovec' vector list, is failed to advise
-thus can take the decission of retrying/skipping on that VMA.
+The following patches resulted in deferring crash kernel reservation to
+mem_init(), mainly aimed at platforms with DMA memory zones (no IOMMU),
+in particular Raspberry Pi 4.
 
-This patch (of 2):
+commit 1a8e1cef7603 ("arm64: use both ZONE_DMA and ZONE_DMA32")
+commit 8424ecdde7df ("arm64: mm: Set ZONE_DMA size based on devicetree's dma-ranges")
+commit 0a30c53573b0 ("arm64: mm: Move reserve_crashkernel() into mem_init()")
+commit 2687275a5843 ("arm64: Force NO_BLOCK_MAPPINGS if crashkernel reservation is required")
 
-The process_madvise() system call returns error even after processing some
-VMA's passed in the 'struct iovec' vector list which leaves the user
-confused to know where to restart the advise next.  It is also against
-this syscall man page[1] documentation where it mentions that "return
-value may be less than the total number of requested bytes, if an error
-occurred after some iovec elements were already processed.".
+Above changes introduced boot slowdown due to linear map creation for
+all the memory banks with NO_BLOCK_MAPPINGS, see discussion[1].  The proposed
+changes restore crash kernel reservation to earlier behavior thus avoids
+slow boot, particularly for platforms with IOMMU (no DMA memory zones).
 
-Consider a user passed 10 VMA's in the 'struct iovec' vector list of which
-9 are processed but one.  Then it just returns the error caused on that
-failed VMA despite the first 9 VMA's processed, leaving the user confused
-about on which VMA it is failed.  Returning the number of bytes processed
-here can help the user to know which VMA it is failed on and thus can
-retry/skip the advise on that VMA.
+Tested changes to confirm no ~150ms boot slowdown on our SoC with IOMMU
+and 8GB memory.  Also tested with ZONE_DMA and/or ZONE_DMA32 configs to confirm
+no regression to deferring scheme of crash kernel memory reservation.
+In both cases successfully collected kernel crash dump.
 
-[1]https://man7.org/linux/man-pages/man2/process_madvise.2.html.
+[1] https://lore.kernel.org/all/9436d033-579b-55fa-9b00-6f4b661c2dd7@linux.microsoft.com/
 
-Link: https://lkml.kernel.org/r/cover.1647008754.git.quic_charante@quicinc.com
-Link: https://lkml.kernel.org/r/125b61a0edcee5c2db8658aed9d06a43a19ccafc.1647008754.git.quic_charante@quicinc.com
-Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Vijay Balakrishna <vijayb@linux.microsoft.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+Link: https://lore.kernel.org/r/1646242689-20744-1-git-send-email-vijayb@linux.microsoft.com
+[will: Add #ifdef CONFIG_KEXEC_CORE guards to fix 'crashk_res' references in allnoconfig build]
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/madvise.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm64/mm/init.c |   36 ++++++++++++++++++++++++++++++++----
+ arch/arm64/mm/mmu.c  |   32 +++++++++++++++++++++++++++++++-
+ 2 files changed, 63 insertions(+), 5 deletions(-)
 
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1294,8 +1294,7 @@ SYSCALL_DEFINE5(process_madvise, int, pi
- 		iov_iter_advance(&iter, iovec.iov_len);
- 	}
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -61,8 +61,34 @@ EXPORT_SYMBOL(memstart_addr);
+  * unless restricted on specific platforms (e.g. 30-bit on Raspberry Pi 4).
+  * In such case, ZONE_DMA32 covers the rest of the 32-bit addressable memory,
+  * otherwise it is empty.
++ *
++ * Memory reservation for crash kernel either done early or deferred
++ * depending on DMA memory zones configs (ZONE_DMA) --
++ *
++ * In absence of ZONE_DMA configs arm64_dma_phys_limit initialized
++ * here instead of max_zone_phys().  This lets early reservation of
++ * crash kernel memory which has a dependency on arm64_dma_phys_limit.
++ * Reserving memory early for crash kernel allows linear creation of block
++ * mappings (greater than page-granularity) for all the memory bank rangs.
++ * In this scheme a comparatively quicker boot is observed.
++ *
++ * If ZONE_DMA configs are defined, crash kernel memory reservation
++ * is delayed until DMA zone memory range size initilazation performed in
++ * zone_sizes_init().  The defer is necessary to steer clear of DMA zone
++ * memory range to avoid overlap allocation.  So crash kernel memory boundaries
++ * are not known when mapping all bank memory ranges, which otherwise means
++ * not possible to exclude crash kernel range from creating block mappings
++ * so page-granularity mappings are created for the entire memory range.
++ * Hence a slightly slower boot is observed.
++ *
++ * Note: Page-granularity mapppings are necessary for crash kernel memory
++ * range for shrinking its size via /sys/kernel/kexec_crash_size interface.
+  */
+-phys_addr_t arm64_dma_phys_limit __ro_after_init;
++#if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
++phys_addr_t __ro_after_init arm64_dma_phys_limit;
++#else
++const phys_addr_t arm64_dma_phys_limit = PHYS_MASK + 1;
++#endif
  
--	if (ret == 0)
--		ret = total_len - iov_iter_count(&iter);
-+	ret = (total_len - iov_iter_count(&iter)) ? : ret;
+ #ifdef CONFIG_KEXEC_CORE
+ /*
+@@ -153,8 +179,6 @@ static void __init zone_sizes_init(unsig
+ 	if (!arm64_dma_phys_limit)
+ 		arm64_dma_phys_limit = dma32_phys_limit;
+ #endif
+-	if (!arm64_dma_phys_limit)
+-		arm64_dma_phys_limit = PHYS_MASK + 1;
+ 	max_zone_pfns[ZONE_NORMAL] = max;
  
- release_mm:
- 	mmput(mm);
+ 	free_area_init(max_zone_pfns);
+@@ -315,6 +339,9 @@ void __init arm64_memblock_init(void)
+ 
+ 	early_init_fdt_scan_reserved_mem();
+ 
++	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
++		reserve_crashkernel();
++
+ 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+ }
+ 
+@@ -361,7 +388,8 @@ void __init bootmem_init(void)
+ 	 * request_standard_resources() depends on crashkernel's memory being
+ 	 * reserved, so do it here.
+ 	 */
+-	reserve_crashkernel();
++	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
++		reserve_crashkernel();
+ 
+ 	memblock_dump_all();
+ }
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -517,7 +517,7 @@ static void __init map_mem(pgd_t *pgdp)
+ 	 */
+ 	BUILD_BUG_ON(pgd_index(direct_map_end - 1) == pgd_index(direct_map_end));
+ 
+-	if (can_set_direct_map() || crash_mem_map || IS_ENABLED(CONFIG_KFENCE))
++	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
+ 		flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+ 
+ 	/*
+@@ -528,6 +528,17 @@ static void __init map_mem(pgd_t *pgdp)
+ 	 */
+ 	memblock_mark_nomap(kernel_start, kernel_end - kernel_start);
+ 
++#ifdef CONFIG_KEXEC_CORE
++	if (crash_mem_map) {
++		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
++		    IS_ENABLED(CONFIG_ZONE_DMA32))
++			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
++		else if (crashk_res.end)
++			memblock_mark_nomap(crashk_res.start,
++			    resource_size(&crashk_res));
++	}
++#endif
++
+ 	/* map all the memory banks */
+ 	for_each_mem_range(i, &start, &end) {
+ 		if (start >= end)
+@@ -554,6 +565,25 @@ static void __init map_mem(pgd_t *pgdp)
+ 	__map_memblock(pgdp, kernel_start, kernel_end,
+ 		       PAGE_KERNEL, NO_CONT_MAPPINGS);
+ 	memblock_clear_nomap(kernel_start, kernel_end - kernel_start);
++
++	/*
++	 * Use page-level mappings here so that we can shrink the region
++	 * in page granularity and put back unused memory to buddy system
++	 * through /sys/kernel/kexec_crash_size interface.
++	 */
++#ifdef CONFIG_KEXEC_CORE
++	if (crash_mem_map &&
++	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
++		if (crashk_res.end) {
++			__map_memblock(pgdp, crashk_res.start,
++				       crashk_res.end + 1,
++				       PAGE_KERNEL,
++				       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
++			memblock_clear_nomap(crashk_res.start,
++					     resource_size(&crashk_res));
++		}
++	}
++#endif
+ }
+ 
+ void mark_rodata_ro(void)
 
 
