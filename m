@@ -2,105 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 995A1C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6632C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586932AbiDFAGc (ORCPT
+        id S1586981AbiDFAGo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
+        Tue, 5 Apr 2022 20:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384127AbiDEM1M (ORCPT
+        with ESMTP id S1349295AbiDEJtf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:27:12 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3161574BF;
-        Tue,  5 Apr 2022 04:35:18 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 235BYCGn000464;
-        Tue, 5 Apr 2022 20:34:13 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGn000464
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649158453;
-        bh=3DqNNvADXzvHcLCX0JSWQu0LGeQKS0pcjU6by571POs=;
+        Tue, 5 Apr 2022 05:49:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EF813CC5;
+        Tue,  5 Apr 2022 02:43:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEAA0B81B76;
+        Tue,  5 Apr 2022 09:43:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 043E5C385A3;
+        Tue,  5 Apr 2022 09:43:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151823;
+        bh=k5xEwT2EpCrvE2/ecRxQ9L6o9jtoomLXGOZUR/EcBEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IMM4BxXHf9E3neDAF1TWt3R+5eYjP6f7RQRZUvTHBnrIAQT4Pz/Q5AIfVvofrn4J4
-         7RoXYWZ8ok44JqyjEhkn9QipP1dxZoWTkOeerMrUH4Q59PunvHTHp323M4A+jQ3RTJ
-         T/extvRF5kV6xsvgaJuf2VjE4pDbPIf08E+3Hyo1Y7nz0OOvEbgyyfjqX5/1e9+oYn
-         gmiEx3+cCur7VXwUVAOmm0aaMuEMp5Gyrkw6DehiFLPZ0JbRwaN4RxyZFzieEQWlZG
-         4BqsexGyno2F1xP5ZzXbeZvfNaldzuMr6gY+u6rhOG7EMHmw2LqRT5Hs4qxz7IRtDc
-         7aFfq7GP3W8DA==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 01/10] kbuild: factor out genksyms command from cmd_gensymtypes_{c,S}
-Date:   Tue,  5 Apr 2022 20:33:49 +0900
-Message-Id: <20220405113359.2880241-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
+        b=RnfscOi39nXOoGnCWUqdUi5gY8SM1gGWj+vlka3NWNH8OR1aY9hQbDUWsOYGiB87U
+         7jBmxaH34700WEctNRzp1gwitkl2ySt+YTL+84CNw2JBkF0m+aYfQ+uCnIFfyixtR7
+         ACqjw4R2rKdLdkHNm41BGMnmllsmMNhwvGMlgk10=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 554/913] af_unix: Fix some data-races around unix_sk(sk)->oob_skb.
+Date:   Tue,  5 Apr 2022 09:26:56 +0200
+Message-Id: <20220405070356.453123879@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The genksyms command part in cmd_gensymtypes_{c,S} is duplicated.
-Factor it out into the 'genksyms' macro.
+From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-For the readability, I slightly refactor the arguments to genksyms.
+[ Upstream commit e82025c623e2bf04d162bafceb66a59115814479 ]
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Out-of-band data automatically places a "mark" showing wherein the
+sequence the out-of-band data would have been.  If the out-of-band data
+implies cancelling everything sent so far, the "mark" is helpful to flush
+them.  When the socket's read pointer reaches the "mark", the ioctl() below
+sets a non zero value to the arg `atmark`:
+
+The out-of-band data is queued in sk->sk_receive_queue as well as ordinary
+data and also saved in unix_sk(sk)->oob_skb.  It can be used to test if the
+head of the receive queue is the out-of-band data meaning the socket is at
+the "mark".
+
+While testing that, unix_ioctl() reads unix_sk(sk)->oob_skb locklessly.
+Thus, all accesses to oob_skb need some basic protection to avoid
+load/store tearing which KCSAN detects when these are called concurrently:
+
+  - ioctl(fd_a, SIOCATMARK, &atmark, sizeof(atmark))
+  - send(fd_b_connected_to_a, buf, sizeof(buf), MSG_OOB)
+
+BUG: KCSAN: data-race in unix_ioctl / unix_stream_sendmsg
+
+write to 0xffff888003d9cff0 of 8 bytes by task 175 on cpu 1:
+ unix_stream_sendmsg (net/unix/af_unix.c:2087 net/unix/af_unix.c:2191)
+ sock_sendmsg (net/socket.c:705 net/socket.c:725)
+ __sys_sendto (net/socket.c:2040)
+ __x64_sys_sendto (net/socket.c:2048)
+ do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+ entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
+
+read to 0xffff888003d9cff0 of 8 bytes by task 176 on cpu 0:
+ unix_ioctl (net/unix/af_unix.c:3101 (discriminator 1))
+ sock_do_ioctl (net/socket.c:1128)
+ sock_ioctl (net/socket.c:1242)
+ __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:874 fs/ioctl.c:860 fs/ioctl.c:860)
+ do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+ entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
+
+value changed: 0xffff888003da0c00 -> 0xffff888003da0d00
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 176 Comm: unix_race_oob_i Not tainted 5.17.0-rc5-59529-g83dc4c2af682 #12
+Hardware name: Red Hat KVM, BIOS 1.11.0-2.amzn2 04/01/2014
+
+Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ net/unix/af_unix.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-Changes in v2:
-  - Fix the location of the closing parenthesis
-
- scripts/Makefile.build | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 9717e6f6fb31..31e0e33dfe5d 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -125,13 +125,14 @@ cmd_cpp_i_c       = $(CPP) $(c_flags) -o $@ $<
- $(obj)/%.i: $(src)/%.c FORCE
- 	$(call if_changed_dep,cpp_i_c)
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index b0bfc78e421c..826ac391a7a4 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -1996,7 +1996,7 @@ static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other
+ 	if (ousk->oob_skb)
+ 		consume_skb(ousk->oob_skb);
  
-+genksyms = scripts/genksyms/genksyms		\
-+	$(if $(1), -T $(2))			\
-+	$(if $(CONFIG_MODULE_REL_CRCS), -R)	\
-+	$(if $(KBUILD_PRESERVE), -p)		\
-+	-r $(or $(wildcard $(2:.symtypes=.symref)), /dev/null)
-+
- # These mirror gensymtypes_S and co below, keep them in synch.
--cmd_gensymtypes_c =                                                         \
--    $(CPP) -D__GENKSYMS__ $(c_flags) $< |                                   \
--    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
--     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
--     $(if $(KBUILD_PRESERVE),-p)                                            \
--     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-+cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
+-	ousk->oob_skb = skb;
++	WRITE_ONCE(ousk->oob_skb, skb);
  
- quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
- cmd_cc_symtypes_c =                                                         \
-@@ -344,11 +345,7 @@ cmd_gensymtypes_S =                                                         \
-     $(CPP) $(a_flags) $< |                                                  \
-      grep "\<___EXPORT_SYMBOL\>" |                                          \
-      sed 's/.*___EXPORT_SYMBOL[[:space:]]*\([a-zA-Z0-9_]*\)[[:space:]]*,.*/EXPORT_SYMBOL(\1);/' ; } | \
--    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - |                                \
--    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
--     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
--     $(if $(KBUILD_PRESERVE),-p)                                            \
--     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-+    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
+ 	scm_stat_add(other, skb);
+ 	skb_queue_tail(&other->sk_receive_queue, skb);
+@@ -2514,9 +2514,8 @@ static int unix_stream_recv_urg(struct unix_stream_read_state *state)
  
- quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
- cmd_cc_symtypes_S =                                                         \
+ 	oob_skb = u->oob_skb;
+ 
+-	if (!(state->flags & MSG_PEEK)) {
+-		u->oob_skb = NULL;
+-	}
++	if (!(state->flags & MSG_PEEK))
++		WRITE_ONCE(u->oob_skb, NULL);
+ 
+ 	unix_state_unlock(sk);
+ 
+@@ -2551,7 +2550,7 @@ static struct sk_buff *manage_oob(struct sk_buff *skb, struct sock *sk,
+ 				skb = NULL;
+ 			} else if (sock_flag(sk, SOCK_URGINLINE)) {
+ 				if (!(flags & MSG_PEEK)) {
+-					u->oob_skb = NULL;
++					WRITE_ONCE(u->oob_skb, NULL);
+ 					consume_skb(skb);
+ 				}
+ 			} else if (!(flags & MSG_PEEK)) {
+@@ -3006,11 +3005,10 @@ static int unix_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+ 	case SIOCATMARK:
+ 		{
+ 			struct sk_buff *skb;
+-			struct unix_sock *u = unix_sk(sk);
+ 			int answ = 0;
+ 
+ 			skb = skb_peek(&sk->sk_receive_queue);
+-			if (skb && skb == u->oob_skb)
++			if (skb && skb == READ_ONCE(unix_sk(sk)->oob_skb))
+ 				answ = 1;
+ 			err = put_user(answ, (int __user *)arg);
+ 		}
 -- 
-2.32.0
+2.34.1
+
+
 
