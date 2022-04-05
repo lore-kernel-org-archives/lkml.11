@@ -2,67 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A89BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbiDEB1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 21:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
+        id S229556AbiDEB1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 21:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiDEB1Y (ORCPT
+        with ESMTP id S229494AbiDEB11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 21:27:24 -0400
-Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4113E28AB3C
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:39:02 -0700 (PDT)
-Received: by mail-oo1-xc2c.google.com with SMTP id h3-20020a4ae8c3000000b00324b9ae6ff2so2015967ooe.10
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 17:39:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iVbRFb3pHKJObhGTfG4TyT4E0cfow5X3SEOtVm7qSqU=;
-        b=D8RB3yzwW1THTOskjZcYFnmP4WkVo9Xx0bih+Eq2XdF3des0BmB41dk8Q5MCyR9mOi
-         hPh+AGv+gTG3fUM3DRMyZK1EbiSGLDNPOU7EnkVBOkRhgVfqnSgj5p58xQTZoL/Z9YeK
-         xGUATkEXjRYfTWebIUnQ9lyOTaUDql4l47eER4ak4WIxGXEuoPWdzBFCkzUNwRALUxyq
-         Lzd5n36eq80YTcSls+P/7hSSS11v8hMRbmgDWIMPPjpS66vs84SeW/vxqNJ68iEFvbGR
-         Joqf9+/Xje/9GvhVKr67Ql5MRB/x8+s8JamGESZisUs8ae6JyhWJT7ENUkr/fx10J7QD
-         +1+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iVbRFb3pHKJObhGTfG4TyT4E0cfow5X3SEOtVm7qSqU=;
-        b=bI8hDCYTMl8Z2Br/SDTgEBfRTscARfEgNese4WVRsqTylgfC8LAdNC2vK8+VHv+6IP
-         ltfbkV4uqruIuh/4P0VoERmDwj1YS9n8Y0jLGg8Vfomh/BvxLQm4p+mYMlZftscwNfN8
-         m9BTZgIzsRz28Up7oiBmQl0nppX8Ga97niuvJcdpCkPUozT6gs2ECCbmPxT9ecO37o/k
-         teBqgWAWFVNxIvWevTHqOveHMl09zd1Pqa6DRsKSCrfco+O35Xar47rxFTc3U/+9e/h6
-         BMEkVpSL8m0S//iAwCSsLIxL0mNfiQEDfGb+012u64wa+jL174jAPJST3HjhASo4Tah/
-         1bdQ==
-X-Gm-Message-State: AOAM533JKPVQ2c0Jaj5Lz4XJqNluRI8hHE+RQF9sYTyaRgkvoK+mFa7b
-        ynIyGdcDupMNvZvNRbMv/NtT6rU5hBral+msMwY/s80Gk7Y=
-X-Google-Smtp-Source: ABdhPJxtx/GH6LWYXx8C6ldpwgMglrOnpypW5aqgzqo7wrMaQbWjNebWBzYw94xuXDp+yqNNkgufUEvGH5nrWfeZq1Y=
-X-Received: by 2002:a9d:6250:0:b0:5cd:afcf:999d with SMTP id
- i16-20020a9d6250000000b005cdafcf999dmr293865otk.75.1649118183603; Mon, 04 Apr
- 2022 17:23:03 -0700 (PDT)
+        Mon, 4 Apr 2022 21:27:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6D428E355;
+        Mon,  4 Apr 2022 17:39:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D5036178D;
+        Tue,  5 Apr 2022 00:35:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 316ADC2BBE4;
+        Tue,  5 Apr 2022 00:35:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649118903;
+        bh=TUQDwA5oUvOfBLmcRPZvF7xp3TjIfEeV0e2XgtHJnNA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bBOBsxplszIf67QVQqJ2EwfPQE2M++fqNb0Yd9NSZYsD64yfsVRI23HkorAj44+/6
+         nN+8zCrCS2N+vShsAajbtP5upMOvbtN7SkmdAYGWSlPTNztsXnQE2KJUsVH4D7J0lS
+         s2Pgn358HZklqe2q+sb6ghbMuRuyDOoy2UdYW1LaQHWx1yGYIPGmaqP69+myVoXqua
+         CCAmqKxbHH0ccC/Mrv2Voa/pyGHRIjR07f8okE6r+1ycyX3pYjXQVmkAYx5+76+8NY
+         eN6UNZj6YYvg8gmoNie2mSf0ek8etHckuc6FGyiImZC9HN6Zv8GIhX8eEBgcV1lIp1
+         equbS+z19xUwg==
+Date:   Mon, 4 Apr 2022 17:35:00 -0700
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH mlx5-next 0/5] Drop Mellanox FPGA TLS support from the
+ kernel
+Message-ID: <20220405003500.duivahirienxrkuk@sx1>
+References: <cover.1649073691.git.leonro@nvidia.com>
 MIME-Version: 1.0
-References: <20220329134632.6064-1-likexu@tencent.com> <CALMp9eRqrkLRQ7UWNUdp3Z58WWgTqO-OPRuNo+EjcOW3c5eteQ@mail.gmail.com>
-In-Reply-To: <CALMp9eRqrkLRQ7UWNUdp3Z58WWgTqO-OPRuNo+EjcOW3c5eteQ@mail.gmail.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Mon, 4 Apr 2022 17:22:51 -0700
-Message-ID: <CALMp9eTCqRD+LyQ13+-3nyKAHcJ-T00K-vfK3iu0RnFR=Ax0hQ@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86/pmu: Update AMD PMC smaple period to fix guest NMI-watchdog
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Eric Hankland <ehankland@google.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <cover.1649073691.git.leonro@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Minor nit: "sample" is misspelled in the subject line.
+On 04 Apr 15:08, Leon Romanovsky wrote:
+>From: Leon Romanovsky <leonro@nvidia.com>
+>
+>Mellanox INNOVA TLS cards are EOL in May, 2018 [1]. As such, the code
+>is unmaintained, untested and not in-use by any upstream/distro oriented
+>customers. In order to reduce code complexity, drop the kernel code,
+>clean build config options and delete useless kTLS vs. TLS separation.
+>
+>[1] https://network.nvidia.com/related-docs/eol/LCR-000286.pdf
+>
+>Thanks
+>
+>BTW, the target of this series is mlx5-next, as other series removes
+>FPGA IPsec together with relevant cleanup in RDMA side.
+>
+
+Other than the renaming ktls => tls comment, which is not a big deal
+anyhow. The series looks great.
+
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com> 
+
