@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1A2C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 646EEC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844069AbiDFBot (ORCPT
+        id S1844111AbiDFBpU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
+        Tue, 5 Apr 2022 21:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348980AbiDEJsv (ORCPT
+        with ESMTP id S1348883AbiDEJso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983646264;
-        Tue,  5 Apr 2022 02:38:40 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79453B82F1;
+        Tue,  5 Apr 2022 02:36:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5975EB81C6A;
-        Tue,  5 Apr 2022 09:38:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC78C385A3;
-        Tue,  5 Apr 2022 09:38:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECBAAB81C6F;
+        Tue,  5 Apr 2022 09:36:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DB99C385A0;
+        Tue,  5 Apr 2022 09:36:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151518;
-        bh=IfWMaRl05hOWBxfG40GcyKXtd4SGRrCitFCS7E/8zvI=;
+        s=korg; t=1649151407;
+        bh=wrzKA6GCbzPNzzjub1bTM8BTkxgUSu+wwTfvBLMihEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TRO3VdIRCWtp7+brP0QBP83lCJgqF++qgJoE9gOrjTpqFGqfwwc6ZfYipUNtRP6vo
-         w5Qzqt8VDy6zZ/I+uspq/9wAvQLAv6MZesBAbDEWPZshkPyii8cgPx2VtOmqmA/25X
-         4EZ4ZOgTwb6N4dVmh4nYbMP1wcrLwFftZDDbbuSg=
+        b=n8+T5/5aBzh4NOCCj0tAorkv9cTNqd/uM/VT3vtDUKajun3QWmw2ufI45Y1xkTShR
+         +92Uvx4Q5wjuiS3o6JejvpSSk27/YhwohuYM035bbuk5/tCYB5LZSv9Ckvv9cQHZXT
+         RU2SZHvBmKz9fNLMWaS3qadyHv2CXpFvRgCJHEic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 443/913] RDMA/rxe: Check the last packet by RXE_END_MASK
-Date:   Tue,  5 Apr 2022 09:25:05 +0200
-Message-Id: <20220405070353.124994754@linuxfoundation.org>
+Subject: [PATCH 5.15 403/913] net: phy: at803x: move page selection fix to config_init
+Date:   Tue,  5 Apr 2022 09:24:25 +0200
+Message-Id: <20220405070351.927797234@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,52 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiao Yang <yangx.jy@fujitsu.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit b1377cc37f6bebd57ce8747b7e16163a475af295 ]
+[ Upstream commit 4f3a00c7f5b2cfe4e127fd3fe49b55e1b318c01f ]
 
-It's wrong to check the last packet by RXE_COMP_MASK because the flag is
-to indicate if responder needs to generate a completion.
+The fix to select the copper page on AR8031 was being done in the probe
+function rather than config_init, so it would not be redone after resume
+from suspend. Move this to config_init so it is always redone when
+needed.
 
-Fixes: 9fcd67d1772c ("IB/rxe: increment msn only when completing a request")
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20211229034438.1854908-1-yangx.jy@fujitsu.com
-Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: c329e5afb42f ("net: phy: at803x: select correct page on config init")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_resp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/phy/at803x.c | 40 ++++++++++++++++------------------------
+ 1 file changed, 16 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_resp.c b/drivers/infiniband/sw/rxe/rxe_resp.c
-index 5501227ddc65..8ed172ab0beb 100644
---- a/drivers/infiniband/sw/rxe/rxe_resp.c
-+++ b/drivers/infiniband/sw/rxe/rxe_resp.c
-@@ -830,6 +830,10 @@ static enum resp_states execute(struct rxe_qp *qp, struct rxe_pkt_info *pkt)
- 			return RESPST_ERR_INVALIDATE_RKEY;
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index bdac087058b2..5ae39d236b30 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -666,25 +666,7 @@ static int at803x_probe(struct phy_device *phydev)
+ 			return ret;
  	}
  
-+	if (pkt->mask & RXE_END_MASK)
-+		/* We successfully processed this new request. */
-+		qp->resp.msn++;
-+
- 	/* next expected psn, read handles this separately */
- 	qp->resp.psn = (pkt->psn + 1) & BTH_PSN_MASK;
- 	qp->resp.ack_psn = qp->resp.psn;
-@@ -837,11 +841,9 @@ static enum resp_states execute(struct rxe_qp *qp, struct rxe_pkt_info *pkt)
- 	qp->resp.opcode = pkt->opcode;
- 	qp->resp.status = IB_WC_SUCCESS;
+-	/* Some bootloaders leave the fiber page selected.
+-	 * Switch to the copper page, as otherwise we read
+-	 * the PHY capabilities from the fiber side.
+-	 */
+-	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+-		phy_lock_mdio_bus(phydev);
+-		ret = at803x_write_page(phydev, AT803X_PAGE_COPPER);
+-		phy_unlock_mdio_bus(phydev);
+-		if (ret)
+-			goto err;
+-	}
+-
+ 	return 0;
+-
+-err:
+-	if (priv->vddio)
+-		regulator_disable(priv->vddio);
+-
+-	return ret;
+ }
  
--	if (pkt->mask & RXE_COMP_MASK) {
--		/* We successfully processed this new request. */
--		qp->resp.msn++;
-+	if (pkt->mask & RXE_COMP_MASK)
- 		return RESPST_COMPLETE;
--	} else if (qp_type(qp) == IB_QPT_RC)
-+	else if (qp_type(qp) == IB_QPT_RC)
- 		return RESPST_ACKNOWLEDGE;
- 	else
- 		return RESPST_CLEANUP;
+ static void at803x_remove(struct phy_device *phydev)
+@@ -785,6 +767,22 @@ static int at803x_config_init(struct phy_device *phydev)
+ {
+ 	int ret;
+ 
++	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
++		/* Some bootloaders leave the fiber page selected.
++		 * Switch to the copper page, as otherwise we read
++		 * the PHY capabilities from the fiber side.
++		 */
++		phy_lock_mdio_bus(phydev);
++		ret = at803x_write_page(phydev, AT803X_PAGE_COPPER);
++		phy_unlock_mdio_bus(phydev);
++		if (ret)
++			return ret;
++
++		ret = at8031_pll_config(phydev);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	/* The RX and TX delay default is:
+ 	 *   after HW reset: RX delay enabled and TX delay disabled
+ 	 *   after SW reset: RX delay enabled, while TX delay retains the
+@@ -814,12 +812,6 @@ static int at803x_config_init(struct phy_device *phydev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+-		ret = at8031_pll_config(phydev);
+-		if (ret < 0)
+-			return ret;
+-	}
+-
+ 	/* Ar803x extended next page bit is enabled by default. Cisco
+ 	 * multigig switches read this bit and attempt to negotiate 10Gbps
+ 	 * rates even if the next page bit is disabled. This is incorrect
 -- 
 2.34.1
 
