@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9E4C4707E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCC0C4707F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390487AbiDENmH (ORCPT
+        id S1390524AbiDENmV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
+        Tue, 5 Apr 2022 09:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345236AbiDEJWW (ORCPT
+        with ESMTP id S1345235AbiDEJWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:22:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2572A724;
-        Tue,  5 Apr 2022 02:09:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293E62A726;
+        Tue,  5 Apr 2022 02:09:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 435A5B81B75;
-        Tue,  5 Apr 2022 09:09:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95962C385A2;
-        Tue,  5 Apr 2022 09:09:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A078B81A22;
+        Tue,  5 Apr 2022 09:09:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6C8EC385A0;
+        Tue,  5 Apr 2022 09:09:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149787;
-        bh=0K+8KsR+j4aH3e4AuxoIRtkQ3/ATfCNbxCPkVALNxBM=;
+        s=korg; t=1649149785;
+        bh=a3X9AFzHlu8+WSu53lKw4fxPUWErvt/B1kO6xdYwI7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bLYHWJI7RU0AYRU0qCkDp93v3CTEOg78Dh09jEa5dNg9U4ISYgyv/HanL1dDbIkbf
-         RV02dqRXvYI+UdM1kfLTN+Wzy8nXPiHzFOylesLZy7xjEJKDjtmHPkPTTu0o1A9kIf
-         Ij78sHOkQeCTrR6+6rY1O4qHZmpkWLochw2Hx22Q=
+        b=UW92J+oDxrW2ONOSE52ob5AhL71QMbCjwWn6p7LHJMLxeykMO8SlvbXMfvoPgqLPd
+         VvSP0RX0rFapKTRwUwfpv9gLpeZ2GNeE30P7JlQbmOhJD3bFc7upUj2da9mYxgOx8G
+         QKX7eALckNG3IUax/mycU6Wr192ZXmA/DH08m8jg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org,
+        syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Anton Altaparmakov <anton@tuxera.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0793/1017] f2fs: dont get FREEZE lock in f2fs_evict_inode in frozen fs
-Date:   Tue,  5 Apr 2022 09:28:26 +0200
-Message-Id: <20220405070417.790776026@linuxfoundation.org>
+Subject: [PATCH 5.16 0802/1017] ntfs: add sanity check on allocation size
+Date:   Tue,  5 Apr 2022 09:28:35 +0200
+Message-Id: <20220405070418.055812793@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,116 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit ba900534f807f0b327c92d5141c85d2313e2d55c ]
+[ Upstream commit 714fbf2647b1a33d914edd695d4da92029c7e7c0 ]
 
-Let's purge inode cache in order to avoid the below deadlock.
+ntfs_read_inode_mount invokes ntfs_malloc_nofs with zero allocation
+size.  It triggers one BUG in the __ntfs_malloc function.
 
-[freeze test]                         shrinkder
-freeze_super
- - pwercpu_down_write(SB_FREEZE_FS)
-                                       - super_cache_scan
-                                         - down_read(&sb->s_umount)
-                                           - prune_icache_sb
-                                            - dispose_list
-                                             - evict
-                                              - f2fs_evict_inode
-thaw_super
- - down_write(&sb->s_umount);
-                                              - __percpu_down_read(SB_FREEZE_FS)
+Fix this by adding sanity check on ni->attr_list_size.
 
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Link: https://lkml.kernel.org/r/20220120094914.47736-1-dzm91@hust.edu.cn
+Reported-by: syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Acked-by: Anton Altaparmakov <anton@tuxera.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/ABI/testing/sysfs-fs-f2fs | 1 +
- fs/f2fs/debug.c                         | 1 +
- fs/f2fs/f2fs.h                          | 1 +
- fs/f2fs/inode.c                         | 6 ++++--
- fs/f2fs/super.c                         | 4 ++++
- 5 files changed, 11 insertions(+), 2 deletions(-)
+ fs/ntfs/inode.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-fs-f2fs b/Documentation/ABI/testing/sysfs-fs-f2fs
-index b268e3e18b4a..91e2b549f817 100644
---- a/Documentation/ABI/testing/sysfs-fs-f2fs
-+++ b/Documentation/ABI/testing/sysfs-fs-f2fs
-@@ -425,6 +425,7 @@ Description:	Show status of f2fs superblock in real time.
- 		0x800  SBI_QUOTA_SKIP_FLUSH  skip flushing quota in current CP
- 		0x1000 SBI_QUOTA_NEED_REPAIR quota file may be corrupted
- 		0x2000 SBI_IS_RESIZEFS       resizefs is in process
-+		0x4000 SBI_IS_FREEZING       freefs is in process
- 		====== ===================== =================================
- 
- What:		/sys/fs/f2fs/<disk>/ckpt_thread_ioprio
-diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
-index 8c50518475a9..07ad0d81f0c5 100644
---- a/fs/f2fs/debug.c
-+++ b/fs/f2fs/debug.c
-@@ -338,6 +338,7 @@ static char *s_flag[] = {
- 	[SBI_QUOTA_SKIP_FLUSH]	= " quota_skip_flush",
- 	[SBI_QUOTA_NEED_REPAIR]	= " quota_need_repair",
- 	[SBI_IS_RESIZEFS]	= " resizefs",
-+	[SBI_IS_FREEZING]	= " freezefs",
- };
- 
- static int stat_show(struct seq_file *s, void *v)
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index d753094a4919..980c0c2b6350 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -1259,6 +1259,7 @@ enum {
- 	SBI_QUOTA_SKIP_FLUSH,			/* skip flushing quota in current CP */
- 	SBI_QUOTA_NEED_REPAIR,			/* quota file may be corrupted */
- 	SBI_IS_RESIZEFS,			/* resizefs is in process */
-+	SBI_IS_FREEZING,			/* freezefs is in process */
- };
- 
- enum {
-diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
-index 5a10f98dbbc3..a40e52ba5ec8 100644
---- a/fs/f2fs/inode.c
-+++ b/fs/f2fs/inode.c
-@@ -769,7 +769,8 @@ void f2fs_evict_inode(struct inode *inode)
- 	f2fs_remove_ino_entry(sbi, inode->i_ino, UPDATE_INO);
- 	f2fs_remove_ino_entry(sbi, inode->i_ino, FLUSH_INO);
- 
--	sb_start_intwrite(inode->i_sb);
-+	if (!is_sbi_flag_set(sbi, SBI_IS_FREEZING))
-+		sb_start_intwrite(inode->i_sb);
- 	set_inode_flag(inode, FI_NO_ALLOC);
- 	i_size_write(inode, 0);
- retry:
-@@ -800,7 +801,8 @@ void f2fs_evict_inode(struct inode *inode)
- 		if (dquot_initialize_needed(inode))
- 			set_sbi_flag(sbi, SBI_QUOTA_NEED_REPAIR);
- 	}
--	sb_end_intwrite(inode->i_sb);
-+	if (!is_sbi_flag_set(sbi, SBI_IS_FREEZING))
-+		sb_end_intwrite(inode->i_sb);
- no_delete:
- 	dquot_drop(inode);
- 
-diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-index 45106b426e8d..9402d5b2c7fd 100644
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -1668,11 +1668,15 @@ static int f2fs_freeze(struct super_block *sb)
- 	/* ensure no checkpoint required */
- 	if (!llist_empty(&F2FS_SB(sb)->cprc_info.issue_list))
- 		return -EINVAL;
-+
-+	/* to avoid deadlock on f2fs_evict_inode->SB_FREEZE_FS */
-+	set_sbi_flag(F2FS_SB(sb), SBI_IS_FREEZING);
- 	return 0;
- }
- 
- static int f2fs_unfreeze(struct super_block *sb)
- {
-+	clear_sbi_flag(F2FS_SB(sb), SBI_IS_FREEZING);
- 	return 0;
- }
- 
+diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
+index 4474adb393ca..517b71c73aa9 100644
+--- a/fs/ntfs/inode.c
++++ b/fs/ntfs/inode.c
+@@ -1881,6 +1881,10 @@ int ntfs_read_inode_mount(struct inode *vi)
+ 		}
+ 		/* Now allocate memory for the attribute list. */
+ 		ni->attr_list_size = (u32)ntfs_attr_size(a);
++		if (!ni->attr_list_size) {
++			ntfs_error(sb, "Attr_list_size is zero");
++			goto put_err_out;
++		}
+ 		ni->attr_list = ntfs_malloc_nofs(ni->attr_list_size);
+ 		if (!ni->attr_list) {
+ 			ntfs_error(sb, "Not enough memory to allocate buffer "
 -- 
 2.34.1
 
