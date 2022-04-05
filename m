@@ -2,48 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCD4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14ACBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445210AbiDEUIc (ORCPT
+        id S1445803AbiDEUIp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        Tue, 5 Apr 2022 16:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356829AbiDEKY5 (ORCPT
+        with ESMTP id S1455441AbiDEQAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:24:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31844C0545;
-        Tue,  5 Apr 2022 03:09:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:00:02 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1133E17077
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:15:29 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D52C0B81C88;
-        Tue,  5 Apr 2022 10:09:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4325FC385A0;
-        Tue,  5 Apr 2022 10:09:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153344;
-        bh=ZTic4zvL01xfAw3poXzKuNGU8kOgFdNA7qhJdx2enBQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oFNLn3bLWEjjp4xIOMkJHeMpHZuG7rifXg92RZLrsdXHMR/N2cLVk+JQuxQzUIKpD
-         jEswL8pt88orwrIecoOzRMW0czLCfUwD0gLVkdFxThoIXpubklkDYmmTm0v9atdM9A
-         1XAqiFY9LB5LKJh29otZ+YkbaSTtWeyFIDqNp0ng=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 188/599] media: v4l2-mem2mem: Apply DST_QUEUE_OFF_BASE on MMAP buffers across ioctls
-Date:   Tue,  5 Apr 2022 09:28:02 +0200
-Message-Id: <20220405070304.436627021@linuxfoundation.org>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id F21321EC04AD;
+        Tue,  5 Apr 2022 17:15:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649171724;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:in-reply-to:
+         references; bh=Hu6/55Y5RP0JeHRRHFzJWTLf8RYPBg7nbGCBlr4S73o=;
+        b=MnDYNBG22EWthkUZ/Ya63+V8MCVMmDtfcDxQItzPpBKA0JdMvsrm3P8FFsQ3YUnama26/p
+        Ot7+9BAebypZI1hG1PVISCd2eCHJECNaDOg9OBvmKFaVjqSM/Oft4sjf9A2M/35kxznZIP
+        inB4ZisU32YbZ5siQHNo3JdtyjO1oic=
+From:   Borislav Petkov <bp@alien8.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH 00/11] treewide: Fix a bunch of shift overflows
+Date:   Tue,  5 Apr 2022 17:15:06 +0200
+Message-Id: <20220405151517.29753-1-bp@alien8.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,135 +43,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 8310ca94075e784bbb06593cd6c068ee6b6e4ca6 ]
+Hi all,
 
-DST_QUEUE_OFF_BASE is applied to offset/mem_offset on MMAP capture buffers
-only for the VIDIOC_QUERYBUF ioctl, while the userspace fields (including
-offset/mem_offset) are filled in for VIDIOC_{QUERY,PREPARE,Q,DQ}BUF
-ioctls. This leads to differences in the values presented to userspace.
-If userspace attempts to mmap the capture buffer directly using values
-from DQBUF, it will fail.
+so this is the result of me trying to make allmodconfig actually build
+here.
 
-Move the code that applies the magic offset into a helper, and call
-that helper from all four ioctl entry points.
+Due to some recent changes which added -fsanitize-shift to the build
+options of an allmodconfig, it started failing here with an old gcc
+because getting an overflow while shifting is undefined C99 behavior.
 
-[hverkuil: drop unnecessary '= 0' in v4l2_m2m_querybuf() for ret]
+gcc warns/errors out with -Werror about this only on newer versions
+where -pedantic is present while older ones do so even without it. The
+whole details here:
 
-Fixes: 7f98639def42 ("V4L/DVB: add memory-to-memory device helper framework for videobuf")
-Fixes: 908a0d7c588e ("[media] v4l: mem2mem: port to videobuf2")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/v4l2-core/v4l2-mem2mem.c | 53 ++++++++++++++++++++------
- 1 file changed, 41 insertions(+), 12 deletions(-)
+  https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic
 
-diff --git a/drivers/media/v4l2-core/v4l2-mem2mem.c b/drivers/media/v4l2-core/v4l2-mem2mem.c
-index b221b4e438a1..73190652c267 100644
---- a/drivers/media/v4l2-core/v4l2-mem2mem.c
-+++ b/drivers/media/v4l2-core/v4l2-mem2mem.c
-@@ -585,19 +585,14 @@ int v4l2_m2m_reqbufs(struct file *file, struct v4l2_m2m_ctx *m2m_ctx,
- }
- EXPORT_SYMBOL_GPL(v4l2_m2m_reqbufs);
- 
--int v4l2_m2m_querybuf(struct file *file, struct v4l2_m2m_ctx *m2m_ctx,
--		      struct v4l2_buffer *buf)
-+static void v4l2_m2m_adjust_mem_offset(struct vb2_queue *vq,
-+				       struct v4l2_buffer *buf)
- {
--	struct vb2_queue *vq;
--	int ret = 0;
--	unsigned int i;
--
--	vq = v4l2_m2m_get_vq(m2m_ctx, buf->type);
--	ret = vb2_querybuf(vq, buf);
--
- 	/* Adjust MMAP memory offsets for the CAPTURE queue */
- 	if (buf->memory == V4L2_MEMORY_MMAP && V4L2_TYPE_IS_CAPTURE(vq->type)) {
- 		if (V4L2_TYPE_IS_MULTIPLANAR(vq->type)) {
-+			unsigned int i;
-+
- 			for (i = 0; i < buf->length; ++i)
- 				buf->m.planes[i].m.mem_offset
- 					+= DST_QUEUE_OFF_BASE;
-@@ -605,8 +600,23 @@ int v4l2_m2m_querybuf(struct file *file, struct v4l2_m2m_ctx *m2m_ctx,
- 			buf->m.offset += DST_QUEUE_OFF_BASE;
- 		}
- 	}
-+}
- 
--	return ret;
-+int v4l2_m2m_querybuf(struct file *file, struct v4l2_m2m_ctx *m2m_ctx,
-+		      struct v4l2_buffer *buf)
-+{
-+	struct vb2_queue *vq;
-+	int ret;
-+
-+	vq = v4l2_m2m_get_vq(m2m_ctx, buf->type);
-+	ret = vb2_querybuf(vq, buf);
-+	if (ret)
-+		return ret;
-+
-+	/* Adjust MMAP memory offsets for the CAPTURE queue */
-+	v4l2_m2m_adjust_mem_offset(vq, buf);
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(v4l2_m2m_querybuf);
- 
-@@ -763,6 +773,9 @@ int v4l2_m2m_qbuf(struct file *file, struct v4l2_m2m_ctx *m2m_ctx,
- 	if (ret)
- 		return ret;
- 
-+	/* Adjust MMAP memory offsets for the CAPTURE queue */
-+	v4l2_m2m_adjust_mem_offset(vq, buf);
-+
- 	/*
- 	 * If the capture queue is streaming, but streaming hasn't started
- 	 * on the device, but was asked to stop, mark the previously queued
-@@ -784,9 +797,17 @@ int v4l2_m2m_dqbuf(struct file *file, struct v4l2_m2m_ctx *m2m_ctx,
- 		   struct v4l2_buffer *buf)
- {
- 	struct vb2_queue *vq;
-+	int ret;
- 
- 	vq = v4l2_m2m_get_vq(m2m_ctx, buf->type);
--	return vb2_dqbuf(vq, buf, file->f_flags & O_NONBLOCK);
-+	ret = vb2_dqbuf(vq, buf, file->f_flags & O_NONBLOCK);
-+	if (ret)
-+		return ret;
-+
-+	/* Adjust MMAP memory offsets for the CAPTURE queue */
-+	v4l2_m2m_adjust_mem_offset(vq, buf);
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(v4l2_m2m_dqbuf);
- 
-@@ -795,9 +816,17 @@ int v4l2_m2m_prepare_buf(struct file *file, struct v4l2_m2m_ctx *m2m_ctx,
- {
- 	struct video_device *vdev = video_devdata(file);
- 	struct vb2_queue *vq;
-+	int ret;
- 
- 	vq = v4l2_m2m_get_vq(m2m_ctx, buf->type);
--	return vb2_prepare_buf(vq, vdev->v4l2_dev->mdev, buf);
-+	ret = vb2_prepare_buf(vq, vdev->v4l2_dev->mdev, buf);
-+	if (ret)
-+		return ret;
-+
-+	/* Adjust MMAP memory offsets for the CAPTURE queue */
-+	v4l2_m2m_adjust_mem_offset(vq, buf);
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(v4l2_m2m_prepare_buf);
- 
+Fixing all those is trivial so please pick up at your convenience.
+
+In order to avoid spamming people unnecessarily, I'm not CCing everyone
+on each patch but only the relevant maintainers and lists.
+
+Thx.
+
+Borislav Petkov (11):
+  scsi: aacraid: Fix undefined behavior due to shift overflowing the
+    constant
+  ALSA: usb-audio: Fix undefined behavior due to shift overflowing the
+    constant
+  bnx2x: Fix undefined behavior due to shift overflowing the constant
+  drm/r128: Fix undefined behavior due to shift overflowing the constant
+  i2c: ismt: Fix undefined behavior due to shift overflowing the
+    constant
+  brcmfmac: sdio: Fix undefined behavior due to shift overflowing the
+    constant
+  usb: typec: tcpm: Fix undefined behavior due to shift overflowing the
+    constant
+  mt76: Fix undefined behavior due to shift overflowing the constant
+  perf/imx_ddr: Fix undefined behavior due to shift overflowing the
+    constant
+  IB/mlx5: Fix undefined behavior due to shift overflowing the constant
+  drm/i915: Fix undefined behavior due to shift overflowing the constant
+
+ .../gpu/drm/i915/gt/uc/abi/guc_actions_abi.h   |  2 +-
+ .../i915/gt/uc/abi/guc_communication_ctb_abi.h |  2 +-
+ .../gpu/drm/i915/gt/uc/abi/guc_messages_abi.h  |  2 +-
+ drivers/gpu/drm/i915/gt/uc/intel_guc_reg.h     |  2 +-
+ drivers/gpu/drm/i915/i915_reg.h                | 18 +++++++++---------
+ drivers/gpu/drm/r128/r128_drv.h                |  4 ++--
+ drivers/i2c/busses/i2c-ismt.c                  |  4 ++--
+ .../net/ethernet/broadcom/bnx2x/bnx2x_reg.h    |  2 +-
+ .../broadcom/brcm80211/brcmfmac/sdio.c         |  2 +-
+ .../net/wireless/mediatek/mt76/mt76x2/pci.c    |  2 +-
+ drivers/perf/fsl_imx8_ddr_perf.c               |  2 +-
+ drivers/scsi/aacraid/aacraid.h                 |  2 +-
+ include/linux/mlx5/port.h                      |  2 +-
+ include/linux/usb/pd_bdo.h                     |  2 +-
+ sound/usb/usbaudio.h                           |  2 +-
+ 15 files changed, 25 insertions(+), 25 deletions(-)
+
 -- 
-2.34.1
-
-
+2.35.1
 
