@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D4FC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC57DC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384463AbiDEM1e (ORCPT
+        id S1384644AbiDEM1u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:27:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
+        Tue, 5 Apr 2022 08:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245187AbiDEIyN (ORCPT
+        with ESMTP id S245208AbiDEIyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:54:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A057E219E;
-        Tue,  5 Apr 2022 01:51:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C315FB5;
+        Tue,  5 Apr 2022 01:52:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47CD5B81B92;
-        Tue,  5 Apr 2022 08:51:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95CE6C385A1;
-        Tue,  5 Apr 2022 08:51:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A79D8B81BC0;
+        Tue,  5 Apr 2022 08:52:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4CB8C385A1;
+        Tue,  5 Apr 2022 08:52:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148712;
-        bh=78RxZR77BSioRzFqKK8i55TTw5bKAdRw/UP/KCM/hrI=;
+        s=korg; t=1649148723;
+        bh=ZpYxQzMbWq9VFdzbyTTC+uP5ynNLub8AhNQdYd8W74o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dfetiqjvxc4c+Lzs4mapGTR7OYx/gFRTyJlsPRqk/fPZ3dzOia0mFyj3zQcs/VL6/
-         lpIrDThafCo9siQR/yOmulDUsaKk2NCyxMY9c2GxWnDZAqzPRtk2veN2jDah8oABgM
-         Ot83z2avJ81xmppBBn38PBMhsaOifQrYcVSDhAtM=
+        b=Zx+bAoK7wfYOQNaWmj1B9YdS044gGFrP6V4hUkxo06CfTDUg8DhPadwPvcur16h3c
+         svAA574J0Bot3s0l7csdx115TED66Pr8ghYmK02cczmtwTMNoB504O7Fwp2ZQREHDF
+         QovkXVB0nSpNvtJNCkYV7EFNuUGuC/M0T7h5VrpQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0454/1017] mt76: mt76_connac: fix MCU_CE_CMD_SET_ROC definition error
-Date:   Tue,  5 Apr 2022 09:22:47 +0200
-Message-Id: <20220405070407.775336709@linuxfoundation.org>
+Subject: [PATCH 5.16 0457/1017] mt76: mt7921: fix a leftover race in runtime-pm
+Date:   Tue,  5 Apr 2022 09:22:50 +0200
+Message-Id: <20220405070407.864554065@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,34 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit bf9727a27442a50c75b7d99a5088330c578b2a42 ]
+[ Upstream commit 591cdccebdd4d02eb46d400dea911136400cc567 ]
 
-Fixed an MCU_CE_CMD_SET_ROC definition error that occurred from a previous
-refactor work.
+Fix a possible race in mt7921_pm_power_save_work() if rx/tx napi
+schedules ps_work and we are currently accessing device register
+on a different cpu.
 
-Fixes: d0e274af2f2e4 ("mt76: mt76_connac: create mcu library")
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Fixes: 1d8efc741df8 ("mt76: mt7921: introduce Runtime PM support")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-index acb9a286d354..63fc331e98bd 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-@@ -598,7 +598,7 @@ enum {
- 	MCU_CE_CMD_SET_BSS_CONNECTED = 0x16,
- 	MCU_CE_CMD_SET_BSS_ABORT = 0x17,
- 	MCU_CE_CMD_CANCEL_HW_SCAN = 0x1b,
--	MCU_CE_CMD_SET_ROC = 0x1d,
-+	MCU_CE_CMD_SET_ROC = 0x1c,
- 	MCU_CE_CMD_SET_P2P_OPPPS = 0x33,
- 	MCU_CE_CMD_SET_RATE_TX_POWER = 0x5d,
- 	MCU_CE_CMD_SCHED_SCAN_ENABLE = 0x61,
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+index fc21a78b37c4..1fea9266d4b8 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+@@ -1472,6 +1472,14 @@ void mt7921_pm_power_save_work(struct work_struct *work)
+ 	    test_bit(MT76_HW_SCHED_SCANNING, &mphy->state))
+ 		goto out;
+ 
++	if (mutex_is_locked(&dev->mt76.mutex))
++		/* if mt76 mutex is held we should not put the device
++		 * to sleep since we are currently accessing device
++		 * register map. We need to wait for the next power_save
++		 * trigger.
++		 */
++		goto out;
++
+ 	if (time_is_after_jiffies(dev->pm.last_activity + delta)) {
+ 		delta = dev->pm.last_activity + delta - jiffies;
+ 		goto out;
 -- 
 2.34.1
 
