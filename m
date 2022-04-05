@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 870A5C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1473C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389990AbiDEP3X (ORCPT
+        id S1384250AbiDEP0Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59708 "EHLO
+        Tue, 5 Apr 2022 11:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348018AbiDEJqx (ORCPT
+        with ESMTP id S1347264AbiDEJqT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:46:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D742CDFFAF;
-        Tue,  5 Apr 2022 02:33:09 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05301DE0AD;
+        Tue,  5 Apr 2022 02:32:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FC63B81C6F;
-        Tue,  5 Apr 2022 09:33:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E39D7C385A2;
-        Tue,  5 Apr 2022 09:33:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94CDB615E5;
+        Tue,  5 Apr 2022 09:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F285C385A3;
+        Tue,  5 Apr 2022 09:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151187;
-        bh=/BqF9jgSCsU1r7qpd4RDUUkzXDFKR7HrHJJF5oevN9o=;
+        s=korg; t=1649151162;
+        bh=Qa3RGJUb/13qAmle082Sl0DJGE+PN6Kzlk1E+pmBBJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XpWMdcK7konzSuUkBGdOjKn+XXIk2UxONn9/k5F+E6Qh3Dl0myS1vrEVTKMY2bIHI
-         PMyjYqj2FCrhYZexResfTJlmRZmEmQx0TUFiuod17WHxJxByhSR928/SaJi8vUwOmW
-         9bYr9Klmg+9jZjVVBLeMMtHLRgsDq6PhcL4zv6NU=
+        b=klAZGvjyW9XOVcsD7YygrcbzTfq+LlggWWgz3NY6wrDUADwB6VFGj6LH3Bc3iwHbw
+         6MCuksv/ZJmxSmsT2yHQi+YRqjj0pnO3ieM5PsyjG/RkFYK8Jh0ipSxZRlFROi34mM
+         FlteB8uDDf5ZprizN3GTNv/spTJanuXl0g/z7MZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 324/913] media: v4l2-core: Initialize h264 scaling matrix
-Date:   Tue,  5 Apr 2022 09:23:06 +0200
-Message-Id: <20220405070349.562420774@linuxfoundation.org>
+Subject: [PATCH 5.15 316/913] media: cedrus: h264: Fix neighbour info buffer size
+Date:   Tue,  5 Apr 2022 09:22:58 +0200
+Message-Id: <20220405070349.324571049@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,62 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit 0f6146d476fc99862899e70f2554ee77b444b7b9 ]
+[ Upstream commit fecd363ae2d5042553370b0adf60c47e35c34a83 ]
 
-In the final H264 API, it is not required to set scaling matrix if
-they are not present in the bitstream. A flag was added in order to let
-the driver know. The downside is that it leaves the default control
-value to 0, which isn't valid. As per the spec (see formulas 7-8/7-9),
-when the scaling matrix are absent from the bitstream, flat values
-of 16 should be used. This improves this control semantic in a way
-that the control value are always valid. Drivers can then use
-the scaling_matrix control values without having to check its presence.
-Same method was employed for MPEG2_QUANTISATION.
+According to BSP library source, H264 neighbour info buffer size needs
+to be 32 kiB for H6. This is similar to H265 decoding, which also needs
+double buffer size in comparison to older Cedrus core generations.
 
-This fixes issues with MTK VCODEC H264 decoder when using GStreamer.
-GStreamer does not set this control if its not present in the bitstream.
-As MTK VDCODEC was using the initialized to 0 values, the frames ended
-up completely gray.
+Increase buffer size to cover H6 needs. Since increase is not that big
+in absolute numbers, it doesn't make sense to complicate logic for older
+generations.
 
-Fixes: 54889c51b833d236 ("media: uapi: h264: Rename and clarify PPS_FLAG_SCALING_MATRIX_PRESENT")
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Issue was discovered using iommu and cross checked with BSP library
+source.
+
+Fixes: 6eb9b758e307 ("media: cedrus: Add H264 decoding support")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/v4l2-core/v4l2-ctrls-core.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/v4l2-core/v4l2-ctrls-core.c b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-index c4b5082849b6..45a76f40deeb 100644
---- a/drivers/media/v4l2-core/v4l2-ctrls-core.c
-+++ b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-@@ -113,6 +113,7 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
- 	struct v4l2_ctrl_mpeg2_quantisation *p_mpeg2_quant;
- 	struct v4l2_ctrl_vp8_frame *p_vp8_frame;
- 	struct v4l2_ctrl_fwht_params *p_fwht_params;
-+	struct v4l2_ctrl_h264_scaling_matrix *p_h264_scaling_matrix;
- 	void *p = ptr.p + idx * ctrl->elem_size;
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+index de7442d4834d..d3e26bfe6c90 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+@@ -38,7 +38,7 @@ struct cedrus_h264_sram_ref_pic {
  
- 	if (ctrl->p_def.p_const)
-@@ -160,6 +161,15 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
- 		p_fwht_params->flags = V4L2_FWHT_FL_PIXENC_YUV |
- 			(2 << V4L2_FWHT_FL_COMPONENTS_NUM_OFFSET);
- 		break;
-+	case V4L2_CTRL_TYPE_H264_SCALING_MATRIX:
-+		p_h264_scaling_matrix = p;
-+		/*
-+		 * The default (flat) H.264 scaling matrix when none are
-+		 * specified in the bitstream, this is according to formulas
-+		 *  (7-8) and (7-9) of the specification.
-+		 */
-+		memset(p_h264_scaling_matrix, 16, sizeof(*p_h264_scaling_matrix));
-+		break;
- 	}
- }
+ #define CEDRUS_H264_FRAME_NUM		18
  
+-#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(16 * SZ_1K)
++#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(32 * SZ_1K)
+ #define CEDRUS_MIN_PIC_INFO_BUF_SIZE       (130 * SZ_1K)
+ 
+ static void cedrus_h264_write_sram(struct cedrus_dev *dev,
 -- 
 2.34.1
 
