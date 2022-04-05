@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF733C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CF2C47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353170AbiDEKFu (ORCPT
+        id S1352482AbiDEKEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        Tue, 5 Apr 2022 06:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240321AbiDEIbw (ORCPT
+        with ESMTP id S237344AbiDEIR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2816C973;
-        Tue,  5 Apr 2022 01:24:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:17:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9AEB53C1;
+        Tue,  5 Apr 2022 01:06:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DD7D60FF7;
-        Tue,  5 Apr 2022 08:23:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65D8CC385A0;
-        Tue,  5 Apr 2022 08:23:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3E66617EF;
+        Tue,  5 Apr 2022 08:06:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4DB0C385A0;
+        Tue,  5 Apr 2022 08:06:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147034;
-        bh=Wn3JxQQnYj5scrd2H9Ydr3wFpxUS1p1tfgW+6PBkh4A=;
+        s=korg; t=1649145964;
+        bh=0e3l9pPzVkeZhdzgF8J8i/OJrfVilyJRrXcXUlIX+qI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kflPRL2lnDvaF9yvx7QDfHxndLYFlzIPtKLRi87o1GqMq8c7YxyoJPaVvk+gVMc0C
-         g2E0682r4eI3Z5FgfJXBbaim8nsDYMrIAr3h8ktPlF0MfQHq6eggOcpO9ee/EaQ4yf
-         SUzXykVh4yNUBtRG/Rfj6RemhKi4AFsuYxiNy+a8=
+        b=hgTuIMyd0XREv43M0W93tpK/fMWNHI4SIojMKG5dx31xvV/D3HxFtae7/TI/W0Xwd
+         MOY1f05r8QAy0/tjbB69le7r30FbF5fOiMM3e680YRmLXXkA7W+Taa+tJukbTXzqcQ
+         ofmOKpbPNRsil1lWx89dgs3ixbBJmUTZJ9vPIg2Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 0979/1126] scsi: qla2xxx: edif: Fix clang warning
-Date:   Tue,  5 Apr 2022 09:28:46 +0200
-Message-Id: <20220405070436.237076091@linuxfoundation.org>
+        stable@vger.kernel.org, Tong Zhang <ztong0001@gmail.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0555/1126] dax: make sure inodes are flushed before destroy cache
+Date:   Tue,  5 Apr 2022 09:21:42 +0200
+Message-Id: <20220405070423.923849328@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,94 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Tong Zhang <ztong0001@gmail.com>
 
-commit 73825fd7a37c1a685e9e9e27c9dc91ef1f3e2971 upstream.
+[ Upstream commit a7e8de822e0b1979f08767c751f6c8a9c1d4ad86 ]
 
-Silence compile warning due to unaligned memory access.
+A bug can be triggered by following command
 
-qla_edif.c:713:45: warning: taking address of packed member 'u' of class or
-   structure 'auth_complete_cmd' may result in an unaligned pointer value
-   [-Waddress-of-packed-member]
-    fcport = qla2x00_find_fcport_by_pid(vha, &appplogiok.u.d_id);
+$ modprobe nd_pmem && modprobe -r nd_pmem
 
-Link: https://lore.kernel.org/r/20220110050218.3958-13-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[   10.060014] BUG dax_cache (Not tainted): Objects remaining in dax_cache on __kmem_cache_shutdown()
+[   10.060938] Slab 0x0000000085b729ac objects=9 used=1 fp=0x000000004f5ae469 flags=0x200000000010200(slab|head|node)
+[   10.062433] Call Trace:
+[   10.062673]  dump_stack_lvl+0x34/0x44
+[   10.062865]  slab_err+0x90/0xd0
+[   10.063619]  __kmem_cache_shutdown+0x13b/0x2f0
+[   10.063848]  kmem_cache_destroy+0x4a/0x110
+[   10.064058]  __x64_sys_delete_module+0x265/0x300
+
+This is caused by dax_fs_exit() not flushing inodes before destroy cache.
+To fix this issue, call rcu_barrier() before destroy cache.
+
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220212071111.148575-1-ztong0001@gmail.com
+Fixes: 7b6be8444e0f ("dax: refactor dax-fs into a generic provider of 'struct dax_device' instances")
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_edif.c |   22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ drivers/dax/super.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/scsi/qla2xxx/qla_edif.c
-+++ b/drivers/scsi/qla2xxx/qla_edif.c
-@@ -668,6 +668,11 @@ qla_edif_app_authok(scsi_qla_host_t *vha
- 	    bsg_job->request_payload.sg_cnt, &appplogiok,
- 	    sizeof(struct auth_complete_cmd));
+diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+index e3029389d809..6bd565fe2e63 100644
+--- a/drivers/dax/super.c
++++ b/drivers/dax/super.c
+@@ -476,6 +476,7 @@ static int dax_fs_init(void)
+ static void dax_fs_exit(void)
+ {
+ 	kern_unmount(dax_mnt);
++	rcu_barrier();
+ 	kmem_cache_destroy(dax_cache);
+ }
  
-+	/* silent unaligned access warning */
-+	portid.b.domain = appplogiok.u.d_id.b.domain;
-+	portid.b.area   = appplogiok.u.d_id.b.area;
-+	portid.b.al_pa  = appplogiok.u.d_id.b.al_pa;
-+
- 	switch (appplogiok.type) {
- 	case PL_TYPE_WWPN:
- 		fcport = qla2x00_find_fcport_by_wwpn(vha,
-@@ -678,7 +683,7 @@ qla_edif_app_authok(scsi_qla_host_t *vha
- 			    __func__, appplogiok.u.wwpn);
- 		break;
- 	case PL_TYPE_DID:
--		fcport = qla2x00_find_fcport_by_pid(vha, &appplogiok.u.d_id);
-+		fcport = qla2x00_find_fcport_by_pid(vha, &portid);
- 		if (!fcport)
- 			ql_dbg(ql_dbg_edif, vha, 0x911d,
- 			    "%s d_id lookup failed: %x\n", __func__,
-@@ -777,6 +782,11 @@ qla_edif_app_authfail(scsi_qla_host_t *v
- 	    bsg_job->request_payload.sg_cnt, &appplogifail,
- 	    sizeof(struct auth_complete_cmd));
- 
-+	/* silent unaligned access warning */
-+	portid.b.domain = appplogifail.u.d_id.b.domain;
-+	portid.b.area   = appplogifail.u.d_id.b.area;
-+	portid.b.al_pa  = appplogifail.u.d_id.b.al_pa;
-+
- 	/*
- 	 * TODO: edif: app has failed this plogi. Inform driver to
- 	 * take any action (if any).
-@@ -788,7 +798,7 @@ qla_edif_app_authfail(scsi_qla_host_t *v
- 		SET_DID_STATUS(bsg_reply->result, DID_OK);
- 		break;
- 	case PL_TYPE_DID:
--		fcport = qla2x00_find_fcport_by_pid(vha, &appplogifail.u.d_id);
-+		fcport = qla2x00_find_fcport_by_pid(vha, &portid);
- 		if (!fcport)
- 			ql_dbg(ql_dbg_edif, vha, 0x911d,
- 			    "%s d_id lookup failed: %x\n", __func__,
-@@ -1253,6 +1263,7 @@ qla24xx_sadb_update(struct bsg_job *bsg_
- 	int result = 0;
- 	struct qla_sa_update_frame sa_frame;
- 	struct srb_iocb *iocb_cmd;
-+	port_id_t portid;
- 
- 	ql_dbg(ql_dbg_edif + ql_dbg_verbose, vha, 0x911d,
- 	    "%s entered, vha: 0x%p\n", __func__, vha);
-@@ -1276,7 +1287,12 @@ qla24xx_sadb_update(struct bsg_job *bsg_
- 		goto done;
- 	}
- 
--	fcport = qla2x00_find_fcport_by_pid(vha, &sa_frame.port_id);
-+	/* silent unaligned access warning */
-+	portid.b.domain = sa_frame.port_id.b.domain;
-+	portid.b.area   = sa_frame.port_id.b.area;
-+	portid.b.al_pa  = sa_frame.port_id.b.al_pa;
-+
-+	fcport = qla2x00_find_fcport_by_pid(vha, &portid);
- 	if (fcport) {
- 		found = 1;
- 		if (sa_frame.flags == QLA_SA_UPDATE_FLAGS_TX_KEY)
+-- 
+2.34.1
+
 
 
