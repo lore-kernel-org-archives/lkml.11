@@ -2,93 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B07FAC35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A858CC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347757AbiDEVXC (ORCPT
+        id S1348104AbiDEVXU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
+        Tue, 5 Apr 2022 17:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384122AbiDEM1L (ORCPT
+        with ESMTP id S1354624AbiDEKO4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:27:11 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D39574BC;
-        Tue,  5 Apr 2022 04:35:18 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 235BYCGt000464;
-        Tue, 5 Apr 2022 20:34:17 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGt000464
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649158457;
-        bh=g76dlQF6mmZzr43YQ6WiTAVzfZji/JTWeTt9/x6nhy8=;
+        Tue, 5 Apr 2022 06:14:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F78F6BDC9;
+        Tue,  5 Apr 2022 03:01:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50DF8B818F6;
+        Tue,  5 Apr 2022 10:01:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECE0C385A2;
+        Tue,  5 Apr 2022 10:01:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152894;
+        bh=qtRo7NqPmOBJhZkP7N4XIeizdiNyvQ6+jtWSqnD7YvA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fhkX7GfZ1icPtiA7cEpfvegqzI8mfJATIDbetdt2odNtdCLvwcVJbCeOwONU77Vz4
-         nSePOhux0lQk44IYWxfyYxJwmKw8ZT5qQwaQuMa5RRkjeByWbGxewF0m8GzKNhEjpw
-         3mU7LXD1uWZhPhC1MGCcPsytnpd6qEDZCSRBIG9xJU5clVEv4nv0OImbzNqdgNIc+w
-         qo+J86PA3PYHQr/pkfo5OdrBlC7XpaF3HaBw8740gCbiiKgtIXY7z0/ZilnObun8OT
-         /qBp6C97UmE0EJKvHrXoC8t1Wuct2SKs4qOzErdjGLh5jpcHfrUWWjudhk5MWbXJya
-         dvzaDo8oWbJeg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 07/10] kbuild: get rid of duplication in the first line of *.mod files
-Date:   Tue,  5 Apr 2022 20:33:55 +0900
-Message-Id: <20220405113359.2880241-8-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
+        b=05+Ya9PEDOYK8tpssy8uf8JkalUEe3pPI3L62kctjQ0du70JKwlcnsJJ8I+cmvIVg
+         qxVyk/8a7zRcJY6LWwX5oXZdmPt5gNt5D2Il9T7oxz5k24aQslEN8nfX9yBq08mFbt
+         nixfBnn2mKdNFAYsl3t7SHkmNL9QgnQf9zXfTGP0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.10 027/599] xhci: fix runtime PM imbalance in USB2 resume
+Date:   Tue,  5 Apr 2022 09:25:21 +0200
+Message-Id: <20220405070259.627300358@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The first line of *.mod lists the member objects of the module.
-This list may contain duplication if the same object is added multiple
-times, like this:
+From: Henry Lin <henryl@nvidia.com>
 
-  obj-m := foo.o
-  foo-$(CONFIG_FOO1_X) += foo1.o
-  foo-$(CONFIG_FOO1_Y) += foo1.o
-  foo-$(CONFIG_FOO2_X) += foo2.o
-  foo-$(CONFIG_FOO2_Y) += foo2.o
+commit 70c05e4cf63054cd755ca66c1819327b22cb085f upstream.
 
-This is probably not a big deal. As far as I know, the only small
-problem is scripts/mod/sumversion.c parses the same file over again.
-This can be avoided by adding $(sort ...). It has a side-effect that
-sorts the objects alphabetically, but it is not a big deal, either.
+A race between system resume and device-initiated resume may result in
+runtime PM imbalance on USB2 root hub. If a device-initiated resume
+starts and system resume xhci_bus_resume() directs U0 before hub driver
+sees the resuming device in RESUME state, device-initiated resume will
+not be finished in xhci_handle_usb2_port_link_resume(). In this case,
+usb_hcd_end_port_resume() call is missing.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+This changes calls usb_hcd_end_port_resume() if resuming device reaches
+U0 to keep runtime PM balance.
+
+Fixes: a231ec41e6f6 ("xhci: refactor U0 link state handling in get_port_status")
+Cc: stable@vger.kernel.org
+Signed-off-by: Henry Lin <henryl@nvidia.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220303110903.1662404-5-mathias.nyman@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
+ drivers/usb/host/xhci-hub.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-Changes in v2:
-  - new
+--- a/drivers/usb/host/xhci-hub.c
++++ b/drivers/usb/host/xhci-hub.c
+@@ -1002,6 +1002,9 @@ static void xhci_get_usb2_port_status(st
+ 		if (link_state == XDEV_U2)
+ 			*status |= USB_PORT_STAT_L1;
+ 		if (link_state == XDEV_U0) {
++			if (bus_state->resume_done[portnum])
++				usb_hcd_end_port_resume(&port->rhub->hcd->self,
++							portnum);
+ 			bus_state->resume_done[portnum] = 0;
+ 			clear_bit(portnum, &bus_state->resuming_ports);
+ 			if (bus_state->suspended_ports & (1 << portnum)) {
 
- scripts/Makefile.build | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 3ef2373f0a57..63625877aeae 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -307,8 +307,10 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
- 	$(call if_changed,cc_prelink_modules)
- endif
- 
-+multi-m-prereqs = $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)))
-+
- cmd_mod = { \
--	echo $(if $($*-objs)$($*-y)$($*-m), $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)), $(@:.mod=.o)); \
-+	echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)); \
- 	$(undefined_syms) echo; \
- 	} > $@
- 
--- 
-2.32.0
 
