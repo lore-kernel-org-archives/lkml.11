@@ -2,68 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB466C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF71C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244960AbiDEVVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51050 "EHLO
+        id S1345626AbiDEVWF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457874AbiDEQyG (ORCPT
+        with ESMTP id S1354841AbiDENH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:54:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892E5326E9;
-        Tue,  5 Apr 2022 09:52:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 09:07:28 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DA724F14;
+        Tue,  5 Apr 2022 05:09:59 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2276B6187A;
-        Tue,  5 Apr 2022 16:52:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7EA34C385A1;
-        Tue,  5 Apr 2022 16:52:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649177527;
-        bh=Y7Mst8KQiuSlm/hirze6AqU381D0n5oCqAcv5T0uzsQ=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Rik8keXLhHjTTb9+WfjTpHN7fhIp0W77s2Ye55P9Feqy3C0Z/vHSTWGYV5LHndpRP
-         5lI8TxrKifRHSBKPdqGMBqcuHAAZTm67bo9AJ2mlvfoBUNW7VerfVSOmBDisKF1Xpz
-         YfToC0IICv4VG2OlrAGOfwbyGXqXvvmD4xEUTDRY4xoe+aPb4CO1OsyOnmaN3aPRe5
-         Kl53yE5dpvT2yM8hP+fMCCqY3ndLp8K6RNpahiWIcsqihtEc861vVT2FcUensY1zfL
-         QVJZvpzEnq7LQ1iP5yAKDcS1pdWghaS3rYKOXON/afehyEsMA0xhn9fFVoyQPoas0d
-         5+QGbGf1SetcA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 67F56E6D402;
-        Tue,  5 Apr 2022 16:52:07 +0000 (UTC)
-Subject: Re: [GIT PULL] Btrfs fixes for 5.18-rc2
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <cover.1649109877.git.dsterba@suse.com>
-References: <cover.1649109877.git.dsterba@suse.com>
-X-PR-Tracked-List-Id: <linux-btrfs.vger.kernel.org>
-X-PR-Tracked-Message-Id: <cover.1649109877.git.dsterba@suse.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc1-tag
-X-PR-Tracked-Commit-Id: 60021bd754c6ca0addc6817994f20290a321d8d6
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ce4c854ee8681bc66c1c369518b6594e93b11ee5
-Message-Id: <164917752741.856.4378700460752736894.pr-tracker-bot@kernel.org>
-Date:   Tue, 05 Apr 2022 16:52:07 +0000
-To:     David Sterba <dsterba@suse.com>
-Cc:     torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        by ssl.serverraum.org (Postfix) with ESMTPSA id ADE092224D;
+        Tue,  5 Apr 2022 14:09:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649160597;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7WaKtmsAct4eFrA+KGGxilxHVP2Bwhzu8dzCAWhFx8o=;
+        b=oYg7yuaMfIQM3IfqfMlSOS+FFRinbYbWLjZ2z7mOaGm5ij6LMGR5XRgD/0FcrunnyZil/+
+        hjc/DVsyPEGkck2J2e1qhmXosWa43vLuvFJLU+R07V1WCoM0g/3pQCgK+anUImsp3yY1KM
+        nlimXoK2aKyugaERn+/nRB9Tf9iP2Mw=
+From:   Michael Walle <michael@walle.cc>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next v3 3/3] net: phy: mscc-miim: add support to set MDIO bus frequency
+Date:   Tue,  5 Apr 2022 14:09:51 +0200
+Message-Id: <20220405120951.4044875-4-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405120951.4044875-1-michael@walle.cc>
+References: <20220405120951.4044875-1-michael@walle.cc>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 5 Apr 2022 13:28:27 +0200:
+Until now, the MDIO bus will have the hardware default bus frequency.
+Read the desired frequency of the bus from the device tree and configure
+it.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc1-tag
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/mdio/mdio-mscc-miim.c | 58 +++++++++++++++++++++++++++++--
+ 1 file changed, 56 insertions(+), 2 deletions(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ce4c854ee8681bc66c1c369518b6594e93b11ee5
-
-Thank you!
-
+diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
+index c9efcfa2a1ce..7fd979f68dc0 100644
+--- a/drivers/net/mdio/mdio-mscc-miim.c
++++ b/drivers/net/mdio/mdio-mscc-miim.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <linux/bitops.h>
++#include <linux/clk.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/kernel.h>
+@@ -30,6 +31,8 @@
+ #define		MSCC_MIIM_CMD_VLD		BIT(31)
+ #define MSCC_MIIM_REG_DATA		0xC
+ #define		MSCC_MIIM_DATA_ERROR		(BIT(16) | BIT(17))
++#define MSCC_MIIM_REG_CFG		0x10
++#define		MSCC_MIIM_CFG_PRESCALE_MASK	GENMASK(7, 0)
+ 
+ #define MSCC_PHY_REG_PHY_CFG	0x0
+ #define		PHY_CFG_PHY_ENA		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
+@@ -50,6 +53,8 @@ struct mscc_miim_dev {
+ 	int mii_status_offset;
+ 	struct regmap *phy_regs;
+ 	const struct mscc_miim_info *info;
++	struct clk *clk;
++	u32 bus_freq;
+ };
+ 
+ /* When high resolution timers aren't built-in: we can't use usleep_range() as
+@@ -242,9 +247,32 @@ int mscc_miim_setup(struct device *dev, struct mii_bus **pbus, const char *name,
+ }
+ EXPORT_SYMBOL(mscc_miim_setup);
+ 
++static int mscc_miim_clk_set(struct mii_bus *bus)
++{
++	struct mscc_miim_dev *miim = bus->priv;
++	unsigned long rate;
++	u32 div;
++
++	/* Keep the current settings */
++	if (!miim->bus_freq)
++		return 0;
++
++	rate = clk_get_rate(miim->clk);
++
++	div = DIV_ROUND_UP(rate, 2 * miim->bus_freq) - 1;
++	if (div == 0 || div & ~MSCC_MIIM_CFG_PRESCALE_MASK) {
++		dev_err(&bus->dev, "Incorrect MDIO clock frequency\n");
++		return -EINVAL;
++	}
++
++	return regmap_update_bits(miim->regs, MSCC_MIIM_REG_CFG,
++				  MSCC_MIIM_CFG_PRESCALE_MASK, div);
++}
++
+ static int mscc_miim_probe(struct platform_device *pdev)
+ {
+ 	struct regmap *mii_regmap, *phy_regmap = NULL;
++	struct device_node *np = pdev->dev.of_node;
+ 	void __iomem *regs, *phy_regs;
+ 	struct mscc_miim_dev *miim;
+ 	struct resource *res;
+@@ -295,21 +323,47 @@ static int mscc_miim_probe(struct platform_device *pdev)
+ 	if (!miim->info)
+ 		return -EINVAL;
+ 
+-	ret = of_mdiobus_register(bus, pdev->dev.of_node);
++	miim->clk = devm_clk_get_optional(&pdev->dev, NULL);
++	if (IS_ERR(miim->clk))
++		return PTR_ERR(miim->clk);
++
++	of_property_read_u32(np, "clock-frequency", &miim->bus_freq);
++
++	if (miim->bus_freq && !miim->clk) {
++		dev_err(&pdev->dev,
++			"cannot use clock-frequency without a clock\n");
++		return -EINVAL;
++	}
++
++	ret = clk_prepare_enable(miim->clk);
++	if (ret)
++		return ret;
++
++	ret = mscc_miim_clk_set(bus);
++	if (ret)
++		goto out_disable_clk;
++
++	ret = of_mdiobus_register(bus, np);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
+-		return ret;
++		goto out_disable_clk;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, bus);
+ 
+ 	return 0;
++
++out_disable_clk:
++	clk_disable_unprepare(miim->clk);
++	return ret;
+ }
+ 
+ static int mscc_miim_remove(struct platform_device *pdev)
+ {
+ 	struct mii_bus *bus = platform_get_drvdata(pdev);
++	struct mscc_miim_dev *miim = bus->priv;
+ 
++	clk_disable_unprepare(miim->clk);
+ 	mdiobus_unregister(bus);
+ 
+ 	return 0;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.30.2
+
