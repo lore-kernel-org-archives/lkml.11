@@ -2,48 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D44E0C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C71BC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356387AbiDEVLQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
+        id S232317AbiDEVL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349455AbiDEJtx (ORCPT
+        with ESMTP id S1344760AbiDEKkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE3E627B;
-        Tue,  5 Apr 2022 02:46:26 -0700 (PDT)
+        Tue, 5 Apr 2022 06:40:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247102C656;
+        Tue,  5 Apr 2022 03:25:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA956B81B76;
-        Tue,  5 Apr 2022 09:46:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3733FC385A2;
-        Tue,  5 Apr 2022 09:46:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B57CF61514;
+        Tue,  5 Apr 2022 10:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93349C385A0;
+        Tue,  5 Apr 2022 10:25:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151983;
-        bh=3Yd5Mu6SsAllpJGL4JsS8KR3YEFLwzpdFT0ECOPKAYU=;
+        s=korg; t=1649154317;
+        bh=NRI08BMC2mQMJAMCwOYu968Ay1sZqWVmKmribbWVRmc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rv8S2D7ypcgpjk/zqEB660hHl0FLUcp3VyIKZLz7Cos39Hh5PHR375C8g8C2RO/aJ
-         Zm+fcBoyaQgJI83QwVRHyV6O7gD91znj7+x9+Zvu73CMm6FmReopBf53y4hqJfyEFy
-         81G9DyDo5cVIEbGyGTHbH3Ua2ggJWwQyURQjMBEs=
+        b=J2R8z3JuWE8qgfRPOc9kmQfd5gb4AtE9kkhe+zdMfBWSROTnCFi1WgKn9LZAprkix
+         EZ4wi6X77/ww9EiZAgM9Aj3q8SoEEyz0S1t5+0IqJj1gCBoxpO1lulolPMsVWgpyja
+         OxBUcDeUaYdzQ8CJytBes6l3T6PMkmhXnzAHmYgg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 611/913] clk: at91: sama7g5: fix parents of PDMCs GCLK
-Date:   Tue,  5 Apr 2022 09:27:53 +0200
-Message-Id: <20220405070358.156350707@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Keyon Jie <yang.jie@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rander Wang <rander.wang@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: [PATCH 5.10 537/599] ASoC: SOF: Intel: Fix NULL ptr dereference when ENOMEM
+Date:   Tue,  5 Apr 2022 09:33:51 +0200
+Message-Id: <20220405070314.821469619@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,49 +59,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-[ Upstream commit 1a944729d8635fa59638f24e8727d5ccaa0c8c19 ]
+commit b7fb0ae09009d076964afe4c1a2bde1ee2bd88a9 upstream.
 
-Audio PLL can be used as parent by the GCLKs of PDMCs.
+Do not call snd_dma_free_pages() when snd_dma_alloc_pages() returns
+-ENOMEM because it leads to a NULL pointer dereference bug.
 
-Fixes: cb783bbbcf54 ("clk: at91: sama7g5: add clock support for sama7g5")
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220304182616.1920392-1-codrin.ciubotariu@microchip.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The dmesg says:
+
+  [ T1387] sof-audio-pci-intel-tgl 0000:00:1f.3: error: memory alloc failed: -12
+  [ T1387] BUG: kernel NULL pointer dereference, address: 0000000000000000
+  [ T1387] #PF: supervisor read access in kernel mode
+  [ T1387] #PF: error_code(0x0000) - not-present page
+  [ T1387] PGD 0 P4D 0
+  [ T1387] Oops: 0000 [#1] PREEMPT SMP NOPTI
+  [ T1387] CPU: 6 PID: 1387 Comm: alsa-sink-HDA A Tainted: G        W         5.17.0-rc4-superb-owl-00055-g80d47f5de5e3
+  [ T1387] Hardware name: HP HP Laptop 14s-dq2xxx/87FD, BIOS F.15 09/15/2021
+  [ T1387] RIP: 0010:dma_free_noncontiguous+0x37/0x80
+  [ T1387] Code: [... snip ...]
+  [ T1387] RSP: 0000:ffffc90002b87770 EFLAGS: 00010246
+  [ T1387] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+  [ T1387] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888101db30d0
+  [ T1387] RBP: 00000000fffffff4 R08: 0000000000000000 R09: 0000000000000000
+  [ T1387] R10: 0000000000000000 R11: ffffc90002b874d0 R12: 0000000000000001
+  [ T1387] R13: 0000000000058000 R14: ffff888105260c68 R15: ffff888105260828
+  [ T1387] FS:  00007f42e2ffd640(0000) GS:ffff888466b80000(0000) knlGS:0000000000000000
+  [ T1387] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  [ T1387] CR2: 0000000000000000 CR3: 000000014acf0003 CR4: 0000000000770ee0
+  [ T1387] PKRU: 55555554
+  [ T1387] Call Trace:
+  [ T1387]  <TASK>
+  [ T1387]  cl_stream_prepare+0x10a/0x120 [snd_sof_intel_hda_common 146addf995b9279ae7f509621078cccbe4f875e1]
+  [... snip ...]
+  [ T1387]  </TASK>
+
+Cc: Daniel Baluta <daniel.baluta@nxp.com>
+Cc: Jaroslav Kysela <perex@perex.cz>
+Cc: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Cc: Keyon Jie <yang.jie@linux.intel.com>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Rander Wang <rander.wang@intel.com>
+Cc: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Cc: Takashi Iwai <tiwai@suse.com>
+Cc: sound-open-firmware@alsa-project.org
+Cc: alsa-devel@alsa-project.org
+Cc: linux-kernel@vger.kernel.org
+Cc: stable@vger.kernel.org # v5.2+
+Fixes: d16046ffa6de040bf580a64d5f4d0aa18258a854 ("ASoC: SOF: Intel: Add Intel specific HDA firmware loader")
+Link: https://lore.kernel.org/lkml/20220224145124.15985-1-ammarfaizi2@gnuweeb.org/ # v1
+Link: https://lore.kernel.org/lkml/20220224180850.34592-1-ammarfaizi2@gnuweeb.org/ # v2
+Link: https://lore.kernel.org/lkml/20220224182818.40301-1-ammarfaizi2@gnuweeb.org/ # v3
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Link: https://lore.kernel.org/r/20220224185836.44907-1-ammarfaizi2@gnuweeb.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+[ammarfaizi2: Backport to Linux 5.10 LTS]
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/at91/sama7g5.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/sof/intel/hda-loader.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/at91/sama7g5.c b/drivers/clk/at91/sama7g5.c
-index 019e712f90d6..9eed97a299d0 100644
---- a/drivers/clk/at91/sama7g5.c
-+++ b/drivers/clk/at91/sama7g5.c
-@@ -687,16 +687,16 @@ static const struct {
- 	{ .n  = "pdmc0_gclk",
- 	  .id = 68,
- 	  .r = { .max = 50000000  },
--	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
--	  .pp_mux_table = { 5, 8, },
-+	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
-+	  .pp_mux_table = { 5, 9, },
- 	  .pp_count = 2,
- 	  .pp_chg_id = INT_MIN, },
+--- a/sound/soc/sof/intel/hda-loader.c
++++ b/sound/soc/sof/intel/hda-loader.c
+@@ -47,7 +47,7 @@ static struct hdac_ext_stream *cl_stream
+ 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV_SG, &pci->dev, size, dmab);
+ 	if (ret < 0) {
+ 		dev_err(sdev->dev, "error: memory alloc failed: %x\n", ret);
+-		goto error;
++		goto out_put;
+ 	}
  
- 	{ .n  = "pdmc1_gclk",
- 	  .id = 69,
- 	  .r = { .max = 50000000, },
--	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
--	  .pp_mux_table = { 5, 8, },
-+	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
-+	  .pp_mux_table = { 5, 9, },
- 	  .pp_count = 2,
- 	  .pp_chg_id = INT_MIN, },
+ 	hstream->period_bytes = 0;/* initialize period_bytes */
+@@ -58,22 +58,23 @@ static struct hdac_ext_stream *cl_stream
+ 		ret = hda_dsp_iccmax_stream_hw_params(sdev, dsp_stream, dmab, NULL);
+ 		if (ret < 0) {
+ 			dev_err(sdev->dev, "error: iccmax stream prepare failed: %x\n", ret);
+-			goto error;
++			goto out_free;
+ 		}
+ 	} else {
+ 		ret = hda_dsp_stream_hw_params(sdev, dsp_stream, dmab, NULL);
+ 		if (ret < 0) {
+ 			dev_err(sdev->dev, "error: hdac prepare failed: %x\n", ret);
+-			goto error;
++			goto out_free;
+ 		}
+ 		hda_dsp_stream_spib_config(sdev, dsp_stream, HDA_DSP_SPIB_ENABLE, size);
+ 	}
  
--- 
-2.34.1
-
+ 	return dsp_stream;
+ 
+-error:
+-	hda_dsp_stream_put(sdev, direction, hstream->stream_tag);
++out_free:
+ 	snd_dma_free_pages(dmab);
++out_put:
++	hda_dsp_stream_put(sdev, direction, hstream->stream_tag);
+ 	return ERR_PTR(ret);
+ }
+ 
 
 
