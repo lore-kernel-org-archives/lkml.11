@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD54C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9A5C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344437AbiDEOMy (ORCPT
+        id S1344350AbiDEOMk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
+        Tue, 5 Apr 2022 10:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236227AbiDEJbN (ORCPT
+        with ESMTP id S236156AbiDEJbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:31:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A143236686;
-        Tue,  5 Apr 2022 02:18:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3078D638C;
+        Tue,  5 Apr 2022 02:18:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D210B81BBF;
-        Tue,  5 Apr 2022 09:18:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8F8C385A2;
-        Tue,  5 Apr 2022 09:18:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4733561576;
+        Tue,  5 Apr 2022 09:18:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5434EC385A3;
+        Tue,  5 Apr 2022 09:18:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150323;
-        bh=QLUbeQL0nE8++80CEN0No5WFiksOD40PoaaxYQ/2MMM=;
+        s=korg; t=1649150317;
+        bh=icmzaQjTA2AMAeSYFVcRD2WKyO+/3zIAb8Ggsg0MqkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YVR0bw903CtRPbrDPXePZSEOCxig0VaXXkxgEPM+1GV8Y/bdjJVqHzh7BK7q+C7C4
-         6qQb2B4oSOFtnLeVc1r6dUNGZK1xsp0E77xGviw78xqO5EAOvYL+5dJM7oJCej1r5E
-         9mE8UBct853oTeJ6em8znMbv3HZU8oF1oy1p0HqE=
+        b=y4EV08XUgfUy43TuGczAxpKlfjVhfRuYeoa7JbJ9bsHcq+AiR9mKpfsUhta9k+Po9
+         HWcMipond7iViyx99Tziqhaz7h/mQ33aJwojcZiKnwP9bhoFKLe9cFsAVOFd4L5PM2
+         fEPEXr6U3RJg51dz1aoHX56d/c83lL6nq0Jt/uCE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 017/913] spi: Fix invalid sgs value
-Date:   Tue,  5 Apr 2022 09:17:59 +0200
-Message-Id: <20220405070340.330823801@linuxfoundation.org>
+Subject: [PATCH 5.15 015/913] ethernet: sun: Free the coherent when failing in probing
+Date:   Tue,  5 Apr 2022 09:17:57 +0200
+Message-Id: <20220405070340.272075166@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,45 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 1a4e53d2fc4f68aa654ad96d13ad042e1a8e8a7d ]
+[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
 
-max_seg_size is unsigned int and it can have a value up to 2^32
-(for eg:-RZ_DMAC driver sets dma_set_max_seg_size as U32_MAX)
-When this value is used in min_t() as an integer type, it becomes
--1 and the value of sgs becomes 0.
+When the driver fails to register net device, it should free the DMA
+region first, and then do other cleanup.
 
-Fix this issue by replacing the 'int' data type with 'unsigned int'
-in min_t().
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220307184843.9994-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index a42b9e8521ce..c7c8d13b2f83 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -942,10 +942,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
- 	int i, ret;
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index 62f81b0d14ed..b05ee2e0e305 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -3139,7 +3139,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	if (err) {
+ 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
+ 		       "aborting.\n");
+-		goto err_out_iounmap;
++		goto err_out_free_coherent;
+ 	}
  
- 	if (vmalloced_buf || kmap_buf) {
--		desc_len = min_t(int, max_seg_size, PAGE_SIZE);
-+		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
- 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
- 	} else if (virt_addr_valid(buf)) {
--		desc_len = min_t(int, max_seg_size, ctlr->max_dma_len);
-+		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
- 		sgs = DIV_ROUND_UP(len, desc_len);
- 	} else {
- 		return -EINVAL;
+ 	pci_set_drvdata(pdev, hp);
+@@ -3172,6 +3172,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 
+ 	return 0;
+ 
++err_out_free_coherent:
++	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
++			  hp->happy_block, hp->hblock_dvma);
++
+ err_out_iounmap:
+ 	iounmap(hp->gregs);
+ 
 -- 
 2.34.1
 
