@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA13C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7A6C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391022AbiDENqr (ORCPT
+        id S1391038AbiDENq4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
+        Tue, 5 Apr 2022 09:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244524AbiDEJ0B (ORCPT
+        with ESMTP id S242674AbiDEJ0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:26:01 -0400
+        Tue, 5 Apr 2022 05:26:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF773DE924;
-        Tue,  5 Apr 2022 02:15:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A6CDE917;
+        Tue,  5 Apr 2022 02:15:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0110AB81B14;
-        Tue,  5 Apr 2022 09:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579A3C385A0;
-        Tue,  5 Apr 2022 09:14:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32737B81A12;
+        Tue,  5 Apr 2022 09:14:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 858E3C385A0;
+        Tue,  5 Apr 2022 09:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150099;
-        bh=th3SH/UYN00xmghGQyw0UjvdAJJPxvFTYeHfhhfy0kc=;
+        s=korg; t=1649150096;
+        bh=sbnwdoSVqLGy+sxt29AUW1vGB75AYvZ5+OBYERYQW0Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FQ4EUkKylPPxTtpWD7o5Z2q3UhgBWH8LlSgLL1wQxNBqFEcxKs1nJIhczBUBOi6ji
-         bFFRKU699/FidbkF3DgHWbASs15q4sKgAeUzVpFt9DjzlloCqTfr3O+Qz/et3gXmkI
-         G/IXFgrfBJWry7EhDaaKtQ0A0d/zjD/nP2CY3tbI=
+        b=dfwL0cc1pU9skU86pxUi4ICN2+TDnRVpABKXSRqAe0w21bM8QDqNydRZIoTySHX2H
+         9qPWxDd0DnBHoPSTnVvxps2ZxXB+R4WvMHAWWXTtpHE1T1P68TNGNzVdu6HohgSEH4
+         ND837U7vDixpsy+Sdr1DTi+ZaFV+7GNPZA2coHAs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 0953/1017] io_uring: fix memory leak of uid in files registration
-Date:   Tue,  5 Apr 2022 09:31:06 +0200
-Message-Id: <20220405070422.499082322@linuxfoundation.org>
+        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.16 0952/1017] virtio: use virtio_device_ready() in virtio_device_restore()
+Date:   Tue,  5 Apr 2022 09:31:05 +0200
+Message-Id: <20220405070422.470327478@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,31 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-commit c86d18f4aa93e0e66cda0e55827cd03eea6bc5f8 upstream.
+commit 8d65bc9a5be3f23c5e2ab36b6b8ef40095165b18 upstream.
 
-When there are no files for __io_sqe_files_scm() to process in the
-range, it'll free everything and return. However, it forgets to put uid.
+After waking up a suspended VM, the kernel prints the following trace
+for virtio drivers which do not directly call virtio_device_ready() in
+the .restore:
 
-Fixes: 08a451739a9b5 ("io_uring: allow sparse fixed file sets")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/accee442376f33ce8aaebb099d04967533efde92.1648226048.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    PM: suspend exit
+    irq 22: nobody cared (try booting with the "irqpoll" option)
+    Call Trace:
+     <IRQ>
+     dump_stack_lvl+0x38/0x49
+     dump_stack+0x10/0x12
+     __report_bad_irq+0x3a/0xaf
+     note_interrupt.cold+0xb/0x60
+     handle_irq_event+0x71/0x80
+     handle_fasteoi_irq+0x95/0x1e0
+     __common_interrupt+0x6b/0x110
+     common_interrupt+0x63/0xe0
+     asm_common_interrupt+0x1e/0x40
+     ? __do_softirq+0x75/0x2f3
+     irq_exit_rcu+0x93/0xe0
+     sysvec_apic_timer_interrupt+0xac/0xd0
+     </IRQ>
+     <TASK>
+     asm_sysvec_apic_timer_interrupt+0x12/0x20
+     arch_cpu_idle+0x12/0x20
+     default_idle_call+0x39/0xf0
+     do_idle+0x1b5/0x210
+     cpu_startup_entry+0x20/0x30
+     start_secondary+0xf3/0x100
+     secondary_startup_64_no_verify+0xc3/0xcb
+     </TASK>
+    handlers:
+    [<000000008f9bac49>] vp_interrupt
+    [<000000008f9bac49>] vp_interrupt
+    Disabling IRQ #22
+
+This happens because we don't invoke .enable_cbs callback in
+virtio_device_restore(). That callback is used by some transports
+(e.g. virtio-pci) to enable interrupts.
+
+Let's fix it, by calling virtio_device_ready() as we do in
+virtio_dev_probe(). This function calls .enable_cts callback and sets
+DRIVER_OK status bit.
+
+This fix also avoids setting DRIVER_OK twice for those drivers that
+call virtio_device_ready() in the .restore.
+
+Fixes: d50497eb4e55 ("virtio_config: introduce a new .enable_cbs method")
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Link: https://lore.kernel.org/r/20220322114313.116516-1-sgarzare@redhat.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/virtio/virtio.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8180,6 +8180,7 @@ static int __io_sqe_files_scm(struct io_
- 			fput(fpl->fp[i]);
- 	} else {
- 		kfree_skb(skb);
-+		free_uid(fpl->user);
- 		kfree(fpl);
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -504,8 +504,9 @@ int virtio_device_restore(struct virtio_
+ 			goto err;
  	}
+ 
+-	/* Finally, tell the device we're all set */
+-	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER_OK);
++	/* If restore didn't do it, mark device DRIVER_OK ourselves. */
++	if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
++		virtio_device_ready(dev);
+ 
+ 	virtio_config_enable(dev);
  
 
 
