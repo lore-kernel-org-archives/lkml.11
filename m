@@ -2,104 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A07C35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42529C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378565AbiDEU2P (ORCPT
+        id S1379555AbiDEU2b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        Tue, 5 Apr 2022 16:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572907AbiDERS1 (ORCPT
+        with ESMTP id S1349150AbiDEJtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:18:27 -0400
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C3925DA;
-        Tue,  5 Apr 2022 10:16:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1649178945; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=VY+0yKVKo/OVl+of7lhiC+NmERw/mO0QIL7d/4Zt2BK2DvDHJe7p+FYSZU3ej7pPRyCuFkYQodsZwHnCI9+bDNxwX6ymxq8d2/QH2AiqgeWo721jljL1AS/mnCSF93Ovl7njzvvGJE/8nPx2+CC5dv5YPbayD+LBEOc4kDhEH7U=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1649178945; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=IGWowlI8r+WgRZZc7My5D0pUljhMLj42f7CltFmHSBg=; 
-        b=IdFBMiNpx3O18xSKZrid62+fV4c3LjwQ0U5dbZNvNfinfrS7/JVi5247bRbVOWBFRMEJiwUeCx6wk3pzHbgYwYkhdYAco8Bl+gggK3j9lZ90igApJOd55kFN68d/l64iucbBTvPDLVxNw/1oB/WW11qtZRNczpsySkwuvQczSNQ=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649178945;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=IGWowlI8r+WgRZZc7My5D0pUljhMLj42f7CltFmHSBg=;
-        b=MMUud1Fbn3lFWPmI1IjLMb9yr4uoLp/IjkTbnW4xngwQb5ukVWKyYDRd7ForX3lU
-        eqqJTnUHQSunNNAPWg/AhRaRNXIuO13j9Kn+KjJHPo0ShvP3vajIfrUphFmiIEMh6Hz
-        hGrk6GwnArH72BXcmPELd+uzA/l0c3659orphwOI=
-Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1649178943002319.0872332652002; Tue, 5 Apr 2022 10:15:43 -0700 (PDT)
-Message-ID: <991f49fd-354b-6d07-6925-f79ca7f09838@arinc9.com>
-Date:   Tue, 5 Apr 2022 20:15:36 +0300
+        Tue, 5 Apr 2022 05:49:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B5F100F;
+        Tue,  5 Apr 2022 02:41:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F26DB818F3;
+        Tue,  5 Apr 2022 09:41:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65D47C385A2;
+        Tue,  5 Apr 2022 09:41:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151692;
+        bh=O/rUeuX7WDYJ1f7A8mCRWZrYOcynNWYyRpGRWEx81Gk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cg9wTdHZOzFtbnAyP4ung+UHZnkpxiPCvqPipt4XSDoIANPPSfAlYoFWKIT/NKG9q
+         N1O0HZqn7ZrAyTw9H3HHRXOkv7WIyui98eSfKT/LJYpTFKTJj3cO5jUcOlWUBPuxmr
+         xR3p3JVUb/LUJsLkp3cPu+3e0S/LKBUYksAuuhec=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 508/913] powerpc/Makefile: Dont pass -mcpu=powerpc64 when building 32-bit
+Date:   Tue,  5 Apr 2022 09:26:10 +0200
+Message-Id: <20220405070355.083572127@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: add label support for GMACs
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>
-References: <20220404114000.3549-1-arinc.unal@arinc9.com>
- <Ykri9tOtUDmXzHkG@lunn.ch>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <Ykri9tOtUDmXzHkG@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/04/2022 15:22, Andrew Lunn wrote:
-> On Mon, Apr 04, 2022 at 02:40:00PM +0300, Arınç ÜNAL wrote:
->> From: René van Dorst <opensource@vdorst.com>
->>
->> Add label support for GMACs. The network interface of the GMAC will have
->> the string of the label property defined on the devicetree as its name.
-> 
-> Sorry, but no. This has been discussed a few times, you need something
-> in user space, udev or systemd etc to set interface names.
-> 
-> Please look back in the archive at previous discussions.
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-Thanks for the heads up Andrew, I found your quote from 
-https://lore.kernel.org/all/Ydhwfa%2FECqTE3rLx@lunn.ch/:
+[ Upstream commit 2863dd2db23e0407f6c50b8ba5c0e55abef894f1 ]
 
-> I agree with Russell here. I doubt this is going to be accepted.
-> 
-> DSA is special because DSA is very old, much older than DT, and maybe
-> older than udev. The old DSA platform drivers had a mechanism to
-> supply the interface name to the DSA core. When we added a DT binding
-> to DSA we kept that mechanism, since that mechanism had been used for
-> a long time.
-> 
-> Even if you could show there was a generic old mechanism, from before
-> the days of DT, that allowed interface names to be set from platform
-> drivers, i doubt it would be accepted because there is no continuity,
-> which DSA has.
+When CONFIG_GENERIC_CPU=y (true for all our defconfigs) we pass
+-mcpu=powerpc64 to the compiler, even when we're building a 32-bit
+kernel.
 
-On MT7621 SoC, we can mux a switch phy of MT7530 (must be phy0 or 4) to 
-the SoC's gmac1. So a UTP port connected to that phy becomes directly 
-connected to the SoC's gmac1. Because of that, I wanted to be able to 
-give the gmac's netdev interface a name from DT like DSA. However, the 
-quote above makes sense why not to do so.
+This happens because we have an ifdef CONFIG_PPC_BOOK3S_64/else block in
+the Makefile that was written before 32-bit supported GENERIC_CPU. Prior
+to that the else block only applied to 64-bit Book3E.
 
-Thanks.
-Arınç
+The GCC man page says -mcpu=powerpc64 "[specifies] a pure ... 64-bit big
+endian PowerPC ... architecture machine [type], with an appropriate,
+generic processor model assumed for scheduling purposes."
+
+It's unclear how that interacts with -m32, which we are also passing,
+although obviously -m32 is taking precedence in some sense, as the
+32-bit kernel only contains 32-bit instructions.
+
+This was noticed by inspection, not via any bug reports, but it does
+affect code generation. Comparing before/after code generation, there
+are some changes to instruction scheduling, and the after case (with
+-mcpu=powerpc64 removed) the compiler seems more keen to use r8.
+
+Fix it by making the else case only apply to Book3E 64, which excludes
+32-bit.
+
+Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220215112858.304779-1-mpe@ellerman.id.au
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index aa6808e70647..72610e2d6176 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -173,7 +173,7 @@ else
+ CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=power7,$(call cc-option,-mtune=power5))
+ CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mcpu=power5,-mcpu=power4)
+ endif
+-else
++else ifdef CONFIG_PPC_BOOK3E_64
+ CFLAGS-$(CONFIG_GENERIC_CPU) += -mcpu=powerpc64
+ endif
+ 
+-- 
+2.34.1
+
+
+
