@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0800FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60474C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235462AbiDEJCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
+        id S235587AbiDEJCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237123AbiDEIRn (ORCPT
+        with ESMTP id S237133AbiDEIRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:17:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4979EB0A6F;
-        Tue,  5 Apr 2022 01:05:21 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9421F689A6;
+        Tue,  5 Apr 2022 01:05:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCB51B81BAF;
-        Tue,  5 Apr 2022 08:05:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0547C385A0;
-        Tue,  5 Apr 2022 08:05:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A519617ED;
+        Tue,  5 Apr 2022 08:05:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14F96C385A0;
+        Tue,  5 Apr 2022 08:05:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145919;
-        bh=iftefzfnNwWIV5Gp1aIdncGKpyuR27RKTguas8nZSYM=;
+        s=korg; t=1649145922;
+        bh=JtOMfaEbVXd2i/CdfdprYFI1BoQI8cBSV7rn34byu2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T7A4/OjWXG/JhRO/Uboba7dSMB8ivuHrbzu1zG/ZgWgJUNh/aIWR3WSnvH+bFC4D7
-         u4BJzzgz6eMRboU5USudrlmuW33vtxGvglh09dUv53zOVX3JjNtVOoDZo9W2meQefM
-         bD7pXR8r6H4mDgBpr3CuSqiyDlP+t20tHso2IWOQ=
+        b=QQBnMmkyEHa4EQyd2Z+0Vv59TERPYjrAyyI2XuwWSnCr8qDkgatJL/PXBhgxD+Ei+
+         GxHgNDYUbnHOgF+hgPm3thdkEERuh8HqZaTKjhrKmeGguoZesaW4EuoniQGKTdDRhP
+         kGJfy74sUB/LNrHzIXVcsjmiSYHaX86vSQIdQjjc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0550/1126] bpftool: Fix pretty print dump for maps without BTF loaded
-Date:   Tue,  5 Apr 2022 09:21:37 +0200
-Message-Id: <20220405070423.776542694@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Rameshkumar Sundaram <quic_ramess@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0577/1126] ath11k: Invalidate cached reo ring entry before accessing it
+Date:   Tue,  5 Apr 2022 09:22:04 +0200
+Message-Id: <20220405070424.568803354@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,93 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Olsa <jolsa@kernel.org>
+From: Rameshkumar Sundaram <quic_ramess@quicinc.com>
 
-[ Upstream commit f76d8507d23834f7e56b0fe95c82605e7d7e0efe ]
+[ Upstream commit f2180ccb52b5fd0876291ad2df37e2898cac18cf ]
 
-The commit e5043894b21f ("bpftool: Use libbpf_get_error() to check error")
-fails to dump map without BTF loaded in pretty mode (-p option).
+REO2SW ring descriptor is currently allocated in cacheable memory.
+While reaping reo ring entries on second trial after updating head
+pointer, first entry is not invalidated before accessing it.
 
-Fixing this by making sure get_map_kv_btf won't fail in case there's
-no BTF available for the map.
+This results in host reaping and using cached descriptor which is
+already overwritten in memory by DMA device (HW).
+Since the contents of descriptor(buffer id, peer info and other information
+bits) are outdated host throws errors like below while parsing corresponding
+MSDU's and drops them.
 
-Fixes: e5043894b21f ("bpftool: Use libbpf_get_error() to check error")
-Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220216092102.125448-1-jolsa@kernel.org
+[347712.048904] ath11k_pci 0004:01:00.0: msdu_done bit in attention is not set
+[349173.355503] ath11k_pci 0004:01:00.0: frame rx with invalid buf_id 962
+
+Move the try_again: label above  ath11k_hal_srng_access_begin()
+so that first entry will be invalidated and prefetched.
+
+Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01100-QCAHKSWPL_SILICONZ-1
+
+Fixes: 6452f0a3d565 ("ath11k: allocate dst ring descriptors from cacheable memory")
+Signed-off-by: Rameshkumar Sundaram <quic_ramess@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/1645000354-32558-1-git-send-email-quic_ramess@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/map.c | 31 +++++++++++++++----------------
- 1 file changed, 15 insertions(+), 16 deletions(-)
+ drivers/net/wireless/ath/ath11k/dp_rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index 7a341a472ea4..e746642de292 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -805,29 +805,30 @@ static int maps_have_btf(int *fds, int nb_fds)
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index c212a789421e..e432f8dc05d6 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -2642,9 +2642,9 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  
- static struct btf *btf_vmlinux;
+ 	spin_lock_bh(&srng->lock);
  
--static struct btf *get_map_kv_btf(const struct bpf_map_info *info)
-+static int get_map_kv_btf(const struct bpf_map_info *info, struct btf **btf)
- {
--	struct btf *btf = NULL;
-+	int err = 0;
++try_again:
+ 	ath11k_hal_srng_access_begin(ab, srng);
  
- 	if (info->btf_vmlinux_value_type_id) {
- 		if (!btf_vmlinux) {
- 			btf_vmlinux = libbpf_find_kernel_btf();
--			if (libbpf_get_error(btf_vmlinux))
-+			err = libbpf_get_error(btf_vmlinux);
-+			if (err) {
- 				p_err("failed to get kernel btf");
-+				return err;
-+			}
- 		}
--		return btf_vmlinux;
-+		*btf = btf_vmlinux;
- 	} else if (info->btf_value_type_id) {
--		int err;
--
--		btf = btf__load_from_kernel_by_id(info->btf_id);
--		err = libbpf_get_error(btf);
--		if (err) {
-+		*btf = btf__load_from_kernel_by_id(info->btf_id);
-+		err = libbpf_get_error(*btf);
-+		if (err)
- 			p_err("failed to get btf");
--			btf = ERR_PTR(err);
--		}
-+	} else {
-+		*btf = NULL;
- 	}
- 
--	return btf;
-+	return err;
- }
- 
- static void free_map_kv_btf(struct btf *btf)
-@@ -862,8 +863,7 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
- 	prev_key = NULL;
- 
- 	if (wtr) {
--		btf = get_map_kv_btf(info);
--		err = libbpf_get_error(btf);
-+		err = get_map_kv_btf(info, &btf);
- 		if (err) {
- 			goto exit_free;
- 		}
-@@ -1054,8 +1054,7 @@ static void print_key_value(struct bpf_map_info *info, void *key,
- 	json_writer_t *btf_wtr;
- 	struct btf *btf;
- 
--	btf = get_map_kv_btf(info);
--	if (libbpf_get_error(btf))
-+	if (get_map_kv_btf(info, &btf))
- 		return;
- 
- 	if (json_output) {
+-try_again:
+ 	while (likely(desc =
+ 	      (struct hal_reo_dest_ring *)ath11k_hal_srng_dst_get_next_entry(ab,
+ 									     srng))) {
 -- 
 2.34.1
 
