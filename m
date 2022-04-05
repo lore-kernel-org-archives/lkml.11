@@ -2,89 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 827FBC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B6A7C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442730AbiDEWTf (ORCPT
+        id S1442614AbiDEWT0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
+        Tue, 5 Apr 2022 18:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356861AbiDEKZA (ORCPT
+        with ESMTP id S1573395AbiDETGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:25:00 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA89C12EB;
-        Tue,  5 Apr 2022 03:09:09 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 4B8321F745;
-        Tue,  5 Apr 2022 10:09:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649153348; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=s2JAhA7wRXjstDGSBxsda1XlMcvrnOLvDvnRGSGBhWQ=;
-        b=VUzkhbo1IP8rBXBSTb+xi5+IO+JKiwE8GKiq1RV8GvLLp621TtLgWINmac+lMjA3AxHC7/
-        U+KDroTz7bzqhgUsS1Gvm4ACqI7ELwJOUTcIP0zkEutls9EakN7ohOic0E9tlWNymY7qr2
-        xEeaJnx+CzP6OJK8UrMwCtA0b8swnf8=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0023613A04;
-        Tue,  5 Apr 2022 10:09:07 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Bx79OkMVTGI0SQAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Tue, 05 Apr 2022 10:09:07 +0000
-Date:   Tue, 5 Apr 2022 12:09:06 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Wei Xu <weixugc@google.com>, Johannes Weiner <hannes@cmpxchg.org>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Cgroups <cgroups@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Greg Thelen <gthelen@google.com>
-Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
-Message-ID: <20220405100906.GB13806@blackbody.suse.cz>
-References: <20220331084151.2600229-1-yosryahmed@google.com>
- <CAAPL-u8g2qkhdTQtFtBS3GNYz0WnyahWEXvR4g_OSaKv+7EozA@mail.gmail.com>
- <YkcYq8F6MYlMi+yS@cmpxchg.org>
- <CAAPL-u-za-TTyyC5uMVev9eQyhxZS7q3pVqaUxCFjqk+Sv9+ig@mail.gmail.com>
- <CALvZod4-fKfv6vbZPZ3nCE=Bue4FUnC+9t27wsznmyd+JKgDbg@mail.gmail.com>
+        Tue, 5 Apr 2022 15:06:15 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A9D167F6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:04:14 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id t19so399932qtc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=p4sIUWeO6+P4zWNNUhdcwFoqQbff1GSzTj3PyXvmiEQ=;
+        b=nmqu50EBRX36s361/cDtv8BTMjCMfqpX08sQhZFrt8sYSEBPwE1vgZ4nW0w4EdNOZv
+         o+tA8EKhpRSdQR3Dv6ZeNplzb/6/d4P/pYo8hMuSFtnnHbT18NbIqrDKWGWRuzj0sX33
+         NwkCKPzO9uzXxgwt6mzZTzUipt/2LtQXBV9/6/aCHm68I4zhTPhv8T6Xk7CqblW0d9at
+         77T1IBaxtpT6vZINZsj5yY7V5fK3TqnoQBl+RnTQQqZTftcLpRRB8gnwvPgzdCfnGiPk
+         34ATgiHVCSNNKC4vBPleRiNh9Mj27XotB+bI/48+eyL/b5gKJFVKWfht+KhNDWMMBTx/
+         hSzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=p4sIUWeO6+P4zWNNUhdcwFoqQbff1GSzTj3PyXvmiEQ=;
+        b=ObuRJkKPxDx8GUsUMaBGI/76uMN35F82t54CagK2wJy9ELkn1n9zg901JeDAUvuxNc
+         FRCx6bb/E5HXBVR4ljICPC9IeT8v0C+Jw7qWrM5i0cDKIp2pseArOKaXWt1IScoL5EiB
+         bdizHtoK+ckr0D3/DczBvNLQFG6KPoenEbJ8yhl/Bs36mwvR8we9/s8bKq/IFURMn3mt
+         hXE9EB5m1FQiqAlbA2DZ5myl8YBGrZ/XbkU5o2lytylvgpuU8tbaeC2U0tdnCGe+fw3L
+         F6dr8FT3/CxBKcnnC0ItDd6mfXpQ9iF0J8Kkhiig1gLEnd1zYxxG+7djbtfHtFLQFqGc
+         nnJQ==
+X-Gm-Message-State: AOAM533Z+4Qw3IsgmxEU52lI5nf0o3QVX6RvHXElPyA1LcGJ7nb4n+2V
+        3G3uu2QM0MiyImzaNOG7xvlbEA==
+X-Google-Smtp-Source: ABdhPJw89QndTutZv11VxczePEqDQB0+l7F3uU5v+rVSKfMzarjpMx65Se4MSU9B2AhnbihAOWRqBA==
+X-Received: by 2002:a05:620a:2452:b0:699:9df2:665d with SMTP id h18-20020a05620a245200b006999df2665dmr3178998qkn.668.1649185453843;
+        Tue, 05 Apr 2022 12:04:13 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id p16-20020a05620a22b000b0067b7b158985sm8057701qkh.128.2022.04.05.12.04.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 12:04:13 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nboTL-00DBjA-Ix; Tue, 05 Apr 2022 16:04:11 -0300
+Date:   Tue, 5 Apr 2022 16:04:11 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     alex.williamson@redhat.com, iommu@lists.linux-foundation.org,
+        cohuck@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH] vfio: Stop using iommu_present()
+Message-ID: <20220405190411.GT64706@ziepe.ca>
+References: <537103bbd7246574f37f2c88704d7824a3a889f2.1649160714.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALvZod4-fKfv6vbZPZ3nCE=Bue4FUnC+9t27wsznmyd+JKgDbg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <537103bbd7246574f37f2c88704d7824a3a889f2.1649160714.git.robin.murphy@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 10:08:43AM -0700, Shakeel Butt <shakeelb@google.com> wrote:
-> What would be the challenge on returning the number of bytes reclaimed
-> through cgroup interface?
-
-You'd need an object that represents the write size:
-
-> bfd = open("/sys/kernel/mm/reclaim/balloon", O_RDWR);
-> dprintf(bfd, "type=file nodemask=1-2 timeout=30\n")
+On Tue, Apr 05, 2022 at 01:11:54PM +0100, Robin Murphy wrote:
+> IOMMU groups have been mandatory for some time now, so a device without
+> one is necessarily a device without any usable IOMMU, therefore the
+> iommu_present() check is redundant (or at best unhelpful).
 > 
-> fd = open("/sys/kernel/fs/cgroup/foo/memory.reclaim", O_WRONLY);
-> reclaimed = splice(bfd, NULL, fd, NULL, reclaim_size);
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/vfio/vfio.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
-(I'm joking with this API but it is a resembling concept.)
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Michal
+Jason
