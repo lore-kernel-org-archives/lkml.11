@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF44C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44595C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243834AbiDEJJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
+        id S244088AbiDEJJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239498AbiDEIUI (ORCPT
+        with ESMTP id S239512AbiDEIUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C611B2F;
-        Tue,  5 Apr 2022 01:14:35 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA44E20;
+        Tue,  5 Apr 2022 01:14:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 861E6609D0;
-        Tue,  5 Apr 2022 08:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95A04C385A0;
-        Tue,  5 Apr 2022 08:14:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59F58609AD;
+        Tue,  5 Apr 2022 08:14:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DFD3C385A1;
+        Tue,  5 Apr 2022 08:14:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146475;
-        bh=xiVxqNXnPrd0umBKGvEaHQFbAeEbjAy7J6xMXFkVXKA=;
+        s=korg; t=1649146493;
+        bh=/vXsamBdSnO41BjFWNF63X0LjmmtbeaDPUrPjiNI93w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uFUIl4m83ZaGB1x0drXX6BueIA7YccekW7XaUuDHWxWTqqQG8Ur8tuXK/3Unolm64
-         p2kGwflIK5WGOFljDEPPrbNrCg9fvV/vxLdHxgPD3aXOVoh4HhLLM4E1p+AbmEoPF5
-         ylxHMo13hvFWepCKRIg2+7g7LUN5zCEiEG8ZB8fA=
+        b=XO2OM8CYnvgK4Cs4yzJombnNUA5DrZkgEecE0T8iDq7mxH4YU3nOW/9b5SGXBywLv
+         3Tn2/i/UD6ID3GAY9sYB87MYMNZNzwzOjVgIzTrx0ueUow6KdopTHuL+JqV4r7U6Ro
+         WQLeYiECmDaUlYfG/Jd24pclIdwaSPZ8Q5eFo+r8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0777/1126] pinctrl/rockchip: Add missing of_node_put() in rockchip_pinctrl_probe
-Date:   Tue,  5 Apr 2022 09:25:24 +0200
-Message-Id: <20220405070430.385573941@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        Fei Li <fei1.li@intel.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0783/1126] virt: acrn: fix a memory leak in acrn_dev_ioctl()
+Date:   Tue,  5 Apr 2022 09:25:30 +0200
+Message-Id: <20220405070430.558928476@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,43 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xiaolong Huang <butterflyhuangxx@gmail.com>
 
-[ Upstream commit 89388f8730699c259f8090ec435fb43569efe4ac ]
+[ Upstream commit ecd1735f14d6ac868ae5d8b7a2bf193fa11f388b ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+The vm_param and cpu_regs need to be freed via kfree()
+before return -EINVAL error.
 
-Fixes: 1e747e59cc4d ("pinctrl: rockchip: base regmap supplied by a syscon")
-Fixes: 14dee8677e19 ("pinctrl: rockchip: let pmu registers be supplied by a syscon")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307120234.28657-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 9c5137aedd11 ("virt: acrn: Introduce VM management interfaces")
+Fixes: 2ad2aaee1bc9 ("virt: acrn: Introduce an ioctl to set vCPU registers state")
+Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Signed-off-by: Fei Li <fei1.li@intel.com>
+Link: https://lore.kernel.org/r/20220308092047.1008409-1-butterflyhuangxx@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-rockchip.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/virt/acrn/hsm.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index d8dd8415fa81..a1b598b86aa9 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -2693,6 +2693,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
- 	node = of_parse_phandle(np, "rockchip,grf", 0);
- 	if (node) {
- 		info->regmap_base = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(info->regmap_base))
- 			return PTR_ERR(info->regmap_base);
- 	} else {
-@@ -2725,6 +2726,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
- 	node = of_parse_phandle(np, "rockchip,pmu", 0);
- 	if (node) {
- 		info->regmap_pmu = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(info->regmap_pmu))
- 			return PTR_ERR(info->regmap_pmu);
- 	}
+diff --git a/drivers/virt/acrn/hsm.c b/drivers/virt/acrn/hsm.c
+index 5419794fccf1..423ea888d79a 100644
+--- a/drivers/virt/acrn/hsm.c
++++ b/drivers/virt/acrn/hsm.c
+@@ -136,8 +136,10 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
+ 		if (IS_ERR(vm_param))
+ 			return PTR_ERR(vm_param);
+ 
+-		if ((vm_param->reserved0 | vm_param->reserved1) != 0)
++		if ((vm_param->reserved0 | vm_param->reserved1) != 0) {
++			kfree(vm_param);
+ 			return -EINVAL;
++		}
+ 
+ 		vm = acrn_vm_create(vm, vm_param);
+ 		if (!vm) {
+@@ -182,21 +184,29 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
+ 			return PTR_ERR(cpu_regs);
+ 
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->reserved); i++)
+-			if (cpu_regs->reserved[i])
++			if (cpu_regs->reserved[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
+ 
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_32); i++)
+-			if (cpu_regs->vcpu_regs.reserved_32[i])
++			if (cpu_regs->vcpu_regs.reserved_32[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
+ 
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_64); i++)
+-			if (cpu_regs->vcpu_regs.reserved_64[i])
++			if (cpu_regs->vcpu_regs.reserved_64[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
+ 
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.gdt.reserved); i++)
+ 			if (cpu_regs->vcpu_regs.gdt.reserved[i] |
+-			    cpu_regs->vcpu_regs.idt.reserved[i])
++			    cpu_regs->vcpu_regs.idt.reserved[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
+ 
+ 		ret = hcall_set_vcpu_regs(vm->vmid, virt_to_phys(cpu_regs));
+ 		if (ret < 0)
 -- 
 2.34.1
 
