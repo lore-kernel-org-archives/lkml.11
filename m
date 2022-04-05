@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE418C47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9455EC3A589
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238541AbiDEITL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45374 "EHLO
+        id S239521AbiDEIUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235681AbiDEIAA (ORCPT
+        with ESMTP id S235646AbiDEH76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:00 -0400
+        Tue, 5 Apr 2022 03:59:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE0A1AF33;
-        Tue,  5 Apr 2022 00:57:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1699F17AAE;
+        Tue,  5 Apr 2022 00:56:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 475C8B81B90;
-        Tue,  5 Apr 2022 07:57:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9838CC340EE;
-        Tue,  5 Apr 2022 07:57:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B80E5B81B9C;
+        Tue,  5 Apr 2022 07:56:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E52C340EE;
+        Tue,  5 Apr 2022 07:56:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145474;
-        bh=QlK+fwpu7ZtD2C3yV/ydrvguyf3FpGIVVQmFwYhvBoU=;
+        s=korg; t=1649145405;
+        bh=Y9T7AymKarL8J7ujH1ykvAvM2oVlvHHT+qXyz/qBDV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pgn9cO2gS8nMPdLsZzs0ErlSwuWfAHOBVpCUEQbCAqt4LSrStauBCAcqjkNGsKawY
-         t1lGuoiT48H2W3jMOB+0kXeyW9q7hotunr7ZsqyByYrYzclg/lkxSNUFjlcWWp0yga
-         05DvMEvr90ePRkIVIhUU4za/2f/waXmTgDB8ZR7Q=
+        b=Wmafl77k8tzqHzimtGHZ/CtUk4vbFLRb1EuqRkCCbp7iYaksAKelEplmfEaID+Q7G
+         Lmg/NQ+wLzmyDMWng0+PQTmSozTCUcxblyVgrAv2YVJpMcaGqUoUAQ9LKSNaM87jHU
+         RoRC6zV/U5heCOeIgSQ+gVXhvuDzvcYin7qCt+44=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0417/1126] ASoC: mediatek: mt8195: Fix error handling in mt8195_mt6359_rt1019_rt5682_dev_probe
-Date:   Tue,  5 Apr 2022 09:19:24 +0200
-Message-Id: <20220405070419.865907939@linuxfoundation.org>
+Subject: [PATCH 5.17 0394/1126] ASoC: cs35l41: Fix max number of TX channels
+Date:   Tue,  5 Apr 2022 09:19:01 +0200
+Message-Id: <20220405070419.193018178@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,47 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Lucas Tanure <tanureal@opensource.cirrus.com>
 
-[ Upstream commit c4b7174fe5bb875a09a78674a14a1589d1a672f3 ]
+[ Upstream commit 16639d39bdf577168d3fe34315917a94365c8d19 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+This device only has 4 TX channels.
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error path.
-
-Fixes: 082482a50227 ("ASoC: mediatek: mt8195: release device_node after snd_soc_register_card")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220316084623.24238-1-linmq006@gmail.com
+Fixes: fe1024d50477b ("ASoC: cs35l41: Combine adjacent register writes")
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220303173059.269657-3-tanureal@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ sound/soc/codecs/cs35l41.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
-index 29c2d3407cc7..e3146311722f 100644
---- a/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
-+++ b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
-@@ -1342,7 +1342,8 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
- 					      "mediatek,dai-link");
- 		if (ret) {
- 			dev_dbg(&pdev->dev, "Parse dai-link fail\n");
--			return -EINVAL;
-+			ret = -EINVAL;
-+			goto put_node;
- 		}
- 	} else {
- 		if (!sof_on)
-@@ -1398,6 +1399,7 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
- 
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
- 
-+put_node:
- 	of_node_put(platform_node);
- 	of_node_put(adsp_node);
- 	of_node_put(dp_node);
+diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
+index 90c91b00288b..f3787d77f892 100644
+--- a/sound/soc/codecs/cs35l41.c
++++ b/sound/soc/codecs/cs35l41.c
+@@ -1091,7 +1091,7 @@ static struct snd_soc_dai_driver cs35l41_dai[] = {
+ 		.capture = {
+ 			.stream_name = "AMP Capture",
+ 			.channels_min = 1,
+-			.channels_max = 8,
++			.channels_max = 4,
+ 			.rates = SNDRV_PCM_RATE_KNOT,
+ 			.formats = CS35L41_TX_FORMATS,
+ 		},
 -- 
 2.34.1
 
