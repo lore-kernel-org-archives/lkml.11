@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7030BC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D97CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244941AbiDEOyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36684 "EHLO
+        id S1343569AbiDEOyk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244528AbiDEJl1 (ORCPT
+        with ESMTP id S244449AbiDEJlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0885BB935;
-        Tue,  5 Apr 2022 02:26:40 -0700 (PDT)
+        Tue, 5 Apr 2022 05:41:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA86BB91B;
+        Tue,  5 Apr 2022 02:26:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C9C161684;
-        Tue,  5 Apr 2022 09:26:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BCC9C385A2;
-        Tue,  5 Apr 2022 09:26:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38F14B81C9F;
+        Tue,  5 Apr 2022 09:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C5A3C385A0;
+        Tue,  5 Apr 2022 09:26:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150799;
-        bh=zRmSmzz9vDRdCW6CbMwaehqfUXppBLkYD3vwE3+vKG0=;
+        s=korg; t=1649150786;
+        bh=dlYk8rC60OvZeHn5CTD5I6a5wqwswMluROqrjoBv3YU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gXNlzMfKcT+wDUA5zvKnf+K9XprpbdnDNLz8d+KnUo7bS2g72x08q6xJdxfwd1GRf
-         cEt4dhswI8caf0gbCYvn2PU3ZvdCRgTL0BYPAcnBduISwIhwwx43sz/1haHH+Ww56v
-         fWqQZHyo5JFz02ipFUx2SLaGJ/7gOjgNZUz70Das=
+        b=l7Vhytfdge9AT8oQzkIJ+PVUL685R/BGANLNDFRZb6YhlC8jujxNzJWYoa8Mad2sW
+         mZbLnhALT90XXLeuxQoxDdnlKBgwQo6ebegVqlkG3REmvTqiVnf4AviA9OyWZsg4Ir
+         DeIYjhORh8JhULTxkGc335EHJOutbip7C4+IkXJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Richard Zhu <hongxing.zhu@nxp.com>
-Subject: [PATCH 5.15 186/913] PCI: imx6: Allow to probe when dw_pcie_wait_for_link() fails
-Date:   Tue,  5 Apr 2022 09:20:48 +0200
-Message-Id: <20220405070345.431700530@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.15 181/913] brcmfmac: pcie: Declare missing firmware files in pcie.c
+Date:   Tue,  5 Apr 2022 09:20:43 +0200
+Message-Id: <20220405070345.280041237@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,80 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Hector Martin <marcan@marcan.st>
 
-commit f81f095e87715e198471f4653952fe5e3f824874 upstream.
+commit 6d766d8cb505ec1fae63da8faef4fc5712c3d794 upstream.
 
-The intention of commit 886a9c134755 ("PCI: dwc: Move link handling into
-common code") was to standardize the behavior of link down as explained
-in its commit log:
+Move one of the declarations from sdio.c to pcie.c, since it makes no
+sense in the former (SDIO support is optional), and add missing ones.
 
-"The behavior for a link down was inconsistent as some drivers would fail
-probe in that case while others succeed. Let's standardize this to
-succeed as there are usecases where devices (and the link) appear later
-even without hotplug. For example, a reconfigured FPGA device."
-
-The pci-imx6 still fails to probe when the link is not present, which
-causes the following warning:
-
-imx6q-pcie 8ffc000.pcie: Phy link never came up
-imx6q-pcie: probe of 8ffc000.pcie failed with error -110
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 30 at drivers/regulator/core.c:2257 _regulator_put.part.0+0x1b8/0x1dc
-Modules linked in:
-CPU: 0 PID: 30 Comm: kworker/u2:2 Not tainted 5.15.0-next-20211103 #1
-Hardware name: Freescale i.MX6 SoloX (Device Tree)
-Workqueue: events_unbound async_run_entry_fn
-[<c0111730>] (unwind_backtrace) from [<c010bb74>] (show_stack+0x10/0x14)
-[<c010bb74>] (show_stack) from [<c0f90290>] (dump_stack_lvl+0x58/0x70)
-[<c0f90290>] (dump_stack_lvl) from [<c012631c>] (__warn+0xd4/0x154)
-[<c012631c>] (__warn) from [<c0f87b00>] (warn_slowpath_fmt+0x74/0xa8)
-[<c0f87b00>] (warn_slowpath_fmt) from [<c076b4bc>] (_regulator_put.part.0+0x1b8/0x1dc)
-[<c076b4bc>] (_regulator_put.part.0) from [<c076b574>] (regulator_put+0x2c/0x3c)
-[<c076b574>] (regulator_put) from [<c08c3740>] (release_nodes+0x50/0x178)
-
-Fix this problem by ignoring the dw_pcie_wait_for_link() error like
-it is done on the other dwc drivers.
-
-Tested on imx6sx-sdb and imx6q-sabresd boards.
-
-Link: https://lore.kernel.org/r/20220106103645.2790803-1-festevam@gmail.com
-Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Richard Zhu <hongxing.zhu@nxp.com>
-Cc: <stable@vger.kernel.org>
+Fixes: 75729e110e68 ("brcmfmac: expose firmware config files through modinfo")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-5-marcan@marcan.st
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pci-imx6.c |   10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |    7 +++++++
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c |    1 -
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -779,9 +779,7 @@ static int imx6_pcie_start_link(struct d
- 	/* Start LTSSM. */
- 	imx6_pcie_ltssm_enable(dev);
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -59,6 +59,13 @@ BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie"
+ BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
+ BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
  
--	ret = dw_pcie_wait_for_link(pci);
--	if (ret)
--		goto err_reset_phy;
-+	dw_pcie_wait_for_link(pci);
++/* firmware config files */
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.txt");
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
++
++/* per-board firmware binaries */
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.bin");
++
+ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+ 	BRCMF_FW_ENTRY(BRCM_CC_43602_CHIP_ID, 0xFFFFFFFF, 43602),
+ 	BRCMF_FW_ENTRY(BRCM_CC_43465_CHIP_ID, 0xFFFFFFF0, 4366C),
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -629,7 +629,6 @@ BRCMF_FW_CLM_DEF(43752, "brcmfmac43752-s
  
- 	if (pci->link_gen == 2) {
- 		/* Allow Gen2 mode after the link is up. */
-@@ -817,11 +815,7 @@ static int imx6_pcie_start_link(struct d
- 		}
+ /* firmware config files */
+ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.txt");
+-MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
  
- 		/* Make sure link training is finished as well! */
--		ret = dw_pcie_wait_for_link(pci);
--		if (ret) {
--			dev_err(dev, "Failed to bring link up!\n");
--			goto err_reset_phy;
--		}
-+		dw_pcie_wait_for_link(pci);
- 	} else {
- 		dev_info(dev, "Link: Gen2 disabled\n");
- 	}
+ /* per-board firmware binaries */
+ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.bin");
 
 
