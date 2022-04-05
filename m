@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A03C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED45C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445061AbiDEUI2 (ORCPT
+        id S1444838AbiDEUIX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
+        Tue, 5 Apr 2022 16:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358068AbiDEK15 (ORCPT
+        with ESMTP id S1349067AbiDEJtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603C13BBEC;
-        Tue,  5 Apr 2022 03:14:22 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DA4A94F6;
+        Tue,  5 Apr 2022 02:39:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C4DCB81C6C;
-        Tue,  5 Apr 2022 10:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ADE2C385A0;
-        Tue,  5 Apr 2022 10:14:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 005D5615E5;
+        Tue,  5 Apr 2022 09:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C92EC385A2;
+        Tue,  5 Apr 2022 09:39:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153659;
-        bh=D9I+rGgfR4xsdgyZ9tEUcIy10T7OjvR2xyL8W/yW+GE=;
+        s=korg; t=1649151584;
+        bh=W/rAFKXNz3HhQGCq+VKNswrAmZ8mi7KiJaR5vyar9Sk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=POtDXnvmlg3r2a7Oq1Z4h9Z8l5rsi14UKuh35Sd4A46YMMM/RIft13OV69t6RHXPg
-         C9VykEwgbmA1ONHJoDAuXnclt4POJj9XkW+M0JUImFAl8YHPGTUsAgSA1iwRwf75Jx
-         4H8HYvqLMxKqQReqWp8Uclm4c6eRukW9QskDClRM=
+        b=rwsv1IR6zAlywwU1tXta4CYD2CYuCvo193Ahr6Z9YQz/huaShzl+Hh1bkJqkCf88N
+         w6agki8vbwE+P2WElltTQVDTy+tr94XgAquax4eAqU4iziE5JNIhNPQ6iHWrAJPe6t
+         hTZlVQvkmr638F1M783MOn02KimPGf3WQQf2ljMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 284/599] powerpc: dts: t1040rdb: fix ports names for Seville Ethernet switch
-Date:   Tue,  5 Apr 2022 09:29:38 +0200
-Message-Id: <20220405070307.287328947@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>
+Subject: [PATCH 5.15 469/913] drm/msm/dp: populate connector of struct dp_panel
+Date:   Tue,  5 Apr 2022 09:25:31 +0200
+Message-Id: <20220405070353.907182430@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,109 +53,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Kiselev <bigunclemax@gmail.com>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 5ebb74749202a25da4b3cc2eb15470225a05527c ]
+[ Upstream commit 5e602f5156910c7b19661699896cb6e3fb94fab9 ]
 
-On board rev A, the network interface labels for the switch ports
-written on the front panel are different than on rev B and later.
+DP CTS test case 4.2.2.6 has valid edid with bad checksum on purpose
+and expect DP source return correct checksum. During drm edid read,
+correct edid checksum is calculated and stored at
+connector::real_edid_checksum.
 
-This patch fixes network interface names for the switch ports according
-to labels that are written on the front panel of the board rev B.
-They start from ETH3 and end at ETH10.
+The problem is struct dp_panel::connector never be assigned, instead the
+connector is stored in struct msm_dp::connector. When we run compliance
+testing test case 4.2.2.6 dp_panel_handle_sink_request() won't have a valid
+edid set in struct dp_panel::edid so we'll try to use the connectors
+real_edid_checksum and hit a NULL pointer dereference error because the
+connector pointer is never assigned.
 
-This patch also introduces a separate device tree for rev A.
-The main device tree is supposed to cover rev B and later.
+Changes in V2:
+-- populate panel connector at msm_dp_modeset_init() instead of at dp_panel_read_sink_caps()
 
-Fixes: e69eb0824d8c ("powerpc: dts: t1040rdb: add ports for Seville Ethernet switch")
-Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
-Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220121091447.3412907-1-bigunclemax@gmail.com
+Changes in V3:
+-- remove unhelpful kernel crash trace commit text
+-- remove renaming dp_display parameter to dp
+
+Changes in V4:
+-- add more details to commit text
+
+Changes in v10:
+--  group into one series
+
+Changes in v11:
+-- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
+
+Fixes: 7948fe12d47 ("drm/msm/dp: return correct edid checksum after corrupted edid checksum read")
+Signee-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/1642531648-8448-3-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts | 30 ++++++++++++++++++++
- arch/powerpc/boot/dts/fsl/t1040rdb.dts       |  8 +++---
- 2 files changed, 34 insertions(+), 4 deletions(-)
- create mode 100644 arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
+ drivers/gpu/drm/msm/dp/dp_display.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts b/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
-new file mode 100644
-index 000000000000..73f8c998c64d
---- /dev/null
-+++ b/arch/powerpc/boot/dts/fsl/t1040rdb-rev-a.dts
-@@ -0,0 +1,30 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * T1040RDB-REV-A Device Tree Source
-+ *
-+ * Copyright 2014 - 2015 Freescale Semiconductor Inc.
-+ *
-+ */
-+
-+#include "t1040rdb.dts"
-+
-+/ {
-+	model = "fsl,T1040RDB-REV-A";
-+	compatible = "fsl,T1040RDB-REV-A";
-+};
-+
-+&seville_port0 {
-+	label = "ETH5";
-+};
-+
-+&seville_port2 {
-+	label = "ETH7";
-+};
-+
-+&seville_port4 {
-+	label = "ETH9";
-+};
-+
-+&seville_port6 {
-+	label = "ETH11";
-+};
-diff --git a/arch/powerpc/boot/dts/fsl/t1040rdb.dts b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-index af0c8a6f5613..b6733e7e6580 100644
---- a/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-+++ b/arch/powerpc/boot/dts/fsl/t1040rdb.dts
-@@ -119,7 +119,7 @@
- 	managed = "in-band-status";
- 	phy-handle = <&phy_qsgmii_0>;
- 	phy-mode = "qsgmii";
--	label = "ETH5";
-+	label = "ETH3";
- 	status = "okay";
- };
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index a0392e4d8134..d5198b435638 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -1442,6 +1442,7 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
+ 			struct drm_encoder *encoder)
+ {
+ 	struct msm_drm_private *priv;
++	struct dp_display_private *dp_priv;
+ 	int ret;
  
-@@ -135,7 +135,7 @@
- 	managed = "in-band-status";
- 	phy-handle = <&phy_qsgmii_2>;
- 	phy-mode = "qsgmii";
--	label = "ETH7";
-+	label = "ETH5";
- 	status = "okay";
- };
+ 	if (WARN_ON(!encoder) || WARN_ON(!dp_display) || WARN_ON(!dev))
+@@ -1450,6 +1451,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
+ 	priv = dev->dev_private;
+ 	dp_display->drm_dev = dev;
  
-@@ -151,7 +151,7 @@
- 	managed = "in-band-status";
- 	phy-handle = <&phy_qsgmii_4>;
- 	phy-mode = "qsgmii";
--	label = "ETH9";
-+	label = "ETH7";
- 	status = "okay";
- };
++	dp_priv = container_of(dp_display, struct dp_display_private, dp_display);
++
+ 	ret = dp_display_request_irq(dp_display);
+ 	if (ret) {
+ 		DRM_ERROR("request_irq failed, ret=%d\n", ret);
+@@ -1467,6 +1470,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
+ 		return ret;
+ 	}
  
-@@ -167,7 +167,7 @@
- 	managed = "in-band-status";
- 	phy-handle = <&phy_qsgmii_6>;
- 	phy-mode = "qsgmii";
--	label = "ETH11";
-+	label = "ETH9";
- 	status = "okay";
- };
- 
++	dp_priv->panel->connector = dp_display->connector;
++
+ 	priv->connectors[priv->num_connectors++] = dp_display->connector;
+ 	return 0;
+ }
 -- 
 2.34.1
 
