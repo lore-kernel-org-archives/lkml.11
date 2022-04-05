@@ -2,103 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1E7C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAFFC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387710AbiDEOcs convert rfc822-to-8bit (ORCPT
+        id S1388232AbiDEOdT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
+        Tue, 5 Apr 2022 10:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238907AbiDEJdC (ORCPT
+        with ESMTP id S238905AbiDEJdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:33:02 -0400
-Received: from mail3.swissbit.com (mail3.swissbit.com [176.95.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DD1DC5;
-        Tue,  5 Apr 2022 02:20:29 -0700 (PDT)
-Received: from mail3.swissbit.com (localhost [127.0.0.1])
-        by DDEI (Postfix) with ESMTP id 6536D462BE9;
-        Tue,  5 Apr 2022 11:20:27 +0200 (CEST)
-Received: from mail3.swissbit.com (localhost [127.0.0.1])
-        by DDEI (Postfix) with ESMTP id 539C1461980;
-        Tue,  5 Apr 2022 11:20:27 +0200 (CEST)
-X-TM-AS-ERS: 10.149.2.84-127.5.254.253
-X-TM-AS-SMTP: 1.0 ZXguc3dpc3NiaXQuY29t Y2xvZWhsZUBoeXBlcnN0b25lLmNvbQ==
-X-DDEI-TLS-USAGE: Used
-Received: from ex.swissbit.com (SBDEEX02.sbitdom.lan [10.149.2.84])
-        by mail3.swissbit.com (Postfix) with ESMTPS;
-        Tue,  5 Apr 2022 11:20:27 +0200 (CEST)
-Received: from sbdeex02.sbitdom.lan (10.149.2.84) by sbdeex02.sbitdom.lan
- (10.149.2.84) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 5 Apr 2022
- 11:20:26 +0200
-Received: from sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74]) by
- sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74%8]) with mapi id
- 15.02.0986.022; Tue, 5 Apr 2022 11:20:26 +0200
-From:   =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
-To:     "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-CC:     Ulf Hansson <ulf.hansson@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>
-Subject: Re: [PATCH 2/2] mmc: mmc_spi: enable Highspeed for above 25MHz
-Thread-Topic: [PATCH 2/2] mmc: mmc_spi: enable Highspeed for above 25MHz
-Thread-Index: AQHYRNET6fGEHIFWCkie/s3TyF86+azZZi8AgAesmZo=
-Date:   Tue, 5 Apr 2022 09:20:26 +0000
-Message-ID: <c1726b6966e74c9fa9fb4a6ac56dedf9@hyperstone.com>
-References: <20c6efa9a4c7423bbfb9352705c4a53a@hyperstone.com>
- <5eaae8e215d84dd3a4f7e09782478a29@hyperstone.com>,<YkW1qGY3uJPhrmf1@smile.fi.intel.com>
-In-Reply-To: <YkW1qGY3uJPhrmf1@smile.fi.intel.com>
-Accept-Language: en-US, de-DE
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.153.3.17]
-Content-Type: text/plain;
-        charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD5F1081;
+        Tue,  5 Apr 2022 02:20:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8867B615E4;
+        Tue,  5 Apr 2022 09:20:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9154CC385A0;
+        Tue,  5 Apr 2022 09:20:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649150446;
+        bh=GHdBnWH3UX1Xlg0sRoZEr/y66U2ZsPElXuujtK71+AE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vIljCNUSFqZ6xuz6Yzzwx1eBULSbCBfqlfktgW9p2nou/MCxn6JpLr6juKResk7ql
+         sP2GBf18Y4j5smc26lYV/h5T1AMBc1VWP/Y6WuxxzcQ1STds2VSbHuZ37REN60xrWG
+         sH/n9D/DAlXJBSyYpwsyUT26k+XjU5V76ST38mv8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: [PATCH 5.15 059/913] Documentation: update stable tree link
+Date:   Tue,  5 Apr 2022 09:18:41 +0200
+Message-Id: <20220405070341.592213166@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-TMASE-Version: DDEI-5.1-9.0.1000-26814.006
-X-TMASE-Result: 10--9.372200-10.000000
-X-TMASE-MatchedRID: BFQSNthdAqLUL3YCMmnG4tKDcT1f9CjEQAKUX1R86jTMVqPzYKoX2fy+
-        IfkvA3MsPzfUQuvyrgz0B9yN5j90xCbixKZRJvnJF+qQpCWTUjmCZaeJCjp8UkcTQWdpiE3Vo8W
-        MkQWv6iUsOwD+dG3DyZ/Unpyav4ctavP8b9lJtWr6C0ePs7A07RQEL0GGu6SD0zjjSJ2xuUGIc3
-        tHPZjuopV9NtlmaYdITb0eacHsFvw=
-X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
-X-TMASE-INERTIA: 0-0;;;;
-X-TMASE-XGENCLOUD: 8ee7dfcf-8a27-4f92-b964-d58b1aaf410b-0-0-200-0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Understood and sure, then I'll take 2/2 back.
-@Ulf, would you like a v2 just containing 1/2 or is it fine like this?
+From: Bagas Sanjaya <bagasdotme@gmail.com>
 
+commit 555d44932c67e617d89bc13c81c7efac5b51fcfa upstream.
 
+The link to stable tree is redirected to
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git. Update
+accordingly.
 
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sasha Levin <sashal@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: stable@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://lore.kernel.org/r/20220314113329.485372-6-bagasdotme@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/process/stable-kernel-rules.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-From: andriy.shevchenko@linux.intel.com <andriy.shevchenko@linux.intel.com>
-Sent: Thursday, March 31, 2022 4:07 PM
-To: Christian Löhle
-Cc: Ulf Hansson; linux-kernel@vger.kernel.org; linux-mmc@vger.kernel.org; adrian.hunter@intel.com; digetx@gmail.com; avri.altman@wdc.com
-Subject: Re: [PATCH 2/2] mmc: mmc_spi: enable Highspeed for above 25MHz
-    
-On Thu, Mar 31, 2022 at 07:29:37AM +0000, Christian Löhle wrote:
-> Any setup supporting more than 25MHz is able to utilize
-> highspeed, so enable it even when not explicitly specified.
+--- a/Documentation/process/stable-kernel-rules.rst
++++ b/Documentation/process/stable-kernel-rules.rst
+@@ -168,7 +168,7 @@ Trees
+  - The finalized and tagged releases of all stable kernels can be found
+    in separate branches per version at:
+ 
+-	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
++	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+ 
+  - The release candidate of all stable kernel versions can be found at:
+ 
 
-I'm not sure about this. I prefer to be on the safer side, i.e.
-follow only what is supplied by firmware (ACPI / DT).
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
-    =
-Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
-Managing Director: Dr. Jan Peter Berns.
-Commercial register of local courts: Freiburg HRB381782
 
