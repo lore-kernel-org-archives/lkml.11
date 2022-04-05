@@ -2,194 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62ADEC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8523C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587307AbiDFAIe (ORCPT
+        id S1587368AbiDFAIv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        Tue, 5 Apr 2022 20:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352775AbiDEKFI (ORCPT
+        with ESMTP id S1356598AbiDELPg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:05:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB3EBBE22;
-        Tue,  5 Apr 2022 02:53:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14A7961748;
-        Tue,  5 Apr 2022 09:53:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE17C385A7;
-        Tue,  5 Apr 2022 09:53:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152428;
-        bh=SKZutM5MYcPInu9uE+l6/j/YSHIv/4wzRWyJA1p9xes=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWcQsd720Qxei7LZTGqsWXaKDjXdpUdG1IzUrc0CeKqLM1zD6FRpEKP6FCWeiVTQy
-         RqSToOipqZJKGwjLKZpS2nTuuRwKexKWiWY7x+pmqtrj04ugCgu2tCSl0UCqik8fks
-         ivrKtfGPKE5R0nsBBYFBwe2+yci9hEd9fJ2BGq98=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 772/913] KVM: x86/mmu: Zap _all_ roots when unmapping gfn range in TDP MMU
-Date:   Tue,  5 Apr 2022 09:30:34 +0200
-Message-Id: <20220405070402.973258152@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:15:36 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5F27F239
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:36:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649154964; x=1680690964;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LDJjU9zCF2yUo6JmrZW5kQUAHhzbUQYV3bIsKsJG9dQ=;
+  b=EMfXiqVZYVJrKpm9UqePJXBzXGl2VE42g9GY6xJOIYLD4kyPSr7vCYTc
+   CjlfPPk3tOupB2yDsO8bPCueLb2ZmAIOubXOTi4Mq2zVBhcDaVC+2TQgS
+   M3SY1c5ccgvZ9278o5ebX96FYEekD8mouTzQFMs+B+rn5mhGNvbwgU8dW
+   lvoCvkr/Kp62fw82ics5qsiOAZIx4CR66HyMlxLSh9nCit+DqORI+uz/u
+   JcV2m6Mt940rPcXJIe+7iUPFP4wO3D4jCGYGsYHm/9JiRvPgwnr2THgjH
+   9DaUaeavonyYYOOH8BIJ3/IxUF4+mAdGRi+6/4a0Aq46eOCpAOzYBUClI
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260413920"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="260413920"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 03:36:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="569824757"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 05 Apr 2022 03:36:02 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbgXZ-00034B-Up;
+        Tue, 05 Apr 2022 10:36:01 +0000
+Date:   Tue, 5 Apr 2022 18:35:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [avpatel:riscv_kvm_aia_v1 9/29] arch/riscv/kernel/smp.c:120:2-3:
+ Unneeded semicolon
+Message-ID: <202204051806.SNUnP4eo-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
+head:   dab41b5c8f55fb8e864a5e10fd181dd0d4443778
+commit: 9951f846b51d68f916cfa08140171cbcc8c0d02b [9/29] RISC-V: Treat IPIs as normal Linux IRQs
+config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220405/202204051806.SNUnP4eo-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
 
-commit d62007edf01f5c11f75d0f4b1e538fc52a5b1982 upstream.
-
-Zap both valid and invalid roots when zapping/unmapping a gfn range, as
-KVM must ensure it holds no references to the freed page after returning
-from the unmap operation.  Most notably, the TDP MMU doesn't zap invalid
-roots in mmu_notifier callbacks.  This leads to use-after-free and other
-issues if the mmu_notifier runs to completion while an invalid root
-zapper yields as KVM fails to honor the requirement that there must be
-_no_ references to the page after the mmu_notifier returns.
-
-The bug is most easily reproduced by hacking KVM to cause a collision
-between set_nx_huge_pages() and kvm_mmu_notifier_release(), but the bug
-exists between kvm_mmu_notifier_invalidate_range_start() and memslot
-updates as well.  Invalidating a root ensures pages aren't accessible by
-the guest, and KVM won't read or write page data itself, but KVM will
-trigger e.g. kvm_set_pfn_dirty() when zapping SPTEs, and thus completing
-a zap of an invalid root _after_ the mmu_notifier returns is fatal.
-
-  WARNING: CPU: 24 PID: 1496 at arch/x86/kvm/../../../virt/kvm/kvm_main.c:173 [kvm]
-  RIP: 0010:kvm_is_zone_device_pfn+0x96/0xa0 [kvm]
-  Call Trace:
-   <TASK>
-   kvm_set_pfn_dirty+0xa8/0xe0 [kvm]
-   __handle_changed_spte+0x2ab/0x5e0 [kvm]
-   __handle_changed_spte+0x2ab/0x5e0 [kvm]
-   __handle_changed_spte+0x2ab/0x5e0 [kvm]
-   zap_gfn_range+0x1f3/0x310 [kvm]
-   kvm_tdp_mmu_zap_invalidated_roots+0x50/0x90 [kvm]
-   kvm_mmu_zap_all_fast+0x177/0x1a0 [kvm]
-   set_nx_huge_pages+0xb4/0x190 [kvm]
-   param_attr_store+0x70/0x100
-   module_attr_store+0x19/0x30
-   kernfs_fop_write_iter+0x119/0x1b0
-   new_sync_write+0x11c/0x1b0
-   vfs_write+0x1cc/0x270
-   ksys_write+0x5f/0xe0
-   do_syscall_64+0x38/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-   </TASK>
-
-Fixes: b7cccd397f31 ("KVM: x86/mmu: Fast invalidation for TDP MMU")
-Cc: stable@vger.kernel.org
-Cc: Ben Gardon <bgardon@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20211215011557.399940-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/kvm/mmu/tdp_mmu.c |   39 ++++++++++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 15 deletions(-)
-
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -99,15 +99,18 @@ void kvm_tdp_mmu_put_root(struct kvm *kv
- }
- 
- /*
-- * Finds the next valid root after root (or the first valid root if root
-- * is NULL), takes a reference on it, and returns that next root. If root
-- * is not NULL, this thread should have already taken a reference on it, and
-- * that reference will be dropped. If no valid root is found, this
-- * function will return NULL.
-+ * Returns the next root after @prev_root (or the first root if @prev_root is
-+ * NULL).  A reference to the returned root is acquired, and the reference to
-+ * @prev_root is released (the caller obviously must hold a reference to
-+ * @prev_root if it's non-NULL).
-+ *
-+ * If @only_valid is true, invalid roots are skipped.
-+ *
-+ * Returns NULL if the end of tdp_mmu_roots was reached.
-  */
- static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
- 					      struct kvm_mmu_page *prev_root,
--					      bool shared)
-+					      bool shared, bool only_valid)
- {
- 	struct kvm_mmu_page *next_root;
- 
-@@ -122,7 +125,7 @@ static struct kvm_mmu_page *tdp_mmu_next
- 						   typeof(*next_root), link);
- 
- 	while (next_root) {
--		if (!next_root->role.invalid &&
-+		if ((!only_valid || !next_root->role.invalid) &&
- 		    kvm_tdp_mmu_get_root(kvm, next_root))
- 			break;
- 
-@@ -148,13 +151,19 @@ static struct kvm_mmu_page *tdp_mmu_next
-  * mode. In the unlikely event that this thread must free a root, the lock
-  * will be temporarily dropped and reacquired in write mode.
-  */
--#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)	\
--	for (_root = tdp_mmu_next_root(_kvm, NULL, _shared);		\
--	     _root;							\
--	     _root = tdp_mmu_next_root(_kvm, _root, _shared))		\
--		if (kvm_mmu_page_as_id(_root) != _as_id) {		\
-+#define __for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, _only_valid)\
-+	for (_root = tdp_mmu_next_root(_kvm, NULL, _shared, _only_valid);	\
-+	     _root;								\
-+	     _root = tdp_mmu_next_root(_kvm, _root, _shared, _only_valid))	\
-+		if (kvm_mmu_page_as_id(_root) != _as_id) {			\
- 		} else
- 
-+#define for_each_valid_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)	\
-+	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, true)
-+
-+#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)		\
-+	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, false)
-+
- #define for_each_tdp_mmu_root(_kvm, _root, _as_id)				\
- 	list_for_each_entry_rcu(_root, &_kvm->arch.tdp_mmu_roots, link,		\
- 				lockdep_is_held_type(&kvm->mmu_lock, 0) ||	\
-@@ -1279,7 +1288,7 @@ bool kvm_tdp_mmu_wrprot_slot(struct kvm
- 
- 	lockdep_assert_held_read(&kvm->mmu_lock);
- 
--	for_each_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
-+	for_each_valid_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
- 		spte_set |= wrprot_gfn_range(kvm, root, slot->base_gfn,
- 			     slot->base_gfn + slot->npages, min_level);
- 
-@@ -1350,7 +1359,7 @@ bool kvm_tdp_mmu_clear_dirty_slot(struct
- 
- 	lockdep_assert_held_read(&kvm->mmu_lock);
- 
--	for_each_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
-+	for_each_valid_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
- 		spte_set |= clear_dirty_gfn_range(kvm, root, slot->base_gfn,
- 				slot->base_gfn + slot->npages);
- 
-@@ -1475,7 +1484,7 @@ void kvm_tdp_mmu_zap_collapsible_sptes(s
- 
- 	lockdep_assert_held_read(&kvm->mmu_lock);
- 
--	for_each_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
-+	for_each_valid_tdp_mmu_root_yield_safe(kvm, root, slot->as_id, true)
- 		zap_collapsible_spte_range(kvm, root, slot);
- }
- 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
+cocci warnings: (new ones prefixed by >>)
+>> arch/riscv/kernel/smp.c:120:2-3: Unneeded semicolon
+
+Please review and possibly fold the followup patch.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
