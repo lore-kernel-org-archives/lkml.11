@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A88DDC4707E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380708AbiDEVhV (ORCPT
+        id S1380953AbiDEVhe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        Tue, 5 Apr 2022 17:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348795AbiDEJsg (ORCPT
+        with ESMTP id S1348321AbiDEJrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8035D88B17;
-        Tue,  5 Apr 2022 02:35:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:47:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0C96C49E;
+        Tue,  5 Apr 2022 02:33:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B3E8B81B93;
-        Tue,  5 Apr 2022 09:35:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E4E6C385A0;
-        Tue,  5 Apr 2022 09:35:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81520B81C86;
+        Tue,  5 Apr 2022 09:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9196C385A0;
+        Tue,  5 Apr 2022 09:33:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151335;
-        bh=zNbstIO7fTReljmVQ05A1unZPeHQpqkHrt0QzvkAAfA=;
+        s=korg; t=1649151221;
+        bh=4CbGFM1Lbe8DmiPQBMYFTnVQIyjT1+Fi1scJt5CW+h8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IPwnZiaYu3HTk5n1jz6RxY2XkkC4jdBx5Aqc4W+77SteTndKiO2TRSowkJTbb+VBx
-         h7Fr2skZOQvKAsKwH868NTlyZAIFTkzvPfarIO4R9kx8i5Qgc+jTwlk1N/7SlHoint
-         t1CoE6EVw9XGSa2QEVzrD0pYxvFsBg0vAWF9qRNM=
+        b=ULvlNA4MPJhFVp9bD5bEM8mi94vTwT9o0Ogaj/HNlNVvZEU8VsbzsphU8LPFIYCrs
+         PvgjAheyZ1Jbqm/WfeHLw2pdLjQsTJ3tJfDPpUHU6pJEBOpPvgRuTO6FkrJh3Cczfx
+         3igQ3ngxin6F3Jce07UqS/cGhcZK+kYMROpdc1z0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 379/913] drm/bridge: Add missing pm_runtime_disable() in __dw_mipi_dsi_probe
-Date:   Tue,  5 Apr 2022 09:24:01 +0200
-Message-Id: <20220405070351.209523550@linuxfoundation.org>
+Subject: [PATCH 5.15 338/913] ASoC: mxs-saif: Handle errors for clk_enable
+Date:   Tue,  5 Apr 2022 09:23:20 +0200
+Message-Id: <20220405070349.980719157@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,36 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 96211b7c56b109a52768e6cc5e23a1f79316eca0 ]
+[ Upstream commit 2ecf362d220317debf5da376e0390e9f7a3f7b29 ]
 
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
-Add missing pm_runtime_disable() for __dw_mipi_dsi_probe.
+As the potential failure of the clk_enable(),
+it should be better to check it, like mxs_saif_trigger().
 
-Fixes: 46fc51546d44 ("drm/bridge/synopsys: Add MIPI DSI host controller bridge")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220105104113.31415-1-linmq006@gmail.com
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Fixes: d0ba4c014934 ("ASoC: mxs-saif: set a base clock rate for EXTMASTER mode work")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301081717.3727190-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/mxs/mxs-saif.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
-index e44e18a0112a..56c3fd08c6a0 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
-@@ -1199,6 +1199,7 @@ __dw_mipi_dsi_probe(struct platform_device *pdev,
- 	ret = mipi_dsi_host_register(&dsi->dsi_host);
- 	if (ret) {
- 		dev_err(dev, "Failed to register MIPI host: %d\n", ret);
-+		pm_runtime_disable(dev);
- 		dw_mipi_dsi_debugfs_remove(dsi);
- 		return ERR_PTR(ret);
- 	}
+diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
+index 6a2d24d48964..879c1221a809 100644
+--- a/sound/soc/mxs/mxs-saif.c
++++ b/sound/soc/mxs/mxs-saif.c
+@@ -455,7 +455,10 @@ static int mxs_saif_hw_params(struct snd_pcm_substream *substream,
+ 		* basic clock which should be fast enough for the internal
+ 		* logic.
+ 		*/
+-		clk_enable(saif->clk);
++		ret = clk_enable(saif->clk);
++		if (ret)
++			return ret;
++
+ 		ret = clk_set_rate(saif->clk, 24000000);
+ 		clk_disable(saif->clk);
+ 		if (ret)
 -- 
 2.34.1
 
