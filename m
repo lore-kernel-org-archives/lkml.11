@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1FAC352A7
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54485C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379580AbiDEMxK (ORCPT
+        id S1380816AbiDEMyL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        Tue, 5 Apr 2022 08:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243418AbiDEJI4 (ORCPT
+        with ESMTP id S1343846AbiDEJOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:08:56 -0400
+        Tue, 5 Apr 2022 05:14:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DE69F6E5;
-        Tue,  5 Apr 2022 01:58:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFD64A91D;
+        Tue,  5 Apr 2022 02:00:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F78461574;
-        Tue,  5 Apr 2022 08:58:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94805C385A0;
-        Tue,  5 Apr 2022 08:58:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44AAB61564;
+        Tue,  5 Apr 2022 09:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58180C385A0;
+        Tue,  5 Apr 2022 09:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149083;
-        bh=nTo5q30PPqsFi2+GkQvzuK8vFIkgLEuVQEnryNps5rM=;
+        s=korg; t=1649149252;
+        bh=MgDDT8VuQWca49TghJ4tLzY7YNfYN4Yv/TzRySXi/dQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C/V/U6o5xam35r3g8pxq0dbkYh1i1iIT57o1bcc5jFha/ZJCDQwSMfwqZ7XToS+Bh
-         61e2Wj7KN6ZqVhC3MOHvp7jKMMJ1VLGnKvDKP6tal3nawtbDVIdFKTMOPDLBdp5qbA
-         ok+fAm1Oydt4bvYcflpnmGdRBOnPcrVigYokeb9M=
+        b=NbTI/VYedjXeNWIs6ruHM4wh14yI9NC0hGE3V1B9/bocmv+6458OzTOxJ4poRpBBC
+         URp7bj5Fopy8wGvv9XY/TKu3WKqyph4dALc8XOgFCnoUfE8eLnblHEzzDkbO+LHjzI
+         Qf7l7b0Lm/7qzhwBiKRAcRv43v/hWq/NuAUuNP4I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0587/1017] xtensa: add missing XCHAL_HAVE_WINDOWED check
-Date:   Tue,  5 Apr 2022 09:25:00 +0200
-Message-Id: <20220405070411.703420324@linuxfoundation.org>
+Subject: [PATCH 5.16 0649/1017] fsi: Aspeed: Fix a potential double free
+Date:   Tue,  5 Apr 2022 09:26:02 +0200
+Message-Id: <20220405070413.548551803@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,37 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 8c9ab55c0fbdc76cb876140c2dad75a610bb23ef ]
+[ Upstream commit 83ba7e895debc529803a7a258653f2fe9bf3bf40 ]
 
-Add missing preprocessor conditions to secondary reset vector code.
+A struct device can never be devm_alloc()'ed.
+Here, it is embedded in "struct fsi_master", and "struct fsi_master" is
+embedded in "struct fsi_master_aspeed".
 
-Fixes: 09af39f649da ("xtensa: use register window specific opcodes only when present")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Since "struct device" is embedded, the data structure embedding it must be
+released with the release function, as is already done here.
+
+So use kzalloc() instead of devm_kzalloc() when allocating "aspeed" and
+update all error handling branches accordingly.
+
+This prevent a potential double free().
+
+This also fix another issue if opb_readl() fails. Instead of a direct
+return, it now jumps in the error handling path.
+
+Fixes: 606397d67f41 ("fsi: Add ast2600 master driver")
+Suggested-by: Greg KH <gregkh@linuxfoundation.org>
+Suggested-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/2c123f8b0a40dc1a061fae982169fe030b4f47e6.1641765339.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/kernel/mxhead.S | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/fsi/fsi-master-aspeed.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/arch/xtensa/kernel/mxhead.S b/arch/xtensa/kernel/mxhead.S
-index 9f3843742726..b702c0908b1f 100644
---- a/arch/xtensa/kernel/mxhead.S
-+++ b/arch/xtensa/kernel/mxhead.S
-@@ -37,11 +37,13 @@ _SetupOCD:
- 	 * xt-gdb to single step via DEBUG exceptions received directly
- 	 * by ocd.
- 	 */
-+#if XCHAL_HAVE_WINDOWED
- 	movi	a1, 1
- 	movi	a0, 0
- 	wsr	a1, windowstart
- 	wsr	a0, windowbase
- 	rsync
-+#endif
+diff --git a/drivers/fsi/fsi-master-aspeed.c b/drivers/fsi/fsi-master-aspeed.c
+index 8606e55c1721..0bed2fab8055 100644
+--- a/drivers/fsi/fsi-master-aspeed.c
++++ b/drivers/fsi/fsi-master-aspeed.c
+@@ -542,25 +542,28 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 		return rc;
+ 	}
  
- 	movi	a1, LOCKLEVEL
- 	wsr	a1, ps
+-	aspeed = devm_kzalloc(&pdev->dev, sizeof(*aspeed), GFP_KERNEL);
++	aspeed = kzalloc(sizeof(*aspeed), GFP_KERNEL);
+ 	if (!aspeed)
+ 		return -ENOMEM;
+ 
+ 	aspeed->dev = &pdev->dev;
+ 
+ 	aspeed->base = devm_platform_ioremap_resource(pdev, 0);
+-	if (IS_ERR(aspeed->base))
+-		return PTR_ERR(aspeed->base);
++	if (IS_ERR(aspeed->base)) {
++		rc = PTR_ERR(aspeed->base);
++		goto err_free_aspeed;
++	}
+ 
+ 	aspeed->clk = devm_clk_get(aspeed->dev, NULL);
+ 	if (IS_ERR(aspeed->clk)) {
+ 		dev_err(aspeed->dev, "couldn't get clock\n");
+-		return PTR_ERR(aspeed->clk);
++		rc = PTR_ERR(aspeed->clk);
++		goto err_free_aspeed;
+ 	}
+ 	rc = clk_prepare_enable(aspeed->clk);
+ 	if (rc) {
+ 		dev_err(aspeed->dev, "couldn't enable clock\n");
+-		return rc;
++		goto err_free_aspeed;
+ 	}
+ 
+ 	rc = setup_cfam_reset(aspeed);
+@@ -595,7 +598,7 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 	rc = opb_readl(aspeed, ctrl_base + FSI_MVER, &raw);
+ 	if (rc) {
+ 		dev_err(&pdev->dev, "failed to read hub version\n");
+-		return rc;
++		goto err_release;
+ 	}
+ 
+ 	reg = be32_to_cpu(raw);
+@@ -634,6 +637,8 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 
+ err_release:
+ 	clk_disable_unprepare(aspeed->clk);
++err_free_aspeed:
++	kfree(aspeed);
+ 	return rc;
+ }
+ 
 -- 
 2.34.1
 
