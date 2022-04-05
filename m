@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B546C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 981B3C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239021AbiDEJeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        id S239466AbiDEJeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239466AbiDEIUG (ORCPT
+        with ESMTP id S239460AbiDEIUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A08AAC93A;
-        Tue,  5 Apr 2022 01:13:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2931F986EA;
+        Tue,  5 Apr 2022 01:13:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAAC960B0A;
-        Tue,  5 Apr 2022 08:13:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0155C385A0;
-        Tue,  5 Apr 2022 08:13:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9C8F60B0A;
+        Tue,  5 Apr 2022 08:13:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA909C385A1;
+        Tue,  5 Apr 2022 08:13:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146432;
-        bh=6tQ1SmCuXGWeuod34frKtsQaqkmflRErCJOG0nxktR4=;
+        s=korg; t=1649146424;
+        bh=csgVznpz+CbDSMa65uT6mHegJRLSqN9GgMqe8LRJoHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pMfDM2+9AhgObbrFZlj4rNVRbWUDpAscwetchkkgHqMcimQ6A7x7byoy+vL+UwALc
-         ahbKQy+Bpj65POiU/jGTC1UdeNCDFd/PHMx1+qEPwykZe3W3XsJhf2YnWBr0ONu99y
-         pdcbMH9iF/r4efM9FnaPpMG68pJBykVhXYFafm0o=
+        b=KS736sv6URAg8KSfmKGMLOV2RhN9NlVOcmYWZBVbXeUJvpyWqe0WMRwQ3W3p4d41h
+         wFvNwqXBozoUD0RvjiE1uYgA+K+NVuupU/0OtlsUM5T4E1rTHfn8rL0oH156eEAEup
+         hK4dh+wE0Xe4RR+BydxhARZ/k/xy2pboys6Qri4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0763/1126] staging: mt7621-dts: fix LEDs and pinctrl on GB-PC1 devicetree
-Date:   Tue,  5 Apr 2022 09:25:10 +0200
-Message-Id: <20220405070429.979017287@linuxfoundation.org>
+        stable@vger.kernel.org, Libin Yang <libin.yang@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0721/1126] soundwire: intel: fix wrong register name in intel_shim_wake
+Date:   Tue,  5 Apr 2022 09:24:28 +0200
+Message-Id: <20220405070428.756144289@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,134 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+From: Libin Yang <libin.yang@intel.com>
 
-[ Upstream commit 6256e18686158fa49e019297f990f1c1817aabf1 ]
+[ Upstream commit 3957db3ae3dae6f8b8168791f154567fe49e1fd7 ]
 
-Fix LED and pinctrl definitions on the GB-PC1 devicetree. Refer to the
-schematics of the device for more information.
+When clearing the sdw wakests status, we should use SDW_SHIM_WAKESTS.
 
-LED fixes:
-- Change GPIO6 LED label from system to power as GPIO6 is connected to
-PLED.
-- Add default-on default-trigger to power LED.
-- Change GPIO8 LED label from status to system as GPIO8 is connected to
-SYS_LED.
-- Add disk-activity default-trigger to system LED.
-- Switch to the color:function naming scheme.
-- Remove lan1 and lan2 LEDs as they don't exist.
-
-Pinctrl fixes:
-- Claim state_default node under pinctrl node.
-- Change pinctrl0 node name to state-default.
-- Change gpio node name to gpio-pinmux to respect
-Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinmux.yaml.
-- Sort pin groups alphabetically.
-
-Misc fixes:
-- Fix formatting.
-- Use the status value "okay".
-- Define hexadecimal addresses in lower case.
-- Make hexadecimal addresses for memory easier to read.
-
-Link: https://github.com/ngiger/GnuBee_Docs/blob/master/GB-PCx/Documents/GB-PC1_V1.0_Schematic.pdf
-Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220311090320.3068-1-arinc.unal@arinc9.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4a17c441c7cb ("soundwire: intel: revisit SHIM programming sequences.")
+Signed-off-by: Libin Yang <libin.yang@intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220126011451.27853-1-yung-chuan.liao@linux.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/mt7621-dts/gbpc1.dts | 40 +++++++++++++---------------
- 1 file changed, 18 insertions(+), 22 deletions(-)
+ drivers/soundwire/intel.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/mt7621-dts/gbpc1.dts b/drivers/staging/mt7621-dts/gbpc1.dts
-index e38a083811e5..5ae94b1ad599 100644
---- a/drivers/staging/mt7621-dts/gbpc1.dts
-+++ b/drivers/staging/mt7621-dts/gbpc1.dts
-@@ -12,7 +12,8 @@
+diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+index 122f7a29d8ca..63101f1ba271 100644
+--- a/drivers/soundwire/intel.c
++++ b/drivers/soundwire/intel.c
+@@ -448,8 +448,8 @@ static void intel_shim_wake(struct sdw_intel *sdw, bool wake_enable)
  
- 	memory@0 {
- 		device_type = "memory";
--		reg = <0x0 0x1c000000>, <0x20000000 0x4000000>;
-+		reg = <0x00000000 0x1c000000>,
-+		      <0x20000000 0x04000000>;
- 	};
- 
- 	chosen {
-@@ -38,24 +39,16 @@
- 	gpio-leds {
- 		compatible = "gpio-leds";
- 
--		system {
--			label = "gb-pc1:green:system";
-+		power {
-+			label = "green:power";
- 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
-+			linux,default-trigger = "default-on";
- 		};
- 
--		status {
--			label = "gb-pc1:green:status";
-+		system {
-+			label = "green:system";
- 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
--		};
--
--		lan1 {
--			label = "gb-pc1:green:lan1";
--			gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
--		};
--
--		lan2 {
--			label = "gb-pc1:green:lan2";
--			gpios = <&gpio 25 GPIO_ACTIVE_LOW>;
-+			linux,default-trigger = "disk-activity";
- 		};
- 	};
- };
-@@ -95,9 +88,8 @@
- 
- 		partition@50000 {
- 			label = "firmware";
--			reg = <0x50000 0x1FB0000>;
-+			reg = <0x50000 0x1fb0000>;
- 		};
--
- 	};
- };
- 
-@@ -106,9 +98,12 @@
- };
- 
- &pinctrl {
--	state_default: pinctrl0 {
--		default_gpio: gpio {
--			groups = "wdt", "rgmii2", "uart3";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&state_default>;
-+
-+	state_default: state-default {
-+		gpio-pinmux {
-+			groups = "rgmii2", "uart3", "wdt";
- 			function = "gpio";
- 		};
- 	};
-@@ -117,12 +112,13 @@
- &switch0 {
- 	ports {
- 		port@0 {
-+			status = "okay";
- 			label = "ethblack";
--			status = "ok";
- 		};
-+
- 		port@4 {
-+			status = "okay";
- 			label = "ethblue";
--			status = "ok";
- 		};
- 	};
- };
+ 		/* Clear wake status */
+ 		wake_sts = intel_readw(shim, SDW_SHIM_WAKESTS);
+-		wake_sts |= (SDW_SHIM_WAKEEN_ENABLE << link_id);
+-		intel_writew(shim, SDW_SHIM_WAKESTS_STATUS, wake_sts);
++		wake_sts |= (SDW_SHIM_WAKESTS_STATUS << link_id);
++		intel_writew(shim, SDW_SHIM_WAKESTS, wake_sts);
+ 	}
+ 	mutex_unlock(sdw->link_res->shim_lock);
+ }
 -- 
 2.34.1
 
