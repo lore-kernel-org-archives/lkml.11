@@ -2,98 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A12DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FEDC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844233AbiDFBqd (ORCPT
+        id S1391276AbiDFBsn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
+        Tue, 5 Apr 2022 21:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351543AbiDEKCi (ORCPT
+        with ESMTP id S1457970AbiDERCV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:02:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F94D6EC64;
-        Tue,  5 Apr 2022 02:51:55 -0700 (PDT)
+        Tue, 5 Apr 2022 13:02:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334F788B0E;
+        Tue,  5 Apr 2022 10:00:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F22DBCE1CA0;
-        Tue,  5 Apr 2022 09:51:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1611EC385C1;
-        Tue,  5 Apr 2022 09:51:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C272C615AF;
+        Tue,  5 Apr 2022 17:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4FBBC385A5;
+        Tue,  5 Apr 2022 17:00:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152312;
-        bh=IarqHDYKJbHBln3CcZKc26LuO7T/MvquBPPP1r30uhU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RlYRI95rrs85MTWekBOPL1aGRy5KjHig+z2vFAm5EWVbLtmnXDfq3cCYZ+sIgfSue
-         2J/XjnXKbRAFfp7tXU/Je0Cw2rFbiDBEvV8YjEF0zhd8yN6RPT9tYM4Hd0M2aG+8tH
-         OWuzVhXzI9DyfolPRrodw2QybC/8evv7V64vGvOk=
+        s=korg; t=1649178022;
+        bh=zb1JFQP4vJ/gYj1rlsoqkkSJjt4zifG3LrmGqsQ055U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LKBetFmeA75o9XU4QGhMx54eDMYGRe6Polah3FawFP3ub9F9PvXz8KyjNQwvnu8hG
+         20c1vv60qUF70wyTBjWbRC3ZyrFXVxWxbD6Jp1sWltN7+VJhhrdGESUJLulGn4yoCg
+         UtkoFG8fjZROl67hOi1TfLJt66UAX2gCLwW7nCOg=
+Date:   Tue, 5 Apr 2022 19:00:19 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 730/913] ASoC: sh: rz-ssi: Make the data structures available before registering the handlers
-Date:   Tue,  5 Apr 2022 09:29:52 +0200
-Message-Id: <20220405070401.713076262@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+To:     dann frazier <dann.frazier@canonical.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Toan Le <toan@os.amperecomputing.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>
+Subject: Re: [PATCH 5.16 0199/1017] PCI: xgene: Revert "PCI: xgene: Fix IB
+ window setup"
+Message-ID: <Ykx1o2PbNzGlp1ds@kroah.com>
+References: <20220405070354.155796697@linuxfoundation.org>
+ <20220405070400.156176848@linuxfoundation.org>
+ <YkxjbVp3W2LeVIeL@xps13.dannf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YkxjbVp3W2LeVIeL@xps13.dannf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Tue, Apr 05, 2022 at 09:42:37AM -0600, dann frazier wrote:
+> On Tue, Apr 05, 2022 at 09:18:32AM +0200, Greg Kroah-Hartman wrote:
+> > From: Marc Zyngier <maz@kernel.org>
+> > 
+> > commit 825da4e9cec68713fbb02dc6f71fe1bf65fe8050 upstream.
+> > 
+> > Commit c7a75d07827a ("PCI: xgene: Fix IB window setup") tried to
+> > fix the damages that 6dce5aa59e0b ("PCI: xgene: Use inbound resources
+> > for setup") caused, but actually didn't improve anything for some
+> > plarforms (at least Mustang and m400 are still broken).
+> > 
+> > Given that 6dce5aa59e0b has been reverted, revert this patch as well,
+> > restoring the PCIe support on XGene to its pre-5.5, working state.
+> > 
+> > Link: https://lore.kernel.org/r/YjN8pT5e6/8cRohQ@xps13.dannf
+> > Link: https://lore.kernel.org/r/20220321104843.949645-3-maz@kernel.org
+> > Fixes: c7a75d07827a ("PCI: xgene: Fix IB window setup")
+> > Signed-off-by: Marc Zyngier <maz@kernel.org>
+> > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > Cc: stable@vger.kernel.org
+> > Cc: Rob Herring <robh@kernel.org>
+> > Cc: Toan Le <toan@os.amperecomputing.com>
+> > Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > Cc: Krzysztof Wilczyński <kw@linux.com>
+> > Cc: Bjorn Helgaas <bhelgaas@google.com>
+> > Cc: Stéphane Graber <stgraber@ubuntu.com>
+> > Cc: dann frazier <dann.frazier@canonical.com>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> >  drivers/pci/controller/pci-xgene.c |    2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> Hi Greg,
+> 
+>   I don't think it makes sense to apply this to 5.10.y, 5.15.y &
+> 5.16.y w/o also applying a backport of 1874b6d7ab1, because without
+> that we will regress support for Stéphane's X-Gene2-based systems. The
+> backport of 1874b6d7ab1 was rejected for these trees because it doesn't
+> apply cleanly, but I've just submitted new versions that do.
 
-[ Upstream commit 0788785c78342d422f93b1c9831c2b2b7f137937 ]
+Where were those patches sent to?  I don't seem to see them on the
+stable list, did I miss them?
 
-Initialize the spinlock and make the data structures available before
-registering the interrupt handlers.
+thanks,
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220110094711.8574-3-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/sh/rz-ssi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 37466f65c2b0..16de2633a873 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -977,6 +977,9 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	ssi->playback.priv = ssi;
- 	ssi->capture.priv = ssi;
- 
-+	spin_lock_init(&ssi->lock);
-+	dev_set_drvdata(&pdev->dev, ssi);
-+
- 	/* Error Interrupt */
- 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
- 	if (ssi->irq_int < 0)
-@@ -1024,8 +1027,6 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_resume_and_get(&pdev->dev);
- 
--	spin_lock_init(&ssi->lock);
--	dev_set_drvdata(&pdev->dev, ssi);
- 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
- 					      rz_ssi_soc_dai,
- 					      ARRAY_SIZE(rz_ssi_soc_dai));
--- 
-2.34.1
-
-
-
+greg k-h
