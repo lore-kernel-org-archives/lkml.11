@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF0BC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36907C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343524AbiDEJMc (ORCPT
+        id S1343687AbiDEJMj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        Tue, 5 Apr 2022 05:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239544AbiDEIUN (ORCPT
+        with ESMTP id S239594AbiDEIUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:13 -0400
+        Tue, 5 Apr 2022 04:20:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EE11112;
-        Tue,  5 Apr 2022 01:15:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25BAA18D;
+        Tue,  5 Apr 2022 01:16:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 423C7609AD;
-        Tue,  5 Apr 2022 08:15:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43942C385A0;
-        Tue,  5 Apr 2022 08:15:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F223609D0;
+        Tue,  5 Apr 2022 08:16:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E88BC385A0;
+        Tue,  5 Apr 2022 08:16:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146550;
-        bh=mVJW0jriGsMkJF7MMUrG9gnidIxh1CbR3g/6L45+X3Q=;
+        s=korg; t=1649146618;
+        bh=WDCh1frB76ZgY5mu6uFLH7Bvag6zbMU6kBLWN9Pw2bs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SoJcH1SiLpSZV6Cm8cjSmdzDNwyvMcgj/i33NiTV//7QpJJxWJ6WGgRRTD30CNsdK
-         fNdbEO1U3/GOQtYn2R3zPpHxRDEtlv/CZv8dWmbsWho8Z//RbZ8gPBEv30nociusf0
-         sYhH4wWCawabX9lcg5uiaJocTcBgbijL2tx7ANcM=
+        b=SHXccYvEi2azUnYiVbRf8Q0iEC1kzElgt878SbXN+XysVxfldAieAqXHda07uBJc6
+         W1j/MT8J6WhpwUFWYH9kGU2seWhyS8TB1q6I7qFIRj9ho1J1vxq/9Ob2+sFJDNZBNi
+         dA9Ok9Rae+mTxL6s+vrBCvNVnz0Ld2DLLrIuiVpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0805/1126] xen: fix is_xen_pmu()
-Date:   Tue,  5 Apr 2022 09:25:52 +0200
-Message-Id: <20220405070431.198019903@linuxfoundation.org>
+Subject: [PATCH 5.17 0828/1126] NFSv4/pNFS: Fix another issue with a list iterator pointing to the head
+Date:   Tue,  5 Apr 2022 09:26:15 +0200
+Message-Id: <20220405070431.864937855@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,122 +50,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit de2ae403b4c0e79a3410e63bc448542fbb9f9bfc ]
+[ Upstream commit 7c9d845f0612e5bcd23456a2ec43be8ac43458f1 ]
 
-is_xen_pmu() is taking the cpu number as parameter, but it is not using
-it. Instead it just tests whether the Xen PMU initialization on the
-current cpu did succeed. As this test is done by checking a percpu
-pointer, preemption needs to be disabled in order to avoid switching
-the cpu while doing the test. While resuming from suspend() this seems
-not to be the case:
+In nfs4_callback_devicenotify(), if we don't find a matching entry for
+the deviceid, we're left with a pointer to 'struct nfs_server' that
+actually points to the list of super blocks associated with our struct
+nfs_client.
+Furthermore, even if we have a valid pointer, nothing pins the super
+block, and so the struct nfs_server could end up getting freed while
+we're using it.
 
-[   88.082751] ACPI: PM: Low-level resume complete
-[   88.087933] ACPI: EC: EC started
-[   88.091464] ACPI: PM: Restoring platform NVS memory
-[   88.097166] xen_acpi_processor: Uploading Xen processor PM info
-[   88.103850] Enabling non-boot CPUs ...
-[   88.108128] installing Xen timer for CPU 1
-[   88.112763] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-sleep/7138
-[   88.122256] caller is is_xen_pmu+0x12/0x30
-[   88.126937] CPU: 0 PID: 7138 Comm: systemd-sleep Tainted: G        W         5.16.13-2.fc32.qubes.x86_64 #1
-[   88.137939] Hardware name: Star Labs StarBook/StarBook, BIOS 7.97 03/21/2022
-[   88.145930] Call Trace:
-[   88.148757]  <TASK>
-[   88.151193]  dump_stack_lvl+0x48/0x5e
-[   88.155381]  check_preemption_disabled+0xde/0xe0
-[   88.160641]  is_xen_pmu+0x12/0x30
-[   88.164441]  xen_smp_intr_init_pv+0x75/0x100
+Since all we want is a pointer to the struct pnfs_layoutdriver_type,
+let's skip all the iteration over super blocks, and just use APIs to
+find the layout driver directly.
 
-Fix that by replacing is_xen_pmu() by a simple boolean variable which
-reflects the Xen PMU initialization state on cpu 0.
-
-Modify xen_pmu_init() to return early in case it is being called for a
-cpu other than cpu 0 and the boolean variable not being set.
-
-Fixes: bf6dfb154d93 ("xen/PMU: PMU emulation code")
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/20220325142002.31789-1-jgross@suse.com
-Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Reported-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Fixes: 1be5683b03a7 ("pnfs: CB_NOTIFY_DEVICEID")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/xen/pmu.c    | 10 ++++------
- arch/x86/xen/pmu.h    |  3 ++-
- arch/x86/xen/smp_pv.c |  2 +-
- 3 files changed, 7 insertions(+), 8 deletions(-)
+ fs/nfs/callback_proc.c | 27 +++++++++------------------
+ fs/nfs/pnfs.c          | 11 +++++++++++
+ fs/nfs/pnfs.h          |  2 ++
+ 3 files changed, 22 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/xen/pmu.c b/arch/x86/xen/pmu.c
-index 89dd6b1708b0..21ecbe754cb2 100644
---- a/arch/x86/xen/pmu.c
-+++ b/arch/x86/xen/pmu.c
-@@ -506,10 +506,7 @@ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id)
- 	return ret;
+diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
+index c343666d9a42..6464dde03705 100644
+--- a/fs/nfs/callback_proc.c
++++ b/fs/nfs/callback_proc.c
+@@ -358,12 +358,11 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
+ 				  struct cb_process_state *cps)
+ {
+ 	struct cb_devicenotifyargs *args = argp;
++	const struct pnfs_layoutdriver_type *ld = NULL;
+ 	uint32_t i;
+ 	__be32 res = 0;
+-	struct nfs_client *clp = cps->clp;
+-	struct nfs_server *server = NULL;
+ 
+-	if (!clp) {
++	if (!cps->clp) {
+ 		res = cpu_to_be32(NFS4ERR_OP_NOT_IN_SESSION);
+ 		goto out;
+ 	}
+@@ -371,23 +370,15 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
+ 	for (i = 0; i < args->ndevs; i++) {
+ 		struct cb_devicenotifyitem *dev = &args->devs[i];
+ 
+-		if (!server ||
+-		    server->pnfs_curr_ld->id != dev->cbd_layout_type) {
+-			rcu_read_lock();
+-			list_for_each_entry_rcu(server, &clp->cl_superblocks, client_link)
+-				if (server->pnfs_curr_ld &&
+-				    server->pnfs_curr_ld->id == dev->cbd_layout_type) {
+-					rcu_read_unlock();
+-					goto found;
+-				}
+-			rcu_read_unlock();
+-			continue;
++		if (!ld || ld->id != dev->cbd_layout_type) {
++			pnfs_put_layoutdriver(ld);
++			ld = pnfs_find_layoutdriver(dev->cbd_layout_type);
++			if (!ld)
++				continue;
+ 		}
+-
+-	found:
+-		nfs4_delete_deviceid(server->pnfs_curr_ld, clp, &dev->cbd_dev_id);
++		nfs4_delete_deviceid(ld, cps->clp, &dev->cbd_dev_id);
+ 	}
+-
++	pnfs_put_layoutdriver(ld);
+ out:
+ 	kfree(args->devs);
+ 	return res;
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index 7c9090a28e5c..7ddd003ab8b1 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -92,6 +92,17 @@ find_pnfs_driver(u32 id)
+ 	return local;
  }
  
--bool is_xen_pmu(int cpu)
--{
--	return (get_xenpmu_data() != NULL);
--}
-+bool is_xen_pmu;
- 
- void xen_pmu_init(int cpu)
- {
-@@ -520,7 +517,7 @@ void xen_pmu_init(int cpu)
- 
- 	BUILD_BUG_ON(sizeof(struct xen_pmu_data) > PAGE_SIZE);
- 
--	if (xen_hvm_domain())
-+	if (xen_hvm_domain() || (cpu != 0 && !is_xen_pmu))
- 		return;
- 
- 	xenpmu_data = (struct xen_pmu_data *)get_zeroed_page(GFP_KERNEL);
-@@ -541,7 +538,8 @@ void xen_pmu_init(int cpu)
- 	per_cpu(xenpmu_shared, cpu).xenpmu_data = xenpmu_data;
- 	per_cpu(xenpmu_shared, cpu).flags = 0;
- 
--	if (cpu == 0) {
-+	if (!is_xen_pmu) {
-+		is_xen_pmu = true;
- 		perf_register_guest_info_callbacks(&xen_guest_cbs);
- 		xen_pmu_arch_init();
- 	}
-diff --git a/arch/x86/xen/pmu.h b/arch/x86/xen/pmu.h
-index 0e83a160589b..65c58894fc79 100644
---- a/arch/x86/xen/pmu.h
-+++ b/arch/x86/xen/pmu.h
-@@ -4,6 +4,8 @@
- 
- #include <xen/interface/xenpmu.h>
- 
-+extern bool is_xen_pmu;
++const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id)
++{
++	return find_pnfs_driver(id);
++}
 +
- irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id);
- #ifdef CONFIG_XEN_HAVE_VPMU
- void xen_pmu_init(int cpu);
-@@ -12,7 +14,6 @@ void xen_pmu_finish(int cpu);
- static inline void xen_pmu_init(int cpu) {}
- static inline void xen_pmu_finish(int cpu) {}
- #endif
--bool is_xen_pmu(int cpu);
- bool pmu_msr_read(unsigned int msr, uint64_t *val, int *err);
- bool pmu_msr_write(unsigned int msr, uint32_t low, uint32_t high, int *err);
- int pmu_apic_update(uint32_t reg);
-diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-index 4a6019238ee7..688aa8b6ae29 100644
---- a/arch/x86/xen/smp_pv.c
-+++ b/arch/x86/xen/smp_pv.c
-@@ -129,7 +129,7 @@ int xen_smp_intr_init_pv(unsigned int cpu)
- 	per_cpu(xen_irq_work, cpu).irq = rc;
- 	per_cpu(xen_irq_work, cpu).name = callfunc_name;
++void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld)
++{
++	if (ld)
++		module_put(ld->owner);
++}
++
+ void
+ unset_pnfs_layoutdriver(struct nfs_server *nfss)
+ {
+diff --git a/fs/nfs/pnfs.h b/fs/nfs/pnfs.h
+index f4d7548d67b2..07f11489e4e9 100644
+--- a/fs/nfs/pnfs.h
++++ b/fs/nfs/pnfs.h
+@@ -234,6 +234,8 @@ struct pnfs_devicelist {
  
--	if (is_xen_pmu(cpu)) {
-+	if (is_xen_pmu) {
- 		pmu_name = kasprintf(GFP_KERNEL, "pmu%d", cpu);
- 		rc = bind_virq_to_irqhandler(VIRQ_XENPMU, cpu,
- 					     xen_pmu_irq_handler,
+ extern int pnfs_register_layoutdriver(struct pnfs_layoutdriver_type *);
+ extern void pnfs_unregister_layoutdriver(struct pnfs_layoutdriver_type *);
++extern const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id);
++extern void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld);
+ 
+ /* nfs4proc.c */
+ extern size_t max_response_pages(struct nfs_server *server);
 -- 
 2.34.1
 
