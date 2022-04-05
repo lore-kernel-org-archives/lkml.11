@@ -2,134 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F256C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0BBC4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839032AbiDFA55 (ORCPT
+        id S1839020AbiDFA5x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
+        Tue, 5 Apr 2022 20:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350462AbiDEJ63 (ORCPT
+        with ESMTP id S1353651AbiDENHS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:58:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5481C57156;
-        Tue,  5 Apr 2022 02:51:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04713B81B97;
-        Tue,  5 Apr 2022 09:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD5FC385A3;
-        Tue,  5 Apr 2022 09:51:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152266;
-        bh=AJfBjKjh2+RRkrw2MJojNVGL7DPhthwNBpPtrMeZIT8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D/2GSQj6Ix+3JMMYhOU7l5LlSxalF+izRKEcatVQbGWPpRJqtBcTe8LZD83aBpYlo
-         C1c0cGwWvPa16/d7Oy4Lqkc+XKxXbVHlqCjipFZvfxxmJ/gmGSBYo0/P1rGav3hKmT
-         2PKydorTHwM7Mh7Vz32OM5bcfNuutcgtcajSMsW8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 716/913] f2fs: fix to do sanity check on curseg->alloc_type
-Date:   Tue,  5 Apr 2022 09:29:38 +0200
-Message-Id: <20220405070401.296433124@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:07:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B6CBE167FB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:09:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649160547;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wTHcEPqS4WZU3twPg6xFE08lBamScSNylvPFU0OFzg4=;
+        b=B22yoDcAQRw1Vts9MS32ITUwy6/UdIQ7uF0jPjzo2fFQaRHzVqGAn71l4WMdwI/YPiS89+
+        VvY3SfUBiwMAyAjYMm6S9kxg4PAoSF9c6EwSkPoSPbjowUITMpZVVChSxOzPRFTcT2QVh4
+        YSPIN3GXs0jObkOHHKj5boFHVd/tEDA=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-517-e07P-Z4CN0KVFs4JtRw1Yg-1; Tue, 05 Apr 2022 08:09:06 -0400
+X-MC-Unique: e07P-Z4CN0KVFs4JtRw1Yg-1
+Received: by mail-qv1-f70.google.com with SMTP id kc2-20020a056214410200b00443e6240ba1so2626076qvb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:09:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=wTHcEPqS4WZU3twPg6xFE08lBamScSNylvPFU0OFzg4=;
+        b=Kn75rhpukTIRxXSo8wNc6TrjHhfsHB7Gi8Hgx1pWtkaz/BTrpyckhh+VFQAUwAgyoX
+         l236x1Zzn/V6HopQ5upC15iaxwlGKPnyEBf3+qAxGKUCAajnnEFwAeoEzM8OkH5w7wd5
+         j+pPe+GYcXiRZt4DP2sc5Y8eTUpDNlnJTh5g9Zcgwdklvr76PULhNsX+4CX763kRRgqA
+         kbrRqtDNP6VU3HbHObXf2EXRQnHBaBGmZDEQu5jAap9W9M2uoqbAtqS0Cx2CM+K8eOUQ
+         1NVv4Bk7ZzJAS+sRQoh82tC5bhvMYqvh9W2RzvtrvJaGganV7V4xsP7WE1j2BpfVhRiC
+         ZxGA==
+X-Gm-Message-State: AOAM533JiTGLQf1yQ3dgUAu0+NsNJWKvAx1e/3Q0+Fyyczo2pgnhzN4b
+        h3rQmrolYHGhPhOQojr1b0mP6hqbxwkLajjV1FhFDH4MdVx2t5Lil/3/VgeGg6HSa7GCGlXzBs8
+        J7ewkMkSR+s5iZGxtXCeu9F7U
+X-Received: by 2002:ac8:4e8b:0:b0:2e2:129b:35f1 with SMTP id 11-20020ac84e8b000000b002e2129b35f1mr2557099qtp.387.1649160546383;
+        Tue, 05 Apr 2022 05:09:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwX7HhPj5mEGcuqhZHuJX+RbnyZLGTfgVtl7WdedWYWbPlNoy2uZL3YMCqfNCIwWRAhYtFenA==
+X-Received: by 2002:ac8:4e8b:0:b0:2e2:129b:35f1 with SMTP id 11-20020ac84e8b000000b002e2129b35f1mr2557071qtp.387.1649160546126;
+        Tue, 05 Apr 2022 05:09:06 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id c20-20020a05622a059400b002e1d59e68f3sm10850768qtb.48.2022.04.05.05.09.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 05:09:05 -0700 (PDT)
+Subject: Re: [PATCH v4 2/2] hwmon: intel-m10-bmc-hwmon: use
+ devm_hwmon_sanitize_name()
+To:     Michael Walle <michael@walle.cc>, Xu Yilun <yilun.xu@intel.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>
+References: <20220405092452.4033674-1-michael@walle.cc>
+ <20220405092452.4033674-3-michael@walle.cc>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <155156e6-e258-78dd-441a-7faad4afde3c@redhat.com>
+Date:   Tue, 5 Apr 2022 05:09:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220405092452.4033674-3-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit f41ee8b91c00770d718be2ff4852a80017ae9ab3 ]
-
-As Wenqing Liu reported in bugzilla:
-
-https://bugzilla.kernel.org/show_bug.cgi?id=215657
-
-- Overview
-UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2 when mount and operate a corrupted image
-
-- Reproduce
-tested on kernel 5.17-rc4, 5.17-rc6
-
-1. mkdir test_crash
-2. cd test_crash
-3. unzip tmp2.zip
-4. mkdir mnt
-5. ./single_test.sh f2fs 2
-
-- Kernel dump
-[   46.434454] loop0: detected capacity change from 0 to 131072
-[   46.529839] F2FS-fs (loop0): Mounted with checkpoint version = 7548c2d9
-[   46.738319] ================================================================================
-[   46.738412] UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2
-[   46.738475] index 231 is out of range for type 'unsigned int [2]'
-[   46.738539] CPU: 2 PID: 939 Comm: umount Not tainted 5.17.0-rc6 #1
-[   46.738547] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[   46.738551] Call Trace:
-[   46.738556]  <TASK>
-[   46.738563]  dump_stack_lvl+0x47/0x5c
-[   46.738581]  ubsan_epilogue+0x5/0x50
-[   46.738592]  __ubsan_handle_out_of_bounds+0x68/0x80
-[   46.738604]  f2fs_allocate_data_block+0xdff/0xe60 [f2fs]
-[   46.738819]  do_write_page+0xef/0x210 [f2fs]
-[   46.738934]  f2fs_do_write_node_page+0x3f/0x80 [f2fs]
-[   46.739038]  __write_node_page+0x2b7/0x920 [f2fs]
-[   46.739162]  f2fs_sync_node_pages+0x943/0xb00 [f2fs]
-[   46.739293]  f2fs_write_checkpoint+0x7bb/0x1030 [f2fs]
-[   46.739405]  kill_f2fs_super+0x125/0x150 [f2fs]
-[   46.739507]  deactivate_locked_super+0x60/0xc0
-[   46.739517]  deactivate_super+0x70/0xb0
-[   46.739524]  cleanup_mnt+0x11a/0x200
-[   46.739532]  __cleanup_mnt+0x16/0x20
-[   46.739538]  task_work_run+0x67/0xa0
-[   46.739547]  exit_to_user_mode_prepare+0x18c/0x1a0
-[   46.739559]  syscall_exit_to_user_mode+0x26/0x40
-[   46.739568]  do_syscall_64+0x46/0xb0
-[   46.739584]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is we missed to do sanity check on curseg->alloc_type,
-result in out-of-bound accessing on sbi->block_count[] array, fix it.
-
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/f2fs/segment.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index d716553bdc02..338a57360bb8 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4747,6 +4747,13 @@ static int sanity_check_curseg(struct f2fs_sb_info *sbi)
- 
- 		sanity_check_seg_type(sbi, curseg->seg_type);
- 
-+		if (curseg->alloc_type != LFS && curseg->alloc_type != SSR) {
-+			f2fs_err(sbi,
-+				 "Current segment has invalid alloc_type:%d",
-+				 curseg->alloc_type);
-+			return -EFSCORRUPTED;
-+		}
-+
- 		if (f2fs_test_bit(blkofs, se->cur_valid_map))
- 			goto out;
- 
--- 
-2.34.1
-
-
+On 4/5/22 2:24 AM, Michael Walle wrote:
+> Instead of open-coding the bad characters replacement in the hwmon name,
+> use the new devm_hwmon_sanitize_name().
+>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> Acked-by: Xu Yilun <yilun.xu@intel.com>
+> ---
+>   drivers/hwmon/intel-m10-bmc-hwmon.c | 11 +++--------
+>   1 file changed, 3 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/hwmon/intel-m10-bmc-hwmon.c b/drivers/hwmon/intel-m10-bmc-hwmon.c
+> index 7a08e4c44a4b..6e82f7200d1c 100644
+> --- a/drivers/hwmon/intel-m10-bmc-hwmon.c
+> +++ b/drivers/hwmon/intel-m10-bmc-hwmon.c
+> @@ -515,7 +515,6 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
+>   	struct intel_m10bmc *m10bmc = dev_get_drvdata(pdev->dev.parent);
+>   	struct device *hwmon_dev, *dev = &pdev->dev;
+>   	struct m10bmc_hwmon *hw;
+> -	int i;
+>   
+>   	hw = devm_kzalloc(dev, sizeof(*hw), GFP_KERNEL);
+>   	if (!hw)
+> @@ -528,13 +527,9 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
+>   	hw->chip.info = hw->bdata->hinfo;
+>   	hw->chip.ops = &m10bmc_hwmon_ops;
+>   
+> -	hw->hw_name = devm_kstrdup(dev, id->name, GFP_KERNEL);
+> -	if (!hw->hw_name)
+> -		return -ENOMEM;
+> -
+> -	for (i = 0; hw->hw_name[i]; i++)
+> -		if (hwmon_is_bad_char(hw->hw_name[i]))
+> -			hw->hw_name[i] = '_';
+> +	hw->hw_name = devm_hwmon_sanitize_name(dev, id->name);
+> +	if (IS_ERR(hw->hw_name))
+> +		return PTR_ERR(hw->hw_name);
+Reviewed-by: Tom Rix <trix@redhat.com>
+>   
+>   	hwmon_dev = devm_hwmon_device_register_with_info(dev, hw->hw_name,
+>   							 hw, &hw->chip, NULL);
 
