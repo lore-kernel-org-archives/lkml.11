@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE5AC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E3CFC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385944AbiDEVuX (ORCPT
+        id S1386118AbiDEVu2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        Tue, 5 Apr 2022 17:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358231AbiDEK2J (ORCPT
+        with ESMTP id S1353985AbiDEKKQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6511AD93;
-        Tue,  5 Apr 2022 03:17:14 -0700 (PDT)
+        Tue, 5 Apr 2022 06:10:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D74BC55A1;
+        Tue,  5 Apr 2022 02:56:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 024FB617AA;
-        Tue,  5 Apr 2022 10:17:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EADCC385A2;
-        Tue,  5 Apr 2022 10:17:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F09061676;
+        Tue,  5 Apr 2022 09:56:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B19A6C385A3;
+        Tue,  5 Apr 2022 09:56:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153833;
-        bh=Wu9EoBb4bBXtOyqt/h2vb+Y/ya1Bxiwt1yRBhqJpw4w=;
+        s=korg; t=1649152578;
+        bh=dpAuHk9AMMi+c0jBE3LaVdSqLounWNH5VIaXCMAcTEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OdYN2DlMqgj/qwdQZJxrSVxlxKAQP0tznHEJip5uhDDw1l4p2VVhGRX1UtRyePF98
-         WRppTgzWXx8BNjq5gEGAqnMuyd0ZZMyoYv2Ex0hc7H03N7MDw7izM0H9af0OaKmuOs
-         jxDv1cnGpvq/c55WFxgsAxf3BzaRaxeQSXGbZpB4=
+        b=swi93AZyUWgw7BCoWQzdPvBzraHTY+y8GKiiU6yAhgpO2MsdDvujeaPBH6GKJx5Kb
+         IVBOUEOU1ZfUBlP+OmsaXu8XpgBNkf7B3XdvuwT7vmEUC7Rmq7ZUiRGEj07IS7ptbL
+         TFR2UPsyKyDNQv/98NaAd7S5gQipbXErlKjcfc28=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 362/599] can: isotp: support MSG_TRUNC flag when reading from socket
-Date:   Tue,  5 Apr 2022 09:30:56 +0200
-Message-Id: <20220405070309.604358102@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 789/913] scsi: qla2xxx: Fix stuck session in gpdb
+Date:   Tue,  5 Apr 2022 09:30:51 +0200
+Message-Id: <20220405070403.485019282@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,86 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 42bf50a1795a1854d48717b7361dbdbce496b16b ]
+commit 725d3a0d31a51c0debf970011e05f585e805165b upstream.
 
-When providing the MSG_TRUNC flag via recvmsg() syscall the return value
-provides the real length of the packet or datagram, even when it was longer
-than the passed buffer.
+Fix stuck sessions in get port database. When a thread is in the process of
+re-establishing a session, a flag is set to prevent multiple threads /
+triggers from doing the same task. This flag was left on, where any attempt
+to relogin was locked out. Clear this flag, if the attempt has failed.
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1065932671
-Link: https://lore.kernel.org/all/20220316164258.54155-3-socketcan@hartkopp.net
-Suggested-by: Derek Will <derekrobertwill@gmail.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220110050218.3958-4-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index cb5546c186bc..518014506fff 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1004,29 +1004,28 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	struct sock *sk = sock->sk;
- 	struct sk_buff *skb;
- 	struct isotp_sock *so = isotp_sk(sk);
--	int err = 0;
--	int noblock;
-+	int noblock = flags & MSG_DONTWAIT;
-+	int ret = 0;
- 
--	noblock = flags & MSG_DONTWAIT;
--	flags &= ~MSG_DONTWAIT;
-+	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
-+		return -EINVAL;
- 
- 	if (!so->bound)
- 		return -EADDRNOTAVAIL;
- 
--	skb = skb_recv_datagram(sk, flags, noblock, &err);
-+	flags &= ~MSG_DONTWAIT;
-+	skb = skb_recv_datagram(sk, flags, noblock, &ret);
- 	if (!skb)
--		return err;
-+		return ret;
- 
- 	if (size < skb->len)
- 		msg->msg_flags |= MSG_TRUNC;
- 	else
- 		size = skb->len;
- 
--	err = memcpy_to_msg(msg, skb->data, size);
--	if (err < 0) {
--		skb_free_datagram(sk, skb);
--		return err;
--	}
-+	ret = memcpy_to_msg(msg, skb->data, size);
-+	if (ret < 0)
-+		goto out_err;
- 
- 	sock_recv_timestamp(msg, sk, skb);
- 
-@@ -1036,9 +1035,13 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		memcpy(msg->msg_name, skb->cb, msg->msg_namelen);
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -1333,9 +1333,9 @@ int qla24xx_async_gpdb(struct scsi_qla_h
+ 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
+ 	    fcport->loop_id == FC_NO_LOOP_ID) {
+ 		ql_log(ql_log_warn, vha, 0xffff,
+-		    "%s: %8phC - not sending command.\n",
+-		    __func__, fcport->port_name);
+-		return rval;
++		    "%s: %8phC online %d flags %x - not sending command.\n",
++		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
++		goto done;
  	}
  
-+	/* set length of return value */
-+	ret = (flags & MSG_TRUNC) ? skb->len : size;
-+
-+out_err:
- 	skb_free_datagram(sk, skb);
- 
--	return size;
-+	return ret;
- }
- 
- static int isotp_release(struct socket *sock)
--- 
-2.34.1
-
+ 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 
 
