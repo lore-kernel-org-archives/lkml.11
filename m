@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655C6C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DCD2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382226AbiDEMDp (ORCPT
+        id S1382254AbiDEMDx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
+        Tue, 5 Apr 2022 08:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243551AbiDEIuk (ORCPT
+        with ESMTP id S243883AbiDEIvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:50:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AA226106;
-        Tue,  5 Apr 2022 01:39:06 -0700 (PDT)
+        Tue, 5 Apr 2022 04:51:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D09D0818;
+        Tue,  5 Apr 2022 01:40:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56FE861511;
-        Tue,  5 Apr 2022 08:38:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 612A3C385A6;
-        Tue,  5 Apr 2022 08:38:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C5FEB81BC0;
+        Tue,  5 Apr 2022 08:39:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3771C385A0;
+        Tue,  5 Apr 2022 08:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147883;
-        bh=F2sXadztW3MARwarwpZlIp38N5A1LAVO17ur1+LgINs=;
+        s=korg; t=1649147947;
+        bh=4ZYE+YnlX6ZXr0Mpn8C8QagEhJ13qfYl0HC5aYEyi4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wz9cY6cHjVOj1E+TkqORkQUxRvBQScOzweYSP/O5pUtCY4bC7Un35oG3PNqpcchps
-         cbYyOpS6sCbuRIaE4byyBsjpRoISsTRdI44ycP962GX3ReS0kTaotHtStJMO8qxhrY
-         xCX7ba4zYYToxMB6Bz+1IbfiV5PTcUH6IljhwKVM=
+        b=cV3WpXyJtCWMArE2Nx7daYJWylZLeWa5vf5tAthDu4EjnCvO/s5FgYtV4vpqXyEYi
+         wR/gk5BKapW9phzULytI1CN9nQLLDYDnFrNE6x8ijjr9ZhvxMTUiEjKr2n6XgDtO3j
+         EFy3YTY16NDPE54RRBh7qPfzuLqf2tuONsa0tDG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>
-Subject: [PATCH 5.16 0118/1017] dm stats: fix too short end duration_ns when using precise_timestamps
-Date:   Tue,  5 Apr 2022 09:17:11 +0200
-Message-Id: <20220405070357.701300167@linuxfoundation.org>
+        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
+        Johan Hovold <johan@kernel.org>,
+        Lad Prabhakar <prabhakar.csengg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.16 0179/1017] media: davinci: vpif: fix use-after-free on driver unbind
+Date:   Tue,  5 Apr 2022 09:18:12 +0200
+Message-Id: <20220405070359.548826855@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,133 +52,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 0cdb90f0f306384ecbc60dfd6dc48cdbc1f2d0d8 upstream.
+commit 43acb728bbc40169d2e2425e84a80068270974be upstream.
 
-dm_stats_account_io()'s STAT_PRECISE_TIMESTAMPS support doesn't handle
-the fact that with commit b879f915bc48 ("dm: properly fix redundant
-bio-based IO accounting") io->start_time _may_ be in the past (meaning
-the start_io_acct() was deferred until later).
+The driver allocates and registers two platform device structures during
+probe, but the devices were never deregistered on driver unbind.
 
-Add a new dm_stats_recalc_precise_timestamps() helper that will
-set/clear a new 'precise_timestamps' flag in the dm_stats struct based
-on whether any configured stats enable STAT_PRECISE_TIMESTAMPS.
-And update DM core's alloc_io() to use dm_stats_record_start() to set
-stats_aux.duration_ns if stats->precise_timestamps is true.
+This results in a use-after-free on driver unbind as the device
+structures were allocated using devres and would be freed by driver
+core when remove() returns.
 
-Also, remove unused 'last_sector' and 'last_rw' members from the
-dm_stats struct.
+Fix this by adding the missing deregistration calls to the remove()
+callback and failing probe on registration errors.
 
-Fixes: b879f915bc48 ("dm: properly fix redundant bio-based IO accounting")
-Cc: stable@vger.kernel.org
-Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Note that the platform device structures must be freed using a proper
+release callback to avoid leaking associated resources like device
+names.
+
+Fixes: 479f7a118105 ("[media] davinci: vpif: adaptions for DT support")
+Cc: stable@vger.kernel.org      # 4.12
+Cc: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Lad Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-stats.c |   28 +++++++++++++++++++++++++---
- drivers/md/dm-stats.h |    9 +++++++--
- drivers/md/dm.c       |    2 ++
- 3 files changed, 34 insertions(+), 5 deletions(-)
+ drivers/media/platform/davinci/vpif.c |   97 ++++++++++++++++++++++++----------
+ 1 file changed, 71 insertions(+), 26 deletions(-)
 
---- a/drivers/md/dm-stats.c
-+++ b/drivers/md/dm-stats.c
-@@ -195,6 +195,7 @@ void dm_stats_init(struct dm_stats *stat
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -41,6 +41,11 @@ MODULE_ALIAS("platform:" VPIF_DRIVER_NAM
+ #define VPIF_CH2_MAX_MODES	15
+ #define VPIF_CH3_MAX_MODES	2
  
- 	mutex_init(&stats->mutex);
- 	INIT_LIST_HEAD(&stats->list);
-+	stats->precise_timestamps = false;
- 	stats->last = alloc_percpu(struct dm_stats_last_position);
- 	for_each_possible_cpu(cpu) {
- 		last = per_cpu_ptr(stats->last, cpu);
-@@ -231,6 +232,22 @@ void dm_stats_cleanup(struct dm_stats *s
- 	mutex_destroy(&stats->mutex);
- }
- 
-+static void dm_stats_recalc_precise_timestamps(struct dm_stats *stats)
-+{
-+	struct list_head *l;
-+	struct dm_stat *tmp_s;
-+	bool precise_timestamps = false;
++struct vpif_data {
++	struct platform_device *capture;
++	struct platform_device *display;
++};
 +
-+	list_for_each(l, &stats->list) {
-+		tmp_s = container_of(l, struct dm_stat, list_entry);
-+		if (tmp_s->stat_flags & STAT_PRECISE_TIMESTAMPS) {
-+			precise_timestamps = true;
-+			break;
-+		}
-+	}
-+	stats->precise_timestamps = precise_timestamps;
+ DEFINE_SPINLOCK(vpif_lock);
+ EXPORT_SYMBOL_GPL(vpif_lock);
+ 
+@@ -423,17 +428,31 @@ int vpif_channel_getfid(u8 channel_id)
+ }
+ EXPORT_SYMBOL(vpif_channel_getfid);
+ 
++static void vpif_pdev_release(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++
++	kfree(pdev);
 +}
 +
- static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
- 			   sector_t step, unsigned stat_flags,
- 			   unsigned n_histogram_entries,
-@@ -376,6 +393,9 @@ static int dm_stats_create(struct dm_sta
+ static int vpif_probe(struct platform_device *pdev)
+ {
+ 	static struct resource *res_irq;
+ 	struct platform_device *pdev_capture, *pdev_display;
+ 	struct device_node *endpoint = NULL;
++	struct vpif_data *data;
+ 	int ret;
+ 
+ 	vpif_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(vpif_base))
+ 		return PTR_ERR(vpif_base);
+ 
++	data = kzalloc(sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, data);
++
+ 	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_get(&pdev->dev);
+ 
+@@ -461,49 +480,75 @@ static int vpif_probe(struct platform_de
+ 		goto err_put_rpm;
  	}
- 	ret_id = s->id;
- 	list_add_tail_rcu(&s->list_entry, l);
-+
-+	dm_stats_recalc_precise_timestamps(stats);
-+
- 	mutex_unlock(&stats->mutex);
  
- 	resume_callback(md);
-@@ -418,6 +438,9 @@ static int dm_stats_delete(struct dm_sta
+-	pdev_capture = devm_kzalloc(&pdev->dev, sizeof(*pdev_capture),
+-				    GFP_KERNEL);
+-	if (pdev_capture) {
+-		pdev_capture->name = "vpif_capture";
+-		pdev_capture->id = -1;
+-		pdev_capture->resource = res_irq;
+-		pdev_capture->num_resources = 1;
+-		pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
+-		pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
+-		pdev_capture->dev.parent = &pdev->dev;
+-		platform_device_register(pdev_capture);
+-	} else {
+-		dev_warn(&pdev->dev, "Unable to allocate memory for pdev_capture.\n");
++	pdev_capture = kzalloc(sizeof(*pdev_capture), GFP_KERNEL);
++	if (!pdev_capture) {
++		ret = -ENOMEM;
++		goto err_put_rpm;
  	}
  
- 	list_del_rcu(&s->list_entry);
+-	pdev_display = devm_kzalloc(&pdev->dev, sizeof(*pdev_display),
+-				    GFP_KERNEL);
+-	if (pdev_display) {
+-		pdev_display->name = "vpif_display";
+-		pdev_display->id = -1;
+-		pdev_display->resource = res_irq;
+-		pdev_display->num_resources = 1;
+-		pdev_display->dev.dma_mask = pdev->dev.dma_mask;
+-		pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
+-		pdev_display->dev.parent = &pdev->dev;
+-		platform_device_register(pdev_display);
+-	} else {
+-		dev_warn(&pdev->dev, "Unable to allocate memory for pdev_display.\n");
++	pdev_capture->name = "vpif_capture";
++	pdev_capture->id = -1;
++	pdev_capture->resource = res_irq;
++	pdev_capture->num_resources = 1;
++	pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
++	pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
++	pdev_capture->dev.parent = &pdev->dev;
++	pdev_capture->dev.release = vpif_pdev_release;
 +
-+	dm_stats_recalc_precise_timestamps(stats);
++	ret = platform_device_register(pdev_capture);
++	if (ret)
++		goto err_put_pdev_capture;
 +
- 	mutex_unlock(&stats->mutex);
++	pdev_display = kzalloc(sizeof(*pdev_display), GFP_KERNEL);
++	if (!pdev_display) {
++		ret = -ENOMEM;
++		goto err_put_pdev_capture;
+ 	}
  
- 	/*
-@@ -654,9 +677,8 @@ void dm_stats_account_io(struct dm_stats
- 	got_precise_time = false;
- 	list_for_each_entry_rcu(s, &stats->list, list_entry) {
- 		if (s->stat_flags & STAT_PRECISE_TIMESTAMPS && !got_precise_time) {
--			if (!end)
--				stats_aux->duration_ns = ktime_to_ns(ktime_get());
--			else
-+			/* start (!end) duration_ns is set by DM core's alloc_io() */
-+			if (end)
- 				stats_aux->duration_ns = ktime_to_ns(ktime_get()) - stats_aux->duration_ns;
- 			got_precise_time = true;
- 		}
---- a/drivers/md/dm-stats.h
-+++ b/drivers/md/dm-stats.h
-@@ -13,8 +13,7 @@ struct dm_stats {
- 	struct mutex mutex;
- 	struct list_head list;	/* list of struct dm_stat */
- 	struct dm_stats_last_position __percpu *last;
--	sector_t last_sector;
--	unsigned last_rw;
-+	bool precise_timestamps;
- };
++	pdev_display->name = "vpif_display";
++	pdev_display->id = -1;
++	pdev_display->resource = res_irq;
++	pdev_display->num_resources = 1;
++	pdev_display->dev.dma_mask = pdev->dev.dma_mask;
++	pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
++	pdev_display->dev.parent = &pdev->dev;
++	pdev_display->dev.release = vpif_pdev_release;
++
++	ret = platform_device_register(pdev_display);
++	if (ret)
++		goto err_put_pdev_display;
++
++	data->capture = pdev_capture;
++	data->display = pdev_display;
++
+ 	return 0;
  
- struct dm_stats_aux {
-@@ -40,4 +39,10 @@ static inline bool dm_stats_used(struct
- 	return !list_empty(&st->list);
++err_put_pdev_display:
++	platform_device_put(pdev_display);
++err_put_pdev_capture:
++	platform_device_put(pdev_capture);
+ err_put_rpm:
+ 	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
++	kfree(data);
+ 
+ 	return ret;
  }
  
-+static inline void dm_stats_record_start(struct dm_stats *stats, struct dm_stats_aux *aux)
-+{
-+	if (unlikely(stats->precise_timestamps))
-+		aux->duration_ns = ktime_to_ns(ktime_get());
-+}
+ static int vpif_remove(struct platform_device *pdev)
+ {
++	struct vpif_data *data = platform_get_drvdata(pdev);
 +
- #endif
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -537,6 +537,8 @@ static struct dm_io *alloc_io(struct map
- 
- 	io->start_time = jiffies;
- 
-+	dm_stats_record_start(&md->stats, &io->stats_aux);
++	if (data->capture)
++		platform_device_unregister(data->capture);
++	if (data->display)
++		platform_device_unregister(data->display);
 +
- 	return io;
+ 	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
++
++	kfree(data);
++
+ 	return 0;
  }
  
 
