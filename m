@@ -2,121 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50CE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847039AbiDFCMb (ORCPT
+        id S1847063AbiDFCMo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56052 "EHLO
+        Tue, 5 Apr 2022 22:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354396AbiDEKOA (ORCPT
+        with ESMTP id S1378484AbiDENNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28B168FB6;
-        Tue,  5 Apr 2022 02:59:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DF756172B;
-        Tue,  5 Apr 2022 09:59:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 489DEC385A2;
-        Tue,  5 Apr 2022 09:59:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152791;
-        bh=6bkja0LTQHSZqPVobeIryLZm/EoL6/GJ5Tl85AYkTlQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2sddKG4f34oIp0QGnODJIR9EnUWpjDIMUITWKy658zEGiwHcbXJ4zuSJowiDt5Y+M
-         ExD1bogCAI3hrsIjv19kkmNEefiKwZ6wBQWp6xiBH7+ozjI9ZZ2s66U0fCY5Uz6vhH
-         qzD/os2aT0vRWm+sSwHqMJGrjeDTl5MSrV9oZsUw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        kernel test robot <lkp@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 903/913] mmc: rtsx: Fix build errors/warnings for unused variable
-Date:   Tue,  5 Apr 2022 09:32:45 +0200
-Message-Id: <20220405070406.886006401@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:13:19 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A500B45056
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:13:37 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6EB9ED6E;
+        Tue,  5 Apr 2022 05:13:37 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9F7643F5A1;
+        Tue,  5 Apr 2022 05:13:36 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     perex@perex.cz, tiwai@suse.com
+Cc:     iommu@lists.linux-foundation.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: emu10k1: Stop using iommu_present()
+Date:   Tue,  5 Apr 2022 13:13:33 +0100
+Message-Id: <5ac9b54285b2189b848da2595408eb3cae8e5e9d.1649160813.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+iommu_get_domain_for_dev() is already perfectly happy to return NULL
+if the given device has no IOMMU. Drop the unnecessary check.
 
-commit 3dd9a926ec2308e49445f22abef149fc64e9332e upstream.
-
-The struct device *dev, is no longer needed at various functions, let's
-therefore drop it to fix the build errors/warnings.
-
-Fixes: 7570fb41e450 ("mmc: rtsx: Let MMC core handle runtime PM")
-Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220301115300.64332-1-ulf.hansson@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/mmc/host/rtsx_pci_sdmmc.c |    6 ------
- 1 file changed, 6 deletions(-)
+ sound/pci/emu10k1/emu10k1_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/mmc/host/rtsx_pci_sdmmc.c
-+++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
-@@ -806,7 +806,6 @@ static void sd_request(struct work_struc
- 	struct mmc_request *mrq = host->mrq;
- 	struct mmc_command *cmd = mrq->cmd;
- 	struct mmc_data *data = mrq->data;
--	struct device *dev = &host->pdev->dev;
+diff --git a/sound/pci/emu10k1/emu10k1_main.c b/sound/pci/emu10k1/emu10k1_main.c
+index 86cc1ca025e4..5ffab343b89c 100644
+--- a/sound/pci/emu10k1/emu10k1_main.c
++++ b/sound/pci/emu10k1/emu10k1_main.c
+@@ -1751,9 +1751,6 @@ static void snd_emu10k1_detect_iommu(struct snd_emu10k1 *emu)
  
- 	unsigned int data_size = 0;
- 	int err;
-@@ -1081,7 +1080,6 @@ static void sdmmc_set_ios(struct mmc_hos
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
+ 	emu->iommu_workaround = false;
  
- 	if (host->eject)
+-	if (!iommu_present(emu->card->dev->bus))
+-		return;
+-
+ 	domain = iommu_get_domain_for_dev(emu->card->dev);
+ 	if (domain && domain->type == IOMMU_DOMAIN_IDENTITY)
  		return;
-@@ -1130,7 +1128,6 @@ static int sdmmc_get_ro(struct mmc_host
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
- 	int ro = 0;
- 	u32 val;
- 
-@@ -1156,7 +1153,6 @@ static int sdmmc_get_cd(struct mmc_host
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
- 	int cd = 0;
- 	u32 val;
- 
-@@ -1255,7 +1251,6 @@ static int sdmmc_switch_voltage(struct m
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
- 	int err = 0;
- 	u8 voltage;
- 
-@@ -1308,7 +1303,6 @@ static int sdmmc_execute_tuning(struct m
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
- 	int err = 0;
- 
- 	if (host->eject)
-
+-- 
+2.28.0.dirty
 
