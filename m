@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88208C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457541AbiDEXrg (ORCPT
+        id S1582523AbiDEXsP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
+        Tue, 5 Apr 2022 19:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348790AbiDEJsg (ORCPT
+        with ESMTP id S1349402AbiDEJts (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:36 -0400
+        Tue, 5 Apr 2022 05:49:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03AA2765A5;
-        Tue,  5 Apr 2022 02:35:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E66917A81;
+        Tue,  5 Apr 2022 02:44:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9294661675;
-        Tue,  5 Apr 2022 09:35:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A47EFC385A2;
-        Tue,  5 Apr 2022 09:35:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 577F261675;
+        Tue,  5 Apr 2022 09:44:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6584FC385A2;
+        Tue,  5 Apr 2022 09:44:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151325;
-        bh=w7dKSlwXBA/ixEwcf1zFa8OnnuZoUm3ObPb+9ezhVoU=;
+        s=korg; t=1649151897;
+        bh=vZCYosMR3xAeEcqaIxxhaQzuSAuF9vWSVdw/VukUcbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Iixj/rB2Pl467s26UtlVuzfWcCIZ/5tlBpaYXPCEndyFvZNsEUuilb4Dhohx9jna6
-         ujTE2qm2OMTaAU1L53OzBqMjTXUY3w+d+ixc88L+e3DYMRFlv8y6DRabWoOAFY6zkL
-         BvMt3cOHQjps2Z1BZ6xIIWqSTUaujyrQ9u3xZ8dI=
+        b=LY4huCouIcDyL0SQCuaCjHVfRUfuWm6MdnKHGvjOB6vYpBwNv2WNaF5LmJxzOvQ52
+         ZFRgvxKB9WB20n9HuiN69exyZw/i0u9Ge2dC8H+m1JWHXOkUf+GSiwdRI+LbGFipI+
+         AZl8ndbmL6tDmJFi6lAlZyZqIO7mywWJ8YkKoYEI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 336/913] arm64: dts: broadcom: Fix sata nodename
-Date:   Tue,  5 Apr 2022 09:23:18 +0200
-Message-Id: <20220405070349.920709783@linuxfoundation.org>
+Subject: [PATCH 5.15 543/913] bpf, sockmap: Fix double uncharge the mem of sk_msg
+Date:   Tue,  5 Apr 2022 09:26:45 +0200
+Message-Id: <20220405070356.125960097@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,39 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit 55927cb44db43a57699fa652e2437a91620385dc ]
+[ Upstream commit 2486ab434b2c2a14e9237296db00b1e1b7ae3273 ]
 
-After converting ahci-platform txt binding to yaml nodename is reported
-as not matching the standard:
+If tcp_bpf_sendmsg is running during a tear down operation, psock may be
+freed.
 
-arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dt.yaml:
-ahci@663f2000: $nodename:0: 'ahci@663f2000' does not match '^sata(@.*)?$'
+tcp_bpf_sendmsg()
+ tcp_bpf_send_verdict()
+  sk_msg_return()
+  tcp_bpf_sendmsg_redir()
+   unlikely(!psock))
+     sk_msg_free()
 
-Fix it to match binding.
+The mem of msg has been uncharged in tcp_bpf_send_verdict() by
+sk_msg_return(), and would be uncharged by sk_msg_free() again. When psock
+is null, we can simply returning an error code, this would then trigger
+the sk_msg_free_nocharge in the error path of __SK_REDIRECT and would have
+the side effect of throwing an error up to user space. This would be a
+slight change in behavior from user side but would look the same as an
+error if the redirect on the socket threw an error.
 
-Fixes: ac9aae00f0fc ("arm64: dts: Add SATA3 AHCI and SATA3 PHY DT nodes for NS2")
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+This issue can cause the following info:
+WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+Call Trace:
+ <TASK>
+ __sk_destruct+0x24/0x1f0
+ sk_psock_destroy+0x19b/0x1c0
+ process_one_work+0x1b3/0x3c0
+ worker_thread+0x30/0x350
+ ? process_one_work+0x3c0/0x3c0
+ kthread+0xe6/0x110
+ ? kthread_complete_and_exit+0x20/0x20
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220304081145.2037182-5-wangyufen@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp_bpf.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi b/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
-index 2cfeaf3b0a87..8c218689fef7 100644
---- a/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
-+++ b/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
-@@ -687,7 +687,7 @@
- 			};
- 		};
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 304800c60427..1cdcb4df0eb7 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -138,10 +138,9 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
+ 	struct sk_psock *psock = sk_psock_get(sk);
+ 	int ret;
  
--		sata: ahci@663f2000 {
-+		sata: sata@663f2000 {
- 			compatible = "brcm,iproc-ahci", "generic-ahci";
- 			reg = <0x663f2000 0x1000>;
- 			dma-coherent;
+-	if (unlikely(!psock)) {
+-		sk_msg_free(sk, msg);
+-		return 0;
+-	}
++	if (unlikely(!psock))
++		return -EPIPE;
++
+ 	ret = ingress ? bpf_tcp_ingress(sk, psock, msg, bytes, flags) :
+ 			tcp_bpf_push_locked(sk, msg, bytes, flags, false);
+ 	sk_psock_put(sk, psock);
 -- 
 2.34.1
 
