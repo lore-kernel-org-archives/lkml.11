@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA15C352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A63C352A1
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236726AbiDEIQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43930 "EHLO
+        id S236536AbiDEIQt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:16:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235600AbiDEH7w (ORCPT
+        with ESMTP id S235611AbiDEH7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B0C1ADB0;
-        Tue,  5 Apr 2022 00:55:55 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9F71B6;
+        Tue,  5 Apr 2022 00:56:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BAFFB81B14;
-        Tue,  5 Apr 2022 07:55:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E7C5C340EE;
-        Tue,  5 Apr 2022 07:55:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 689656167D;
+        Tue,  5 Apr 2022 07:56:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AEC0C340EE;
+        Tue,  5 Apr 2022 07:56:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145352;
-        bh=Af3DNXGcxmhNy43NxMC7wdVQntnZD7bR8BmZoupVJ8M=;
+        s=korg; t=1649145363;
+        bh=YDTpRcSaCATao+L5CmLPyxK92OlmEXkjxf7243VK0CQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IL+XSqxY1Tzz0KvC//7HjhmAxGQ0/3yw7oZJwRYCCK/ezNeeUdMXt2fJHoc9HT+yO
-         k67YQtodMsYazz4p84obFl1QIC7fmVndp+qX8zeICPPbTKqUIUEVrJsJyo32tD8/Cg
-         GowYb4My83gDvMegzz3iR7f4i2aunjxsx2bxm0Us=
+        b=v+8Jfqsbtr23z+4wjKlQkmHAAXV46Pm+/jqPVdWgj7BRObTnSOG1M/sIrhsk1BaPr
+         9f8ZqbwVkiDUnACmVVCBxdA/QwyCPZNM4S+k6TP2SEosNExUx2CfEM0/cPTM9amNdf
+         cq7WjUINNV5EEB/Uxq9KkY01+sm2Q1fsuA+04a7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0373/1126] ASoC: acp: check the return value of devm_kzalloc() in acp_legacy_dai_links_create()
-Date:   Tue,  5 Apr 2022 09:18:40 +0200
-Message-Id: <20220405070418.575162840@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0377/1126] ALSA: spi: Add check for clk_enable()
+Date:   Tue,  5 Apr 2022 09:18:44 +0200
+Message-Id: <20220405070418.691958883@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,36 +48,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 431f9a77a4a62694ce90742d1f4c5abe1b8b6612 ]
+[ Upstream commit ca1697eb09208f0168d94b88b72f57505339cbe5 ]
 
-The function devm_kzalloc() in acp_legacy_dai_links_create() can fail,
-so its return value should be checked.
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-Fixes: d4c750f2c7d4 ("ASoC: amd: acp: Add generic machine driver support for ACP cards")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225131645.27556-1-baijiaju1990@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 3568459a5113 ("ALSA: at73c213: manage SSC clock")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220228022839.3547266-1-jiasheng@iscas.ac.cn
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/amd/acp/acp-mach-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/spi/at73c213.c | 27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/amd/acp/acp-mach-common.c b/sound/soc/amd/acp/acp-mach-common.c
-index cd05ee2802c9..5247015e8b31 100644
---- a/sound/soc/amd/acp/acp-mach-common.c
-+++ b/sound/soc/amd/acp/acp-mach-common.c
-@@ -556,6 +556,8 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
- 		num_links++;
+diff --git a/sound/spi/at73c213.c b/sound/spi/at73c213.c
+index 76c0e37a838c..8a2da6b1012e 100644
+--- a/sound/spi/at73c213.c
++++ b/sound/spi/at73c213.c
+@@ -218,7 +218,9 @@ static int snd_at73c213_pcm_open(struct snd_pcm_substream *substream)
+ 	runtime->hw = snd_at73c213_playback_hw;
+ 	chip->substream = substream;
  
- 	links = devm_kzalloc(dev, sizeof(struct snd_soc_dai_link) * num_links, GFP_KERNEL);
-+	if (!links)
-+		return -ENOMEM;
+-	clk_enable(chip->ssc->clk);
++	err = clk_enable(chip->ssc->clk);
++	if (err)
++		return err;
  
- 	if (drv_data->hs_cpu_id == I2S_SP) {
- 		links[i].name = "acp-headset-codec";
+ 	return 0;
+ }
+@@ -776,7 +778,9 @@ static int snd_at73c213_chip_init(struct snd_at73c213 *chip)
+ 		goto out;
+ 
+ 	/* Enable DAC master clock. */
+-	clk_enable(chip->board->dac_clk);
++	retval = clk_enable(chip->board->dac_clk);
++	if (retval)
++		goto out;
+ 
+ 	/* Initialize at73c213 on SPI bus. */
+ 	retval = snd_at73c213_write_reg(chip, DAC_RST, 0x04);
+@@ -889,7 +893,9 @@ static int snd_at73c213_dev_init(struct snd_card *card,
+ 	chip->card = card;
+ 	chip->irq = -1;
+ 
+-	clk_enable(chip->ssc->clk);
++	retval = clk_enable(chip->ssc->clk);
++	if (retval)
++		return retval;
+ 
+ 	retval = request_irq(irq, snd_at73c213_interrupt, 0, "at73c213", chip);
+ 	if (retval) {
+@@ -1008,7 +1014,9 @@ static int snd_at73c213_remove(struct spi_device *spi)
+ 	int retval;
+ 
+ 	/* Stop playback. */
+-	clk_enable(chip->ssc->clk);
++	retval = clk_enable(chip->ssc->clk);
++	if (retval)
++		goto out;
+ 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXDIS));
+ 	clk_disable(chip->ssc->clk);
+ 
+@@ -1088,9 +1096,16 @@ static int snd_at73c213_resume(struct device *dev)
+ {
+ 	struct snd_card *card = dev_get_drvdata(dev);
+ 	struct snd_at73c213 *chip = card->private_data;
++	int retval;
+ 
+-	clk_enable(chip->board->dac_clk);
+-	clk_enable(chip->ssc->clk);
++	retval = clk_enable(chip->board->dac_clk);
++	if (retval)
++		return retval;
++	retval = clk_enable(chip->ssc->clk);
++	if (retval) {
++		clk_disable(chip->board->dac_clk);
++		return retval;
++	}
+ 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXEN));
+ 
+ 	return 0;
 -- 
 2.34.1
 
