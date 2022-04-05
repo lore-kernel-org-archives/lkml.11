@@ -2,120 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7043AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B3FC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349359AbiDEUep (ORCPT
+        id S1350987AbiDEUex (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
+        Tue, 5 Apr 2022 16:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572980AbiDERjw (ORCPT
+        with ESMTP id S1384781AbiDEOSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:39:52 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE2EB8203
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:37:53 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id s11so7085272pla.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:37:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Nwu8jpVkI6C7VwnrywKtcRGeDT2fuyh+kt2g5bo1y9w=;
-        b=Lw5EATL+sOQBSkpUq+6d2yFb3UX+wLpMPBMs1qT7H2FEnxAxS+Out/GTJK1O6Dl9Rh
-         zzVeKLhcn9Iqw5nnSbmT59AtX+vxfT3tVF++IZuE8YPig+uL0Qd73A/szLBe14lkFRhT
-         sKkEy0M5HsZGZhfriWrrucPJywYn7pNKnInUE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Nwu8jpVkI6C7VwnrywKtcRGeDT2fuyh+kt2g5bo1y9w=;
-        b=BfmUb870CgyuCBdvCs97mIRLX2AISnjbUys9RBrjfdZN2Eq66rLKxUOGpUOvxtq/Kl
-         ezJC7YlbDCy0GuctsE1vM4RM35W5HoROZD3sy6sEXBoeZvVF2ERszVGHzqjJeSbaerae
-         X35On3R5p6cZmwuSLFmFZU3uWpxsan35oAG6Dc+1o+MaRRgv2+Px+serFAaS8olzS78k
-         H+Hh3qJvzKkFHSD3Kngx15gjVkYy2JwQpc6rpzspcGB/GVr9obIRfvv+cHjpyH5+ylYU
-         ltm0bYLjrvuK7mHu3Xpz0zklK8Obded91OK7p+s0z5OIeDYdqIGttrqF+h8nym01zwQ1
-         kulg==
-X-Gm-Message-State: AOAM530h9sOgz9ojYphXL36phFnt6w+2OaIrhahkKnABFtXX15/0U0mk
-        uL5aw/IZbP4SC0FViX3TZTGnTA==
-X-Google-Smtp-Source: ABdhPJx/Ml/KJFa13Olx66XGO/m5W3BLJXnALBjf/zubTA+VU5XEeYwj7jehcCiBfOkP4z4ChXJsAA==
-X-Received: by 2002:a17:902:7ec1:b0:156:17a4:a2f8 with SMTP id p1-20020a1709027ec100b0015617a4a2f8mr4774620plb.155.1649180273187;
-        Tue, 05 Apr 2022 10:37:53 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:1331:63a2:a876:db1d])
-        by smtp.gmail.com with UTF8SMTPSA id v3-20020a056a00148300b004fb04acde5dsm16033146pfu.166.2022.04.05.10.37.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 10:37:52 -0700 (PDT)
-From:   "Jes B. Klinke" <jbk@chromium.org>
-To:     linux-integrity@vger.kernel.org
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        "Jes B. Klinke" <jbk@chromium.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Peter Huewe <peterhuewe@gmx.de>, linux-kernel@vger.kernel.org
-Subject: [PATCH] tpm: cr50: Add new device/vendor ID 0x504a6666
-Date:   Tue,  5 Apr 2022 10:37:41 -0700
-Message-Id: <20220405173741.4023216-1-jbk@chromium.org>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+        Tue, 5 Apr 2022 10:18:24 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EB0F11DD34;
+        Tue,  5 Apr 2022 06:04:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 41AECD6E;
+        Tue,  5 Apr 2022 06:04:52 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.8.234])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B8213F5A1;
+        Tue,  5 Apr 2022 06:04:49 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 14:04:45 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linux-arch@vger.kernel.org, gcc@gcc.gnu.org,
+        catalin.marinas@arm.com, will@kernel.org, marcan@marcan.st,
+        maz@kernel.org, szabolcs.nagy@arm.com, f.fainelli@gmail.com,
+        opendmb@gmail.com, Andrew Pinski <pinskia@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        andrew.cooper3@citrix.com, Jeremy Linton <jeremy.linton@arm.com>
+Subject: Re: GCC 12 miscompilation of volatile asm (was: Re: [PATCH]
+ arm64/io: Remind compiler that there is a memory side effect)
+Message-ID: <Ykw+bVS9WY/JfoYO@FVFF77S0Q05N>
+References: <20220401164406.61583-1-jeremy.linton@arm.com>
+ <Ykc0xrLv391/jdJj@FVFF77S0Q05N>
+ <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Accept one additional numerical value of DID:VID for next generation
-Google TPM, to be used in future Chromebooks.
+Sorry, I copied the wrong version of the x86_64 assembly as generated by GCC
+11.2.0). Updated below.
 
-This patch touches more lines than may seem necessary, as a result of
-the need to move the error case to sit after the two recognized cases.
+On Tue, Apr 05, 2022 at 01:51:30PM +0100, Mark Rutland wrote:
+> My x86_64 test case is:
+> 
+> | unsigned long rdmsr(unsigned long reg)
+> | {
+> |     unsigned int lo, hi;
+> | 
+> |     asm volatile(
+> |     "rdmsr"
+> |     : "=d" (hi), "=a" (lo)
+> |     : "c" (reg)
+> |     );
+> | 
+> |     return ((unsigned long)hi << 32) | lo;
+> | }
+> | 
+> | void wrmsr(unsigned long reg, unsigned long val)
+> | {
+> |     unsigned int lo = val;
+> |     unsigned int hi = val >> 32;
+> | 
+> |     asm volatile(
+> |     "wrmsr"
+> |     :
+> |     : "d" (hi), "a" (lo), "c" (reg)
+> |     );
+> | }
+> | 
+> | void msr_rmw_set_bits(unsigned long reg, unsigned long bits)
+> | {
+> |     unsigned long val;
+> | 
+> |     val = rdmsr(reg);
+> |     val |= bits;
+> |     wrmsr(reg, val);
+> | }
+> | 
+> | void func_with_msr_side_effects(unsigned long reg)
+> | {
+> |     msr_rmw_set_bits(reg, 1UL << 0);
+> |     msr_rmw_set_bits(reg, 1UL << 1);
+> |     msr_rmw_set_bits(reg, 1UL << 2);
+> |     msr_rmw_set_bits(reg, 1UL << 3);
+> | }
+> 
+> Per compiler explorer (https://godbolt.org/z/cveff9hq5) GCC trunk currently
+> compiles this as:
+> 
+> | msr_rmw_set_bits:
+> |         mov     rcx, rdi
+> |         rdmsr
+> |         sal     rdx, 32
+> |         mov     eax, eax
+> |         or      rax, rsi
+> |         or      rax, rdx
+> |         mov     rdx, rax
+> |         shr     rdx, 32
+> |         wrmsr
+> |         ret
+> | func_with_msr_side_effects:
+> |         ret
+> 
 
-Signed-off-by: Jes B. Klinke <jbk@chromium.org>
----
+GCC 11.2 compiles that as:
 
- drivers/char/tpm/tpm_tis_i2c_cr50.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+| rdmsr:
+|         mov     rcx, rdi
+|         rdmsr
+|         sal     rdx, 32
+|         mov     eax, eax
+|         or      rax, rdx
+|         ret
+| wrmsr:
+|         mov     rax, rsi
+|         mov     rdx, rsi
+|         shr     rdx, 32
+|         mov     rcx, rdi
+|         wrmsr
+|         ret
+| msr_rmw_set_bits:
+|         mov     rcx, rdi
+|         rdmsr
+|         sal     rdx, 32
+|         mov     eax, eax
+|         or      rax, rsi
+|         or      rax, rdx
+|         mov     rdx, rax
+|         shr     rdx, 32
+|         wrmsr
+|         ret
+| func_with_msr_side_effects:
+|         push    rbx
+|         mov     rbx, rdi
+|         mov     esi, 1
+|         call    msr_rmw_set_bits
+|         mov     esi, 2
+|         mov     rdi, rbx
+|         call    msr_rmw_set_bits
+|         mov     esi, 4
+|         mov     rdi, rbx
+|         call    msr_rmw_set_bits
+|         mov     esi, 8
+|         mov     rdi, rbx
+|         call    msr_rmw_set_bits
+|         pop     rbx
+|         ret
 
-diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-index f6c0affbb4567..bf54ebd6724b0 100644
---- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
-+++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-@@ -31,6 +31,7 @@
- #define TPM_CR50_TIMEOUT_SHORT_MS	2		/* Short timeout during transactions */
- #define TPM_CR50_TIMEOUT_NOIRQ_MS	20		/* Timeout for TPM ready without IRQ */
- #define TPM_CR50_I2C_DID_VID		0x00281ae0L	/* Device and vendor ID reg value */
-+#define TPM_TI50_I2C_DID_VID		0x504a6666L	/* Device and vendor ID reg value */
- #define TPM_CR50_I2C_MAX_RETRIES	3		/* Max retries due to I2C errors */
- #define TPM_CR50_I2C_RETRY_DELAY_LO	55		/* Min usecs between retries on I2C */
- #define TPM_CR50_I2C_RETRY_DELAY_HI	65		/* Max usecs between retries on I2C */
-@@ -742,16 +743,20 @@ static int tpm_cr50_i2c_probe(struct i2c_client *client)
- 	}
- 
- 	vendor = le32_to_cpup((__le32 *)buf);
--	if (vendor != TPM_CR50_I2C_DID_VID) {
--		dev_err(dev, "Vendor ID did not match! ID was %08x\n", vendor);
--		tpm_cr50_release_locality(chip, true);
--		return -ENODEV;
-+	if (vendor == TPM_CR50_I2C_DID_VID) {
-+		dev_info(dev, "cr50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
-+			 client->addr, client->irq, vendor >> 16);
-+		return tpm_chip_register(chip);
-+	}
-+	if (vendor == TPM_TI50_I2C_DID_VID) {
-+		dev_info(dev, "ti50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
-+			 client->addr, client->irq, vendor >> 16);
-+		return tpm_chip_register(chip);
- 	}
- 
--	dev_info(dev, "cr50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
--		 client->addr, client->irq, vendor >> 16);
--
--	return tpm_chip_register(chip);
-+	dev_err(dev, "Vendor ID did not match! ID was %08x\n", vendor);
-+	tpm_cr50_release_locality(chip, true);
-+	return -ENODEV;
- }
- 
- /**
--- 
-2.35.1.1094.g7c7d902a7c-goog
-
+Thanks,
+Mark.
