@@ -2,99 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41547C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2A5C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838765AbiDFA4q (ORCPT
+        id S1838749AbiDFA4l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
+        Tue, 5 Apr 2022 20:56:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457662AbiDEQ2k (ORCPT
+        with ESMTP id S239766AbiDEOmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:28:40 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB287C166;
-        Tue,  5 Apr 2022 09:26:42 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id DA08F608;
-        Tue,  5 Apr 2022 16:26:41 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net DA08F608
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1649176002; bh=hdowXzq/NUai0/4J9T9jKyuof812l1GFSJ0ykV3EZkg=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=nktbmN+5YYLHdx1ydR8Midr+mqkwl9GMf76yqvmv1uQerX1B+W/BGdR2toWFXiCOb
-         qzH0Lsa3/sMI7VqKP65V8hfYGSTWhsB+s1XkwESyXV3plSKUxgPIq7/BM4S56fnocJ
-         RxJAXwsjS6M38bq7g688zWIzY9/vo+rARpE7EpiellJ+MRTMeCFIC5FbdLK3WgutVV
-         5M22JeWazCuQO+HoZ7E4P7zkMXCu38VIwE+O4Gg9NFTsN2GcskHMRtw9puTl5hkZ3B
-         E7fJCiNJb0n1Rdmaap7B5c3yTWjh+aR/GbcPRQ01xwiSXbRufB6tixq4+H7u0dB2uJ
-         d7rMR5z6VyoEw==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Akihiko Odaki <akihiko.odaki@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-efi@vger.kernel.org, x86@kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Akihiko Odaki <akihiko.odaki@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: Re: [PATCH] x86/efi: Remove references of EFI earlyprintk from
- documentation
-In-Reply-To: <20220321045853.3324-1-akihiko.odaki@gmail.com>
-References: <20220321045853.3324-1-akihiko.odaki@gmail.com>
-Date:   Tue, 05 Apr 2022 10:26:41 -0600
-Message-ID: <87bkxfebsu.fsf@meer.lwn.net>
+        Tue, 5 Apr 2022 10:42:05 -0400
+Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.48.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E6B27CD8
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:18:06 -0700 (PDT)
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 4BB4A15945
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:18:06 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id bj4Qn7J6zdx86bj4QnY5ew; Tue, 05 Apr 2022 08:18:06 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=x+f3jWcojSlFA+ZZ0pJlnzELpcaYSX7f8bbsqUkUiLc=; b=SeH0C6R6Bg1boiO9t0nVHpAKJH
+        LD5kJXC20mkbH2n9LpvZwPvz1L+0YmglCdasF7qeiDMddy6SlslCZxA6Q2na94TAyUP7BwFqVIvEM
+        XHVj+PxWxn8k2PxR/3lAAcgNbOUasmxTUXZZArZkPH/r3IXR1dpK9sDHV7ShrhTUGNgk3acJ7Av6Y
+        rWl7FPSX7ueoF+uQJOZMR1hqiV4k8gf45i8VEHKU/D0JcDdpUjnz3sWrMYjyont9U6qLlApmkDKmP
+        ldwUXYCSwP/QIl4o3Ap9YpeKGU3u/Wrjlb3gHmlEsgQ94VCUUcJee6WZ+uAYGRzFWKCeJTnKlrC1L
+        yLg1Fm7w==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54730)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nbj4P-002s2v-Um; Tue, 05 Apr 2022 13:18:06 +0000
+Message-ID: <dc26e88b-ab7e-755b-13fd-8710883ac80b@roeck-us.net>
+Date:   Tue, 5 Apr 2022 06:18:04 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: Linux 5.18-rc1
+Content-Language: en-US
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
+ <20220404022239.GA1186352@roeck-us.net> <YkwzzANkBRzrYAuq@debian>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <YkwzzANkBRzrYAuq@debian>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nbj4P-002s2v-Um
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54730
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 15
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Akihiko Odaki <akihiko.odaki@gmail.com> writes:
+On 4/5/22 05:19, Sudip Mukherjee wrote:
+> On Sun, Apr 03, 2022 at 07:22:39PM -0700, Guenter Roeck wrote:
+>> On Sun, Apr 03, 2022 at 03:14:19PM -0700, Linus Torvalds wrote:
+>>> So here we are, two weeks later, and the merge window is closed.
+>>>
+> 
+> <snip>
+> 
+>>>
+>>> Go test, please,
+>>
+>> Build results:
+>> 	total: 151 pass: 142 fail: 9
+>> Failed builds:
+>> 	alpha:allmodconfig
+>> 	arm:allmodconfig
+> 
+> Apart from the ones Guenter reported, arm imote2_defconfig fails due to:
+> 28f74201e37c ("ARM: pxa: remove Intel Imote2 and Stargate 2 boards")
+> 
 
-> x86 EFI earlyprink was removed with commit 69c1f396f25b ("efi/x86:
-> Convert x86 EFI earlyprintk into generic earlycon implementation").
+Not entirely surprising, since its support was removed with that patch.
+The error is "arm-linux-gnueabi-ld: no machine record defined", which is
+consistent with that removal. So the fix would be to remove that
+configuration file.
 
-So I will confess that I don't know this area well enough to know
-whether this patch makes sense or not.  To help with that, it would have
-been good to CC Ard, who is the author of the patch you cite above.
-Adding him now.
-
-Ard, do you agree with this change (preserved below)?
-
-Thanks,
-
-jon
-
-> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
-> ---
->  Documentation/admin-guide/kernel-parameters.txt | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index f5a27f067db9..fb39337f4123 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1252,7 +1252,7 @@
->  			Append ",keep" to not disable it when the real console
->  			takes over.
->  
-> -			Only one of vga, efi, serial, or usb debug port can
-> +			Only one of vga, serial, or usb debug port can
->  			be used at a time.
->  
->  			Currently only ttyS0 and ttyS1 may be specified by
-> @@ -1267,7 +1267,7 @@
->  			Interaction with the standard serial driver is not
->  			very good.
->  
-> -			The VGA and EFI output is eventually overwritten by
-> +			The VGA output is eventually overwritten by
->  			the real console.
->  
->  			The xen option can only be used in Xen domains.
-> -- 
-> 2.35.1
+Guenter
