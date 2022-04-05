@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1174CC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E63C35276
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587145AbiDFAHs (ORCPT
+        id S1587132AbiDFAHm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
+        Tue, 5 Apr 2022 20:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343688AbiDEKjg (ORCPT
+        with ESMTP id S1348922AbiDEJss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D01A5E84;
-        Tue,  5 Apr 2022 03:24:25 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5631EE4F0;
+        Tue,  5 Apr 2022 02:37:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 61DFCCE0B18;
-        Tue,  5 Apr 2022 10:24:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61F43C385A1;
-        Tue,  5 Apr 2022 10:24:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8227561368;
+        Tue,  5 Apr 2022 09:37:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A0EC385A0;
+        Tue,  5 Apr 2022 09:37:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154261;
-        bh=3eNm8dG5hwrOYRfNxaPoVEjbdCJXfSIDk1mmCHp/p8o=;
+        s=korg; t=1649151454;
+        bh=QNoGFnLDPZWBXQwk0TSwDZMOh2bX8rqDTA3X0EL9tfA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BkXFlO7KB8cohEA1avlA/izCiNZ1ECLTg+z4MVn5CwUnGsxKbehMoUDFt9pL1EfYU
-         oEcN7DsqN4+5qD3pXYSfkeH9ypZ5ySwbRw4yy4GyKv3XV8GfyW5olegfVTVruUbzdQ
-         oeRfkgqSjLLqJQyKkWPaupxT36bBGEBK0WSWGC+M=
+        b=Igt+Tl4rZJy5vI89+QkHjKxQMcS8qkqvRUPb7kwJP3i6KI6snBFAPqjDTr6kRqzff
+         0PXi78UdTDc8UHSFv/vtoMabTBinamW93+cX0TFszIOqJtSSz4SkHVkXPc/rUobeEm
+         f64yJcAUWCzOh+KD6B3CAy8W0Q2lqDyiCSWzrOtc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 489/599] ASoC: madera: Add dependencies on MFD
-Date:   Tue,  5 Apr 2022 09:33:03 +0200
-Message-Id: <20220405070313.380412732@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 422/913] mt76: mt7915: use proper aid value in mt7915_mcu_wtbl_generic_tlv in sta mode
+Date:   Tue,  5 Apr 2022 09:24:44 +0200
+Message-Id: <20220405070352.495259947@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,58 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit ec29170c724ca30305fc3a19ba2ee73ecac65509 ]
+[ Upstream commit a56b1b0f145ef2d6bb9312dedf3ab8558ef50a5b ]
 
-The Madera CODECs use regmap_irq functions but nothing ensures that
-regmap_irq is built into the kernel. Add dependencies on the ASoC
-symbols for the relevant MFD component. There is no point in building
-the ASoC driver if the MFD doesn't support it and the MFD part contains
-the necessary dependencies to ensure everything is built into the
-kernel.
+mac80211 provides aid in vif->bss_conf.aid for sta mode and not in
+sta->aid. Fix mt7915_mcu_wtbl_generic_tlv routine using proper value for
+aid in sta mode.
 
-Reported-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220203115025.16464-1-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: e57b7901469fc ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/Kconfig | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 34c6dd04b85a..52c89a6f54e9 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -659,6 +659,7 @@ config SND_SOC_CS4349
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 7440f2b443ec..b157db9f8903 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1396,8 +1396,11 @@ mt7915_mcu_wtbl_generic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
+ 	generic = (struct wtbl_generic *)tlv;
  
- config SND_SOC_CS47L15
- 	tristate
-+	depends on MFD_CS47L15
- 
- config SND_SOC_CS47L24
- 	tristate
-@@ -666,15 +667,19 @@ config SND_SOC_CS47L24
- 
- config SND_SOC_CS47L35
- 	tristate
-+	depends on MFD_CS47L35
- 
- config SND_SOC_CS47L85
- 	tristate
-+	depends on MFD_CS47L85
- 
- config SND_SOC_CS47L90
- 	tristate
-+	depends on MFD_CS47L90
- 
- config SND_SOC_CS47L92
- 	tristate
-+	depends on MFD_CS47L92
- 
- # Cirrus Logic Quad-Channel ADC
- config SND_SOC_CS53L30
+ 	if (sta) {
++		if (vif->type == NL80211_IFTYPE_STATION)
++			generic->partial_aid = cpu_to_le16(vif->bss_conf.aid);
++		else
++			generic->partial_aid = cpu_to_le16(sta->aid);
+ 		memcpy(generic->peer_addr, sta->addr, ETH_ALEN);
+-		generic->partial_aid = cpu_to_le16(sta->aid);
+ 		generic->muar_idx = mvif->omac_idx;
+ 		generic->qos = sta->wme;
+ 	} else {
 -- 
 2.34.1
 
