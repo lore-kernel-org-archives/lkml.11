@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C4DC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC517C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384556AbiDEU4D (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56048 "EHLO
+        id S234890AbiDEU4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354668AbiDEKPE (ORCPT
+        with ESMTP id S1348730AbiDEJs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:15:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF5C6C1FC;
-        Tue,  5 Apr 2022 03:02:21 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E40C3DDCC;
+        Tue,  5 Apr 2022 02:34:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7CE2B81C83;
-        Tue,  5 Apr 2022 10:02:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34A57C385A1;
-        Tue,  5 Apr 2022 10:02:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD320616AE;
+        Tue,  5 Apr 2022 09:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD09AC385A3;
+        Tue,  5 Apr 2022 09:34:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152938;
-        bh=FYy2NuQYAT8A88IIsa/Kesb6XY03e4b5Gwo9kUxcGzI=;
+        s=korg; t=1649151271;
+        bh=pgnFe3HATdt1Pd0paifG5y7NhhasCQkzoDJ8+rs+IFk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W4QSI0eo5TkekaQyKimMuXFkAh8+siqnB3BLq2CGd7vMUkDEN8+xly8ljrzPIgugs
-         06Rcc6yZQKznH50cPU4Brwouyl+IJUc1ocHgz2Wsm8XRrXHLs/DnyeboQZIyRmj1ho
-         i9bZUm1HSn01tzBz84dkHxEuN4Lna4biwTi+7z+o=
+        b=k9z+qTzn2I+Oi5XOJ8HYlZ7t7WKHu3aZw4XX981f1XUAzlsREMLPOEtTg1oKTHjmB
+         3BCMlxsYc9cQaYfX5WFm2G1okBQy8M76jlpj7HM0toN9JYMgXCjFRaqkKji8siQ0b8
+         RFsOniSl/58dMomP/wNYo8GFov/IhjWQt/g03jJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.10 044/599] HID: intel-ish-hid: Use dma_alloc_coherent for firmware update
-Date:   Tue,  5 Apr 2022 09:25:38 +0200
-Message-Id: <20220405070300.139280160@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 355/913] ASoC: atmel: Fix error handling in snd_proto_probe
+Date:   Tue,  5 Apr 2022 09:23:37 +0200
+Message-Id: <20220405070350.486585069@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,92 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gwendal Grignou <gwendal@chromium.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit f97ec5d75e9261a5da78dc28a8955b7cc0c4468b upstream.
+[ Upstream commit b0bfaf0544d08d093d6211d7ef8816fb0b5b6c75 ]
 
-Allocating memory with kmalloc and GPF_DMA32 is not allowed, the
-allocator will ignore the attribute.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Instead, use dma_alloc_coherent() API as we allocate a small amount of
-memory to transfer firmware fragment to the ISH.
+This function only calls of_node_put() in the regular path.
+And it will cause refcount leak in error paths.
+Fix this by calling of_node_put() in error handling too.
 
-On Arcada chromebook, after the patch the warning:
-"Unexpected gfp: 0x4 (GFP_DMA32). Fixing up to gfp: 0xcc0 (GFP_KERNEL).  Fix your code!"
-is gone. The ISH firmware is loaded properly and we can interact with
-the ISH:
-> ectool  --name cros_ish version
-...
-Build info:    arcada_ish_v2.0.3661+3c1a1c1ae0 2022-02-08 05:37:47 @localhost
-Tool version:  v2.0.12300-900b03ec7f 2022-02-08 10:01:48 @localhost
-
-Fixes: commit 91b228107da3 ("HID: intel-ish-hid: ISH firmware loader client driver")
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a45f8853a5f9 ("ASoC: Add driver for PROTO Audio CODEC (with a WM8731)")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220308013949.20323-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/intel-ish-hid/ishtp-fw-loader.c |   29 ++--------------------------
- 1 file changed, 3 insertions(+), 26 deletions(-)
+ sound/soc/atmel/mikroe-proto.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
---- a/drivers/hid/intel-ish-hid/ishtp-fw-loader.c
-+++ b/drivers/hid/intel-ish-hid/ishtp-fw-loader.c
-@@ -656,21 +656,12 @@ static int ish_fw_xfer_direct_dma(struct
- 	 */
- 	payload_max_size &= ~(L1_CACHE_BYTES - 1);
- 
--	dma_buf = kmalloc(payload_max_size, GFP_KERNEL | GFP_DMA32);
-+	dma_buf = dma_alloc_coherent(devc, payload_max_size, &dma_buf_phy, GFP_KERNEL);
- 	if (!dma_buf) {
- 		client_data->flag_retry = true;
- 		return -ENOMEM;
+diff --git a/sound/soc/atmel/mikroe-proto.c b/sound/soc/atmel/mikroe-proto.c
+index 0be7b4221c14..93d114f5b9e6 100644
+--- a/sound/soc/atmel/mikroe-proto.c
++++ b/sound/soc/atmel/mikroe-proto.c
+@@ -115,7 +115,8 @@ static int snd_proto_probe(struct platform_device *pdev)
+ 	cpu_np = of_parse_phandle(np, "i2s-controller", 0);
+ 	if (!cpu_np) {
+ 		dev_err(&pdev->dev, "i2s-controller missing\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_codec_node;
+ 	}
+ 	dai->cpus->of_node = cpu_np;
+ 	dai->platforms->of_node = cpu_np;
+@@ -125,7 +126,8 @@ static int snd_proto_probe(struct platform_device *pdev)
+ 						       &bitclkmaster, &framemaster);
+ 	if (bitclkmaster != framemaster) {
+ 		dev_err(&pdev->dev, "Must be the same bitclock and frame master\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_cpu_node;
+ 	}
+ 	if (bitclkmaster) {
+ 		if (codec_np == bitclkmaster)
+@@ -136,18 +138,20 @@ static int snd_proto_probe(struct platform_device *pdev)
+ 		dai_fmt |= snd_soc_daifmt_parse_clock_provider_as_flag(np, NULL);
  	}
  
--	dma_buf_phy = dma_map_single(devc, dma_buf, payload_max_size,
--				     DMA_TO_DEVICE);
--	if (dma_mapping_error(devc, dma_buf_phy)) {
--		dev_err(cl_data_to_dev(client_data), "DMA map failed\n");
--		client_data->flag_retry = true;
--		rv = -ENOMEM;
--		goto end_err_dma_buf_release;
--	}
+-	of_node_put(bitclkmaster);
+-	of_node_put(framemaster);
+-	dai->dai_fmt = dai_fmt;
 -
- 	ldr_xfer_dma_frag.fragment.hdr.command = LOADER_CMD_XFER_FRAGMENT;
- 	ldr_xfer_dma_frag.fragment.xfer_mode = LOADER_XFER_MODE_DIRECT_DMA;
- 	ldr_xfer_dma_frag.ddr_phys_addr = (u64)dma_buf_phy;
-@@ -690,14 +681,7 @@ static int ish_fw_xfer_direct_dma(struct
- 		ldr_xfer_dma_frag.fragment.size = fragment_size;
- 		memcpy(dma_buf, &fw->data[fragment_offset], fragment_size);
+-	of_node_put(codec_np);
+-	of_node_put(cpu_np);
  
--		dma_sync_single_for_device(devc, dma_buf_phy,
--					   payload_max_size,
--					   DMA_TO_DEVICE);
--
--		/*
--		 * Flush cache here because the dma_sync_single_for_device()
--		 * does not do for x86.
--		 */
-+		/* Flush cache to be sure the data is in main memory. */
- 		clflush_cache_range(dma_buf, payload_max_size);
++	dai->dai_fmt = dai_fmt;
+ 	ret = snd_soc_register_card(&snd_proto);
+ 	if (ret && ret != -EPROBE_DEFER)
+ 		dev_err(&pdev->dev,
+ 			"snd_soc_register_card() failed: %d\n", ret);
  
- 		dev_dbg(cl_data_to_dev(client_data),
-@@ -720,15 +704,8 @@ static int ish_fw_xfer_direct_dma(struct
- 		fragment_offset += fragment_size;
- 	}
- 
--	dma_unmap_single(devc, dma_buf_phy, payload_max_size, DMA_TO_DEVICE);
--	kfree(dma_buf);
--	return 0;
--
- end_err_resp_buf_release:
--	/* Free ISH buffer if not done already, in error case */
--	dma_unmap_single(devc, dma_buf_phy, payload_max_size, DMA_TO_DEVICE);
--end_err_dma_buf_release:
--	kfree(dma_buf);
-+	dma_free_coherent(devc, payload_max_size, dma_buf, dma_buf_phy);
- 	return rv;
++
++put_cpu_node:
++	of_node_put(bitclkmaster);
++	of_node_put(framemaster);
++	of_node_put(cpu_np);
++put_codec_node:
++	of_node_put(codec_np);
+ 	return ret;
  }
  
+-- 
+2.34.1
+
 
 
