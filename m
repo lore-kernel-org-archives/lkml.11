@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCFEC352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6317BC352B6
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392539AbiDEWKB (ORCPT
+        id S1392630AbiDEWKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
+        Tue, 5 Apr 2022 18:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241169AbiDEKfO (ORCPT
+        with ESMTP id S242810AbiDEKfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:14 -0400
+        Tue, 5 Apr 2022 06:35:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF052A715;
-        Tue,  5 Apr 2022 03:20:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0B2522F4;
+        Tue,  5 Apr 2022 03:21:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB6CA616D7;
-        Tue,  5 Apr 2022 10:20:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE80C385A1;
-        Tue,  5 Apr 2022 10:20:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C23F8617CA;
+        Tue,  5 Apr 2022 10:21:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCF1FC385A0;
+        Tue,  5 Apr 2022 10:21:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154005;
-        bh=5FrGcilHNiUz4isouMtLYPMowkNlL7KbZe/hG/nvb8c=;
+        s=korg; t=1649154085;
+        bh=0cxfFW4PAGudJo0W1iePckThDGuRuVdAGovI7HmiBvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CYTwXAB1yUDinYNFu1HQGoktjjVR4E+D0M+ihAAAVR9vUK2EbmxttE/U1ekxN+d8m
-         V+KMNNUOF7XHGrGChBLZkgsLBmtleZduWj/BMKs5yGopAgOtc03CFxAG0O8l1gqj1d
-         oHV3giWrTJCCbao7mLbTVWeTUqXtjuC2aFl6u3zU=
+        b=P+wy0Uz01DWecga2c+O6Pii7lEWmQJQz12siLnluW8mWIxYHi+gxL0iVCIih8OueE
+         wkSmj1TUSmQkgPpirJbbmlAe6NCoO0OSqQVZ0Hxt0VZlMmVqUw2AYBghtQ+oK6b4pN
+         Xvv8fWqf3lAIDRR8i39fri8eB5JJ1QrVQD73kILs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 424/599] pinctrl/rockchip: Add missing of_node_put() in rockchip_pinctrl_probe
-Date:   Tue,  5 Apr 2022 09:31:58 +0200
-Message-Id: <20220405070311.450555929@linuxfoundation.org>
+Subject: [PATCH 5.10 405/599] remoteproc: qcom: Fix missing of_node_put in adsp_alloc_memory_region
+Date:   Tue,  5 Apr 2022 09:31:39 +0200
+Message-Id: <20220405070310.883645719@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -52,41 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 89388f8730699c259f8090ec435fb43569efe4ac ]
+[ Upstream commit 505b5b1616e200042999de715dbe7c1e2735cd65 ]
 
 The device_node pointer is returned by of_parse_phandle()  with refcount
 incremented. We should use of_node_put() on it when done.
 
-Fixes: 1e747e59cc4d ("pinctrl: rockchip: base regmap supplied by a syscon")
-Fixes: 14dee8677e19 ("pinctrl: rockchip: let pmu registers be supplied by a syscon")
+Fixes: dc160e449122 ("remoteproc: qcom: Introduce Non-PAS ADSP PIL driver")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307120234.28657-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220308031219.4718-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-rockchip.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/remoteproc/qcom_q6v5_adsp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index 53a0badc6b03..9df48e0cf4cb 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -3774,6 +3774,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
- 	node = of_parse_phandle(np, "rockchip,grf", 0);
- 	if (node) {
- 		info->regmap_base = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(info->regmap_base))
- 			return PTR_ERR(info->regmap_base);
- 	} else {
-@@ -3810,6 +3811,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
- 	node = of_parse_phandle(np, "rockchip,pmu", 0);
- 	if (node) {
- 		info->regmap_pmu = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(info->regmap_pmu))
- 			return PTR_ERR(info->regmap_pmu);
+diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c b/drivers/remoteproc/qcom_q6v5_adsp.c
+index 9eb599701f9b..c39138d39cf0 100644
+--- a/drivers/remoteproc/qcom_q6v5_adsp.c
++++ b/drivers/remoteproc/qcom_q6v5_adsp.c
+@@ -406,6 +406,7 @@ static int adsp_alloc_memory_region(struct qcom_adsp *adsp)
  	}
+ 
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.34.1
 
