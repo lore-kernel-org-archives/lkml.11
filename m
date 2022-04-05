@@ -2,86 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C51FC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD6EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586999AbiDFAG4 (ORCPT
+        id S1587013AbiDFAHC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45286 "EHLO
+        Tue, 5 Apr 2022 20:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242359AbiDEKcm (ORCPT
+        with ESMTP id S1380267AbiDENOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:32:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491D9DE92E;
-        Tue,  5 Apr 2022 03:18:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7BBDB81C98;
-        Tue,  5 Apr 2022 10:18:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40616C385A0;
-        Tue,  5 Apr 2022 10:18:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153926;
-        bh=LyU0UCjIMK28Y/+3dy2ewi5N3bhvr2nkJBhF+Msbu9w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zHFsjodAqc5T/rW7IHW7DlzEd/KWkwNHWxSvveE/sEqRKffP9WTavSHLi4pMxPetE
-         x/F0xhC1yeN6AZo+H9FpPCh7UKicuHrXxMCypqbfO/0k5diDyVsD15BRAMjI/4+7JU
-         u9CJiDo+cZW/guCD2LSfITTBKhq3lbATOUUrfon8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 396/599] iio: adc: Add check for devm_request_threaded_irq
-Date:   Tue,  5 Apr 2022 09:31:30 +0200
-Message-Id: <20220405070310.615265669@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:14:00 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307D312343F;
+        Tue,  5 Apr 2022 05:16:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649160997;
+  x=1680696997;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IQbFdsIycaKMPC2WtqAU6bZcJ0n+YEHMU/Uu+zlGT7I=;
+  b=ae7dSkD7GoCDc2NTaNCq3XgDrTcm4p7/80S49gpON3AX+mYkUIK84gnr
+   jnK5D2akK5XnMwxmSBJSt231FFA755yUKQmY1aQUTnPi9SeTtJHyHSeH6
+   oGk/xBHyVyz1j12hQ7Xp41SzTa4gGfwUDk4nfaHC+xxEfhzwM2A7ypP6T
+   6wdpGzTOU+WO5QoCummNdb2bJR8dtJBVNjeRYBNMFuJ6VEpDF8P/yP8We
+   qLCVY+WiFMpZq2DdG73QIP4oDnbwP9A56lVtoP0WpqP3jcnKcndsP7d01
+   R4wu1f2NXr88o+GsfnvzlQRc6npEroX8psnY3nyn8gyebdVTuznsxNq+T
+   Q==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <wsa@kernel.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <krzk+dt@kernel.org>, <robh+dt@kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/2] i2c: add binding to prevent device detection
+Date:   Tue, 5 Apr 2022 14:16:26 +0200
+Message-ID: <20220405121627.1560949-2-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
+References: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+When drivers with ->detect callbacks are loaded, the I2C core does a
+bunch of transactions to try to probe for these devices, regardless of
+whether they are specified in the devicetree or not.  (This only happens
+on I2C controllers whose drivers enable the I2C_CLASS* flags, but this
+is the case for generic drivers like i2c-gpio.)
 
-[ Upstream commit b30537a4cedcacf0ade2f33ebb7610178ed1e7d7 ]
+These kinds of transactions are unnecessary on systems where the
+devicetree specifies all the devices on the I2C bus, so add a property
+to allow them to be disabled.
 
-As the potential failure of the devm_request_threaded_irq(),
-it should be better to check the return value and return
-error if fails.
-
-Fixes: fa659a40b80b ("iio: adc: twl6030-gpadc: Use devm_* API family")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220224062849.3280966-1-jiasheng@iscas.ac.cn
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 ---
- drivers/iio/adc/twl6030-gpadc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-index c6416ad795ca..256177b15c51 100644
---- a/drivers/iio/adc/twl6030-gpadc.c
-+++ b/drivers/iio/adc/twl6030-gpadc.c
-@@ -911,6 +911,8 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
- 	ret = devm_request_threaded_irq(dev, irq, NULL,
- 				twl6030_gpadc_irq_handler,
- 				IRQF_ONESHOT, "twl6030_gpadc", indio_dev);
-+	if (ret)
-+		return ret;
+diff --git a/Documentation/devicetree/bindings/i2c/i2c.txt b/Documentation/devicetree/bindings/i2c/i2c.txt
+index fc3dd7ec0445..5f7bdf4851e8 100644
+--- a/Documentation/devicetree/bindings/i2c/i2c.txt
++++ b/Documentation/devicetree/bindings/i2c/i2c.txt
+@@ -72,6 +72,10 @@ wants to support one of the below features, it should adapt these bindings.
+ 	this information to adapt power management to keep the arbitration awake
+ 	all the time, for example. Can not be combined with 'single-master'.
  
- 	ret = twl6030_gpadc_enable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
- 	if (ret < 0) {
++- no-detect
++	states that the system should not attempt to automatically detect
++	devices which are not explicitly specified as child nodes.
++
+ - pinctrl
+ 	add extra pinctrl to configure SCL/SDA pins to GPIO function for bus
+ 	recovery, call it "gpio" or "recovery" (deprecated) state
 -- 
 2.34.1
-
-
 
