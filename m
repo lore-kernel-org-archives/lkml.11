@@ -2,96 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 165E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389344AbiDEV7V (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        id S232738AbiDEV7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349554AbiDEJuP (ORCPT
+        with ESMTP id S1457544AbiDEQI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:50:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA389B;
-        Tue,  5 Apr 2022 02:48:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:08:59 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2921F25CD;
+        Tue,  5 Apr 2022 09:07:01 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C220B818F3;
-        Tue,  5 Apr 2022 09:48:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05763C385A2;
-        Tue,  5 Apr 2022 09:48:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152095;
-        bh=xc5tT771KBxay9UwO9nhcapUuxOWzNj8GgPN+OHumyg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hwx3qXTWwKb04BYfesn1bHmSSwkxxs/KYdGmuC0r94HDY87Of9VY9ucpsXJKslpf1
-         EmHwOh8mepmkWiVRQrBbPdkZ1oLZasmmlV5UhrxSpTovCA7KS0vr7bwc8msQ5Sfl5q
-         2FFlcSA3ezPC6WfFqFI/1RXFSc4NscUnyxpDOBe4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 652/913] kdb: Fix the putarea helper function
-Date:   Tue,  5 Apr 2022 09:28:34 +0200
-Message-Id: <20220405070359.382969619@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C6A571EC0518;
+        Tue,  5 Apr 2022 18:06:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649174815;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=NIHZ+oWgHNxDPqo+kf4JAqld28hQkGONJlhfcuaM2A4=;
+        b=YpyH3gE3vol361+JkMCGivTB3ISpKPRQux3pAYKUECfl0l6waGULLAo/1JAE9dDOTMQLcp
+        3UrC221rE5FpMTmwHAN8IkzbdYBwjYcaDJ2C6HDBDyxNcT5bt+VAEp1IEMAQ29f3s2qRXT
+        SpLbJXPjUOdJaa9FzRDSsBN4mKM5QA8=
+Date:   Tue, 5 Apr 2022 18:06:57 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: Re: [PATCH 06/11] brcmfmac: sdio: Fix undefined behavior due to
+ shift overflowing the constant
+Message-ID: <YkxpIQHKLXmGBwV1@zn.tnic>
+References: <20220405151517.29753-1-bp@alien8.de>
+ <20220405151517.29753-7-bp@alien8.de>
+ <87y20jr1qt.fsf@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87y20jr1qt.fsf@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Thompson <daniel.thompson@linaro.org>
+On Tue, Apr 05, 2022 at 06:25:30PM +0300, Kalle Valo wrote:
+> Via which tree is this going? I assume not the wireless tree, so:
 
-[ Upstream commit c1cb81429df462eca1b6ba615cddd21dd3103c46 ]
+Whoever picks it up.
 
-Currently kdb_putarea_size() uses copy_from_kernel_nofault() to write *to*
-arbitrary kernel memory. This is obviously wrong and means the memory
-modify ('mm') command is a serious risk to debugger stability: if we poke
-to a bad address we'll double-fault and lose our debug session.
+> Acked-by: Kalle Valo <kvalo@kernel.org>
 
-Fix this the (very) obvious way.
+Thx.
 
-Note that there are two Fixes: tags because the API was renamed and this
-patch will only trivially backport as far as the rename (and this is
-probably enough). Nevertheless Christoph's rename did not introduce this
-problem so I wanted to record that!
-
-Fixes: fe557319aa06 ("maccess: rename probe_kernel_{read,write} to copy_{from,to}_kernel_nofault")
-Fixes: 5d5314d6795f ("kdb: core for kgdb back end (1 of 2)")
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Link: https://lore.kernel.org/r/20220128144055.207267-1-daniel.thompson@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/debug/kdb/kdb_support.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/debug/kdb/kdb_support.c b/kernel/debug/kdb/kdb_support.c
-index df2bface866e..85cb51c4a17e 100644
---- a/kernel/debug/kdb/kdb_support.c
-+++ b/kernel/debug/kdb/kdb_support.c
-@@ -291,7 +291,7 @@ int kdb_getarea_size(void *res, unsigned long addr, size_t size)
-  */
- int kdb_putarea_size(unsigned long addr, void *res, size_t size)
- {
--	int ret = copy_from_kernel_nofault((char *)addr, (char *)res, size);
-+	int ret = copy_to_kernel_nofault((char *)addr, (char *)res, size);
- 	if (ret) {
- 		if (!KDB_STATE(SUPPRESS)) {
- 			kdb_func_printf("Bad address 0x%lx\n", addr);
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
