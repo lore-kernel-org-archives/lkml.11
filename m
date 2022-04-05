@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9615BC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5706EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379652AbiDEL6E (ORCPT
+        id S1379834AbiDEL6K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
+        Tue, 5 Apr 2022 07:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245020AbiDEIxC (ORCPT
+        with ESMTP id S245027AbiDEIxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B7DD98;
-        Tue,  5 Apr 2022 01:49:36 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D270DDC7;
+        Tue,  5 Apr 2022 01:49:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B980EB818F7;
-        Tue,  5 Apr 2022 08:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02382C385A1;
-        Tue,  5 Apr 2022 08:49:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FE3960FFB;
+        Tue,  5 Apr 2022 08:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AEEC385A3;
+        Tue,  5 Apr 2022 08:49:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148573;
-        bh=FM40Sum4E3GKALIV4MiLpgEC9bKb3cKTTuUrE3SrG1U=;
+        s=korg; t=1649148586;
+        bh=moMl4mv1cQ04EJlf9b/nOiH9/cb7BtO/t5iNseANe2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LuetxT8vT2rHoUCNccfkxdZOxP8Vn3/NHexme4MWTtgsf8V7DGuhg8H0NTamSc8kl
-         +Q9jemLgat5qDhqrsoDtPghfsDh54+z5EMI39P13cy3QOy6lpGznSiiMLLxpDJNcEq
-         bWT5HN3TkkSheyMo/JQwbWPYlyQ7Q4XFMFcfVLBw=
+        b=MmpekmvLXycqoA1hf/fIvY5jEATP+ZvMYU1or7CcZ44ZgdBBfLWqa7E18YaM0yhPz
+         bu74Iu5g/a9j6+86E8z5YA8clxiny0rx9AjEDNPdZdkc8aWif25iGjBZnlI4nHz1Cg
+         VpxOijWnPC6SfYQuUrrelWdwBDc6/us2Yq9WmlHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jagan Teki <jagan@amarulasolutions.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0404/1017] drm: bridge: adv7511: Fix ADV7535 HPD enablement
-Date:   Tue,  5 Apr 2022 09:21:57 +0200
-Message-Id: <20220405070406.279693911@linuxfoundation.org>
+Subject: [PATCH 5.16 0409/1017] libbpf: Fix possible NULL pointer dereference when destroying skeleton
+Date:   Tue,  5 Apr 2022 09:22:02 +0200
+Message-Id: <20220405070406.428629566@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,98 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jagan Teki <jagan@amarulasolutions.com>
+From: Yafang Shao <laoar.shao@gmail.com>
 
-[ Upstream commit 3dbc84a595d17f64f14fcea00120d31e33e98880 ]
+[ Upstream commit a32ea51a3f17ce6524c9fc19d311e708331c8b5f ]
 
-Existing HPD enablement logic is not compatible with ADV7535
-bridge, thus any runtime plug-in of HDMI cable is not working
-on these bridge designs.
+When I checked the code in skeleton header file generated with my own
+bpf prog, I found there may be possible NULL pointer dereference when
+destroying skeleton. Then I checked the in-tree bpf progs, finding that is
+a common issue. Let's take the generated samples/bpf/xdp_redirect_cpu.skel.h
+for example. Below is the generated code in
+xdp_redirect_cpu__create_skeleton():
 
-Unlike other ADV7511 family of bridges, the ADV7535 require
-HPD_OVERRIDE bit to set and reset for proper handling of HPD
-functionality.
+	xdp_redirect_cpu__create_skeleton
+		struct bpf_object_skeleton *s;
+		s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));
+		if (!s)
+			goto error;
+		...
+	error:
+		bpf_object__destroy_skeleton(s);
+		return  -ENOMEM;
 
-Fix it.
+After goto error, the NULL 's' will be deferenced in
+bpf_object__destroy_skeleton().
 
-Fixes: 8501fe4b14a3 ("drm: bridge: adv7511: Add support for ADV7535")
-Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220109172949.168167-1-jagan@amarulasolutions.com
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
+We can simply fix this issue by just adding a NULL check in
+bpf_object__destroy_skeleton().
+
+Fixes: d66562fba1ce ("libbpf: Add BPF object skeleton support")
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220108134739.32541-1-laoar.shao@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/adv7511/adv7511.h     |  1 +
- drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 29 +++++++++++++++-----
- 2 files changed, 23 insertions(+), 7 deletions(-)
+ tools/lib/bpf/libbpf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511.h b/drivers/gpu/drm/bridge/adv7511/adv7511.h
-index 05e3abb5a0c9..1b00dfda6e0d 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511.h
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511.h
-@@ -169,6 +169,7 @@
- #define ADV7511_PACKET_ENABLE_SPARE2		BIT(1)
- #define ADV7511_PACKET_ENABLE_SPARE1		BIT(0)
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index c7ba5e6ed9cf..23edb41637d4 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -11497,6 +11497,9 @@ void bpf_object__detach_skeleton(struct bpf_object_skeleton *s)
  
-+#define ADV7535_REG_POWER2_HPD_OVERRIDE		BIT(6)
- #define ADV7511_REG_POWER2_HPD_SRC_MASK		0xc0
- #define ADV7511_REG_POWER2_HPD_SRC_BOTH		0x00
- #define ADV7511_REG_POWER2_HPD_SRC_HPD		0x40
-diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-index 76555ae64e9c..c02f3ec60b04 100644
---- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-+++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-@@ -351,11 +351,17 @@ static void __adv7511_power_on(struct adv7511 *adv7511)
- 	 * from standby or are enabled. When the HPD goes low the adv7511 is
- 	 * reset and the outputs are disabled which might cause the monitor to
- 	 * go to standby again. To avoid this we ignore the HPD pin for the
--	 * first few seconds after enabling the output.
-+	 * first few seconds after enabling the output. On the other hand
-+	 * adv7535 require to enable HPD Override bit for proper HPD.
- 	 */
--	regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
--			   ADV7511_REG_POWER2_HPD_SRC_MASK,
--			   ADV7511_REG_POWER2_HPD_SRC_NONE);
-+	if (adv7511->type == ADV7535)
-+		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
-+				   ADV7535_REG_POWER2_HPD_OVERRIDE,
-+				   ADV7535_REG_POWER2_HPD_OVERRIDE);
-+	else
-+		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
-+				   ADV7511_REG_POWER2_HPD_SRC_MASK,
-+				   ADV7511_REG_POWER2_HPD_SRC_NONE);
- }
- 
- static void adv7511_power_on(struct adv7511 *adv7511)
-@@ -375,6 +381,10 @@ static void adv7511_power_on(struct adv7511 *adv7511)
- static void __adv7511_power_off(struct adv7511 *adv7511)
+ void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s)
  {
- 	/* TODO: setup additional power down modes */
-+	if (adv7511->type == ADV7535)
-+		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
-+				   ADV7535_REG_POWER2_HPD_OVERRIDE, 0);
++	if (!s)
++		return;
 +
- 	regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER,
- 			   ADV7511_POWER_POWER_DOWN,
- 			   ADV7511_POWER_POWER_DOWN);
-@@ -672,9 +682,14 @@ adv7511_detect(struct adv7511 *adv7511, struct drm_connector *connector)
- 			status = connector_status_disconnected;
- 	} else {
- 		/* Renable HPD sensing */
--		regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
--				   ADV7511_REG_POWER2_HPD_SRC_MASK,
--				   ADV7511_REG_POWER2_HPD_SRC_BOTH);
-+		if (adv7511->type == ADV7535)
-+			regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
-+					   ADV7535_REG_POWER2_HPD_OVERRIDE,
-+					   ADV7535_REG_POWER2_HPD_OVERRIDE);
-+		else
-+			regmap_update_bits(adv7511->regmap, ADV7511_REG_POWER2,
-+					   ADV7511_REG_POWER2_HPD_SRC_MASK,
-+					   ADV7511_REG_POWER2_HPD_SRC_BOTH);
- 	}
- 
- 	adv7511->status = status;
+ 	if (s->progs)
+ 		bpf_object__detach_skeleton(s);
+ 	if (s->obj)
 -- 
 2.34.1
 
