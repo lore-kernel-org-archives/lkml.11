@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09638C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04748C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391165AbiDENr3 (ORCPT
+        id S1391095AbiDENrM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37372 "EHLO
+        Tue, 5 Apr 2022 09:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347323AbiDEJZ2 (ORCPT
+        with ESMTP id S1347337AbiDEJZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:25:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B64D6DCE38;
-        Tue,  5 Apr 2022 02:15:09 -0700 (PDT)
+        Tue, 5 Apr 2022 05:25:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00375DD94E;
+        Tue,  5 Apr 2022 02:15:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5227C6165E;
-        Tue,  5 Apr 2022 09:14:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61E3FC385A2;
-        Tue,  5 Apr 2022 09:14:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56419B818F3;
+        Tue,  5 Apr 2022 09:15:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 915EFC385A0;
+        Tue,  5 Apr 2022 09:15:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150088;
-        bh=XcJJsTcZIwH4Md28xUo15wxWFf4rvGuUqJK1WLRjavM=;
+        s=korg; t=1649150107;
+        bh=5zlb1hptJ2v/BAudDlnKXkagzh8LBcBz6czfaqR09DE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yyntjx403V4oL1y/RszOhwlt3z3L5TUp0xKO/Hxc3Jo0bpEng3WZWSuN3wP7rhDQz
-         i5kT5i2IpHU/RmE9/Rcw2IqDgw7Lyg3uZcHdB3YEoCYkzbAvYtDI6AMXeaiD/H4oLs
-         2kA1JG1f9zZxPqetLfmAhMqVJ/zW19N0TH7G69Dw=
+        b=pK8Dci/17egm8CQEp2oGl6YeuUMgryfNBCdEwyazr/szdGZbUuSZuSiMAJu4dO/Pb
+         cJ1QQ7SO4kCVYA240ur6h+qOQ6+qMgXGIo/AnFCMfA6PceW897OFvNLCbIHAMd++b9
+         mVJsYcs7DULMfteDqCrGpKjaKJQx4fZ3mkUdFG+Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jan Kara <jack@suse.cz>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 0949/1017] block: Fix the maximum minor value is blk_alloc_ext_minor()
-Date:   Tue,  5 Apr 2022 09:31:02 +0200
-Message-Id: <20220405070422.382772594@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Hai <wanghai38@huawei.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 0920/1017] wireguard: socket: free skb in send6 when ipv6 is disabled
+Date:   Tue,  5 Apr 2022 09:30:33 +0200
+Message-Id: <20220405070421.527610767@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,41 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Wang Hai <wanghai38@huawei.com>
 
-commit d1868328dec5ae2cf210111025fcbc71f78dd5ca upstream.
+commit bbbf962d9460194993ee1943a793a0a0af4a7fbf upstream.
 
-ida_alloc_range(..., min, max, ...) returns values from min to max,
-inclusive.
+I got a memory leak report:
 
-So, NR_EXT_DEVT is a valid idx returned by blk_alloc_ext_minor().
+unreferenced object 0xffff8881191fc040 (size 232):
+  comm "kworker/u17:0", pid 23193, jiffies 4295238848 (age 3464.870s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814c3ef4>] slab_post_alloc_hook+0x84/0x3b0
+    [<ffffffff814c8977>] kmem_cache_alloc_node+0x167/0x340
+    [<ffffffff832974fb>] __alloc_skb+0x1db/0x200
+    [<ffffffff82612b5d>] wg_socket_send_buffer_to_peer+0x3d/0xc0
+    [<ffffffff8260e94a>] wg_packet_send_handshake_initiation+0xfa/0x110
+    [<ffffffff8260ec81>] wg_packet_handshake_send_worker+0x21/0x30
+    [<ffffffff8119c558>] process_one_work+0x2e8/0x770
+    [<ffffffff8119ca2a>] worker_thread+0x4a/0x4b0
+    [<ffffffff811a88e0>] kthread+0x120/0x160
+    [<ffffffff8100242f>] ret_from_fork+0x1f/0x30
 
-This is an issue because in device_add_disk(), this value is used in:
-   ddev->devt = MKDEV(disk->major, disk->first_minor);
-and NR_EXT_DEVT is '(1 << MINORBITS)'.
+In function wg_socket_send_buffer_as_reply_to_skb() or wg_socket_send_
+buffer_to_peer(), the semantics of send6() is required to free skb. But
+when CONFIG_IPV6 is disable, kfree_skb() is missing. This patch adds it
+to fix this bug.
 
-So, should 'disk->first_minor' be NR_EXT_DEVT, it would overflow.
-
-Fixes: 22ae8ce8b892 ("block: simplify bdev/disk lookup in blkdev_get")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/cc17199798312406b90834e433d2cefe8266823d.1648306232.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/genhd.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireguard/socket.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -328,7 +328,7 @@ int blk_alloc_ext_minor(void)
- {
- 	int idx;
- 
--	idx = ida_alloc_range(&ext_devt_ida, 0, NR_EXT_DEVT, GFP_KERNEL);
-+	idx = ida_alloc_range(&ext_devt_ida, 0, NR_EXT_DEVT - 1, GFP_KERNEL);
- 	if (idx == -ENOSPC)
- 		return -EBUSY;
- 	return idx;
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -160,6 +160,7 @@ out:
+ 	rcu_read_unlock_bh();
+ 	return ret;
+ #else
++	kfree_skb(skb);
+ 	return -EAFNOSUPPORT;
+ #endif
+ }
 
 
