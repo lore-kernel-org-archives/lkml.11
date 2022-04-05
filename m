@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF3AC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A30A4C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575440AbiDEXHk (ORCPT
+        id S1575477AbiDEXHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
+        Tue, 5 Apr 2022 19:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243506AbiDEKgv (ORCPT
+        with ESMTP id S1357983AbiDEK1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:36:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AB554F8C;
-        Tue,  5 Apr 2022 03:22:27 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2A1D1130;
+        Tue,  5 Apr 2022 03:12:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A946F61676;
-        Tue,  5 Apr 2022 10:22:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF564C385A0;
-        Tue,  5 Apr 2022 10:22:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23C616172B;
+        Tue,  5 Apr 2022 10:12:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31DE9C385A1;
+        Tue,  5 Apr 2022 10:12:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154146;
-        bh=UVSMQTDzbXysduxji4Mk7WYAfSuVvqdNDjO0KdD/6to=;
+        s=korg; t=1649153531;
+        bh=IvyBkfbeIWILmVXwush284Vcs9+1LeJ2nOw1//Ki3mQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K8KAP8aoNg0F3ULTC182qwE/1VOM89q92b+QZF5oZ1D3fslvT5glbbdPjnBgK3IgG
-         To/SgGURjSV9lBNfoVRlJu8rLFaNXNMH5qndWxL+pihCCtgZsGyxYMiN52KX3kICgU
-         SKYFPV3R5vS00xf/Qc8VX/QIZMScv4bzT9yzExuE=
+        b=Lcn2YLn+3zCqu+IlJnUY2PNdfe6Rv6LpCWY1cNt3+8+FPlZ+yT17fg3CZhWlNkVZ3
+         QB79b+dWqgnq87IKZBqjxBJVJMkyL9Jva3kTIjEd/IPbmugGveJnr/3SoZ9TIC2OZe
+         KJsZg2ZMOoIROUrX/tNPVKbi5UWrQxOQQiANkN3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 474/599] f2fs: fix to do sanity check on curseg->alloc_type
-Date:   Tue,  5 Apr 2022 09:32:48 +0200
-Message-Id: <20220405070312.931404738@linuxfoundation.org>
+Subject: [PATCH 5.10 256/599] ASoC: atmel: Fix error handling in sam9x5_wm8731_driver_probe
+Date:   Tue,  5 Apr 2022 09:29:10 +0200
+Message-Id: <20220405070306.457934499@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,84 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit f41ee8b91c00770d718be2ff4852a80017ae9ab3 ]
+[ Upstream commit 740dc3e846537c3743da98bf106f376023fd085c ]
 
-As Wenqing Liu reported in bugzilla:
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215657
+This function only calls of_node_put() in the regular path.
+And it will cause refcount leak in error path.
 
-- Overview
-UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2 when mount and operate a corrupted image
-
-- Reproduce
-tested on kernel 5.17-rc4, 5.17-rc6
-
-1. mkdir test_crash
-2. cd test_crash
-3. unzip tmp2.zip
-4. mkdir mnt
-5. ./single_test.sh f2fs 2
-
-- Kernel dump
-[   46.434454] loop0: detected capacity change from 0 to 131072
-[   46.529839] F2FS-fs (loop0): Mounted with checkpoint version = 7548c2d9
-[   46.738319] ================================================================================
-[   46.738412] UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2
-[   46.738475] index 231 is out of range for type 'unsigned int [2]'
-[   46.738539] CPU: 2 PID: 939 Comm: umount Not tainted 5.17.0-rc6 #1
-[   46.738547] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[   46.738551] Call Trace:
-[   46.738556]  <TASK>
-[   46.738563]  dump_stack_lvl+0x47/0x5c
-[   46.738581]  ubsan_epilogue+0x5/0x50
-[   46.738592]  __ubsan_handle_out_of_bounds+0x68/0x80
-[   46.738604]  f2fs_allocate_data_block+0xdff/0xe60 [f2fs]
-[   46.738819]  do_write_page+0xef/0x210 [f2fs]
-[   46.738934]  f2fs_do_write_node_page+0x3f/0x80 [f2fs]
-[   46.739038]  __write_node_page+0x2b7/0x920 [f2fs]
-[   46.739162]  f2fs_sync_node_pages+0x943/0xb00 [f2fs]
-[   46.739293]  f2fs_write_checkpoint+0x7bb/0x1030 [f2fs]
-[   46.739405]  kill_f2fs_super+0x125/0x150 [f2fs]
-[   46.739507]  deactivate_locked_super+0x60/0xc0
-[   46.739517]  deactivate_super+0x70/0xb0
-[   46.739524]  cleanup_mnt+0x11a/0x200
-[   46.739532]  __cleanup_mnt+0x16/0x20
-[   46.739538]  task_work_run+0x67/0xa0
-[   46.739547]  exit_to_user_mode_prepare+0x18c/0x1a0
-[   46.739559]  syscall_exit_to_user_mode+0x26/0x40
-[   46.739568]  do_syscall_64+0x46/0xb0
-[   46.739584]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is we missed to do sanity check on curseg->alloc_type,
-result in out-of-bound accessing on sbi->block_count[] array, fix it.
-
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: fdbcb3cba54b ("ASoC: atmel: machine driver for at91sam9x5-wm8731 boards")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220316111530.4551-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/segment.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ sound/soc/atmel/sam9x5_wm8731.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index d04b449978aa..49f5cb532738 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4650,6 +4650,13 @@ static int sanity_check_curseg(struct f2fs_sb_info *sbi)
+diff --git a/sound/soc/atmel/sam9x5_wm8731.c b/sound/soc/atmel/sam9x5_wm8731.c
+index 7745250fd743..529604a06c53 100644
+--- a/sound/soc/atmel/sam9x5_wm8731.c
++++ b/sound/soc/atmel/sam9x5_wm8731.c
+@@ -142,7 +142,7 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
+ 	if (!cpu_np) {
+ 		dev_err(&pdev->dev, "atmel,ssc-controller node missing\n");
+ 		ret = -EINVAL;
+-		goto out;
++		goto out_put_codec_np;
+ 	}
+ 	dai->cpus->of_node = cpu_np;
+ 	dai->platforms->of_node = cpu_np;
+@@ -153,12 +153,9 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
+ 	if (ret != 0) {
+ 		dev_err(&pdev->dev, "Failed to set SSC %d for audio: %d\n",
+ 			ret, priv->ssc_id);
+-		goto out;
++		goto out_put_cpu_np;
+ 	}
  
- 		sanity_check_seg_type(sbi, curseg->seg_type);
+-	of_node_put(codec_np);
+-	of_node_put(cpu_np);
+-
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Platform device allocation failed\n");
+@@ -167,10 +164,14 @@ static int sam9x5_wm8731_driver_probe(struct platform_device *pdev)
  
-+		if (curseg->alloc_type != LFS && curseg->alloc_type != SSR) {
-+			f2fs_err(sbi,
-+				 "Current segment has invalid alloc_type:%d",
-+				 curseg->alloc_type);
-+			return -EFSCORRUPTED;
-+		}
-+
- 		if (f2fs_test_bit(blkofs, se->cur_valid_map))
- 			goto out;
+ 	dev_dbg(&pdev->dev, "%s ok\n", __func__);
  
+-	return ret;
++	goto out_put_cpu_np;
+ 
+ out_put_audio:
+ 	atmel_ssc_put_audio(priv->ssc_id);
++out_put_cpu_np:
++	of_node_put(cpu_np);
++out_put_codec_np:
++	of_node_put(codec_np);
+ out:
+ 	return ret;
+ }
 -- 
 2.34.1
 
