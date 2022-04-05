@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A75C38162
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C979FC47089
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236242AbiDEIBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54494 "EHLO
+        id S236302AbiDEICA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232461AbiDEHu7 (ORCPT
+        with ESMTP id S233023AbiDEHwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:50:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C67D9549E;
-        Tue,  5 Apr 2022 00:47:15 -0700 (PDT)
+        Tue, 5 Apr 2022 03:52:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A3F99EF2;
+        Tue,  5 Apr 2022 00:48:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13E19616C6;
-        Tue,  5 Apr 2022 07:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BB58C340EE;
-        Tue,  5 Apr 2022 07:47:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 521CDB81BAD;
+        Tue,  5 Apr 2022 07:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC649C36AEB;
+        Tue,  5 Apr 2022 07:48:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144833;
-        bh=fA6jlSOTDUzNe8YCEepk5YnDTbZKLllnbhM2A2nSFIA=;
+        s=korg; t=1649144888;
+        bh=EIqZGIC3MEY6zK++/3lavNvUv7djR+iZn/Z4aFTomR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j1KfgMuxL9Y6YI/Ums/M16753BKXNofhQVD6AHpKT97NfGO6FxY+kNGN32/KVJkmG
-         3g5VZmf2LXRxnHP3l/89dlv2lEH1OB4z/YOXIo648LMSzJ345ozhlAeX0JrF94WtUn
-         pzMGWxU1uj48VdbX8ok4a81tCmsgmN5rEXKdmzZU=
+        b=f6icmoYM4d2ofkNqaF2HuBQUNNqRFqReGcjUNEhnW2hm32Fk9gaEHoCoW2gtHUy55
+         BbvTr4l2Z7Hv/4krcvadaang9BYQ24d104ncStT/mLn5e8HhauMVCdj8AqDJi6w9Cy
+         M/hTtu47Lgg2Mf4AAbKdjzSoj9+9FrblHeARRKsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.17 0188/1126] brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
-Date:   Tue,  5 Apr 2022 09:15:35 +0200
-Message-Id: <20220405070413.125522885@linuxfoundation.org>
+        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0207/1126] crypto: authenc - Fix sleep in atomic context in decrypt_tail
+Date:   Tue,  5 Apr 2022 09:15:54 +0200
+Message-Id: <20220405070413.685069675@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,36 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit 5e90f0f3ead014867dade7a22f93958119f5efab upstream.
+[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
 
-This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
-the CLM blob is released in the device remove path.
+The function crypto_authenc_decrypt_tail discards its flags
+argument and always relies on the flags from the original request
+when starting its sub-request.
 
-Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-2-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This is clearly wrong as it may cause the SLEEPABLE flag to be
+set when it shouldn't.
+
+Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |    2 ++
- 1 file changed, 2 insertions(+)
+ crypto/authenc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1777,6 +1777,8 @@ static void brcmf_pcie_setup(struct devi
- 	ret = brcmf_chip_get_raminfo(devinfo->ci);
- 	if (ret) {
- 		brcmf_err(bus, "Failed to get RAM info\n");
-+		release_firmware(fw);
-+		brcmf_fw_nvram_free(nvram);
- 		goto fail;
- 	}
+diff --git a/crypto/authenc.c b/crypto/authenc.c
+index 670bf1a01d00..17f674a7cdff 100644
+--- a/crypto/authenc.c
++++ b/crypto/authenc.c
+@@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+ 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
  
+ 	skcipher_request_set_tfm(skreq, ctx->enc);
+-	skcipher_request_set_callback(skreq, aead_request_flags(req),
++	skcipher_request_set_callback(skreq, flags,
+ 				      req->base.complete, req->base.data);
+ 	skcipher_request_set_crypt(skreq, src, dst,
+ 				   req->cryptlen - authsize, req->iv);
+-- 
+2.34.1
+
 
 
