@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9237C4707E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91ABC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354576AbiDEKOj (ORCPT
+        id S1354291AbiDEKNO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33842 "EHLO
+        Tue, 5 Apr 2022 06:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241177AbiDEIcw (ORCPT
+        with ESMTP id S241159AbiDEIcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:52 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D5810FF2;
-        Tue,  5 Apr 2022 01:29:08 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:06 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F222167C7;
+        Tue,  5 Apr 2022 01:28:59 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:28:56 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147347;
+        s=2020; t=1649147337;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Fe9mJlC687Zaz7e4JSc1XJLsZV5carty3Du71P+qWIE=;
-        b=x5NlzsVn1/CdfpqvjfOU+FVbbwuTufv3Sg4irPI84QFEf/vpJO00bNk7Yea7Ul6CIwWhDx
-        NfKAWNyiS39tfWeeyexxPke/MdKjdv3Goy4HLt7MsVjWIUrs0J4BR/7N9R5h/LSY37IbmN
-        4fwNokbCtTz+g2KXClgwCULOfJW7/ZbJG09yV+BwAn46o1sIEATAOmcJBIQjovvNoOHrLb
-        qcmau9K2T705rqyKENMCQfLYCoDVqwlY6v+KXc/iWQ0blyMqAwk4i0uGRA+99Y9QD4YtGf
-        8jgb6Jgh39Y5AT54CHjOcFlKA8ghj1kaw0Z4ijVBlRTMeSFsqEsguNXO2d5wgw==
+        bh=aRspjOD+sp4wLkw4s0WLBmG5G07DJy71EvKofdBLPA4=;
+        b=gok3LcuSKj4zHHuSDoKXqImYIYgLzOiqWQmeaO0TT7se7k1AS6iHAf0DLX7gCwbSZ8So9o
+        3PSKYhQa+td4Dz5gi2y6hCbTg8mbMDjVO39IQfj4fU1lR6Teav0I6/Jo5cVpzz3pvHQ/f1
+        otDThHBB5ChCpFRrCZuOzlTHh2uz6tsKh8mE7BypSn4GgsDZoEe6yT9BrflLOL5zBmQRb8
+        Y4UGPw9EGMyHIKD3PD8fsK5LTe4/FngmAuofjAzR6hdlY8hsVtQfkt8ezHnR6cYENWz1Uy
+        0iLeDoF0pPk8kqrltGxJI3I3nSjwr0YR90BPow/iSpki8FEkybVBAU5SXqlvdw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147347;
+        s=2020e; t=1649147337;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Fe9mJlC687Zaz7e4JSc1XJLsZV5carty3Du71P+qWIE=;
-        b=Ab2d/xej9XdJAAwlQUAg7d57HRRchEKTP160WdUlGFIJ3yDiqhX5pzAVigfo1biuVQWRaz
-        gM36oOGzcMLtdhAQ==
-From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
+        bh=aRspjOD+sp4wLkw4s0WLBmG5G07DJy71EvKofdBLPA4=;
+        b=VxaaUtbIbDRsVByCzaPodikw8WVDkI1rGgzMxON0+tAuOIy8nh02YGsBmagANhYfrPGO0J
+        oo2+TPEhpRMsjrDA==
+From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] perf/x86/intel: Update the FRONTEND MSR mask on
- Sapphire Rapids
-Cc:     Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        stable@vger.kernel.org, x86@kernel.org,
+Subject: [tip: locking/urgent] x86/percpu: Remove volatile from arch_raw_cpu_ptr().
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <1648482543-14923-2-git-send-email-kan.liang@linux.intel.com>
-References: <1648482543-14923-2-git-send-email-kan.liang@linux.intel.com>
+In-Reply-To: <20220328145810.86783-2-bigeasy@linutronix.de>
+References: <20220328145810.86783-2-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Message-ID: <164914734621.389.12529799156249746184.tip-bot2@tip-bot2>
+Message-ID: <164914733657.389.13602692959226451396.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,42 +61,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/urgent branch of tip:
+The following commit has been merged into the locking/urgent branch of tip:
 
-Commit-ID:     e590928de7547454469693da9bc7ffd562e54b7e
-Gitweb:        https://git.kernel.org/tip/e590928de7547454469693da9bc7ffd562e54b7e
-Author:        Kan Liang <kan.liang@linux.intel.com>
-AuthorDate:    Mon, 28 Mar 2022 08:49:03 -07:00
+Commit-ID:     1c1e7e3c23dd25f938302428eeb22c3dda2c3427
+Gitweb:        https://git.kernel.org/tip/1c1e7e3c23dd25f938302428eeb22c3dda2c3427
+Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+AuthorDate:    Mon, 28 Mar 2022 16:58:08 +02:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 09:59:44 +02:00
+CommitterDate: Tue, 05 Apr 2022 09:59:38 +02:00
 
-perf/x86/intel: Update the FRONTEND MSR mask on Sapphire Rapids
+x86/percpu: Remove volatile from arch_raw_cpu_ptr().
 
-On Sapphire Rapids, the FRONTEND_RETIRED.MS_FLOWS event requires the
-FRONTEND MSR value 0x8. However, the current FRONTEND MSR mask doesn't
-support it.
+The volatile attribute in the inline assembly of arch_raw_cpu_ptr()
+forces the compiler to always generate the code, even if the compiler
+can decide upfront that its result is not needed.
 
-Update intel_spr_extra_regs[] to support it.
+For instance invoking __intel_pmu_disable_all(false) (like
+intel_pmu_snapshot_arch_branch_stack() does) leads to loading the
+address of &cpu_hw_events into the register while compiler knows that it
+has no need for it. This ends up with code like:
 
-Fixes: 61b985e3e775 ("perf/x86/intel: Add perf core PMU support for Sapphire Rapids")
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+|	movq	$cpu_hw_events, %rax			#, tcp_ptr__
+|	add	%gs:this_cpu_off(%rip), %rax		# this_cpu_off, tcp_ptr__
+|	xorl	%eax, %eax				# tmp93
+
+It also creates additional code within local_lock() with !RT &&
+!LOCKDEP which is not desired.
+
+By removing the volatile attribute the compiler can place the
+function freely and avoid it if it is not needed in the end.
+By using the function twice the compiler properly caches only the
+variable offset and always loads the CPU-offset.
+
+this_cpu_ptr() also remains properly placed within a preempt_disable()
+sections because
+- arch_raw_cpu_ptr() assembly has a memory input ("m" (this_cpu_off))
+- prempt_{dis,en}able() fundamentally has a 'barrier()' in it
+
+Therefore this_cpu_ptr() is already properly serialized and does not
+rely on the 'volatile' attribute.
+
+Remove volatile from arch_raw_cpu_ptr().
+
+[ bigeasy: Added Linus' explanation why this_cpu_ptr() is not moved out
+  of a preempt_disable() section without the 'volatile' attribute. ]
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/1648482543-14923-2-git-send-email-kan.liang@linux.intel.com
+Link: https://lore.kernel.org/r/20220328145810.86783-2-bigeasy@linutronix.de
 ---
- arch/x86/events/intel/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/percpu.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index eb17b96..fc7f458 100644
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -302,7 +302,7 @@ static struct extra_reg intel_spr_extra_regs[] __read_mostly = {
- 	INTEL_UEVENT_EXTRA_REG(0x012a, MSR_OFFCORE_RSP_0, 0x3fffffffffull, RSP_0),
- 	INTEL_UEVENT_EXTRA_REG(0x012b, MSR_OFFCORE_RSP_1, 0x3fffffffffull, RSP_1),
- 	INTEL_UEVENT_PEBS_LDLAT_EXTRA_REG(0x01cd),
--	INTEL_UEVENT_EXTRA_REG(0x01c6, MSR_PEBS_FRONTEND, 0x7fff17, FE),
-+	INTEL_UEVENT_EXTRA_REG(0x01c6, MSR_PEBS_FRONTEND, 0x7fff1f, FE),
- 	INTEL_UEVENT_EXTRA_REG(0x40ad, MSR_PEBS_FRONTEND, 0x7, FE),
- 	INTEL_UEVENT_EXTRA_REG(0x04c2, MSR_PEBS_FRONTEND, 0x8, FE),
- 	EVENT_EXTRA_END
+diff --git a/arch/x86/include/asm/percpu.h b/arch/x86/include/asm/percpu.h
+index a3c33b7..13c0d63 100644
+--- a/arch/x86/include/asm/percpu.h
++++ b/arch/x86/include/asm/percpu.h
+@@ -38,9 +38,9 @@
+ #define arch_raw_cpu_ptr(ptr)				\
+ ({							\
+ 	unsigned long tcp_ptr__;			\
+-	asm volatile("add " __percpu_arg(1) ", %0"	\
+-		     : "=r" (tcp_ptr__)			\
+-		     : "m" (this_cpu_off), "0" (ptr));	\
++	asm ("add " __percpu_arg(1) ", %0"		\
++	     : "=r" (tcp_ptr__)				\
++	     : "m" (this_cpu_off), "0" (ptr));		\
+ 	(typeof(*(ptr)) __kernel __force *)tcp_ptr__;	\
+ })
+ #else
