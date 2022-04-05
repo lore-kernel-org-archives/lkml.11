@@ -2,119 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE78C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF57CC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382039AbiDEMAe (ORCPT
+        id S1382124AbiDEMAo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
+        Tue, 5 Apr 2022 08:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236594AbiDEIQv (ORCPT
+        with ESMTP id S236344AbiDEIQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:16:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DCE71ECD;
-        Tue,  5 Apr 2022 01:04:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8575461748;
-        Tue,  5 Apr 2022 08:04:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D2F4C385A0;
-        Tue,  5 Apr 2022 08:04:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145841;
-        bh=N+zWu7AI5IWaUS3GUluxulWeUVNUFJ71l/5vn5pCO2g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KWzrGFLo44xPE86VgQ0sOS+0LtDFJPw58Ex13f7y1XCc75HPPmaxJdblYdj73q9rN
-         7f2I3lphzh3sslG1Pz+0Fw9fLAvmCoknWJembadGUHVpGSQKepcYjnLA1S/HWfGhjM
-         kzlFnKtH5N8BNAxyWM2EPzEJON9sgZh0PL962L/k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0510/1126] ptp: unregister virtual clocks when unregistering physical clock.
-Date:   Tue,  5 Apr 2022 09:20:57 +0200
-Message-Id: <20220405070422.597451327@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:16:42 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1946FA3D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:04:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=esA02a7oh965kskQzv4SS8tP7F5wpRe9ez3P/VwbZ3A=; b=kIYvLQ5PNZ4kqh3JmglRTIV0u8
+        sV10s3bmaS5912V9wJqud/UoqIv6f6s0K37MizNc0BwEmMcj7uIK/WwSm7fSA/Znl1oKEOzxNjVaa
+        PTq53BuqJF9WxWJ8UfR109zHnd2bghX5zAXn59RHx/zU8tW3HSTpJE7d2E7slkbVw8KJMwhQqvCIS
+        Gcm45cfqQh0z2IBbDOJV020FS3mC7vPh9A2KPA4KXBoU94+OvBRYhDVBXV1hsrzXy3gl74t2j+Jtu
+        27bUJkJB9/rQsx0GzCj5c2ZkzDvZk4amPMQlMSr0Ts6YjJxr5TNCBxrqKEV/5cLvZPmqhJo/e9v9j
+        6i1P8AIA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbeA5-001o5L-3e; Tue, 05 Apr 2022 08:03:38 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5FE80986B5B; Tue,  5 Apr 2022 10:03:35 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 10:03:35 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: Re: vmlinux.o: warning: objtool: stackleak_erase()+0x35: call to
+ ftrace_likely_update() leaves .noinstr.text section
+Message-ID: <20220405080335.GC30877@worktop.programming.kicks-ass.net>
+References: <202204042008.sCQbEmVS-lkp@intel.com>
+ <202204041125.500C28FD8@keescook>
+ <20220404152502.0621caf9@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404152502.0621caf9@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miroslav Lichvar <mlichvar@redhat.com>
+On Mon, Apr 04, 2022 at 03:25:02PM -0400, Steven Rostedt wrote:
+> On Mon, 4 Apr 2022 11:27:47 -0700
+> Kees Cook <keescook@chromium.org> wrote:
+> 
+> > I got CCed on this because of stackleak_erase() triggering, this, but it
+> > appears to be an existing issue for other callers too. It looks like
+> > __branch_check__() shouldn't be emitting ftrace_likely_update() calls
+> > for noinstr functions...
+> > 
+> > I have no idea how a macro is meant to check for function attributes,
+> > though... :(
+> 
+> Ignore it. It's the branch tracer enabled (that is, every "if ()" is being
+> traced).
+> 
+> Although I still use the branch profiler, I do not believe anyone uses the
+> branch tracer. The branch profiler updates an array of counters that tells
+> when the branch was true or false, the branch tracer actually traces
+> (records an event) for every branch in the system!
 
-[ Upstream commit bfcbb76b0f595ea9ede9f7a218086fef85242f10 ]
+\o/
 
-When unregistering a physical clock which has some virtual clocks,
-unregister the virtual clocks with it.
+> I think I'll just send a patch to nuke the tracer. I'm sure Peter Zijlstra
+> will be happy when I do that. But I still want the profiler, as I find that
+> useful.
 
-This fixes the following oops, which can be triggered by unloading
-a driver providing a PTP clock when it has enabled virtual clocks:
-
-BUG: unable to handle page fault for address: ffffffffc04fc4d8
-Oops: 0000 [#1] PREEMPT SMP NOPTI
-RIP: 0010:ptp_vclock_read+0x31/0xb0
-Call Trace:
- timecounter_read+0xf/0x50
- ptp_vclock_refresh+0x2c/0x50
- ? ptp_clock_release+0x40/0x40
- ptp_aux_kworker+0x17/0x30
- kthread_worker_fn+0x9b/0x240
- ? kthread_should_park+0x30/0x30
- kthread+0xe2/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
-
-Fixes: 73f37068d540 ("ptp: support ptp physical/virtual clocks conversion")
-Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Cc: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/ptp/ptp_clock.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-index 0e4bc8b9329d..b6f2cfd15dd2 100644
---- a/drivers/ptp/ptp_clock.c
-+++ b/drivers/ptp/ptp_clock.c
-@@ -317,11 +317,18 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
- }
- EXPORT_SYMBOL(ptp_clock_register);
- 
-+static int unregister_vclock(struct device *dev, void *data)
-+{
-+	struct ptp_clock *ptp = dev_get_drvdata(dev);
-+
-+	ptp_vclock_unregister(info_to_vclock(ptp->info));
-+	return 0;
-+}
-+
- int ptp_clock_unregister(struct ptp_clock *ptp)
- {
- 	if (ptp_vclock_in_use(ptp)) {
--		pr_err("ptp: virtual clock in use\n");
--		return -EBUSY;
-+		device_for_each_child(&ptp->dev, NULL, unregister_vclock);
- 	}
- 
- 	ptp->defunct = 1;
--- 
-2.34.1
-
+It'll explode the moment Lai's entry rework goes through. That'll make
+us run C code before we switch to the kernel address space, so your
+counters will not exist/be-mapped and *BOOM*.
 
 
