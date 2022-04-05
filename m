@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC5EC47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A74BC3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380236AbiDEU2q (ORCPT
+        id S1380693AbiDEU2u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
+        Tue, 5 Apr 2022 16:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354978AbiDEKQu (ORCPT
+        with ESMTP id S1358135AbiDEK2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F2B11C0A;
-        Tue,  5 Apr 2022 03:04:22 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68E29AE6E;
+        Tue,  5 Apr 2022 03:15:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32B07B81C99;
-        Tue,  5 Apr 2022 10:04:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D21BC385A6;
-        Tue,  5 Apr 2022 10:04:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AAC1B81C88;
+        Tue,  5 Apr 2022 10:15:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 134FAC385A1;
+        Tue,  5 Apr 2022 10:15:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153059;
-        bh=r4l+owIcrNQ3efGn/1bGA3KGQMB6wEfh4CiEt6UHA3Q=;
+        s=korg; t=1649153748;
+        bh=4imunOY0aHzERC4UsQvyYo5x70zlw1ErYihHvlIFqGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PFneB6CrddJXe6VeQFalHJpQxA4Z4mwjlFB4Peyy/AGcytZh6c2IA1qWHrOgIvlEY
-         mW8o62cQqOzawG9Gb+RDoJBH2gMYfUXwNLaTA7jYdIT7LXm8BT6IBMX1bOzTPiPgCB
-         o8B2DLaWUrVjROuDSaxsiyzFBR2um2PrCwgGoYWI=
+        b=Wl2/m7m6FOqp3H82MnCyJk59f0C7O6Ez3kS4IWFXPBqCMCln11aIvErfs2Ay3KDtL
+         0x0XBIJ6Xt1pUJbvWIZQ+bwdhXpNS7N0T1dmmnyU6G2YJFOtCVLSjGebPLzm8tK2PR
+         y0MOjE9dyqRUplSU2kW/RiVIwkqVl8H6+3YdCI5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.10 088/599] ACPI: properties: Consistently return -ENOENT if there are no more references
-Date:   Tue,  5 Apr 2022 09:26:22 +0200
-Message-Id: <20220405070301.448435301@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 334/599] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
+Date:   Tue,  5 Apr 2022 09:30:28 +0200
+Message-Id: <20220405070308.772326353@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,36 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Hou Wenlong <houwenlong.hwl@antgroup.com>
 
-commit babc92da5928f81af951663fc436997352e02d3a upstream.
+[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
 
-__acpi_node_get_property_reference() is documented to return -ENOENT if
-the caller requests a property reference at an index that does not exist,
-not -EINVAL which it actually does.
+Per Intel's SDM on the "Instruction Set Reference", when
+loading segment descriptor, not-present segment check should
+be after all type and privilege checks. But the emulator checks
+it first, then #NP is triggered instead of #GP if privilege fails
+and segment is not present. Put not-present segment check after
+type and privilege checks in __load_segment_descriptor().
 
-Fix this by returning -ENOENT consistenly, independently of whether the
-property value is a plain reference or a package.
-
-Fixes: c343bc2ce2c6 ("ACPI: properties: Align return codes of __acpi_node_get_property_reference()")
-Cc: 4.14+ <stable@vger.kernel.org> # 4.14+
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/property.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/emulate.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -685,7 +685,7 @@ int __acpi_node_get_property_reference(c
- 	 */
- 	if (obj->type == ACPI_TYPE_LOCAL_REFERENCE) {
- 		if (index)
--			return -EINVAL;
-+			return -ENOENT;
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index e82151ba95c0..a63df19ef4da 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1718,11 +1718,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 		goto exception;
+ 	}
  
- 		ret = acpi_bus_get_device(obj->reference.handle, &device);
- 		if (ret)
+-	if (!seg_desc.p) {
+-		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
+-		goto exception;
+-	}
+-
+ 	dpl = seg_desc.dpl;
+ 
+ 	switch (seg) {
+@@ -1762,6 +1757,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
++		if (!seg_desc.p) {
++			err_vec = NP_VECTOR;
++			goto exception;
++		}
+ 		old_desc = seg_desc;
+ 		seg_desc.type |= 2; /* busy */
+ 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+@@ -1786,6 +1785,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 		break;
+ 	}
+ 
++	if (!seg_desc.p) {
++		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
++		goto exception;
++	}
++
+ 	if (seg_desc.s) {
+ 		/* mark segment as accessed */
+ 		if (!(seg_desc.type & 1)) {
+-- 
+2.34.1
+
 
 
