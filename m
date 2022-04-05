@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4194BC4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2268C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234646AbiDELfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46826 "EHLO
+        id S244540AbiDELgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244708AbiDEIwf (ORCPT
+        with ESMTP id S244702AbiDEIwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:35 -0400
+        Tue, 5 Apr 2022 04:52:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB72D95D0;
-        Tue,  5 Apr 2022 01:42:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69C2D95FF;
+        Tue,  5 Apr 2022 01:42:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 532E6609D0;
-        Tue,  5 Apr 2022 08:42:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65276C385A1;
-        Tue,  5 Apr 2022 08:42:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72CB060FFC;
+        Tue,  5 Apr 2022 08:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88F9EC385A1;
+        Tue,  5 Apr 2022 08:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148143;
-        bh=FMqjZnBTFL1ItX9ExSI+O2OIK8U3hGPGIJE5SD3iFNI=;
+        s=korg; t=1649148135;
+        bh=KRNK4njVsHVBRUVwoLTSxSdSTi/Wg8AxT7cHVB6pSlE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C6HBWRrrRylf/awCK4sBdjJ6EGEmnjWJes+dXBFhpN5mdD9OVtpUO1o6o6Bv/OEFw
-         8EfB1559ptNZCYnkjapOmX3zquaXw62JVGHxAoNvCJuoRu+/i8SyOcaOmm+9GXpErZ
-         nwukiAYCLreqS+Zqk1C1yiPcz1YjPRxRDCobrgdI=
+        b=BAh1wMzCLhXYficB1VKtNt5o2OdwYdDWQtG7h16FMVW4mhDskrmJ6GToRiDFkB+JM
+         wV9vXg7W9fT9PszH06IREc/BuzyholeogGkz/qFliaCpqbWJorsb7GokePGsXLYsD0
+         eDG2BcW81m3jXeDJuObbB3vSfeNp/gAub0iJo97Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Andreas Rammhold <andreas@rammhold.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0249/1017] ACPI: APEI: fix return value of __setup handlers
-Date:   Tue,  5 Apr 2022 09:19:22 +0200
-Message-Id: <20220405070401.652458142@linuxfoundation.org>
+Subject: [PATCH 5.16 0247/1017] KEYS: trusted: Fix trusted key backends when building as module
+Date:   Tue,  5 Apr 2022 09:19:20 +0200
+Message-Id: <20220405070401.591509556@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,84 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Andreas Rammhold <andreas@rammhold.de>
 
-[ Upstream commit f3303ff649dbf7dcdc6a6e1a922235b12b3028f4 ]
+[ Upstream commit 969a26446bcd142faedfe8c6f41cd7668596c1fa ]
 
-__setup() handlers should return 1 to indicate that the boot option
-has been handled. Returning 0 causes a boot option to be listed in
-the Unknown kernel command line parameters and also added to init's
-arg list (if no '=' sign) or environment list (if of the form 'a=b').
+Before this commit the kernel could end up with no trusted key sources
+even though both of the currently supported backends (TPM and TEE) were
+compiled as modules. This manifested in the trusted key type not being
+registered at all.
 
-Unknown kernel command line parameters "erst_disable
-  bert_disable hest_disable BOOT_IMAGE=/boot/bzImage-517rc6", will be
-  passed to user space.
+When checking if a CONFIG_… preprocessor variable is defined we only
+test for the builtin (=y) case and not the module (=m) case. By using
+the IS_REACHABLE() macro we do test for both cases.
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-     erst_disable
-     bert_disable
-     hest_disable
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc6
-
-Fixes: a3e2acc5e37b ("ACPI / APEI: Add Boot Error Record Table (BERT) support")
-Fixes: a08f82d08053 ("ACPI, APEI, Error Record Serialization Table (ERST) support")
-Fixes: 9dc966641677 ("ACPI, APEI, HEST table parsing")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 5d0682be3189 ("KEYS: trusted: Add generic trusted keys framework")
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+Signed-off-by: Andreas Rammhold <andreas@rammhold.de>
+Tested-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/apei/bert.c | 2 +-
- drivers/acpi/apei/erst.c | 2 +-
- drivers/acpi/apei/hest.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ security/keys/trusted-keys/trusted_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-index 19e50fcbf4d6..86211422f4ee 100644
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -77,7 +77,7 @@ static int __init setup_bert_disable(char *str)
- {
- 	bert_disable = 1;
+diff --git a/security/keys/trusted-keys/trusted_core.c b/security/keys/trusted-keys/trusted_core.c
+index d5c891d8d353..5b35f1b87644 100644
+--- a/security/keys/trusted-keys/trusted_core.c
++++ b/security/keys/trusted-keys/trusted_core.c
+@@ -27,10 +27,10 @@ module_param_named(source, trusted_key_source, charp, 0);
+ MODULE_PARM_DESC(source, "Select trusted keys source (tpm or tee)");
  
--	return 0;
-+	return 1;
- }
- __setup("bert_disable", setup_bert_disable);
- 
-diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
-index 242f3c2d5533..698d67cee052 100644
---- a/drivers/acpi/apei/erst.c
-+++ b/drivers/acpi/apei/erst.c
-@@ -891,7 +891,7 @@ EXPORT_SYMBOL_GPL(erst_clear);
- static int __init setup_erst_disable(char *str)
- {
- 	erst_disable = 1;
--	return 0;
-+	return 1;
- }
- 
- __setup("erst_disable", setup_erst_disable);
-diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
-index 0edc1ed47673..6aef1ee5e1bd 100644
---- a/drivers/acpi/apei/hest.c
-+++ b/drivers/acpi/apei/hest.c
-@@ -224,7 +224,7 @@ static int __init hest_ghes_dev_register(unsigned int ghes_count)
- static int __init setup_hest_disable(char *str)
- {
- 	hest_disable = HEST_DISABLED;
--	return 0;
-+	return 1;
- }
- 
- __setup("hest_disable", setup_hest_disable);
+ static const struct trusted_key_source trusted_key_sources[] = {
+-#if defined(CONFIG_TCG_TPM)
++#if IS_REACHABLE(CONFIG_TCG_TPM)
+ 	{ "tpm", &trusted_key_tpm_ops },
+ #endif
+-#if defined(CONFIG_TEE)
++#if IS_REACHABLE(CONFIG_TEE)
+ 	{ "tee", &trusted_key_tee_ops },
+ #endif
+ };
 -- 
 2.34.1
 
