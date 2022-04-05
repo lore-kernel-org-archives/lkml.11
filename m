@@ -2,104 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 867F5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BABC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345431AbiDEKlV (ORCPT
+        id S1345489AbiDEKla (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
+        Tue, 5 Apr 2022 06:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240909AbiDEIci (ORCPT
+        with ESMTP id S240959AbiDEIcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8C113D60;
-        Tue,  5 Apr 2022 01:25:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 04:32:41 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECFC91560;
+        Tue,  5 Apr 2022 01:25:32 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8503B81BAF;
-        Tue,  5 Apr 2022 08:25:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A587C385A1;
-        Tue,  5 Apr 2022 08:25:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147107;
-        bh=cpsnT1zebhl17DiwBKb127RWcxcMG89F+sCYUs5gNuA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R8zdsxufEmf7NeRBqE98Vv2PWEGmoCrNEj2ELnIHPxul20pgWcvzufuJKngxnQh/T
-         K7IpTguOu2L36FC/Lt7o7zy9Lw0rgt2ipThkMKEf8nkPB02n2TSYD2TcSt1UDt/Fsf
-         jIJf7ctHvTzElOuNzx5vEw9oE8n6/CNtHlcbRkkw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.17 0966/1126] drm/dp: Fix off-by-one in register cache size
-Date:   Tue,  5 Apr 2022 09:28:33 +0200
-Message-Id: <20220405070435.860956354@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D0341210E1;
+        Tue,  5 Apr 2022 08:25:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649147130; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p7Y05L7uOkIJquMnEg+eO/WF4r7xbv9mlE1hTt5HzHs=;
+        b=QTCcWeRSxmtaPQcnjhcxGV6y8zrYNXXfKZvW0smRC1Z4E8alqJxsnm3t1m5cIiLud6rBDX
+        CCFz18ZHmdnp4m1SaZg8qRC2zmNdtPamt4TTGfryllKc9mlcJP70meU4aXUD8kkrnkFVj7
+        CObTXQscO+vhCwIc9MT78jVoyqsxd64=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649147130;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p7Y05L7uOkIJquMnEg+eO/WF4r7xbv9mlE1hTt5HzHs=;
+        b=z850LmrTnqtL0PP3wyuPWV69JsNFpCW527wlNSNd9XqpJvWPDk+MS08t5MJQwvGBVhuaES
+        /OqRCZbvuc6hY8Aw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B795D13A04;
+        Tue,  5 Apr 2022 08:25:30 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id mKOcLPr8S2JwEQAAMHmgww
+        (envelope-from <iivanov@suse.de>); Tue, 05 Apr 2022 08:25:30 +0000
+From:   "Ivan T. Ivanov" <iivanov@suse.de>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, "Ivan T. Ivanov" <iivanov@suse.de>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>
+Subject: [PATCH v2 2/2] clk: bcm: rpi: Handle pixel clock in firmware
+Date:   Tue,  5 Apr 2022 11:25:03 +0300
+Message-Id: <20220405082503.61041-3-iivanov@suse.de>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220405082503.61041-1-iivanov@suse.de>
+References: <20220405082503.61041-1-iivanov@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+The clk-bcm2835 handling of the pixel clock does not function
+correctly when the HDMI power domain is disabled.
 
-commit d4da1f27396fb1dde079447a3612f4f512caed07 upstream.
+The firmware supports it correctly, so add it to the
+firmware clock driver.
 
-The pcon_dsc_dpcd array holds 13 registers (0x92 through 0x9E). Fix the
-math to calculate the max size. Found from a -Warray-bounds build:
-
-drivers/gpu/drm/drm_dp_helper.c: In function 'drm_dp_pcon_dsc_bpp_incr':
-drivers/gpu/drm/drm_dp_helper.c:3130:28: error: array subscript 12 is outside array bounds of 'const u8[12]' {aka 'const unsigned char[12]'} [-Werror=array-bounds]
- 3130 |         buf = pcon_dsc_dpcd[DP_PCON_DSC_BPP_INCR - DP_PCON_DSC_ENCODER];
-      |               ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/drm_dp_helper.c:3126:39: note: while referencing 'pcon_dsc_dpcd'
- 3126 | int drm_dp_pcon_dsc_bpp_incr(const u8 pcon_dsc_dpcd[DP_PCON_DSC_ENCODER_CAP_SIZE])
-      |                              ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: dri-devel@lists.freedesktop.org
-Fixes: e2e16da398d9 ("drm/dp_helper: Add support for Configuring DSC for HDMI2.1 Pcon")
-Cc: stable@vger.kernel.org
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Link: https://lore.kernel.org/lkml/20211214001849.GA62559@embeddedor/
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220105173310.2420598-1-keescook@chromium.org
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220225035610.2552144-2-keescook@chromium.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
 ---
- include/drm/drm_dp_helper.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clk/bcm/clk-raspberrypi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/include/drm/drm_dp_helper.h
-+++ b/include/drm/drm_dp_helper.h
-@@ -456,7 +456,7 @@ struct drm_panel;
- #define DP_FEC_CAPABILITY_1			0x091   /* 2.0 */
- 
- /* DP-HDMI2.1 PCON DSC ENCODER SUPPORT */
--#define DP_PCON_DSC_ENCODER_CAP_SIZE        0xC	/* 0x9E - 0x92 */
-+#define DP_PCON_DSC_ENCODER_CAP_SIZE        0xD	/* 0x92 through 0x9E */
- #define DP_PCON_DSC_ENCODER                 0x092
- # define DP_PCON_DSC_ENCODER_SUPPORTED      (1 << 0)
- # define DP_PCON_DSC_PPS_ENC_OVERRIDE       (1 << 1)
-
+diff --git a/drivers/clk/bcm/clk-raspberrypi.c b/drivers/clk/bcm/clk-raspberrypi.c
+index 2e2491d85835..530820d13104 100644
+--- a/drivers/clk/bcm/clk-raspberrypi.c
++++ b/drivers/clk/bcm/clk-raspberrypi.c
+@@ -129,6 +129,9 @@ raspberrypi_clk_variants[RPI_FIRMWARE_NUM_CLK_ID] = {
+ 	[RPI_FIRMWARE_V3D_CLK_ID] = {
+ 		.export = true,
+ 	},
++	[RPI_FIRMWARE_PIXEL_CLK_ID] = {
++		.export = true,
++	},
+ 	[RPI_FIRMWARE_HEVC_CLK_ID] = {
+ 		.export = true,
+ 	},
+-- 
+2.26.2
 
