@@ -2,96 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB81C4707E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A595EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377264AbiDEV2R (ORCPT
+        id S1377749AbiDEV3W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
+        Tue, 5 Apr 2022 17:29:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573279AbiDESmZ (ORCPT
+        with ESMTP id S1379485AbiDENNo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:42:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5088020BE2;
-        Tue,  5 Apr 2022 11:40:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 037F5B81C87;
-        Tue,  5 Apr 2022 18:40:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39BD9C385A0;
-        Tue,  5 Apr 2022 18:40:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649184024;
-        bh=ghRwdOCZeE0FLxCkHuewv1vVzfiJAyexUmL+mjAuZKI=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=PuGrDTfN9mtaJLKhCc8cygB5HY+S9ISDbBOaEvUtNqr/5L0Ba2s9ylit7TYx2lzLq
-         vqFsbywVAXKgmawyMVR4X9FOjydhYiVzJmPlaMf82vcqp44S49pvQfCnCDSjYQ6j0m
-         f5oAkChWbnvd2x2inPli7WjMwxxrTeu7CZEEdMQSsp9wuLe90Y3fevpIgPCPfvLK4E
-         Y77yULlDTEUO49GFkRB4/LWpB3UP7yfJbU1sWbWx+/VBCUhlnS0WN27doMdeZUHbV9
-         wQxqO9nGnAU3CO4ZWmSTlRj9PRZbIFxfT9XjRGPJSn8e28wWm5EEoPl+V2Y5Fyps41
-         rxSsUdk8bpzIw==
-Message-ID: <94f62e19a630792f78e3c48895dfb792ecb02c6c.camel@kernel.org>
-Subject: Re: [PATCH V3 17/30] x86/sgx: Support modifying SGX page type
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
-        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
-        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
-        cathy.zhang@intel.com, cedric.xing@intel.com,
-        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 05 Apr 2022 21:41:34 +0300
-In-Reply-To: <d8cc2142-c50d-fbd9-425f-01e279c9a0f1@intel.com>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
-         <bac6e77fe04100d6bfebd4e13aa9b916f82bfea6.1648847675.git.reinette.chatre@intel.com>
-         <Ykvqf3Ws6jlN5g+p@kernel.org>
-         <b41d81ebcb6934765d7f37d4ce95baa16ec9b5d2.camel@kernel.org>
-         <d8cc2142-c50d-fbd9-425f-01e279c9a0f1@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.42.4 
+        Tue, 5 Apr 2022 09:13:44 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4577D10782B;
+        Tue,  5 Apr 2022 05:15:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649160956; x=1680696956;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eLlXIWgzT4jg7igfmDa9mpSj+r1W/DMEJ9zt2e+BDk4=;
+  b=BROFxVoaMdJ9K3TW78g89ECva9COhsR+KZdSIpNuB+CplyS31FqpO7KS
+   f+Zm8dbgsvviWO1GUchRhbsi/1kokykUjP1y4U/EyTtDEw42dYU75wCu3
+   3X5Ptdp6q1WLlWcrqBe32i5YI1H9KD68oIkJLwql2cLkbqBSRi8mKkK6b
+   0nPcCcdUzoSG91pJYUKZu161QQ24tTkQX3sZC+RlsRxN/PZKY9fh7QPq0
+   IVsopk/QFZ/K/+32GBkMd1ifAu9XYmQE9/ioSSCBc+yzhWPhx500Ml1cR
+   NMAMur2fpbInQJex6lxim03Np6JG9U1SrmDYabBz4JwP8nZf9+TN1ntpT
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="248249151"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="248249151"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 05:15:55 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="505260917"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 05:15:51 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 05 Apr 2022 15:09:07 +0300
+Date:   Tue, 5 Apr 2022 15:09:07 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     joro@8bytes.org, baolu.lu@linux.intel.com,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        YehezkelShB@gmail.com, iommu@lists.linux-foundation.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mario.limonciello@amd.com, hch@lst.de
+Subject: Re: [PATCH v3 3/4] thunderbolt: Make iommu_dma_protection more
+ accurate
+Message-ID: <YkwxY59ACqFF9jer@lahna>
+References: <cover.1649089693.git.robin.murphy@arm.com>
+ <b1f89ea2ad38221e0b75783357b9afb53087061d.1649089693.git.robin.murphy@arm.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b1f89ea2ad38221e0b75783357b9afb53087061d.1649089693.git.robin.murphy@arm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-05 at 10:05 -0700, Reinette Chatre wrote:
-> Hi Jarkko,
->=20
-> On 4/5/2022 8:34 AM, Jarkko Sakkinen wrote:
-> > On Tue, 2022-04-05 at 10:06 +0300, Jarkko Sakkinen wrote:
->=20
-> > > >=20
-> > >=20
-> > > To be coherent with other names, this should be
-> > > SGX_IOC_ENCLAVE_MODIFY_TYPES.
->=20
-> This is not such a clear change request to me:
->=20
-> SGX_IOC_ENCLAVE_ADD_PAGES - add multiple pages
-> SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS - restrict multiple permissions
-> SGX_IOC_ENCLAVE_REMOVE_PAGES - remove multiple pages
-> SGX_IOC_ENCLAVE_MODIFY_TYPE - set a single type
->=20
-> Perhaps it should rather be SGX_IOC_ENCLAVE_SET_TYPE to indicate that
-> there is a single target type as opposed to the possibility
-> of multiple source types (TCS and regular pages can be trimmed).
->=20
-> >=20
-> > This should take only page type given that flags are zeroed:
-> >=20
-> > EPCM(DS:RCX).R :=3D 0;
-> > EPCM(DS:RCX).W :=3D 0;
-> > EPCM(DS:RCX).X :=3D 0;=20
-> >=20
->=20
-> ok, this was how it was done in V1 [1] and I can go back to that.
+On Tue, Apr 05, 2022 at 11:41:03AM +0100, Robin Murphy wrote:
+> Between me trying to get rid of iommu_present() and Mario wanting to
+> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
+> that the iommu_dma_protection attribute is being far too optimistic.
+> Even if an IOMMU might be present for some PCI segment in the system,
+> that doesn't necessarily mean it provides translation for the device(s)
+> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
+> is tell us that memory was protected before the kernel was loaded, and
+> prevent the user from disabling the intel-iommu driver entirely. While
+> that lets us assume kernel integrity, what matters for actual runtime
+> DMA protection is whether we trust individual devices, based on the
+> "external facing" property that we expect firmware to describe for
+> Thunderbolt ports.
+> 
+> It's proven challenging to determine the appropriate ports accurately
+> given the variety of possible topologies, so while still not getting a
+> perfect answer, by putting enough faith in firmware we can at least get
+> a good bit closer. If we can see that any device near a Thunderbolt NHI
+> has all the requisites for Kernel DMA Protection, chances are that it
+> *is* a relevant port, but moreover that implies that firmware is playing
+> the game overall, so we'll use that to assume that all Thunderbolt ports
+> should be correctly marked and thus will end up fully protected.
+> 
+> CC: Mario Limonciello <mario.limonciello@amd.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-I would name the fields as "flags" and "page_type" just to align
-names with SGX instead of trying to mimim "posix names". Otherwise,=C2=A0
-I support that.
-
-BR, Jarkko
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
