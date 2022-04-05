@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2920AC35296
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1ADC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382183AbiDEMD1 (ORCPT
+        id S1382208AbiDEMDk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
+        Tue, 5 Apr 2022 08:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243274AbiDEIuT (ORCPT
+        with ESMTP id S243446AbiDEIu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:50:19 -0400
+        Tue, 5 Apr 2022 04:50:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4C212A82;
-        Tue,  5 Apr 2022 01:38:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060816550;
+        Tue,  5 Apr 2022 01:38:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85DE9614E5;
-        Tue,  5 Apr 2022 08:37:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91DB0C385A0;
-        Tue,  5 Apr 2022 08:37:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C88B561517;
+        Tue,  5 Apr 2022 08:38:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6458C385A1;
+        Tue,  5 Apr 2022 08:38:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147874;
-        bh=Cw2NlYAm/sub3uTEA3b2qIyrR3JDeMkKrC26amsoKtQ=;
+        s=korg; t=1649147892;
+        bh=r14M1DWPwRyo4+jvdjnECycfq43gChG0BjIE5UEYJjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=giPofauEkR82o5KTt4SaFEzge6imnZO4bbsJRwgNuNnOfsuPAoPigN23SwVcwxJcJ
-         Ujr857Hjh8ZE1fwiczus0IfLVq5IHLhKv3yq6cLMoSGEcV2cMejhFV6tK4AymRxugC
-         NWlinx1jQerjsqpYWcwCWlQzUkxyJF2Z0aTnvMJc=
+        b=iIeo2BWjapJjfgQtITzQLciyGyxtlacO20rxqWjr9Emx9b/Sw5Bng3/WhpWiSwRFs
+         8nCMfJ5uBEqojBE16bsKJtuk/oJ2RiyJj0ux/6zOZj1o9nxurkH1sMO9gde/p5/cvA
+         6tT57ZfmSjJ7B8oZ5A01Pm9w9TJM/PsXZLdhS6JY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.16 0151/1017] video: fbdev: sm712fb: Fix crash in smtcfb_read()
-Date:   Tue,  5 Apr 2022 09:17:44 +0200
-Message-Id: <20220405070358.691303918@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Dayvison <sathlerds@gmail.com>,
+        Valentin Vidic <vvidic@valentin-vidic.from.hr>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 0111/1017] ocfs2: fix crash when mount with quota enabled
+Date:   Tue,  5 Apr 2022 09:17:04 +0200
+Message-Id: <20220405070357.491220852@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,76 +52,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Joseph Qi <joseph.qi@linux.alibaba.com>
 
-commit bd771cf5c4254511cc4abb88f3dab3bd58bdf8e8 upstream.
+commit de19433423c7bedabbd4f9a25f7dbc62c5e78921 upstream.
 
-Zheyu Ma reported this crash in the sm712fb driver when reading
-three bytes from the framebuffer:
+There is a reported crash when mounting ocfs2 with quota enabled.
 
- BUG: unable to handle page fault for address: ffffc90001ffffff
- RIP: 0010:smtcfb_read+0x230/0x3e0
- Call Trace:
-  vfs_read+0x198/0xa00
-  ? do_sys_openat2+0x27d/0x350
-  ? __fget_light+0x54/0x340
-  ksys_read+0xce/0x190
-  do_syscall_64+0x43/0x90
+  RIP: 0010:ocfs2_qinfo_lock_res_init+0x44/0x50 [ocfs2]
+  Call Trace:
+    ocfs2_local_read_info+0xb9/0x6f0 [ocfs2]
+    dquot_load_quota_sb+0x216/0x470
+    dquot_load_quota_inode+0x85/0x100
+    ocfs2_enable_quotas+0xa0/0x1c0 [ocfs2]
+    ocfs2_fill_super.cold+0xc8/0x1bf [ocfs2]
+    mount_bdev+0x185/0x1b0
+    legacy_get_tree+0x27/0x40
+    vfs_get_tree+0x25/0xb0
+    path_mount+0x465/0xac0
+    __x64_sys_mount+0x103/0x140
 
-Fix it by removing the open-coded endianess fixup-code and
-by moving the pointer post decrement out the fb_readl() function.
+It is caused by when initializing dqi_gqlock, the corresponding dqi_type
+and dqi_sb are not properly initialized.
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Cc: stable@vger.kernel.org
+This issue is introduced by commit 6c85c2c72819, which wants to avoid
+accessing uninitialized variables in error cases.  So make global quota
+info properly initialized.
+
+Link: https://lkml.kernel.org/r/20220323023644.40084-1-joseph.qi@linux.alibaba.com
+Link: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1007141
+Fixes: 6c85c2c72819 ("ocfs2: quota_local: fix possible uninitialized-variable access in ocfs2_local_read_info()")
+Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Reported-by: Dayvison <sathlerds@gmail.com>
+Tested-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/sm712fb.c |   25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
+ fs/ocfs2/quota_global.c |   23 ++++++++++++-----------
+ fs/ocfs2/quota_local.c  |    2 --
+ 2 files changed, 12 insertions(+), 13 deletions(-)
 
---- a/drivers/video/fbdev/sm712fb.c
-+++ b/drivers/video/fbdev/sm712fb.c
-@@ -1047,7 +1047,7 @@ static ssize_t smtcfb_read(struct fb_inf
- 	if (count + p > total_size)
- 		count = total_size - p;
+--- a/fs/ocfs2/quota_global.c
++++ b/fs/ocfs2/quota_global.c
+@@ -337,7 +337,6 @@ void ocfs2_unlock_global_qf(struct ocfs2
+ /* Read information header from global quota file */
+ int ocfs2_global_read_info(struct super_block *sb, int type)
+ {
+-	struct inode *gqinode = NULL;
+ 	unsigned int ino[OCFS2_MAXQUOTAS] = { USER_QUOTA_SYSTEM_INODE,
+ 					      GROUP_QUOTA_SYSTEM_INODE };
+ 	struct ocfs2_global_disk_dqinfo dinfo;
+@@ -346,29 +345,31 @@ int ocfs2_global_read_info(struct super_
+ 	u64 pcount;
+ 	int status;
  
--	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -1059,25 +1059,14 @@ static ssize_t smtcfb_read(struct fb_inf
- 	while (count) {
- 		c = (count > PAGE_SIZE) ? PAGE_SIZE : count;
- 		dst = buffer;
--		for (i = c >> 2; i--;) {
--			*dst = fb_readl(src++);
--			*dst = big_swap(*dst);
-+		for (i = (c + 3) >> 2; i--;) {
-+			u32 val;
++	oinfo->dqi_gi.dqi_sb = sb;
++	oinfo->dqi_gi.dqi_type = type;
++	ocfs2_qinfo_lock_res_init(&oinfo->dqi_gqlock, oinfo);
++	oinfo->dqi_gi.dqi_entry_size = sizeof(struct ocfs2_global_disk_dqblk);
++	oinfo->dqi_gi.dqi_ops = &ocfs2_global_ops;
++	oinfo->dqi_gqi_bh = NULL;
++	oinfo->dqi_gqi_count = 0;
 +
-+			val = fb_readl(src);
-+			*dst = big_swap(val);
-+			src++;
- 			dst++;
- 		}
--		if (c & 3) {
--			u8 *dst8 = (u8 *)dst;
--			u8 __iomem *src8 = (u8 __iomem *)src;
--
--			for (i = c & 3; i--;) {
--				if (i & 1) {
--					*dst8++ = fb_readb(++src8);
--				} else {
--					*dst8++ = fb_readb(--src8);
--					src8 += 2;
--				}
--			}
--			src = (u32 __iomem *)src8;
--		}
+ 	/* Read global header */
+-	gqinode = ocfs2_get_system_file_inode(OCFS2_SB(sb), ino[type],
++	oinfo->dqi_gqinode = ocfs2_get_system_file_inode(OCFS2_SB(sb), ino[type],
+ 			OCFS2_INVALID_SLOT);
+-	if (!gqinode) {
++	if (!oinfo->dqi_gqinode) {
+ 		mlog(ML_ERROR, "failed to get global quota inode (type=%d)\n",
+ 			type);
+ 		status = -EINVAL;
+ 		goto out_err;
+ 	}
+-	oinfo->dqi_gi.dqi_sb = sb;
+-	oinfo->dqi_gi.dqi_type = type;
+-	oinfo->dqi_gi.dqi_entry_size = sizeof(struct ocfs2_global_disk_dqblk);
+-	oinfo->dqi_gi.dqi_ops = &ocfs2_global_ops;
+-	oinfo->dqi_gqi_bh = NULL;
+-	oinfo->dqi_gqi_count = 0;
+-	oinfo->dqi_gqinode = gqinode;
++
+ 	status = ocfs2_lock_global_qf(oinfo, 0);
+ 	if (status < 0) {
+ 		mlog_errno(status);
+ 		goto out_err;
+ 	}
  
- 		if (copy_to_user(buf, buffer, c)) {
- 			err = -EFAULT;
+-	status = ocfs2_extent_map_get_blocks(gqinode, 0, &oinfo->dqi_giblk,
++	status = ocfs2_extent_map_get_blocks(oinfo->dqi_gqinode, 0, &oinfo->dqi_giblk,
+ 					     &pcount, NULL);
+ 	if (status < 0)
+ 		goto out_unlock;
+--- a/fs/ocfs2/quota_local.c
++++ b/fs/ocfs2/quota_local.c
+@@ -702,8 +702,6 @@ static int ocfs2_local_read_info(struct
+ 	info->dqi_priv = oinfo;
+ 	oinfo->dqi_type = type;
+ 	INIT_LIST_HEAD(&oinfo->dqi_chunk);
+-	oinfo->dqi_gqinode = NULL;
+-	ocfs2_qinfo_lock_res_init(&oinfo->dqi_gqlock, oinfo);
+ 	oinfo->dqi_rec = NULL;
+ 	oinfo->dqi_lqi_bh = NULL;
+ 	oinfo->dqi_libh = NULL;
 
 
