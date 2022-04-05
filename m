@@ -2,108 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E04C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44442C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447120AbiDEUJQ (ORCPT
+        id S1447242AbiDEUJW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
+        Tue, 5 Apr 2022 16:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354468AbiDEKOU (ORCPT
+        with ESMTP id S1457533AbiDEQG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595066A421;
-        Tue,  5 Apr 2022 03:00:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA70361673;
-        Tue,  5 Apr 2022 10:00:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07D4CC385A2;
-        Tue,  5 Apr 2022 10:00:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152825;
-        bh=tgcIH8ngRpuHjfV9wDFrK09HvAFQoY9C83lectSVLG4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GKHP+DhnKkl1zwsoRvwhCRnzaUxpvvtbJTkl6Pm4tXHLGMXmSDO+L74nSt5cF1ftx
-         7W47oRb3dC0qXjlP7wO0ajObkVI8hw43dUG33C9tN/LwF8poj9UK4JOh6Q+YBrcIDf
-         MEa71GzEd1n35n1m4mZoJjH66130LTp9gA3EiMNs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.15 909/913] iommu/dma: Account for min_align_mask w/swiotlb
-Date:   Tue,  5 Apr 2022 09:32:51 +0200
-Message-Id: <20220405070407.067298408@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:06:29 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00533DDA;
+        Tue,  5 Apr 2022 09:04:29 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 235ANpX7013964;
+        Tue, 5 Apr 2022 18:04:09 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=siZuhc+89Jo9JDA/pbHU2hXuJ1K7MHFkUHJM38FJfmw=;
+ b=wjcnvV0EE/7FrSLN1x2A8CbH1mUtD2blQDYwa/L32Abma3dUt+KypinbB/YCNajWtFRR
+ QadwC+5pppvKXtF3T6KAambfwcr1uH0TliGG7d6+ouJmyV3NWFJuyV+uZr5518Kqdl1K
+ a13t6OlHsHmNUdYADAkZMHSN+M/cwhN831PcTFBt8sK6vXkjYAt6rzpPUR9WHhoKqq+p
+ QVcZ7bLp90qHjeOSFj3rZBdGRWPcymFcg+kHOsbAchmw/bHXthgRkClkD4q4CSyW+Mla
+ 7qV2fe7yPDnofLmlafzNRa+H81c99c1eodrCAB5twZ3IUZbrPwLa+4znao1AkP0xyOD+ +Q== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6du0r4em-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Apr 2022 18:04:09 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C2A4810002A;
+        Tue,  5 Apr 2022 18:04:08 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9B6DB245534;
+        Tue,  5 Apr 2022 18:04:08 +0200 (CEST)
+Received: from [10.201.20.246] (10.75.127.48) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 5 Apr
+ 2022 18:04:07 +0200
+Message-ID: <9f10659b-a778-1c9b-09ba-bd4dbc3f7c66@foss.st.com>
+Date:   Tue, 5 Apr 2022 18:04:06 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] arm64: defconfig: Config that had RPMSG_CHAR now gets
+ RPMSG_CTRL
+Content-Language: en-US
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>
+References: <20220405115524.1020499-1-arnaud.pouliquen@foss.st.com>
+ <20220405152555.GB4147585@p14s>
+From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
+In-Reply-To: <20220405152555.GB4147585@p14s>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.48]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-05_04,2022-04-05_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Stevens <stevensd@chromium.org>
-
-commit 2cbc61a1b1665c84282dbf2b1747ffa0b6248639 upstream.
-
-Pass the non-aligned size to __iommu_dma_map when using swiotlb bounce
-buffers in iommu_dma_map_page, to account for min_align_mask.
-
-To deal with granule alignment, __iommu_dma_map maps iova_align(size +
-iova_off) bytes starting at phys - iova_off. If iommu_dma_map_page
-passes aligned size when using swiotlb, then this becomes
-iova_align(iova_align(orig_size) + iova_off). Normally iova_off will be
-zero when using swiotlb. However, this is not the case for devices that
-set min_align_mask. When iova_off is non-zero, __iommu_dma_map ends up
-mapping an extra page at the end of the buffer. Beyond just being a
-security issue, the extra page is not cleaned up by __iommu_dma_unmap.
-This causes problems when the IOVA is reused, due to collisions in the
-iommu driver.  Just passing the original size is sufficient, since
-__iommu_dma_map will take care of granule alignment.
-
-Fixes: 1f221a0d0dbf ("swiotlb: respect min_align_mask")
-Signed-off-by: David Stevens <stevensd@chromium.org>
-Link: https://lore.kernel.org/r/20210929023300.335969-8-stevensd@google.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/iommu/dma-iommu.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -806,7 +806,6 @@ static dma_addr_t iommu_dma_map_page(str
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
--	size_t aligned_size = size;
- 	dma_addr_t iova, dma_mask = dma_get_mask(dev);
- 
- 	/*
-@@ -815,7 +814,7 @@ static dma_addr_t iommu_dma_map_page(str
- 	 */
- 	if (dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) {
- 		void *padding_start;
--		size_t padding_size;
-+		size_t padding_size, aligned_size;
- 
- 		aligned_size = iova_align(iovad, size);
- 		phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
-@@ -840,7 +839,7 @@ static dma_addr_t iommu_dma_map_page(str
- 	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
- 		arch_sync_dma_for_device(phys, size, dir);
- 
--	iova = __iommu_dma_map(dev, phys, aligned_size, prot, dma_mask);
-+	iova = __iommu_dma_map(dev, phys, size, prot, dma_mask);
- 	if (iova == DMA_MAPPING_ERROR && is_swiotlb_buffer(dev, phys))
- 		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
- 	return iova;
 
 
+On 4/5/22 17:25, Mathieu Poirier wrote:
+> On Tue, Apr 05, 2022 at 01:55:24PM +0200, Arnaud Pouliquen wrote:
+>> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
+>> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
+>> By default give everyone who had the old driver enabled the rpmsg_ctrl
+>> driver too.
+>>
+>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> 
+> This patch is missing a separation marker, i.e "---", just above.  Without it
+> the text below is also included in the changelog, and it shouldn't.
+
+A badly controlled cleaning... I send a V3
+
+My apologizes,
+Arnaud 
+
+> 
+> Thanks,
+> Mathieu
+> 
+>>
+>> This patch is extracted from the series [1] that has been partially
+>> integrated in the Linux Kernel 5.18-rc1.
+>>
+>> Update vs previous version:
+>> - remove "Fixes:" tag in commit, requested by Mathieu Poirier in [2]
+>>
+>> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
+>> [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
+>> ---
+>>  arch/arm64/configs/defconfig | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+>> index 50aa3d75ab4f..3f8906b8a2ca 100644
+>> --- a/arch/arm64/configs/defconfig
+>> +++ b/arch/arm64/configs/defconfig
+>> @@ -1053,6 +1053,7 @@ CONFIG_QCOM_Q6V5_PAS=m
+>>  CONFIG_QCOM_SYSMON=m
+>>  CONFIG_QCOM_WCNSS_PIL=m
+>>  CONFIG_RPMSG_CHAR=m
+>> +CONFIG_RPMSG_CTRL=m
+>>  CONFIG_RPMSG_QCOM_GLINK_RPM=y
+>>  CONFIG_RPMSG_QCOM_GLINK_SMEM=m
+>>  CONFIG_RPMSG_QCOM_SMD=y
+>> -- 
+>> 2.25.1
+>>
