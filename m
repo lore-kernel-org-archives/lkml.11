@@ -2,82 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BCCBC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377963AbiDELbG (ORCPT
+        id S1377982AbiDELbJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42522 "EHLO
+        Tue, 5 Apr 2022 07:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244016AbiDEIvZ (ORCPT
+        with ESMTP id S244017AbiDEIvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:51:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4615DD1CC8;
-        Tue,  5 Apr 2022 01:40:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726ABD1CDF;
+        Tue,  5 Apr 2022 01:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FE95B81BBF;
-        Tue,  5 Apr 2022 08:39:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0CF6C385A0;
-        Tue,  5 Apr 2022 08:39:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147963;
-        bh=kHivgI89ExcwhIzHs0s0eahszGcG5QZveN98bO2rNkA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GmIbB7ctzsKRE5xMdffszgApwDnkdrIXHN65XTfJMQ/6ifVEM2L3X0WIxUgd9Z5KZ
-         0GTFh26Uru7JQGhn5MvyXvpXtDiautFnLtjjy6e84w1CqiNAnIjugmNFlQfN4sIq3b
-         MQvLLu/DnbAxNWE7J2b8iXofbqq/TYaTFvChIy2c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH 5.16 0158/1017] ARM: dts: exynos: add missing HDMI supplies on SMDK5420
-Date:   Tue,  5 Apr 2022 09:17:51 +0200
-Message-Id: <20220405070358.906688065@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 108D5B81C6F;
+        Tue,  5 Apr 2022 08:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9FF91C385A1;
+        Tue,  5 Apr 2022 08:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649148012;
+        bh=Zc1lPH1m7basa7ZzhirPvPyfn9KWw84TMvg3+N1Z3Iw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FUBoPWaBBUeCm7ZIaQtsGiOm3qmKp+ZwPu10zFqFnHisNR+OYrz2B+817AwmUTTQz
+         Zwn7z1nDRS7lTzduKDR6Hb6mI4CxXmlBkEeir+RNjrzvtZUsTRg4c2qClAZ4Harj9x
+         G+9hrX6/rxo7o7kXVDtEWSSQb9Wyn1kfihWlFJsayS+OPAhudymvoCBZBxkTv5HJrW
+         yTIxe9fgcElmIW9hNkcLi048dH9GiRQ2ryIWs66h1FFP5AN3oYAZKSWCTgz/Xs6p2w
+         uepNGF+ajKgSiM5zhxwKWAdg5/TdZibiUuDZGBtpQrEajpzd7e+9Kr8yi932mYZx8N
+         tmGYwk0WOfdqg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7B208E85D15;
+        Tue,  5 Apr 2022 08:40:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 net] sctp: count singleton chunks in assoc user stats
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164914801250.9044.11217465324374083651.git-patchwork-notify@kernel.org>
+Date:   Tue, 05 Apr 2022 08:40:12 +0000
+References: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
+In-Reply-To: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
+To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
+        marcelo.leitner@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Hello:
 
-commit 453a24ded415f7fce0499c6b0a2c7b28f84911f2 upstream.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Add required VDD supplies to HDMI block on SMDK5420.  Without them, the
-HDMI driver won't probe.  Because of lack of schematics, use same
-supplies as on Arndale Octa and Odroid XU3 boards (voltage matches).
+On Mon,  4 Apr 2022 09:47:48 +1000 you wrote:
+> Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
+> COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
+> counter available to the assoc owner.
+> 
+> These are all control chunks so they should be counted as such.
+> 
+> Add counting of singleton chunks so they are properly accounted for.
+> 
+> [...]
 
-Cc: <stable@vger.kernel.org> # v3.15+
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20220208171823.226211-3-krzysztof.kozlowski@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm/boot/dts/exynos5420-smdk5420.dts |    3 +++
- 1 file changed, 3 insertions(+)
+Here is the summary with links:
+  - [v4,net] sctp: count singleton chunks in assoc user stats
+    https://git.kernel.org/netdev/net/c/e3d37210df5c
 
---- a/arch/arm/boot/dts/exynos5420-smdk5420.dts
-+++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-@@ -124,6 +124,9 @@
- 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&hdmi_hpd_irq>;
-+	vdd-supply = <&ldo6_reg>;
-+	vdd_osc-supply = <&ldo7_reg>;
-+	vdd_pll-supply = <&ldo6_reg>;
- };
- 
- &hsi2c_4 {
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
