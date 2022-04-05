@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A464C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D08C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234631AbiDEH6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
+        id S234875AbiDEH67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbiDEHr4 (ORCPT
+        with ESMTP id S233529AbiDEHr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:47:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE24F9233D;
-        Tue,  5 Apr 2022 00:45:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0443E91AEC;
+        Tue,  5 Apr 2022 00:44:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40AE9616BF;
-        Tue,  5 Apr 2022 07:45:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48EAFC340EE;
-        Tue,  5 Apr 2022 07:45:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95939616BF;
+        Tue,  5 Apr 2022 07:44:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7A62C340EE;
+        Tue,  5 Apr 2022 07:44:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144716;
-        bh=S9aXtfEKDGdBQZkVkd+a1yTaeGJtvtEgjUrZ0wayzj4=;
+        s=korg; t=1649144692;
+        bh=MUiEXPO4LhosmoDe4SgoOHlSs9A0TC8U8L2HesdNXFs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zECrY2ubk9bbWD8Xelbj5t1VFMrP8BHD3mPnKv+fxCVbTfzAQdeFh5xMex2muf66+
-         G89v0ISDKlHgXBe5j6cBI9GWttYqO7juHxP6Ei0C626v4LGSutqJ82iZXwHeWzQLCf
-         T1EATTi1DFHdGNdzv6x+r7XIlPA3oFqv21s9MZXI=
+        b=iVOedYzIqlCm5/39BXnEoO0NA7NoerMS0X+5i92roGYnrJjHVNezEdguyOJ6Pvqr3
+         gcU5Yz8TFr4A9V+IR85NMJr/q7N7m4bc6QjgdnC8JwVRni4mHBhQ0Hqi/3Z9sYVnbJ
+         4LzIEGIHSo5WmbR/oscgiV0u5/Z6O6f9QVJ88kzc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, linux-security-module@vger.kernel.org,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>
-Subject: [PATCH 5.17 0138/1126] landlock: Use square brackets around "landlock-ruleset"
-Date:   Tue,  5 Apr 2022 09:14:45 +0200
-Message-Id: <20220405070411.629673184@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 0099/1126] ALSA: hda/realtek: Fix audio regression on Mi Notebook Pro 2020
+Date:   Tue,  5 Apr 2022 09:14:06 +0200
+Message-Id: <20220405070410.475002959@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,49 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <christian.brauner@ubuntu.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-commit aea0b9f2486da8497f35c7114b764bf55e17c7ea upstream.
+commit f30741cded62f87bb4b1cc58bc627f076abcaba8 upstream.
 
-Make the name of the anon inode fd "[landlock-ruleset]" instead of
-"landlock-ruleset". This is minor but most anon inode fds already
-carry square brackets around their name:
+Commit 5aec98913095 ("ALSA: hda/realtek - ALC236 headset MIC recording
+issue") is to solve recording issue met on AL236, by matching codec
+variant ALC269_TYPE_ALC257 and ALC269_TYPE_ALC256.
 
-    [eventfd]
-    [eventpoll]
-    [fanotify]
-    [fscontext]
-    [io_uring]
-    [pidfd]
-    [signalfd]
-    [timerfd]
-    [userfaultfd]
+This match can be too broad and Mi Notebook Pro 2020 is broken by the
+patch.
 
-For the sake of consistency lets do the same for the landlock-ruleset anon
-inode fd that comes with landlock. We did the same in
-1cdc415f1083 ("uapi, fsopen: use square brackets around "fscontext" [ver #2]")
-for the new mount api.
+Instead, use codec ID to be narrow down the scope, in order to make
+ALC256 unaffected.
 
-Cc: linux-security-module@vger.kernel.org
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-Link: https://lore.kernel.org/r/20211011133704.1704369-1-brauner@kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215484
+Fixes: 5aec98913095 ("ALSA: hda/realtek - ALC236 headset MIC recording issue")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220330061335.1015533-1-kai.heng.feng@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/landlock/syscalls.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/security/landlock/syscalls.c
-+++ b/security/landlock/syscalls.c
-@@ -192,7 +192,7 @@ SYSCALL_DEFINE3(landlock_create_ruleset,
- 		return PTR_ERR(ruleset);
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -3617,8 +3617,8 @@ static void alc256_shutup(struct hda_cod
+ 	/* If disable 3k pulldown control for alc257, the Mic detection will not work correctly
+ 	 * when booting with headset plugged. So skip setting it for the codec alc257
+ 	 */
+-	if (spec->codec_variant != ALC269_TYPE_ALC257 &&
+-	    spec->codec_variant != ALC269_TYPE_ALC256)
++	if (codec->core.vendor_id != 0x10ec0236 &&
++	    codec->core.vendor_id != 0x10ec0257)
+ 		alc_update_coef_idx(codec, 0x46, 0, 3 << 12);
  
- 	/* Creates anonymous FD referring to the ruleset. */
--	ruleset_fd = anon_inode_getfd("landlock-ruleset", &ruleset_fops,
-+	ruleset_fd = anon_inode_getfd("[landlock-ruleset]", &ruleset_fops,
- 			ruleset, O_RDWR | O_CLOEXEC);
- 	if (ruleset_fd < 0)
- 		landlock_put_ruleset(ruleset);
+ 	if (!spec->no_shutup_pins)
 
 
