@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69078C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B72C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236161AbiDEIQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53046 "EHLO
+        id S237707AbiDEISR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235552AbiDEH7v (ORCPT
+        with ESMTP id S235620AbiDEH7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9D63FBF7;
-        Tue,  5 Apr 2022 00:55:29 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F521835C;
+        Tue,  5 Apr 2022 00:56:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF68E615CD;
-        Tue,  5 Apr 2022 07:55:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4220C340EE;
-        Tue,  5 Apr 2022 07:55:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A08E3B81B14;
+        Tue,  5 Apr 2022 07:56:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11585C340EE;
+        Tue,  5 Apr 2022 07:56:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145328;
-        bh=zU+CWYBYU/8pJUNeNTS9RmWcQvumA7Jb/SBfIxAI/3I=;
+        s=korg; t=1649145385;
+        bh=dzWhcPIWdsa4A39sNEcEVgjZ6v05Z816/SN2s+i6y/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l7bI+vEMcXxCu5wuspnoxZgFUsUPtndkDMSqrzvVoljeR4bxQP82LQsK7jjc0vdXS
-         As3mnTSxBSBxAtuRexe3nbXwj7ZLVwuwTPuMOXea0YMWQiZlzdxzDDn4PnrdF02Sf1
-         1N1/WSXxR9iJFjRw8WW+gX6jUoSBd0V2BdaT22uk=
+        b=ajz1SrUNNGF34EiL54Q2PCyKKEc3OQ2DrCyBbojoFSzTPGkB36bUrYhABaLDT/mrw
+         Uti92l3YMYAW/jD0Ufcie209VyfmgkFBgqDiA0bYM7db7znt0M06I8CE/ZRmU7Jivi
+         dx2lPEzloGpJbZgXf6EH+Nj4xGvVorYDe33DCa0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0365/1126] media: v4l2-core: Initialize h264 scaling matrix
-Date:   Tue,  5 Apr 2022 09:18:32 +0200
-Message-Id: <20220405070418.341509882@linuxfoundation.org>
+Subject: [PATCH 5.17 0348/1126] ARM: dts: imx: Add missing LVDS decoder on M53Menlo
+Date:   Tue,  5 Apr 2022 09:18:15 +0200
+Message-Id: <20220405070417.844099434@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,62 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 0f6146d476fc99862899e70f2554ee77b444b7b9 ]
+[ Upstream commit 0c6f71176ea43d6f4003a4d57f7bb518c5ad6145 ]
 
-In the final H264 API, it is not required to set scaling matrix if
-they are not present in the bitstream. A flag was added in order to let
-the driver know. The downside is that it leaves the default control
-value to 0, which isn't valid. As per the spec (see formulas 7-8/7-9),
-when the scaling matrix are absent from the bitstream, flat values
-of 16 should be used. This improves this control semantic in a way
-that the control value are always valid. Drivers can then use
-the scaling_matrix control values without having to check its presence.
-Same method was employed for MPEG2_QUANTISATION.
+The M53Menlo display unit uses an LVDS-to-DPI bridge, TI DS90CF364A.
+Describe this bridge in DT, otherwise the DT incorrectly describes
+DPI panel attached directly to LVDS source.
 
-This fixes issues with MTK VCODEC H264 decoder when using GStreamer.
-GStreamer does not set this control if its not present in the bitstream.
-As MTK VDCODEC was using the initialized to 0 values, the frames ended
-up completely gray.
-
-Fixes: 54889c51b833d236 ("media: uapi: h264: Rename and clarify PPS_FLAG_SCALING_MATRIX_PRESENT")
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 716be61d1869 ("ARM: dts: imx53: Add Menlosystems M53 board")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/v4l2-core/v4l2-ctrls-core.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm/boot/dts/imx53-m53menlo.dts | 29 ++++++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/v4l2-core/v4l2-ctrls-core.c b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-index b25c77b8a445..df8cff47a7fb 100644
---- a/drivers/media/v4l2-core/v4l2-ctrls-core.c
-+++ b/drivers/media/v4l2-core/v4l2-ctrls-core.c
-@@ -114,6 +114,7 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
- 	struct v4l2_ctrl_vp8_frame *p_vp8_frame;
- 	struct v4l2_ctrl_vp9_frame *p_vp9_frame;
- 	struct v4l2_ctrl_fwht_params *p_fwht_params;
-+	struct v4l2_ctrl_h264_scaling_matrix *p_h264_scaling_matrix;
- 	void *p = ptr.p + idx * ctrl->elem_size;
+diff --git a/arch/arm/boot/dts/imx53-m53menlo.dts b/arch/arm/boot/dts/imx53-m53menlo.dts
+index 4f88e96d81dd..d5c68d1ea707 100644
+--- a/arch/arm/boot/dts/imx53-m53menlo.dts
++++ b/arch/arm/boot/dts/imx53-m53menlo.dts
+@@ -53,6 +53,31 @@
+ 		};
+ 	};
  
- 	if (ctrl->p_def.p_const)
-@@ -168,6 +169,15 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
- 		p_fwht_params->flags = V4L2_FWHT_FL_PIXENC_YUV |
- 			(2 << V4L2_FWHT_FL_COMPONENTS_NUM_OFFSET);
- 		break;
-+	case V4L2_CTRL_TYPE_H264_SCALING_MATRIX:
-+		p_h264_scaling_matrix = p;
-+		/*
-+		 * The default (flat) H.264 scaling matrix when none are
-+		 * specified in the bitstream, this is according to formulas
-+		 *  (7-8) and (7-9) of the specification.
-+		 */
-+		memset(p_h264_scaling_matrix, 16, sizeof(*p_h264_scaling_matrix));
-+		break;
- 	}
- }
++	lvds-decoder {
++		compatible = "ti,ds90cf364a", "lvds-decoder";
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				lvds_decoder_in: endpoint {
++					remote-endpoint = <&lvds0_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				lvds_decoder_out: endpoint {
++					remote-endpoint = <&panel_in>;
++				};
++			};
++		};
++	};
++
+ 	panel {
+ 		compatible = "edt,etm0700g0dh6";
+ 		pinctrl-0 = <&pinctrl_display_gpio>;
+@@ -61,7 +86,7 @@
  
+ 		port {
+ 			panel_in: endpoint {
+-				remote-endpoint = <&lvds0_out>;
++				remote-endpoint = <&lvds_decoder_out>;
+ 			};
+ 		};
+ 	};
+@@ -450,7 +475,7 @@
+ 			reg = <2>;
+ 
+ 			lvds0_out: endpoint {
+-				remote-endpoint = <&panel_in>;
++				remote-endpoint = <&lvds_decoder_in>;
+ 			};
+ 		};
+ 	};
 -- 
 2.34.1
 
