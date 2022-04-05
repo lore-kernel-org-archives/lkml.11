@@ -2,124 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 978F4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89CD0C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449131AbiDEUKR (ORCPT
+        id S1449082AbiDEUKN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33938 "EHLO
+        Tue, 5 Apr 2022 16:10:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353453AbiDEKGN (ORCPT
+        with ESMTP id S1457062AbiDEQCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:06:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8194BF979;
-        Tue,  5 Apr 2022 02:55:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22FD4B818F3;
-        Tue,  5 Apr 2022 09:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75321C385A3;
-        Tue,  5 Apr 2022 09:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152503;
-        bh=JvjyQbqzGBHoo/fnIR59SnE5qGnqo560ZSO1/q6vJIc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hoOgbezBodw+wT0ewOVqlBWrpkCYnfhg+S6sW6w6NxG7QznKmUxCm/F5R9EWjddch
-         5YETxjSqIOOPj+GEE3PzZp2C/vtH7MktPmR2zXDukwAUCZ3ItvjEEGiorEdJ8+Cs7f
-         rVPbdCjFRp5bLjdNs5egQ95rqQo/db6jT/9Uz2dY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 801/913] scsi: qla2xxx: Fix disk failure to rediscover
-Date:   Tue,  5 Apr 2022 09:31:03 +0200
-Message-Id: <20220405070403.842354690@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:02:42 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C743BF32AB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:26:53 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id r66so2474997pgr.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:26:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kdycBsuX0g++/RcAqO3Nh9RpbFLdm52QoSaW2fF8jpA=;
+        b=vWElyWYs5POabdNlTJG/H3Z8Mcd7e7W1xxw4ojO5DcfZmeJmBi4zgZ4udZCL5YkkJC
+         gcfavDDrTarEbQoPO4Sdio+h9k3N6ADyEMGUi2aHg7GXp2palwloLsHgGZNrDlCbcL2x
+         ar4hVSaUpOdRz3ORNcruxOquOe7N6t2NeatyyU3qjlHvvq9TbTKXi+s+9icEwa4BgjH9
+         5FLHspkniaM0KwAJhgpa6Du4DK5nYVmJaiJmRAazUcC+uPIvQ5xOHHuogY1cNOTeyxSw
+         vwjjpLCs1Q0xNLcF7g4oMhTJZaF7Drg3jNvA6UtPNtKESTPExorYtxrIBGkXbYKmJIcb
+         WNFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kdycBsuX0g++/RcAqO3Nh9RpbFLdm52QoSaW2fF8jpA=;
+        b=Jv7Ivd2/auhPsSn3ZZtq3ooK581rzGR5eNMIKG7mvV0dA4KhoqkVXsQZySMyAJ3BEm
+         q6glG8ieRMypE7dHnoqxrk4Vm8ZwQbLOtfgufZXsHS2ebwh6Ir7GPTjswH9Vs/x7ZxwR
+         Le2iyC7I15lMqIKdOuKrxAabxtSNg9VfRo31dA1kYMCT9GlnKaOEdGFGe6vMuvfO+cz5
+         55024OXMm2F6ftD9X+y0I0rIWenizXwEaqZY/+Pe9PtXa89P5fwZyt6jiiMRsXhAbEP5
+         v4pjeZ6TJxDXAnx2WZLf/1vXA5WP3G+FVFXiyywIvlijWnbpuPGYwca80VvzPT4j5Z3q
+         G9Gg==
+X-Gm-Message-State: AOAM532uLwMhp1R/EYKfPsNV+TnAykkoN1MRSyxReXdKVIZB54jcvZrh
+        XG2NMlgTouO/T0Befr+VrDMIUA==
+X-Google-Smtp-Source: ABdhPJzrbX/Sddjrknw9Kh/d2WHnv7CItd5Pk7DXrwOfNDQD+F5B4NYZiMWJySrhddyqzsAOE88YMg==
+X-Received: by 2002:a65:6813:0:b0:384:b288:8702 with SMTP id l19-20020a656813000000b00384b2888702mr3339475pgt.275.1649172413085;
+        Tue, 05 Apr 2022 08:26:53 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id m21-20020a17090ab79500b001ca3c46ba2fsm2737681pjr.24.2022.04.05.08.26.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 08:26:52 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 09:26:49 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        linux-riscv@lists.infradead.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        Anup Patel <anup@brainfault.org>
+Subject: Re: [PATCH v2] RISC-V: configs: Configs that had RPMSG_CHAR now get
+ RPMSG_CTRL
+Message-ID: <20220405152649.GC4147585@p14s>
+References: <20220405115729.1020889-1-arnaud.pouliquen@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405115729.1020889-1-arnaud.pouliquen@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+On Tue, Apr 05, 2022 at 01:57:29PM +0200, Arnaud Pouliquen wrote:
+> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
+> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
+> By default give everyone who had the old driver enabled the rpmsg_ctrl
+> driver too.
+> 
+> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> Reviewed-by: Anup Patel <anup@brainfault.org>
+> ---
+> 
+> This patch is extracted from the series [1] that has been partially
+> integrated in the Linux Kernel 5.18-rc1.
+> 
+> Update vs previous version:
+> - remove "Fixes:" tag in commit, requested by Mathieu Poirier in [2]
+> 
+> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
+> [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
+> ---
+>  arch/riscv/configs/defconfig      | 1 +
+>  arch/riscv/configs/rv32_defconfig | 1 +
+>  2 files changed, 2 insertions(+)
+> 
+> diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+> index 30e3017f22bc..0cc17db8aaba 100644
+> --- a/arch/riscv/configs/defconfig
+> +++ b/arch/riscv/configs/defconfig
+> @@ -101,6 +101,7 @@ CONFIG_VIRTIO_BALLOON=y
+>  CONFIG_VIRTIO_INPUT=y
+>  CONFIG_VIRTIO_MMIO=y
+>  CONFIG_RPMSG_CHAR=y
+> +CONFIG_RPMSG_CTRL=y
+>  CONFIG_RPMSG_VIRTIO=y
+>  CONFIG_EXT4_FS=y
+>  CONFIG_EXT4_FS_POSIX_ACL=y
+> diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
+> index 7e5efdc3829d..6cd9d84d3e13 100644
+> --- a/arch/riscv/configs/rv32_defconfig
+> +++ b/arch/riscv/configs/rv32_defconfig
+> @@ -93,6 +93,7 @@ CONFIG_VIRTIO_BALLOON=y
+>  CONFIG_VIRTIO_INPUT=y
+>  CONFIG_VIRTIO_MMIO=y
+>  CONFIG_RPMSG_CHAR=y
+> +CONFIG_RPMSG_CTRL=y
+>  CONFIG_RPMSG_VIRTIO=y
+>  CONFIG_EXT4_FS=y
+>  CONFIG_EXT4_FS_POSIX_ACL=y
 
-commit 6a45c8e137d4e2c72eecf1ac7cf64f2fdfcead99 upstream.
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 
-User experienced some of the LUN failed to get rediscovered after long
-cable pull test. The issue is triggered by a race condition between driver
-setting session online state vs starting the LUN scan process at the same
-time. Current code set the online state after notifying the session is
-available. In this case, trigger to start the LUN scan process happened
-before driver could set the session in online state.  LUN scan ends up with
-failure due to the session online check was failing.
-
-Set the online state before reporting of the availability of the session.
-
-Link: https://lore.kernel.org/r/20220310092604.22950-3-njavali@marvell.com
-Fixes: aecf043443d3 ("scsi: qla2xxx: Fix Remote port registration")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/scsi/qla2xxx/qla_init.c |    5 +++--
- drivers/scsi/qla2xxx/qla_nvme.c |    5 +++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -5740,6 +5740,8 @@ qla2x00_reg_remote_port(scsi_qla_host_t
- 	if (atomic_read(&fcport->state) == FCS_ONLINE)
- 		return;
- 
-+	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
-+
- 	rport_ids.node_name = wwn_to_u64(fcport->node_name);
- 	rport_ids.port_name = wwn_to_u64(fcport->port_name);
- 	rport_ids.port_id = fcport->d_id.b.domain << 16 |
-@@ -5847,6 +5849,7 @@ qla2x00_update_fcport(scsi_qla_host_t *v
- 		qla2x00_reg_remote_port(vha, fcport);
- 		break;
- 	case MODE_TARGET:
-+		qla2x00_set_fcport_state(fcport, FCS_ONLINE);
- 		if (!vha->vha_tgt.qla_tgt->tgt_stop &&
- 			!vha->vha_tgt.qla_tgt->tgt_stopped)
- 			qlt_fc_port_added(vha, fcport);
-@@ -5861,8 +5864,6 @@ qla2x00_update_fcport(scsi_qla_host_t *v
- 		break;
- 	}
- 
--	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
--
- 	if (IS_IIDMA_CAPABLE(vha->hw) && vha->hw->flags.gpsc_supported) {
- 		if (fcport->id_changed) {
- 			fcport->id_changed = 0;
---- a/drivers/scsi/qla2xxx/qla_nvme.c
-+++ b/drivers/scsi/qla2xxx/qla_nvme.c
-@@ -35,6 +35,11 @@ int qla_nvme_register_remote(struct scsi
- 		(fcport->nvme_flag & NVME_FLAG_REGISTERED))
- 		return 0;
- 
-+	if (atomic_read(&fcport->state) == FCS_ONLINE)
-+		return 0;
-+
-+	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
-+
- 	fcport->nvme_flag &= ~NVME_FLAG_RESETTING;
- 
- 	memset(&req, 0, sizeof(struct nvme_fc_port_info));
-
-
+> -- 
+> 2.25.1
+> 
