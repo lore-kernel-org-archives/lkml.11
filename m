@@ -2,222 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51540C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231220AbiDEGz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
+        id S230470AbiDEGz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231184AbiDEGzB (ORCPT
+        with ESMTP id S231299AbiDEGzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:55:01 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5440F8FE60;
-        Mon,  4 Apr 2022 23:52:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649141572; x=1680677572;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=R6S4jkz8rJH+vQOPg4Dg3MbNO5ps2IIpCkrCjpQeDxI=;
-  b=Au3+AZkEmxAAk0QdzQz9jMvJCDHORG959UCWhKJKRdSIj3sYI07KCubM
-   +EuiXt2pABGQzk7t+Ltm3+WAweb0Vsx+oFCohuRuvpaqHeKRK6vyIhj2d
-   O2XRIyOuZfgYfZqmnpztftrDBk9rf99UBlhgiB0VeYPVX3Lay+3jc/SHa
-   8YrGrivaoKVJt9S8TW3hbUSx+AqYZ7sf07Yiah+dcTx9Od4wkVpH+9MZ3
-   RqyAa0p0Lb8K+qHowQABhfzsAE+hHPopkQwoETdi4pRDuX4T3l8Tss5kK
-   zR5gCSqN76Ioqm1jVDAMDT7BaYgi/dTVlSDv1gsMh7bVv1FxU8j2OCUZI
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="241264862"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="241264862"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 23:52:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="657822773"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 04 Apr 2022 23:52:48 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbd3X-0002kg-Gq;
-        Tue, 05 Apr 2022 06:52:47 +0000
-Date:   Tue, 5 Apr 2022 14:52:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     guoren@kernel.org, arnd@arndb.de
-Cc:     kbuild-all@lists.01.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
-        Matteo Croce <mcroce@microsoft.com>,
-        Guo Ren <guoren@linux.alibaba.com>
-Subject: Re: [PATCH] csky: Add C based string functions
-Message-ID: <202204051450.UN2k1raL-lkp@intel.com>
-References: <20220404142354.2792428-1-guoren@kernel.org>
+        Tue, 5 Apr 2022 02:55:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8366C91546;
+        Mon,  4 Apr 2022 23:53:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 202F56158E;
+        Tue,  5 Apr 2022 06:53:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308E7C340F3;
+        Tue,  5 Apr 2022 06:53:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649141598;
+        bh=R2Aj79mJA5Nt9aiKfrYCcBadm1RYNQmwTSLFqRL6scE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Yfhh8gAKT4UR2pN8DFqGYNtbz8FWzVMAFnTJeXx7GPDu1Tu5UE3B24GlWpKxo4w8V
+         Dte7UL9HtTWWFbxKqZ1XknH16xXSFMsnP7bNifBki8x5fagwk0kmAB/HrL+axGkdBd
+         E6ZG6PFcSPZJzHGQRQLL+2tlPhCauYUcx34TWyhBdCwwLXVPv2yZm/uKHjlYCkLtar
+         mVDCgD9RPsAKSNTWNdTS1zRKkfCoAnGjvLtmi6bYG71UkBz6+PwjSm+LRNEetUFkqU
+         Bwa/gjS33CYiOzZ6cvKxxVEw9Z0myu8TB3vo4CB0wQ+KXMgAn4yPOsix4lx3VtCQwH
+         KPF79lTBBcGFQ==
+Date:   Tue, 5 Apr 2022 09:54:29 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3 04/30] x86/sgx: Add wrapper for SGX2 EAUG function
+Message-ID: <YkvnpSAezhnkth2Z@kernel.org>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+ <db6a2a6b394d9900ce8e3abb1b471b61b7e25c53.1648847675.git.reinette.chatre@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220404142354.2792428-1-guoren@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <db6a2a6b394d9900ce8e3abb1b471b61b7e25c53.1648847675.git.reinette.chatre@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, Apr 04, 2022 at 09:49:12AM -0700, Reinette Chatre wrote:
+> Add a wrapper for the EAUG ENCLS leaf function used to
+> add a page to an initialized enclave.
+> 
+> EAUG:
+> 1) Stores all properties of the new enclave page in the SGX
+>    hardware's Enclave Page Cache Map (EPCM).
+> 2) Sets the PENDING bit in the EPCM entry of the enclave page.
+>    This bit is cleared by the enclave by invoking ENCLU leaf
+>    function EACCEPT or EACCEPTCOPY.
+> 
+> Access from within the enclave to the new enclave page is not
+> possible until the PENDING bit is cleared.
+> 
+> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+> ---
+> No changes since V2
+> 
+> Changes since V1:
+> - Split original patch ("x86/sgx: Add wrappers for SGX2 functions")
+>   in three to introduce the SGX2 functions separately (Jarkko).
+> - Rewrite commit message to include how the EPCM within the hardware
+>   is changed by the SGX2 function as well as any calling
+>   conditions (Jarkko).
+> 
+>  arch/x86/kernel/cpu/sgx/encls.h | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
+> index 7a1ecf704ec1..99004b02e2ed 100644
+> --- a/arch/x86/kernel/cpu/sgx/encls.h
+> +++ b/arch/x86/kernel/cpu/sgx/encls.h
+> @@ -227,4 +227,10 @@ static inline int __emodt(struct sgx_secinfo *secinfo, void *addr)
+>  	return __encls_ret_2(EMODT, secinfo, addr);
+>  }
+>  
+> +/* Zero a page of EPC memory and add it to an initialized enclave. */
+> +static inline int __eaug(struct sgx_pageinfo *pginfo, void *addr)
+> +{
+> +	return __encls_2(EAUG, pginfo, addr);
+> +}
+> +
+>  #endif /* _X86_ENCLS_H */
+> -- 
+> 2.25.1
+> 
 
-Thank you for the patch! Perhaps something to improve:
 
-[auto build test WARNING on soc/for-next]
-[also build test WARNING on linus/master linux/master v5.18-rc1 next-20220404]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/guoren-kernel-org/csky-Add-C-based-string-functions/20220404-222518
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-config: csky-defconfig (https://download.01.org/0day-ci/archive/20220405/202204051450.UN2k1raL-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/e8231df5e8121c094f8668e0c850381873aa4249
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review guoren-kernel-org/csky-Add-C-based-string-functions/20220404-222518
-        git checkout e8231df5e8121c094f8668e0c850381873aa4249
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/csky/lib/string.c:30:7: warning: no previous prototype for '__memcpy' [-Wmissing-prototypes]
-      30 | void *__memcpy(void *dest, const void *src, size_t count)
-         |       ^~~~~~~~
->> arch/csky/lib/string.c:94:7: warning: no previous prototype for '__memmove' [-Wmissing-prototypes]
-      94 | void *__memmove(void *dest, const void *src, size_t count)
-         |       ^~~~~~~~~
->> arch/csky/lib/string.c:113:7: warning: no previous prototype for '__memset' [-Wmissing-prototypes]
-     113 | void *__memset(void *s, int c, size_t count)
-         |       ^~~~~~~~
-
-
-vim +/__memcpy +30 arch/csky/lib/string.c
-
-    29	
-  > 30	void *__memcpy(void *dest, const void *src, size_t count)
-    31	{
-    32		union const_types s = { .as_u8 = src };
-    33		union types d = { .as_u8 = dest };
-    34		int distance = 0;
-    35	
-    36		if (count < MIN_THRESHOLD)
-    37			goto copy_remainder;
-    38	
-    39		/* Copy a byte at time until destination is aligned. */
-    40		for (; d.as_uptr & WORD_MASK; count--)
-    41			*d.as_u8++ = *s.as_u8++;
-    42	
-    43		distance = s.as_uptr & WORD_MASK;
-    44	
-    45		if (distance) {
-    46			unsigned long last, next;
-    47	
-    48			/*
-    49			 * s is distance bytes ahead of d, and d just reached
-    50			 * the alignment boundary. Move s backward to word align it
-    51			 * and shift data to compensate for distance, in order to do
-    52			 * word-by-word copy.
-    53			 */
-    54			s.as_u8 -= distance;
-    55	
-    56			next = s.as_ulong[0];
-    57			for (; count >= BYTES_LONG; count -= BYTES_LONG) {
-    58				last = next;
-    59				next = s.as_ulong[1];
-    60	
-    61				d.as_ulong[0] = last >> (distance * 8) |
-    62					next << ((BYTES_LONG - distance) * 8);
-    63	
-    64				d.as_ulong++;
-    65				s.as_ulong++;
-    66			}
-    67	
-    68			/* Restore s with the original offset. */
-    69			s.as_u8 += distance;
-    70		} else {
-    71			/*
-    72			 * If the source and dest lower bits are the same, do a simple
-    73			 * 32/64 bit wide copy.
-    74			 */
-    75			for (; count >= BYTES_LONG; count -= BYTES_LONG)
-    76				*d.as_ulong++ = *s.as_ulong++;
-    77		}
-    78	
-    79	copy_remainder:
-    80		while (count--)
-    81			*d.as_u8++ = *s.as_u8++;
-    82	
-    83		return dest;
-    84	}
-    85	EXPORT_SYMBOL(__memcpy);
-    86	
-    87	void *memcpy(void *dest, const void *src, size_t count) __weak __alias(__memcpy);
-    88	EXPORT_SYMBOL(memcpy);
-    89	
-    90	/*
-    91	 * Simply check if the buffer overlaps an call memcpy() in case,
-    92	 * otherwise do a simple one byte at time backward copy.
-    93	 */
-  > 94	void *__memmove(void *dest, const void *src, size_t count)
-    95	{
-    96		if (dest < src || src + count <= dest)
-    97			return memcpy(dest, src, count);
-    98	
-    99		if (dest > src) {
-   100			const char *s = src + count;
-   101			char *tmp = dest + count;
-   102	
-   103			while (count--)
-   104				*--tmp = *--s;
-   105		}
-   106		return dest;
-   107	}
-   108	EXPORT_SYMBOL(__memmove);
-   109	
-   110	void *memmove(void *dest, const void *src, size_t count) __weak __alias(__memmove);
-   111	EXPORT_SYMBOL(memmove);
-   112	
- > 113	void *__memset(void *s, int c, size_t count)
-   114	{
-   115		union types dest = { .as_u8 = s };
-   116	
-   117		if (count >= MIN_THRESHOLD) {
-   118			unsigned long cu = (unsigned long)c;
-   119	
-   120			/* Compose an ulong with 'c' repeated 4/8 times */
-   121			cu |= cu << 8;
-   122			cu |= cu << 16;
-   123			/* Suppress warning on 32 bit machines */
-   124			cu |= (cu << 16) << 16;
-   125	
-   126			for (; count && dest.as_uptr & WORD_MASK; count--)
-   127				*dest.as_u8++ = c;
-   128	
-   129			/* Copy using the largest size allowed */
-   130			for (; count >= BYTES_LONG; count -= BYTES_LONG)
-   131				*dest.as_ulong++ = cu;
-   132		}
-   133	
-   134		/* copy the remainder */
-   135		while (count--)
-   136			*dest.as_u8++ = c;
-   137	
-   138		return s;
-   139	}
-   140	EXPORT_SYMBOL(__memset);
-   141	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+BR, Jarkko
