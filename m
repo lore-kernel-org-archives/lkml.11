@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5837EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4315EC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838453AbiDFAvk (ORCPT
+        id S1838437AbiDFAve (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
+        Tue, 5 Apr 2022 20:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356168AbiDEKXG (ORCPT
+        with ESMTP id S1345154AbiDEKkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E84BA33B;
-        Tue,  5 Apr 2022 03:07:23 -0700 (PDT)
+        Tue, 5 Apr 2022 06:40:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637CBD57;
+        Tue,  5 Apr 2022 03:26:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0EAD0B81BC0;
-        Tue,  5 Apr 2022 10:07:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79337C385A1;
-        Tue,  5 Apr 2022 10:07:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 011E66141D;
+        Tue,  5 Apr 2022 10:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097A2C385A1;
+        Tue,  5 Apr 2022 10:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153240;
-        bh=aR1A0SezXpkQGZdReRE0MJZ9Tozm4kPC8Waf9Ta+wng=;
+        s=korg; t=1649154374;
+        bh=cFnyWfm/m81Gz9VNERIZUDDiocWZQybTsQ0v67lOfbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HHyxgE5y5Cqn0GAIjERw4F1we3eefSJKLvfV2urHdW1CIm5O+NWebrZ9XmJuQjUgm
-         kbLwXhs3SoSJd+0YwGK9C08GtpHfPDBenJHf3rpia8b6FN5gHO1e1XUOXsiu/r0TsZ
-         64L79ClePOcPx6Czv8h+nxJbKbkHUaBXyACSM55c=
+        b=PD9rktGdsQ8AIiJS+zqlc6akvwFVBzQHGQxBZ5ehjlPNUBFu3jq1n9+1nX8YG8GIR
+         0aoLWpSUx2MbzQNk8VC4EgH7wRPspeq9+CYjp/0KX2b1zQHyyhoi/FAEFfvSheiw+A
+         ZLCNh1FdbEvKcJyNFAoFh2tV8Y9PzrHlMh8KCWBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 151/599] hwrng: atmel - disable trng on failure path
-Date:   Tue,  5 Apr 2022 09:27:25 +0200
-Message-Id: <20220405070303.336180296@linuxfoundation.org>
+        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.10 555/599] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
+Date:   Tue,  5 Apr 2022 09:34:09 +0200
+Message-Id: <20220405070315.357038357@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,34 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-[ Upstream commit a223ea9f89ab960eb254ba78429efd42eaf845eb ]
+commit 7ed258f12ec5ce855f15cdfb5710361dc82fe899 upstream.
 
-Call atmel_trng_disable() on failure path of probe.
+When user delete vlan 0, as driver will not delete vlan 0 for hardware in
+function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
+not be deleted.
 
-Fixes: a1fa98d8116f ("hwrng: atmel - disable TRNG during suspend")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/hw_random/atmel-rng.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/char/hw_random/atmel-rng.c b/drivers/char/hw_random/atmel-rng.c
-index ecb71c4317a5..8cf0ef501341 100644
---- a/drivers/char/hw_random/atmel-rng.c
-+++ b/drivers/char/hw_random/atmel-rng.c
-@@ -114,6 +114,7 @@ static int atmel_trng_probe(struct platform_device *pdev)
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -9197,11 +9197,11 @@ int hclge_set_vlan_filter(struct hnae3_h
+ 	}
  
- err_register:
- 	clk_disable_unprepare(trng->clk);
-+	atmel_trng_disable(trng);
- 	return ret;
- }
- 
--- 
-2.34.1
-
+ 	if (!ret) {
+-		if (is_kill)
+-			hclge_rm_vport_vlan_table(vport, vlan_id, false);
+-		else
++		if (!is_kill)
+ 			hclge_add_vport_vlan_table(vport, vlan_id,
+ 						   writen_to_tbl);
++		else if (is_kill && vlan_id != 0)
++			hclge_rm_vport_vlan_table(vport, vlan_id, false);
+ 	} else if (is_kill) {
+ 		/* when remove hw vlan filter failed, record the vlan id,
+ 		 * and try to remove it from hw later, to be consistence
 
 
