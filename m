@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ED50C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0991C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1589073AbiDFAS1 (ORCPT
+        id S1589118AbiDFASl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
+        Tue, 5 Apr 2022 20:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348617AbiDEKrt (ORCPT
+        with ESMTP id S1348976AbiDEJsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:47:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF28F58385;
-        Tue,  5 Apr 2022 03:27:15 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838A521BF;
+        Tue,  5 Apr 2022 02:38:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63BA2617AF;
-        Tue,  5 Apr 2022 10:27:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F382C385A1;
-        Tue,  5 Apr 2022 10:27:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DFF161576;
+        Tue,  5 Apr 2022 09:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4491BC385A2;
+        Tue,  5 Apr 2022 09:38:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154434;
-        bh=DYk/1tgFYAREGxESYGyO/u0W/NU7F91T01lwHxf8//o=;
+        s=korg; t=1649151515;
+        bh=JYxTO2rIP6G3utofM/I3wsvMma8X+tPaET/r2PEszRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b7Q3mO6/6cko8MFWfUYk3fPOU/hsnYW6pCkpEzP31+vzFYVukEPFipwzE90l2zHe3
-         z60sdpQZAHgPkGHDnIcRuuaQ69sGGDdCk+2bE05xYhA1g9CEiaRcgSiPHdX40ZxIJ5
-         K7n60JbW6kHCZn3CJvb03oCCJ7L7lzggLTgeRqtc=
+        b=aAbb63CXTQT85VZR3i9LA40CpcL8+aV2y11ocVhswXbRUuBgIvINk95zdjNBcD92r
+         JfjA5QK3j4Fa/6c88aDjuItRP73LDZtWInq7fYawQhSTDYfLJ1BcWnqH0+YtU1k6pt
+         Ygu3v91fR6qxnFjOEkiGXqp7IyqpS9hR7mCrLqso=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 578/599] mm/memcontrol: return 1 from cgroup.memory __setup() handler
-Date:   Tue,  5 Apr 2022 09:34:32 +0200
-Message-Id: <20220405070316.043091679@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 442/913] PCI: aardvark: Fix reading PCI_EXP_RTSTA_PME bit on emulated bridge
+Date:   Tue,  5 Apr 2022 09:25:04 +0200
+Message-Id: <20220405070353.095303188@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,55 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Pali Rohár <pali@kernel.org>
 
-commit 460a79e18842caca6fa0c415de4a3ac1e671ac50 upstream.
+[ Upstream commit 735f5ae49e1b44742cc63ca9b5c1ffde3e94ba91 ]
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; it just pollutes init's
-environment).
+The emulated bridge returns incorrect value for PCI_EXP_RTSTA register
+during readout in advk_pci_bridge_emul_pcie_conf_read() function: the
+correct bit is BIT(16), but we are setting BIT(23), because the code
+does
+  *value = (isr0 & PCIE_MSG_PM_PME_MASK) << 16
+where
+  PCIE_MSG_PM_PME_MASK
+is
+  BIT(7).
 
-The only reason that this particular __setup handler does not pollute
-init's environment is that the setup string contains a '.', as in
-"cgroup.memory".  This causes init/main.c::unknown_boottoption() to
-consider it to be an "Unused module parameter" and ignore it.  (This is
-for parsing of loadable module parameters any time after kernel init.)
-Otherwise the string "cgroup.memory=whatever" would be added to init's
-environment strings.
+The code should probably have been something like
+  *value = (!!(isr0 & PCIE_MSG_PM_PME_MASK)) << 16,
+but we are better of using an if() and using the proper macro for this
+bit.
 
-Instead of relying on this '.' quirk, just return 1 to indicate that the
-boot option has been handled.
-
-Note that there is no warning message if someone enters:
-	cgroup.memory=anything_invalid
-
-Link: https://lkml.kernel.org/r/20220222005811.10672-1-rdunlap@infradead.org
-Fixes: f7e1cb6ec51b0 ("mm: memcontrol: account socket memory in unified hierarchy memory controller")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
-Cc: Roman Gushchin <roman.gushchin@linux.dev>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220110015018.26359-15-kabel@kernel.org
+Fixes: 8a3ebd8de328 ("PCI: aardvark: Implement emulated root PCI bridge config space")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memcontrol.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pci-aardvark.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -7124,7 +7124,7 @@ static int __init cgroup_memory(char *s)
- 		if (!strcmp(token, "nokmem"))
- 			cgroup_memory_nokmem = true;
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index 7aa6d6336223..a924564fdbbc 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -844,7 +844,9 @@ advk_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
+ 	case PCI_EXP_RTSTA: {
+ 		u32 isr0 = advk_readl(pcie, PCIE_ISR0_REG);
+ 		u32 msglog = advk_readl(pcie, PCIE_MSG_LOG_REG);
+-		*value = (isr0 & PCIE_MSG_PM_PME_MASK) << 16 | (msglog >> 16);
++		*value = msglog >> 16;
++		if (isr0 & PCIE_MSG_PM_PME_MASK)
++			*value |= PCI_EXP_RTSTA_PME;
+ 		return PCI_BRIDGE_EMUL_HANDLED;
  	}
--	return 0;
-+	return 1;
- }
- __setup("cgroup.memory=", cgroup_memory);
  
+-- 
+2.34.1
+
 
 
