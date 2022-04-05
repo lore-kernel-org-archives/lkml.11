@@ -2,89 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 734AAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D848C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836477AbiDFAgQ (ORCPT
+        id S1836436AbiDFAgN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
+        Tue, 5 Apr 2022 20:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457452AbiDEQDP (ORCPT
+        with ESMTP id S1442334AbiDEPhb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:15 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A4D83B1A;
-        Tue,  5 Apr 2022 08:46:09 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id ot30so17621337ejb.12;
-        Tue, 05 Apr 2022 08:46:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7kpsGMmBzpfBM9jAlxaQhQ6QOVa8yPc2XChn38jewUY=;
-        b=I5g0SlH/NucKf4U+Po0XGGhkZOjwxqIjt9E4hxyBJg0pvtGoLR0KIdFJrb0oGRicdZ
-         OM1/ePde9Gbn5UEx1Ws+Qdpe7nfnQ0YdTPVjI6Swb8DHXaWdV/xcnjQ1QkqaazJ04+gL
-         vsDF96pQWUkp2OvuQuGRSC+dGesVGoohUMm7bBMoC6weHrUz9+3atn5QsuEKe0wqz9IK
-         AnGeYH/RgmF+ttX06xfQ9O70V76DJfDJD2t5UreZm3Gs8mipmWLqiVzrkFLJVGSA6Tc8
-         Joi29ALUmcai5dyjkgJe00qXX8QJnutTDM1yJZMXK0KGOoI8w0jyum7lN8b7C1SQQNDr
-         Sn3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7kpsGMmBzpfBM9jAlxaQhQ6QOVa8yPc2XChn38jewUY=;
-        b=7dyJ1gtJD5llitJc/rjMBicpuy5vMMJJhyyNPuBt9xfzWsvm2d8mXw0kYffRTs7Sec
-         CDEnXQTb0vtAGa7ANZBW/ktoWut0QY3TlkGfshuIZMw3gn9VhOz8BJANOJzUcwiaWPP6
-         L6yA0exQORllghHXV6zz7rTDKyb+ovnhhQQZy8zXGvGTohhvXdkQAkubN+EKkEjoqtvY
-         yeqKsgYDMbF9S9sFqceBTvomKxb2Ilz3u864DBKzTQnSV/Lk6TsSlzW0/H/vjH32l27b
-         jnVCTmzN4p7zbEV69pXIrCNzXy8bSSM01/J0PCzXmcTOxv9J9oTyyAMufFcvjD6yy0gb
-         n2Ag==
-X-Gm-Message-State: AOAM531ubsh0dpYRgCInYeXtTei435OaZKhNIJGckAZPrwXwKy1wmsT3
-        sIw31ARo5nsqPS//a7YKpbRPbGbuCLc=
-X-Google-Smtp-Source: ABdhPJyEkIwTEUwce8H9FP20psOugoXTbBXDIbSo+wHBBaa2NYCuFO8E8gtxoJdmK5qt2Ye4zfh4JA==
-X-Received: by 2002:a17:907:6d8b:b0:6e7:5610:d355 with SMTP id sb11-20020a1709076d8b00b006e75610d355mr4089958ejc.369.1649173567528;
-        Tue, 05 Apr 2022 08:46:07 -0700 (PDT)
-Received: from hoboy.vegasvil.org (81-223-89-254.static.upcbusiness.at. [81.223.89.254])
-        by smtp.gmail.com with ESMTPSA id f26-20020a170906825a00b006e7efc52be8sm2649201ejx.166.2022.04.05.08.46.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 08:46:06 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 08:46:04 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
-        grygorii.strashko@ti.com, kuba@kernel.org, kurt@linutronix.de,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Message-ID: <20220405154604.GA6509@hoboy.vegasvil.org>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc>
- <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc>
- <20220405055954.GB91955@hoboy.vegasvil.org>
- <d38744cbe67474b3c83b84547ec3cb4f@walle.cc>
+        Tue, 5 Apr 2022 11:37:31 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2884710E043;
+        Tue,  5 Apr 2022 06:51:43 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 235DWRjZ003272;
+        Tue, 5 Apr 2022 13:51:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=70f3++uodWHlr/PXmHHWDTclVF91IG0xsbEDXHos37A=;
+ b=DMdIq0bl6/8VKmrHbW7wM6dIBwQofXy30Ekze1jv+W36eX+v5tx38d0A7JrvYQIWAqWs
+ PytJ8x1Um5W6COeLdTOTjrKrvx55uz+eFvaEmAwmTcd3hsmZ+l/KPIR1c6LSkyNDf9GG
+ NHU1IOLwoMwSjbRn1mU4/qaf7Tnb94wzU2LaJ2XMEM7MCj9QX3J39+MEYLPptgBhkdxV
+ NYlBZOvKhCZoCk5sUf8f7Tp66XBW2ziCgb5x6cFJcM3MzCqiypsVEiUERf4IMM/ogsud
+ 0MIhodjCZiOrsQVZeJSa4SMZ2pVoGjNzCL6nBDDxwXpqKad4yjGzQMfGGoJ+syPKayTX 0A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f8ph20rn4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Apr 2022 13:51:42 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 235DWvRX004595;
+        Tue, 5 Apr 2022 13:51:42 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f8ph20rmn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Apr 2022 13:51:41 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 235DmwQM029536;
+        Tue, 5 Apr 2022 13:51:40 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma02wdc.us.ibm.com with ESMTP id 3f6e49fny5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Apr 2022 13:51:40 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 235DpdFA46072108
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 5 Apr 2022 13:51:39 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CA3D728065;
+        Tue,  5 Apr 2022 13:51:39 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E77E428074;
+        Tue,  5 Apr 2022 13:51:34 +0000 (GMT)
+Received: from [9.211.32.125] (unknown [9.211.32.125])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue,  5 Apr 2022 13:51:34 +0000 (GMT)
+Message-ID: <26fa1eef-8c89-8819-b12c-3b8caaf40bb2@linux.ibm.com>
+Date:   Tue, 5 Apr 2022 09:51:34 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d38744cbe67474b3c83b84547ec3cb4f@walle.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 10/21] KVM: s390: pci: add basic kvm_zdev structure
+Content-Language: en-US
+To:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+ <20220404174349.58530-11-mjrosato@linux.ibm.com>
+ <8fc611271c6156dee5c5f5b5c2f583d2d7774843.camel@linux.ibm.com>
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <8fc611271c6156dee5c5f5b5c2f583d2d7774843.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Qt5-YCCO2ZAkFtw-CyjLutRvAHpvHu4x
+X-Proofpoint-ORIG-GUID: abzCw4HVKfcXKNf_D465BhRHBCQe8tNw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-05_02,2022-04-05_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ clxscore=1015 priorityscore=1501 adultscore=0 mlxlogscore=898 phishscore=0
+ suspectscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204050079
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:48:21AM +0200, Michael Walle wrote:
-> Can the ethernet driver select the default one? So any current
-> driver which has "if phy_has_hwtstamp() forward_ioctl;" can set
-> it to PHY while newer drivers can (or should actually) leave it as
-> MAC.
+On 4/5/22 4:20 AM, Niklas Schnelle wrote:
+> On Mon, 2022-04-04 at 13:43 -0400, Matthew Rosato wrote:
+>> This structure will be used to carry kvm passthrough information related to
+>> zPCI devices.
+>>
+>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+>> ---
+>>   arch/s390/include/asm/pci.h |  3 +++
+>>   arch/s390/kvm/Makefile      |  1 +
+>>   arch/s390/kvm/pci.c         | 38 +++++++++++++++++++++++++++++++++++++
+>>   arch/s390/kvm/pci.h         | 21 ++++++++++++++++++++
+>>   4 files changed, 63 insertions(+)
+>>   create mode 100644 arch/s390/kvm/pci.c
+>>   create mode 100644 arch/s390/kvm/pci.h
+>>
+>> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+>> index 4c5b8fbc2079..9eb20cebaa18 100644
+>> --- a/arch/s390/include/asm/pci.h
+>> +++ b/arch/s390/include/asm/pci.h
+>> @@ -97,6 +97,7 @@ struct zpci_bar_struct {
+>>   };
+>>   
+>>   struct s390_domain;
+>> +struct kvm_zdev;
+>>   
+>>   #define ZPCI_FUNCTIONS_PER_BUS 256
+>>   struct zpci_bus {
+>> @@ -190,6 +191,8 @@ struct zpci_dev {
+>>   	struct dentry	*debugfs_dev;
+>>   
+>>   	struct s390_domain *s390_domain; /* s390 IOMMU domain data */
+>> +
+>> +	struct kvm_zdev *kzdev; /* passthrough data */
+>>   };
+> 
+> The struct zpci_dev tries to use semantic groups in its formatting.
+> It's not perfect and we probably need to clean this up to remove some
+> holes in the future. For now let's put the new kzdev without a blank
+> line together with s390_domain and add a "section comment" like
+> "IOMMU and passthrough".
+> Also I'd drop the "... data" part of the line end comment or even drop
+> it entirely, the name is pretty clear already when combined with the
+> section comment.
 
-I want to remove all of the phy_has_ stuff from MAC drivers.
-MAC/PHY drivers should just implement the in-kernel interfaces.
-IMO that is the clean way forward.
+Sure, will do
 
-Thanks,
-Richard
+> 
+> With that Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> 
+
+Thanks!
