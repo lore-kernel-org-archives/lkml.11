@@ -2,88 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B622EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9661BC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391176AbiDEWE4 (ORCPT
+        id S1391146AbiDEWEw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
+        Tue, 5 Apr 2022 18:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353226AbiDEKFw (ORCPT
+        with ESMTP id S1572966AbiDEReB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:05:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D60BF008;
-        Tue,  5 Apr 2022 02:54:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72431616DC;
-        Tue,  5 Apr 2022 09:54:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE45C385A1;
-        Tue,  5 Apr 2022 09:54:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152467;
-        bh=ad5NuxpHH/Hvd4cfnrHfXY6pLQKYnybTjf9eWocz+E0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YCzqxTYv7m8PJnh5t9d0twjQQHhO+7X4uT+vbW6z3rB2wjiWbCx/CUVbaeXja0Bae
-         dTAgnJAFgpLKnvs1DgHvmUjjOHkicAxRgAa4AP4ry33wUI+cdvZM14B/hZ/t9GEvYQ
-         yPSEvfi8SHDE7MT5JnZsbMydyUN7mXgvUJjcGY8w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 748/913] arm64: defconfig: build imx-sdma as a module
-Date:   Tue,  5 Apr 2022 09:30:10 +0200
-Message-Id: <20220405070402.254945941@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:34:01 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDF04F448
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:32:00 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nbn1n-0005q6-Lf; Tue, 05 Apr 2022 19:31:39 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nbn1l-0004Ld-6t; Tue, 05 Apr 2022 19:31:37 +0200
+Date:   Tue, 5 Apr 2022 19:31:37 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     Nicolin Chen <nicoleotsuka@gmail.com>,
+        Xiubo Li <Xiubo.Lee@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Shengjiu Wang <shengjiu.wang@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Viorel Suman <viorel.suman@nxp.com>, kernel@pengutronix.de,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: fsl_sai: fix 1:1 bclk:mclk ratio support
+Message-ID: <20220405173137.GR4012@pengutronix.de>
+References: <20220405155731.745413-1-a.fatoum@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405155731.745413-1-a.fatoum@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 19:31:02 up 6 days,  6:00, 66 users,  load average: 0.28, 0.18, 0.18
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Tue, Apr 05, 2022 at 05:57:31PM +0200, Ahmad Fatoum wrote:
+> Refactoring in commit a50b7926d015 ("ASoC: fsl_sai: implement 1:1
+> bclk:mclk ratio support") led to the bypass never happening
+> as (ratio = 1) was caught in the existing if (ratio & 1) continue;
+> check. The correct check sequence instead is:
+> 
+>  - skip all ratios lower than one and higher than 512
+>  - skip all odd ratios except for 1:1
+>  - skip 1:1 ratio if and only if !support_1_1_ratio
+> 
+> And for all others, calculate the appropriate divider. Adjust the
+> code to facilitate this.
+> 
+> Fixes: a50b7926d015 ("ASoC: fsl_sai: implement 1:1 bclk:mclk ratio support")
+> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
 
-[ Upstream commit e95622289f263662240544a9f0009b25c19e64d4 ]
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 
-This avoids firmware load error and sysfs fallback reported as follows:
+Sascha
 
-[    0.199448] imx-sdma 302c0000.dma-controller: Direct firmware load
- for imx/sdma/sdma-imx7d.bin failed with error -2
-[    0.199487] imx-sdma 302c0000.dma-controller: Falling back to sysfs
- fallback for: imx/sdma/sdma-imx7d.bin
+> ---
+>  sound/soc/fsl/fsl_sai.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
+> index a992d51568cc..50c377f16097 100644
+> --- a/sound/soc/fsl/fsl_sai.c
+> +++ b/sound/soc/fsl/fsl_sai.c
+> @@ -372,7 +372,7 @@ static int fsl_sai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
+>  			continue;
+>  		if (ratio == 1 && !support_1_1_ratio)
+>  			continue;
+> -		else if (ratio & 1)
+> +		if ((ratio & 1) && ratio > 1)
+>  			continue;
+>  
+>  		diff = abs((long)clk_rate - ratio * freq);
+> -- 
+> 2.30.2
+> 
+> 
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/configs/defconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 545197bc0501..4972a81d40d6 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -921,7 +921,7 @@ CONFIG_DMADEVICES=y
- CONFIG_DMA_BCM2835=y
- CONFIG_DMA_SUN6I=m
- CONFIG_FSL_EDMA=y
--CONFIG_IMX_SDMA=y
-+CONFIG_IMX_SDMA=m
- CONFIG_K3_DMA=y
- CONFIG_MV_XOR=y
- CONFIG_MV_XOR_V2=y
 -- 
-2.34.1
-
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
