@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFF1C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578014AbiDEXSB (ORCPT
+        id S1578029AbiDEXSE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        Tue, 5 Apr 2022 19:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348089AbiDEJq5 (ORCPT
+        with ESMTP id S1353417AbiDEKGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:46:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544C5E2F70;
-        Tue,  5 Apr 2022 02:33:17 -0700 (PDT)
+        Tue, 5 Apr 2022 06:06:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0564ABF953;
+        Tue,  5 Apr 2022 02:55:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C13AC616AE;
-        Tue,  5 Apr 2022 09:33:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB226C385A2;
-        Tue,  5 Apr 2022 09:33:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A49CB818F6;
+        Tue,  5 Apr 2022 09:54:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBAE6C385A3;
+        Tue,  5 Apr 2022 09:54:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151196;
-        bh=SiWQfNK6upuvyL25sOXXFwldcQxeRu/FiH4eEINwg/w=;
+        s=korg; t=1649152498;
+        bh=VpvgJUPwkPLk9GTxl57w4IvFsD7R7c3aMkC2Vn9EM7Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rChFkmpUQ4NCt8WvS+xnJiDEoRnwz5/3po2/YAFiSgGhejeFrD1plIsUXN7baXg9G
-         vtlpE/AUGnanE/V1zdsXd9e8tRgOSJFVmSwgyFANLzl4tDk0tUO1g6QudYfaB9MS9J
-         0eJbIH71JwJvxn3hxZhfunB3CPkduO6FzawuNml8=
+        b=n5pAdb4H8Rvq8oFXpw8Tk5YzklZ1UuPrTt5MDGGaHeUz9OOtsJvrovkny3a0QOR0G
+         ctsVeRe+bMlYhU5bVDI5G1M6Mw87sFdFrRyaLdyIf2Sq4sxvEoFfhL8LaKzT38tvCi
+         +QKkscN1aZSttLTCknR2lsIKjL5CNnqstUOri9G4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 291/913] video: fbdev: atmel_lcdfb: fix an error code in atmel_lcdfb_probe()
-Date:   Tue,  5 Apr 2022 09:22:33 +0200
-Message-Id: <20220405070348.579876453@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Carnuccio <joe.carnuccio@cavium.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 799/913] scsi: qla2xxx: Check for firmware dump already collected
+Date:   Tue,  5 Apr 2022 09:31:01 +0200
+Message-Id: <20220405070403.781945178@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,50 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Joe Carnuccio <joe.carnuccio@cavium.com>
 
-[ Upstream commit fee5c1e4b789e41719af9fee0e2dd397cd31988f ]
+commit cfbafad7c6032d449a5a07f2d273acd2437bbc6a upstream.
 
-If "sinfo->config" is not found, then return -ENODEV.  Don't
-return success.
+While allocating firmware dump, check if dump is already collected and do
+not re-allocate the buffer.
 
-Fixes: b985172b328a ("video: atmel_lcdfb: add device tree suport")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220110050218.3958-17-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/atmel_lcdfb.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
-index 355b6120dc4f..1fc8de4ecbeb 100644
---- a/drivers/video/fbdev/atmel_lcdfb.c
-+++ b/drivers/video/fbdev/atmel_lcdfb.c
-@@ -1062,15 +1062,16 @@ static int __init atmel_lcdfb_probe(struct platform_device *pdev)
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -3463,6 +3463,14 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
+ 	struct rsp_que *rsp = ha->rsp_q_map[0];
+ 	struct qla2xxx_fw_dump *fw_dump;
  
- 	INIT_LIST_HEAD(&info->modelist);
- 
--	if (pdev->dev.of_node) {
--		ret = atmel_lcdfb_of_init(sinfo);
--		if (ret)
--			goto free_info;
--	} else {
-+	if (!pdev->dev.of_node) {
- 		dev_err(dev, "cannot get default configuration\n");
- 		goto free_info;
- 	}
- 
-+	ret = atmel_lcdfb_of_init(sinfo);
-+	if (ret)
-+		goto free_info;
++	if (ha->fw_dump) {
++		ql_dbg(ql_dbg_init, vha, 0x00bd,
++		    "Firmware dump already allocated.\n");
++		return;
++	}
 +
-+	ret = -ENODEV;
- 	if (!sinfo->config)
- 		goto free_info;
++	ha->fw_dumped = 0;
++	ha->fw_dump_cap_flags = 0;
+ 	dump_size = fixed_size = mem_size = eft_size = fce_size = mq_size = 0;
+ 	req_q_size = rsp_q_size = 0;
  
--- 
-2.34.1
-
 
 
