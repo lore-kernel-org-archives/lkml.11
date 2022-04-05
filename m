@@ -2,128 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4C5C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6DFC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455088AbiDEWkJ (ORCPT
+        id S1455118AbiDEWkP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:40:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        Tue, 5 Apr 2022 18:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348968AbiDEJsu (ORCPT
+        with ESMTP id S1358881AbiDELRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D9DA27E1;
-        Tue,  5 Apr 2022 02:38:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5335261576;
-        Tue,  5 Apr 2022 09:38:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C3B2C385A3;
-        Tue,  5 Apr 2022 09:38:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151504;
-        bh=QgN7lXd/5D4nXDbVFwp/TInBYA77pHrREhhUm7GLROU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x5buKPgAt5L6YpFN6h/0l1m7pt3x9UOJ38bmxyPbYEtx0e692u738G81sUzqDrqSd
-         Gq/ed79QbFJ/ugMipTiCvSyHecP5yLrzfO3bGxPtosw6a1DiepQEpDdaU1lCcvxdpZ
-         QWbh1HOIVmxm6An09NNZCsmA6sIpQzx8o+7+Ynq8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lennert Buytenhek <buytenh@arista.com>,
-        Corinna Vinschen <vinschen@redhat.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 439/913] igc: avoid kernel warning when changing RX ring parameters
-Date:   Tue,  5 Apr 2022 09:25:01 +0200
-Message-Id: <20220405070353.004872616@linuxfoundation.org>
+        Tue, 5 Apr 2022 07:17:40 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DEB8A32D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:49:31 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id a6so14915022ejk.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 03:49:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Adg3pN2RW58wCT9rm+ufFClNqKORGkE/N3E2nxNd7RY=;
+        b=UNwkZnqk7dS8LG08uS2paqAo7c3EjqpY8dO4XyoghVpgARkcT6BjhzsEHkCyaVGpuU
+         VZ6s3URU004FZ/EoRCCHRR/W8F5zWAOv/G7xiHymasP8sycr/kBLCTG0grOPxO/SmNzV
+         UNxkr13NClG5ZDi4Nw5F4ofob7HKxUqPMAGb2b4EYS3xbxKGanh8Z444D6FmFFCj5Fhy
+         ewg3m03VFw9oGe8R2qzecy6YNvD/4gK9TnGx8uN2/HwEVTXXxx/ZLLQWGsrB7fJdJhCc
+         IBEwwcYUVQd+HfJbyfvfFpXVsJhgvtR9mudbizOoFuqeO45C3zBccb4ilmoblr8/ySFK
+         WQ2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Adg3pN2RW58wCT9rm+ufFClNqKORGkE/N3E2nxNd7RY=;
+        b=8NIRqzSCkGZkxBmzriTJ7XLeb0dlXhOxJF6sG9MphkKYzpCOnyy/J7QeoTXIQV2089
+         2BckPFByKb4jfMawVSk+170roJok+a50pu29qREEGtEyrVAyTvNgE3KigCebaBDVtwAp
+         7jS/Tl9ZsXZY25UwFewLFnWdTv5xYtvkKxsgwrV2yM1DhD9pfrfd/LUZTpHZ45s456eP
+         QIiuCv8IL6gNsOdi7HtnZPTbfOrEfN6ec954bjbGB1xlGVLsq2JPGUZ6LvZ0TkpwPkAy
+         5MMiE4YPNrcjyGIcJKEApEqKRHQrWueXIciy3lTldUvBGFn8Kl2Q/t9v8qCxqI1zMhIy
+         S1lg==
+X-Gm-Message-State: AOAM5337WWSLfC4jMlJosfdiHczpxvWCzlrxvmNbfcKVG9Tfisjnv3Lc
+        YXkpgmgvMZfSRoK3kP2Zge4=
+X-Google-Smtp-Source: ABdhPJxtwBNi5M3av58Natvm7wrBfwyDLFGOKk8pLWKQyqncAUaQNgIcZ12kpqxDNSOBKvaW+hZhxw==
+X-Received: by 2002:a17:907:c16:b0:6db:682:c8c9 with SMTP id ga22-20020a1709070c1600b006db0682c8c9mr2987787ejc.153.1649155769444;
+        Tue, 05 Apr 2022 03:49:29 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm2436702edl.28.2022.04.05.03.49.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 03:49:28 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH v2 4/4] staging: r8188eu: remove GetHalDefVar8188EUsb()
+Date:   Tue,  5 Apr 2022 12:49:10 +0200
+Message-Id: <20220405104910.9769-5-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405104910.9769-1-straube.linux@gmail.com>
+References: <20220405104910.9769-1-straube.linux@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corinna Vinschen <vinschen@redhat.com>
+The local variable odm_flag in rtw_dbg_port() is set but never used.
+This are the last two remaining calls to GetHalDefVar8188EUsb(). Both
+calls can be removed and we finally can remove GetHalDefVar8188EUsb()
+itself. This is part of the ongoing effort to get rid of the unwanted
+hal layer.
 
-[ Upstream commit 453307b569a0d41bddd07f26bf41b784cd82a4c9 ]
-
-Calling ethtool changing the RX ring parameters like this:
-
-  $ ethtool -G eth0 rx 1024
-
-on igc triggers kernel warnings like this:
-
-[  225.198467] ------------[ cut here ]------------
-[  225.198473] Missing unregister, handled but fix driver
-[  225.198485] WARNING: CPU: 7 PID: 959 at net/core/xdp.c:168
-xdp_rxq_info_reg+0x79/0xd0
-[...]
-[  225.198601] Call Trace:
-[  225.198604]  <TASK>
-[  225.198609]  igc_setup_rx_resources+0x3f/0xe0 [igc]
-[  225.198617]  igc_ethtool_set_ringparam+0x30e/0x450 [igc]
-[  225.198626]  ethnl_set_rings+0x18a/0x250
-[  225.198631]  genl_family_rcv_msg_doit+0xca/0x110
-[  225.198637]  genl_rcv_msg+0xce/0x1c0
-[  225.198640]  ? rings_prepare_data+0x60/0x60
-[  225.198644]  ? genl_get_cmd+0xd0/0xd0
-[  225.198647]  netlink_rcv_skb+0x4e/0xf0
-[  225.198652]  genl_rcv+0x24/0x40
-[  225.198655]  netlink_unicast+0x20e/0x330
-[  225.198659]  netlink_sendmsg+0x23f/0x480
-[  225.198663]  sock_sendmsg+0x5b/0x60
-[  225.198667]  __sys_sendto+0xf0/0x160
-[  225.198671]  ? handle_mm_fault+0xb2/0x280
-[  225.198676]  ? do_user_addr_fault+0x1eb/0x690
-[  225.198680]  __x64_sys_sendto+0x20/0x30
-[  225.198683]  do_syscall_64+0x38/0x90
-[  225.198687]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  225.198693] RIP: 0033:0x7f7ae38ac3aa
-
-igc_ethtool_set_ringparam() copies the igc_ring structure but neglects to
-reset the xdp_rxq_info member before calling igc_setup_rx_resources().
-This in turn calls xdp_rxq_info_reg() with an already registered xdp_rxq_info.
-
-Make sure to unregister the xdp_rxq_info structure first in
-igc_setup_rx_resources.
-
-Fixes: 73f1071c1d29 ("igc: Add support for XDP_TX action")
-Reported-by: Lennert Buytenhek <buytenh@arista.com>
-Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+v2: no changes
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index a514cfc6c8a0..f99819fc559d 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -504,6 +504,9 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
- 	u8 index = rx_ring->queue_index;
- 	int size, desc_len, res;
+ drivers/staging/r8188eu/hal/usb_halinit.c    | 14 --------------
+ drivers/staging/r8188eu/include/hal_intf.h   |  1 -
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c |  8 +-------
+ 3 files changed, 1 insertion(+), 22 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index 9d39c5ca56a7..c983e42bf523 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -1198,20 +1198,6 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
  
-+	/* XDP RX-queue info */
-+	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
-+		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
- 	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
- 			       rx_ring->q_vector->napi.napi_id);
- 	if (res < 0) {
+ }
+ 
+-/* Query setting of specified variable. */
+-void GetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariable, void *pValue)
+-{
+-	struct hal_data_8188e *haldata = &Adapter->haldata;
+-
+-	switch (eVariable) {
+-	case HAL_DEF_DBG_DM_FUNC:
+-		*((u32 *)pValue) = haldata->odmpriv.SupportAbility;
+-		break;
+-	default:
+-		break;
+-	}
+-}
+-
+ /* Change default setting of specified variable. */
+ void SetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariable, void *pValue)
+ {
+diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
+index 0bc274a695d9..ab6cab1281ab 100644
+--- a/drivers/staging/r8188eu/include/hal_intf.h
++++ b/drivers/staging/r8188eu/include/hal_intf.h
+@@ -52,7 +52,6 @@ int rtl8188e_IOL_exec_cmds_sync(struct adapter *adapter,
+ 				struct xmit_frame *xmit_frame, u32 max_wating_ms, u32 bndy_cnt);
+ 
+ void SetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariable, void *pValue);
+-void GetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariable, void *pValue);
+ 
+ unsigned int rtl8188eu_inirp_init(struct adapter *Adapter);
+ 
+diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+index d127cebb6eae..b6851628e4d2 100644
+--- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
++++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+@@ -3675,22 +3675,16 @@ static int rtw_dbg_port(struct net_device *dev,
+ 			break;
+ 		case 0xee:/* turn on/off dynamic funcs */
+ 			{
+-				u32 odm_flag;
+-
+-				if (0xf == extra_arg) {
+-					GetHalDefVar8188EUsb(padapter, HAL_DEF_DBG_DM_FUNC, &odm_flag);
+-				} else {
++				if (extra_arg != 0xf) {
+ 					/*	extra_arg = 0  - disable all dynamic func
+ 						extra_arg = 1  - disable DIG
+ 						extra_arg = 2  - disable tx power tracking
+ 						extra_arg = 3  - turn on all dynamic func
+ 					*/
+ 					SetHalDefVar8188EUsb(padapter, HAL_DEF_DBG_DM_FUNC, &extra_arg);
+-					GetHalDefVar8188EUsb(padapter, HAL_DEF_DBG_DM_FUNC, &odm_flag);
+ 				}
+ 			}
+ 			break;
+-
+ 		case 0xfd:
+ 			rtw_write8(padapter, 0xc50, arg);
+ 			rtw_write8(padapter, 0xc58, arg);
 -- 
-2.34.1
-
-
+2.35.1
 
