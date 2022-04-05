@@ -2,89 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA57BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4914C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835633AbiDFAcl (ORCPT
+        id S1835618AbiDFAcd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
+        Tue, 5 Apr 2022 20:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573574AbiDETW5 (ORCPT
+        with ESMTP id S1356177AbiDEKXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:22:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA0A483AF;
-        Tue,  5 Apr 2022 12:20:59 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A54BA33E;
+        Tue,  5 Apr 2022 03:07:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B1A48CE1FB7;
-        Tue,  5 Apr 2022 19:20:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 851C8C385A1;
-        Tue,  5 Apr 2022 19:20:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186456;
-        bh=QSQJwXnQ26aopltanKUAuklulNeW880EC3N09Fc3UKo=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 834FCB81BC0;
+        Tue,  5 Apr 2022 10:07:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5BAEC385A2;
+        Tue,  5 Apr 2022 10:07:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153246;
+        bh=E7YpLm0vNAAryXZwsLRjt7m1vsldvGR95nHASoIBHBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PULmi/MSmvm3KcMyeoe4q7YjAY098w+k3YDDbZvoCb07KoISMwzAzmUIRz696LhBs
-         pYSQPt9mNUe61J+L5+HTXwFeXVJbeZ8l/tA8ymKxDPWtszKcck5fFTpWfZ3uO3vhSV
-         rRifdEkJqKR/4Tt7DTGtZoYUFVQDL9yOU8/tXEIEzU0yKWZ2okSz/pdAis59+28Rlq
-         RoyKD479znZzAwV1WWeSdclRsEH6LHjCLZ3feSK5jCP/sM2tXxBA7oG/jsuxOZSCO3
-         uP2zzNYUGUnii1yr7Zwv+YXS9c8gVocK35GWnqe6fwKupAErvZuhdhcBm0zMfbdDnf
-         iI/a6kQk4aBDw==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 26/59] ceph: make d_revalidate call fscrypt revalidator for encrypted dentries
-Date:   Tue,  5 Apr 2022 15:19:57 -0400
-Message-Id: <20220405192030.178326-27-jlayton@kernel.org>
+        b=cgWlvzYeqHUS9LTkbrF3JxZy3Yvm7DfUVwXxgzkFGLMh2AatFhCkbhz+aI1nsVtEL
+         I2m7VJOCx0o+lsb5HIOKP4hTtrqhEyUMe/YjEEP7cHFc2bzPjtpoPKJUrNkVLgnLv7
+         nu3xG8mY32DYRh3h1fBiLNePuO2Sgyu8BHzWc82w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 153/599] crypto: sun8i-ce - call finalize with bh disabled
+Date:   Tue,  5 Apr 2022 09:27:27 +0200
+Message-Id: <20220405070303.395735329@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If we have a dentry which represents a no-key name, then we need to test
-whether the parent directory's encryption key has since been added.  Do
-that before we test anything else about the dentry.
+From: Corentin Labbe <clabbe@baylibre.com>
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+[ Upstream commit f75a749b6d78aeae2ce90e14fcc4b7b3ba46126d ]
+
+Doing ipsec produces a spinlock recursion warning.
+This is due to not disabling BH during crypto completion function.
+
+Fixes: 06f751b61329 ("crypto: allwinner - Add sun8i-ce Crypto Engine")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/dir.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c | 3 +++
+ drivers/crypto/allwinner/sun8i-ce/sun8i-ce-hash.c   | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
-index 897f8618151b..caf2547c3fe1 100644
---- a/fs/ceph/dir.c
-+++ b/fs/ceph/dir.c
-@@ -1709,6 +1709,10 @@ static int ceph_d_revalidate(struct dentry *dentry, unsigned int flags)
- 	struct inode *dir, *inode;
- 	struct ceph_mds_client *mdsc;
+diff --git a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+index 33707a2e55ff..64133d4da3d5 100644
+--- a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
++++ b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+@@ -11,6 +11,7 @@
+  * You could find a link for the datasheet in Documentation/arm/sunxi.rst
+  */
  
-+	valid = fscrypt_d_revalidate(dentry, flags);
-+	if (valid <= 0)
-+		return valid;
-+
- 	if (flags & LOOKUP_RCU) {
- 		parent = READ_ONCE(dentry->d_parent);
- 		dir = d_inode_rcu(parent);
-@@ -1721,8 +1725,8 @@ static int ceph_d_revalidate(struct dentry *dentry, unsigned int flags)
- 		inode = d_inode(dentry);
- 	}
++#include <linux/bottom_half.h>
+ #include <linux/crypto.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/io.h>
+@@ -280,7 +281,9 @@ static int sun8i_ce_cipher_run(struct crypto_engine *engine, void *areq)
  
--	dout("d_revalidate %p '%pd' inode %p offset 0x%llx\n", dentry,
--	     dentry, inode, ceph_dentry(dentry)->offset);
-+	dout("d_revalidate %p '%pd' inode %p offset 0x%llx nokey %d\n", dentry,
-+	     dentry, inode, ceph_dentry(dentry)->offset, !!(dentry->d_flags & DCACHE_NOKEY_NAME));
+ 	flow = rctx->flow;
+ 	err = sun8i_ce_run_task(ce, flow, crypto_tfm_alg_name(breq->base.tfm));
++	local_bh_disable();
+ 	crypto_finalize_skcipher_request(engine, breq, err);
++	local_bh_enable();
+ 	return 0;
+ }
  
- 	mdsc = ceph_sb_to_client(dir->i_sb)->mdsc;
- 
+diff --git a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-hash.c b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-hash.c
+index 4c5a2c11d714..62c07a724d40 100644
+--- a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-hash.c
++++ b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-hash.c
+@@ -9,6 +9,7 @@
+  *
+  * You could find the datasheet in Documentation/arm/sunxi.rst
+  */
++#include <linux/bottom_half.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/scatterlist.h>
+@@ -412,6 +413,8 @@ int sun8i_ce_hash_run(struct crypto_engine *engine, void *breq)
+ theend:
+ 	kfree(buf);
+ 	kfree(result);
++	local_bh_disable();
+ 	crypto_finalize_hash_request(engine, breq, err);
++	local_bh_enable();
+ 	return 0;
+ }
 -- 
-2.35.1
+2.34.1
+
+
 
