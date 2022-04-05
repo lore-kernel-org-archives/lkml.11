@@ -2,109 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A48ECC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69022C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447873AbiDEUJg (ORCPT
+        id S1447535AbiDEUJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        Tue, 5 Apr 2022 16:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357778AbiDEOhs (ORCPT
+        with ESMTP id S1354202AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:37:48 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F28126FAB;
-        Tue,  5 Apr 2022 06:16:08 -0700 (PDT)
-Received: from fsav114.sakura.ne.jp (fsav114.sakura.ne.jp [27.133.134.241])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 235DFlkC033288;
-        Tue, 5 Apr 2022 22:15:47 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav114.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp);
- Tue, 05 Apr 2022 22:15:47 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 235DFkv5033285
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 5 Apr 2022 22:15:47 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <286f411f-8482-6c0b-c005-01d7d20f9dbe@I-love.SAKURA.ne.jp>
-Date:   Tue, 5 Apr 2022 22:15:47 +0900
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC431546BD;
+        Tue,  5 Apr 2022 02:58:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78C236167E;
+        Tue,  5 Apr 2022 09:58:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88626C385A2;
+        Tue,  5 Apr 2022 09:58:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152721;
+        bh=ExR9OgwnusTJKSrNCVHWa9/0YVov40hwrNn7KXjpx1I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Yy+2KOuWxVRD4QHIBxse8wIfJ8U8CADokoHI4aYeABHIN5calvwBo/6vJXmFvGBb+
+         k73alAwKmaioeAy5dMM9QMDl2RLBhQEBWhwYrEWiOJm6R/izz5OKS5CXLNLSHnNNDM
+         esyerAblxjb691MZnHv556+rjKbNcEkDPGZ+bAiA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ricky WU <ricky_wu@realtek.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [PATCH 5.15 880/913] mmc: rtsx: Use pm_runtime_{get,put}() to handle runtime PM
+Date:   Tue,  5 Apr 2022 09:32:22 +0200
+Message-Id: <20220405070406.201272246@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [syzbot] INFO: task can't die in blkdev_common_ioctl
-Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     syzbot <syzbot+4f1a237abaf14719db49@syzkaller.appspotmail.com>,
-        axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Jan Kara <jack@suse.cz>
-References: <0000000000007a4a2d05dba6baa6@google.com>
- <d3213c1a-f82a-02f6-b5b2-0d3242e0242a@I-love.SAKURA.ne.jp>
- <Ykp63pk7aSj/bNRT@infradead.org>
- <67179a84-8be7-4c93-e355-2ca50666f960@I-love.SAKURA.ne.jp>
- <YkvlRnO3Ho/mrk0V@infradead.org>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <YkvlRnO3Ho/mrk0V@infradead.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/04/05 15:44, Christoph Hellwig wrote:
-> On Mon, Apr 04, 2022 at 02:12:14PM +0900, Tetsuo Handa wrote:
->> On 2022/04/04 13:58, Christoph Hellwig wrote:
->> My patch proposes filemap_invalidate_lock_killable() and converts only
->> blkdev_fallocate() case as a starting point. Nothing prevents us from
->> converting e.g. blk_ioctl_zeroout() case as well. The "not come through
->> blkdev_fallocate" is bogus.
-> 
-> Sure, we could try to convert most of the > 50 instances of
-> filemap_invalidate_lock to be killable.  But that:
-> 
->   a) isn't what your patch actuall did
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-We can step by step convert all possible locations.
+commit 7499b529d97f752124fa62fefa1d6d44b371215a upstream.
 
->   b) doesn't solve the underlying issue that is wasn't designed to to be
->      held over very extremely long running operations
+Commit 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM") doesn't
+use pm_runtime_{get,put}() helpers when it should, so the RPM refcount
+keeps at zero, hence its parent driver, rtsx_pci, has to do lots of
+weird tricks to keep it from runtime suspending.
 
-Do you want to introduce state variables like Lo_rundown in order to
-avoid holding this invalidate lock? That will be a lot of complication.
+So use those helpers at right places to properly manage runtime PM.
 
-> 
-> Or to get back to what I said before - I don't think we can just hold
-> the lock over manually zeroing potentially gigabytes of blocks.
-> 
+Fixes: 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM")
+Cc: Ricky WU <ricky_wu@realtek.com>
+Tested-by: Ricky WU <ricky_wu@realtek.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220125055010.1866563-1-kai.heng.feng@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/mmc/host/rtsx_pci_sdmmc.c |   44 ++++++++++++++++++++++++++++----------
+ 1 file changed, 33 insertions(+), 11 deletions(-)
 
-Periodically releasing this invalidate lock may result in inconsistent
-output. One can issue conflicting request (e.g. enlarging a file and
-truncating that file). If truncate happens while partially enlarged (or
-writing non-zero values while partially zeroed), resuming will need to
-undo what was done during this invalidate lock was released. (Or do you
-want to make conflicting requests fail with e.g. -EBUSY, possibly breaking
-userspace programs?)
+--- a/drivers/mmc/host/rtsx_pci_sdmmc.c
++++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
+@@ -806,6 +806,7 @@ static void sd_request(struct work_struc
+ 	struct mmc_request *mrq = host->mrq;
+ 	struct mmc_command *cmd = mrq->cmd;
+ 	struct mmc_data *data = mrq->data;
++	struct device *dev = &host->pdev->dev;
+ 
+ 	unsigned int data_size = 0;
+ 	int err;
+@@ -822,6 +823,7 @@ static void sd_request(struct work_struc
+ 	}
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -858,6 +860,8 @@ static void sd_request(struct work_struc
+ 			data->bytes_xfered = data->blocks * data->blksz;
+ 	}
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ finish:
+@@ -1080,6 +1084,7 @@ static void sdmmc_set_ios(struct mmc_hos
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 
+ 	if (host->eject)
+ 		return;
+@@ -1088,6 +1093,7 @@ static void sdmmc_set_ios(struct mmc_hos
+ 		return;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1121,6 +1127,8 @@ static void sdmmc_set_ios(struct mmc_hos
+ 	rtsx_pci_switch_clock(pcr, ios->clock, host->ssc_depth,
+ 			host->initial_mode, host->double_clk, host->vpclk);
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ }
+ 
+@@ -1128,6 +1136,7 @@ static int sdmmc_get_ro(struct mmc_host
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 	int ro = 0;
+ 	u32 val;
+ 
+@@ -1135,6 +1144,7 @@ static int sdmmc_get_ro(struct mmc_host
+ 		return -ENOMEDIUM;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1144,6 +1154,8 @@ static int sdmmc_get_ro(struct mmc_host
+ 	if (val & SD_WRITE_PROTECT)
+ 		ro = 1;
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return ro;
+@@ -1153,6 +1165,7 @@ static int sdmmc_get_cd(struct mmc_host
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 	int cd = 0;
+ 	u32 val;
+ 
+@@ -1160,6 +1173,7 @@ static int sdmmc_get_cd(struct mmc_host
+ 		return cd;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1169,6 +1183,8 @@ static int sdmmc_get_cd(struct mmc_host
+ 	if (val & SD_EXIST)
+ 		cd = 1;
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return cd;
+@@ -1251,6 +1267,7 @@ static int sdmmc_switch_voltage(struct m
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 	int err = 0;
+ 	u8 voltage;
+ 
+@@ -1265,6 +1282,7 @@ static int sdmmc_switch_voltage(struct m
+ 		return err;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1294,6 +1312,8 @@ out:
+ 	err = rtsx_pci_write_register(pcr, SD_BUS_STAT,
+ 			SD_CLK_TOGGLE_EN | SD_CLK_FORCE_STOP, 0);
+ 
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return err;
+@@ -1303,6 +1323,7 @@ static int sdmmc_execute_tuning(struct m
+ {
+ 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
+ 	struct rtsx_pcr *pcr = host->pcr;
++	struct device *dev = &host->pdev->dev;
+ 	int err = 0;
+ 
+ 	if (host->eject)
+@@ -1313,6 +1334,7 @@ static int sdmmc_execute_tuning(struct m
+ 		return err;
+ 
+ 	mutex_lock(&pcr->pcr_mutex);
++	pm_runtime_get_sync(dev);
+ 
+ 	rtsx_pci_start_run(pcr);
+ 
+@@ -1345,6 +1367,8 @@ static int sdmmc_execute_tuning(struct m
+ 		err = sd_change_phase(host, DDR50_RX_PHASE(pcr), true);
+ 
+ out:
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ 	mutex_unlock(&pcr->pcr_mutex);
+ 
+ 	return err;
+@@ -1495,12 +1519,12 @@ static int rtsx_pci_sdmmc_drv_probe(stru
+ 
+ 	realtek_init_host(host);
+ 
+-	if (pcr->rtd3_en) {
+-		pm_runtime_set_autosuspend_delay(&pdev->dev, 5000);
+-		pm_runtime_use_autosuspend(&pdev->dev);
+-		pm_runtime_enable(&pdev->dev);
+-	}
+-
++	pm_runtime_no_callbacks(&pdev->dev);
++	pm_runtime_set_active(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
++	pm_runtime_set_autosuspend_delay(&pdev->dev, 200);
++	pm_runtime_mark_last_busy(&pdev->dev);
++	pm_runtime_use_autosuspend(&pdev->dev);
+ 
+ 	mmc_add_host(mmc);
+ 
+@@ -1521,11 +1545,6 @@ static int rtsx_pci_sdmmc_drv_remove(str
+ 	pcr->slots[RTSX_SD_CARD].card_event = NULL;
+ 	mmc = host->mmc;
+ 
+-	if (pcr->rtd3_en) {
+-		pm_runtime_dont_use_autosuspend(&pdev->dev);
+-		pm_runtime_disable(&pdev->dev);
+-	}
+-
+ 	cancel_work_sync(&host->work);
+ 
+ 	mutex_lock(&host->host_mutex);
+@@ -1548,6 +1567,9 @@ static int rtsx_pci_sdmmc_drv_remove(str
+ 
+ 	flush_work(&host->work);
+ 
++	pm_runtime_dont_use_autosuspend(&pdev->dev);
++	pm_runtime_disable(&pdev->dev);
++
+ 	mmc_free_host(mmc);
+ 
+ 	dev_dbg(&(pdev->dev),
 
-Serialization via holding throughout this zeroing/fallocate operation
-is needed for returning consistent output.
-
-> In other words:  we'll need to chunk the zeroing up if we want
-> to hold the invalidate lock, I see no ther way to properly fix this.
-
-I don't think that we can chunk the zeroing/fallocate up, for
-I don't think that we can determine appropriate chunk size.
-It might be 4KB, it might be 1MB, it might be 1GB, but who knows which
-size is safe for avoiding hung task warning on this invalidate lock.
-
-The block device might be super slow (e.g. as slow as floppy disk, or
-networking block device over very slow network). Also, hung task watchdog
-timeout and concurrent requests colliding on this invalidate lock are not
-visible to current thread doing actual zeroing/fallocate.
-
-All we could afford will be to make this invalidate lock killable and
-sometimes check fatal_signal_pending() inside zeroing/fallocate loop.
 
