@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F8EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FC2C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382858AbiDENaQ (ORCPT
+        id S1382827AbiDENaI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
+        Tue, 5 Apr 2022 09:30:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345135AbiDEJWS (ORCPT
+        with ESMTP id S1345335AbiDEJW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:18 -0400
+        Tue, 5 Apr 2022 05:22:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBB71EC63;
-        Tue,  5 Apr 2022 02:09:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3AE46167;
+        Tue,  5 Apr 2022 02:10:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48C2A615E5;
-        Tue,  5 Apr 2022 09:09:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B254C385A0;
-        Tue,  5 Apr 2022 09:09:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE29961577;
+        Tue,  5 Apr 2022 09:10:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE0F9C385A2;
+        Tue,  5 Apr 2022 09:10:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149754;
-        bh=QzSIcaDzb8HnSCLtk/JYXGW98gjjpvoITr3c8rYkXFs=;
+        s=korg; t=1649149835;
+        bh=KBBEiaudzNuttpozFnSTnTmfgA9wXGUFOKNx4lDwuv0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iHpjXvvsk7ZDesGDilGlGYgKVrNXbPfl215snxWKR5ZNDVj6GuNNcdXx1UAEVIPxd
-         Yh1o7qRst1eM7UQEV+LXpaXmWXkKGuBtCQfQ+NGeP3DDBzgX1vyXbyLNZoN04EzIgP
-         oiYGAc2AiI2KQsyhQjKudKti+3EM5uaPXlIHdfGM=
+        b=LYPqW2tfsb+qhmgyPqSW7NKz9tHo30OGI1uTfgr/8FMj/Qf3CwMVFnKcJeF4GnuZ9
+         XyDSMwEnev9yK3IJw1eWuXjvRnj+b7YjO1GwRC4d/2t2MwJUr0ypCMPAmeFOuCvyQU
+         fAF7oi2ti6uwwXP1rkbtNdllN0rbebCmBkd7t0Ck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0828/1017] arm64: defconfig: build imx-sdma as a module
-Date:   Tue,  5 Apr 2022 09:29:01 +0200
-Message-Id: <20220405070418.823495051@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 0858/1017] KVM: x86/mmu: Use common TDP MMU zap helper for MMU notifier unmap hook
+Date:   Tue,  5 Apr 2022 09:29:31 +0200
+Message-Id: <20220405070419.703621984@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,39 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit e95622289f263662240544a9f0009b25c19e64d4 ]
+commit 83b83a02073ec8d18c77a9bbe0881d710f7a9d32 upstream.
 
-This avoids firmware load error and sysfs fallback reported as follows:
+Use the common TDP MMU zap helper when handling an MMU notifier unmap
+event, the two flows are semantically identical.  Consolidate the code in
+preparation for a future bug fix, as both kvm_tdp_mmu_unmap_gfn_range()
+and __kvm_tdp_mmu_zap_gfn_range() are guilty of not zapping SPTEs in
+invalid roots.
 
-[    0.199448] imx-sdma 302c0000.dma-controller: Direct firmware load
- for imx/sdma/sdma-imx7d.bin failed with error -2
-[    0.199487] imx-sdma 302c0000.dma-controller: Falling back to sysfs
- fallback for: imx/sdma/sdma-imx7d.bin
+No functional change intended.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20211215011557.399940-2-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/configs/defconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/mmu/tdp_mmu.c |    9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index f2e2b9bdd702..d1fdf68be26e 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -931,7 +931,7 @@ CONFIG_DMADEVICES=y
- CONFIG_DMA_BCM2835=y
- CONFIG_DMA_SUN6I=m
- CONFIG_FSL_EDMA=y
--CONFIG_IMX_SDMA=y
-+CONFIG_IMX_SDMA=m
- CONFIG_K3_DMA=y
- CONFIG_MV_XOR=y
- CONFIG_MV_XOR_V2=y
--- 
-2.34.1
-
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1032,13 +1032,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcp
+ bool kvm_tdp_mmu_unmap_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range,
+ 				 bool flush)
+ {
+-	struct kvm_mmu_page *root;
+-
+-	for_each_tdp_mmu_root_yield_safe(kvm, root, range->slot->as_id, false)
+-		flush = zap_gfn_range(kvm, root, range->start, range->end,
+-				      range->may_block, flush, false);
+-
+-	return flush;
++	return __kvm_tdp_mmu_zap_gfn_range(kvm, range->slot->as_id, range->start,
++					   range->end, range->may_block, flush);
+ }
+ 
+ typedef bool (*tdp_handler_t)(struct kvm *kvm, struct tdp_iter *iter,
 
 
