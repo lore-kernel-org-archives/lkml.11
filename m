@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73AF0C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B523C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578170AbiDEXSo (ORCPT
+        id S1578185AbiDEXSx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
+        Tue, 5 Apr 2022 19:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350159AbiDEKvQ (ORCPT
+        with ESMTP id S1356199AbiDEKXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:51:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECBFA7765;
-        Tue,  5 Apr 2022 03:27:54 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781BFBAB82;
+        Tue,  5 Apr 2022 03:07:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CC1BECE0B18;
-        Tue,  5 Apr 2022 10:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE871C385A0;
-        Tue,  5 Apr 2022 10:27:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 136936172B;
+        Tue,  5 Apr 2022 10:07:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 258E9C385A2;
+        Tue,  5 Apr 2022 10:07:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154471;
-        bh=6wKpk08UUBQ09fdq2h7b6YuZ7LLQ3UhRsOaB5Ym2fp0=;
+        s=korg; t=1649153254;
+        bh=4j2Vmnry4afDwD/BVc1voFBpw36DgCELYEtrkoh8pZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jVWdguYi6AxukZILCOGsewCG3mYKwf4azTbHqA3GYkUkcNgIi8H8c3VSBovjOWs7B
-         FGsiXjziOBb4vHifQ4zT+ZbPHMUbTFjMhuFZF7XEo8hTOcgkJoMn7iI888oBDaUmw+
-         tEcFZ0bAwQTiCaRKVQJyOzjDE4PNXsw1UGjEy/5M=
+        b=jdL8qSUF2WZSx4DjG3opKmagScBbW5sOoSAA3DrQ2RWuGgDFgKbauhqIUmoVWUZbl
+         DvRBsIzvB9zVucBh/KNJ0BmdjriruXTDOtrrn5IJTXL+/aH6xrR5uZGNzjgDd5h5rw
+         HaA+VotkazAky8dQfCgvYnGyvzZU4lG5KOalv4jQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 590/599] docs: sysctl/kernel: add missing bit to panic_print
-Date:   Tue,  5 Apr 2022 09:34:44 +0200
-Message-Id: <20220405070316.397977596@linuxfoundation.org>
+        stable@vger.kernel.org, Suman Anna <s-anna@ti.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Drew Fustini <dfustini@baylibre.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 156/599] clocksource/drivers/timer-ti-dm: Fix regression from errata i940 fix
+Date:   Tue,  5 Apr 2022 09:27:30 +0200
+Message-Id: <20220405070303.484775695@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -56,55 +52,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: Drew Fustini <dfustini@baylibre.com>
 
-commit a1ff1de00db21ecb956213f046b79741b64c6b65 upstream.
+[ Upstream commit bceaae3bac0ce27c549bb050336d8d08abc2ee54 ]
 
-Patch series "Some improvements on panic_print".
+The existing fix for errata i940 causes a conflict for IPU2 which is
+using timer 3 and 4. From arch/arm/boot/dts/dra7-ipu-dsp-common.dtsi:
 
-This is a mix of a documentation fix with some additions to the
-"panic_print" syscall / parameter.  The goal here is being able to collect
-all CPUs backtraces during a panic event and also to enable "panic_print"
-in a kdump event - details of the reasoning and design choices in the
-patches.
+  &ipu2 {
+          mboxes = <&mailbox6 &mbox_ipu2_ipc3x>;
+          ti,timers = <&timer3>;
+          ti,watchdog-timers = <&timer4>, <&timer9>;
+  };
 
-This patch (of 3):
+The conflict was noticed when booting mainline on the BeagleBoard X15
+which has a TI AM5728 SoC:
 
-Commit de6da1e8bcf0 ("panic: add an option to replay all the printk
-message in buffer") added a new bit to the sysctl/kernel parameter
-"panic_print", but the documentation was added only in
-kernel-parameters.txt, not in the sysctl guide.
+  remoteproc remoteproc1: 55020000.ipu is available
+  remoteproc remoteproc1: powering up 55020000.ipu
+  remoteproc remoteproc1: Booting fw image dra7-ipu2-fw.xem4
+  omap-rproc 55020000.ipu: could not get timer platform device
+  omap-rproc 55020000.ipu: omap_rproc_enable_timers failed: -19
+  remoteproc remoteproc1: can't start rproc 55020000.ipu: -19
 
-Fix it here by adding bit 5 to sysctl admin-guide documentation.
+This change modifies the errata fix to instead use timer 15 and 16 which
+resolves the timer conflict.
 
-[rdunlap@infradead.org: fix table format warning]
-  Link: https://lkml.kernel.org/r/20220109055635.6999-1-rdunlap@infradead.org
+It does not appear to introduce any latency regression. Results from
+cyclictest with original errata fix using dmtimer 3 and 4:
 
-Link: https://lkml.kernel.org/r/20211109202848.610874-1-gpiccoli@igalia.com
-Link: https://lkml.kernel.org/r/20211109202848.610874-2-gpiccoli@igalia.com
-Fixes: de6da1e8bcf0 ("panic: add an option to replay all the printk message in buffer")
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Reviewed-by: Feng Tang <feng.tang@intel.com>
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Iurii Zaikin <yzaikin@google.com>
-Cc: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  # cyclictest --mlockall --smp --priority=80 --interval=200 --distance=0
+  policy: fifo: loadavg: 0.02 0.03 0.05
+
+  T: 0 ( 1449) P:80 I:200 C: 800368 Min:   0 Act:   32 Avg:   22 Max:  128
+  T: 1 ( 1450) P:80 I:200 C: 800301 Min:   0 Act:   12 Avg:   23 Max:   70
+
+The results after the change to dmtimer 15 and 16:
+
+  # cyclictest --mlockall --smp --priority=80 --interval=200 --distance=0
+  policy: fifo: loadavg: 0.36 0.19 0.07
+
+  T: 0 ( 1711) P:80 I:200 C: 759599 Min:   0 Act:    6 Avg:   22 Max:  108
+  T: 1 ( 1712) P:80 I:200 C: 759539 Min:   0 Act:   19 Avg:   23 Max:   79
+
+Fixes: 25de4ce5ed02 ("clocksource/drivers/timer-ti-dm: Handle dra7 timer wrap errata i940")
+Link: https://lore.kernel.org/linux-omap/YfWsG0p6to3IJuvE@x1/
+Suggested-by: Suman Anna <s-anna@ti.com>
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Drew Fustini <dfustini@baylibre.com>
+Link: https://lore.kernel.org/r/20220204053503.1409162-1-dfustini@baylibre.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/sysctl/kernel.rst |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/dra7-l4.dtsi             | 5 ++---
+ arch/arm/boot/dts/dra7.dtsi                | 8 ++++----
+ drivers/clocksource/timer-ti-dm-systimer.c | 4 ++--
+ 3 files changed, 8 insertions(+), 9 deletions(-)
 
---- a/Documentation/admin-guide/sysctl/kernel.rst
-+++ b/Documentation/admin-guide/sysctl/kernel.rst
-@@ -787,6 +787,7 @@ bit 1  print system memory info
- bit 2  print timer info
- bit 3  print locks info if ``CONFIG_LOCKDEP`` is on
- bit 4  print ftrace buffer
-+bit 5  print all printk messages in buffer
- =====  ============================================
+diff --git a/arch/arm/boot/dts/dra7-l4.dtsi b/arch/arm/boot/dts/dra7-l4.dtsi
+index 30b72f431850..f8c0eee7a62b 100644
+--- a/arch/arm/boot/dts/dra7-l4.dtsi
++++ b/arch/arm/boot/dts/dra7-l4.dtsi
+@@ -3448,8 +3448,7 @@
+ 				ti,timer-pwm;
+ 			};
+ 		};
+-
+-		target-module@2c000 {			/* 0x4882c000, ap 17 02.0 */
++		timer15_target: target-module@2c000 {	/* 0x4882c000, ap 17 02.0 */
+ 			compatible = "ti,sysc-omap4-timer", "ti,sysc";
+ 			reg = <0x2c000 0x4>,
+ 			      <0x2c010 0x4>;
+@@ -3477,7 +3476,7 @@
+ 			};
+ 		};
  
- So for example to print tasks and memory info on panic, user can::
+-		target-module@2e000 {			/* 0x4882e000, ap 19 14.0 */
++		timer16_target: target-module@2e000 {	/* 0x4882e000, ap 19 14.0 */
+ 			compatible = "ti,sysc-omap4-timer", "ti,sysc";
+ 			reg = <0x2e000 0x4>,
+ 			      <0x2e010 0x4>;
+diff --git a/arch/arm/boot/dts/dra7.dtsi b/arch/arm/boot/dts/dra7.dtsi
+index 7ecf8f86ac74..998932136656 100644
+--- a/arch/arm/boot/dts/dra7.dtsi
++++ b/arch/arm/boot/dts/dra7.dtsi
+@@ -1093,20 +1093,20 @@
+ };
+ 
+ /* Local timers, see ARM architected timer wrap erratum i940 */
+-&timer3_target {
++&timer15_target {
+ 	ti,no-reset-on-init;
+ 	ti,no-idle;
+ 	timer@0 {
+-		assigned-clocks = <&l4per_clkctrl DRA7_L4PER_TIMER3_CLKCTRL 24>;
++		assigned-clocks = <&l4per3_clkctrl DRA7_L4PER3_TIMER15_CLKCTRL 24>;
+ 		assigned-clock-parents = <&timer_sys_clk_div>;
+ 	};
+ };
+ 
+-&timer4_target {
++&timer16_target {
+ 	ti,no-reset-on-init;
+ 	ti,no-idle;
+ 	timer@0 {
+-		assigned-clocks = <&l4per_clkctrl DRA7_L4PER_TIMER4_CLKCTRL 24>;
++		assigned-clocks = <&l4per3_clkctrl DRA7_L4PER3_TIMER16_CLKCTRL 24>;
+ 		assigned-clock-parents = <&timer_sys_clk_div>;
+ 	};
+ };
+diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
+index 1fccb457fcc5..2737407ff069 100644
+--- a/drivers/clocksource/timer-ti-dm-systimer.c
++++ b/drivers/clocksource/timer-ti-dm-systimer.c
+@@ -694,9 +694,9 @@ static int __init dmtimer_percpu_quirk_init(struct device_node *np, u32 pa)
+ 		return 0;
+ 	}
+ 
+-	if (pa == 0x48034000)		/* dra7 dmtimer3 */
++	if (pa == 0x4882c000)           /* dra7 dmtimer15 */
+ 		return dmtimer_percpu_timer_init(np, 0);
+-	else if (pa == 0x48036000)	/* dra7 dmtimer4 */
++	else if (pa == 0x4882e000)      /* dra7 dmtimer16 */
+ 		return dmtimer_percpu_timer_init(np, 1);
+ 
+ 	return 0;
+-- 
+2.34.1
+
 
 
