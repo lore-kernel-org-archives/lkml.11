@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 793FFC4708B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C4FC47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240340AbiDEIqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58310 "EHLO
+        id S240082AbiDEIpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233332AbiDEIGO (ORCPT
+        with ESMTP id S233225AbiDEIFZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:06:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064FD6972C;
-        Tue,  5 Apr 2022 01:01:41 -0700 (PDT)
+        Tue, 5 Apr 2022 04:05:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A017469282;
+        Tue,  5 Apr 2022 01:01:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 560F961806;
-        Tue,  5 Apr 2022 08:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D9D6C385B2;
-        Tue,  5 Apr 2022 08:01:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB5A1617D7;
+        Tue,  5 Apr 2022 08:01:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B849C34112;
+        Tue,  5 Apr 2022 08:01:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145700;
-        bh=xZqW6bhmtjzrBnDxdcWjv2+8BAXwYVWbAoDYitT4kk0=;
+        s=korg; t=1649145686;
+        bh=EPZiKiBy+kuacmEzwYHvQMUapudOZHYHm3CdwShSsZ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vQAKpub3RMBjVgwiiWzqNGRimznDyhUhuT56t6kq/8CrpWIGVbpSDYu1UbK/Qj8U9
-         bYHsGzUHx5SRevlt5/86HSCnapsvnTBUadnioVIxRuWW3ydYCMPDtvOy8AF0tc3ctn
-         fwiU/iHfIQjn4PoqaOMGa8HUjyvqnmnSQnBTUJBg=
+        b=cEEyCCP4Lcz4a87Fy/TW6KfRUjXBDz2vmN4lT5Amb5w6oehsYlC8HrNkFnu68IXuw
+         6sn6aVa3IUnYBRzaj4m2ZMyMeTfZFnbHy3L+erXw0l/0hxQ8RM62ushAx3HQ5JaXwa
+         DP+6NqBDP01Scg3JVSmMHUlfYjs46N7nUuuC1bpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0497/1126] mt76: mt7921: do not always disable fw runtime-pm
-Date:   Tue,  5 Apr 2022 09:20:44 +0200
-Message-Id: <20220405070422.215177427@linuxfoundation.org>
+Subject: [PATCH 5.17 0493/1126] mt76: mt7915: use proper aid value in mt7915_mcu_wtbl_generic_tlv in sta mode
+Date:   Tue,  5 Apr 2022 09:20:40 +0200
+Message-Id: <20220405070422.097937806@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,42 +50,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit b44eeb8cbdf2b88f2844f11e4f263b0abed5b5b0 ]
+[ Upstream commit a56b1b0f145ef2d6bb9312dedf3ab8558ef50a5b ]
 
-After commit 'd430dffbe9dd ("mt76: mt7921: fix a possible race
-enabling/disabling runtime-pm")', runtime-pm is always disabled in the
-fw even if the user requests to enable it toggling debugfs node since
-mt7921_pm_interface_iter routine will use pm->enable to configure the fw.
-Fix the issue moving enable variable configuration before running
-mt7921_pm_interface_iter routine.
+mac80211 provides aid in vif->bss_conf.aid for sta mode and not in
+sta->aid. Fix mt7915_mcu_wtbl_generic_tlv routine using proper value for
+aid in sta mode.
 
-Fixes: d430dffbe9dd ("mt76: mt7921: fix a possible race enabling/disabling runtime-pm")
+Fixes: e57b7901469fc ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-index 86fd7292b229..45a393070e46 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-@@ -291,13 +291,12 @@ mt7921_pm_set(void *data, u64 val)
- 	pm->enable = false;
- 	mt76_connac_pm_wake(&dev->mphy, pm);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 0911b6f973b5..38cc50603d20 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1264,8 +1264,11 @@ mt7915_mcu_wtbl_generic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
+ 	generic = (struct wtbl_generic *)tlv;
  
-+	pm->enable = val;
- 	ieee80211_iterate_active_interfaces(mt76_hw(dev),
- 					    IEEE80211_IFACE_ITER_RESUME_ALL,
- 					    mt7921_pm_interface_iter, dev);
- 
- 	mt76_connac_mcu_set_deep_sleep(&dev->mt76, pm->ds_enable);
--
--	pm->enable = val;
- 	mt76_connac_power_save_sched(&dev->mphy, pm);
- out:
- 	mutex_unlock(&dev->mt76.mutex);
+ 	if (sta) {
++		if (vif->type == NL80211_IFTYPE_STATION)
++			generic->partial_aid = cpu_to_le16(vif->bss_conf.aid);
++		else
++			generic->partial_aid = cpu_to_le16(sta->aid);
+ 		memcpy(generic->peer_addr, sta->addr, ETH_ALEN);
+-		generic->partial_aid = cpu_to_le16(sta->aid);
+ 		generic->muar_idx = mvif->mt76.omac_idx;
+ 		generic->qos = sta->wme;
+ 	} else {
 -- 
 2.34.1
 
