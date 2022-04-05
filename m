@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 644D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88202C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbiDEHlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52118 "EHLO
+        id S231779AbiDEHlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbiDEHlJ (ORCPT
+        with ESMTP id S231836AbiDEHlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:41:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9140D4B436;
-        Tue,  5 Apr 2022 00:39:11 -0700 (PDT)
+        Tue, 5 Apr 2022 03:41:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBA291366;
+        Tue,  5 Apr 2022 00:39:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC46461690;
-        Tue,  5 Apr 2022 07:39:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A6CC340EE;
-        Tue,  5 Apr 2022 07:39:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 51F8FCE1BF0;
+        Tue,  5 Apr 2022 07:39:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431DFC340EE;
+        Tue,  5 Apr 2022 07:39:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144350;
-        bh=up/dd1x1ze4xIvI4L8PDVed9sHZe0DHRytKUsawlFDw=;
+        s=korg; t=1649144358;
+        bh=7uj4GxtLx2Q9hPDEJouo8h2fEFB6TdTXpiQ25YfsT5U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rPqzGh+U9EOLfwfFALNdWNBIiR8L3COGobPcedCLjKvpCnzmLYMQ/RlULUqKFDZJ6
-         wkUEDZBIWx6RnlmENn9aelElUGggwVqh4FlmP7ykRtyfj2Va37lyiUbKkjmnRKngp4
-         TThMWn6REbRr9ne423ft6bas0ooOsz8e/ngRKEhY=
+        b=eAbZfG6BomAJfmiu3laQbxipeKbD9LnSc9DE0XKtx3Xf0ns9ZAk9Q5AKqDR0iieb3
+         N8rI+I1TwK7W0M1DXAzcRZ1PL6Rn5cW/GAguCQlNpewB3sqQQlyMKlNqgzd1A47wpb
+         LcPH4KiKn8vWyImROrSgS3ZLzYhXzxOhtvjkpDXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Maty=C3=A1=C5=A1=20Kroupa?= <kroupa.matyas@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.17 0004/1126] USB: serial: pl2303: fix GS type detection
-Date:   Tue,  5 Apr 2022 09:12:31 +0200
-Message-Id: <20220405070407.656792714@linuxfoundation.org>
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Waiman Long <longman@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
+Subject: [PATCH 5.17 0007/1126] locking/lockdep: Avoid potential access of invalid memory in lock_class
+Date:   Tue,  5 Apr 2022 09:12:34 +0200
+Message-Id: <20220405070407.750985604@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,33 +52,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Waiman Long <longman@redhat.com>
 
-commit 5b6ab28d06780c87320ceade61698bb6719c85db upstream.
+commit 61cc4534b6550997c97a03759ab46b29d44c0017 upstream.
 
-At least some PL2303GS have a bcdDevice of 0x605 instead of 0x100 as the
-datasheet claims. Add it to the list of known release numbers for the
-HXN (G) type.
+It was found that reading /proc/lockdep after a lockdep splat may
+potentially cause an access to freed memory if lockdep_unregister_key()
+is called after the splat but before access to /proc/lockdep [1]. This
+is due to the fact that graph_lock() call in lockdep_unregister_key()
+fails after the clearing of debug_locks by the splat process.
 
-Fixes: 894758d0571d ("USB: serial: pl2303: tighten type HXN (G) detection")
-Reported-by: Matyáš Kroupa <kroupa.matyas@gmail.com>
-Link: https://lore.kernel.org/r/165de6a0-43e9-092c-2916-66b115c7fbf4@gmail.com
-Cc: stable@vger.kernel.org	# 5.13
-Signed-off-by: Johan Hovold <johan@kernel.org>
+After lockdep_unregister_key() is called, the lock_name may be freed
+but the corresponding lock_class structure still have a reference to
+it. That invalid memory pointer will then be accessed when /proc/lockdep
+is read by a user and a use-after-free (UAF) error will be reported if
+KASAN is enabled.
+
+To fix this problem, lockdep_unregister_key() is now modified to always
+search for a matching key irrespective of the debug_locks state and
+zap the corresponding lock class if a matching one is found.
+
+[1] https://lore.kernel.org/lkml/77f05c15-81b6-bddd-9650-80d5f23fe330@i-love.sakura.ne.jp/
+
+Fixes: 8b39adbee805 ("locking/lockdep: Make lockdep_unregister_key() honor 'debug_locks' again")
+Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Signed-off-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Cc: Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
+Link: https://lkml.kernel.org/r/20220103023558.1377055-1-longman@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/pl2303.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/locking/lockdep.c |   24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -436,6 +436,7 @@ static int pl2303_detect_type(struct usb
- 		case 0x105:
- 		case 0x305:
- 		case 0x405:
-+		case 0x605:
- 			/*
- 			 * Assume it's an HXN-type if the device doesn't
- 			 * support the old read request value.
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -6290,7 +6290,13 @@ void lockdep_reset_lock(struct lockdep_m
+ 		lockdep_reset_lock_reg(lock);
+ }
+ 
+-/* Unregister a dynamically allocated key. */
++/*
++ * Unregister a dynamically allocated key.
++ *
++ * Unlike lockdep_register_key(), a search is always done to find a matching
++ * key irrespective of debug_locks to avoid potential invalid access to freed
++ * memory in lock_class entry.
++ */
+ void lockdep_unregister_key(struct lock_class_key *key)
+ {
+ 	struct hlist_head *hash_head = keyhashentry(key);
+@@ -6305,10 +6311,8 @@ void lockdep_unregister_key(struct lock_
+ 		return;
+ 
+ 	raw_local_irq_save(flags);
+-	if (!graph_lock())
+-		goto out_irq;
++	lockdep_lock();
+ 
+-	pf = get_pending_free();
+ 	hlist_for_each_entry_rcu(k, hash_head, hash_entry) {
+ 		if (k == key) {
+ 			hlist_del_rcu(&k->hash_entry);
+@@ -6316,11 +6320,13 @@ void lockdep_unregister_key(struct lock_
+ 			break;
+ 		}
+ 	}
+-	WARN_ON_ONCE(!found);
+-	__lockdep_free_key_range(pf, key, 1);
+-	call_rcu_zapped(pf);
+-	graph_unlock();
+-out_irq:
++	WARN_ON_ONCE(!found && debug_locks);
++	if (found) {
++		pf = get_pending_free();
++		__lockdep_free_key_range(pf, key, 1);
++		call_rcu_zapped(pf);
++	}
++	lockdep_unlock();
+ 	raw_local_irq_restore(flags);
+ 
+ 	/* Wait until is_dynamic_key() has finished accessing k->hash_entry. */
 
 
