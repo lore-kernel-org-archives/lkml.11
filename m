@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B33EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA57C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353188AbiDEMIu (ORCPT
+        id S1354241AbiDEMJC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46800 "EHLO
+        Tue, 5 Apr 2022 08:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244197AbiDEIvt (ORCPT
+        with ESMTP id S244517AbiDEIwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF2ED3AE2;
-        Tue,  5 Apr 2022 01:40:31 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5DFD64EE;
+        Tue,  5 Apr 2022 01:41:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8083861003;
-        Tue,  5 Apr 2022 08:39:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9028CC385A0;
-        Tue,  5 Apr 2022 08:39:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6E21614E4;
+        Tue,  5 Apr 2022 08:41:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BF1C385A1;
+        Tue,  5 Apr 2022 08:41:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147985;
-        bh=Zx4lWtvKcRuOo75kaWAnuXqPkXeLmjn2MI0+fP+jJTQ=;
+        s=korg; t=1649148064;
+        bh=OZyYgrz1VCHrilKgZnyeOPJvQBaO39yx7428M/0XhW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0yJsQWc3PYmxcQs91Vudk9kiKJ8rkSC5xIQ8xLwWSj66RvwydOECdXIPa7xTyrgO3
-         C8bmHCBsbWUaqPaBgKzrlpzXtDZPwNU353YOZHkeqzcnIJPTf7DZLlgCPp7aJpU/8l
-         jmUAfhGEnQZ1LTnPl0Bset8EibSuKbOii9MgE7rw=
+        b=k9BJku+0VsRRw0XTewuR/VPkElWkrkarMsP01dAP7I3k2llrqvesOPzq7UgvMoPek
+         t0ofVMQCKE9uTldi840fw2IP2iQsvAQX6lpX9L6FFks58PTm+20AyXBZBeO+GjZxE7
+         +aV9z67aYT1WmopYGPh7HiiWmDBPmrE1WEYvXkQM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.16 0194/1017] brcmfmac: pcie: Fix crashes due to early IRQs
-Date:   Tue,  5 Apr 2022 09:18:27 +0200
-Message-Id: <20220405070400.003319251@linuxfoundation.org>
+        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 5.16 0188/1017] drm/nouveau/backlight: Just set all backlight types as RAW
+Date:   Tue,  5 Apr 2022 09:18:21 +0200
+Message-Id: <20220405070359.821308434@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,66 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Lyude Paul <lyude@redhat.com>
 
-commit b50255c83b914defd61a57fbc81d452334b63f4c upstream.
+commit b21a142fd2055d8276169efcc95b624ff908a341 upstream.
 
-The driver was enabling IRQs before the message processing was
-initialized. This could cause IRQs to come in too early and crash the
-driver. Instead, move the IRQ enable and hostready to a bus preinit
-function, at which point everything is properly initialized.
+Currently we can get a warning on systems with eDP backlights like so:
 
-Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-7-marcan@marcan.st
+  nv_backlight: invalid backlight type
+  WARNING: CPU: 4 PID: 454 at drivers/video/backlight/backlight.c:420
+    backlight_device_register+0x226/0x250
+
+This happens as a result of us not filling out props.type for the eDP
+backlight, even though we do it for all other backlight types.
+
+Since nothing in our driver uses anything but BACKLIGHT_RAW, let's take the
+props\.type assignments out of the codepaths for individual backlight types
+and just set it unconditionally to prevent this from happening again.
+
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Fixes: 6eca310e8924 ("drm/nouveau/kms/nv50-: Add basic DPCD backlight support for nouveau")
+Cc: <stable@vger.kernel.org> # v5.15+
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220204193319.451119-1-lyude@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/nouveau/nouveau_backlight.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1315,6 +1315,18 @@ static void brcmf_pcie_down(struct devic
- {
- }
+--- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
++++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+@@ -101,7 +101,6 @@ nv40_backlight_init(struct nouveau_encod
+ 	if (!(nvif_rd32(device, NV40_PMC_BACKLIGHT) & NV40_PMC_BACKLIGHT_MASK))
+ 		return -ENODEV;
  
-+static int brcmf_pcie_preinit(struct device *dev)
-+{
-+	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
-+	struct brcmf_pciedev *buspub = bus_if->bus_priv.pcie;
-+
-+	brcmf_dbg(PCIE, "Enter\n");
-+
-+	brcmf_pcie_intr_enable(buspub->devinfo);
-+	brcmf_pcie_hostready(buspub->devinfo);
-+
-+	return 0;
-+}
+-	props->type = BACKLIGHT_RAW;
+ 	props->max_brightness = 31;
+ 	*ops = &nv40_bl_ops;
+ 	return 0;
+@@ -340,7 +339,6 @@ nv50_backlight_init(struct nouveau_backl
+ 	else
+ 		*ops = &nva3_bl_ops;
  
- static int brcmf_pcie_tx(struct device *dev, struct sk_buff *skb)
- {
-@@ -1423,6 +1435,7 @@ static int brcmf_pcie_reset(struct devic
- }
+-	props->type = BACKLIGHT_RAW;
+ 	props->max_brightness = 100;
  
- static const struct brcmf_bus_ops brcmf_pcie_bus_ops = {
-+	.preinit = brcmf_pcie_preinit,
- 	.txdata = brcmf_pcie_tx,
- 	.stop = brcmf_pcie_down,
- 	.txctl = brcmf_pcie_tx_ctlpkt,
-@@ -1795,9 +1808,6 @@ static void brcmf_pcie_setup(struct devi
+ 	return 0;
+@@ -408,6 +406,7 @@ nouveau_backlight_init(struct drm_connec
+ 		goto fail_alloc;
+ 	}
  
- 	init_waitqueue_head(&devinfo->mbdata_resp_wait);
- 
--	brcmf_pcie_intr_enable(devinfo);
--	brcmf_pcie_hostready(devinfo);
--
- 	ret = brcmf_attach(&devinfo->pdev->dev);
- 	if (ret)
- 		goto fail;
++	props.type = BACKLIGHT_RAW;
+ 	bl->dev = backlight_device_register(backlight_name, connector->kdev,
+ 					    nv_encoder, ops, &props);
+ 	if (IS_ERR(bl->dev)) {
 
 
