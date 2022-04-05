@@ -2,94 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C29C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37AB2C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450242AbiDEUKe (ORCPT
+        id S1449563AbiDEUK0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        Tue, 5 Apr 2022 16:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358108AbiDEK17 (ORCPT
+        with ESMTP id S1573173AbiDESHA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5277007C;
-        Tue,  5 Apr 2022 03:15:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C77AB81C8A;
-        Tue,  5 Apr 2022 10:15:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BBD4C385A0;
-        Tue,  5 Apr 2022 10:15:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153739;
-        bh=GRVYjGN0oVU3bLQLZkS30dh2b8ueNqwEcosPDjmYZFA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdMfxVS0mYZ0ne+mJs5kAKZRsVCTt9rmXccX8GdQLbMZhWvzuiMrmdYp9csCbKbWF
-         rqCXZz31ZMu0q6j8PbbZ5b5ZsdibfkdLbmkBT+q1Udns1TFcBP+wIgfIS8rnG6Lw59
-         RNovPksRB3rSJrhQYfWhJl0hn2aAod3I1APNmRZw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 282/599] power: reset: gemini-poweroff: Fix IRQ check in gemini_poweroff_probe
-Date:   Tue,  5 Apr 2022 09:29:36 +0200
-Message-Id: <20220405070307.227685516@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 14:07:00 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA441F623;
+        Tue,  5 Apr 2022 11:05:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=eK1W6c3cykjE0LliXQwdPpUl4xUEcuaJtmGpAa5ka20=; b=DroHWKqca4Vq4W7PTsU+k7+YsQ
+        +ZiV7XCDx/UOgPCSCA/Ay36KKPaIMOYZZ8GAlXpb8MzCWbQJADXlw26mZaUMWjK16b+PGHCu6OaLr
+        eKp+zBAZikv9jQCkqK4pZeHIPZTe+JjQDxH1SlB/Wxy4nBz+4ihiONMQulZmxiP3SyLRj6QbLBBHw
+        AEdn36e/hEY5DtsEzGeDqE4HAvDSxRI648dXsVbOfih/gyQnaesDl4t9ttLkT53HDVWHDAs7yD0Jv
+        Dl9TvfKQRib/BrEqja3eRnL6whXR/NN5sSHrnpXf3++dEWxEJ73jYMypwMazlVSe4lL/zm0rcubkM
+        OJy6QZwQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbnXz-006wEx-Ex; Tue, 05 Apr 2022 18:04:55 +0000
+Message-ID: <ac023638-5ce4-1c0b-29e5-e30fc3038e72@infradead.org>
+Date:   Tue, 5 Apr 2022 11:04:51 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] net: micrel: Fix KS8851 Kconfig
+Content-Language: en-US
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        Divya.Koppera@microchip.com, kernel test robot <lkp@intel.com>
+References: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ba18dad0fb880cd29aa97b6b75560ef14d1061ba ]
 
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
+On 4/4/22 23:59, Horatiu Vultur wrote:
+> KS8851 selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL, so
+> make KS8851 also depend on PTP_1588_CLOCK_OPTIONAL.
+> 
+> Fixes kconfig warning and build errors:
+> 
+> WARNING: unmet direct dependencies detected for MICREL_PHY
+>   Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
+>     Selected by [y]:
+>       - KS8851 [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && SPI [=y]
+> 
+> ld.lld: error: undefined symbol: ptp_clock_register referenced by micrel.c
+> net/phy/micrel.o:(lan8814_probe) in archive drivers/built-in.a
+> ld.lld: error: undefined symbol: ptp_clock_index referenced by micrel.c
+> net/phy/micrel.o:(lan8814_ts_info) in archive drivers/built-in.a
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-Fix the check of return value to catch errors correctly.
+Thanks.
 
-Fixes: f7a388d6cd1c ("power: reset: Add a driver for the Gemini poweroff")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/power/reset/gemini-poweroff.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> ---
+>  drivers/net/ethernet/micrel/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
+> index 1b632cdd7630..830363bafcce 100644
+> --- a/drivers/net/ethernet/micrel/Kconfig
+> +++ b/drivers/net/ethernet/micrel/Kconfig
+> @@ -28,6 +28,7 @@ config KS8842
+>  config KS8851
+>  	tristate "Micrel KS8851 SPI"
+>  	depends on SPI
+> +	depends on PTP_1588_CLOCK_OPTIONAL
+>  	select MII
+>  	select CRC32
+>  	select EEPROM_93CX6
 
-diff --git a/drivers/power/reset/gemini-poweroff.c b/drivers/power/reset/gemini-poweroff.c
-index 90e35c07240a..b7f7a8225f22 100644
---- a/drivers/power/reset/gemini-poweroff.c
-+++ b/drivers/power/reset/gemini-poweroff.c
-@@ -107,8 +107,8 @@ static int gemini_poweroff_probe(struct platform_device *pdev)
- 		return PTR_ERR(gpw->base);
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (!irq)
--		return -EINVAL;
-+	if (irq < 0)
-+		return irq;
- 
- 	gpw->dev = dev;
- 
 -- 
-2.34.1
-
-
-
+~Randy
