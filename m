@@ -2,278 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EC7C41535
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850219AbiDFCsJ (ORCPT
+        id S1850303AbiDFCsm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57730 "EHLO
+        Tue, 5 Apr 2022 22:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1585447AbiDEX74 (ORCPT
+        with ESMTP id S1586405AbiDFAB2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 19:59:56 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4F7FF4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:19:08 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so840247pjk.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 15:19:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Mb3Hz6A+dQKIIp0hbQkZNPT8r/kfRWqo9hHnNe02tSc=;
-        b=DJKVcAlgYQLRGDnF4oZDPo6kaUyeBcvUbtM9DQf4086nr63s8CV9xaA1pFyPyVd6zv
-         KsxOq1fTBSBLVdVE0CbjXdyfvsPtrQSojZ3Ik5EtcFOlwIq5JQgHzxbHR555WL9crepH
-         S72rxBu3yQnfLA+Xf5i9Hnhm5xnrtmZcwryoQPDPjxI+PAJgd+UNYC/EvIZh82CdY+qq
-         8FH2u9NSIAcodKHw8ZNc9P4332gvKphUsRzJgm9IKnYZTyiQl4gK6EDr2RbIq/9XSL0j
-         0zvL2UaSPEYpXMRAltbASNWRMwres9qAkSc5MNKP6PB+1a+E4jJDsFpqG+tuLHf5+s+l
-         L2cQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Mb3Hz6A+dQKIIp0hbQkZNPT8r/kfRWqo9hHnNe02tSc=;
-        b=ECisz1Es3GsCdqXinopLc0fA5sxZfPPvQD6ZpK5w6tkZ2liNQ2OwhVIHRwgyiCDvZ2
-         jc/4hwnLUldCbsSyQ3SxAFTnGJoUswURbK0LtWID92xi/kvUp071caMWe2P/eDKdNJjk
-         RcldkZHZNccxTN2hIFSi7RqZEd+ho6m4wLaxIxqtDb0Ze+eMD776WZxYRsmtO67qJCXK
-         YbruIqpy+KKFgi1aJRmHI90xebAz3AQAFeTH/+dYqGyA/o0WMAaIcBjbcty3IXxyckus
-         iq1JBZIKVJT5sNKW5dKFujypr737z+Jc++bYDiXQcEACrZAvYex9y/CwHUOBovlmfLQP
-         pVgQ==
-X-Gm-Message-State: AOAM5332FIcI6FMDzmnPBAhmmxtngh12B3sKH00FbXa8r57Uh9ovjADs
-        edMuBKTdJKojrbQ3SKrToPIsKw==
-X-Google-Smtp-Source: ABdhPJy+b1vR1UXlC3uR2Ml8TmaQn1bk7ySEIBS8UyT96phSNBkzKhPLn6QizSDq1o7c3oi0zmDf1A==
-X-Received: by 2002:a17:90a:280d:b0:1ca:b14e:35e4 with SMTP id e13-20020a17090a280d00b001cab14e35e4mr6485344pjd.158.1649197147763;
-        Tue, 05 Apr 2022 15:19:07 -0700 (PDT)
-Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
-        by smtp.gmail.com with ESMTPSA id 207-20020a6217d8000000b004fdd5af8885sm16164740pfx.22.2022.04.05.15.19.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 15:19:06 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 22:19:03 +0000
-From:   David Matlack <dmatlack@google.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>
-Subject: Re: [PATCH v3 02/11] KVM: selftests: Dump VM stats in binary stats
- test
-Message-ID: <YkzAV8FPdSjzDOd1@google.com>
-References: <20220330174621.1567317-1-bgardon@google.com>
- <20220330174621.1567317-3-bgardon@google.com>
+        Tue, 5 Apr 2022 20:01:28 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B61AF1CB;
+        Tue,  5 Apr 2022 15:27:46 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KY2Md1gVBz4xXK;
+        Wed,  6 Apr 2022 08:27:41 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649197661;
+        bh=AQcMZSaixpjjDWAOAjd+xNhd+Jit/u2PyC6G40SxWxE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=porv704JoScAOo2hhZU1/44TiX9tKj+ZFzFZ4w1NXw3aSsZ8TuDLDlX94nhjp8aoe
+         whMNCsRM+69TonL7zlvdnq4Qnte7nFwxUjkhai0M/l9hqaqPMrvOmxunKyze5q4GBI
+         MCIuPT9zKuScu7NJv9odJghvOg/XqcnK9TOtGzItlZQ69ZgzVauFWf1BvRMBmiMigd
+         dXZiZZJskp1T06oP1BY6ZK7jMoV15v/6FFyBvClpRFKBSfB1bZOD+PcNI0kqUIhiR+
+         RCmHMOK0iiFn3iqQskFUalI2svfXTWbqWumPeWE71ON+Q0mvVgo1zF9+jHSSI00zyM
+         mFhgyuYoQQV7w==
+Date:   Wed, 6 Apr 2022 08:27:40 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the v4l-dvb-fixes
+ tree
+Message-ID: <20220406082740.13959150@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330174621.1567317-3-bgardon@google.com>
+Content-Type: multipart/signed; boundary="Sig_/godLMf+gOkJV7W.q0IjgIIT";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 10:46:12AM -0700, Ben Gardon wrote:
-> Add kvm_util library functions to read KVM stats through the binary
-> stats interface and then dump them to stdout when running the binary
-> stats test. Subsequent commits will extend the kvm_util code and use it
-> to make assertions in a test for NX hugepages.
-> 
-> CC: Jing Zhang <jingzhangos@google.com>
-> Signed-off-by: Ben Gardon <bgardon@google.com>
-> ---
->  .../selftests/kvm/include/kvm_util_base.h     |   1 +
->  .../selftests/kvm/kvm_binary_stats_test.c     |   3 +
->  tools/testing/selftests/kvm/lib/kvm_util.c    | 143 ++++++++++++++++++
->  3 files changed, 147 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index 976aaaba8769..4783fd1cd4cf 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -401,6 +401,7 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
->  
->  int vm_get_stats_fd(struct kvm_vm *vm);
->  int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
-> +void dump_vm_stats(struct kvm_vm *vm);
->  
->  uint32_t guest_get_vcpuid(void);
->  
-> diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> index 17f65d514915..afc4701ce8dd 100644
-> --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> @@ -174,6 +174,9 @@ static void vm_stats_test(struct kvm_vm *vm)
->  	stats_test(stats_fd);
->  	close(stats_fd);
->  	TEST_ASSERT(fcntl(stats_fd, F_GETFD) == -1, "Stats fd not freed");
-> +
-> +	/* Dump VM stats */
-> +	dump_vm_stats(vm);
->  }
->  
->  static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
-> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> index 11a692cf4570..f87df68b150d 100644
-> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> @@ -2562,3 +2562,146 @@ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid)
->  
->  	return ioctl(vcpu->fd, KVM_GET_STATS_FD, NULL);
->  }
-> +
-> +/* Caller is responsible for freeing the returned kvm_stats_header. */
-> +static struct kvm_stats_header *read_vm_stats_header(int stats_fd)
-> +{
-> +	struct kvm_stats_header *header;
-> +	ssize_t ret;
-> +
-> +	/* Read kvm stats header */
-> +	header = malloc(sizeof(*header));
-> +	TEST_ASSERT(header, "Allocate memory for stats header");
-> +
-> +	ret = read(stats_fd, header, sizeof(*header));
-> +	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
-> +
-> +	return header;
-> +}
+--Sig_/godLMf+gOkJV7W.q0IjgIIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-It seems like this helper could be used in kvm_binary_stats_test.c to
-eliminate duplicate code.
+Hi all,
 
-> +
-> +static void dump_header(int stats_fd, struct kvm_stats_header *header)
-> +{
-> +	ssize_t ret;
-> +	char *id;
-> +
-> +	printf("flags: %u\n", header->flags);
-> +	printf("name size: %u\n", header->name_size);
-> +	printf("num_desc: %u\n", header->num_desc);
-> +	printf("id_offset: %u\n", header->id_offset);
-> +	printf("desc_offset: %u\n", header->desc_offset);
-> +	printf("data_offset: %u\n", header->data_offset);
-> +
-> +	/* Read kvm stats id string */
-> +	id = malloc(header->name_size);
-> +	TEST_ASSERT(id, "Allocate memory for id string");
-> +	ret = pread(stats_fd, id, header->name_size, header->id_offset);
-> +	TEST_ASSERT(ret == header->name_size, "Read id string");
-> +
-> +	printf("id: %s\n", id);
-> +
-> +	free(id);
-> +}
-> +
-> +static ssize_t stats_desc_size(struct kvm_stats_header *header)
-> +{
-> +	return sizeof(struct kvm_stats_desc) + header->name_size;
-> +}
-> +
-> +/* Caller is responsible for freeing the returned kvm_stats_desc. */
-> +static struct kvm_stats_desc *read_vm_stats_desc(int stats_fd,
-> +						 struct kvm_stats_header *header)
-> +{
-> +	struct kvm_stats_desc *stats_desc;
-> +	size_t size_desc;
-> +	ssize_t ret;
-> +
-> +	size_desc = header->num_desc * stats_desc_size(header);
-> +
-> +	/* Allocate memory for stats descriptors */
-> +	stats_desc = malloc(size_desc);
-> +	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
-> +
-> +	/* Read kvm stats descriptors */
-> +	ret = pread(stats_fd, stats_desc, size_desc, header->desc_offset);
-> +	TEST_ASSERT(ret == size_desc, "Read KVM stats descriptors");
-> +
-> +	return stats_desc;
-> +}
+Commit
 
-Same with this helper.
+  397c08e66130 ("media: platform: imx-mipi-csis: Add dependency on VIDEO_DE=
+V")
 
-> +
-> +/* Caller is responsible for freeing the memory *data. */
-> +static int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-> +			  struct kvm_stats_desc *desc, uint64_t **data)
-> +{
-> +	u64 *stats_data;
-> +	ssize_t ret;
-> +
-> +	stats_data = malloc(desc->size * sizeof(*stats_data));
-> +
-> +	ret = pread(stats_fd, stats_data, desc->size * sizeof(*stats_data),
-> +		    header->data_offset + desc->offset);
-> +
-> +	/* ret is in bytes. */
-> +	ret = ret / sizeof(*stats_data);
-> +
-> +	TEST_ASSERT(ret == desc->size,
-> +		    "Read data of KVM stats: %s", desc->name);
-> +
-> +	*data = stats_data;
-> +
-> +	return ret;
-> +}
+is missing a Signed-off-by from its committer.
 
-Same with this helper.
+--=20
+Cheers,
+Stephen Rothwell
 
-> +
-> +static void dump_stat(int stats_fd, struct kvm_stats_header *header,
-> +		      struct kvm_stats_desc *desc)
-> +{
-> +	u64 *stats_data;
-> +	ssize_t ret;
-> +	int i;
-> +
-> +	printf("\tflags: %u\n", desc->flags);
-> +	printf("\texponent: %u\n", desc->exponent);
-> +	printf("\tsize: %u\n", desc->size);
-> +	printf("\toffset: %u\n", desc->offset);
-> +	printf("\tbucket_size: %u\n", desc->bucket_size);
-> +	printf("\tname: %s\n", (char *)&desc->name);
-> +
-> +	ret = read_stat_data(stats_fd, header, desc, &stats_data);
-> +
-> +	printf("\tdata: %lu", *stats_data);
-> +	for (i = 1; i < ret; i++)
-> +		printf(", %lu", *(stats_data + i));
-> +	printf("\n\n");
-> +
-> +	free(stats_data);
-> +}
-> +
-> +void dump_vm_stats(struct kvm_vm *vm)
-> +{
-> +	struct kvm_stats_desc *stats_desc;
-> +	struct kvm_stats_header *header;
-> +	struct kvm_stats_desc *desc;
-> +	size_t size_desc;
-> +	int stats_fd;
-> +	int i;
-> +
-> +	stats_fd = vm_get_stats_fd(vm);
-> +
-> +	header = read_vm_stats_header(stats_fd);
-> +	dump_header(stats_fd, header);
-> +
-> +	stats_desc = read_vm_stats_desc(stats_fd, header);
-> +
-> +	size_desc = stats_desc_size(header);
-> +
-> +	/* Read kvm stats data one by one */
-> +	for (i = 0; i < header->num_desc; ++i) {
-> +		desc = (void *)stats_desc + (i * size_desc);
-> +		dump_stat(stats_fd, header, desc);
-> +	}
-> +
-> +	free(stats_desc);
-> +	free(header);
-> +
-> +	close(stats_fd);
-> +}
-> +
-> -- 
-> 2.35.1.1021.g381101b075-goog
-> 
+--Sig_/godLMf+gOkJV7W.q0IjgIIT
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJMwlwACgkQAVBC80lX
+0GyPMggAhltqNPb5urHdU6NZRzIbuaK9cgfukopB49yELQfSYz0I3WFCjowTgftZ
+QEGdBehqkhYqp+cFUpqdzPudI0uUEO5qC/EddCONalcp9aFK1AFUy2+vkFjObMFl
+0R9j7a1k4TTMu/5DJaWSUOpoVAGSCa5j/EwDp3W7pFcM9BQgSCppuLTFtHn1G2NH
+m2f//PZdj0Ln4PjKkotGi+Or66Y51BFYBVpOnD42sQuNtp7R8Ph7kfAY0vXkJPk+
+Sj4O2WOeDvAO1hiXTrPoslSmiNwAriqxgemPPOw6FZo9rjfMpMSUMdpz6NQKdtVh
+lrAh+yyIlC87tfG3U8CtcdPFlrmz8g==
+=WuYs
+-----END PGP SIGNATURE-----
+
+--Sig_/godLMf+gOkJV7W.q0IjgIIT--
