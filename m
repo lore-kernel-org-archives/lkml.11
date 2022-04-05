@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05733C35273
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FCA4C35276
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837317AbiDFApa (ORCPT
+        id S1837446AbiDFApu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        Tue, 5 Apr 2022 20:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349031AbiDEJs7 (ORCPT
+        with ESMTP id S1356062AbiDEKWu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4295A8EEE;
-        Tue,  5 Apr 2022 02:39:14 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2576AFB26;
+        Tue,  5 Apr 2022 03:05:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BF7361673;
-        Tue,  5 Apr 2022 09:39:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C5C8C385A3;
-        Tue,  5 Apr 2022 09:39:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41437616E7;
+        Tue,  5 Apr 2022 10:05:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C947C385A1;
+        Tue,  5 Apr 2022 10:05:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151553;
-        bh=I3uEnA03OADDN1LfFcs2Xj8Bm+YZGExuC8qCYOwy7vY=;
+        s=korg; t=1649153148;
+        bh=snHYWxAODpPiNnfZch9ZVvvzENGs29YpUjIn62J5ic8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GJIS7LwlnlUouYgmGdmsmg4g/8nlZyZfoMsSZFOuY3aT1bMoQuRQ6ZPymFQ32l0i3
-         xvXk2PB7e0DpGjm8g1IsGgWZdbz+hvGDPsB3XYc1N9YABaCe4Jf5FTaFO18ur1s+b2
-         FO/VWLPAGpkO+cCb/OdIOoo/0oFmk3FHLsEsGOGc=
+        b=AIFfDY/Tr+2fTl9aR9oEv22NYYeidd30mC+Ey7Z/J1/T8mYEOvB+16EIv2OV3VDYc
+         3vBf7n3SSXd0Jp0LiReNaWzLZf4D99sd04LkBeK+Wx1jXFIANxlp9AeR1CQFoWABdb
+         7TPNMZ+7n2JFSDgREhzxbgKjSXkPykr2ZptBEN4g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 419/913] KVM: PPC: Book3S HV: Check return value of kvmppc_radix_init
-Date:   Tue,  5 Apr 2022 09:24:41 +0200
-Message-Id: <20220405070352.406396830@linuxfoundation.org>
+        stable@vger.kernel.org, Lars Ellenberg <lars.ellenberg@linbit.com>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 080/599] drbd: fix potential silent data corruption
+Date:   Tue,  5 Apr 2022 09:26:14 +0200
+Message-Id: <20220405070301.207270711@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,42 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabiano Rosas <farosas@linux.ibm.com>
+From: Lars Ellenberg <lars.ellenberg@linbit.com>
 
-[ Upstream commit 69ab6ac380a00244575de02c406dcb9491bf3368 ]
+commit f4329d1f848ac35757d9cc5487669d19dfc5979c upstream.
 
-The return of the function is being shadowed by the call to
-kvmppc_uvmem_init.
+Scenario:
+---------
 
-Fixes: ca9f4942670c ("KVM: PPC: Book3S HV: Support for running secure guests")
-Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220125155735.1018683-2-farosas@linux.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+bio chain generated by blk_queue_split().
+Some split bio fails and propagates its error status to the "parent" bio.
+But then the (last part of the) parent bio itself completes without error.
+
+We would clobber the already recorded error status with BLK_STS_OK,
+causing silent data corruption.
+
+Reproducer:
+-----------
+
+How to trigger this in the real world within seconds:
+
+DRBD on top of degraded parity raid,
+small stripe_cache_size, large read_ahead setting.
+Drop page cache (sysctl vm.drop_caches=1, fadvise "DONTNEED",
+umount and mount again, "reboot").
+
+Cause significant read ahead.
+
+Large read ahead request is split by blk_queue_split().
+Parts of the read ahead that are already in the stripe cache,
+or find an available stripe cache to use, can be serviced.
+Parts of the read ahead that would need "too much work",
+would need to wait for a "stripe_head" to become available,
+are rejected immediately.
+
+For larger read ahead requests that are split in many pieces, it is very
+likely that some "splits" will be serviced, but then the stripe cache is
+exhausted/busy, and the remaining ones will be rejected.
+
+Signed-off-by: Lars Ellenberg <lars.ellenberg@linbit.com>
+Signed-off-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Cc: <stable@vger.kernel.org> # 4.13.x
+Link: https://lore.kernel.org/r/20220330185551.3553196-1-christoph.boehmwalder@linbit.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kvm/book3s_hv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/block/drbd/drbd_req.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index a2fd1db29f7e..7fa685711669 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -6101,8 +6101,11 @@ static int kvmppc_book3s_init_hv(void)
- 	if (r)
- 		return r;
- 
--	if (kvmppc_radix_possible())
-+	if (kvmppc_radix_possible()) {
- 		r = kvmppc_radix_init();
-+		if (r)
-+			return r;
-+	}
- 
- 	r = kvmppc_uvmem_init();
- 	if (r < 0)
--- 
-2.34.1
-
+--- a/drivers/block/drbd/drbd_req.c
++++ b/drivers/block/drbd/drbd_req.c
+@@ -177,7 +177,8 @@ void start_new_tl_epoch(struct drbd_conn
+ void complete_master_bio(struct drbd_device *device,
+ 		struct bio_and_error *m)
+ {
+-	m->bio->bi_status = errno_to_blk_status(m->error);
++	if (unlikely(m->error))
++		m->bio->bi_status = errno_to_blk_status(m->error);
+ 	bio_endio(m->bio);
+ 	dec_ap_bio(device);
+ }
 
 
