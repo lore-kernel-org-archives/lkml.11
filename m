@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 278B1C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12236C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379351AbiDEMxB (ORCPT
+        id S1379206AbiDEMw5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
+        Tue, 5 Apr 2022 08:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245656AbiDEJMH (ORCPT
+        with ESMTP id S245337AbiDEJLq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:12:07 -0400
+        Tue, 5 Apr 2022 05:11:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F5D2E6AB;
-        Tue,  5 Apr 2022 02:00:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34BD32CCBB;
+        Tue,  5 Apr 2022 02:00:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 343ADB81BAE;
-        Tue,  5 Apr 2022 09:00:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94600C385A1;
-        Tue,  5 Apr 2022 09:00:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92976B81A22;
+        Tue,  5 Apr 2022 09:00:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6623C385A0;
+        Tue,  5 Apr 2022 09:00:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149207;
-        bh=G9wSItxLCZgjfZnR7uj5gjKBWgIkn6R2lQFgCFbyFyg=;
+        s=korg; t=1649149202;
+        bh=X0rTzsBGeb+2G6pQhnVePEmfjAUos6BVgAr1tfd3tDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F5ocbqdgsKbUW85fQcasGombQU/A+ejCKPK7r0XraMWgNC+pU8TST+TO5vDUH7w9f
-         t/aC6JZYmL5o/62MbYI2qpEnzLrpcw1Bn3MaJJdVjs087j29NUwOMbaIISxLZYbuQT
-         vkBd4SwmSdAHxLqydf4o+ctF1OAI6vHKcx+VHxiI=
+        b=oXQbq0ySmEJZYBJIwaGB6+hrILvvZuK1gx8JDZhngM1TrZrmgy6s5OOe6qLn36Ex0
+         Ela42VT3a9TwTHX+uMHHaVRlWsHSjcuEp0Pt2XI281wpRCs7rhUyHCI5YvL87ARJwc
+         iYP7XcjnE5X2O9cD1c4Kj8CSPUgroYhD1ZVG4+Qw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0596/1017] RDMA/irdma: Prevent some integer underflows
-Date:   Tue,  5 Apr 2022 09:25:09 +0200
-Message-Id: <20220405070411.968901304@linuxfoundation.org>
+Subject: [PATCH 5.16 0594/1017] mtd: rawnand: atmel: fix refcount issue in atmel_nand_controller_init
+Date:   Tue,  5 Apr 2022 09:25:07 +0200
+Message-Id: <20220405070411.909567431@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,74 +53,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit 6f6dbb819dfc1a35bcb8b709b5c83a3ea8beff75 ]
+[ Upstream commit fecbd4a317c95d73c849648c406bcf1b6a0ec1cf ]
 
-My static checker complains that:
+The reference counting issue happens in several error handling paths
+on a refcounted object "nc->dmac". In these paths, the function simply
+returns the error code, forgetting to balance the reference count of
+"nc->dmac", increased earlier by dma_request_channel(), which may
+cause refcount leaks.
 
-    drivers/infiniband/hw/irdma/ctrl.c:3605 irdma_sc_ceq_init()
-    warn: can subtract underflow 'info->dev->hmc_fpm_misc.max_ceqs'?
+Fix it by decrementing the refcount of specific object in those error
+paths.
 
-It appears that "info->dev->hmc_fpm_misc.max_ceqs" comes from the firmware
-in irdma_sc_parse_fpm_query_buf() so, yes, there is a chance that it could
-be zero.  Even if we trust the firmware, it's easy enough to change the
-condition just as a hardenning measure.
-
-Fixes: 3f49d6842569 ("RDMA/irdma: Implement HW Admin Queue OPs")
-Link: https://lore.kernel.org/r/20220307125928.GE16710@kili
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
+Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220304085330.3610-1-xiongx18@fudan.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/irdma/ctrl.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/mtd/nand/raw/atmel/nand-controller.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/ctrl.c b/drivers/infiniband/hw/irdma/ctrl.c
-index 7264f8c2f7d5..1d6b578dbd82 100644
---- a/drivers/infiniband/hw/irdma/ctrl.c
-+++ b/drivers/infiniband/hw/irdma/ctrl.c
-@@ -431,7 +431,7 @@ enum irdma_status_code irdma_sc_qp_create(struct irdma_sc_qp *qp, struct irdma_c
+diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c b/drivers/mtd/nand/raw/atmel/nand-controller.c
+index f3276ee9e4fe..ddd93bc38ea6 100644
+--- a/drivers/mtd/nand/raw/atmel/nand-controller.c
++++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
+@@ -2060,13 +2060,15 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
+ 	nc->mck = of_clk_get(dev->parent->of_node, 0);
+ 	if (IS_ERR(nc->mck)) {
+ 		dev_err(dev, "Failed to retrieve MCK clk\n");
+-		return PTR_ERR(nc->mck);
++		ret = PTR_ERR(nc->mck);
++		goto out_release_dma;
+ 	}
  
- 	cqp = qp->dev->cqp;
- 	if (qp->qp_uk.qp_id < cqp->dev->hw_attrs.min_hw_qp_id ||
--	    qp->qp_uk.qp_id > (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_QP].max_cnt - 1))
-+	    qp->qp_uk.qp_id >= (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_QP].max_cnt))
- 		return IRDMA_ERR_INVALID_QP_ID;
+ 	np = of_parse_phandle(dev->parent->of_node, "atmel,smc", 0);
+ 	if (!np) {
+ 		dev_err(dev, "Missing or invalid atmel,smc property\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto out_release_dma;
+ 	}
  
- 	wqe = irdma_sc_cqp_get_next_send_wqe(cqp, scratch);
-@@ -2510,10 +2510,10 @@ static enum irdma_status_code irdma_sc_cq_create(struct irdma_sc_cq *cq,
- 	enum irdma_status_code ret_code = 0;
+ 	nc->smc = syscon_node_to_regmap(np);
+@@ -2074,10 +2076,16 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
+ 	if (IS_ERR(nc->smc)) {
+ 		ret = PTR_ERR(nc->smc);
+ 		dev_err(dev, "Could not get SMC regmap (err = %d)\n", ret);
+-		return ret;
++		goto out_release_dma;
+ 	}
  
- 	cqp = cq->dev->cqp;
--	if (cq->cq_uk.cq_id > (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_CQ].max_cnt - 1))
-+	if (cq->cq_uk.cq_id >= (cqp->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_CQ].max_cnt))
- 		return IRDMA_ERR_INVALID_CQ_ID;
+ 	return 0;
++
++out_release_dma:
++	if (nc->dmac)
++		dma_release_channel(nc->dmac);
++
++	return ret;
+ }
  
--	if (cq->ceq_id > (cq->dev->hmc_fpm_misc.max_ceqs - 1))
-+	if (cq->ceq_id >= (cq->dev->hmc_fpm_misc.max_ceqs))
- 		return IRDMA_ERR_INVALID_CEQ_ID;
- 
- 	ceq = cq->dev->ceq[cq->ceq_id];
-@@ -3615,7 +3615,7 @@ enum irdma_status_code irdma_sc_ceq_init(struct irdma_sc_ceq *ceq,
- 	    info->elem_cnt > info->dev->hw_attrs.max_hw_ceq_size)
- 		return IRDMA_ERR_INVALID_SIZE;
- 
--	if (info->ceq_id > (info->dev->hmc_fpm_misc.max_ceqs - 1))
-+	if (info->ceq_id >= (info->dev->hmc_fpm_misc.max_ceqs))
- 		return IRDMA_ERR_INVALID_CEQ_ID;
- 	pble_obj_cnt = info->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].cnt;
- 
-@@ -4164,7 +4164,7 @@ enum irdma_status_code irdma_sc_ccq_init(struct irdma_sc_cq *cq,
- 	    info->num_elem > info->dev->hw_attrs.uk_attrs.max_hw_cq_size)
- 		return IRDMA_ERR_INVALID_SIZE;
- 
--	if (info->ceq_id > (info->dev->hmc_fpm_misc.max_ceqs - 1))
-+	if (info->ceq_id >= (info->dev->hmc_fpm_misc.max_ceqs ))
- 		return IRDMA_ERR_INVALID_CEQ_ID;
- 
- 	pble_obj_cnt = info->dev->hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].cnt;
+ static int
 -- 
 2.34.1
 
