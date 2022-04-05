@@ -2,111 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2FBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD444C43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390186AbiDEWDX (ORCPT
+        id S1390263AbiDEWDd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:03:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46440 "EHLO
+        Tue, 5 Apr 2022 18:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242776AbiDEKfS (ORCPT
+        with ESMTP id S1444192AbiDEPlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D77FE2;
-        Tue,  5 Apr 2022 03:20:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B14B5CE1C9D;
-        Tue,  5 Apr 2022 10:19:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F3BC385A0;
-        Tue,  5 Apr 2022 10:19:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153997;
-        bh=72/1zqUEYhLiiFXk5O7/0IVjc40AnVuaZl0aTzjZ4qE=;
+        Tue, 5 Apr 2022 11:41:00 -0400
+Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78575FCB;
+        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-09.nifty.com with ESMTP id 235E2k8M021295;
+        Tue, 5 Apr 2022 23:02:49 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8M021295
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649167369;
+        bh=yB8mBxh6zgfFkl1vR4ponG9HVyr7i/FNMeStWHFyu/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QXXX8E8y4GFrf/lvP8K6pW/aGSMqZyYNNoPSveBf6+JYhvZio3kYWXprdAtNowMUK
-         emR+qekOdwgv8+4+6GYMVsHgWFouFu7mFFDR8YG9S7uOv0VeMV+a/03EuB6SEOLyJl
-         z5USPVMj6TitlArUfmrvXRr1MA5FYbbYwRoG8DJs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 421/599] pinctrl: mediatek: paris: Fix pingroup pin config state readback
-Date:   Tue,  5 Apr 2022 09:31:55 +0200
-Message-Id: <20220405070311.361696989@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=l2bI6SwM4DXiakwdb8B0EEcAferf7Hwfqdh2AWV7Vu42eBtMBZsdK07j/XqSwrIbu
+         o/h4U5jifRvz3VrtDTKBHbqXO9asE+l1LlHn5b5vz5B8HeQLaJcRQWUhT0GPjyrwhl
+         qoduk9NgUbcUzRypZzOpcbh0xn4FOo9UdwNj9jCYLAkJhLwOznXdFoxDVxlLKaN5qX
+         NPOgULaYb/Ht3+n9/kfNKVdNTCpl2kpGdc5ENaiXaxi7610PZ0BKg/GRwLppzNv0EA
+         CX6A6RmTkNKvhHVIlecsLuJtXkpsYd4lFrgbS8qW1gTOVyl4yp2o0nZrGgtJTG3aYG
+         1Tn29v3k2xnww==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Michal Marek <michal.lkml@markovi.net>
+Subject: [PATCH v2 04/10] modpost: move export_from_secname() call to more relevant place
+Date:   Tue,  5 Apr 2022 23:02:23 +0900
+Message-Id: <20220405140229.2895394-5-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
+References: <20220405140229.2895394-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+The assigned 'export' is only used when
 
-[ Upstream commit 54fe55fb384ade630ef20b9a8b8f3b2a89ad97f2 ]
+    if (strstarts(symname, "__ksymtab_"))
 
-mtk_pconf_group_get(), used to read back pingroup pin config state,
-simply returns a set of configs saved from a previous invocation of
-mtk_pconf_group_set(). This is an unfiltered, unvalidated set passed
-in from the pinconf core, which does not match the current hardware
-state.
+is met. The else-part of the assignment is the dead code.
 
-Since the driver library is designed to have one pin per group, pass
-through mtk_pconf_group_get() to mtk_pinconf_get(), to read back the
-current pin config state of the only pin in the group.
+Move the export_from_secname() call to where it is used.
 
-Also drop the assignment of pin config state to the group.
-
-Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-5-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
- drivers/pinctrl/mediatek/pinctrl-paris.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
-index 9b268ad4e1b8..2f3c65265e23 100644
---- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-@@ -714,10 +714,10 @@ static int mtk_pconf_group_get(struct pinctrl_dev *pctldev, unsigned group,
- 			       unsigned long *config)
+(no changes since v1)
+
+ scripts/mod/modpost.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index eebb32689816..f9e54247ae1d 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -684,14 +684,8 @@ static void handle_modversion(const struct module *mod,
+ static void handle_symbol(struct module *mod, struct elf_info *info,
+ 			  const Elf_Sym *sym, const char *symname)
  {
- 	struct mtk_pinctrl *hw = pinctrl_dev_get_drvdata(pctldev);
-+	struct mtk_pinctrl_group *grp = &hw->groups[group];
+-	enum export export;
+ 	const char *name;
  
--	*config = hw->groups[group].config;
+-	if (strstarts(symname, "__ksymtab"))
+-		export = export_from_secname(info, get_secindex(info, sym));
+-	else
+-		export = export_unknown;
 -
--	return 0;
-+	 /* One pin per group only */
-+	return mtk_pinconf_get(pctldev, grp->pin, config);
- }
- 
- static int mtk_pconf_group_set(struct pinctrl_dev *pctldev, unsigned group,
-@@ -733,8 +733,6 @@ static int mtk_pconf_group_set(struct pinctrl_dev *pctldev, unsigned group,
- 				      pinconf_to_config_argument(configs[i]));
- 		if (ret < 0)
- 			return ret;
--
--		grp->config = configs[i];
- 	}
- 
- 	return 0;
+ 	switch (sym->st_shndx) {
+ 	case SHN_COMMON:
+ 		if (strstarts(symname, "__gnu_lto_")) {
+@@ -726,7 +720,11 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
+ 	default:
+ 		/* All exported symbols */
+ 		if (strstarts(symname, "__ksymtab_")) {
++			enum export export;
++
+ 			name = symname + strlen("__ksymtab_");
++			export = export_from_secname(info,
++						     get_secindex(info, sym));
+ 			sym_add_exported(name, mod, export);
+ 		}
+ 		if (strcmp(symname, "init_module") == 0)
 -- 
-2.34.1
-
-
+2.32.0
 
