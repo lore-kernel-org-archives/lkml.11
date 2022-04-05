@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC5DC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF87CC38162
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240906AbiDEIci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
+        id S237323AbiDEI3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236113AbiDEIB1 (ORCPT
+        with ESMTP id S234641AbiDEH6n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:01:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44C449FB3;
-        Tue,  5 Apr 2022 00:59:29 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74061A94CE;
+        Tue,  5 Apr 2022 00:53:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61CB0B81B14;
-        Tue,  5 Apr 2022 07:59:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C767DC340EE;
-        Tue,  5 Apr 2022 07:59:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2565D615CD;
+        Tue,  5 Apr 2022 07:53:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35B7CC340EE;
+        Tue,  5 Apr 2022 07:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145567;
-        bh=k/Nu6HhUs1n1eK9fQ7ZoaxUfQreYqehxzCU7JsCIUBU=;
+        s=korg; t=1649145184;
+        bh=7wnlgHT1RIJpVnS9Yrdz9dgDs8GDXeJxl614hLxTywo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vmxYCJbAMT19yLHVlhapoVd59spJo/7ke5E8/L18yryWaq9eynTpJq+cj+/CRoZMI
-         PtRF2g8+25nSCOJN/w1S2H7yfnO55Ax91gjF519sRxk76G0zGnu184FOgKCA8RUXd4
-         sl8dAg8vGvzW/s8LWB4Mp5l5cYxJfec2JZEKJJ5c=
+        b=0IbrtZyCEf/Rl8CClKldWQhb6LiJi58B4H4aCrba3XtkaNuuxOAkk7Cugt+rN1fhL
+         c0xqKWIeDWf6Hmp5lfUZdIYDq3evfhg5wzBZB8amIzKS5mMfHeWrKjYF1UJ1/FH2sk
+         ZA2J+OB2K9lk1H43rzR72UHmdH8nTMJxR7uQnEKQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0450/1126] Bluetooth: btmtksdio: mask out interrupt status
-Date:   Tue,  5 Apr 2022 09:19:57 +0200
-Message-Id: <20220405070420.833130061@linuxfoundation.org>
+Subject: [PATCH 5.17 0316/1126] media: aspeed: Correct value for h-total-pixels
+Date:   Tue,  5 Apr 2022 09:17:43 +0200
+Message-Id: <20220405070416.891900669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,47 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Jammy Huang <jammy_huang@aspeedtech.com>
 
-[ Upstream commit db3f1f9b5d88d8d7f9eaa486f71784dd319285ff ]
+[ Upstream commit 4b732a0016853eaff35944f900b0db66f3914374 ]
 
-Currently, there is a loop in btmtksdio_txrx_work() which iteratively
-executes until the variable int_status is zero.
+Previous reg-field, 0x98[11:0], stands for the period of the detected
+hsync signal.
+Use the correct reg, 0xa0, to get h-total in pixels.
 
-But the variable int_status should be masked out with the actual interrupt
-sources (MTK_REG_CHISR bit 0-15) before we check the loop condition.
-Otherwise, RX_PKT_LEN (MTK_REG_CHISR bit 16-31) which is read-only and
-unclearable would cause the loop to get stuck on some chipsets like
-MT7663s.
-
-Fixes: 26270bc189ea ("Bluetooth: btmtksdio: move interrupt service to work")
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btmtksdio.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/platform/aspeed-video.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index 72e00264d9f1..86a52eb77e01 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -92,6 +92,7 @@ MODULE_DEVICE_TABLE(sdio, btmtksdio_table);
- #define TX_EMPTY		BIT(2)
- #define TX_FIFO_OVERFLOW	BIT(8)
- #define FW_MAILBOX_INT		BIT(15)
-+#define INT_MASK		GENMASK(15, 0)
- #define RX_PKT_LEN		GENMASK(31, 16)
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index 7a24daf7165a..bdeecde0d997 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -153,7 +153,7 @@
+ #define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, VE_SRC_TB_EDGE_DET_BOT_SHF)
  
- #define MTK_REG_CSICR		0xc0
-@@ -565,6 +566,7 @@ static void btmtksdio_txrx_work(struct work_struct *work)
- 		 * FIFO.
- 		 */
- 		sdio_writel(bdev->func, int_status, MTK_REG_CHISR, NULL);
-+		int_status &= INT_MASK;
+ #define VE_MODE_DETECT_STATUS		0x098
+-#define  VE_MODE_DETECT_H_PIXELS	GENMASK(11, 0)
++#define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
+ #define  VE_MODE_DETECT_V_LINES_SHF	16
+ #define  VE_MODE_DETECT_V_LINES		GENMASK(27, VE_MODE_DETECT_V_LINES_SHF)
+ #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
+@@ -164,6 +164,8 @@
+ #define  VE_SYNC_STATUS_VSYNC_SHF	16
+ #define  VE_SYNC_STATUS_VSYNC		GENMASK(27, VE_SYNC_STATUS_VSYNC_SHF)
  
- 		if ((int_status & FW_MAILBOX_INT) &&
- 		    bdev->data->chipid == 0x7921) {
++#define VE_H_TOTAL_PIXELS		0x0A0
++
+ #define VE_INTERRUPT_CTRL		0x304
+ #define VE_INTERRUPT_STATUS		0x308
+ #define  VE_INTERRUPT_MODE_DETECT_WD	BIT(0)
+@@ -802,6 +804,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 	u32 src_lr_edge;
+ 	u32 src_tb_edge;
+ 	u32 sync;
++	u32 htotal;
+ 	struct v4l2_bt_timings *det = &video->detected_timings;
+ 
+ 	det->width = MIN_WIDTH;
+@@ -847,6 +850,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 		src_tb_edge = aspeed_video_read(video, VE_SRC_TB_EDGE_DET);
+ 		mds = aspeed_video_read(video, VE_MODE_DETECT_STATUS);
+ 		sync = aspeed_video_read(video, VE_SYNC_STATUS);
++		htotal = aspeed_video_read(video, VE_H_TOTAL_PIXELS);
+ 
+ 		video->frame_bottom = (src_tb_edge & VE_SRC_TB_EDGE_DET_BOT) >>
+ 			VE_SRC_TB_EDGE_DET_BOT_SHF;
+@@ -863,8 +867,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 			VE_SRC_LR_EDGE_DET_RT_SHF;
+ 		video->frame_left = src_lr_edge & VE_SRC_LR_EDGE_DET_LEFT;
+ 		det->hfrontporch = video->frame_left;
+-		det->hbackporch = (mds & VE_MODE_DETECT_H_PIXELS) -
+-			video->frame_right;
++		det->hbackporch = htotal - video->frame_right;
+ 		det->hsync = sync & VE_SYNC_STATUS_HSYNC;
+ 		if (video->frame_left > video->frame_right)
+ 			continue;
 -- 
 2.34.1
 
