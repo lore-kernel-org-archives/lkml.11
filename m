@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95331C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C803C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237630AbiDEISJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
+        id S235598AbiDEIVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235624AbiDEH7x (ORCPT
+        with ESMTP id S235556AbiDEH7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62BA642C;
-        Tue,  5 Apr 2022 00:56:23 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38C94092D;
+        Tue,  5 Apr 2022 00:55:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 515736179A;
-        Tue,  5 Apr 2022 07:56:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FBBDC340EE;
-        Tue,  5 Apr 2022 07:56:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E8C36167D;
+        Tue,  5 Apr 2022 07:55:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B008C340EE;
+        Tue,  5 Apr 2022 07:55:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145382;
-        bh=TUKxNNvhBlzZY1A9EPC3C6qsVhspfXYFcLCwTCMQ0j0=;
+        s=korg; t=1649145331;
+        bh=VQHR5ZlF7JanqFu+p1ZNTUk2Qwci10zOfKht+9wZfoc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mlRIDIEhW/iAtpHkToEC/rVEpVqon2PhrsT2hJLpcDf69+CwvrsvIa2dt1WcQVo7r
-         +iYKPrinL07Zvc/SA+rbHHtqj7X6I+qf2HH+g3pFt/WOqi07VfMJVBKedvd7YabiBc
-         QggismvZYRFMa2vfE8bsZfhfqfplfHxHyUdOkDe4=
+        b=uaTymCO0phczVcLa1S1cvjoDa77v61+nfWCFgHFJD+8cyvtp7aNGtjDYWhtPNFlX7
+         dkSU7xJzLbcFOwadrHhcWH80AMW7PM/QALoQyaMD+jvW7nFtsDy8mAU5urCmGu6Sew
+         ktfsqrka287YbjxX/BI17etUUUpHehksydEfvMYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0347/1126] ARM: dts: qcom: sdx55: Fix the address used for PCIe EP local addr space
-Date:   Tue,  5 Apr 2022 09:18:14 +0200
-Message-Id: <20220405070417.814547657@linuxfoundation.org>
+Subject: [PATCH 5.17 0366/1126] media: hantro: sunxi: Fix VP9 steps
+Date:   Tue,  5 Apr 2022 09:18:33 +0200
+Message-Id: <20220405070418.370365366@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,34 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit c8a8f755170719dde7964d5172a145dd27e107ec ]
+[ Upstream commit 17e83a0a1e134401616120b6976f65234e7ccc45 ]
 
-Fix the address range used for mapping the PCIe host memory in the DDR.
+It turns out that postproc on Allwinner H6 needs width and height to be
+multiple of 32.
 
-Fixes: e6b69813283f ("ARM: dts: qcom: sdx55: Add support for PCIe EP")
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220208175222.415762-1-manivannan.sadhasivam@linaro.org
+Fixes: 86790a4fdf4b ("media: hantro: Add support for Allwinner H6")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-sdx55.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/media/hantro/sunxi_vpu_hw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
-index 8ac0492c7659..40f11159f061 100644
---- a/arch/arm/boot/dts/qcom-sdx55.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
-@@ -413,7 +413,7 @@
- 			      <0x40000000 0xf1d>,
- 			      <0x40000f20 0xc8>,
- 			      <0x40001000 0x1000>,
--			      <0x40002000 0x10000>,
-+			      <0x40200000 0x100000>,
- 			      <0x01c03000 0x3000>;
- 			reg-names = "parf", "dbi", "elbi", "atu", "addr_space",
- 				    "mmio";
+diff --git a/drivers/staging/media/hantro/sunxi_vpu_hw.c b/drivers/staging/media/hantro/sunxi_vpu_hw.c
+index 90633406c4eb..c0edd5856a0c 100644
+--- a/drivers/staging/media/hantro/sunxi_vpu_hw.c
++++ b/drivers/staging/media/hantro/sunxi_vpu_hw.c
+@@ -29,10 +29,10 @@ static const struct hantro_fmt sunxi_vpu_dec_fmts[] = {
+ 		.frmsize = {
+ 			.min_width = 48,
+ 			.max_width = 3840,
+-			.step_width = MB_DIM,
++			.step_width = 32,
+ 			.min_height = 48,
+ 			.max_height = 2160,
+-			.step_height = MB_DIM,
++			.step_height = 32,
+ 		},
+ 	},
+ };
 -- 
 2.34.1
 
