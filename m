@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A60C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349646AbiDEOOT (ORCPT
+        id S1355758AbiDEOPI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
+        Tue, 5 Apr 2022 10:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237140AbiDEJbc (ORCPT
+        with ESMTP id S238618AbiDEJci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:31:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B98C5C;
-        Tue,  5 Apr 2022 02:19:11 -0700 (PDT)
+        Tue, 5 Apr 2022 05:32:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36CCE00;
+        Tue,  5 Apr 2022 02:19:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C840BCE1C38;
-        Tue,  5 Apr 2022 09:19:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1F5C385A3;
-        Tue,  5 Apr 2022 09:19:07 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 44ABFCE1B55;
+        Tue,  5 Apr 2022 09:19:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5918BC385A4;
+        Tue,  5 Apr 2022 09:19:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150348;
-        bh=cLqyc66Mk2i4inv+xvYGwpFjPWfn6/CwT6XBYn9XyHI=;
+        s=korg; t=1649150373;
+        bh=8mb2t1vcLixCqqs5leqyvJaYwmzvz3X3Dz9GErrHCoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cx/lTOgbTrCPbq0AXtpKPZ4Z5dlJbSSlRDPgkkTdgIVcLVoRi5H3WICeo/ouq4gR6
-         jVyxFBp6iAon7x23klF97iPcVjWBxQ+942vNDlbaRmS6y+n1PYO6XFLXkJ0LIxkzYK
-         AoEquBiKxuSYW4McRtIyE9kqW6AQKSjkeSuIO7Vs=
+        b=od7Ck3llL80cSNN5YU24kVhmZ4UeiO1AuYbbEe4ce16Yw6fg9mayMHaP0h6S0afSr
+         vhWgZVUpaz8gcCAZABgmwkwx1wFjFhsIekzg5F/5FXidfj4p3kFYoqALvNI3vWsjjD
+         +TGt7xHql5nzT+Hn4GxOYf9b5NS0ibPMcwc2k77s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Waiman Long <longman@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
-Subject: [PATCH 5.15 025/913] locking/lockdep: Avoid potential access of invalid memory in lock_class
-Date:   Tue,  5 Apr 2022 09:18:07 +0200
-Message-Id: <20220405070340.569402855@linuxfoundation.org>
+        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.15 033/913] xhci: fix garbage USBSTS being logged in some cases
+Date:   Tue,  5 Apr 2022 09:18:15 +0200
+Message-Id: <20220405070340.809378946@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,87 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Anssi Hannula <anssi.hannula@bitwise.fi>
 
-commit 61cc4534b6550997c97a03759ab46b29d44c0017 upstream.
+commit 3105bc977d7cbf2edc35e24cc7e009686f6e4a56 upstream.
 
-It was found that reading /proc/lockdep after a lockdep splat may
-potentially cause an access to freed memory if lockdep_unregister_key()
-is called after the splat but before access to /proc/lockdep [1]. This
-is due to the fact that graph_lock() call in lockdep_unregister_key()
-fails after the clearing of debug_locks by the splat process.
+xhci_decode_usbsts() is expected to return a zero-terminated string by
+its only caller, xhci_stop_endpoint_command_watchdog(), which directly
+logs the return value:
 
-After lockdep_unregister_key() is called, the lock_name may be freed
-but the corresponding lock_class structure still have a reference to
-it. That invalid memory pointer will then be accessed when /proc/lockdep
-is read by a user and a use-after-free (UAF) error will be reported if
-KASAN is enabled.
+  xhci_warn(xhci, "USBSTS:%s\n", xhci_decode_usbsts(str, usbsts));
 
-To fix this problem, lockdep_unregister_key() is now modified to always
-search for a matching key irrespective of the debug_locks state and
-zap the corresponding lock class if a matching one is found.
+However, if no recognized bits are set in usbsts, the function will
+return without having called any sprintf() and therefore return an
+untouched non-zero-terminated caller-provided buffer, causing garbage
+to be output to log.
 
-[1] https://lore.kernel.org/lkml/77f05c15-81b6-bddd-9650-80d5f23fe330@i-love.sakura.ne.jp/
+Fix that by always including the raw value in the output.
 
-Fixes: 8b39adbee805 ("locking/lockdep: Make lockdep_unregister_key() honor 'debug_locks' again")
-Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Signed-off-by: Waiman Long <longman@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Cc: Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
-Link: https://lkml.kernel.org/r/20220103023558.1377055-1-longman@redhat.com
+Note that before commit 4843b4b5ec64 ("xhci: fix even more unsafe memory
+usage in xhci tracing") the result effect in the failure case was different
+as a static buffer was used here, but the code still worked incorrectly.
+
+Fixes: 9c1aa36efdae ("xhci: Show host status when watchdog triggers and host is assumed dead.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220303110903.1662404-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/locking/lockdep.c |   24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ drivers/usb/host/xhci.h |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -6276,7 +6276,13 @@ void lockdep_reset_lock(struct lockdep_m
- 		lockdep_reset_lock_reg(lock);
- }
- 
--/* Unregister a dynamically allocated key. */
-+/*
-+ * Unregister a dynamically allocated key.
-+ *
-+ * Unlike lockdep_register_key(), a search is always done to find a matching
-+ * key irrespective of debug_locks to avoid potential invalid access to freed
-+ * memory in lock_class entry.
-+ */
- void lockdep_unregister_key(struct lock_class_key *key)
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -2624,8 +2624,11 @@ static inline const char *xhci_decode_us
  {
- 	struct hlist_head *hash_head = keyhashentry(key);
-@@ -6291,10 +6297,8 @@ void lockdep_unregister_key(struct lock_
- 		return;
+ 	int ret = 0;
  
- 	raw_local_irq_save(flags);
--	if (!graph_lock())
--		goto out_irq;
-+	lockdep_lock();
- 
--	pf = get_pending_free();
- 	hlist_for_each_entry_rcu(k, hash_head, hash_entry) {
- 		if (k == key) {
- 			hlist_del_rcu(&k->hash_entry);
-@@ -6302,11 +6306,13 @@ void lockdep_unregister_key(struct lock_
- 			break;
- 		}
- 	}
--	WARN_ON_ONCE(!found);
--	__lockdep_free_key_range(pf, key, 1);
--	call_rcu_zapped(pf);
--	graph_unlock();
--out_irq:
-+	WARN_ON_ONCE(!found && debug_locks);
-+	if (found) {
-+		pf = get_pending_free();
-+		__lockdep_free_key_range(pf, key, 1);
-+		call_rcu_zapped(pf);
-+	}
-+	lockdep_unlock();
- 	raw_local_irq_restore(flags);
- 
- 	/* Wait until is_dynamic_key() has finished accessing k->hash_entry. */
++	ret = sprintf(str, " 0x%08x", usbsts);
++
+ 	if (usbsts == ~(u32)0)
+-		return " 0xffffffff";
++		return str;
++
+ 	if (usbsts & STS_HALT)
+ 		ret += sprintf(str + ret, " HCHalted");
+ 	if (usbsts & STS_FATAL)
 
 
