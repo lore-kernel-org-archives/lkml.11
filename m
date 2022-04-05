@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B40C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE5EC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389083AbiDENdV (ORCPT
+        id S1389471AbiDENdy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        Tue, 5 Apr 2022 09:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346242AbiDEJXk (ORCPT
+        with ESMTP id S1345656AbiDEJWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3F8CA0C9;
-        Tue,  5 Apr 2022 02:13:12 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC3750449;
+        Tue,  5 Apr 2022 02:11:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14EFBB818F3;
-        Tue,  5 Apr 2022 09:13:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78807C385A0;
-        Tue,  5 Apr 2022 09:13:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 357F261577;
+        Tue,  5 Apr 2022 09:11:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45281C385A2;
+        Tue,  5 Apr 2022 09:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149989;
-        bh=dXFWPeFlgT6CyzZ310/ga2U0bPPCNAqe3eAdLbGPkzc=;
+        s=korg; t=1649149890;
+        bh=8ZFmnqlSEMxKjuWziuwkhdq48STdoQ3qVnRC30Htjlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SiSLLWRAHs2Hhp+R0vaIhQbBQgLKKJq4ICEVTF3Tno8bl7/xdkLQtyS2q64rFtQ0d
-         wRQ8uFpAFSxWoT506/S06QvM+nBtTwgg3fGOLXnkIMIG/tKIORBOoKzNk2Cr0SDjRb
-         lO9J/WlORmvl9jAa39LXdpoFi22XyZ9afio/w2iw=
+        b=lKYGSBJA7Em5PB4pcwWds/pspHL2oe+IC3fquupXZRLL8H2msVm1p0qnujG47md29
+         2PMGqpbwmYKLSqveT+y3lWHcw/fM0J/nHSSyk2WNU70ezWoWYaY31Kfvs3Vwz5kgyn
+         vv/clxqrXpJmOoPqDaHpPqu6b+F8UBwTX0tvlmxQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.16 0913/1017] ubifs: setflags: Make dirtied_ino_d 8 bytes aligned
-Date:   Tue,  5 Apr 2022 09:30:26 +0200
-Message-Id: <20220405070421.322870162@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Richard Leitner <richard.leitner@skidata.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0840/1017] ARM: tegra: tamonten: Fix I2C3 pad setting
+Date:   Tue,  5 Apr 2022 09:29:13 +0200
+Message-Id: <20220405070419.175218961@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,38 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Richard Leitner <richard.leitner@skidata.com>
 
-commit 1b83ec057db16b4d0697dc21ef7a9743b6041f72 upstream.
+[ Upstream commit 0092c25b541a5422d7e71892a13c55ee91abc34b ]
 
-Make 'ui->data_len' aligned with 8 bytes before it is assigned to
-dirtied_ino_d. Since 8871d84c8f8b0c6b("ubifs: convert to fileattr")
-applied, 'setflags()' only affects regular files and directories, only
-xattr inode, symlink inode and special inode(pipe/char_dev/block_dev)
-have none- zero 'ui->data_len' field, so assertion
-'!(req->dirtied_ino_d & 7)' cannot fail in ubifs_budget_space().
-To avoid assertion fails in future evolution(eg. setflags can operate
-special inodes), it's better to make dirtied_ino_d 8 bytes aligned,
-after all aligned size is still zero for regular files.
+This patch fixes the tristate configuration for i2c3 function assigned
+to the dtf pins on the Tamonten Tegra20 SoM.
 
-Fixes: 1e51764a3c2ac05a ("UBIFS: add new flash file system")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ubifs/ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/ubifs/ioctl.c
-+++ b/fs/ubifs/ioctl.c
-@@ -108,7 +108,7 @@ static int setflags(struct inode *inode,
- 	struct ubifs_inode *ui = ubifs_inode(inode);
- 	struct ubifs_info *c = inode->i_sb->s_fs_info;
- 	struct ubifs_budget_req req = { .dirtied_ino = 1,
--					.dirtied_ino_d = ui->data_len };
-+			.dirtied_ino_d = ALIGN(ui->data_len, 8) };
- 
- 	err = ubifs_budget_space(c, &req);
- 	if (err)
+diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+index dd4d506683de..7f14f0d005c3 100644
+--- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
++++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+@@ -183,8 +183,8 @@
+ 			};
+ 			conf_ata {
+ 				nvidia,pins = "ata", "atb", "atc", "atd", "ate",
+-					"cdev1", "cdev2", "dap1", "dtb", "gma",
+-					"gmb", "gmc", "gmd", "gme", "gpu7",
++					"cdev1", "cdev2", "dap1", "dtb", "dtf",
++					"gma", "gmb", "gmc", "gmd", "gme", "gpu7",
+ 					"gpv", "i2cp", "irrx", "irtx", "pta",
+ 					"rm", "slxa", "slxk", "spia", "spib",
+ 					"uac";
+@@ -203,7 +203,7 @@
+ 			};
+ 			conf_crtp {
+ 				nvidia,pins = "crtp", "dap2", "dap3", "dap4",
+-					"dtc", "dte", "dtf", "gpu", "sdio1",
++					"dtc", "dte", "gpu", "sdio1",
+ 					"slxc", "slxd", "spdi", "spdo", "spig",
+ 					"uda";
+ 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+-- 
+2.34.1
+
 
 
