@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5539C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01389C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233169AbiDEIFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54548 "EHLO
+        id S233260AbiDEIFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231984AbiDEHxV (ORCPT
+        with ESMTP id S232238AbiDEHxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:53:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF021D0FB;
-        Tue,  5 Apr 2022 00:49:04 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3558F17E07;
+        Tue,  5 Apr 2022 00:48:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E2E9616DE;
-        Tue,  5 Apr 2022 07:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96078C34111;
-        Tue,  5 Apr 2022 07:49:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA14AB81B9C;
+        Tue,  5 Apr 2022 07:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B570C3410F;
+        Tue,  5 Apr 2022 07:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144943;
-        bh=cHlysSGxH3/ZHuRkBmnRpvSMKRf5BTYimY2JJA1trDs=;
+        s=korg; t=1649144929;
+        bh=G/l9aUJULJwmI7YT0KaZ81Zov+Y/RRth+XG3A6aSc6U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u8JMfY3U/7rNHnDJ1PyQFdLP2AVwyf7sb21QlOXopsxG+bjAnOZp8msdzhk7HNQ8B
-         grvSpw3p+NKFC1DYo3C3J83AdXnTGAiGkqapLTfczmm2foMJkpIDwTe9r5fpomf3Q4
-         neSurkqKeQYlV+sSvrnieMtIsb8xeGJ5gVY7dfL4=
+        b=uoUrM8No3cBZ62fFt2zZptQwP3H00hEZ+tlMEeYrbnPC4rlPsj5AT6RL9UlREtg9k
+         sl67GEOST3mSoABRnoakc8cJhENNoe/FZfcre9hUyuYZG9q9bXzGAZUg81++B8t5aO
+         9jPK+1X2rpYEgf3JFd/X3NnfiEWUav+P5zuXnJYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0228/1126] audit: log AUDIT_TIME_* records only from rules
-Date:   Tue,  5 Apr 2022 09:16:15 +0200
-Message-Id: <20220405070414.301196183@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christoph Anton Mitterer <calestyo@scientia.org>,
+        David Sterba <dsterba@suse.com>, ree.com@vger.kernel.org
+Subject: [PATCH 5.17 0178/1126] btrfs: verify the tranisd of the to-be-written dirty extent buffer
+Date:   Tue,  5 Apr 2022 09:15:25 +0200
+Message-Id: <20220405070412.828601574@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,167 +49,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Guy Briggs <rgb@redhat.com>
+From: Qu Wenruo <wqu@suse.com>
 
-[ Upstream commit 272ceeaea355214b301530e262a0df8600bfca95 ]
+commit 3777369ff1518b579560611a0d0c33f930154f64 upstream.
 
-AUDIT_TIME_* events are generated when there are syscall rules present
-that are not related to time keeping.  This will produce noisy log
-entries that could flood the logs and hide events we really care about.
+[BUG]
+There is a bug report that a bitflip in the transid part of an extent
+buffer makes btrfs to reject certain tree blocks:
 
-Rather than immediately produce the AUDIT_TIME_* records, store the data
-in the context and log it at syscall exit time respecting the filter
-rules.
+  BTRFS error (device dm-0): parent transid verify failed on 1382301696 wanted 262166 found 22
 
-Note: This eats the audit_buffer, unlike any others in show_special().
+[CAUSE]
+Note the failed transid check, hex(262166) = 0x40016, while
+hex(22) = 0x16.
 
-Please see https://bugzilla.redhat.com/show_bug.cgi?id=1991919
+It's an obvious bitflip.
 
-Fixes: 7e8eda734d30 ("ntp: Audit NTP parameters adjustment")
-Fixes: 2d87a0674bd6 ("timekeeping: Audit clock adjustments")
-Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-[PM: fixed style/whitespace issues]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Furthermore, the reporter also confirmed the bitflip is from the
+hardware, so it's a real hardware caused bitflip, and such problem can
+not be detected by the existing tree-checker framework.
+
+As tree-checker can only verify the content inside one tree block, while
+generation of a tree block can only be verified against its parent.
+
+So such problem remain undetected.
+
+[FIX]
+Although tree-checker can not verify it at write-time, we still have a
+quick (but not the most accurate) way to catch such obvious corruption.
+
+Function csum_one_extent_buffer() is called before we submit metadata
+write.
+
+Thus it means, all the extent buffer passed in should be dirty tree
+blocks, and should be newer than last committed transaction.
+
+Using that we can catch the above bitflip.
+
+Although it's not a perfect solution, as if the corrupted generation is
+higher than the correct value, we have no way to catch it at all.
+
+Reported-by: Christoph Anton Mitterer <calestyo@scientia.org>
+Link: https://lore.kernel.org/linux-btrfs/2dfcbc130c55cc6fd067b93752e90bd2b079baca.camel@scientia.org/
+CC: stable@vger.kernel.org # 5.15+
+Signed-off-by: Qu Wenruo <wqu@sus,ree.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/audit.h   |  4 +++
- kernel/auditsc.c | 87 +++++++++++++++++++++++++++++++++++++-----------
- 2 files changed, 71 insertions(+), 20 deletions(-)
+ fs/btrfs/disk-io.c |   26 ++++++++++++++++++++------
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/audit.h b/kernel/audit.h
-index c4498090a5bd..58b66543b4d5 100644
---- a/kernel/audit.h
-+++ b/kernel/audit.h
-@@ -201,6 +201,10 @@ struct audit_context {
- 		struct {
- 			char			*name;
- 		} module;
-+		struct {
-+			struct audit_ntp_data	ntp_data;
-+			struct timespec64	tk_injoffset;
-+		} time;
- 	};
- 	int fds[2];
- 	struct audit_proctitle proctitle;
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index a83928cbdcb7..ea2ee1181921 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -1340,6 +1340,53 @@ static void audit_log_fcaps(struct audit_buffer *ab, struct audit_names *name)
- 			 from_kuid(&init_user_ns, name->fcap.rootid));
- }
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -441,17 +441,31 @@ static int csum_one_extent_buffer(struct
+ 	else
+ 		ret = btrfs_check_leaf_full(eb);
  
-+static void audit_log_time(struct audit_context *context, struct audit_buffer **ab)
-+{
-+	const struct audit_ntp_data *ntp = &context->time.ntp_data;
-+	const struct timespec64 *tk = &context->time.tk_injoffset;
-+	static const char * const ntp_name[] = {
-+		"offset",
-+		"freq",
-+		"status",
-+		"tai",
-+		"tick",
-+		"adjust",
-+	};
-+	int type;
+-	if (ret < 0) {
+-		btrfs_print_tree(eb, 0);
++	if (ret < 0)
++		goto error;
 +
-+	if (context->type == AUDIT_TIME_ADJNTPVAL) {
-+		for (type = 0; type < AUDIT_NTP_NVALS; type++) {
-+			if (ntp->vals[type].newval != ntp->vals[type].oldval) {
-+				if (!*ab) {
-+					*ab = audit_log_start(context,
-+							GFP_KERNEL,
-+							AUDIT_TIME_ADJNTPVAL);
-+					if (!*ab)
-+						return;
-+				}
-+				audit_log_format(*ab, "op=%s old=%lli new=%lli",
-+						 ntp_name[type],
-+						 ntp->vals[type].oldval,
-+						 ntp->vals[type].newval);
-+				audit_log_end(*ab);
-+				*ab = NULL;
-+			}
-+		}
-+	}
-+	if (tk->tv_sec != 0 || tk->tv_nsec != 0) {
-+		if (!*ab) {
-+			*ab = audit_log_start(context, GFP_KERNEL,
-+					      AUDIT_TIME_INJOFFSET);
-+			if (!*ab)
-+				return;
-+		}
-+		audit_log_format(*ab, "sec=%lli nsec=%li",
-+				 (long long)tk->tv_sec, tk->tv_nsec);
-+		audit_log_end(*ab);
-+		*ab = NULL;
-+	}
-+}
-+
- static void show_special(struct audit_context *context, int *call_panic)
- {
- 	struct audit_buffer *ab;
-@@ -1454,6 +1501,11 @@ static void show_special(struct audit_context *context, int *call_panic)
- 			audit_log_format(ab, "(null)");
- 
- 		break;
-+	case AUDIT_TIME_ADJNTPVAL:
-+	case AUDIT_TIME_INJOFFSET:
-+		/* this call deviates from the rest, eating the buffer */
-+		audit_log_time(context, &ab);
-+		break;
++	/*
++	 * Also check the generation, the eb reached here must be newer than
++	 * last committed. Or something seriously wrong happened.
++	 */
++	if (unlikely(btrfs_header_generation(eb) <= fs_info->last_trans_committed)) {
++		ret = -EUCLEAN;
+ 		btrfs_err(fs_info,
+-			"block=%llu write time tree block corruption detected",
+-			eb->start);
+-		WARN_ON(IS_ENABLED(CONFIG_BTRFS_DEBUG));
+-		return ret;
++			"block=%llu bad generation, have %llu expect > %llu",
++			  eb->start, btrfs_header_generation(eb),
++			  fs_info->last_trans_committed);
++		goto error;
  	}
- 	audit_log_end(ab);
- }
-@@ -2849,31 +2901,26 @@ void __audit_fanotify(unsigned int response)
+ 	write_extent_buffer(eb, result, 0, fs_info->csum_size);
  
- void __audit_tk_injoffset(struct timespec64 offset)
- {
--	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_INJOFFSET,
--		  "sec=%lli nsec=%li",
--		  (long long)offset.tv_sec, offset.tv_nsec);
--}
--
--static void audit_log_ntp_val(const struct audit_ntp_data *ad,
--			      const char *op, enum audit_ntp_type type)
--{
--	const struct audit_ntp_val *val = &ad->vals[type];
--
--	if (val->newval == val->oldval)
--		return;
-+	struct audit_context *context = audit_context();
- 
--	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_ADJNTPVAL,
--		  "op=%s old=%lli new=%lli", op, val->oldval, val->newval);
-+	/* only set type if not already set by NTP */
-+	if (!context->type)
-+		context->type = AUDIT_TIME_INJOFFSET;
-+	memcpy(&context->time.tk_injoffset, &offset, sizeof(offset));
- }
- 
- void __audit_ntp_log(const struct audit_ntp_data *ad)
- {
--	audit_log_ntp_val(ad, "offset",	AUDIT_NTP_OFFSET);
--	audit_log_ntp_val(ad, "freq",	AUDIT_NTP_FREQ);
--	audit_log_ntp_val(ad, "status",	AUDIT_NTP_STATUS);
--	audit_log_ntp_val(ad, "tai",	AUDIT_NTP_TAI);
--	audit_log_ntp_val(ad, "tick",	AUDIT_NTP_TICK);
--	audit_log_ntp_val(ad, "adjust",	AUDIT_NTP_ADJUST);
-+	struct audit_context *context = audit_context();
-+	int type;
+ 	return 0;
 +
-+	for (type = 0; type < AUDIT_NTP_NVALS; type++)
-+		if (ad->vals[type].newval != ad->vals[type].oldval) {
-+			/* unconditionally set type, overwriting TK */
-+			context->type = AUDIT_TIME_ADJNTPVAL;
-+			memcpy(&context->time.ntp_data, ad, sizeof(*ad));
-+			break;
-+		}
++error:
++	btrfs_print_tree(eb, 0);
++	btrfs_err(fs_info, "block=%llu write time tree block corruption detected",
++		  eb->start);
++	WARN_ON(IS_ENABLED(CONFIG_BTRFS_DEBUG));
++	return ret;
  }
  
- void __audit_log_nfcfg(const char *name, u8 af, unsigned int nentries,
--- 
-2.34.1
-
+ /* Checksum all dirty extent buffers in one bio_vec */
 
 
