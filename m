@@ -2,123 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B122DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF05AC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848814AbiDFC3n (ORCPT
+        id S1848848AbiDFCai (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
+        Tue, 5 Apr 2022 22:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356185AbiDEVex (ORCPT
+        with ESMTP id S1387042AbiDEVuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 17:34:53 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0907FDF49B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:38:47 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Tue, 5 Apr 2022 17:50:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D49238D681;
+        Tue,  5 Apr 2022 13:35:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E41531EC01D4;
-        Tue,  5 Apr 2022 22:38:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649191122;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=hjY4xaC+Y0huxRGOUA02K58jj2yfeN469mtBYn5pstk=;
-        b=YTfK+rSBq+aFG1SkmKXyyA20xicGvyDGzg6nSksyizeSiq2Fejs/O2d1RWcSAcdwq2YFUh
-        ur26OEx2lHC4W6+WLR7hLTocAiGQBdfHpF6OanJLInuqXPjZ9FxpNauE4Bq5d2JhRaL2Pv
-        GWKJuZuhIZljGfX7/zdzYwmBsL9S4HE=
-Date:   Tue, 5 Apr 2022 22:38:43 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Carroll, Lewis" <Lewis.Carroll@amd.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "Karny, Wyes" <Wyes.Karny@amd.com>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
-        "Shenoy, Gautham Ranjal" <gautham.shenoy@amd.com>,
-        "Narayan, Ananth" <Ananth.Narayan@amd.com>,
-        "Rao, Bharata Bhasker" <bharata@amd.com>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "metze@samba.org" <metze@samba.org>,
-        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>
-Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
-Message-ID: <Ykyo00r8aIibvLpP@zn.tnic>
-References: <20220405130021.557880-1-wyes.karny@amd.com>
- <YkxMtx9zdk+nH33r@zn.tnic>
- <MN2PR12MB3949923BCD8B368F8269565BFAE49@MN2PR12MB3949.namprd12.prod.outlook.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDA43619AF;
+        Tue,  5 Apr 2022 20:35:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30537C385A1;
+        Tue,  5 Apr 2022 20:35:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649190926;
+        bh=5AMYXQake7hH4Sl7hM9HYLwlrWswqrY810AOuA4uvuY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i0h8TOPZyYXw7YxYxsVl6M7m9galZt/HSu2NrnpCZivNyZ7yuqNR6VPzSsh9B5xZ7
+         wEI8GFAsRtI1+5cpvV4y5V6bD7ZTHWPrNms51oMeBLqlbhz/Pt4jHjEr4YMtpS04bv
+         inUsXA39X6lGwlO1xGyJPxEYe1/qPedJg+ZQA8CccgWdLyfHb14wrrbhHpPIc+xAb6
+         2Kx5UkD3i6eV7U8TpRrO27fFNcv6EyK0xn1bXYnJaKFcb7onhVzGsI0JoyGopO2ej3
+         a1PNnKsF+R00mz8wCgz30M0lR6/Fgfb+1bACZztdZ/k/7a5j2fhFUCttN/z9s5wiPu
+         gNWEMYwCMmdpw==
+Date:   Tue, 5 Apr 2022 20:35:24 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 5/5] fsverity: update the documentation
+Message-ID: <YkyoDE3HPkxcV1jM@gmail.com>
+References: <20220325223824.310119-1-zohar@linux.ibm.com>
+ <20220325223824.310119-6-zohar@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <MN2PR12MB3949923BCD8B368F8269565BFAE49@MN2PR12MB3949.namprd12.prod.outlook.com>
+In-Reply-To: <20220325223824.310119-6-zohar@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 08:26:53PM +0000, Carroll, Lewis wrote:
-> This happens when:
->  * User disables global C-states in BIOS
->  * User disables cpuidle (e.g. idle=off or processor.max_cstate=0)
->  * Kernel does not have CONFIG_ACPI_PROCESSOR_IDLE
+On Fri, Mar 25, 2022 at 06:38:24PM -0400, Mimi Zohar wrote:
+> Update the fsverity documentation related to IMA signature support.
+> 
+> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+> ---
+>  Documentation/filesystems/fsverity.rst | 20 ++++++++++++--------
+>  1 file changed, 12 insertions(+), 8 deletions(-)
+> 
+> diff --git a/Documentation/filesystems/fsverity.rst b/Documentation/filesystems/fsverity.rst
+> index 1d831e3cbcb3..c1d355f17a54 100644
+> --- a/Documentation/filesystems/fsverity.rst
+> +++ b/Documentation/filesystems/fsverity.rst
+> @@ -74,8 +74,12 @@ authenticating the files is up to userspace.  However, to meet some
+>  users' needs, fs-verity optionally supports a simple signature
+>  verification mechanism where users can configure the kernel to require
+>  that all fs-verity files be signed by a key loaded into a keyring; see
+> -`Built-in signature verification`_.  Support for fs-verity file hashes
+> -in IMA (Integrity Measurement Architecture) policies is also planned.
+> +`Built-in signature verification`_.
+> +
+> +The Integrity Measurement Architecture (IMA) supports including
+> +fs-verity file digests and signatures in the IMA measurement list
+> +and verifying fs-verity based file signatures stored as security.ima
+> +xattrs, based on policy.
 
-All three or any one of those?
+This looks okay, but this would be easier to understand as a list of alternative
+ways to do signature verification with fs-verity:
 
-> Genesis of this patch is customer performance observations.
+	* Userspace-only
+	* Built-in signature verification + userspace policy
+	* IMA
 
-Please add that explanation to the changelog - it is important when
-looking back, trying to figure out why this was done.
-
-> Yes. We felt the code more readable with the prefer_mwait_c1_over_halt fn.
-> Hygon CPU init indeed sets X86_FEATURE ZEN.
-> AMD CPU init sets X86_FEATURE_ZEN for family >= 17h (not only 17h).
-
-Yes, but this new logic you're adding, basically says, use MWAIT on all
-Zen uarch CPUs, right?
-
-So why not write exactly that?
-
-The simpler the logic and the clearer the code, the better.
-
-> Cleanest solution might be a new CPU feature (e.g.
-> X86_PREFER_MWAIT_IDLE) that gets set appropriately, but that would
-> require touching more files.
-
-Yes, I thought about it too.
-
-Not really necessary if what I wrote above fits.
-
-And while you're touching files, pls add that change too:
-
----
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 73e643ae94b6..c1091f78f104 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -219,7 +219,7 @@
- #define X86_FEATURE_IBRS		( 7*32+25) /* Indirect Branch Restricted Speculation */
- #define X86_FEATURE_IBPB		( 7*32+26) /* Indirect Branch Prediction Barrier */
- #define X86_FEATURE_STIBP		( 7*32+27) /* Single Thread Indirect Branch Predictors */
--#define X86_FEATURE_ZEN			( 7*32+28) /* "" CPU is AMD family 0x17 or above (Zen) */
-+#define X86_FEATURE_ZEN			( 7*32+28) /* "" Set on CPUs of the Zen uarch */
- #define X86_FEATURE_L1TF_PTEINV		( 7*32+29) /* "" L1TF workaround PTE inversion */
- #define X86_FEATURE_IBRS_ENHANCED	( 7*32+30) /* Enhanced IBRS */
- #define X86_FEATURE_MSR_IA32_FEAT_CTL	( 7*32+31) /* "" MSR IA32_FEAT_CTL configured */
-
-so that dhansen and peterz are not confused anymore. :-)
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+- Eric
