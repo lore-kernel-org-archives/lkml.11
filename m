@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A38B4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 764CDC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237090AbiDEMlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
+        id S229748AbiDEMlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240218AbiDEJF7 (ORCPT
+        with ESMTP id S238413AbiDEJFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:05:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E6D45AD6;
-        Tue,  5 Apr 2022 01:56:24 -0700 (PDT)
+        Tue, 5 Apr 2022 05:05:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F772FE75;
+        Tue,  5 Apr 2022 01:55:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88992B81C6C;
-        Tue,  5 Apr 2022 08:56:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA28EC385A0;
-        Tue,  5 Apr 2022 08:56:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 209C7614E4;
+        Tue,  5 Apr 2022 08:55:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3F3C385A1;
+        Tue,  5 Apr 2022 08:55:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148979;
-        bh=NAF+/mvkE5mniULEoXlQw3jnfQqX1ycYWJpfYP5xMoQ=;
+        s=korg; t=1649148957;
+        bh=kseVb9iJ6OvlNooBTvY7IHJklc5qGVwqkw1XALp37OQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K081Hw8ihQUepbykygd7C4TbiMlRM3KbU5lWkSqG2mYC08R1KkW3zvxvu4rAc1UtI
-         jcxnpv6RmO812xKzNXov68n1nGErabhtK7kv7emh1DJXDlyAsYAmdx46WWvFfboA9z
-         9zG7qYHEHR6kEI6pkCNAfDcD1hjNw2fM6LhRYOJw=
+        b=gZ+7/W8joFhwWZdR/hgjXDim5CiWEgTJhLrFPuMafS1gGOcrQxYk4kRwVVeIHl4Bu
+         ex0ZDVCXZG1HRgEptFL7PYzuCKBCoExF7oQ14qTcI2S9c0OXZ00Laqxs/yaF2OAl/m
+         XA+1BlKZMi5ZhD9EmIMJ355oefTkvPS3Br8FMqF8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0513/1017] iwlwifi: Fix -EIO error code that is never returned
-Date:   Tue,  5 Apr 2022 09:23:46 +0200
-Message-Id: <20220405070409.526088086@linuxfoundation.org>
+Subject: [PATCH 5.16 0541/1017] net: dsa: realtek-smi: fix kdoc warnings
+Date:   Tue,  5 Apr 2022 09:24:14 +0200
+Message-Id: <20220405070410.347730704@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,37 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-[ Upstream commit c305c94bdc18e45b5ad1db54da4269f8cbfdff6b ]
+[ Upstream commit 0f0c6da03ba37739901ca5db4361c1ef1ae9463f ]
 
-Currently the error -EIO is being assinged to variable ret when
-the READY_BIT is not set but the function iwlagn_mac_start returns
-0 rather than ret. Fix this by returning ret instead of 0.
+Removed kdoc mark for incomplete struct description.
+Added a return description for rtl8366rb_drop_untagged.
 
-Addresses-Coverity: ("Unused value")
-Fixes: 7335613ae27a ("iwlwifi: move all mac80211 related functions to one place")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Link: https://lore.kernel.org/r/20210907104658.14706-1-colin.king@canonical.com
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/realtek-smi-core.h | 4 ++--
+ drivers/net/dsa/rtl8366rb.c        | 2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-index 754876cd27ce..e8bd4f0e3d2d 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-@@ -299,7 +299,7 @@ static int iwlagn_mac_start(struct ieee80211_hw *hw)
+diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek-smi-core.h
+index 5bfa53e2480a..faed387d8db3 100644
+--- a/drivers/net/dsa/realtek-smi-core.h
++++ b/drivers/net/dsa/realtek-smi-core.h
+@@ -25,7 +25,7 @@ struct rtl8366_mib_counter {
+ 	const char	*name;
+ };
  
- 	priv->is_open = 1;
- 	IWL_DEBUG_MAC80211(priv, "leave\n");
--	return 0;
-+	return ret;
- }
+-/**
++/*
+  * struct rtl8366_vlan_mc - Virtual LAN member configuration
+  */
+ struct rtl8366_vlan_mc {
+@@ -74,7 +74,7 @@ struct realtek_smi {
+ 	void			*chip_data; /* Per-chip extra variant data */
+ };
  
- static void iwlagn_mac_stop(struct ieee80211_hw *hw)
+-/**
++/*
+  * struct realtek_smi_ops - vtable for the per-SMI-chiptype operations
+  * @detect: detects the chiptype
+  */
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index 03deacd83e61..2a523a33529b 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -1251,6 +1251,8 @@ rtl8366rb_port_bridge_leave(struct dsa_switch *ds, int port,
+  * @smi: SMI state container
+  * @port: the port to drop untagged and C-tagged frames on
+  * @drop: whether to drop or pass untagged and C-tagged frames
++ *
++ * Return: zero for success, a negative number on error.
+  */
+ static int rtl8366rb_drop_untagged(struct realtek_smi *smi, int port, bool drop)
+ {
 -- 
 2.34.1
 
