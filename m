@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 037FBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B11CC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573001AbiDEWsD (ORCPT
+        id S1573111AbiDEWsK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
+        Tue, 5 Apr 2022 18:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354466AbiDEKOT (ORCPT
+        with ESMTP id S1352739AbiDEKFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E5E6A41E;
-        Tue,  5 Apr 2022 03:00:20 -0700 (PDT)
+        Tue, 5 Apr 2022 06:05:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF47A49FA4;
+        Tue,  5 Apr 2022 02:53:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E43161673;
-        Tue,  5 Apr 2022 10:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B03AC385A1;
-        Tue,  5 Apr 2022 10:00:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D868616DC;
+        Tue,  5 Apr 2022 09:53:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B3CCC385A3;
+        Tue,  5 Apr 2022 09:53:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152820;
-        bh=mgtRBFgMqU+b1ionpcQaRy21ElERCcfUPd6hniBMnz8=;
+        s=korg; t=1649152425;
+        bh=LHcQxs7YDYUfU/67ZI4UyYI/EQF43ch4sKzahqrifew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MkJGrmsTHa9vmfcBOhEpCdBCajt740dD2yJ2bnQHArwQBjL/1+gMKbJsH8PNh4aJs
-         Oz/tGMKOJIneTuzsUkf5mdQDfVzF2qGyYzig92wBMa0QNKHvKLCBIFT+HAEE5ULPWw
-         QMOtgw0mo6Td8tW5k/JHS3TfHFYKOg0n4f/xSziI=
+        b=aAvkQP7UZuLM0fKuERgYwqUPtWFv1Bwa5uaq/uPxRbF+eO1p/xrLOrQR4SJA6wVXS
+         eb5W7DKcpSVmoQHVMDnydZUAtjyD3WpQGUMiGswauQMeDqR/FfY+ztuXfDL1GWBs/p
+         HJjixok4DfQtXfBY267/TcmL8XEswL1rlzst9JzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 907/913] iommu/dma: Check CONFIG_SWIOTLB more broadly
-Date:   Tue,  5 Apr 2022 09:32:49 +0200
-Message-Id: <20220405070407.005991513@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 771/913] KVM: x86/mmu: Move "invalid" check out of kvm_tdp_mmu_get_root()
+Date:   Tue,  5 Apr 2022 09:30:33 +0200
+Message-Id: <20220405070402.943010262@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,103 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Stevens <stevensd@chromium.org>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 2e727bffbe93750a13d2414f3ce43de2f21600d2 upstream.
+commit 04dc4e6ce274fa729feda32aa957b27388a3870c upstream.
 
-Introduce a new dev_use_swiotlb function to guard swiotlb code, instead
-of overloading dev_is_untrusted. This allows CONFIG_SWIOTLB to be
-checked more broadly, so the swiotlb related code can be removed more
-aggressively.
+Move the check for an invalid root out of kvm_tdp_mmu_get_root() and into
+the one place it actually matters, tdp_mmu_next_root(), as the other user
+already has an implicit validity check.  A future bug fix will need to
+get references to invalid roots to honor mmu_notifier requests; there's
+no point in forcing what will be a common path to open code getting a
+reference to a root.
 
-Signed-off-by: David Stevens <stevensd@chromium.org>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20210929023300.335969-6-stevensd@google.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+No functional change intended.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20211215011557.399940-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/dma-iommu.c |   20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c |   12 ++++++++++--
+ arch/x86/kvm/mmu/tdp_mmu.h |    3 ---
+ 2 files changed, 10 insertions(+), 5 deletions(-)
 
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -317,6 +317,11 @@ static bool dev_is_untrusted(struct devi
- 	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -121,9 +121,14 @@ static struct kvm_mmu_page *tdp_mmu_next
+ 		next_root = list_first_or_null_rcu(&kvm->arch.tdp_mmu_roots,
+ 						   typeof(*next_root), link);
+ 
+-	while (next_root && !kvm_tdp_mmu_get_root(kvm, next_root))
++	while (next_root) {
++		if (!next_root->role.invalid &&
++		    kvm_tdp_mmu_get_root(kvm, next_root))
++			break;
++
+ 		next_root = list_next_or_null_rcu(&kvm->arch.tdp_mmu_roots,
+ 				&next_root->link, typeof(*next_root), link);
++	}
+ 
+ 	rcu_read_unlock();
+ 
+@@ -199,7 +204,10 @@ hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(stru
+ 
+ 	role = page_role_for_level(vcpu, vcpu->arch.mmu->shadow_root_level);
+ 
+-	/* Check for an existing root before allocating a new one. */
++	/*
++	 * Check for an existing root before allocating a new one.  Note, the
++	 * role check prevents consuming an invalid root.
++	 */
+ 	for_each_tdp_mmu_root(kvm, root, kvm_mmu_role_as_id(role)) {
+ 		if (root->role.word == role.word &&
+ 		    kvm_tdp_mmu_get_root(kvm, root))
+--- a/arch/x86/kvm/mmu/tdp_mmu.h
++++ b/arch/x86/kvm/mmu/tdp_mmu.h
+@@ -10,9 +10,6 @@ hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(stru
+ __must_check static inline bool kvm_tdp_mmu_get_root(struct kvm *kvm,
+ 						     struct kvm_mmu_page *root)
+ {
+-	if (root->role.invalid)
+-		return false;
+-
+ 	return refcount_inc_not_zero(&root->tdp_mmu_root_count);
  }
  
-+static bool dev_use_swiotlb(struct device *dev)
-+{
-+	return IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev);
-+}
-+
- /* sysfs updates are serialised by the mutex of the group owning @domain */
- int iommu_dma_init_fq(struct iommu_domain *domain)
- {
-@@ -731,7 +736,7 @@ static void iommu_dma_sync_single_for_cp
- {
- 	phys_addr_t phys;
- 
--	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
-+	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
- 		return;
- 
- 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
-@@ -747,7 +752,7 @@ static void iommu_dma_sync_single_for_de
- {
- 	phys_addr_t phys;
- 
--	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
-+	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
- 		return;
- 
- 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
-@@ -765,7 +770,7 @@ static void iommu_dma_sync_sg_for_cpu(st
- 	struct scatterlist *sg;
- 	int i;
- 
--	if (dev_is_untrusted(dev))
-+	if (dev_use_swiotlb(dev))
- 		for_each_sg(sgl, sg, nelems, i)
- 			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
- 						      sg->length, dir);
-@@ -781,7 +786,7 @@ static void iommu_dma_sync_sg_for_device
- 	struct scatterlist *sg;
- 	int i;
- 
--	if (dev_is_untrusted(dev))
-+	if (dev_use_swiotlb(dev))
- 		for_each_sg(sgl, sg, nelems, i)
- 			iommu_dma_sync_single_for_device(dev,
- 							 sg_dma_address(sg),
-@@ -808,8 +813,7 @@ static dma_addr_t iommu_dma_map_page(str
- 	 * If both the physical buffer start address and size are
- 	 * page aligned, we don't need to use a bounce page.
- 	 */
--	if (IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev) &&
--	    iova_offset(iovad, phys | size)) {
-+	if (dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) {
- 		void *padding_start;
- 		size_t padding_size;
- 
-@@ -995,7 +999,7 @@ static int iommu_dma_map_sg(struct devic
- 			goto out;
- 	}
- 
--	if (dev_is_untrusted(dev))
-+	if (dev_use_swiotlb(dev))
- 		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
- 
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-@@ -1073,7 +1077,7 @@ static void iommu_dma_unmap_sg(struct de
- 	struct scatterlist *tmp;
- 	int i;
- 
--	if (dev_is_untrusted(dev)) {
-+	if (dev_use_swiotlb(dev)) {
- 		iommu_dma_unmap_sg_swiotlb(dev, sg, nents, dir, attrs);
- 		return;
- 	}
 
 
