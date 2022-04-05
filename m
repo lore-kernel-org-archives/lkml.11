@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06414C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C8AC35296
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356306AbiDEMJw (ORCPT
+        id S1356715AbiDEMKE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
+        Tue, 5 Apr 2022 08:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244693AbiDEIwe (ORCPT
+        with ESMTP id S244730AbiDEIwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01690D8F4E;
-        Tue,  5 Apr 2022 01:42:04 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ECC1B7BE;
+        Tue,  5 Apr 2022 01:42:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B1F1B81C15;
-        Tue,  5 Apr 2022 08:42:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6CB0C385A1;
-        Tue,  5 Apr 2022 08:42:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41D0060FFC;
+        Tue,  5 Apr 2022 08:42:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1E1C385A1;
+        Tue,  5 Apr 2022 08:42:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148122;
-        bh=bgJm6wH0LQOptKnK7GXaPPAhDXn78DplyNlwQZkCo08=;
+        s=korg; t=1649148176;
+        bh=L/pyenQmUdfAnp5wcjo1xjpMHrfCLmOU2nZBPABT8/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ThAiFEGcpxZFgDgk7K5QyAmRfLQ+bs1BBNyA0z82tZPtWHz39VTWuzisUNDyXJWAo
-         fr4M7jBOm2pqJCbLfcgH3miuhlpmusBNSSoPZoJ+fK4mcY2YPSrnP25EyaTp+pAf7J
-         m6Ei8yUXujmF7HhRk35hiXyXPhZVU1zdhUjZzKTk=
+        b=Jc2xLUUQ8kNg12dAKVr8rAjpmu0cKf1l4Q1Ut937ew943hDBCGSnoGah0+9ru3pSx
+         Y69STawd3D5Ody4D32ebL12iqf3C/HWQX3Nbw2WST0HiPwjzrVLfvmh/HbDZAiEIsN
+         lnJnC4jjrJy3UMnkWAqyKkqXI6oiJPLQi4JlEEEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Mimi Zohar <zohar@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0242/1017] clocksource/drivers/exynos_mct: Refactor resources allocation
-Date:   Tue,  5 Apr 2022 09:19:15 +0200
-Message-Id: <20220405070401.441469213@linuxfoundation.org>
+Subject: [PATCH 5.16 0223/1017] EVM: fix the evm= __setup handler return value
+Date:   Tue,  5 Apr 2022 09:18:56 +0200
+Message-Id: <20220405070400.870695370@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,108 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 7cd925a8823d16de5614d3f0aabea9948747accd ]
+[ Upstream commit f2544f5e6c691679d56bb38637d2f347075b36fa ]
 
-Move interrupts allocation from exynos4_timer_resources() into separate
-function together with the interrupt number parsing code from
-mct_init_dt(), so the code for managing interrupts is kept together.
-While touching exynos4_timer_resources() function, move of_iomap() to it.
-No functional changes.
+__setup() handlers should return 1 if the parameter is handled.
+Returning 0 causes the entire string to be added to init's
+environment strings (limited to 32 strings), unnecessarily polluting it.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Chanwoo Choi <cw00.choi@samsung.com>
-Tested-by: Chanwoo Choi <cw00.choi@samsung.com>
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-Link: https://lore.kernel.org/r/20211101193531.15078-2-semen.protsenko@linaro.org
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Using the documented string "evm=fix" causes an Unknown parameter message:
+  Unknown kernel command line parameters
+  "BOOT_IMAGE=/boot/bzImage-517rc5 evm=fix", will be passed to user space.
+
+and that string is added to init's environment string space:
+  Run /sbin/init as init process
+    with arguments:
+     /sbin/init
+    with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     evm=fix
+
+With this change, using "evm=fix" acts as expected and an invalid
+option ("evm=evm") causes a warning to be printed:
+  evm: invalid "evm" mode
+but init's environment is not polluted with this string, as expected.
+
+Fixes: 7102ebcd65c1 ("evm: permit only valid security.evm xattrs to be updated")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/exynos_mct.c | 50 +++++++++++++++++++-------------
- 1 file changed, 30 insertions(+), 20 deletions(-)
+ security/integrity/evm/evm_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-index 5e3e96d3d1b9..857cf12ebe57 100644
---- a/drivers/clocksource/exynos_mct.c
-+++ b/drivers/clocksource/exynos_mct.c
-@@ -504,11 +504,14 @@ static int exynos4_mct_dying_cpu(unsigned int cpu)
- 	return 0;
+diff --git a/security/integrity/evm/evm_main.c b/security/integrity/evm/evm_main.c
+index 08f907382c61..7d87772f0ce6 100644
+--- a/security/integrity/evm/evm_main.c
++++ b/security/integrity/evm/evm_main.c
+@@ -86,7 +86,7 @@ static int __init evm_set_fixmode(char *str)
+ 	else
+ 		pr_err("invalid \"%s\" mode", str);
+ 
+-	return 0;
++	return 1;
  }
- 
--static int __init exynos4_timer_resources(struct device_node *np, void __iomem *base)
-+static int __init exynos4_timer_resources(struct device_node *np)
- {
--	int err, cpu;
- 	struct clk *mct_clk, *tick_clk;
- 
-+	reg_base = of_iomap(np, 0);
-+	if (!reg_base)
-+		panic("%s: unable to ioremap mct address space\n", __func__);
-+
- 	tick_clk = of_clk_get_by_name(np, "fin_pll");
- 	if (IS_ERR(tick_clk))
- 		panic("%s: unable to determine tick clock rate\n", __func__);
-@@ -519,9 +522,27 @@ static int __init exynos4_timer_resources(struct device_node *np, void __iomem *
- 		panic("%s: unable to retrieve mct clock instance\n", __func__);
- 	clk_prepare_enable(mct_clk);
- 
--	reg_base = base;
--	if (!reg_base)
--		panic("%s: unable to ioremap mct address space\n", __func__);
-+	return 0;
-+}
-+
-+static int __init exynos4_timer_interrupts(struct device_node *np,
-+					   unsigned int int_type)
-+{
-+	int nr_irqs, i, err, cpu;
-+
-+	mct_int_type = int_type;
-+
-+	/* This driver uses only one global timer interrupt */
-+	mct_irqs[MCT_G0_IRQ] = irq_of_parse_and_map(np, MCT_G0_IRQ);
-+
-+	/*
-+	 * Find out the number of local irqs specified. The local
-+	 * timer irqs are specified after the four global timer
-+	 * irqs are specified.
-+	 */
-+	nr_irqs = of_irq_count(np);
-+	for (i = MCT_L0_IRQ; i < nr_irqs; i++)
-+		mct_irqs[i] = irq_of_parse_and_map(np, i);
- 
- 	if (mct_int_type == MCT_INT_PPI) {
- 
-@@ -581,24 +602,13 @@ static int __init exynos4_timer_resources(struct device_node *np, void __iomem *
- 
- static int __init mct_init_dt(struct device_node *np, unsigned int int_type)
- {
--	u32 nr_irqs, i;
- 	int ret;
- 
--	mct_int_type = int_type;
--
--	/* This driver uses only one global timer interrupt */
--	mct_irqs[MCT_G0_IRQ] = irq_of_parse_and_map(np, MCT_G0_IRQ);
--
--	/*
--	 * Find out the number of local irqs specified. The local
--	 * timer irqs are specified after the four global timer
--	 * irqs are specified.
--	 */
--	nr_irqs = of_irq_count(np);
--	for (i = MCT_L0_IRQ; i < nr_irqs; i++)
--		mct_irqs[i] = irq_of_parse_and_map(np, i);
-+	ret = exynos4_timer_resources(np);
-+	if (ret)
-+		return ret;
- 
--	ret = exynos4_timer_resources(np, of_iomap(np, 0));
-+	ret = exynos4_timer_interrupts(np, int_type);
- 	if (ret)
- 		return ret;
+ __setup("evm=", evm_set_fixmode);
  
 -- 
 2.34.1
