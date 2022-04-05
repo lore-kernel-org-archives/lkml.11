@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9B3C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F50C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578217AbiDEXTF (ORCPT
+        id S1578281AbiDEXTO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        Tue, 5 Apr 2022 19:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357137AbiDEKZn (ORCPT
+        with ESMTP id S1355862AbiDEKWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:25:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C1F53E0F;
-        Tue,  5 Apr 2022 03:09:36 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C03EA8EEE;
+        Tue,  5 Apr 2022 03:05:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22A62616E7;
-        Tue,  5 Apr 2022 10:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C01C385A0;
-        Tue,  5 Apr 2022 10:09:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB46DB81B7A;
+        Tue,  5 Apr 2022 10:05:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05CEFC385A2;
+        Tue,  5 Apr 2022 10:05:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153375;
-        bh=OV47iBJ5fsFk1E4W5Sw81qOODEtHY8MEP71aX2/Lg+A=;
+        s=korg; t=1649153115;
+        bh=rMKBD1koYZ8J49XDOyG6OKlNOGIa8Bmni21RPT14hTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2sLKwxFYGiKfC5ptjrPslQhJ6s5FYO/a77X6rbvmK56df+3uZXBl6lHZVpAs3mVb5
-         sdOTb9JtGMbIyCDXtascdRG2boR/UT2IuPdVngzOwnbOkI1WZwMFAV2i5vvBHPfuoV
-         843sGPQHJbwucFiZOySyjyAuUNypXpj7nudUHMYQ=
+        b=UR3xJu0e8n2U3uYtX8UbCLJcQNBJtHSuU7dGBNkVoukwcSet/yPkAgh0YCVV+ZXFE
+         QhmpOrWX4S97LUnV1nOSlDl4M58CY/R2ccbSZr3M27uMK2lz8ycnv6A7WjnsWftbgc
+         TXV0Co8OiNq2nRHvbd+4NFAlxkh9uugHxbvVGSvk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 198/599] video: fbdev: controlfb: Fix set but not used warnings
-Date:   Tue,  5 Apr 2022 09:28:12 +0200
-Message-Id: <20220405070304.732913507@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 106/599] thermal: int340x: Increase bitmap size
+Date:   Tue,  5 Apr 2022 09:26:40 +0200
+Message-Id: <20220405070301.988199673@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -53,48 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sam Ravnborg <sam@ravnborg.org>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-[ Upstream commit 4aca4dbcac9d8eed8a8dc15b6883270a20a84218 ]
+commit 668f69a5f863b877bc3ae129efe9a80b6f055141 upstream.
 
-The controlfb driver has a number of dummy defines for IO operations.
-They were introduced in commit a07a63b0e24d
-("video: fbdev: controlfb: add COMPILE_TEST support").
+The number of policies are 10, so can't be supported by the bitmap size
+of u8.
 
-The write variants did not use their value parameter in the
-dummy versions, resulting in set but not used warnings.
-Fix this by adding "(void)val" to silence the compiler.
+Even though there are no platfoms with these many policies, but
+for correctness increase to u32.
 
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://patchwork.freedesktop.org/patch/msgid/20201206190247.1861316-13-sam@ravnborg.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Fixes: 16fc8eca1975 ("thermal/int340x_thermal: Add additional UUIDs")
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/controlfb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/thermal/intel/int340x_thermal/int3400_thermal.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/controlfb.c b/drivers/video/fbdev/controlfb.c
-index 2df56bd303d2..509311471d51 100644
---- a/drivers/video/fbdev/controlfb.c
-+++ b/drivers/video/fbdev/controlfb.c
-@@ -64,9 +64,9 @@
- #undef in_le32
- #undef out_le32
- #define in_8(addr)		0
--#define out_8(addr, val)
-+#define out_8(addr, val)	(void)(val)
- #define in_le32(addr)		0
--#define out_le32(addr, val)
-+#define out_le32(addr, val)	(void)(val)
- #define pgprot_cached_wthru(prot) (prot)
- #else
- static void invalid_vram_cache(void __force *addr)
--- 
-2.34.1
-
+--- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
++++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+@@ -53,7 +53,7 @@ struct int3400_thermal_priv {
+ 	struct art *arts;
+ 	int trt_count;
+ 	struct trt *trts;
+-	u8 uuid_bitmap;
++	u32 uuid_bitmap;
+ 	int rel_misc_dev_res;
+ 	int current_uuid_index;
+ 	char *data_vault;
 
 
