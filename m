@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB2E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5419C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579312AbiDEX06 (ORCPT
+        id S1579076AbiDEX0C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
+        Tue, 5 Apr 2022 19:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358060AbiDEK15 (ORCPT
+        with ESMTP id S1357853AbiDEK1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F59937AA1;
-        Tue,  5 Apr 2022 03:14:08 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A04E43390;
+        Tue,  5 Apr 2022 03:10:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53F5CB81BC5;
-        Tue,  5 Apr 2022 10:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1F3EC385A1;
-        Tue,  5 Apr 2022 10:14:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD9826179E;
+        Tue,  5 Apr 2022 10:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9CA8C385A1;
+        Tue,  5 Apr 2022 10:10:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153646;
-        bh=c3I5LkA6//bl+gmvL+GzcqiMgLSDC/t1HXvj51hvlzY=;
+        s=korg; t=1649153452;
+        bh=TdauvqoEswb21tT1wnBQFOPgjLFvcxp7q1mW8ac6LgY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c7kidxs348hvCYXG/Mo6jkuPMaEnHBc0QuLF6fMizhWjEh+S7z/7gR4HL48XlifF0
-         CFk9jk85+UlBc/2b/FO3U9yn0QA/R/Fyyd4CdvSJFrLKj9Aru62gssp8Yrh9pr/5Ef
-         B+RdmYT2wq1+cbYhXa7etM7TWJAM6usbPJ1sZz0E=
+        b=UorQJ03o03h+TzBolbZ3O6OmaIuo8m7MctyoVEiBISX4MsR5ehAyGmhEyfW+uu6g9
+         M27DtvK0g7rJKHDbRCEss4K3y3kSUH13wW3OyYIonCKs+k9SaRvK8VklQN+WFszSis
+         FFQFWy8SnB/aPcPwTCCxuulFK/iumqA0O65rDC/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 297/599] HID: i2c-hid: fix GET/SET_REPORT for unnumbered reports
-Date:   Tue,  5 Apr 2022 09:29:51 +0200
-Message-Id: <20220405070307.672513533@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 228/599] ASoC: mxs-saif: Handle errors for clk_enable
+Date:   Tue,  5 Apr 2022 09:28:42 +0200
+Message-Id: <20220405070305.626535511@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,89 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit a5e5e03e94764148a01757b2fa4737d3445c13a6 ]
+[ Upstream commit 2ecf362d220317debf5da376e0390e9f7a3f7b29 ]
 
-Internally kernel prepends all report buffers, for both numbered and
-unnumbered reports, with report ID, therefore to properly handle unnumbered
-reports we should prepend it ourselves.
+As the potential failure of the clk_enable(),
+it should be better to check it, like mxs_saif_trigger().
 
-For the same reason we should skip the first byte of the buffer when
-calling i2c_hid_set_or_send_report() which then will take care of properly
-formatting the transfer buffer based on its separate report ID argument
-along with report payload.
-
-[jkosina@suse.cz: finalize trimmed sentence in changelog as spotted by Benjamin]
-Fixes: 9b5a9ae88573 ("HID: i2c-hid: implement ll_driver transport-layer callbacks")
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: d0ba4c014934 ("ASoC: mxs-saif: set a base clock rate for EXTMASTER mode work")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301081717.3727190-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/i2c-hid/i2c-hid-core.c | 32 ++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
+ sound/soc/mxs/mxs-saif.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
-index 998aad8a9e60..14811d42a5a9 100644
---- a/drivers/hid/i2c-hid/i2c-hid-core.c
-+++ b/drivers/hid/i2c-hid/i2c-hid-core.c
-@@ -620,6 +620,17 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
- 	if (report_type == HID_OUTPUT_REPORT)
- 		return -EINVAL;
- 
-+	/*
-+	 * In case of unnumbered reports the response from the device will
-+	 * not have the report ID that the upper layers expect, so we need
-+	 * to stash it the buffer ourselves and adjust the data size.
-+	 */
-+	if (!report_number) {
-+		buf[0] = 0;
-+		buf++;
-+		count--;
-+	}
+diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
+index 07f8cf9980e3..f2eda81985e2 100644
+--- a/sound/soc/mxs/mxs-saif.c
++++ b/sound/soc/mxs/mxs-saif.c
+@@ -455,7 +455,10 @@ static int mxs_saif_hw_params(struct snd_pcm_substream *substream,
+ 		* basic clock which should be fast enough for the internal
+ 		* logic.
+ 		*/
+-		clk_enable(saif->clk);
++		ret = clk_enable(saif->clk);
++		if (ret)
++			return ret;
 +
- 	/* +2 bytes to include the size of the reply in the query buffer */
- 	ask_count = min(count + 2, (size_t)ihid->bufsize);
- 
-@@ -641,6 +652,9 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
- 	count = min(count, ret_count - 2);
- 	memcpy(buf, ihid->rawbuf + 2, count);
- 
-+	if (!report_number)
-+		count++;
-+
- 	return count;
- }
- 
-@@ -657,17 +671,19 @@ static int i2c_hid_output_raw_report(struct hid_device *hid, __u8 *buf,
- 
- 	mutex_lock(&ihid->reset_lock);
- 
--	if (report_id) {
--		buf++;
--		count--;
--	}
--
-+	/*
-+	 * Note that both numbered and unnumbered reports passed here
-+	 * are supposed to have report ID stored in the 1st byte of the
-+	 * buffer, so we strip it off unconditionally before passing payload
-+	 * to i2c_hid_set_or_send_report which takes care of encoding
-+	 * everything properly.
-+	 */
- 	ret = i2c_hid_set_or_send_report(client,
- 				report_type == HID_FEATURE_REPORT ? 0x03 : 0x02,
--				report_id, buf, count, use_data);
-+				report_id, buf + 1, count - 1, use_data);
- 
--	if (report_id && ret >= 0)
--		ret++; /* add report_id to the number of transfered bytes */
-+	if (ret >= 0)
-+		ret++; /* add report_id to the number of transferred bytes */
- 
- 	mutex_unlock(&ihid->reset_lock);
- 
+ 		ret = clk_set_rate(saif->clk, 24000000);
+ 		clk_disable(saif->clk);
+ 		if (ret)
 -- 
 2.34.1
 
