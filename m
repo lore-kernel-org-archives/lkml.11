@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD31C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C65C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234895AbiDEIO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
+        id S234986AbiDEIOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234926AbiDEH7D (ORCPT
+        with ESMTP id S235209AbiDEH7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0280C37BD3;
-        Tue,  5 Apr 2022 00:53:26 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039E732EC3;
+        Tue,  5 Apr 2022 00:54:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A474B81B14;
-        Tue,  5 Apr 2022 07:53:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D7D7C340EE;
-        Tue,  5 Apr 2022 07:53:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B12EB81B9C;
+        Tue,  5 Apr 2022 07:54:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9F7C340EE;
+        Tue,  5 Apr 2022 07:53:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145203;
-        bh=p3fs+r28lnStow8fQ64ZRjbA9lfbA6oqU9NjoM6wbho=;
+        s=korg; t=1649145239;
+        bh=ppIPX3URR0acf6wOyfL262wQNE8KPCBIqOOvB243B1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iJ6JOve10bmhHaNGrx5EeMl7W5y151KtsgxUcvnoW0Xm4Yb/zCYSIUO7x/psk3gJj
-         1BudwjuqmoBulr2g6a6ioCZd9tFI1H4JJ4baANoFlfOCCq52O44JVLXp8Oc6IH59FE
-         JOEuvJmnG1P+HIqiUtpLcaJ0BHCWbi+1JKrqm+GI=
+        b=pOoe0VWNghxZVP30Uc83EZ2IdLETBqkBJAOiF0YJ4OOzZ4w7Wz8sARzUK16tooKPb
+         2tHBRZKSAc77tOCBAyej0g0nKKCBygpl4Wm6cBw5qXXiw6vFfifAh+oBRSxxs5CCNl
+         cMebm0zTsPt9bC3NPOPET+F75sX4/QxrcxlY7CGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>,
-        Lei YU <yulei.sh@bytedance.com>, Joel Stanley <joel@jms.id.au>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0322/1126] ARM: dts: Fix OpenBMC flash layout label addresses
-Date:   Tue,  5 Apr 2022 09:17:49 +0200
-Message-Id: <20220405070417.067287493@linuxfoundation.org>
+Subject: [PATCH 5.17 0334/1126] arm64: dts: broadcom: bcm4908: use proper TWD binding
+Date:   Tue,  5 Apr 2022 09:18:01 +0200
+Message-Id: <20220405070417.420468619@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,51 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zev Weiss <zev@bewilderbeest.net>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ Upstream commit e011df3579ac980d840db8e8c3b9431f88ebddab ]
+[ Upstream commit 33826e9c6ba76b265d4e26cb95493fa27ed78974 ]
 
-We've ended up with some inconsistencies between the addresses in the
-DT node labels and the actual offsets of the partitions; this brings
-them back in sync.
+Block at <ff800400 0x4c> is a TWD that contains timers, watchdog and
+reset. Actual timers happen to be at block beginning but they only span
+across the first 0x28 registers. It means the old block description was
+incorrect (size 0x3c).
 
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-Fixes: 529022738c8e ("ARM: dts: Add OpenBMC flash layout")
-Fixes: 8dec60e7b8d0 ("ARM: dts: aspeed: Grow u-boot partition 64MiB OpenBMC flash layout")
-Reviewed-by: Lei YU <yulei.sh@bytedance.com>
-Link: https://lore.kernel.org/r/20220105003718.19888-1-zev@bewilderbeest.net
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+Drop timers binding for now and use documented TWD binding. Timers
+should be properly documented and defined as TWD subnode.
+
+Fixes: 2961f69f151c ("arm64: dts: broadcom: add BCM4908 and Asus GT-AC5300 early DTS files")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/openbmc-flash-layout-64.dtsi | 2 +-
- arch/arm/boot/dts/openbmc-flash-layout.dtsi    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/openbmc-flash-layout-64.dtsi b/arch/arm/boot/dts/openbmc-flash-layout-64.dtsi
-index 31f59de5190b..7af41361c480 100644
---- a/arch/arm/boot/dts/openbmc-flash-layout-64.dtsi
-+++ b/arch/arm/boot/dts/openbmc-flash-layout-64.dtsi
-@@ -28,7 +28,7 @@ partitions {
- 		label = "rofs";
- 	};
+diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
+index 984c737fa627..6e738f2a3701 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
++++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi
+@@ -273,9 +273,9 @@
+ 		#size-cells = <1>;
+ 		ranges = <0x00 0x00 0xff800000 0x3000>;
  
--	rwfs@6000000 {
-+	rwfs@2a00000 {
- 		reg = <0x2a00000 0x1600000>; // 22MB
- 		label = "rwfs";
- 	};
-diff --git a/arch/arm/boot/dts/openbmc-flash-layout.dtsi b/arch/arm/boot/dts/openbmc-flash-layout.dtsi
-index 6c26524e93e1..b47e14063c38 100644
---- a/arch/arm/boot/dts/openbmc-flash-layout.dtsi
-+++ b/arch/arm/boot/dts/openbmc-flash-layout.dtsi
-@@ -20,7 +20,7 @@ partitions {
- 		label = "kernel";
- 	};
+-		timer: timer@400 {
+-			compatible = "brcm,bcm6328-timer", "syscon";
+-			reg = <0x400 0x3c>;
++		twd: timer-mfd@400 {
++			compatible = "brcm,bcm4908-twd", "simple-mfd", "syscon";
++			reg = <0x400 0x4c>;
+ 		};
  
--	rofs@c0000 {
-+	rofs@4c0000 {
- 		reg = <0x4c0000 0x1740000>;
- 		label = "rofs";
+ 		gpio0: gpio-controller@500 {
+@@ -330,7 +330,7 @@
+ 
+ 	reboot {
+ 		compatible = "syscon-reboot";
+-		regmap = <&timer>;
++		regmap = <&twd>;
+ 		offset = <0x34>;
+ 		mask = <1>;
  	};
 -- 
 2.34.1
