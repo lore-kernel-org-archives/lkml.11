@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E89C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4D8C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382745AbiDENSM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        id S235614AbiDENYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344348AbiDEJTe (ORCPT
+        with ESMTP id S1345181AbiDEJWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:34 -0400
+        Tue, 5 Apr 2022 05:22:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731DBE0D9;
-        Tue,  5 Apr 2022 02:07:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0B92A714;
+        Tue,  5 Apr 2022 02:09:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25062B81C19;
-        Tue,  5 Apr 2022 09:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 674CFC385A0;
-        Tue,  5 Apr 2022 09:07:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3995B81BAE;
+        Tue,  5 Apr 2022 09:09:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DB67C385A2;
+        Tue,  5 Apr 2022 09:09:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149657;
-        bh=UPyd4KE5RZhuBQ3r29MQ6fG0fXlHOPnapWsvTCOT5Uw=;
+        s=korg; t=1649149771;
+        bh=111nFQNGUUvNUOoM3silLV8vcRp4KOZ0W6kSv0vS8KU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r5BNr1UqGl7ljJG4spYyWwQM7Xm4oiHGBUeZfguwGOPoB/nhY04pvFXk5cgJg/Eeq
-         /lAW+Di3XjWEDPmYemCsWxD2JrYJzRIss1hWg9QVnbVuLJc2OUCCV9Zjw8C6dNd8Ni
-         uHgQ6Uu1aWNVI2FqD6QTQ43iiJQFoeFnHRmG509A=
+        b=OFZ9fytw+H6Cqd5PkoIjOnzr+iLrcWC49DStxgMSZ85AYAy/2hrj2JHX5+T6N78Uw
+         8qrMmumMJl7CgCsHOkNRrRjcIkzeTAnalxY737Dd30xd73o+cft3Qer+rxHBJ+1FEg
+         ZZpCkU+8DzSKU2A9rnfO3MK2Oie+MiYYxCbHSsaY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0792/1017] NFSD: Fix nfsd_breaker_owns_lease() return values
-Date:   Tue,  5 Apr 2022 09:28:25 +0200
-Message-Id: <20220405070417.761952002@linuxfoundation.org>
+Subject: [PATCH 5.16 0833/1017] ASoC: soc-core: skip zero num_dai component in searching dai name
+Date:   Tue,  5 Apr 2022 09:29:06 +0200
+Message-Id: <20220405070418.970627526@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,55 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 50719bf3442dd6cd05159e9c98d020b3919ce978 ]
+[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
 
-These have been incorrect since the function was introduced.
+In the case like dmaengine which's not a dai but as a component, the
+num_dai is zero, dmaengine component has the same component_of_node
+as cpu dai, when cpu dai component is not ready, but dmaengine component
+is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
+-EINVAL, not -EPROBE_DEFER, that cause below error:
 
-A proper kerneldoc comment is added since this function, though
-static, is part of an external interface.
+asoc-simple-card <card name>: parse error -22
+asoc-simple-card: probe of <card name> failed with error -22
 
-Reported-by: Dai Ngo <dai.ngo@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+The sound card failed to probe.
+
+So this patch fixes the issue above by skipping the zero num_dai
+component in searching dai name.
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/nfs4state.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ sound/soc/soc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
-index ac0ddde8beef..6075a328d756 100644
---- a/fs/nfsd/nfs4state.c
-+++ b/fs/nfsd/nfs4state.c
-@@ -4693,6 +4693,14 @@ nfsd_break_deleg_cb(struct file_lock *fl)
- 	return ret;
- }
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index dcf6be4c4aaa..0dc89f568407 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -3184,7 +3184,7 @@ int snd_soc_get_dai_name(const struct of_phandle_args *args,
+ 	for_each_component(pos) {
+ 		struct device_node *component_of_node = soc_component_to_node(pos);
  
-+/**
-+ * nfsd_breaker_owns_lease - Check if lease conflict was resolved
-+ * @fl: Lock state to check
-+ *
-+ * Return values:
-+ *   %true: Lease conflict was resolved
-+ *   %false: Lease conflict was not resolved.
-+ */
- static bool nfsd_breaker_owns_lease(struct file_lock *fl)
- {
- 	struct nfs4_delegation *dl = fl->fl_owner;
-@@ -4700,11 +4708,11 @@ static bool nfsd_breaker_owns_lease(struct file_lock *fl)
- 	struct nfs4_client *clp;
+-		if (component_of_node != args->np)
++		if (component_of_node != args->np || !pos->num_dai)
+ 			continue;
  
- 	if (!i_am_nfsd())
--		return NULL;
-+		return false;
- 	rqst = kthread_data(current);
- 	/* Note rq_prog == NFS_ACL_PROGRAM is also possible: */
- 	if (rqst->rq_prog != NFS_PROGRAM || rqst->rq_vers < 4)
--		return NULL;
-+		return false;
- 	clp = *(rqst->rq_lease_breaker);
- 	return dl->dl_stid.sc_client == clp;
- }
+ 		ret = snd_soc_component_of_xlate_dai_name(pos, args, dai_name);
 -- 
 2.34.1
 
