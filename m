@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED37C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A599C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390970AbiDENqE (ORCPT
+        id S1390988AbiDENqZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
+        Tue, 5 Apr 2022 09:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347188AbiDEJZU (ORCPT
+        with ESMTP id S1347261AbiDEJZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:25:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7493DBD1A;
-        Tue,  5 Apr 2022 02:14:55 -0700 (PDT)
+        Tue, 5 Apr 2022 05:25:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D947DCAB0;
+        Tue,  5 Apr 2022 02:15:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0562D61663;
-        Tue,  5 Apr 2022 09:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192E4C385A0;
-        Tue,  5 Apr 2022 09:14:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E3FE61659;
+        Tue,  5 Apr 2022 09:15:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD13C385A0;
+        Tue,  5 Apr 2022 09:15:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150091;
-        bh=yMDw+3Dl6/Eb0dGKBwer0nh7Fx6ro0c+hSAlN+Glybo=;
+        s=korg; t=1649150102;
+        bh=4djunoAxJHOaDgEd2iZ0RMBXmqeYYQMugjYVYuIJyBs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aG8H11vtS+zoSRyNA3ri+nS4Dl4/Pxg0Wx98IjlHBdel7vMHlkzQ3g93j6q167Opt
-         nCA0eGw2LlUkVqrh2u+c6EfADuLPAf34bGpkUcwEo02+0ZU/V9tXEa93if7K0yKMAN
-         r+X/Re+kU9g9yerkZidGjtO/cFY5sEYwc21Bd+rs=
+        b=VDYIdw22qhOhK0A9LFH4yO1dWKTBnNBCzXh2qQGiQus/H2dH3cjvubrYRpz4hNG5i
+         C6TuafokJNnmH5fc7o4LnBKa16mLE9lz/1gqMXCdJwDRBG+0A3bjy2vqvxtiD/uAWR
+         qR9/0x9zz3Plh8XQMywhaAPrQ0uOPyb2/Kn/JZKU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.16 0950/1017] Revert "virtio-pci: harden INTX interrupts"
-Date:   Tue,  5 Apr 2022 09:31:03 +0200
-Message-Id: <20220405070422.411415860@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Fangrui Song <maskray@google.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.16 0954/1017] riscv module: remove (NOLOAD)
+Date:   Tue,  5 Apr 2022 09:31:07 +0200
+Message-Id: <20220405070422.528094436@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,81 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Fangrui Song <maskray@google.com>
 
-commit 7b79edfb862d6b1ecc66479419ae67a7db2d02e3 upstream.
+commit 60210a3d86dc57ce4a76a366e7841dda746a33f7 upstream.
 
-This reverts commit 080cd7c3ac8701081d143a15ba17dd9475313188. Since
-the MSI-X interrupts hardening will be reverted in the next patch. We
-will rework the interrupt hardening in the future.
+On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
+inappropriate for .plt, .got, and .got.plt sections which are always
+SHT_PROGBITS.
 
-Fixes: 080cd7c3ac87 ("virtio-pci: harden INTX interrupts")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Link: https://lore.kernel.org/r/20220323031524.6555-1-jasowang@redhat.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
+and (NOLOAD) will be essentially ignored. In ld.lld, since
+https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
+customize the output section type"), ld.lld will report a `section type
+mismatch` error (later changed to a warning). Just remove (NOLOAD) to
+fix the warning.
+
+[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
+section should be marked as not loadable" on
+https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
+outdated for ELF.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1597
+Fixes: ab1ef68e5401 ("RISC-V: Add sections of PLT and GOT for kernel module")
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_pci_common.c |   23 ++---------------------
- drivers/virtio/virtio_pci_common.h |    1 -
- 2 files changed, 2 insertions(+), 22 deletions(-)
+ arch/riscv/include/asm/module.lds.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -30,16 +30,8 @@ void vp_disable_cbs(struct virtio_device
- 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
- 	int i;
- 
--	if (vp_dev->intx_enabled) {
--		/*
--		 * The below synchronize() guarantees that any
--		 * interrupt for this line arriving after
--		 * synchronize_irq() has completed is guaranteed to see
--		 * intx_soft_enabled == false.
--		 */
--		WRITE_ONCE(vp_dev->intx_soft_enabled, false);
-+	if (vp_dev->intx_enabled)
- 		synchronize_irq(vp_dev->pci_dev->irq);
--	}
- 
- 	for (i = 0; i < vp_dev->msix_vectors; ++i)
- 		disable_irq(pci_irq_vector(vp_dev->pci_dev, i));
-@@ -51,16 +43,8 @@ void vp_enable_cbs(struct virtio_device
- 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
- 	int i;
- 
--	if (vp_dev->intx_enabled) {
--		disable_irq(vp_dev->pci_dev->irq);
--		/*
--		 * The above disable_irq() provides TSO ordering and
--		 * as such promotes the below store to store-release.
--		 */
--		WRITE_ONCE(vp_dev->intx_soft_enabled, true);
--		enable_irq(vp_dev->pci_dev->irq);
-+	if (vp_dev->intx_enabled)
- 		return;
--	}
- 
- 	for (i = 0; i < vp_dev->msix_vectors; ++i)
- 		enable_irq(pci_irq_vector(vp_dev->pci_dev, i));
-@@ -113,9 +97,6 @@ static irqreturn_t vp_interrupt(int irq,
- 	struct virtio_pci_device *vp_dev = opaque;
- 	u8 isr;
- 
--	if (!READ_ONCE(vp_dev->intx_soft_enabled))
--		return IRQ_NONE;
--
- 	/* reading the ISR has the effect of also clearing it so it's very
- 	 * important to save off the value. */
- 	isr = ioread8(vp_dev->isr);
---- a/drivers/virtio/virtio_pci_common.h
-+++ b/drivers/virtio/virtio_pci_common.h
-@@ -63,7 +63,6 @@ struct virtio_pci_device {
- 	/* MSI-X support */
- 	int msix_enabled;
- 	int intx_enabled;
--	bool intx_soft_enabled;
- 	cpumask_var_t *msix_affinity_masks;
- 	/* Name strings for interrupts. This size should be enough,
- 	 * and I'm too lazy to allocate each name separately. */
+--- a/arch/riscv/include/asm/module.lds.h
++++ b/arch/riscv/include/asm/module.lds.h
+@@ -2,8 +2,8 @@
+ /* Copyright (C) 2017 Andes Technology Corporation */
+ #ifdef CONFIG_MODULE_SECTIONS
+ SECTIONS {
+-	.plt (NOLOAD) : { BYTE(0) }
+-	.got (NOLOAD) : { BYTE(0) }
+-	.got.plt (NOLOAD) : { BYTE(0) }
++	.plt : { BYTE(0) }
++	.got : { BYTE(0) }
++	.got.plt : { BYTE(0) }
+ }
+ #endif
 
 
