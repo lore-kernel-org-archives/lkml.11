@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10ED2C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF85AC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451731AbiDEWai (ORCPT
+        id S1452017AbiDEWbM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34404 "EHLO
+        Tue, 5 Apr 2022 18:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238653AbiDEJwx (ORCPT
+        with ESMTP id S1358186AbiDEK2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1744991A;
-        Tue,  5 Apr 2022 02:50:55 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9639E9E1;
+        Tue,  5 Apr 2022 03:16:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFDB3B817D3;
-        Tue,  5 Apr 2022 09:50:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16133C385A1;
-        Tue,  5 Apr 2022 09:50:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E195E617A4;
+        Tue,  5 Apr 2022 10:16:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F168AC385A1;
+        Tue,  5 Apr 2022 10:16:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152252;
-        bh=cxIlbeMDmUc/aVrFTc+t0g8Jo+ZFlW+CNDEk4hZ16Io=;
+        s=korg; t=1649153793;
+        bh=BUp89Y48prw3uC7Zsp9NBI6Xgc8DoR1PbAzvthqIWTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fI3cURfxOKzPq+kR3EwB5eYqs1pOK4dhU3c9MMjJCtQqwMTetRGX4jZFedYgK0euY
-         o92rcf1HnBg5R/mbXKCjQANZ8kRJgQgCS5TgATcNpwY1HlhFu4m6L/EBuikTyjMeCV
-         U0JlfHOjZYuf3G7n6fg7a6nrFyEqaCz0jfkvqNSg=
+        b=ks33A9w9DcgmLuiQHIykxg7cbCpCV1Qd8VHCs50iiLNWVX9vrRdL0fArKVjUh5kIi
+         prcCiXG8BD+EICoygn6oTirv3p5GFUxVjMFqDwXSR7G2GCXXaMmI7oNUChd4aN6pJX
+         EmhpDGNFN5BGRilxnBSDAryB2oGHeNdDckx60Ihc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ritesh Harjani <riteshh@linux.ibm.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 711/913] ext4: correct cluster len and clusters changed accounting in ext4_mb_mark_bb
-Date:   Tue,  5 Apr 2022 09:29:33 +0200
-Message-Id: <20220405070401.147664169@linuxfoundation.org>
+Subject: [PATCH 5.10 349/599] vxcan: enable local echo for sent CAN frames
+Date:   Tue,  5 Apr 2022 09:30:43 +0200
+Message-Id: <20220405070309.211281348@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,79 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ritesh Harjani <riteshh@linux.ibm.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit a5c0e2fdf7cea535ba03259894dc184e5a4c2800 ]
+[ Upstream commit 259bdba27e32368b4404f69d613b1c1014c07cbf ]
 
-ext4_mb_mark_bb() currently wrongly calculates cluster len (clen) and
-flex_group->free_clusters. This patch fixes that.
+The vxcan driver provides a pair of virtual CAN interfaces to exchange
+CAN traffic between different namespaces - analogue to veth.
 
-Identified based on code review of ext4_mb_mark_bb() function.
+In opposite to the vcan driver the local sent CAN traffic on this interface
+is not echo'ed back but only sent to the remote peer. This is unusual and
+can be easily fixed by removing IFF_ECHO from the netdevice flags that
+are set for vxcan interfaces by default at startup.
 
-Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/a0b035d536bafa88110b74456853774b64c8ac40.1644992609.git.riteshh@linux.ibm.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Without IFF_ECHO set on driver level, the local sent CAN frames are echo'ed
+in af_can.c in can_send(). This patch makes vxcan interfaces adopt the
+same local echo behavior and procedures as known from the vcan interfaces.
+
+Fixes: a8f820a380a2 ("can: add Virtual CAN Tunnel driver (vxcan)")
+Link: https://lore.kernel.org/all/20220309120416.83514-5-socketcan@hartkopp.net
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/mballoc.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/can/vxcan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 74e3286d0e26..9a749327336f 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -3899,10 +3899,11 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
- 	struct ext4_sb_info *sbi = EXT4_SB(sb);
- 	ext4_group_t group;
- 	ext4_grpblk_t blkoff;
--	int i, clen, err;
-+	int i, err;
- 	int already;
-+	unsigned int clen, clen_changed;
+diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
+index 7000c6cd1e48..282c53ef76d2 100644
+--- a/drivers/net/can/vxcan.c
++++ b/drivers/net/can/vxcan.c
+@@ -148,7 +148,7 @@ static void vxcan_setup(struct net_device *dev)
+ 	dev->hard_header_len	= 0;
+ 	dev->addr_len		= 0;
+ 	dev->tx_queue_len	= 0;
+-	dev->flags		= (IFF_NOARP|IFF_ECHO);
++	dev->flags		= IFF_NOARP;
+ 	dev->netdev_ops		= &vxcan_netdev_ops;
+ 	dev->needs_free_netdev	= true;
  
--	clen = EXT4_B2C(sbi, len);
-+	clen = EXT4_NUM_B2C(sbi, len);
- 
- 	ext4_get_group_no_and_offset(sb, block, &group, &blkoff);
- 	bitmap_bh = ext4_read_block_bitmap(sb, group);
-@@ -3923,6 +3924,7 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
- 		if (!mb_test_bit(blkoff + i, bitmap_bh->b_data) == !state)
- 			already++;
- 
-+	clen_changed = clen - already;
- 	if (state)
- 		ext4_set_bits(bitmap_bh->b_data, blkoff, clen);
- 	else
-@@ -3935,9 +3937,9 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
- 						group, gdp));
- 	}
- 	if (state)
--		clen = ext4_free_group_clusters(sb, gdp) - clen + already;
-+		clen = ext4_free_group_clusters(sb, gdp) - clen_changed;
- 	else
--		clen = ext4_free_group_clusters(sb, gdp) + clen - already;
-+		clen = ext4_free_group_clusters(sb, gdp) + clen_changed;
- 
- 	ext4_free_group_clusters_set(sb, gdp, clen);
- 	ext4_block_bitmap_csum_set(sb, group, gdp, bitmap_bh);
-@@ -3947,10 +3949,13 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
- 
- 	if (sbi->s_log_groups_per_flex) {
- 		ext4_group_t flex_group = ext4_flex_group(sbi, group);
-+		struct flex_groups *fg = sbi_array_rcu_deref(sbi,
-+					   s_flex_groups, flex_group);
- 
--		atomic64_sub(len,
--			     &sbi_array_rcu_deref(sbi, s_flex_groups,
--						  flex_group)->free_clusters);
-+		if (state)
-+			atomic64_sub(clen_changed, &fg->free_clusters);
-+		else
-+			atomic64_add(clen_changed, &fg->free_clusters);
- 	}
- 
- 	err = ext4_handle_dirty_metadata(NULL, NULL, bitmap_bh);
 -- 
 2.34.1
 
