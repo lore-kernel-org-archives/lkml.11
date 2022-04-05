@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B42C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7596BC46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381934AbiDEMAG (ORCPT
+        id S1381871AbiDEL7x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52326 "EHLO
+        Tue, 5 Apr 2022 07:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245091AbiDEIxM (ORCPT
+        with ESMTP id S245033AbiDEIxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:12 -0400
+        Tue, 5 Apr 2022 04:53:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309BC188;
-        Tue,  5 Apr 2022 01:51:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA46DF1;
+        Tue,  5 Apr 2022 01:50:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE7A6614FD;
-        Tue,  5 Apr 2022 08:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B877BC385A1;
-        Tue,  5 Apr 2022 08:51:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD66461509;
+        Tue,  5 Apr 2022 08:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B479AC385A3;
+        Tue,  5 Apr 2022 08:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148673;
-        bh=HxPvGO4i6YQI4tsd97xYSdxadOmMIE2y4ja5TyeJoRo=;
+        s=korg; t=1649148612;
+        bh=cHh6Am89UvKmAAC6DhpJgKI9IPbPSd8DeXy2OH/l794=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XhtfI8x39WFEd7LQfuJAMeQl6Yiy8iAnZRC3MOG8twJ+M7E0fXYGGq0lfuS7HtZhC
-         Psx17R0mZ6jSFuh9H7Vyk+DR797UuNhI10+fCSDFVFTWvHCCons8YpCHX1Xk0rdBT8
-         7POfFJdw1JnYjKjOu0xl2W9Kzko4J/zv0pzT0B3w=
+        b=LN26nnnL3CWPvZxGsoNhIkn+pcnGefkZ9OJ4px2C8NGzP/pnbPFPzkPaoyZGIJNWp
+         L7ckHdVHr1WY60OIGUqgXmPgohGLGA3jfrhu5lG5ixW2H6MZI+kkBhK27g/HkywtCl
+         lihCKEJJlOhQ094KOD4tbi7XHR3VLdM3nDbYcY6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Yiru Xu <xyru1999@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0441/1017] ice: respect metadata on XSK Rx to skb
-Date:   Tue,  5 Apr 2022 09:22:34 +0200
-Message-Id: <20220405070407.385524288@linuxfoundation.org>
+Subject: [PATCH 5.16 0417/1017] Bluetooth: hci_serdev: call init_rwsem() before p->open()
+Date:   Tue,  5 Apr 2022 09:22:10 +0200
+Message-Id: <20220405070406.666839315@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,65 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 45a34ca68070e34e09d5bf4309f7f1f286a27fc7 ]
+[ Upstream commit 9d7cbe2b9cf5f650067df4f402fdd799d4bbb4e1 ]
 
-For now, if the XDP prog returns XDP_PASS on XSK, the metadata will
-be lost as it doesn't get copied to the skb.
+kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
+The problem was in wrong place for percpu_init_rwsem() call.
 
-Copy it along with the frame headers. Account its size on skb
-allocation, and when copying just treat it as a part of the frame
-and do a pull after to "move" it to the "reserved" zone.
+hci_uart_proto::open() may register a timer whose callback may call
+hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
+thread won't be fast enough to call percpu_init_rwsem().
 
-net_prefetch() xdp->data_meta and align the copy size to speed-up
-memcpy() a little and better match ice_construct_skb().
+Fix it my moving percpu_init_rwsem() call before p->open().
 
-Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
-Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
+...
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ assign_lock_key kernel/locking/lockdep.c:951 [inline]
+ register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
+ __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
+ lock_acquire kernel/locking/lockdep.c:5637 [inline]
+ lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
+ percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
+ hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
+ h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+
+Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
+Reported-by: Yiru Xu <xyru1999@gmail.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_xsk.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/bluetooth/hci_serdev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index a2c79431afd8..ac97cf3c5804 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -428,18 +428,24 @@ static void ice_bump_ntc(struct ice_rx_ring *rx_ring)
- static struct sk_buff *
- ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
- {
-+	unsigned int totalsize = xdp->data_end - xdp->data_meta;
- 	unsigned int metasize = xdp->data - xdp->data_meta;
--	unsigned int datasize = xdp->data_end - xdp->data;
- 	struct sk_buff *skb;
+diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+index 3b00d82d36cf..4cda890ce647 100644
+--- a/drivers/bluetooth/hci_serdev.c
++++ b/drivers/bluetooth/hci_serdev.c
+@@ -305,6 +305,8 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 	if (err)
+ 		return err;
  
--	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
-+	net_prefetch(xdp->data_meta);
++	percpu_init_rwsem(&hu->proto_lock);
 +
-+	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, totalsize,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		return NULL;
+ 	err = p->open(hu);
+ 	if (err)
+ 		goto err_open;
+@@ -327,7 +329,6 @@ int hci_uart_register_device(struct hci_uart *hu,
  
--	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
--	if (metasize)
-+	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
-+	       ALIGN(totalsize, sizeof(long)));
-+
-+	if (metasize) {
- 		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
-+	}
+ 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
+ 	INIT_WORK(&hu->write_work, hci_uart_write_work);
+-	percpu_init_rwsem(&hu->proto_lock);
  
- 	xsk_buff_free(xdp);
- 	return skb;
+ 	/* Only when vendor specific setup callback is provided, consider
+ 	 * the manufacturer information valid. This avoids filling in the
 -- 
 2.34.1
 
