@@ -2,169 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D27C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7497C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454592AbiDFCvA (ORCPT
+        id S1457313AbiDFCvU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
+        Tue, 5 Apr 2022 22:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586235AbiDFABM (ORCPT
+        with ESMTP id S1586948AbiDFAGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 20:01:12 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9FE9BAF0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:26:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649197599; x=1680733599;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pW27kf6wGZKRVMIeWfA0Y9QPC3INAacHxabCny2Kt0o=;
-  b=eJwqEy6qWfmLCdkMS6go7DH6+xDH59/YEYAh9mTd03oeLxF12VG6jS3T
-   PWYZnglzbGedJ7XpXrZQd4/OcRlTci7405mwzE/7pHhm9x4BLGIVY0QW4
-   TbgDA3x2bAGB1ALX1u0jA8d6RFLWRNLl78uL+xUPClD7mZLQZWU1v13NP
-   YY8d9cShg9H78gRAss7sqP4sCXhmYePiv5jVb9XHndiFMv+xviAD8qnJN
-   tICpM3nAlrFaecY+KblfKOArtuH0mZPRkIo9lf71JSaJerGUBvgXWD7tO
-   X4vPgCoO+pDhtbp/FwB2eGyLHlumkzLVOvVvm3h7MK0IDxVcTjGKthEz3
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240812303"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="240812303"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 15:26:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="570123375"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 05 Apr 2022 15:26:37 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbrdE-0003p3-QW;
-        Tue, 05 Apr 2022 22:26:36 +0000
-Date:   Wed, 06 Apr 2022 06:25:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:sched/core] BUILD SUCCESS
- 089c02ae2771a14af2928c59c56abfb9b885a8d7
-Message-ID: <624cc1e4.e2KxaWTIymi80O2A%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 5 Apr 2022 20:06:33 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F45BF53B;
+        Tue,  5 Apr 2022 15:32:22 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KY2Sd6x1Gz4xY2;
+        Wed,  6 Apr 2022 08:32:01 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649197922;
+        bh=m8mQ+AAlaFbjrsVWsEIbNf1ef+uhsQG+0q725wBu1b0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=e97n9l0n+mWY7rInRU4D4W1tu+awUnIHu4J2xHpCxBKz5hXMXlvcyFMhZ2simTPW7
+         7tMjbW7EIK7FIr0ajuwSvk8eFltl/+z2I0D2bgbYuLeeJcZAx/4tAnam5qn4qHYlwA
+         l9pIXTbiN2Oa0O1d4tR5YxwhsKwuX3a8iyzr8lHHXG0gky+knlPolswKmkgdroalEZ
+         TyMdy6AY8gz7Qe/Pl/HyVrrXKUoU5RNBfJ6usVrauZMvqIhE8BuBoQ7ngV6XzDV0QQ
+         b8ow7wodZdOwcEwq73W7IzhPaQA1yGTcaHQpIXDEV5rYQn578plHa/pNYaSnFp2tjh
+         ON4r8rITZp+DQ==
+Date:   Wed, 6 Apr 2022 08:32:01 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the v4l-dvb tree
+Message-ID: <20220406083201.15e8e589@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/hZkRtp5noDF.3RVrYk5gFG4";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-branch HEAD: 089c02ae2771a14af2928c59c56abfb9b885a8d7  ftrace: Use preemption model accessors for trace header printout
+--Sig_/hZkRtp5noDF.3RVrYk5gFG4
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-elapsed time: 760m
+Hi all,
 
-configs tested: 90
-configs skipped: 3
+Commit
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+  535f49a9e1f9 ("media: platform: imx-mipi-csis: Add dependency on VIDEO_DE=
+V")
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-arm                         lpc18xx_defconfig
-mips                         db1xxx_defconfig
-sh                           se7343_defconfig
-sh                         ap325rxa_defconfig
-arm                        shmobile_defconfig
-m68k                        mvme16x_defconfig
-riscv                            allmodconfig
-mips                  maltasmvp_eva_defconfig
-sh                             sh03_defconfig
-powerpc                         wii_defconfig
-arm                             ezx_defconfig
-sh                        edosk7760_defconfig
-powerpc                     stx_gp3_defconfig
-m68k                        mvme147_defconfig
-ia64                             allyesconfig
-mips                         cobalt_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220405
-ia64                             allmodconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+is missing a Signed-off-by from its committer.
 
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220405
-riscv                randconfig-c006-20220405
-mips                 randconfig-c004-20220405
-arm                  randconfig-c002-20220405
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220405
-riscv                randconfig-r042-20220405
-hexagon              randconfig-r041-20220405
+--=20
+Cheers,
+Stephen Rothwell
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--Sig_/hZkRtp5noDF.3RVrYk5gFG4
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJMw2EACgkQAVBC80lX
+0GxMwgf8DzWjdfW7ehDUCjvyT17Y5RWVtuzrXQ3xYGlQqZCXUwM/h18MXkr53Mqm
+7wtCj/UyVPfDVOlQpZdJqZCZTCqBlPSYWEU1i/AfkWl270rstJfs3Uh8RRzWxGmL
++keKVHltYnAiHlQpzBYrRer4jFr2/EVg0xJEBeE66d++UdZKQ3VGmwbzqdIqzpvR
+liSoFhmccji47BfzAMCMGaKyQPi0jp8tgxku4Lvqaoq0R0hEdCdUPUYQREgASbPf
+JiISIGJqU+Wy3E1XsrRE8D8nNF/MdjwrTlD2j6+FCROA5r+LBihBcUgjx7klghLb
+O2b6YwMuUj/GvZ4XCg6dpZspsCsXDg==
+=nDqG
+-----END PGP SIGNATURE-----
+
+--Sig_/hZkRtp5noDF.3RVrYk5gFG4--
