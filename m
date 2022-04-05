@@ -2,157 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E645DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C45AC41535
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360373AbiDFDaH (ORCPT
+        id S2360503AbiDFDb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
+        Tue, 5 Apr 2022 23:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850041AbiDFCrJ (ORCPT
+        with ESMTP id S1850378AbiDFCwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:47:09 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627D2294A32;
-        Tue,  5 Apr 2022 16:48:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649202521; x=1680738521;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uxOljjKX+qk9GQuCznjSBxeTYqGSyAmKn+lWvo4axDU=;
-  b=krarkGPDArAarEZszI0oXyaf94CLU31PWcatsi8sGKsr5v18hezKkWQ+
-   fESXE3GMRzy1V2mA5qVovpECViAHxVMLUG/wKcbRTHxzut0zzDtuAoxgB
-   /GSsui3ed3hHescEwHWLdQVQO+vnaFsULPc71JGEAdAeeSVosWoKXMjN7
-   HcJssFK0Wke7ST5zcdjFUz7PfSs1nulF0zv6m1P8lhI/55adQLMs3s62S
-   DQ/CI9wYFxSmXWeUx2H66kJquaZfdCcrNmI3KWL+O+MoEQvd8Tj4e8YJ2
-   RR+S3Aa1Qo02ekoLY2PXmB+Ut2WGYICeK9hV7aFs9HVn/Vsb7K6my8MxT
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243035267"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="243035267"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:48:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="608658168"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 05 Apr 2022 16:48:35 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 98F0C32E; Wed,  6 Apr 2022 02:43:47 +0300 (EEST)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 2/8] efi/x86: Get full memory map in allocate_e820()
-Date:   Wed,  6 Apr 2022 02:43:37 +0300
-Message-Id: <20220405234343.74045-3-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
-References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+        Tue, 5 Apr 2022 22:52:14 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66054181149;
+        Tue,  5 Apr 2022 16:52:16 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id e22so1074856ioe.11;
+        Tue, 05 Apr 2022 16:52:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pHXomKH7znoD3NKtjCedrAePGvj1PU34oOzV9waUrWE=;
+        b=qP2Je91cC5X9wuYLjZp8TH9PNetiSDkDUC4K9LVY0XsP70Z0P360X7QBCcp544wpWn
+         uj80MoZx+E/whCCVsJBl7bHFLs4zX9YT1v0DtGIo2TXQVILm6wSdrAYbxEVLaPSpMPRG
+         SIKIBtv9TFPsCcXbNOHKCqINnfCryFkkOuEUG17CZIPI7EC5N++bXiQLtbGUwI3G1ktC
+         B4WGJJrB9L4fEuvWaEKUmpTr1MxaOMVrexGTVXwlaRX188e8xQqjFFpGQ/W7Qw+DtTJ8
+         44qAfRFH+M9VBi0NFgLYpeT8wWfgUW7inCLoeNUEeDAjzmUxiUZdp/P9BBnkLKTi4zUx
+         rLGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pHXomKH7znoD3NKtjCedrAePGvj1PU34oOzV9waUrWE=;
+        b=jdmo3pXGSLArTYozWH56R61Sa9Vm8CKn635zT3jwKfS6G9VwiGq4bMj1JGW9CWrIOC
+         zgZE0A9nu4gni9LSjQ04SWMPAmBsI/0DMPKKQASMPPCisp5MjyHQ3OVKnXvS+lqqBhS+
+         IrIYLQVlyQjkeQ4lU7+8XZ69SKvya7elwuXCydLM6ftV8DChQHldjiNBt0U9hOzzTghu
+         zgzsrQ11B6JFK79XWsA7ObyiiZ9KImBdGY/V8b5H7bePn8uc3LvbObG+OH182xmkd5GF
+         x+uP2goSxS/RGteWy1y61OHLobZTJLr6OzQySzcsXDJkaS7ybD0Hb2RqDeoxLXNZRB9T
+         nwPA==
+X-Gm-Message-State: AOAM533CEvHxR5iN4a6VcaGJ1GLQ7vWPtbG4Rz4rjPUfl+VRlZB4EMAP
+        bG9KOKVZeuBjyzxtK3lQd+zE4KQgH8bLN7SuFRw=
+X-Google-Smtp-Source: ABdhPJw6QDEx6357RD8/tWoPiOfZM+DJ9CdKHEhzqAWEeOUPTScS2FluYFnoR+Xgdc6Cy4lLB2keEra95hY1Z8CnTU4=
+X-Received: by 2002:a05:6638:772:b0:319:e4eb:adb with SMTP id
+ y18-20020a056638077200b00319e4eb0adbmr3287706jad.237.1649202733374; Tue, 05
+ Apr 2022 16:52:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220405163728.56471-1-ytcoode@gmail.com>
+In-Reply-To: <20220405163728.56471-1-ytcoode@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 5 Apr 2022 16:52:02 -0700
+Message-ID: <CAEf4BzZLw-QeXgb1HRR-b3D5NqQRs_iqOFcZmokvmf6rXTy-iw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Remove redundant checks in get_stack_print_output()
+To:     Yuntao Wang <ytcoode@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently allocate_e820() only interested in the size of map and size of
-memory descriptor to determine how many e820 entries the kernel needs.
+On Tue, Apr 5, 2022 at 9:39 AM Yuntao Wang <ytcoode@gmail.com> wrote:
+>
+> The checks preceding CHECK macro are redundant, remove them.
+>
+> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+> index 16048978a1ef..5f2ab720dabd 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+> @@ -76,10 +76,8 @@ static void get_stack_print_output(void *ctx, int cpu, void *data, __u32 size)
+>                         good_user_stack = true;
+>         }
+>
+> -       if (!good_kern_stack)
+> -           CHECK(!good_kern_stack, "kern_stack", "corrupted kernel stack\n");
+> -       if (!good_user_stack)
+> -           CHECK(!good_user_stack, "user_stack", "corrupted user stack\n");
+> +       CHECK(!good_kern_stack, "kern_stack", "corrupted kernel stack\n");
+> +       CHECK(!good_user_stack, "user_stack", "corrupted user stack\n");
 
-UEFI Specification version 2.9 introduces a new memory type --
-unaccepted memory. To track unaccepted memory kernel needs to allocate
-a bitmap. The size of the bitmap is dependent on the maximum physical
-address present in the system. A full memory map is required to find
-the maximum address.
+I suspect it was to avoid super long verbose logs, as each CHECK()
+emits one line into output and here we might be getting a lot of
+samples. So let's keep it as is. But for the future let's try getting
+rid of CHECK()s as much as possible in favor of ASSERT_xxx(). Thanks.
 
-Modify allocate_e820() to get a full memory map.
-
-This is preparation for the next patch that implements handling of
-unaccepted memory in EFI stub.
-
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
----
- drivers/firmware/efi/libstub/x86-stub.c | 28 ++++++++++++-------------
- 1 file changed, 13 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
-index 01ddd4502e28..d18cac8ab436 100644
---- a/drivers/firmware/efi/libstub/x86-stub.c
-+++ b/drivers/firmware/efi/libstub/x86-stub.c
-@@ -569,30 +569,28 @@ static efi_status_t alloc_e820ext(u32 nr_desc, struct setup_data **e820ext,
- }
- 
- static efi_status_t allocate_e820(struct boot_params *params,
-+				  struct efi_boot_memmap *map,
- 				  struct setup_data **e820ext,
- 				  u32 *e820ext_size)
- {
--	unsigned long map_size, desc_size, map_key;
- 	efi_status_t status;
--	__u32 nr_desc, desc_version;
-+	__u32 nr_desc;
- 
--	/* Only need the size of the mem map and size of each mem descriptor */
--	map_size = 0;
--	status = efi_bs_call(get_memory_map, &map_size, NULL, &map_key,
--			     &desc_size, &desc_version);
--	if (status != EFI_BUFFER_TOO_SMALL)
--		return (status != EFI_SUCCESS) ? status : EFI_UNSUPPORTED;
--
--	nr_desc = map_size / desc_size + EFI_MMAP_NR_SLACK_SLOTS;
-+	status = efi_get_memory_map(map);
-+	if (status != EFI_SUCCESS)
-+		return status;
- 
--	if (nr_desc > ARRAY_SIZE(params->e820_table)) {
--		u32 nr_e820ext = nr_desc - ARRAY_SIZE(params->e820_table);
-+	nr_desc = *map->map_size / *map->desc_size;
-+	if (nr_desc > ARRAY_SIZE(params->e820_table) - EFI_MMAP_NR_SLACK_SLOTS) {
-+		u32 nr_e820ext = nr_desc - ARRAY_SIZE(params->e820_table) +
-+			EFI_MMAP_NR_SLACK_SLOTS;
- 
- 		status = alloc_e820ext(nr_e820ext, e820ext, e820ext_size);
- 		if (status != EFI_SUCCESS)
--			return status;
-+			goto out;
- 	}
--
-+out:
-+	efi_bs_call(free_pool, *map->map);
- 	return EFI_SUCCESS;
- }
- 
-@@ -642,7 +640,7 @@ static efi_status_t exit_boot(struct boot_params *boot_params, void *handle)
- 	priv.boot_params	= boot_params;
- 	priv.efi		= &boot_params->efi_info;
- 
--	status = allocate_e820(boot_params, &e820ext, &e820ext_size);
-+	status = allocate_e820(boot_params, &map, &e820ext, &e820ext_size);
- 	if (status != EFI_SUCCESS)
- 		return status;
- 
--- 
-2.35.1
-
+>  }
+>
+>  void test_get_stack_raw_tp(void)
+> --
+> 2.35.1
+>
