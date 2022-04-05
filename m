@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E026C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FD1C35294
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377876AbiDEMwh (ORCPT
+        id S1378258AbiDEMwl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
+        Tue, 5 Apr 2022 08:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243720AbiDEJJN (ORCPT
+        with ESMTP id S243543AbiDEJJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:09:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C853C9B4E;
-        Tue,  5 Apr 2022 01:58:29 -0700 (PDT)
+        Tue, 5 Apr 2022 05:09:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B89B91B0;
+        Tue,  5 Apr 2022 01:58:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54B16615E3;
-        Tue,  5 Apr 2022 08:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1B5C385A8;
-        Tue,  5 Apr 2022 08:58:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7D4761572;
+        Tue,  5 Apr 2022 08:58:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9145C385A0;
+        Tue,  5 Apr 2022 08:58:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149108;
-        bh=u8PxMLCYo4rYp2EXONipyGluuU3I5q0QkRQTH2Ha+LM=;
+        s=korg; t=1649149092;
+        bh=kYZhOnBQIEQ5uNY6XMoHEpNf48Uv3rRYsl8kLmBQSDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B2jBlvnkG/OBhNQz3/mJXYIhDymcMlvhzRkGyL8Y4arWmSvkId2hZ4Nn03XJFcyOY
-         tJiRZVoxu2QFMSkkf/20spx4AlfLH695XVls6a+MpbFCYie1E+2z5XvoEaHmJM0HJv
-         YjFsoHw+bMU09yd2TqG54MegxGFktjM7iCTKOfDc=
+        b=k+YlihSIqIl71Y23T4AE9EOpDNFn1/ldemvHNusYvAhideNyRKi6voZQ8DMucEbkF
+         ROfn2TJQdcYUiPJaYZ2oQ2Xop3eaVP/S7H+PvnxZ8ZqiigL7jwnvtKQHd31G9hxnZK
+         tceIsxDCcqdcRSdCH8q0oRdKQ7ZR6vDbj80ChdK0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0590/1017] ath10k: Fix error handling in ath10k_setup_msa_resources
-Date:   Tue,  5 Apr 2022 09:25:03 +0200
-Message-Id: <20220405070411.792477692@linuxfoundation.org>
+Subject: [PATCH 5.16 0553/1017] bpf, arm64: Call build_prologue() first in first JIT pass
+Date:   Tue,  5 Apr 2022 09:24:26 +0200
+Message-Id: <20220405070410.698756494@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,43 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Hou Tao <houtao1@huawei.com>
 
-[ Upstream commit 9747a78d5f758a5284751a10aee13c30d02bd5f1 ]
+[ Upstream commit 68e4f238b0e9d3670a1612ad900a6e98b2b3f7dd ]
 
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
+BPF line info needs ctx->offset to be the instruction offset in the whole JITed
+image instead of the body itself, so also call build_prologue() first in first
+JIT pass.
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error path.
-
-Fixes: 727fec790ead ("ath10k: Setup the msa resources before qmi init")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220308070238.19295-1-linmq006@gmail.com
+Fixes: 37ab566c178d ("bpf: arm64: Enable arm64 jit to provide bpf_line_info")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220226121906.5709-2-houtao1@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/net/bpf_jit_comp.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index 9513ab696fff..f79dd9a71690 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -1556,11 +1556,11 @@ static int ath10k_setup_msa_resources(struct ath10k *ar, u32 msa_size)
- 	node = of_parse_phandle(dev->of_node, "memory-region", 0);
- 	if (node) {
- 		ret = of_address_to_resource(node, 0, &r);
-+		of_node_put(node);
- 		if (ret) {
- 			dev_err(dev, "failed to resolve msa fixed region\n");
- 			return ret;
- 		}
--		of_node_put(node);
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 71ef9dcd9b57..3c6d0d60820f 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -1049,15 +1049,18 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 		goto out_off;
+ 	}
  
- 		ar->msa.paddr = r.start;
- 		ar->msa.mem_size = resource_size(&r);
+-	/* 1. Initial fake pass to compute ctx->idx. */
+-
+-	/* Fake pass to fill in ctx->offset. */
+-	if (build_body(&ctx, extra_pass)) {
++	/*
++	 * 1. Initial fake pass to compute ctx->idx and ctx->offset.
++	 *
++	 * BPF line info needs ctx->offset[i] to be the offset of
++	 * instruction[i] in jited image, so build prologue first.
++	 */
++	if (build_prologue(&ctx, was_classic)) {
+ 		prog = orig_prog;
+ 		goto out_off;
+ 	}
+ 
+-	if (build_prologue(&ctx, was_classic)) {
++	if (build_body(&ctx, extra_pass)) {
+ 		prog = orig_prog;
+ 		goto out_off;
+ 	}
 -- 
 2.34.1
 
