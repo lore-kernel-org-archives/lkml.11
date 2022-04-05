@@ -2,100 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38EFFC4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EACDC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450791AbiDEWvk (ORCPT
+        id S1453698AbiDEWwA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
+        Tue, 5 Apr 2022 18:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358183AbiDEK2F (ORCPT
+        with ESMTP id S1349186AbiDEJt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 467C39E9D6;
-        Tue,  5 Apr 2022 03:16:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC38FB81C8A;
-        Tue,  5 Apr 2022 10:16:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40774C385A1;
-        Tue,  5 Apr 2022 10:16:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153787;
-        bh=qQkG5DprhOohE/vv7FqAicjZ5OSnoUow72LwglFkNNY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yLYXVX1IAkGu7jGj93lP0Hwmmtk/00flU1CTCSo66D0HzFYcvCQxYleGrvsnqsbgB
-         otJVshTEmNBOOiQSoPt2JG7ct+Brnhhz1RoDqnCJ+W1QubN1vIEewETQ9SDMAP3Yc3
-         DiH96Z4ZnzXP91D2WlDYQsv3BbXdUJo9jhhSHucg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 347/599] platform/x86: huawei-wmi: check the return value of device_create_file()
-Date:   Tue,  5 Apr 2022 09:30:41 +0200
-Message-Id: <20220405070309.153077583@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 05:49:27 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DD0320181;
+        Tue,  5 Apr 2022 02:42:23 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 0518E92009D; Tue,  5 Apr 2022 11:42:21 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id F2E5592009B;
+        Tue,  5 Apr 2022 10:42:21 +0100 (BST)
+Date:   Tue, 5 Apr 2022 10:42:21 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Andrew Powers-Holmes <aholmes@omnom.net>
+cc:     yaliang.wang@windriver.com, rppt@kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        huangpei@loongson.cn, Andrew Morton <akpm@linux-foundation.org>,
+        kumba@gentoo.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        anshuman.khandual@arm.com, penberg@kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] MIPS: pgalloc: fix memory leak caused by pgd_free()
+In-Reply-To: <b273a9b7-82f7-5883-14d2-973dd005b005@omnom.net>
+Message-ID: <alpine.DEB.2.21.2204051027490.47162@angie.orcam.me.uk>
+References: <20220310113116.2068859-1-yaliang.wang@windriver.com> <alpine.DEB.2.21.2204021446370.47162@angie.orcam.me.uk> <9cc88b1c-8a8c-95ea-2cf7-31be3b771495@omnom.net> <alpine.DEB.2.21.2204031122020.47162@angie.orcam.me.uk>
+ <b273a9b7-82f7-5883-14d2-973dd005b005@omnom.net>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+On Mon, 4 Apr 2022, Andrew Powers-Holmes wrote:
 
-[ Upstream commit c91a5b1c221a58d008485cf7d02ccce73108b119 ]
+> Fair enough :) apologies, didn't mean to sound combative or ungrateful.
+> I know there's far more work to go around than people to do it,
+> everyone's doing the best they can, and I have nothing but appreciation
+> for all the work the kernel community does.
 
-The function device_create_file() in huawei_wmi_battery_add() can fail,
-so its return value should be checked.
+ No offence taken; I just wanted to make it absolutely clear what the 
+situation currently is.
 
-Fixes: 355a070b09ab ("platform/x86: huawei-wmi: Add battery charging thresholds")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220303022421.313-1-baijiaju1990@gmail.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/platform/x86/huawei-wmi.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+> It's just surprising that this *could* go unnoticed for over a year -
+> though I suppose most of the MIPS64 systems out there are running on one
+> or another old vendor SDK kernel so won't have been affected...
 
-diff --git a/drivers/platform/x86/huawei-wmi.c b/drivers/platform/x86/huawei-wmi.c
-index a2d846c4a7ee..eac3e6b4ea11 100644
---- a/drivers/platform/x86/huawei-wmi.c
-+++ b/drivers/platform/x86/huawei-wmi.c
-@@ -470,10 +470,17 @@ static DEVICE_ATTR_RW(charge_control_thresholds);
- 
- static int huawei_wmi_battery_add(struct power_supply *battery)
- {
--	device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
--	device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
-+	int err = 0;
- 
--	return 0;
-+	err = device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
-+	if (err)
-+		return err;
-+
-+	err = device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
-+	if (err)
-+		device_remove_file(&battery->dev, &dev_attr_charge_control_start_threshold);
-+
-+	return err;
- }
- 
- static int huawei_wmi_battery_remove(struct power_supply *battery)
--- 
-2.34.1
+ That's subject to the probability theory and depending on what people's 
+usage models are.
 
+> Would the best way to get this merged into 5.10/15 (and maybe .16 just
+> for good measure) be to email the stable team (since it's already in
+> Linus' tree)? Documentation/process/stable-kernel-rules seems to say
+> yes, but I'd like to avoid stepping on anyone's toes given that it's not
+> my patch.
 
+ You seem the most severely affected so far, so why not act in your best 
+interest?  I think option #2 applies here and seems quite straightforward 
+to follow, referring commit 2bc5bab9a763 and using your use case as the 
+justification.  It doesn't have to be the author to request a backport.
 
+ NB I think it has to be backported to all the stable branches made since 
+the original breakage; i.e. v5.9+ (I haven't kept track of what they are).
+
+  Maciej
