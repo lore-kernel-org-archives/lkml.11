@@ -2,159 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC959C3527A
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5DC2C3527E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839678AbiDFBFT (ORCPT
+        id S1839778AbiDFBFo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
+        Tue, 5 Apr 2022 21:05:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240392AbiDEKcj (ORCPT
+        with ESMTP id S1452834AbiDEPzf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:32:39 -0400
+        Tue, 5 Apr 2022 11:55:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7A9DE906;
-        Tue,  5 Apr 2022 03:18:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4157CB18
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:57:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59CDE61777;
-        Tue,  5 Apr 2022 10:18:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4228CC385A1;
-        Tue,  5 Apr 2022 10:18:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153915;
-        bh=9PEFQguw30U1gpsVR7cU8RY0vR6P0NTVaLm1k7N31mQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SEPSUYsy+gRZzA7LJ/UWk6NdGeOPsfpe5HAViPJDRgMT47p5vJJeXGtsGnBr7070v
-         aVZXYPGWjC6r0rIhOpb3lhEk59BGAzo4s5S2UTy7sdayFrDss5YvYoq9Ah3HneGZuT
-         6UPNd0N+1C5aTYc70h/Io5hkdBKpUR8Fn8e+JEoM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 393/599] serial: 8250_lpss: Balance reference count for PCI DMA device
-Date:   Tue,  5 Apr 2022 09:31:27 +0200
-Message-Id: <20220405070310.526505829@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 598D061741
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:57:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB50C385A0;
+        Tue,  5 Apr 2022 14:57:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649170648;
+        bh=pgAEikqG7Zu0fteM7CcdkQX3ljjFVaexnnlWX6gjnYA=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=AszIqGU56P25oO/C4b4jSBYGtGn5jS0yTdm1BWO4z5e1pSiXELgYyNOxmElD2gb3s
+         wtcSkC8x8vK1NLyn91vAKM5CmV/tNeFfZcUbZQSuKRPL7AHataWxC81cfSuSbCwHzm
+         X1O4IKmwBZ1JtOlsnFY42yyY6xYkmAgC+Zw5C7dle3C1lqop1VgIq3J1PaFA89NKTN
+         ZSLM7gN7i8A1mata5Qqf9TbS53+fac6APmsDf6wwzfOOzDTUlTMTSeeqpPmmfVn93e
+         C9YfjvnXwzPNMfiXf3KejZrm17+LFXU1/IDuqdxp0H01uRprd/iMr5OWXuMdISgxQq
+         0GVtUCKDTPkwg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 616685C0245; Tue,  5 Apr 2022 07:57:28 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 07:57:28 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     bigeasy@linutronix.de, linux-kernel@vger.kernel.org
+Subject: Re: Typical PREEMPT_RT .config?
+Message-ID: <20220405145728.GG4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220404231654.GA3445712@paulmck-ThinkPad-P17-Gen-1>
+ <20220405094048.30a75670@gandalf.local.home>
+ <20220405094202.0823ce48@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405094202.0823ce48@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Tue, Apr 05, 2022 at 09:42:02AM -0400, Steven Rostedt wrote:
+> On Tue, 5 Apr 2022 09:40:48 -0400
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+> 
+> > On Mon, 4 Apr 2022 16:16:54 -0700
+> > "Paul E. McKenney" <paulmck@kernel.org> wrote:
+> > 
+> > > OK, now that PREEMPT_RT is mostly into mainline, I should probably create
+> > > an rcutorture scenario more closely reflecting it.  The closest at the
+> > > moment is probably tools/testing/selftests/rcutorture/configs/rcu/TREE03,
+> > > but I figured that before beating on it I should check to see if you
+> > > already have a PREEMPT_RT rcutorture scenario file.  
+> > 
+> > I don't have one.
+> 
+> And now reading the subject line and not just the body, are you asking
+> about what configs are normally added? I had several I used for testing,
+> but will have to go back and look at them.
 
-[ Upstream commit 5318f70da7e82649d794fc27d8a127c22aa3566e ]
+That would be great!  I can easily add CONFIG_PREEMPT_RT=y.  Maybe I also
+should add CONFIG_RT_DELAYED_SIGNALS, though rcutorture probably doesn't
+care about this one.  Maybe threaded interrupts happen automatically?
+Sleeping spinlocks?
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+If no advice is forthcoming, I will make something up based on my best
+guesses, but I guarantee you that this will result in me missing important
+bugs in my testing.  ;-)
 
-Fixes: 9a1870ce812e ("serial: 8250: don't use slave_id of dma_slave_config")
-Depends-on: a13e19cf3dc1 ("serial: 8250_lpss: split LPSS driver to separate module")
-Reported-by: Qing Wang <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20220223151240.70248-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/8250/8250_lpss.c | 28 ++++++++++++++++++++++------
- 1 file changed, 22 insertions(+), 6 deletions(-)
+So it would be great to have a list of the Kconfig options normally
+selected when building CONFIG_PREEMPT_RT=y kernels.
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 4dee8a9e0c95..dfb730b7ea2a 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -121,8 +121,7 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- {
- 	struct dw_dma_slave *param = &lpss->dma_param;
- 	struct pci_dev *pdev = to_pci_dev(port->dev);
--	unsigned int dma_devfn = PCI_DEVFN(PCI_SLOT(pdev->devfn), 0);
--	struct pci_dev *dma_dev = pci_get_slot(pdev->bus, dma_devfn);
-+	struct pci_dev *dma_dev;
- 
- 	switch (pdev->device) {
- 	case PCI_DEVICE_ID_INTEL_BYT_UART1:
-@@ -141,6 +140,8 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- 		return -EINVAL;
- 	}
- 
-+	dma_dev = pci_get_slot(pdev->bus, PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
-+
- 	param->dma_dev = &dma_dev->dev;
- 	param->m_master = 0;
- 	param->p_master = 1;
-@@ -156,11 +157,26 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- 	return 0;
- }
- 
-+static void byt_serial_exit(struct lpss8250 *lpss)
-+{
-+	struct dw_dma_slave *param = &lpss->dma_param;
-+
-+	/* Paired with pci_get_slot() in the byt_serial_setup() above */
-+	put_device(param->dma_dev);
-+}
-+
- static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- {
- 	return 0;
- }
- 
-+static void ehl_serial_exit(struct lpss8250 *lpss)
-+{
-+	struct uart_8250_port *up = serial8250_get_port(lpss->data.line);
-+
-+	up->dma = NULL;
-+}
-+
- #ifdef CONFIG_SERIAL_8250_DMA
- static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
- 	.nr_channels = 2,
-@@ -335,8 +351,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	return 0;
- 
- err_exit:
--	if (lpss->board->exit)
--		lpss->board->exit(lpss);
-+	lpss->board->exit(lpss);
- 	pci_free_irq_vectors(pdev);
- 	return ret;
- }
-@@ -347,8 +362,7 @@ static void lpss8250_remove(struct pci_dev *pdev)
- 
- 	serial8250_unregister_port(lpss->data.line);
- 
--	if (lpss->board->exit)
--		lpss->board->exit(lpss);
-+	lpss->board->exit(lpss);
- 	pci_free_irq_vectors(pdev);
- }
- 
-@@ -356,12 +370,14 @@ static const struct lpss8250_board byt_board = {
- 	.freq = 100000000,
- 	.base_baud = 2764800,
- 	.setup = byt_serial_setup,
-+	.exit = byt_serial_exit,
- };
- 
- static const struct lpss8250_board ehl_board = {
- 	.freq = 200000000,
- 	.base_baud = 12500000,
- 	.setup = ehl_serial_setup,
-+	.exit = ehl_serial_exit,
- };
- 
- static const struct lpss8250_board qrk_board = {
--- 
-2.34.1
-
-
-
+							Thanx, Paul
