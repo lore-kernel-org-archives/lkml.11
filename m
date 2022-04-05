@@ -2,100 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF2AC4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBD0C41535
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582844AbiDEXuA (ORCPT
+        id S1582932AbiDEXu1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
+        Tue, 5 Apr 2022 19:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349719AbiDEJvF (ORCPT
+        with ESMTP id S1343805AbiDEKjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:51:05 -0400
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2267EDF87
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:49:06 -0700 (PDT)
-Received: by mail-qt1-f176.google.com with SMTP id t19so10135578qtc.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:49:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=98e9JuWzU+E3aW1OxhH7dluXsgHcJP+pexJl+baDgqc=;
-        b=SBhCMA2CzgTaVDcN5KVxIl6GRs+BMpDp2DF3RBP/JLfVcW+p+GXn+pc/c78kNcCDU7
-         yfH2NfqOwnho4I08xsg4bG95hKAjhdtYUaLxrT1QQamrkxMeKGiaYcrVQ1YmrGtzjCLy
-         VnhYcyqP+9PtgYG3xsGaAw5la7DrJQKH71eeQRvAfxC0udNVXH1h9qvPG4BxbaG1wmCc
-         GzLuEfxMfiBUGx3fMPaICag4IEjJIUeyRrt1QrfG0kGr9dLTg4QYA9bCfkU5oglK4hiy
-         WCgr36YOzEYqXM3KkMetFipUmk92QSxTAOLF1uMX49XQfOEs3/yAkebX5Fj7D0+v0kYA
-         /cuA==
-X-Gm-Message-State: AOAM533socbl90J5g+gE29LTw3YzsE+tJEi3mOu3gJbnGSSGYJ8z5Tkn
-        a+9OYIWGF87o4ULXWB1zAvkukBloT9PuHw==
-X-Google-Smtp-Source: ABdhPJyp1F4sw9N5wd2Icf9Y7PVJqhy6aQag1BkceMv3PWuQQK+p+A2Dexoq4O/X6ow4iWJkcmK8rA==
-X-Received: by 2002:a05:620a:ccb:b0:67b:3191:c635 with SMTP id b11-20020a05620a0ccb00b0067b3191c635mr1499452qkj.285.1649152145362;
-        Tue, 05 Apr 2022 02:49:05 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id h206-20020a379ed7000000b0067b5192da4csm7683331qke.12.2022.04.05.02.49.04
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 02:49:05 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id f38so22374966ybi.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:49:04 -0700 (PDT)
-X-Received: by 2002:a25:45:0:b0:633:96e2:2179 with SMTP id 66-20020a250045000000b0063396e22179mr1849700yba.393.1649152144476;
- Tue, 05 Apr 2022 02:49:04 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57EC13CD3;
+        Tue,  5 Apr 2022 03:24:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 790976141D;
+        Tue,  5 Apr 2022 10:24:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A697C385A0;
+        Tue,  5 Apr 2022 10:24:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154283;
+        bh=XPuLNZR60B9iBBkDGoHuCp203zPgXEvWgZXhPuEdS8I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1P8n9373vTpFbADclf1jbA2oIJ415dU2InTWLxUPDz0Mk8tsGFEjL4rqt4iW3r3d2
+         H2yaaSfINyHTnU3NMzcW1lS6oqv9RZuk6BdgEh6CzG6ChNKM8cykt143HfSGsZDGTw
+         bBZsRWjYfvUtZvIQDo+8K6MhqfBIdlhCwM0T1WoQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Joe Carnuccio <joe.carnuccio@cavium.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 523/599] scsi: qla2xxx: Check for firmware dump already collected
+Date:   Tue,  5 Apr 2022 09:33:37 +0200
+Message-Id: <20220405070314.403287445@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20190617142156.2526-1-geert+renesas@glider.be>
- <20190617155633.GA3927@kernel.org> <c0fcd807-abf1-c7b1-4601-e0e46b0199b4@linux.intel.com>
-In-Reply-To: <c0fcd807-abf1-c7b1-4601-e0e46b0199b4@linux.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 5 Apr 2022 11:48:53 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUn7rLBS6rpC5vMbrJzwtd0heU-EBdyWNpVy+FZyyoQwg@mail.gmail.com>
-Message-ID: <CAMuHMdUn7rLBS6rpC5vMbrJzwtd0heU-EBdyWNpVy+FZyyoQwg@mail.gmail.com>
-Subject: Re: [PATCH trivial] perf vendor events intel: Assorted style fixes
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Andi Kleen <andi@firstfloor.org>,
-        Kan Liang <kan.liang@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Jiri Kosina <trivial@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 6:10 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
-> On 6/17/2019 11:56 AM, Arnaldo Carvalho de Melo wrote:
-> > Em Mon, Jun 17, 2019 at 04:21:56PM +0200, Geert Uytterhoeven escreveu:
-> >>    - Do not use apostrophes for plurals,
-> >>    - Insert commas before "and",
-> >>    - Spelling s/statisfied/satisfied/.
-> >
-> > I think these files are generated from some other material from Intel,
-> > i.e. if they update something somewhere else and regenerate those files,
-> > your changes would be lost, right Andi, Kan? (Adding them to the CC list).
-> >
->
-> Yes, they are generated from JSON files in
-> https://download.01.org/perfmon/
->
-> I will forward the patch to our internal team to check the issues in
-> JSON file.
+From: Joe Carnuccio <joe.carnuccio@cavium.com>
 
-The auto-generated files have been updated, the issues still exist.
+commit cfbafad7c6032d449a5a07f2d273acd2437bbc6a upstream.
 
-Gr{oetje,eeting}s,
+While allocating firmware dump, check if dump is already collected and do
+not re-allocate the buffer.
 
-                        Geert
+Link: https://lore.kernel.org/r/20220110050218.3958-17-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/scsi/qla2xxx/qla_init.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -3312,6 +3312,14 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
+ 	struct rsp_que *rsp = ha->rsp_q_map[0];
+ 	struct qla2xxx_fw_dump *fw_dump;
+ 
++	if (ha->fw_dump) {
++		ql_dbg(ql_dbg_init, vha, 0x00bd,
++		    "Firmware dump already allocated.\n");
++		return;
++	}
++
++	ha->fw_dumped = 0;
++	ha->fw_dump_cap_flags = 0;
+ 	dump_size = fixed_size = mem_size = eft_size = fce_size = mq_size = 0;
+ 	req_q_size = rsp_q_size = 0;
+ 
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
