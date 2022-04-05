@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B17BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9E5C352A1
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354995AbiDENko (ORCPT
+        id S1390565AbiDENmb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
+        Tue, 5 Apr 2022 09:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345149AbiDEJWS (ORCPT
+        with ESMTP id S1345305AbiDEJWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:18 -0400
+        Tue, 5 Apr 2022 05:22:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A32E1CB3C;
-        Tue,  5 Apr 2022 02:09:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBF442A21;
+        Tue,  5 Apr 2022 02:10:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52E6BB81A22;
-        Tue,  5 Apr 2022 09:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F05AC385A0;
-        Tue,  5 Apr 2022 09:09:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C461B81A22;
+        Tue,  5 Apr 2022 09:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E17ABC385A2;
+        Tue,  5 Apr 2022 09:10:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149752;
-        bh=K8wp9f7c8DZjl995t5b4YxLYOq6G3UpjgyQ/0uJK0k4=;
+        s=korg; t=1649149818;
+        bh=eoZ0HFT+tUf0KCHQlr264DY6FOlKPVdFmmnUbukaqx8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iKAp5CqosOyfSAxHNA1OdLAkBw49H9EdAfrZsOIz5MfSQ69tk8MdMY5Fn7fn4e/nN
-         nJVulUtk19kd800mXyPuTnWFXHxRbnj4VLBlxPKmA/Iq0APY0Hgx+8uckyw11/LxUF
-         g6PbLLS7h8MUUm+5kvmypLcaklS2yFYTXoiPKUTw=
+        b=ZWX0orBFmsO3rtej4Uw/+s7GDolAf9tmsDYkwNWofSG206ahrCD0nH0vHJBaiFsYj
+         sviIqBmZ+8mgTAcIwpqjVsBYutpJL55kPEIf5zPVJHV830oCVmj3UPeUdfUoAKbbIQ
+         EM81wrVo3IAduQeep1npfirZNju0HWAWhaDEAQQo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abel Vesa <abel.vesa@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Ritesh Harjani <riteshh@linux.ibm.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0827/1017] ARM: dts: imx7: Use audio_mclk_post_div instead audio_mclk_root_clk
-Date:   Tue,  5 Apr 2022 09:29:00 +0200
-Message-Id: <20220405070418.794118902@linuxfoundation.org>
+Subject: [PATCH 5.16 0853/1017] tracing: Have TRACE_DEFINE_ENUM affect trace event types as well
+Date:   Tue,  5 Apr 2022 09:29:26 +0200
+Message-Id: <20220405070419.556935675@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,164 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 4cb7df64c732b2b9918424095c11660c2a8c4a33 ]
+[ Upstream commit b3bc8547d3be60898818885f5bf22d0a62e2eb48 ]
 
-The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
-but according to the reference manual, there is no such gate. Moreover,
-the consumer driver of the mentioned clock might gate it and leave
-the ECSPI2 (the true owner of that gate) hanging. So lets use the
-audio_mclk_post_div, which is the parent.
+The macro TRACE_DEFINE_ENUM is used to convert enums in the kernel to
+their actual value when they are exported to user space via the trace
+event format file.
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Currently only the enums in the "print fmt" (TP_printk in the TRACE_EVENT
+macro) have the enums converted. But the enums can be used to denote array
+size:
+
+        field:unsigned int fc_ineligible_rc[EXT4_FC_REASON_MAX]; offset:12;      size:36;        signed:0;
+
+The EXT4_FC_REASON_MAX has no meaning to userspace but it needs to know
+that information to know how to parse the array.
+
+Have the array indexes also be parsed as well.
+
+Link: https://lore.kernel.org/all/cover.1646922487.git.riteshh@linux.ibm.com/
+
+Reported-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Tested-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7-colibri.dtsi     | 4 ++--
- arch/arm/boot/dts/imx7-mba7.dtsi        | 2 +-
- arch/arm/boot/dts/imx7d-nitrogen7.dts   | 2 +-
- arch/arm/boot/dts/imx7d-pico-hobbit.dts | 4 ++--
- arch/arm/boot/dts/imx7d-pico-pi.dts     | 4 ++--
- arch/arm/boot/dts/imx7d-sdb.dts         | 4 ++--
- arch/arm/boot/dts/imx7s-warp.dts        | 4 ++--
- 7 files changed, 12 insertions(+), 12 deletions(-)
+ kernel/trace/trace_events.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index 62b771c1d5a9..f1c60b0cb143 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -40,7 +40,7 @@
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index c097d89ca946..f809d795a9a8 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -2637,6 +2637,33 @@ static void update_event_printk(struct trace_event_call *call,
+ 	}
+ }
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -293,7 +293,7 @@
- 		compatible = "fsl,sgtl5000";
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&reg_module_3v3_avdd>;
-diff --git a/arch/arm/boot/dts/imx7-mba7.dtsi b/arch/arm/boot/dts/imx7-mba7.dtsi
-index 49086c6b6a0a..3df6dff7734a 100644
---- a/arch/arm/boot/dts/imx7-mba7.dtsi
-+++ b/arch/arm/boot/dts/imx7-mba7.dtsi
-@@ -302,7 +302,7 @@
- 	tlv320aic32x4: audio-codec@18 {
- 		compatible = "ti,tlv320aic32x4";
- 		reg = <0x18>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		ldoin-supply = <&reg_audio_3v3>;
- 		iov-supply = <&reg_audio_3v3>;
-diff --git a/arch/arm/boot/dts/imx7d-nitrogen7.dts b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-index e0751e6ba3c0..a31de900139d 100644
---- a/arch/arm/boot/dts/imx7d-nitrogen7.dts
-+++ b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-@@ -288,7 +288,7 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-pico-hobbit.dts b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-index 7b2198a9372c..d917dc4f2f22 100644
---- a/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-@@ -31,7 +31,7 @@
- 
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-pico-pi.dts b/arch/arm/boot/dts/imx7d-pico-pi.dts
-index 70bea95c06d8..f263e391e24c 100644
---- a/arch/arm/boot/dts/imx7d-pico-pi.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-pi.dts
-@@ -31,7 +31,7 @@
- 
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-sdb.dts b/arch/arm/boot/dts/imx7d-sdb.dts
-index 7813ef960f6e..f053f5122741 100644
---- a/arch/arm/boot/dts/imx7d-sdb.dts
-+++ b/arch/arm/boot/dts/imx7d-sdb.dts
-@@ -385,14 +385,14 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 		wlf,hp-cfg = <2 2 3>;
- 		wlf,gpio-cfg = <1 3>;
- 		assigned-clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_SRC>,
- 				  <&clks IMX7D_PLL_AUDIO_POST_DIV>,
--				  <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+				  <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		assigned-clock-parents = <&clks IMX7D_PLL_AUDIO_POST_DIV>;
- 		assigned-clock-rates = <0>, <884736000>, <12288000>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7s-warp.dts b/arch/arm/boot/dts/imx7s-warp.dts
-index 569bbd84e371..558b064da743 100644
---- a/arch/arm/boot/dts/imx7s-warp.dts
-+++ b/arch/arm/boot/dts/imx7s-warp.dts
-@@ -75,7 +75,7 @@
- 
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -232,7 +232,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&vgen4_reg>;
++static void update_event_fields(struct trace_event_call *call,
++				struct trace_eval_map *map)
++{
++	struct ftrace_event_field *field;
++	struct list_head *head;
++	char *ptr;
++	int len = strlen(map->eval_string);
++
++	head = trace_get_fields(call);
++	list_for_each_entry(field, head, link) {
++		ptr = strchr(field->type, '[');
++		if (!ptr)
++			continue;
++		ptr++;
++
++		if (!isalpha(*ptr) && *ptr != '_')
++			continue;
++
++		if (strncmp(map->eval_string, ptr, len) != 0)
++			continue;
++
++		ptr = eval_replace(ptr, map, len);
++		/* enum/sizeof string smaller than value */
++		WARN_ON_ONCE(!ptr);
++	}
++}
++
+ void trace_event_eval_update(struct trace_eval_map **map, int len)
+ {
+ 	struct trace_event_call *call, *p;
+@@ -2672,6 +2699,7 @@ void trace_event_eval_update(struct trace_eval_map **map, int len)
+ 					first = false;
+ 				}
+ 				update_event_printk(call, map[i]);
++				update_event_fields(call, map[i]);
+ 			}
+ 		}
+ 	}
 -- 
 2.34.1
 
