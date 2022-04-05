@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D56D1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5079C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580340AbiDEXeP (ORCPT
+        id S1580362AbiDEXeZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
+        Tue, 5 Apr 2022 19:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351542AbiDEKCi (ORCPT
+        with ESMTP id S1354981AbiDEKQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:02:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530E5710D2;
-        Tue,  5 Apr 2022 02:51:56 -0700 (PDT)
+        Tue, 5 Apr 2022 06:16:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8789DE9F;
+        Tue,  5 Apr 2022 03:04:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8F2461368;
-        Tue,  5 Apr 2022 09:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D299DC385A1;
-        Tue,  5 Apr 2022 09:51:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E0546174B;
+        Tue,  5 Apr 2022 10:04:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32017C385A2;
+        Tue,  5 Apr 2022 10:04:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152315;
-        bh=73n2kpjKjVfcEIGK9ACsjcNs/FDx2rkxpRD6WZBYkQM=;
+        s=korg; t=1649153062;
+        bh=z3BpInOZg7lcxumibtyoEA2UOYtY6znbUUxMJ1KDSLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sNRDXYTTx2P7A4IUrN5kT/5yEXyzkfJNRyyvkIlbqIYCeB7iXNzhqpZAgj5GjdfjP
-         oi4KztCFtrgZElEj5kN1gxJAsFABYWqZa2gskPxJs2fH9E7rftXCI9gb+CxcentpZs
-         6VG17NSBcsV4R3Q1l00wKQKOpj6J+FyzbM3bhA0k=
+        b=qcKRcJdX+ymKjtFLlxmtWtPzKKrsMRvLPwF/zEIk08ieiVfzdXOrcudTzLm7Mtapv
+         vq+AN7IeMQlMDqrMIRGdefkNlow2K+QlIGywoAwIIBUcme0749sXJYfVNBUZwbuyN2
+         z19DOl+ANRsoqkFWGpUtwAhpD00IZlnee6n52TVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Reddy Muralidhar <muralidhar.reddy@intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 731/913] ASoC: SOF: Intel: match sdw version on link_slaves_found
-Date:   Tue,  5 Apr 2022 09:29:53 +0200
-Message-Id: <20220405070401.743093014@linuxfoundation.org>
+        stable@vger.kernel.org, Bill Messmer <wmessmer@microsoft.com>,
+        Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.10 089/599] coredump: Also dump first pages of non-executable ELF libraries
+Date:   Tue,  5 Apr 2022 09:26:23 +0200
+Message-Id: <20220405070301.478765187@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,85 +49,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bard Liao <yung-chuan.liao@linux.intel.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit f67c0c0d3b9048d86ea6ae52e36a2b78c48f265d ]
+commit 84158b7f6a0624b81800b4e7c90f7fb7fdecf66c upstream.
 
-Codecs with the same part id, manufacturer id and part id, but different
-sdw version should be treated as different codecs. For example, rt711 and
-rt711-sdca are different. So, we should match sdw version as well.
+When I rewrote the VMA dumping logic for coredumps, I changed it to
+recognize ELF library mappings based on the file being executable instead
+of the mapping having an ELF header. But turns out, distros ship many ELF
+libraries as non-executable, so the heuristic goes wrong...
 
-Reported-by: Reddy Muralidhar <muralidhar.reddy@intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220120232157.199919-2-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Restore the old behavior where FILTER(ELF_HEADERS) dumps the first page of
+any offset-0 readable mapping that starts with the ELF magic.
+
+This fix is technically layer-breaking a bit, because it checks for
+something ELF-specific in fs/coredump.c; but since we probably want to
+share this between standard ELF and FDPIC ELF anyway, I guess it's fine?
+And this also keeps the change small for backporting.
+
+Cc: stable@vger.kernel.org
+Fixes: 429a22e776a2 ("coredump: rework elf/elf_fdpic vma_dump_size() into common helper")
+Reported-by: Bill Messmer <wmessmer@microsoft.com>
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220126025739.2014888-1-jannh@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/intel/hda.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ fs/coredump.c |   39 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 34 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index ef92cca7ae01..ddf70902e53c 100644
---- a/sound/soc/sof/intel/hda.c
-+++ b/sound/soc/sof/intel/hda.c
-@@ -1072,7 +1072,7 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
- 	struct hdac_bus *bus = sof_to_bus(sdev);
- 	struct sdw_intel_slave_id *ids = sdw->ids;
- 	int num_slaves = sdw->num_slaves;
--	unsigned int part_id, link_id, unique_id, mfg_id;
-+	unsigned int part_id, link_id, unique_id, mfg_id, version;
- 	int i, j, k;
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -41,6 +41,7 @@
+ #include <linux/fs.h>
+ #include <linux/path.h>
+ #include <linux/timekeeping.h>
++#include <linux/elf.h>
  
- 	for (i = 0; i < link->num_adr; i++) {
-@@ -1082,12 +1082,14 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
- 		mfg_id = SDW_MFG_ID(adr);
- 		part_id = SDW_PART_ID(adr);
- 		link_id = SDW_DISCO_LINK_ID(adr);
-+		version = SDW_VERSION(adr);
+ #include <linux/uaccess.h>
+ #include <asm/mmu_context.h>
+@@ -969,6 +970,8 @@ static bool always_dump_vma(struct vm_ar
+ 	return false;
+ }
  
- 		for (j = 0; j < num_slaves; j++) {
- 			/* find out how many identical parts were reported on that link */
- 			if (ids[j].link_id == link_id &&
- 			    ids[j].id.part_id == part_id &&
--			    ids[j].id.mfg_id == mfg_id)
-+			    ids[j].id.mfg_id == mfg_id &&
-+			    ids[j].id.sdw_version == version)
- 				reported_part_count++;
- 		}
++#define DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER 1
++
+ /*
+  * Decide how much of @vma's contents should be included in a core dump.
+  */
+@@ -1028,9 +1031,20 @@ static unsigned long vma_dump_size(struc
+ 	 * dump the first page to aid in determining what was mapped here.
+ 	 */
+ 	if (FILTER(ELF_HEADERS) &&
+-	    vma->vm_pgoff == 0 && (vma->vm_flags & VM_READ) &&
+-	    (READ_ONCE(file_inode(vma->vm_file)->i_mode) & 0111) != 0)
+-		return PAGE_SIZE;
++	    vma->vm_pgoff == 0 && (vma->vm_flags & VM_READ)) {
++		if ((READ_ONCE(file_inode(vma->vm_file)->i_mode) & 0111) != 0)
++			return PAGE_SIZE;
++
++		/*
++		 * ELF libraries aren't always executable.
++		 * We'll want to check whether the mapping starts with the ELF
++		 * magic, but not now - we're holding the mmap lock,
++		 * so copy_from_user() doesn't work here.
++		 * Use a placeholder instead, and fix it up later in
++		 * dump_vma_snapshot().
++		 */
++		return DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER;
++	}
  
-@@ -1096,21 +1098,24 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
+ #undef	FILTER
  
- 			if (ids[j].link_id != link_id ||
- 			    ids[j].id.part_id != part_id ||
--			    ids[j].id.mfg_id != mfg_id)
-+			    ids[j].id.mfg_id != mfg_id ||
-+			    ids[j].id.sdw_version != version)
- 				continue;
+@@ -1105,8 +1119,6 @@ int dump_vma_snapshot(struct coredump_pa
+ 		m->end = vma->vm_end;
+ 		m->flags = vma->vm_flags;
+ 		m->dump_size = vma_dump_size(vma, cprm->mm_flags);
+-
+-		vma_data_size += m->dump_size;
+ 	}
  
- 			/* find out how many identical parts are expected */
- 			for (k = 0; k < link->num_adr; k++) {
- 				u64 adr2 = link->adr_d[k].adr;
--				unsigned int part_id2, link_id2, mfg_id2;
-+				unsigned int part_id2, link_id2, mfg_id2, version2;
+ 	mmap_write_unlock(mm);
+@@ -1116,6 +1128,23 @@ int dump_vma_snapshot(struct coredump_pa
+ 		return -EFAULT;
+ 	}
  
- 				mfg_id2 = SDW_MFG_ID(adr2);
- 				part_id2 = SDW_PART_ID(adr2);
- 				link_id2 = SDW_DISCO_LINK_ID(adr2);
-+				version2 = SDW_VERSION(adr2);
- 
- 				if (link_id2 == link_id &&
- 				    part_id2 == part_id &&
--				    mfg_id2 == mfg_id)
-+				    mfg_id2 == mfg_id &&
-+				    version2 == version)
- 					expected_part_count++;
- 			}
- 
--- 
-2.34.1
-
++	for (i = 0; i < *vma_count; i++) {
++		struct core_vma_metadata *m = (*vma_meta) + i;
++
++		if (m->dump_size == DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER) {
++			char elfmag[SELFMAG];
++
++			if (copy_from_user(elfmag, (void __user *)m->start, SELFMAG) ||
++					memcmp(elfmag, ELFMAG, SELFMAG) != 0) {
++				m->dump_size = 0;
++			} else {
++				m->dump_size = PAGE_SIZE;
++			}
++		}
++
++		vma_data_size += m->dump_size;
++	}
++
+ 	*vma_data_size_ptr = vma_data_size;
+ 	return 0;
+ }
 
 
