@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4BCC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36720C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457370AbiDEWrU (ORCPT
+        id S1457137AbiDEWrF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
+        Tue, 5 Apr 2022 18:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353921AbiDEKJs (ORCPT
+        with ESMTP id S243805AbiDEKhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:09:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD444C4E1B;
-        Tue,  5 Apr 2022 02:55:48 -0700 (PDT)
+        Tue, 5 Apr 2022 06:37:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D1358391;
+        Tue,  5 Apr 2022 03:23:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31F6161577;
-        Tue,  5 Apr 2022 09:55:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 441F1C385A1;
-        Tue,  5 Apr 2022 09:55:47 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 640D9CE1CA3;
+        Tue,  5 Apr 2022 10:23:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E74BC385A1;
+        Tue,  5 Apr 2022 10:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152547;
-        bh=fywS0SO7tp8sPRJmZFhQFeRorWt9giLj0GkaAOpgxdc=;
+        s=korg; t=1649154189;
+        bh=fyuTIgKNBTLo6gyUetiojpVpLb0Ee9KatKz+ZJtxinM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hyhNUsCdQasC8ykSIyUipJJuhWRUucXp7Rqi7iqo4WjHJs83ZI5ZmBHvbAlCjX7fz
-         wZzgm41Atr19kjbvSm9eAWv0Tglexrt0PYzqufLN+PIvkCU+iGgy2gxYGQUnUzjBgW
-         DCFhWNFG8942pVs50C1ry3pRwzWKEXtc4wxJ4PlA=
+        b=eGPeqpTRsX0WZ9nBpK4au5pqaY3/x7mw7elRDYvSiNwkLHxAH2PXBFJsOqdryvQaK
+         69iQguV76ZCUeAHPuAYqd2nIFa6GAi1e5nNuz2fyy/sLyPxhHOS6cqE/5w5QExVrvz
+         SMUXfYy99PCg0YEqQv2hvC5uHJ6mXmHaCQezrF0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Liu <liu.yi24@zte.com.cn>,
-        Yi Wang <wang.yi59@zte.com.cn>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 815/913] KVM: SVM: fix panic on out-of-bounds guest IRQ
-Date:   Tue,  5 Apr 2022 09:31:17 +0200
-Message-Id: <20220405070404.260348077@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 452/599] pinctrl: npcm: Fix broken references to chip->parent_device
+Date:   Tue,  5 Apr 2022 09:32:26 +0200
+Message-Id: <20220405070312.280742039@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,81 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yi Wang <wang.yi59@zte.com.cn>
+From: Marc Zyngier <maz@kernel.org>
 
-commit a80ced6ea514000d34bf1239d47553de0d1ee89e upstream.
+[ Upstream commit f7e53e2255808ca3abcc8f38d18ad0823425e771 ]
 
-As guest_irq is coming from KVM_IRQFD API call, it may trigger
-crash in svm_update_pi_irte() due to out-of-bounds:
+The npcm driver has a bunch of references to the irq_chip parent_device
+field, but never sets it.
 
-crash> bt
-PID: 22218  TASK: ffff951a6ad74980  CPU: 73  COMMAND: "vcpu8"
- #0 [ffffb1ba6707fa40] machine_kexec at ffffffff8565b397
- #1 [ffffb1ba6707fa90] __crash_kexec at ffffffff85788a6d
- #2 [ffffb1ba6707fb58] crash_kexec at ffffffff8578995d
- #3 [ffffb1ba6707fb70] oops_end at ffffffff85623c0d
- #4 [ffffb1ba6707fb90] no_context at ffffffff856692c9
- #5 [ffffb1ba6707fbf8] exc_page_fault at ffffffff85f95b51
- #6 [ffffb1ba6707fc50] asm_exc_page_fault at ffffffff86000ace
-    [exception RIP: svm_update_pi_irte+227]
-    RIP: ffffffffc0761b53  RSP: ffffb1ba6707fd08  RFLAGS: 00010086
-    RAX: ffffb1ba6707fd78  RBX: ffffb1ba66d91000  RCX: 0000000000000001
-    RDX: 00003c803f63f1c0  RSI: 000000000000019a  RDI: ffffb1ba66db2ab8
-    RBP: 000000000000019a   R8: 0000000000000040   R9: ffff94ca41b82200
-    R10: ffffffffffffffcf  R11: 0000000000000001  R12: 0000000000000001
-    R13: 0000000000000001  R14: ffffffffffffffcf  R15: 000000000000005f
-    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
- #7 [ffffb1ba6707fdb8] kvm_irq_routing_update at ffffffffc09f19a1 [kvm]
- #8 [ffffb1ba6707fde0] kvm_set_irq_routing at ffffffffc09f2133 [kvm]
- #9 [ffffb1ba6707fe18] kvm_vm_ioctl at ffffffffc09ef544 [kvm]
-    RIP: 00007f143c36488b  RSP: 00007f143a4e04b8  RFLAGS: 00000246
-    RAX: ffffffffffffffda  RBX: 00007f05780041d0  RCX: 00007f143c36488b
-    RDX: 00007f05780041d0  RSI: 000000004008ae6a  RDI: 0000000000000020
-    RBP: 00000000000004e8   R8: 0000000000000008   R9: 00007f05780041e0
-    R10: 00007f0578004560  R11: 0000000000000246  R12: 00000000000004e0
-    R13: 000000000000001a  R14: 00007f1424001c60  R15: 00007f0578003bc0
-    ORIG_RAX: 0000000000000010  CS: 0033  SS: 002b
+Fix it by fishing that reference from somewhere else, but it is
+obvious that these debug statements were never used. Also remove
+an unused field in a local data structure.
 
-Vmx have been fix this in commit 3a8b0677fc61 (KVM: VMX: Do not BUG() on
-out-of-bounds guest IRQ), so we can just copy source from that to fix
-this.
-
-Co-developed-by: Yi Liu <liu.yi24@zte.com.cn>
-Signed-off-by: Yi Liu <liu.yi24@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-Message-Id: <20220309113025.44469-1-wang.yi59@zte.com.cn>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Link: https://lore.kernel.org/r/20220201120310.878267-11-maz@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/avic.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c | 25 +++++++++++------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -799,7 +799,7 @@ int svm_update_pi_irte(struct kvm *kvm,
- {
- 	struct kvm_kernel_irq_routing_entry *e;
- 	struct kvm_irq_routing_table *irq_rt;
--	int idx, ret = -EINVAL;
-+	int idx, ret = 0;
+diff --git a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+index 6de31b5ee358..c359e25519f8 100644
+--- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
++++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+@@ -78,7 +78,6 @@ struct npcm7xx_gpio {
+ 	struct gpio_chip	gc;
+ 	int			irqbase;
+ 	int			irq;
+-	void			*priv;
+ 	struct irq_chip		irq_chip;
+ 	u32			pinctrl_id;
+ 	int (*direction_input)(struct gpio_chip *chip, unsigned offset);
+@@ -226,7 +225,7 @@ static void npcmgpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_enter(chip, desc);
+ 	sts = ioread32(bank->base + NPCM7XX_GP_N_EVST);
+ 	en  = ioread32(bank->base + NPCM7XX_GP_N_EVEN);
+-	dev_dbg(chip->parent_device, "==> got irq sts %.8x %.8x\n", sts,
++	dev_dbg(bank->gc.parent, "==> got irq sts %.8x %.8x\n", sts,
+ 		en);
  
- 	if (!kvm_arch_has_assigned_device(kvm) ||
- 	    !irq_remapping_cap(IRQ_POSTING_CAP))
-@@ -810,7 +810,13 @@ int svm_update_pi_irte(struct kvm *kvm,
+ 	sts &= en;
+@@ -241,33 +240,33 @@ static int npcmgpio_set_irq_type(struct irq_data *d, unsigned int type)
+ 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
+ 	unsigned int gpio = BIT(d->hwirq);
  
- 	idx = srcu_read_lock(&kvm->irq_srcu);
- 	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
--	WARN_ON(guest_irq >= irq_rt->nr_rt_entries);
-+
-+	if (guest_irq >= irq_rt->nr_rt_entries ||
-+		hlist_empty(&irq_rt->map[guest_irq])) {
-+		pr_warn_once("no route for guest_irq %u/%u (broken user space?)\n",
-+			     guest_irq, irq_rt->nr_rt_entries);
-+		goto out;
-+	}
+-	dev_dbg(d->chip->parent_device, "setirqtype: %u.%u = %u\n", gpio,
++	dev_dbg(bank->gc.parent, "setirqtype: %u.%u = %u\n", gpio,
+ 		d->irq, type);
+ 	switch (type) {
+ 	case IRQ_TYPE_EDGE_RISING:
+-		dev_dbg(d->chip->parent_device, "edge.rising\n");
++		dev_dbg(bank->gc.parent, "edge.rising\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_EDGE_FALLING:
+-		dev_dbg(d->chip->parent_device, "edge.falling\n");
++		dev_dbg(bank->gc.parent, "edge.falling\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_EDGE_BOTH:
+-		dev_dbg(d->chip->parent_device, "edge.both\n");
++		dev_dbg(bank->gc.parent, "edge.both\n");
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		break;
+ 	case IRQ_TYPE_LEVEL_LOW:
+-		dev_dbg(d->chip->parent_device, "level.low\n");
++		dev_dbg(bank->gc.parent, "level.low\n");
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_LEVEL_HIGH:
+-		dev_dbg(d->chip->parent_device, "level.high\n");
++		dev_dbg(bank->gc.parent, "level.high\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	default:
+-		dev_dbg(d->chip->parent_device, "invalid irq type\n");
++		dev_dbg(bank->gc.parent, "invalid irq type\n");
+ 		return -EINVAL;
+ 	}
  
- 	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
- 		struct vcpu_data vcpu_info;
+@@ -289,7 +288,7 @@ static void npcmgpio_irq_ack(struct irq_data *d)
+ 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
+ 	unsigned int gpio = d->hwirq;
+ 
+-	dev_dbg(d->chip->parent_device, "irq_ack: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_ack: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVST);
+ }
+ 
+@@ -301,7 +300,7 @@ static void npcmgpio_irq_mask(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* Clear events */
+-	dev_dbg(d->chip->parent_device, "irq_mask: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_mask: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENC);
+ }
+ 
+@@ -313,7 +312,7 @@ static void npcmgpio_irq_unmask(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* Enable events */
+-	dev_dbg(d->chip->parent_device, "irq_unmask: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_unmask: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENS);
+ }
+ 
+@@ -323,7 +322,7 @@ static unsigned int npcmgpio_irq_startup(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* active-high, input, clear interrupt, enable interrupt */
+-	dev_dbg(d->chip->parent_device, "startup: %u.%u\n", gpio, d->irq);
++	dev_dbg(gc->parent, "startup: %u.%u\n", gpio, d->irq);
+ 	npcmgpio_direction_input(gc, gpio);
+ 	npcmgpio_irq_ack(d);
+ 	npcmgpio_irq_unmask(d);
+-- 
+2.34.1
+
 
 
