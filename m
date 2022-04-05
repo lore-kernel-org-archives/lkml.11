@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 041E3C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0F6C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384755AbiDEM2C (ORCPT
+        id S1384843AbiDEM2I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58506 "EHLO
+        Tue, 5 Apr 2022 08:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245290AbiDEIyj (ORCPT
+        with ESMTP id S245540AbiDEI4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:54:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123C1101FE;
-        Tue,  5 Apr 2022 01:52:12 -0700 (PDT)
+        Tue, 5 Apr 2022 04:56:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AF812AA0;
+        Tue,  5 Apr 2022 01:52:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 50874CE1C0D;
-        Tue,  5 Apr 2022 08:52:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68BDCC385A1;
-        Tue,  5 Apr 2022 08:52:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0EEF609D0;
+        Tue,  5 Apr 2022 08:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD22CC385A0;
+        Tue,  5 Apr 2022 08:52:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148728;
-        bh=I3n0aTUlW02rmt47gc2lAImmuuLyCn8dtNHfOnE+H2U=;
+        s=korg; t=1649148743;
+        bh=mzkj7bdPyPwyHELeTDKpXc4Xr4tRKHgjWC3TkZCHIe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o5UHpi0nF16vHOFZAS6m+d9hOvdb4Mum+hQV56uoFQNZuVDbktLRt64AEF8ilosyd
-         pf3HQL5vcCgYbsypaWgQ9UiirkB2W5qkaCrN5IJ16lzOh6XvCsMJu0oRxXtFaKFy8I
-         WWjYnyasMFQ6b2ID5MAQ7b1WUR5cTIrUoZYxzMOM=
+        b=1PRibyI14UVWIBqK2MwrhN1ojtS7jEmiKz4Cs5R5ixTxRmgggzeOU3QQdNp0/iiMW
+         YIH9KIWfWXVVD1ykqiAE2Q6GKIxvwttEeh/kda1XYFxc28OTw5wkBaiM5Vm0Xdds+5
+         J5Nk+DV8/OKgBH7JAyn8F5a7X5NITb4CES5ma+Pg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chiu <chui-hao.chiu@mediatek.com>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0459/1017] mt76: mt7915: fix ht mcs in mt7915_mac_add_txs_skb()
-Date:   Tue,  5 Apr 2022 09:22:52 +0200
-Message-Id: <20220405070407.923561100@linuxfoundation.org>
+Subject: [PATCH 5.16 0464/1017] mt76: mt7615: check sta_rates pointer in mt7615_sta_rate_tbl_update
+Date:   Tue,  5 Apr 2022 09:22:57 +0200
+Message-Id: <20220405070408.072775283@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,33 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Chiu <chui-hao.chiu@mediatek.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit d8e4e8d148fb68858d6a997d88a87a2c615629ce ]
+[ Upstream commit 6a6f457ed5fdf6777536c20644a9e42128a50ec2 ]
 
-The mcs value of HT mode reported by mt7915_mac_add_txs_skb()
-has already been converted to the expected format.
+Check sta_rates pointer value in mt7615_sta_rate_tbl_update routine
+since minstrel_ht_update_rates can fail allocating rates array.
 
-Fixes: 9908d98ae72cd ("mt76: mt7915: report tx rate directly from tx status")
-Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
+Fixes: 04b8e65922f63 ("mt76: add mac80211 driver for MT7615 PCIe-based chipsets")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index 38d66411444a..a1da514ca256 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -1412,7 +1412,6 @@ mt7915_mac_add_txs_skb(struct mt7915_dev *dev, struct mt76_wcid *wcid, int pid,
- 		break;
- 	case MT_PHY_TYPE_HT:
- 	case MT_PHY_TYPE_HT_GF:
--		rate.mcs += (rate.nss - 1) * 8;
- 		if (rate.mcs > 31)
- 			goto out;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/main.c b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
+index 1fdcada157d6..18a320d00d8d 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
+@@ -686,6 +686,9 @@ static void mt7615_sta_rate_tbl_update(struct ieee80211_hw *hw,
+ 	struct ieee80211_sta_rates *sta_rates = rcu_dereference(sta->rates);
+ 	int i;
  
++	if (!sta_rates)
++		return;
++
+ 	spin_lock_bh(&dev->mt76.lock);
+ 	for (i = 0; i < ARRAY_SIZE(msta->rates); i++) {
+ 		msta->rates[i].idx = sta_rates->rate[i].idx;
 -- 
 2.34.1
 
