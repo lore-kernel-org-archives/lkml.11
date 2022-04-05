@@ -2,239 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 659C4C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08578C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579209AbiDEX0e (ORCPT
+        id S1579120AbiDEX0K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        Tue, 5 Apr 2022 19:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349091AbiDEJtH (ORCPT
+        with ESMTP id S1573589AbiDETXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE19A9978;
-        Tue,  5 Apr 2022 02:40:38 -0700 (PDT)
+        Tue, 5 Apr 2022 15:23:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561974BFDA;
+        Tue,  5 Apr 2022 12:21:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B1B461576;
-        Tue,  5 Apr 2022 09:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27A0EC385A2;
-        Tue,  5 Apr 2022 09:40:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151637;
-        bh=4Rz+3GRK1sX4jmFidcAGUE5CXZGNR2PI6ZKRJP9uWIg=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A1C9B81FA4;
+        Tue,  5 Apr 2022 19:21:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 370CEC385A5;
+        Tue,  5 Apr 2022 19:21:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186468;
+        bh=NYgOnMz5LZxYWvR6hLfX0fO6hW+FJGG+1J/GyHdvGCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kFFEMqflCSUrn5wKqRWFhbc1iVadr2NHGc4Nn3PRP49H3tjZMJyAF435q/w59nduF
-         rxfAwmpgD5GJQGB8Lb3ERPUBPsxblj6wqkU73l7f8qvtnhabIsIK3IM2DghsxgFQVW
-         ecL8dKdGpwXDhw3Bcm3dezujKwz/jyXs4lzBXecU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 486/913] scsi: pm8001: Fix le32 values handling in pm80xx_chip_sata_req()
-Date:   Tue,  5 Apr 2022 09:25:48 +0200
-Message-Id: <20220405070354.423366280@linuxfoundation.org>
+        b=qEutv6DRBKJn+5NCqUwPm5Ts5efaMJsSTp2TVUO6W0J7YXM/liJhtrgL27Ff2bcnH
+         mhk2XOgZazXiVBJfTtdxXuJnky6XlICRtZUhIfl2wOmE4tEiMQKn8mKGZVcoEAo5SI
+         +qzZ8yDSJK3jRuJE8rOIabwsLmpevbsjtprBGeooXH/0aF0De3eAvH06/bCnmoQSdr
+         Anysj4jVywi+ww7WQOlAVTFiIYYWq1X54OTDvQP6HxWRb2oz/9ZwxLVoVZGcyvcqHU
+         iztyrL2X9Ho3O7YhYB39ET/gBzY3iNSw759Y+CEIgQbUcM/997keGzz5sfX8Ai54FZ
+         9fPQmpiCuXEpw==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 40/59] ceph: fscrypt_file field handling in MClientRequest messages
+Date:   Tue,  5 Apr 2022 15:20:11 -0400
+Message-Id: <20220405192030.178326-41-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+For encrypted inodes, transmit a rounded-up size to the MDS as the
+normal file size and send the real inode size in fscrypt_file field.
 
-[ Upstream commit fd6d0e376211d7ed759db96b0fbd9a1cee67d462 ]
+Also, fix up creates and truncates to also transmit fscrypt_file.
 
-Make sure that the __le32 fields of struct sata_cmd are manipulated after
-applying the correct endian conversion. That is, use cpu_to_le32() for
-assigning values and le32_to_cpu() for consulting a field value.  In
-particular, make sure that the calculations for the 4G boundary check are
-done using CPU endianness and *not* little endian values. With these fixes,
-many sparse warnings are removed.
-
-While at it, fix some code identation and add blank lines after variable
-declarations and in some other places to make this code more readable.
-
-Link: https://lore.kernel.org/r/20220220031810.738362-12-damien.lemoal@opensource.wdc.com
-Fixes: 0ecdf00ba6e5 ("[SCSI] pm80xx: 4G boundary fix.")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 82 ++++++++++++++++++--------------
- 1 file changed, 45 insertions(+), 37 deletions(-)
+ fs/ceph/dir.c        |  3 +++
+ fs/ceph/file.c       |  1 +
+ fs/ceph/inode.c      | 18 ++++++++++++++++--
+ fs/ceph/mds_client.c |  9 ++++++++-
+ fs/ceph/mds_client.h |  2 ++
+ 5 files changed, 30 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index d7a27627fce0..c6e4812e6591 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4540,7 +4540,7 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 	u32 q_index, cpu_id;
- 	struct sata_start_req sata_cmd;
- 	u32 hdr_tag, ncg_tag = 0;
--	u64 phys_addr, start_addr, end_addr;
-+	u64 phys_addr, end_addr;
- 	u32 end_addr_high, end_addr_low;
- 	u32 ATAP = 0x0;
- 	u32 dir;
-@@ -4601,32 +4601,38 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 			pm8001_chip_make_sg(task->scatter,
- 						ccb->n_elem, ccb->buf_prd);
- 			phys_addr = ccb->ccb_dma_handle;
--			sata_cmd.enc_addr_low = lower_32_bits(phys_addr);
--			sata_cmd.enc_addr_high = upper_32_bits(phys_addr);
-+			sata_cmd.enc_addr_low =
-+				cpu_to_le32(lower_32_bits(phys_addr));
-+			sata_cmd.enc_addr_high =
-+				cpu_to_le32(upper_32_bits(phys_addr));
- 			sata_cmd.enc_esgl = cpu_to_le32(1 << 31);
- 		} else if (task->num_scatter == 1) {
- 			u64 dma_addr = sg_dma_address(task->scatter);
--			sata_cmd.enc_addr_low = lower_32_bits(dma_addr);
--			sata_cmd.enc_addr_high = upper_32_bits(dma_addr);
-+
-+			sata_cmd.enc_addr_low =
-+				cpu_to_le32(lower_32_bits(dma_addr));
-+			sata_cmd.enc_addr_high =
-+				cpu_to_le32(upper_32_bits(dma_addr));
- 			sata_cmd.enc_len = cpu_to_le32(task->total_xfer_len);
- 			sata_cmd.enc_esgl = 0;
-+
- 			/* Check 4G Boundary */
--			start_addr = cpu_to_le64(dma_addr);
--			end_addr = (start_addr + sata_cmd.enc_len) - 1;
--			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
--			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
--			if (end_addr_high != sata_cmd.enc_addr_high) {
-+			end_addr = dma_addr + le32_to_cpu(sata_cmd.enc_len) - 1;
-+			end_addr_low = lower_32_bits(end_addr);
-+			end_addr_high = upper_32_bits(end_addr);
-+			if (end_addr_high != le32_to_cpu(sata_cmd.enc_addr_high)) {
- 				pm8001_dbg(pm8001_ha, FAIL,
- 					   "The sg list address start_addr=0x%016llx data_len=0x%x end_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
--					   start_addr, sata_cmd.enc_len,
-+					   dma_addr,
-+					   le32_to_cpu(sata_cmd.enc_len),
- 					   end_addr_high, end_addr_low);
- 				pm8001_chip_make_sg(task->scatter, 1,
- 					ccb->buf_prd);
- 				phys_addr = ccb->ccb_dma_handle;
- 				sata_cmd.enc_addr_low =
--					lower_32_bits(phys_addr);
-+					cpu_to_le32(lower_32_bits(phys_addr));
- 				sata_cmd.enc_addr_high =
--					upper_32_bits(phys_addr);
-+					cpu_to_le32(upper_32_bits(phys_addr));
- 				sata_cmd.enc_esgl =
- 					cpu_to_le32(1 << 31);
- 			}
-@@ -4637,7 +4643,8 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 			sata_cmd.enc_esgl = 0;
- 		}
- 		/* XTS mode. All other fields are 0 */
--		sata_cmd.key_index_mode = 0x6 << 4;
-+		sata_cmd.key_index_mode = cpu_to_le32(0x6 << 4);
-+
- 		/* set tweak values. Should be the start lba */
- 		sata_cmd.twk_val0 =
- 			cpu_to_le32((sata_cmd.sata_fis.lbal_exp << 24) |
-@@ -4663,31 +4670,31 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 			phys_addr = ccb->ccb_dma_handle;
- 			sata_cmd.addr_low = lower_32_bits(phys_addr);
- 			sata_cmd.addr_high = upper_32_bits(phys_addr);
--			sata_cmd.esgl = cpu_to_le32(1 << 31);
-+			sata_cmd.esgl = cpu_to_le32(1U << 31);
- 		} else if (task->num_scatter == 1) {
- 			u64 dma_addr = sg_dma_address(task->scatter);
-+
- 			sata_cmd.addr_low = lower_32_bits(dma_addr);
- 			sata_cmd.addr_high = upper_32_bits(dma_addr);
- 			sata_cmd.len = cpu_to_le32(task->total_xfer_len);
- 			sata_cmd.esgl = 0;
-+
- 			/* Check 4G Boundary */
--			start_addr = cpu_to_le64(dma_addr);
--			end_addr = (start_addr + sata_cmd.len) - 1;
--			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
--			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
-+			end_addr = dma_addr + le32_to_cpu(sata_cmd.len) - 1;
-+			end_addr_low = lower_32_bits(end_addr);
-+			end_addr_high = upper_32_bits(end_addr);
- 			if (end_addr_high != sata_cmd.addr_high) {
- 				pm8001_dbg(pm8001_ha, FAIL,
- 					   "The sg list address start_addr=0x%016llx data_len=0x%xend_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
--					   start_addr, sata_cmd.len,
-+					   dma_addr,
-+					   le32_to_cpu(sata_cmd.len),
- 					   end_addr_high, end_addr_low);
- 				pm8001_chip_make_sg(task->scatter, 1,
- 					ccb->buf_prd);
- 				phys_addr = ccb->ccb_dma_handle;
--				sata_cmd.addr_low =
--					lower_32_bits(phys_addr);
--				sata_cmd.addr_high =
--					upper_32_bits(phys_addr);
--				sata_cmd.esgl = cpu_to_le32(1 << 31);
-+				sata_cmd.addr_low = lower_32_bits(phys_addr);
-+				sata_cmd.addr_high = upper_32_bits(phys_addr);
-+				sata_cmd.esgl = cpu_to_le32(1U << 31);
- 			}
- 		} else if (task->num_scatter == 0) {
- 			sata_cmd.addr_low = 0;
-@@ -4695,27 +4702,28 @@ static int pm80xx_chip_sata_req(struct pm8001_hba_info *pm8001_ha,
- 			sata_cmd.len = cpu_to_le32(task->total_xfer_len);
- 			sata_cmd.esgl = 0;
- 		}
-+
- 		/* scsi cdb */
- 		sata_cmd.atapi_scsi_cdb[0] =
- 			cpu_to_le32(((task->ata_task.atapi_packet[0]) |
--			(task->ata_task.atapi_packet[1] << 8) |
--			(task->ata_task.atapi_packet[2] << 16) |
--			(task->ata_task.atapi_packet[3] << 24)));
-+				     (task->ata_task.atapi_packet[1] << 8) |
-+				     (task->ata_task.atapi_packet[2] << 16) |
-+				     (task->ata_task.atapi_packet[3] << 24)));
- 		sata_cmd.atapi_scsi_cdb[1] =
- 			cpu_to_le32(((task->ata_task.atapi_packet[4]) |
--			(task->ata_task.atapi_packet[5] << 8) |
--			(task->ata_task.atapi_packet[6] << 16) |
--			(task->ata_task.atapi_packet[7] << 24)));
-+				     (task->ata_task.atapi_packet[5] << 8) |
-+				     (task->ata_task.atapi_packet[6] << 16) |
-+				     (task->ata_task.atapi_packet[7] << 24)));
- 		sata_cmd.atapi_scsi_cdb[2] =
- 			cpu_to_le32(((task->ata_task.atapi_packet[8]) |
--			(task->ata_task.atapi_packet[9] << 8) |
--			(task->ata_task.atapi_packet[10] << 16) |
--			(task->ata_task.atapi_packet[11] << 24)));
-+				     (task->ata_task.atapi_packet[9] << 8) |
-+				     (task->ata_task.atapi_packet[10] << 16) |
-+				     (task->ata_task.atapi_packet[11] << 24)));
- 		sata_cmd.atapi_scsi_cdb[3] =
- 			cpu_to_le32(((task->ata_task.atapi_packet[12]) |
--			(task->ata_task.atapi_packet[13] << 8) |
--			(task->ata_task.atapi_packet[14] << 16) |
--			(task->ata_task.atapi_packet[15] << 24)));
-+				     (task->ata_task.atapi_packet[13] << 8) |
-+				     (task->ata_task.atapi_packet[14] << 16) |
-+				     (task->ata_task.atapi_packet[15] << 24)));
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index 8a9f916bfc6c..5ccf6453f02f 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -910,6 +910,9 @@ static int ceph_mknod(struct user_namespace *mnt_userns, struct inode *dir,
+ 		goto out_req;
  	}
  
- 	/* Check for read log for failed drive and return */
++	if (S_ISREG(mode) && IS_ENCRYPTED(dir))
++		set_bit(CEPH_MDS_R_FSCRYPT_FILE, &req->r_req_flags);
++
+ 	req->r_dentry = dget(dentry);
+ 	req->r_num_caps = 2;
+ 	req->r_parent = dir;
+diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+index a3afdb9cfddb..b7e2594cc296 100644
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -764,6 +764,7 @@ int ceph_atomic_open(struct inode *dir, struct dentry *dentry,
+ 	req->r_parent = dir;
+ 	ihold(dir);
+ 	if (IS_ENCRYPTED(dir)) {
++		set_bit(CEPH_MDS_R_FSCRYPT_FILE, &req->r_req_flags);
+ 		if (!fscrypt_has_encryption_key(dir)) {
+ 			spin_lock(&dentry->d_lock);
+ 			dentry->d_flags |= DCACHE_NOKEY_NAME;
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 183b9f52dc7d..b9454721c976 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -2378,11 +2378,25 @@ int __ceph_setattr(struct inode *inode, struct iattr *attr, struct ceph_iattr *c
+ 			}
+ 		} else if ((issued & CEPH_CAP_FILE_SHARED) == 0 ||
+ 			   attr->ia_size != isize) {
+-			req->r_args.setattr.size = cpu_to_le64(attr->ia_size);
+-			req->r_args.setattr.old_size = cpu_to_le64(isize);
+ 			mask |= CEPH_SETATTR_SIZE;
+ 			release |= CEPH_CAP_FILE_SHARED | CEPH_CAP_FILE_EXCL |
+ 				   CEPH_CAP_FILE_RD | CEPH_CAP_FILE_WR;
++			if (IS_ENCRYPTED(inode) && attr->ia_size) {
++				set_bit(CEPH_MDS_R_FSCRYPT_FILE, &req->r_req_flags);
++				mask |= CEPH_SETATTR_FSCRYPT_FILE;
++				req->r_args.setattr.size =
++					cpu_to_le64(round_up(attr->ia_size,
++							     CEPH_FSCRYPT_BLOCK_SIZE));
++				req->r_args.setattr.old_size =
++					cpu_to_le64(round_up(isize,
++							     CEPH_FSCRYPT_BLOCK_SIZE));
++				req->r_fscrypt_file = attr->ia_size;
++				/* FIXME: client must zero out any partial blocks! */
++			} else {
++				req->r_args.setattr.size = cpu_to_le64(attr->ia_size);
++				req->r_args.setattr.old_size = cpu_to_le64(isize);
++				req->r_fscrypt_file = 0;
++			}
+ 		}
+ 	}
+ 	if (ia_valid & ATTR_MTIME) {
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 50fe77768295..0da85c9ce73a 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -2752,7 +2752,12 @@ static void encode_mclientrequest_tail(void **p, const struct ceph_mds_request *
+ 	} else {
+ 		ceph_encode_32(p, 0);
+ 	}
+-	ceph_encode_32(p, 0); // fscrypt_file for now
++	if (test_bit(CEPH_MDS_R_FSCRYPT_FILE, &req->r_req_flags)) {
++		ceph_encode_32(p, sizeof(__le64));
++		ceph_encode_64(p, req->r_fscrypt_file);
++	} else {
++		ceph_encode_32(p, 0);
++	}
+ }
+ 
+ /*
+@@ -2838,6 +2843,8 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
+ 
+ 	/* fscrypt_file */
+ 	len += sizeof(u32);
++	if (test_bit(CEPH_MDS_R_FSCRYPT_FILE, &req->r_req_flags))
++		len += sizeof(__le64);
+ 
+ 	msg = ceph_msg_new2(CEPH_MSG_CLIENT_REQUEST, len, 1, GFP_NOFS, false);
+ 	if (!msg) {
+diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
+index 046a9368c4a9..e297bf98c39f 100644
+--- a/fs/ceph/mds_client.h
++++ b/fs/ceph/mds_client.h
+@@ -282,6 +282,7 @@ struct ceph_mds_request {
+ #define CEPH_MDS_R_DID_PREPOPULATE	(6) /* prepopulated readdir */
+ #define CEPH_MDS_R_PARENT_LOCKED	(7) /* is r_parent->i_rwsem wlocked? */
+ #define CEPH_MDS_R_ASYNC		(8) /* async request */
++#define CEPH_MDS_R_FSCRYPT_FILE		(9) /* must marshal fscrypt_file field */
+ 	unsigned long	r_req_flags;
+ 
+ 	struct mutex r_fill_mutex;
+@@ -289,6 +290,7 @@ struct ceph_mds_request {
+ 	union ceph_mds_request_args r_args;
+ 
+ 	struct ceph_fscrypt_auth *r_fscrypt_auth;
++	u64	r_fscrypt_file;
+ 
+ 	u8 *r_altname;		    /* fscrypt binary crypttext for long filenames */
+ 	u32 r_altname_len;	    /* length of r_altname */
 -- 
-2.34.1
-
-
+2.35.1
 
