@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3DF5C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3D1C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238758AbiDEMEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:04:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
+        id S230030AbiDEMFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244161AbiDEIvr (ORCPT
+        with ESMTP id S244148AbiDEIvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE990D3AC2;
+        Tue, 5 Apr 2022 04:51:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE780D3AC1;
         Tue,  5 Apr 2022 01:40:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B136B81C6C;
-        Tue,  5 Apr 2022 08:39:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 894EAC385A0;
-        Tue,  5 Apr 2022 08:39:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8EC86154A;
+        Tue,  5 Apr 2022 08:39:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D757DC385A4;
+        Tue,  5 Apr 2022 08:39:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147968;
-        bh=AXM6EIGv3cMnti0AXeqKdjQ/tXW2ov+kO9R4rZJX9+c=;
+        s=korg; t=1649147994;
+        bh=zRmSmzz9vDRdCW6CbMwaehqfUXppBLkYD3vwE3+vKG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gL+9DUJAlebsHhTQyjY0N3tSNTVUA5f2lWpA48r55Bolgx6ZMmrK1moh5LDP9rEKr
-         LrTytXIbtBTiJ1+DlcCl2ZgcJse4n6Ov5uRNV91aQCgU9PY3BPDuI6jMiQf81jTO2X
-         UQbcYo69d6g5dwu/Y8LQX3fV96Od1oWQq7u2qBTI=
+        b=dgNUj+HkMMGLJY1wM4aPdBqUb9LS6Udng9+3pEe+/eeEkb/ufActWOngP0Pq4sWb2
+         mMPv0QVUsq4fh/9vLwawQFghT6fO0641ddAWs6nMv0Uvm7frdPxguhQQZfmG0ExdNG
+         5ZzR1EPmOukj9WHLgULGydyWyiwDRV8ENcvvS0Ts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.16 0160/1017] carl9170: fix missing bit-wise or operator for tx_params
-Date:   Tue,  5 Apr 2022 09:17:53 +0200
-Message-Id: <20220405070358.968529673@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Richard Zhu <hongxing.zhu@nxp.com>
+Subject: [PATCH 5.16 0197/1017] PCI: imx6: Allow to probe when dw_pcie_wait_for_link() fails
+Date:   Tue,  5 Apr 2022 09:18:30 +0200
+Message-Id: <20220405070400.095326941@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,39 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-commit 02a95374b5eebdbd3b6413fd7ddec151d2ea75a1 upstream.
+commit f81f095e87715e198471f4653952fe5e3f824874 upstream.
 
-Currently tx_params is being re-assigned with a new value and the
-previous setting IEEE80211_HT_MCS_TX_RX_DIFF is being overwritten.
-The assignment operator is incorrect, the original intent was to
-bit-wise or the value in. Fix this by replacing the = operator
-with |= instead.
+The intention of commit 886a9c134755 ("PCI: dwc: Move link handling into
+common code") was to standardize the behavior of link down as explained
+in its commit log:
 
-Kudos to Christian Lamparter for suggesting the correct fix.
+"The behavior for a link down was inconsistent as some drivers would fail
+probe in that case while others succeed. Let's standardize this to
+succeed as there are usecases where devices (and the link) appear later
+even without hotplug. For example, a reconfigured FPGA device."
 
-Fixes: fe8ee9ad80b2 ("carl9170: mac80211 glue and command interface")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Cc: <Stable@vger.kernel.org>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220125004406.344422-1-colin.i.king@gmail.com
+The pci-imx6 still fails to probe when the link is not present, which
+causes the following warning:
+
+imx6q-pcie 8ffc000.pcie: Phy link never came up
+imx6q-pcie: probe of 8ffc000.pcie failed with error -110
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 30 at drivers/regulator/core.c:2257 _regulator_put.part.0+0x1b8/0x1dc
+Modules linked in:
+CPU: 0 PID: 30 Comm: kworker/u2:2 Not tainted 5.15.0-next-20211103 #1
+Hardware name: Freescale i.MX6 SoloX (Device Tree)
+Workqueue: events_unbound async_run_entry_fn
+[<c0111730>] (unwind_backtrace) from [<c010bb74>] (show_stack+0x10/0x14)
+[<c010bb74>] (show_stack) from [<c0f90290>] (dump_stack_lvl+0x58/0x70)
+[<c0f90290>] (dump_stack_lvl) from [<c012631c>] (__warn+0xd4/0x154)
+[<c012631c>] (__warn) from [<c0f87b00>] (warn_slowpath_fmt+0x74/0xa8)
+[<c0f87b00>] (warn_slowpath_fmt) from [<c076b4bc>] (_regulator_put.part.0+0x1b8/0x1dc)
+[<c076b4bc>] (_regulator_put.part.0) from [<c076b574>] (regulator_put+0x2c/0x3c)
+[<c076b574>] (regulator_put) from [<c08c3740>] (release_nodes+0x50/0x178)
+
+Fix this problem by ignoring the dw_pcie_wait_for_link() error like
+it is done on the other dwc drivers.
+
+Tested on imx6sx-sdb and imx6q-sabresd boards.
+
+Link: https://lore.kernel.org/r/20220106103645.2790803-1-festevam@gmail.com
+Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Richard Zhu <hongxing.zhu@nxp.com>
+Cc: <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/carl9170/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/dwc/pci-imx6.c |   10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
---- a/drivers/net/wireless/ath/carl9170/main.c
-+++ b/drivers/net/wireless/ath/carl9170/main.c
-@@ -1915,7 +1915,7 @@ static int carl9170_parse_eeprom(struct
- 		WARN_ON(!(tx_streams >= 1 && tx_streams <=
- 			IEEE80211_HT_MCS_TX_MAX_STREAMS));
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -779,9 +779,7 @@ static int imx6_pcie_start_link(struct d
+ 	/* Start LTSSM. */
+ 	imx6_pcie_ltssm_enable(dev);
  
--		tx_params = (tx_streams - 1) <<
-+		tx_params |= (tx_streams - 1) <<
- 			    IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT;
+-	ret = dw_pcie_wait_for_link(pci);
+-	if (ret)
+-		goto err_reset_phy;
++	dw_pcie_wait_for_link(pci);
  
- 		carl9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
+ 	if (pci->link_gen == 2) {
+ 		/* Allow Gen2 mode after the link is up. */
+@@ -817,11 +815,7 @@ static int imx6_pcie_start_link(struct d
+ 		}
+ 
+ 		/* Make sure link training is finished as well! */
+-		ret = dw_pcie_wait_for_link(pci);
+-		if (ret) {
+-			dev_err(dev, "Failed to bring link up!\n");
+-			goto err_reset_phy;
+-		}
++		dw_pcie_wait_for_link(pci);
+ 	} else {
+ 		dev_info(dev, "Link: Gen2 disabled\n");
+ 	}
 
 
