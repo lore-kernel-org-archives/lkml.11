@@ -2,98 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118E4C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D6DC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574694AbiDEXAr (ORCPT
+        id S1574654AbiDEXAY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
+        Tue, 5 Apr 2022 19:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384637AbiDEOSQ (ORCPT
+        with ESMTP id S1572976AbiDERjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:18:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65ED111D7BD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:04:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649163865;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+4H3o/lgu3i0pcf5MrN0knfGAGcFyCTknMXedxYHF10=;
-        b=Qk+hScf7jQIir96nc0QLeymUfF5A8ekYuIzw7+0o8ZgdSMqu+rDUYZysdDWuHEZqepo/w8
-        qoe9gpgfMOtJJ4jZL6Z+3lhilG+jx9R1QsBx1YZ7FJMc5K6GFj3j31mIujVRJXtFYm47Rr
-        Eo5efe3LTxiodJGwLE4O04vGDVNoTIY=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-263-xme13RalN2KDnHzHPjMkeQ-1; Tue, 05 Apr 2022 09:04:24 -0400
-X-MC-Unique: xme13RalN2KDnHzHPjMkeQ-1
-Received: by mail-wm1-f70.google.com with SMTP id i6-20020a05600c354600b0038be262d9d9so1311493wmq.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:04:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+4H3o/lgu3i0pcf5MrN0knfGAGcFyCTknMXedxYHF10=;
-        b=RWBg110uq8D3UPMd+Tj9SAiAhjqoT9BnCviELZXm+sBNpRRzDRHzyBcsae77xKF2Ci
-         risUR/aDIavRVkmAAQCXLw49iOOscXvoIyakRJsPYhFdXb4wB5pbSi132oIF1W5CY7JE
-         XPh3uTiTw9HxzetybHw5szPdw3Djtsebcd934F87dy35IwOwClS/KxyHtvy7jbVo/Ths
-         Nfcd72hH2DCdYr/oVdC+GVdkOnkScJBiA+CdmV+68QtvVb/6riWkODzzxHG0UhzZypS4
-         n0BsznxZsqnuK4MkoLL1kJAd0mGrM7mBp8tlT1Vj9g2kgiz3EZXYXCakVZbkHga+AOsv
-         Rz8g==
-X-Gm-Message-State: AOAM533pC6mVkRpV0O+YTwbxchKtuhw3CjGSWtm4A+Dypytsx+83GDZZ
-        /GNghjZ8MMy119SUj+ZpoxMPfCy76LFoyxAUcBlAjfRB+pFsAvqbIucQ5GLtBPEAAiZ+2Ss+I9b
-        HjakONbCxZj+EBn5s+uMJEsU+
-X-Received: by 2002:a05:600c:4fd4:b0:38c:cc3f:ac01 with SMTP id o20-20020a05600c4fd400b0038ccc3fac01mr3110637wmq.206.1649163863155;
-        Tue, 05 Apr 2022 06:04:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwTKXWIZeydbVrpApPxpI5TVS/gLhuIP6d8IrLPccqlzN5Ubrjxgzd+R1jeG967OIfKlV6SFg==
-X-Received: by 2002:a1c:7519:0:b0:383:d29b:257 with SMTP id o25-20020a1c7519000000b00383d29b0257mr3095490wmc.172.1649163851954;
-        Tue, 05 Apr 2022 06:04:11 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id o29-20020a05600c511d00b0038e3532b23csm2192280wms.15.2022.04.05.06.04.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 06:04:11 -0700 (PDT)
-Message-ID: <a02a704a-e53d-6f1f-cd7f-a10b773475cc@redhat.com>
-Date:   Tue, 5 Apr 2022 15:04:10 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 029/104] KVM: TDX: allocate/free TDX vcpu structure
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        Tue, 5 Apr 2022 13:39:13 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDC2B8202;
+        Tue,  5 Apr 2022 10:37:14 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 002665C01D1;
+        Tue,  5 Apr 2022 13:37:14 -0400 (EDT)
+Received: from imap49 ([10.202.2.99])
+  by compute4.internal (MEProxy); Tue, 05 Apr 2022 13:37:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; bh=KuSmYS9TX5fvKT
+        WU45hX70KGFcLIlFZpUizrcrs8diU=; b=I3f4NWgYLX4zJmaCk5k2jpJ2j5+RaP
+        J+RUGv1C92o2lwro4YHnMnyV/wQLdGZFdh/ukhflQ0B2Z15+zTkfA5uMIEJEcqhb
+        QqP1RT2yA+BWQZoDEtxnd3I83wrOiU2gfarbrA1DygPKgRTJrtsTdv4gKIspRdNA
+        LhWNMInI1p8MX+G+oJFOmaYJcxSvnGy5WR+3guftfMC2WjJiQWjnPZ8P/JtHJUKV
+        QwfHjBUNDbPmJ1wNcvEeT0yNTggE0BKrEVbwKHiLkU+LtcnyExkAWW8TdydNvl5B
+        jlRDbnmumxECTI6FUXKchgS//3pNUUjR/L6oAIgmfKJnU8asAbfc6C+Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=KuSmYS9TX5fvKTWU4
+        5hX70KGFcLIlFZpUizrcrs8diU=; b=RxEi0jxhjkB5RtK2k+EQ/DjZiKfCC5or9
+        7dtZdRDHUaLSIQNlMS+gB0mpDv1XHLhfBabEWdn9R0leELvn02xUL9GpvVxqV77O
+        PEHD6/uCDlWkMSHgLGFpZsMGXgfs+7WKWzwaI+GJ9VHEFkR2OxO4Nvhhju0y0S7r
+        0M2H1W9KFM7WcZSRbvdqOf+0rvYTMZE9fQDkoPH5f1ollo+KaGYksIxy7CYmyYaM
+        ZaKpg+I6YrRN76gjUkuScoeDS+53qIzhrYZIH0QL4sCA/h5aKjVoGYYxE8P0lQPv
+        9oVhB4b++ee7dc5Nx/R3E3aGCjK+OWa92zpx+9E6l5mw8JPR9l2lA==
+X-ME-Sender: <xms:SX5MYmQiXzXa-lD88I3Bs5FFKrshX5oWTYIQ6th1QZ8-BmSJJIG11g>
+    <xme:SX5MYryYjeYu2XN5BYhFXzr3QVjBTNDxThD-jfkMPqcmCcbzLS51Wsoj-IFLOK9uH
+    Jam9aYcn8KrF1RZ9Pg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgudduudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhl
+    rgguvgcuhggrthhkihhnshdfuceoshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtoh
+    hmqeenucggtffrrghtthgvrhhnpeeuieffteejieetgfevteelheevudehteeihffhteeh
+    tdetleegtedtvdevvddugeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmh
+    grihhlfhhrohhmpehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+X-ME-Proxy: <xmx:SX5MYj1IMy5Wq4pbYtPcWR4m5U5YrByk0MV67uEq1tVLgH180rocyw>
+    <xmx:SX5MYiD824E3Qxt3uposiCcS-epmRrjTZ_KG5dx9vOOC14n3D2lODg>
+    <xmx:SX5MYvjd8ljYmyc5ZWaeI4GHvMiHijCDk0tE-V3w_tHEsQGHBJko7w>
+    <xmx:SX5MYkbeLKCSOV1kLeWulUHn5XgVqEc_wr1Kn-ptND__mK76YluK8g>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id C014915A005D; Tue,  5 Apr 2022 13:37:13 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-385-g3a17909f9e-fm-20220404.001-g3a17909f
+Mime-Version: 1.0
+Message-Id: <6ec27c63-0496-4b42-97ef-a5d43e2759b1@www.fastmail.com>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+Date:   Tue, 05 Apr 2022 13:37:11 -0400
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <e50caba2a40beaaee7fc1ade60d55d414d979d34.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <e50caba2a40beaaee7fc1ade60d55d414d979d34.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 5.15 000/913] 5.15.33-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
-> +	/*
-> +	 * In TDX case, tsc frequency is per-VM and determined by the parameter
-> +	 * tdh_mng_init().  Forcibly set it instead of max_tsc_khz set by
-> +	 * kvm_arch_vcpu_create().
-> +	 *
-> +	 * This function is called after kvm_arch_vcpu_create() calling
-> +	 * kvm_set_tsc_khz().
-> +	 */
-> +	kvm_set_tsc_khz(vcpu, kvm_tdx->tsc_khz);
-> +
+On Tue, Apr 5, 2022, at 3:17 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.33 release.
+> There are 913 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
 
-I think this is not needed anymore, now that there is 
-kvm->arch.default_tsc_khz.  If so, exporting the function is not needed 
-either.
+5.15.33-rc1 compiled and booted with no errors or regressions on my x86_64 test system.
 
-Paolo
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
+Cheers, 
+Slade
