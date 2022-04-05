@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 589EFC38A2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B03E1C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235525AbiDEH7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
+        id S236281AbiDEIBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232881AbiDEHrN (ORCPT
+        with ESMTP id S232958AbiDEHvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:13 -0400
+        Tue, 5 Apr 2022 03:51:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC45C9BBAB;
-        Tue,  5 Apr 2022 00:43:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010E49969D;
+        Tue,  5 Apr 2022 00:48:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7ED70B81B18;
-        Tue,  5 Apr 2022 07:43:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5ADBC340EE;
-        Tue,  5 Apr 2022 07:43:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5FD2B81B18;
+        Tue,  5 Apr 2022 07:48:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F557C36AE2;
+        Tue,  5 Apr 2022 07:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144590;
-        bh=KrpoqmBm+9RVRU5wmQ0UoegreTFKV0nEgPTZhJMf3uw=;
+        s=korg; t=1649144882;
+        bh=YVnSKNnjayLb8hoRVjMbVITJ4lRqKM31ZFX/8E9iugU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z696SO4J8y5zA4q8hpxm/m1C5D5lHSdG5v2q+wEH7jTFcAWbanlHCPAaIWmfubIc/
-         6mPNouekrLvEjLG93CvgERn1uvJCuErE+6JP5GXbbGWOBl5zyYpZ2fCylhtng8iIHI
-         /dWFrdnVKsXnkDYnWZ0Dt8gBeVx/Y5HdUCsmaHuc=
+        b=md2ITFAiLVJWka3IUkbTlqcvvhOujqf9sWJWjsRUSSXI1Q47ta/ddcDBWUExnbMoX
+         z5idVJ3NdpVXtkGwb+F4moj4m8nnmaPdFt8LoyWnAkogviViojtKj02So41wFjlgNr
+         qSsT67nPreFAENODtrgyRFtBI5TfzLugrXP0lHbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.17 0061/1126] f2fs: fix to do sanity check on .cp_pack_total_block_count
-Date:   Tue,  5 Apr 2022 09:13:28 +0200
-Message-Id: <20220405070409.361282307@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0205/1126] crypto: kdf - Select hmac in addition to sha256
+Date:   Tue,  5 Apr 2022 09:15:52 +0200
+Message-Id: <20220405070413.626250268@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,76 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit 5b5b4f85b01604389f7a0f11ef180a725bf0e2d4 upstream.
+[ Upstream commit a88592cc27efd4ed0ceba79016eb4a3ddb90e05e ]
 
-As bughunter reported in bugzilla:
+In addition to sha256 we must also enable hmac for the kdf self-test
+to work.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215709
-
-f2fs may hang when mounting a fuzzed image, the dmesg shows as below:
-
-__filemap_get_folio+0x3a9/0x590
-pagecache_get_page+0x18/0x60
-__get_meta_page+0x95/0x460 [f2fs]
-get_checkpoint_version+0x2a/0x1e0 [f2fs]
-validate_checkpoint+0x8e/0x2a0 [f2fs]
-f2fs_get_valid_checkpoint+0xd0/0x620 [f2fs]
-f2fs_fill_super+0xc01/0x1d40 [f2fs]
-mount_bdev+0x18a/0x1c0
-f2fs_mount+0x15/0x20 [f2fs]
-legacy_get_tree+0x28/0x50
-vfs_get_tree+0x27/0xc0
-path_mount+0x480/0xaa0
-do_mount+0x7c/0xa0
-__x64_sys_mount+0x8b/0xe0
-do_syscall_64+0x38/0xc0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is cp_pack_total_block_count field in checkpoint was fuzzed
-to one, as calcuated, two cp pack block locates in the same block address,
-so then read latter cp pack block, it will block on the page lock due to
-the lock has already held when reading previous cp pack block, fix it by
-adding sanity check for cp_pack_total_block_count.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Fixes: 304b4acee2f0 ("crypto: kdf - select SHA-256 required...")
+Fixes: 026a733e6659 ("crypto: kdf - add SP800-108 counter key...")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/checkpoint.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ crypto/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/f2fs/checkpoint.c
-+++ b/fs/f2fs/checkpoint.c
-@@ -864,6 +864,7 @@ static struct page *validate_checkpoint(
- 	struct page *cp_page_1 = NULL, *cp_page_2 = NULL;
- 	struct f2fs_checkpoint *cp_block = NULL;
- 	unsigned long long cur_version = 0, pre_version = 0;
-+	unsigned int cp_blocks;
- 	int err;
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index 442765219c37..2cca54c59fec 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -1847,6 +1847,7 @@ config CRYPTO_JITTERENTROPY
  
- 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
-@@ -871,15 +872,16 @@ static struct page *validate_checkpoint(
- 	if (err)
- 		return NULL;
+ config CRYPTO_KDF800108_CTR
+ 	tristate
++	select CRYPTO_HMAC
+ 	select CRYPTO_SHA256
  
--	if (le32_to_cpu(cp_block->cp_pack_total_block_count) >
--					sbi->blocks_per_seg) {
-+	cp_blocks = le32_to_cpu(cp_block->cp_pack_total_block_count);
-+
-+	if (cp_blocks > sbi->blocks_per_seg || cp_blocks <= F2FS_CP_PACKS) {
- 		f2fs_warn(sbi, "invalid cp_pack_total_block_count:%u",
- 			  le32_to_cpu(cp_block->cp_pack_total_block_count));
- 		goto invalid_cp;
- 	}
- 	pre_version = *version;
- 
--	cp_addr += le32_to_cpu(cp_block->cp_pack_total_block_count) - 1;
-+	cp_addr += cp_blocks - 1;
- 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
- 					&cp_page_2, version);
- 	if (err)
+ config CRYPTO_USER_API
+-- 
+2.34.1
+
 
 
