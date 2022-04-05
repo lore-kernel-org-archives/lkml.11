@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD977C47082
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 460CEC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239650AbiDEIUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
+        id S239270AbiDEIT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235667AbiDEH77 (ORCPT
+        with ESMTP id S235679AbiDEIAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4AB193E7;
-        Tue,  5 Apr 2022 00:57:18 -0700 (PDT)
+        Tue, 5 Apr 2022 04:00:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D37B193E8;
+        Tue,  5 Apr 2022 00:57:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0420CB81B18;
-        Tue,  5 Apr 2022 07:57:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D223C340EE;
-        Tue,  5 Apr 2022 07:57:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A22B615CD;
+        Tue,  5 Apr 2022 07:57:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F88BC340EE;
+        Tue,  5 Apr 2022 07:57:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145435;
-        bh=UllYA1hnWzezOeqKYUWGdMOxSYfqVAhtIAwVfrMDH2E=;
+        s=korg; t=1649145460;
+        bh=9xEAKMpxGzf2culwYA+lPprUuDTBQpTKmsGMIu0d/v0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bKGuh8yaGspr8YkcWpLz2yZO6m7CZ+s/J4ILYrM8pEYhflKDjvagKPlVM/HML1cE1
-         uE0kp7ragO7RDEty9tTgScP/VFsqibrycLeJrWpiCehQJ6xeuX//b/Wo4cFBkoIIZ+
-         DREFzNz+30exLwcFWsszUYcF6kluH8k/2whlMbgg=
+        b=ZUT/0MhVEsF1LSkoVR3YUQ2U2vbEXzGMefbLgvlY5W8LoEQp3PzviqkHFNxI2gzTc
+         tMioP31PSvMay5FPtfX0R+WMOvm7By8Ujw0PSAj/3IoUarkZEe2nkPQJDiQtFWW1Um
+         nBO9lO8aeFceZzaIR5In4haR0UhACy2dowcQVKxI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0404/1126] ASoC: mediatek: mt8192-mt6359: Fix error handling in mt8192_mt6359_dev_probe
-Date:   Tue,  5 Apr 2022 09:19:11 +0200
-Message-Id: <20220405070419.484746920@linuxfoundation.org>
+Subject: [PATCH 5.17 0412/1126] mmc: davinci_mmc: Handle error for clk_enable
+Date:   Tue,  5 Apr 2022 09:19:19 +0200
+Message-Id: <20220405070419.719535298@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,73 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit e45ac7831ff3e2934d58cce319c17c8ec763c95c ]
+[ Upstream commit 09e7af76db02c74f2a339b3cb2d95460fa2ddbe4 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error paths.
-Fix this by calling of_node_put() in error handling too.
-
-Fixes: 4e28491a7a19 ("ASoC: mediatek: mt8192-mt6359: fix device_node leak")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
-Link: https://lore.kernel.org/r/20220308015224.23585-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: bbce5802afc5 ("davinci: mmc: updates to suspend/resume implementation")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220308071415.1093393-1-jiasheng@iscas.ac.cn
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../mt8192/mt8192-mt6359-rt1015-rt5682.c       | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/mmc/host/davinci_mmc.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-index f7daad1bfe1e..ee91569c0911 100644
---- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-+++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-@@ -1116,8 +1116,10 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
- 	}
+diff --git a/drivers/mmc/host/davinci_mmc.c b/drivers/mmc/host/davinci_mmc.c
+index 2a757c88f9d2..80de660027d8 100644
+--- a/drivers/mmc/host/davinci_mmc.c
++++ b/drivers/mmc/host/davinci_mmc.c
+@@ -1375,8 +1375,12 @@ static int davinci_mmcsd_suspend(struct device *dev)
+ static int davinci_mmcsd_resume(struct device *dev)
+ {
+ 	struct mmc_davinci_host *host = dev_get_drvdata(dev);
++	int ret;
++
++	ret = clk_enable(host->clk);
++	if (ret)
++		return ret;
  
- 	card = (struct snd_soc_card *)of_device_get_match_data(&pdev->dev);
--	if (!card)
--		return -EINVAL;
-+	if (!card) {
-+		ret = -EINVAL;
-+		goto put_platform_node;
-+	}
- 	card->dev = &pdev->dev;
+-	clk_enable(host->clk);
+ 	mmc_davinci_reset_ctrl(host, 0);
  
- 	hdmi_codec = of_parse_phandle(pdev->dev.of_node,
-@@ -1159,20 +1161,24 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
- 	}
- 
- 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
-+	if (!priv) {
-+		ret = -ENOMEM;
-+		goto put_hdmi_codec;
-+	}
- 	snd_soc_card_set_drvdata(card, priv);
- 
- 	ret = mt8192_afe_gpio_init(&pdev->dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "init gpio error %d\n", ret);
--		return ret;
-+		goto put_hdmi_codec;
- 	}
- 
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
- 
--	of_node_put(platform_node);
-+put_hdmi_codec:
- 	of_node_put(hdmi_codec);
-+put_platform_node:
-+	of_node_put(platform_node);
- 	return ret;
- }
- 
+ 	return 0;
 -- 
 2.34.1
 
