@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB60C47088
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC582C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240290AbiDELnx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
+        id S1379045AbiDELkH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244840AbiDEIwm (ORCPT
+        with ESMTP id S244740AbiDEIwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4A7205F1;
-        Tue,  5 Apr 2022 01:44:37 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318851C909;
+        Tue,  5 Apr 2022 01:43:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6821060FFC;
-        Tue,  5 Apr 2022 08:44:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B69AC385A1;
-        Tue,  5 Apr 2022 08:44:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAC32B81A0C;
+        Tue,  5 Apr 2022 08:43:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35685C385A0;
+        Tue,  5 Apr 2022 08:42:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148276;
-        bh=p0yrrYaEW8mSo8kS3j473PpFIUaa3apm+1xjXPAWWIs=;
+        s=korg; t=1649148179;
+        bh=m9IdsWkhwEHDsIk1mPp3Sw2dqcl6n6tF8/nLt+2Yvdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OlnmONkrkS5E1PD45HO04mHzmDw54LnM/2Xtu5AonuXbOXcNYT0zLq4igzG+X87gl
-         54bEyExsKzipyDG7JGmEkJAKtW65QpWNK+SDC70mgB1znMcG6Xya1/QDXx4tKsE7v2
-         isFEAiVDv8l5iiEvY5x13HxSVq8RFG/ZhZQ1H+So=
+        b=qIr/ID4T4kf6fETm6aAkPq5UAe0C31HShukJzS5oBpccu8VnBcALixluhiNMq7Mzj
+         65H5Wj+Rmfe3W2r6ad/2NVn4BjT5+FD/pLLBEppc5mXAP4JVLEUL8bVQng99+4ux77
+         JLjyBU6QA9/bJlxF8lRD5tK0nYVrWJJZSzwWAEXk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0297/1017] media: hantro: Fix overfill bottom register field name
-Date:   Tue,  5 Apr 2022 09:20:10 +0200
-Message-Id: <20220405070403.091355350@linuxfoundation.org>
+Subject: [PATCH 5.16 0224/1017] crypto: ccree - dont attempt 0 len DMA mappings
+Date:   Tue,  5 Apr 2022 09:18:57 +0200
+Message-Id: <20220405070400.899991650@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,62 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Gilad Ben-Yossef <gilad@benyossef.com>
 
-[ Upstream commit 89d78e0133e71ba324fb67ca776223fba4353418 ]
+[ Upstream commit 1fb37b5692c915edcc2448a6b37255738c7c77e0 ]
 
-The Hantro H1 hardware can crop off pixels from the right and bottom of
-the source frame. These are controlled with the H1_REG_IN_IMG_CTRL_OVRFLB
-and H1_REG_IN_IMG_CTRL_OVRFLR in the H1_REG_IN_IMG_CTRL register.
+Refuse to try mapping zero bytes as this may cause a fault
+on some configurations / platforms and it seems the prev.
+attempt is not enough and we need to be more explicit.
 
-The ChromeOS kernel driver that this was based on incorrectly added the
-_D4 suffix H1_REG_IN_IMG_CTRL_OVRFLB. This field crops the bottom of the
-input frame, and the number is _not_ divided by 4. [1]
-
-Correct the name to avoid confusion when crop support with the selection
-API is added.
-
-[1] https://chromium.googlesource.com/chromiumos/third_party/kernel/+/refs/ \
-	heads/chromeos-4.19/drivers/staging/media/hantro/hantro_h1_vp8_enc.c#377
-
-Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-Fixes: a29add8c9bb2 ("media: rockchip/vpu: rename from rockchip to hantro")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Fixes: ce0fc6db38de ("crypto: ccree - protect against empty or NULL
+scatterlists")
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_h1_jpeg_enc.c | 2 +-
- drivers/staging/media/hantro/hantro_h1_regs.h     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/crypto/ccree/cc_buffer_mgr.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c b/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
-index 9cd713c02a45..686d813f5c62 100644
---- a/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
-+++ b/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
-@@ -23,7 +23,7 @@ static void hantro_h1_set_src_img_ctrl(struct hantro_dev *vpu,
+diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
+index a5e041d9d2cf..11e0278c8631 100644
+--- a/drivers/crypto/ccree/cc_buffer_mgr.c
++++ b/drivers/crypto/ccree/cc_buffer_mgr.c
+@@ -258,6 +258,13 @@ static int cc_map_sg(struct device *dev, struct scatterlist *sg,
+ {
+ 	int ret = 0;
  
- 	reg = H1_REG_IN_IMG_CTRL_ROW_LEN(pix_fmt->width)
- 		| H1_REG_IN_IMG_CTRL_OVRFLR_D4(0)
--		| H1_REG_IN_IMG_CTRL_OVRFLB_D4(0)
-+		| H1_REG_IN_IMG_CTRL_OVRFLB(0)
- 		| H1_REG_IN_IMG_CTRL_FMT(ctx->vpu_src_fmt->enc_fmt);
- 	vepu_write_relaxed(vpu, reg, H1_REG_IN_IMG_CTRL);
- }
-diff --git a/drivers/staging/media/hantro/hantro_h1_regs.h b/drivers/staging/media/hantro/hantro_h1_regs.h
-index d6e9825bb5c7..30e7e7b920b5 100644
---- a/drivers/staging/media/hantro/hantro_h1_regs.h
-+++ b/drivers/staging/media/hantro/hantro_h1_regs.h
-@@ -47,7 +47,7 @@
- #define H1_REG_IN_IMG_CTRL				0x03c
- #define     H1_REG_IN_IMG_CTRL_ROW_LEN(x)		((x) << 12)
- #define     H1_REG_IN_IMG_CTRL_OVRFLR_D4(x)		((x) << 10)
--#define     H1_REG_IN_IMG_CTRL_OVRFLB_D4(x)		((x) << 6)
-+#define     H1_REG_IN_IMG_CTRL_OVRFLB(x)		((x) << 6)
- #define     H1_REG_IN_IMG_CTRL_FMT(x)			((x) << 2)
- #define H1_REG_ENC_CTRL0				0x040
- #define    H1_REG_ENC_CTRL0_INIT_QP(x)			((x) << 26)
++	if (!nbytes) {
++		*mapped_nents = 0;
++		*lbytes = 0;
++		*nents = 0;
++		return 0;
++	}
++
+ 	*nents = cc_get_sgl_nents(dev, sg, nbytes, lbytes);
+ 	if (*nents > max_sg_nents) {
+ 		*nents = 0;
 -- 
 2.34.1
 
