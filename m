@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61915C352A1
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9C7C352AA
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235988AbiDEIA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
+        id S236115AbiDEIB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232392AbiDEHuj (ORCPT
+        with ESMTP id S232841AbiDEHvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:50:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3689939AB;
-        Tue,  5 Apr 2022 00:47:06 -0700 (PDT)
+        Tue, 5 Apr 2022 03:51:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C61985B5;
+        Tue,  5 Apr 2022 00:47:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6BE9616FD;
-        Tue,  5 Apr 2022 07:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C50C34114;
-        Tue,  5 Apr 2022 07:47:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFB79616C3;
+        Tue,  5 Apr 2022 07:47:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C36E6C340EE;
+        Tue,  5 Apr 2022 07:47:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144825;
-        bh=Cw2NlYAm/sub3uTEA3b2qIyrR3JDeMkKrC26amsoKtQ=;
+        s=korg; t=1649144874;
+        bh=9O4WwJcVZHyVCNAhD625hdBxv0ETQ7GrIEIGwSSzUAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IP49xWdkX2/E6gcUhVnhcIy6y+bAazUoqhHuRcB0oAx5juWEoSzMLAFhul8FGrf2r
-         JI+ZnhIJBWl7gEALSknvNntVBL4+k8eqcdgh+QTTT7AaPvQ0wYUZ3lx4Kph5kjhCxN
-         k9ttvWImCBMIRcNvPaJqU7w0U3ik3nuyQ2/Ys350=
+        b=ET7iX/+20OLgd0mEwSYPnP+hRX/w0Kw+t2wZI3oPOfrRhmL8mZE9lc/v0TpqBTjSL
+         cSSI/1KllBw5VR6agf3JeW5C8BE6vpZu+bQCSish4St+WTqe29k7d24VxIkri/Gg+f
+         bG/rBils1b8WWB82g67z3iXXmqaXjdrSVSK+FHB0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.17 0146/1126] video: fbdev: sm712fb: Fix crash in smtcfb_read()
-Date:   Tue,  5 Apr 2022 09:14:53 +0200
-Message-Id: <20220405070411.868248192@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0202/1126] crypto: qat - fix a signedness bug in get_service_enabled()
+Date:   Tue,  5 Apr 2022 09:15:49 +0200
+Message-Id: <20220405070413.535798562@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,76 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit bd771cf5c4254511cc4abb88f3dab3bd58bdf8e8 upstream.
+[ Upstream commit 844318dfd31f7c99f6cebbdba5d6f8392c4c115c ]
 
-Zheyu Ma reported this crash in the sm712fb driver when reading
-three bytes from the framebuffer:
+The "ret" variable needs to be signed or there is an error message which
+will not be printed correctly.
 
- BUG: unable to handle page fault for address: ffffc90001ffffff
- RIP: 0010:smtcfb_read+0x230/0x3e0
- Call Trace:
-  vfs_read+0x198/0xa00
-  ? do_sys_openat2+0x27d/0x350
-  ? __fget_light+0x54/0x340
-  ksys_read+0xce/0x190
-  do_syscall_64+0x43/0x90
-
-Fix it by removing the open-coded endianess fixup-code and
-by moving the pointer post decrement out the fb_readl() function.
-
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0cec19c761e5 ("crypto: qat - add support for compression for 4xxx")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/sm712fb.c |   25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
+ drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/video/fbdev/sm712fb.c
-+++ b/drivers/video/fbdev/sm712fb.c
-@@ -1047,7 +1047,7 @@ static ssize_t smtcfb_read(struct fb_inf
- 	if (count + p > total_size)
- 		count = total_size - p;
+diff --git a/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c b/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
+index 6d10edc40aca..68d39c833332 100644
+--- a/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
++++ b/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
+@@ -52,7 +52,7 @@ static const char *const dev_cfg_services[] = {
+ static int get_service_enabled(struct adf_accel_dev *accel_dev)
+ {
+ 	char services[ADF_CFG_MAX_VAL_LEN_IN_BYTES] = {0};
+-	u32 ret;
++	int ret;
  
--	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -1059,25 +1059,14 @@ static ssize_t smtcfb_read(struct fb_inf
- 	while (count) {
- 		c = (count > PAGE_SIZE) ? PAGE_SIZE : count;
- 		dst = buffer;
--		for (i = c >> 2; i--;) {
--			*dst = fb_readl(src++);
--			*dst = big_swap(*dst);
-+		for (i = (c + 3) >> 2; i--;) {
-+			u32 val;
-+
-+			val = fb_readl(src);
-+			*dst = big_swap(val);
-+			src++;
- 			dst++;
- 		}
--		if (c & 3) {
--			u8 *dst8 = (u8 *)dst;
--			u8 __iomem *src8 = (u8 __iomem *)src;
--
--			for (i = c & 3; i--;) {
--				if (i & 1) {
--					*dst8++ = fb_readb(++src8);
--				} else {
--					*dst8++ = fb_readb(--src8);
--					src8 += 2;
--				}
--			}
--			src = (u32 __iomem *)src8;
--		}
- 
- 		if (copy_to_user(buf, buffer, c)) {
- 			err = -EFAULT;
+ 	ret = adf_cfg_get_param_value(accel_dev, ADF_GENERAL_SEC,
+ 				      ADF_SERVICES_ENABLED, services);
+-- 
+2.34.1
+
 
 
