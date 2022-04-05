@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 715EAC38161
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8245FC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237155AbiDEIRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
+        id S237391AbiDEIR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235655AbiDEH77 (ORCPT
+        with ESMTP id S235631AbiDEH74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD242193DC;
-        Tue,  5 Apr 2022 00:57:13 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540E31AF1A;
+        Tue,  5 Apr 2022 00:56:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB446167D;
-        Tue,  5 Apr 2022 07:57:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C398C340EE;
-        Tue,  5 Apr 2022 07:57:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E417F6179B;
+        Tue,  5 Apr 2022 07:56:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB977C340EE;
+        Tue,  5 Apr 2022 07:56:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145432;
-        bh=rxdAyvvmA/UlhnfN0owAZEkyZFn65KN7y8JgBBlQXAE=;
+        s=korg; t=1649145388;
+        bh=1svdJ2AKn28hyj1/xHu6DgEkXapWfzQJ39MN6QrfE6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PQtZBtUNMgzQ93BGq5yPeBfhIofv7ZGPiW3zCmvNl/rWNBmpbNUDCodOW3f3oi83G
-         JeQ/qJT4Kub4kAm85RDqDsAdHIW7TSY+qi2wc96j3cIHhCPvAhG3GErULP3T1e0to8
-         20AAioLa7GcDrLFRpKU0QbKaXCyOT3X1If2mVHfM=
+        b=j7mz+qHZwWVpxOlv/FmaTTooqsZDwTYy9psUmrligtf1RpMMI9YS5SCTGT9AUEXlC
+         +o6qpEgiwZjGRAmylj/pa/1t1SzG2DXetNQ8+DPEmG6z5/yNTw9mSXpUhVv5tAj+UG
+         ORG9x7/my/t3yUNKcKxviy11ojG60nP4YS1YDZsw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0403/1126] ASoC: SOF: Add missing of_node_put() in imx8m_probe
-Date:   Tue,  5 Apr 2022 09:19:10 +0200
-Message-Id: <20220405070419.455366281@linuxfoundation.org>
+Subject: [PATCH 5.17 0349/1126] media: mexon-ge2d: fixup frames size in registers
+Date:   Tue,  5 Apr 2022 09:18:16 +0200
+Message-Id: <20220405070417.873311665@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,35 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
 
-[ Upstream commit 5575f7f49134c7386a684335c9007737c606d3b5 ]
+[ Upstream commit 79e8c421a099bfbcebe59740153e55aa0442ced6 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+The CLIP, SRC & DST registers are coded to take the pixel/line start & end,
+starting from 0. Thus the end should be the width/height minus 1.
 
-Fixes: afb93d716533 ("ASoC: SOF: imx: Add i.MX8M HW support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220308023325.31702-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+It can be an issue with clipping and rotation, where it will add spurious
+lines from uninitialized or unwanted data with a shift in the result.
+
+Fixes: 59a635327ca7 ("media: meson: Add M2M driver for the Amlogic GE2D Accelerator Unit")
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/imx/imx8m.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/platform/meson/ge2d/ge2d.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/sound/soc/sof/imx/imx8m.c b/sound/soc/sof/imx/imx8m.c
-index 788e77bcb603..60251486b24b 100644
---- a/sound/soc/sof/imx/imx8m.c
-+++ b/sound/soc/sof/imx/imx8m.c
-@@ -224,6 +224,7 @@ static int imx8m_probe(struct snd_sof_dev *sdev)
- 	}
+diff --git a/drivers/media/platform/meson/ge2d/ge2d.c b/drivers/media/platform/meson/ge2d/ge2d.c
+index ccda18e5a377..5e7b319f300d 100644
+--- a/drivers/media/platform/meson/ge2d/ge2d.c
++++ b/drivers/media/platform/meson/ge2d/ge2d.c
+@@ -215,35 +215,35 @@ static void ge2d_hw_start(struct meson_ge2d *ge2d)
  
- 	ret = of_address_to_resource(res_node, 0, &res);
-+	of_node_put(res_node);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to get reserved region address\n");
- 		goto exit_pdev_unregister;
+ 	regmap_write(ge2d->map, GE2D_SRC1_CLIPY_START_END,
+ 		     FIELD_PREP(GE2D_START, ctx->in.crop.top) |
+-		     FIELD_PREP(GE2D_END, ctx->in.crop.top + ctx->in.crop.height));
++		     FIELD_PREP(GE2D_END, ctx->in.crop.top + ctx->in.crop.height - 1));
+ 	regmap_write(ge2d->map, GE2D_SRC1_CLIPX_START_END,
+ 		     FIELD_PREP(GE2D_START, ctx->in.crop.left) |
+-		     FIELD_PREP(GE2D_END, ctx->in.crop.left + ctx->in.crop.width));
++		     FIELD_PREP(GE2D_END, ctx->in.crop.left + ctx->in.crop.width - 1));
+ 	regmap_write(ge2d->map, GE2D_SRC2_CLIPY_START_END,
+ 		     FIELD_PREP(GE2D_START, ctx->out.crop.top) |
+-		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height));
++		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height - 1));
+ 	regmap_write(ge2d->map, GE2D_SRC2_CLIPX_START_END,
+ 		     FIELD_PREP(GE2D_START, ctx->out.crop.left) |
+-		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width));
++		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width - 1));
+ 	regmap_write(ge2d->map, GE2D_DST_CLIPY_START_END,
+ 		     FIELD_PREP(GE2D_START, ctx->out.crop.top) |
+-		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height));
++		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height - 1));
+ 	regmap_write(ge2d->map, GE2D_DST_CLIPX_START_END,
+ 		     FIELD_PREP(GE2D_START, ctx->out.crop.left) |
+-		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width));
++		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width - 1));
+ 
+ 	regmap_write(ge2d->map, GE2D_SRC1_Y_START_END,
+-		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.height));
++		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.height - 1));
+ 	regmap_write(ge2d->map, GE2D_SRC1_X_START_END,
+-		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.width));
++		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.width - 1));
+ 	regmap_write(ge2d->map, GE2D_SRC2_Y_START_END,
+-		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height));
++		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height - 1));
+ 	regmap_write(ge2d->map, GE2D_SRC2_X_START_END,
+-		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width));
++		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width - 1));
+ 	regmap_write(ge2d->map, GE2D_DST_Y_START_END,
+-		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height));
++		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height - 1));
+ 	regmap_write(ge2d->map, GE2D_DST_X_START_END,
+-		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width));
++		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width - 1));
+ 
+ 	/* Color, no blend, use source color */
+ 	reg = GE2D_ALU_DO_COLOR_OPERATION_LOGIC(LOGIC_OPERATION_COPY,
 -- 
 2.34.1
 
