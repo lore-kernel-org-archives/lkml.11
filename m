@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2D3C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF44C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243744AbiDEJJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
+        id S243834AbiDEJJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239500AbiDEIUI (ORCPT
+        with ESMTP id S239498AbiDEIUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727E8B62;
-        Tue,  5 Apr 2022 01:14:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C611B2F;
+        Tue,  5 Apr 2022 01:14:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11762609D0;
-        Tue,  5 Apr 2022 08:14:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEC28C385A0;
-        Tue,  5 Apr 2022 08:14:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 861E6609D0;
+        Tue,  5 Apr 2022 08:14:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95A04C385A0;
+        Tue,  5 Apr 2022 08:14:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146480;
-        bh=gf6hFb0IBIczvzNtHPPSa+xIRoepqNHHLtYzglD/wDk=;
+        s=korg; t=1649146475;
+        bh=xiVxqNXnPrd0umBKGvEaHQFbAeEbjAy7J6xMXFkVXKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uDmAVmJ50imVhHiMQj+Rqyz2SpSRqzAfbgf6lJtPKw4oEpbqRVhle+cyJEQtjEZa9
-         lEGRAYA1Fuob0Sk9EAmNylpozc0ewt3NKUhU+IZFe66pE8Efw99RTqbyrIvXQN3pT2
-         DGLB37ADQh6Fmx7cpHI7grymdy+x76YPmGhP6mH8=
+        b=uFUIl4m83ZaGB1x0drXX6BueIA7YccekW7XaUuDHWxWTqqQG8Ur8tuXK/3Unolm64
+         p2kGwflIK5WGOFljDEPPrbNrCg9fvV/vxLdHxgPD3aXOVoh4HhLLM4E1p+AbmEoPF5
+         ylxHMo13hvFWepCKRIg2+7g7LUN5zCEiEG8ZB8fA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0779/1126] tty: hvc: fix return value of __setup handler
-Date:   Tue,  5 Apr 2022 09:25:26 +0200
-Message-Id: <20220405070430.442762174@linuxfoundation.org>
+Subject: [PATCH 5.17 0777/1126] pinctrl/rockchip: Add missing of_node_put() in rockchip_pinctrl_probe
+Date:   Tue,  5 Apr 2022 09:25:24 +0200
+Message-Id: <20220405070430.385573941@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -55,48 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 53819a0d97aace1425bb042829e3446952a9e8a9 ]
+[ Upstream commit 89388f8730699c259f8090ec435fb43569efe4ac ]
 
-__setup() handlers should return 1 to indicate that the boot option
-has been handled or 0 to indicate that it was not handled.
-Add a pr_warn() message if the option value is invalid and then
-always return 1.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 86b40567b917 ("tty: replace strict_strtoul() with kstrtoul()")
-Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Julian Wiedmann <jwi@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: linuxppc-dev@lists.ozlabs.org
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220308024228.20477-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1e747e59cc4d ("pinctrl: rockchip: base regmap supplied by a syscon")
+Fixes: 14dee8677e19 ("pinctrl: rockchip: let pmu registers be supplied by a syscon")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307120234.28657-1-linmq006@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/hvc/hvc_iucv.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/pinctrl/pinctrl-rockchip.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/hvc/hvc_iucv.c b/drivers/tty/hvc/hvc_iucv.c
-index 82a76cac94de..32366caca662 100644
---- a/drivers/tty/hvc/hvc_iucv.c
-+++ b/drivers/tty/hvc/hvc_iucv.c
-@@ -1417,7 +1417,9 @@ static int __init hvc_iucv_init(void)
-  */
- static	int __init hvc_iucv_config(char *val)
- {
--	 return kstrtoul(val, 10, &hvc_iucv_devices);
-+	if (kstrtoul(val, 10, &hvc_iucv_devices))
-+		pr_warn("hvc_iucv= invalid parameter value '%s'\n", val);
-+	return 1;
- }
- 
- 
+diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
+index d8dd8415fa81..a1b598b86aa9 100644
+--- a/drivers/pinctrl/pinctrl-rockchip.c
++++ b/drivers/pinctrl/pinctrl-rockchip.c
+@@ -2693,6 +2693,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
+ 	node = of_parse_phandle(np, "rockchip,grf", 0);
+ 	if (node) {
+ 		info->regmap_base = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(info->regmap_base))
+ 			return PTR_ERR(info->regmap_base);
+ 	} else {
+@@ -2725,6 +2726,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
+ 	node = of_parse_phandle(np, "rockchip,pmu", 0);
+ 	if (node) {
+ 		info->regmap_pmu = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(info->regmap_pmu))
+ 			return PTR_ERR(info->regmap_pmu);
+ 	}
 -- 
 2.34.1
 
