@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C71F3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB678C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381698AbiDEPOM (ORCPT
+        id S1381381AbiDEPOF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39192 "EHLO
+        Tue, 5 Apr 2022 11:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346580AbiDEJpM (ORCPT
+        with ESMTP id S1346496AbiDEJpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FD4DA6FD;
-        Tue,  5 Apr 2022 02:31:00 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB913DA6EA;
+        Tue,  5 Apr 2022 02:30:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7D426165C;
-        Tue,  5 Apr 2022 09:30:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C160CC385A3;
-        Tue,  5 Apr 2022 09:30:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 742C6B81CB3;
+        Tue,  5 Apr 2022 09:30:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6695C385A0;
+        Tue,  5 Apr 2022 09:30:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151059;
-        bh=D6m+o0u+CA+SvDho6afPxHeHyW7tn/a0c/86ypjkG+8=;
+        s=korg; t=1649151048;
+        bh=ILHz7ulA5x04gj7iYCp96oECxga7eMHwl9e/gQq2a24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MbyN5SdgqACx0nfL+S1OJDR2/uQ9I4fXFKBUqOCesQ2SSZxRRHB8ufU/imKDFc7Mc
-         bA45j1JjxvRBswe45BBI+czvlpSFzaJeoifwf8RcmGNdNJV9gwlUuFf7sjGVEshJFY
-         AmiPacJ3jMAryrv/k34RXpJ/VNJqTkGZIlIhLEPY=
+        b=saLO13AtUVyYeMBtU9tQMWTG35YsOhXaSIDPB6zF8DK44pZ8C4FFUIpnTEQeXHJDa
+         xl7vi+jLfbcznc9+vLDbUGwQ4Xd14PSiE4m7CEr3C4J/rMNnOCA0TvD9luCqRhQWGr
+         F92R7ENtiqxeh74BgGUGItJnk9FtLxxNQma/TayI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Ondrej Zary <linux@zary.sk>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 278/913] ASoC: codecs: Check for error pointer after calling devm_regmap_init_mmio
-Date:   Tue,  5 Apr 2022 09:22:20 +0200
-Message-Id: <20220405070348.190484643@linuxfoundation.org>
+Subject: [PATCH 5.15 275/913] media: bttv: fix WARNING regression on tunerless devices
+Date:   Tue,  5 Apr 2022 09:22:17 +0200
+Message-Id: <20220405070348.100992793@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,67 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Ondrej Zary <linux@zary.sk>
 
-[ Upstream commit aa505ecccf2ae7546e0e262d574e18a9241f3005 ]
+[ Upstream commit ef058cc8b7193d15a771272359c7454839ae74ee ]
 
-Since the potential failure of the devm_regmap_init_mmio(), it will
-return error pointer and be assigned to the regmap.
-Then the error pointer will be dereferenced.
-For example rx->regmap will be used in rx_macro_mclk_enable().
-Therefore, it should be better to check it.
+Commit 2161536516ed ("media: media/pci: set device_caps in struct video_device")
+introduced a regression: V4L2_CAP_TUNER is always present in device_caps,
+even when the device has no tuner.
 
-Fixes: af3d54b99764 ("ASoC: codecs: lpass-rx-macro: add support for lpass rx macro")
-Fixes: c39667ddcfc5 ("ASoC: codecs: lpass-tx-macro: add support for lpass tx macro")
-Fixes: 809bcbcecebf ("ASoC: codecs: lpass-wsa-macro: Add support to WSA Macro")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220121171031.2826198-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This causes a warning:
+WARNING: CPU: 0 PID: 249 at drivers/media/v4l2-core/v4l2-ioctl.c:1102 v4l_querycap+0xa0/0xb0 [videodev]
+
+Fixes: 2161536516ed ("media: media/pci: set device_caps in struct video_device")
+Signed-off-by: Ondrej Zary <linux@zary.sk>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/lpass-rx-macro.c  | 2 ++
- sound/soc/codecs/lpass-tx-macro.c  | 2 ++
- sound/soc/codecs/lpass-wsa-macro.c | 2 ++
- 3 files changed, 6 insertions(+)
+ drivers/media/pci/bt8xx/bttv-driver.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/lpass-rx-macro.c b/sound/soc/codecs/lpass-rx-macro.c
-index 1c0409350e86..0f932ca61c81 100644
---- a/sound/soc/codecs/lpass-rx-macro.c
-+++ b/sound/soc/codecs/lpass-rx-macro.c
-@@ -3542,6 +3542,8 @@ static int rx_macro_probe(struct platform_device *pdev)
- 		return PTR_ERR(base);
+diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
+index 0e9df8b35ac6..661ebfa7bf3f 100644
+--- a/drivers/media/pci/bt8xx/bttv-driver.c
++++ b/drivers/media/pci/bt8xx/bttv-driver.c
+@@ -3890,7 +3890,7 @@ static int bttv_register_video(struct bttv *btv)
  
- 	rx->regmap = devm_regmap_init_mmio(dev, base, &rx_regmap_config);
-+	if (IS_ERR(rx->regmap))
-+		return PTR_ERR(rx->regmap);
- 
- 	dev_set_drvdata(dev, rx);
- 
-diff --git a/sound/soc/codecs/lpass-tx-macro.c b/sound/soc/codecs/lpass-tx-macro.c
-index 27a0d5defd27..e4bbc6bd4925 100644
---- a/sound/soc/codecs/lpass-tx-macro.c
-+++ b/sound/soc/codecs/lpass-tx-macro.c
-@@ -1803,6 +1803,8 @@ static int tx_macro_probe(struct platform_device *pdev)
- 		return PTR_ERR(base);
- 
- 	tx->regmap = devm_regmap_init_mmio(dev, base, &tx_regmap_config);
-+	if (IS_ERR(tx->regmap))
-+		return PTR_ERR(tx->regmap);
- 
- 	dev_set_drvdata(dev, tx);
- 
-diff --git a/sound/soc/codecs/lpass-wsa-macro.c b/sound/soc/codecs/lpass-wsa-macro.c
-index d3ac318fd6b6..dd1a8b7bc794 100644
---- a/sound/soc/codecs/lpass-wsa-macro.c
-+++ b/sound/soc/codecs/lpass-wsa-macro.c
-@@ -2405,6 +2405,8 @@ static int wsa_macro_probe(struct platform_device *pdev)
- 		return PTR_ERR(base);
- 
- 	wsa->regmap = devm_regmap_init_mmio(dev, base, &wsa_regmap_config);
-+	if (IS_ERR(wsa->regmap))
-+		return PTR_ERR(wsa->regmap);
- 
- 	dev_set_drvdata(dev, wsa);
+ 	/* video */
+ 	vdev_init(btv, &btv->video_dev, &bttv_video_template, "video");
+-	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_TUNER |
++	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE |
+ 				     V4L2_CAP_READWRITE | V4L2_CAP_STREAMING;
+ 	if (btv->tuner_type != TUNER_ABSENT)
+ 		btv->video_dev.device_caps |= V4L2_CAP_TUNER;
+@@ -3911,7 +3911,7 @@ static int bttv_register_video(struct bttv *btv)
+ 	/* vbi */
+ 	vdev_init(btv, &btv->vbi_dev, &bttv_video_template, "vbi");
+ 	btv->vbi_dev.device_caps = V4L2_CAP_VBI_CAPTURE | V4L2_CAP_READWRITE |
+-				   V4L2_CAP_STREAMING | V4L2_CAP_TUNER;
++				   V4L2_CAP_STREAMING;
+ 	if (btv->tuner_type != TUNER_ABSENT)
+ 		btv->vbi_dev.device_caps |= V4L2_CAP_TUNER;
  
 -- 
 2.34.1
