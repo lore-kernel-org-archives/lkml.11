@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BECA7C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FDE8C352A8
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241756AbiDEIfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
+        id S241776AbiDEIfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:35:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236460AbiDEICU (ORCPT
+        with ESMTP id S236473AbiDEIC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:02:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B874ECE1;
-        Tue,  5 Apr 2022 01:00:23 -0700 (PDT)
+        Tue, 5 Apr 2022 04:02:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2627527DF;
+        Tue,  5 Apr 2022 01:00:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA833B81B14;
-        Tue,  5 Apr 2022 08:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CC14C340EE;
-        Tue,  5 Apr 2022 08:00:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64929B81B16;
+        Tue,  5 Apr 2022 08:00:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B26F0C3410F;
+        Tue,  5 Apr 2022 08:00:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145620;
-        bh=m0gxXestR9TuCF6pwebEyOfHf08GivCI31KBId5HBac=;
+        s=korg; t=1649145626;
+        bh=WdPlJDC9x81Zim69NDL6sdEbOngFjzL0RXWjGHu9Y60=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fZiZ7vyDZxTAYDj5kTrkn4GNQ4m4bfyUE4mLRO2EKrt9RIb5CagDKK9Xm9gIia5Zr
-         yGcjG5jIf66itSNSUboNoEGFKNOLkt80GeZVIbalOW+gURpwOff0GML2cSSJ0s5BJD
-         MSb/3V/LUIx7CRLlfIWA3kIKY3FTZ0LHFMdZmv0s=
+        b=mckI7AnAQ8bC8TKybIHzSmMVKv1VkfmzBecasBY51GD/lXdq8MSF0B5lS+9cTsteH
+         csolK2YZv6n8VZCJ+HSe6pmUGvK7nbi6nT0v8VGobOp6CYP9+wKH7/f2IgOCUxzcpg
+         LF6PZ71C8LHwfjWvArlhpMJp2EjhR6N1JsWdXtzg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0430/1126] ath10k: fix memory overwrite of the WoWLAN wakeup packet pattern
-Date:   Tue,  5 Apr 2022 09:19:37 +0200
-Message-Id: <20220405070420.246409625@linuxfoundation.org>
+Subject: [PATCH 5.17 0422/1126] drm/bridge: sn65dsi83: Fix an error handling path in sn65dsi83_probe()
+Date:   Tue,  5 Apr 2022 09:19:29 +0200
+Message-Id: <20220405070420.011603627@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,54 +51,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit e3fb3d4418fce5484dfe7995fcd94c18b10a431a ]
+[ Upstream commit 6edf615618b8259f16eeb1df98f0ba0d2312c22e ]
 
-In function ath10k_wow_convert_8023_to_80211(), it will do memcpy for
-the new->pattern, and currently the new->pattern and new->mask is same
-with the old, then the memcpy of new->pattern will also overwrite the
-old->pattern, because the header format of new->pattern is 802.11,
-its length is larger than the old->pattern which is 802.3. Then the
-operation of "Copy frame body" will copy a mistake value because the
-body memory has been overwrite when memcpy the new->pattern.
+sn65dsi83_parse_dt() takes a reference on 'ctx->host_node' that must be
+released in the error handling path of this function and of the probe.
+This is only done in the remove function up to now.
 
-Assign another empty value to new_pattern to avoid the overwrite issue.
-
-Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
-
-Fixes: fa3440fa2fa1 ("ath10k: convert wow pattern from 802.3 to 802.11")
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211222031347.25463-1-quic_wgong@quicinc.com
+Fixes: ceb515ba29ba ("drm/bridge: ti-sn65dsi83: Add TI SN65DSI83 and SN65DSI84 driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/4bc21aed4b60d3d5ac4b28d8b07a6fdd8da6a536.1640768126.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/wow.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/bridge/ti-sn65dsi83.c | 32 +++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/wow.c b/drivers/net/wireless/ath/ath10k/wow.c
-index 7d65c115669f..20b9aa8ddf7d 100644
---- a/drivers/net/wireless/ath/ath10k/wow.c
-+++ b/drivers/net/wireless/ath/ath10k/wow.c
-@@ -337,14 +337,15 @@ static int ath10k_vif_wow_set_wakeups(struct ath10k_vif *arvif,
- 			if (patterns[i].mask[j / 8] & BIT(j % 8))
- 				bitmask[j] = 0xff;
- 		old_pattern.mask = bitmask;
--		new_pattern = old_pattern;
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi83.c b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
+index 945f08de45f1..314a84ffcea3 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi83.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
+@@ -560,10 +560,14 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
+ 	ctx->host_node = of_graph_get_remote_port_parent(endpoint);
+ 	of_node_put(endpoint);
  
- 		if (ar->wmi.rx_decap_mode == ATH10K_HW_TXRX_NATIVE_WIFI) {
--			if (patterns[i].pkt_offset < ETH_HLEN)
-+			if (patterns[i].pkt_offset < ETH_HLEN) {
- 				ath10k_wow_convert_8023_to_80211(&new_pattern,
- 								 &old_pattern);
--			else
-+			} else {
-+				new_pattern = old_pattern;
- 				new_pattern.pkt_offset += WOW_HDR_LEN - ETH_HLEN;
-+			}
- 		}
+-	if (ctx->dsi_lanes < 0 || ctx->dsi_lanes > 4)
+-		return -EINVAL;
+-	if (!ctx->host_node)
+-		return -ENODEV;
++	if (ctx->dsi_lanes < 0 || ctx->dsi_lanes > 4) {
++		ret = -EINVAL;
++		goto err_put_node;
++	}
++	if (!ctx->host_node) {
++		ret = -ENODEV;
++		goto err_put_node;
++	}
  
- 		if (WARN_ON(new_pattern.pattern_len > WOW_MAX_PATTERN_SIZE))
+ 	ctx->lvds_dual_link = false;
+ 	ctx->lvds_dual_link_even_odd_swap = false;
+@@ -590,16 +594,22 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
+ 
+ 	ret = drm_of_find_panel_or_bridge(dev->of_node, 2, 0, &panel, &panel_bridge);
+ 	if (ret < 0)
+-		return ret;
++		goto err_put_node;
+ 	if (panel) {
+ 		panel_bridge = devm_drm_panel_bridge_add(dev, panel);
+-		if (IS_ERR(panel_bridge))
+-			return PTR_ERR(panel_bridge);
++		if (IS_ERR(panel_bridge)) {
++			ret = PTR_ERR(panel_bridge);
++			goto err_put_node;
++		}
+ 	}
+ 
+ 	ctx->panel_bridge = panel_bridge;
+ 
+ 	return 0;
++
++err_put_node:
++	of_node_put(ctx->host_node);
++	return ret;
+ }
+ 
+ static int sn65dsi83_host_attach(struct sn65dsi83 *ctx)
+@@ -673,8 +683,10 @@ static int sn65dsi83_probe(struct i2c_client *client,
+ 		return ret;
+ 
+ 	ctx->regmap = devm_regmap_init_i2c(client, &sn65dsi83_regmap_config);
+-	if (IS_ERR(ctx->regmap))
+-		return PTR_ERR(ctx->regmap);
++	if (IS_ERR(ctx->regmap)) {
++		ret = PTR_ERR(ctx->regmap);
++		goto err_put_node;
++	}
+ 
+ 	dev_set_drvdata(dev, ctx);
+ 	i2c_set_clientdata(client, ctx);
+@@ -691,6 +703,8 @@ static int sn65dsi83_probe(struct i2c_client *client,
+ 
+ err_remove_bridge:
+ 	drm_bridge_remove(&ctx->bridge);
++err_put_node:
++	of_node_put(ctx->host_node);
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
