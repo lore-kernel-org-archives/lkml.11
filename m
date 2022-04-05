@@ -2,154 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FF8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4A5C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574598AbiDEW4i (ORCPT
+        id S1574482AbiDEW4U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
+        Tue, 5 Apr 2022 18:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457388AbiDEQDK (ORCPT
+        with ESMTP id S1444551AbiDEPlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:10 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB70C5FCB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:40:02 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 15:40:00 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649173201;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8bcrTbBX37+kVlaJBgWsgjcoRyEtqjFzNj/tbPx0zYU=;
-        b=LcddRTzEt2hk++e3vqlqx9ayHVfzAFNYkZougtlZIGzKvxTkJi7Q9itEdGCxkLddkdexY1
-        S+RLplC6XuDJK5SfR7kDp0oVgGQML4ZPDen3ooqIrqnl01OdnQnhRjodDhT/BPuthNRToc
-        Y84jWTSzFRKghZcXN7389LsczoNNFkOBi5otO1haniu734wU1MNxQ4P0I0400YdjdYKkI6
-        zkoqgItv5Iyzf3n3BFiOu4PAnvfME4ZhxscphiQeGMNy2ipGHr8WEagXmZLEyd4u6EFMNk
-        jJclyHLxQTi+x3gdVvw7yOdMNWM+31uInkRruxt4QyJBMAo0l4AYpmF0gYS0GA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649173201;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8bcrTbBX37+kVlaJBgWsgjcoRyEtqjFzNj/tbPx0zYU=;
-        b=vX+9+7BKkVw21k5REZ/ZSKU/iT0nz0rA6FTH5uwQNcnzu+n9LW71E4TH1p7BIvwLLHEwGt
-        MQub8RSMQqd89/CA==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-fixes] irqchip/gic-v4: Wait for
- GICR_VPENDBASER.Dirty to clear before descheduling
-Cc:     Jingyi Wang <wangjingyi11@huawei.com>,
-        Nianyao Tang <tangnianyao@huawei.com>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com>
-References: <4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com>
+        Tue, 5 Apr 2022 11:41:39 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03466F8EE5;
+        Tue,  5 Apr 2022 07:05:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=jJ72nyQjgyMortAHdvw06/vFEylkSYuiFVuOxXrhPF4=; b=SwqA6RhnQVGyo1EdkB/Yf6mm02
+        Dl5JtcMTBnIo1saXpfrgbyE/JGZcRsHcp3NLkoWMe5//d3yTDV4wxHJK11pA2rmaZH3TltzAh7fBb
+        XY5ctXudO1Aje6BGJCcBm0qhxr3+SocKS+h5rCtfnw9q15J3zakCAN4hvr/ZpcGT4+AjO9QioIGNn
+        bpzyDFsBioroiBC3Em3r/UCGE5vRMoyK7fZe1MLCHbskQpxFP76afxNXjSE7JhFtksghvu4si2d1s
+        2how848sOs3fzXvTv6gxg+WmiLi8GH1y62pqjHtm/M3icwJ0jG8PmR6ZytAPKMB37cSF4HklVQ14q
+        zM5YH+Mw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbjoD-001sCl-Ae; Tue, 05 Apr 2022 14:05:26 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id BD2953001EA;
+        Tue,  5 Apr 2022 16:05:22 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 9951B2DC78FE1; Tue,  5 Apr 2022 16:05:22 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 16:05:22 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, gcc@gcc.gnu.org,
+        catalin.marinas@arm.com, will@kernel.org, marcan@marcan.st,
+        maz@kernel.org, szabolcs.nagy@arm.com, f.fainelli@gmail.com,
+        opendmb@gmail.com, Andrew Pinski <pinskia@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>, x86@kernel.org,
+        andrew.cooper3@citrix.com, Jeremy Linton <jeremy.linton@arm.com>
+Subject: Re: GCC 12 miscompilation of volatile asm (was: Re: [PATCH]
+ arm64/io: Remind compiler that there is a memory side effect)
+Message-ID: <YkxMov3qpHxFa/n3@hirez.programming.kicks-ass.net>
+References: <20220401164406.61583-1-jeremy.linton@arm.com>
+ <Ykc0xrLv391/jdJj@FVFF77S0Q05N>
+ <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
 MIME-Version: 1.0
-Message-ID: <164917320029.389.16907436280316992087.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
+On Tue, Apr 05, 2022 at 01:51:30PM +0100, Mark Rutland wrote:
+> Hi all,
+> 
+> [adding kernel folk who work on asm stuff]
+> 
+> As a heads-up, GCC 12 (not yet released) appears to erroneously optimize away
+> calls to functions with volatile asm. Szabolcs has raised an issue on the GCC
+> bugzilla:  
+> 
+>   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
+> 
+> ... which is a P1 release blocker, and is currently being investigated.
+> 
+> Jemery originally reported this as an issue with {readl,writel}_relaxed(), but
+> the underlying problem doesn't have anything to do with those specifically.
+> 
+> I'm dumping a bunch of info here largely for posterity / archival, and to find
+> out who (from the kernel side) is willing and able to test proposed compiler
+> fixes, once those are available.
+> 
+> I'm happy to do so for aarch64; Peter, I assume you'd be happy to look at the
+> x86 side?
 
-Commit-ID:     af27e41612ec7e5b4783f589b753a7c31a37aac8
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/af27e41612ec7e5b4783f589b753a7c31a37aac8
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Thu, 17 Mar 2022 09:49:02 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Tue, 05 Apr 2022 16:33:13 +01:00
-
-irqchip/gic-v4: Wait for GICR_VPENDBASER.Dirty to clear before descheduling
-
-The way KVM drives GICv4.{0,1} is as follows:
-- vcpu_load() makes the VPE resident, instructing the RD to start
-  scanning for interrupts
-- just before entering the guest, we check that the RD has finished
-  scanning and that we can start running the vcpu
-- on preemption, we deschedule the VPE by making it invalid on
-  the RD
-
-However, we are preemptible between the first two steps. If it so
-happens *and* that the RD was still scanning, we nonetheless write
-to the GICR_VPENDBASER register while Dirty is set, and bad things
-happen (we're in UNPRED land).
-
-This affects both the 4.0 and 4.1 implementations.
-
-Make sure Dirty is cleared before performing the deschedule,
-meaning that its_clear_vpend_valid() becomes a sort of full VPE
-residency barrier.
-
-Reported-by: Jingyi Wang <wangjingyi11@huawei.com>
-Tested-by: Nianyao Tang <tangnianyao@huawei.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Fixes: 57e3cebd022f ("KVM: arm64: Delay the polling of the GICR_VPENDBASER.Dirty bit")
-Link: https://lore.kernel.org/r/4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com
----
- drivers/irqchip/irq-gic-v3-its.c | 28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index cd77297..a0fc764 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -3011,18 +3011,12 @@ static int __init allocate_lpi_tables(void)
- 	return 0;
- }
- 
--static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
-+static u64 read_vpend_dirty_clear(void __iomem *vlpi_base)
- {
- 	u32 count = 1000000;	/* 1s! */
- 	bool clean;
- 	u64 val;
- 
--	val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
--	val &= ~GICR_VPENDBASER_Valid;
--	val &= ~clr;
--	val |= set;
--	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
--
- 	do {
- 		val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
- 		clean = !(val & GICR_VPENDBASER_Dirty);
-@@ -3033,10 +3027,26 @@ static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
- 		}
- 	} while (!clean && count);
- 
--	if (unlikely(val & GICR_VPENDBASER_Dirty)) {
-+	if (unlikely(!clean))
- 		pr_err_ratelimited("ITS virtual pending table not cleaning\n");
-+
-+	return val;
-+}
-+
-+static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
-+{
-+	u64 val;
-+
-+	/* Make sure we wait until the RD is done with the initial scan */
-+	val = read_vpend_dirty_clear(vlpi_base);
-+	val &= ~GICR_VPENDBASER_Valid;
-+	val &= ~clr;
-+	val |= set;
-+	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
-+
-+	val = read_vpend_dirty_clear(vlpi_base);
-+	if (unlikely(val & GICR_VPENDBASER_Dirty))
- 		val |= GICR_VPENDBASER_PendingLast;
--	}
- 
- 	return val;
- }
+Sure..
