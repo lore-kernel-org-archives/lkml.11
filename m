@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A818C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC85C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389540AbiDENd6 (ORCPT
+        id S1389944AbiDENeb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
+        Tue, 5 Apr 2022 09:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345547AbiDEJWt (ORCPT
+        with ESMTP id S1346930AbiDEJYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:49 -0400
+        Tue, 5 Apr 2022 05:24:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9994D62E;
-        Tue,  5 Apr 2022 02:11:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D731A147D;
+        Tue,  5 Apr 2022 02:14:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFC18B80DA1;
-        Tue,  5 Apr 2022 09:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F650C385A3;
-        Tue,  5 Apr 2022 09:11:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45459B81C19;
+        Tue,  5 Apr 2022 09:14:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E8CC385A9;
+        Tue,  5 Apr 2022 09:14:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149871;
-        bh=9FEs9vOrkJJDlurXarSttw8Ls20U/XrgNh9nEfnRwf0=;
+        s=korg; t=1649150044;
+        bh=UO2eg/kU3zQNVWeY1pHzVEaHjxnStJIMnFDNAI8p7yE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wy3/2etz1Fah/k1yuTGWKAqWMQhzCPbBRf1WPoJ1tjPkuhdODIQEPS8VJIJBHSwY0
-         92Dth+hsefMdpwOqOMmT0y41b/It0ibXijz9SigVyKoL7aS1awe8wJLjDLtzEVs1+y
-         2kwC5gD+lX80D0tmOaKxuoB1SDFf+RvJzXbTuYQo=
+        b=Ex4VLcq+6y7rtXALu2BlzJUHrMNkhh7ZMxXGyJnvmUAow87ybx2YWPk+LyXaYvAdk
+         NvyXevKj2M5U6xRQPAStimyNUVZzTCg9kWlkWqkqZNdc4yDl3suKD9qjdbXWklPCGO
+         +Xk1Ba/dcYQXl2aDLL0EwmX58LFtJI6sOGJPCMuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 0870/1017] powerpc: Fix build errors with newer binutils
-Date:   Tue,  5 Apr 2022 09:29:43 +0200
-Message-Id: <20220405070420.060548386@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.16 0935/1017] rxrpc: fix some null-ptr-deref bugs in server_key.c
+Date:   Tue,  5 Apr 2022 09:30:48 +0200
+Message-Id: <20220405070421.968045401@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,164 +52,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Xiaolong Huang <butterflyhuangxx@gmail.com>
 
-commit 8667d0d64dd1f84fd41b5897fd87fa9113ae05e3 upstream.
+commit ff8376ade4f668130385839cef586a0990f8ef87 upstream.
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+Some function calls are not implemented in rxrpc_no_security, there are
+preparse_server_key, free_preparse_server_key and destroy_server_key.
+When rxrpc security type is rxrpc_no_security, user can easily trigger a
+null-ptr-deref bug via ioctl. So judgment should be added to prevent it
 
-  {standard input}: Assembler messages:
-  {standard input}:1190: Error: unrecognized opcode: `stbcix'
-  {standard input}:1433: Error: unrecognized opcode: `lwzcix'
-  {standard input}:1453: Error: unrecognized opcode: `stbcix'
-  {standard input}:1460: Error: unrecognized opcode: `stwcix'
-  {standard input}:1596: Error: unrecognized opcode: `stbcix'
-  ...
+The crash log:
+user@syzkaller:~$ ./rxrpc_preparse_s
+[   37.956878][T15626] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[   37.957645][T15626] #PF: supervisor instruction fetch in kernel mode
+[   37.958229][T15626] #PF: error_code(0x0010) - not-present page
+[   37.958762][T15626] PGD 4aadf067 P4D 4aadf067 PUD 4aade067 PMD 0
+[   37.959321][T15626] Oops: 0010 [#1] PREEMPT SMP
+[   37.959739][T15626] CPU: 0 PID: 15626 Comm: rxrpc_preparse_ Not tainted 5.17.0-01442-gb47d5a4f6b8d #43
+[   37.960588][T15626] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
+[   37.961474][T15626] RIP: 0010:0x0
+[   37.961787][T15626] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+[   37.962480][T15626] RSP: 0018:ffffc9000d9abdc0 EFLAGS: 00010286
+[   37.963018][T15626] RAX: ffffffff84335200 RBX: ffff888012a1ce80 RCX: 0000000000000000
+[   37.963727][T15626] RDX: 0000000000000000 RSI: ffffffff84a736dc RDI: ffffc9000d9abe48
+[   37.964425][T15626] RBP: ffffc9000d9abe48 R08: 0000000000000000 R09: 0000000000000002
+[   37.965118][T15626] R10: 000000000000000a R11: f000000000000000 R12: ffff888013145680
+[   37.965836][T15626] R13: 0000000000000000 R14: ffffffffffffffec R15: ffff8880432aba80
+[   37.966441][T15626] FS:  00007f2177907700(0000) GS:ffff88803ec00000(0000) knlGS:0000000000000000
+[   37.966979][T15626] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   37.967384][T15626] CR2: ffffffffffffffd6 CR3: 000000004aaf1000 CR4: 00000000000006f0
+[   37.967864][T15626] Call Trace:
+[   37.968062][T15626]  <TASK>
+[   37.968240][T15626]  rxrpc_preparse_s+0x59/0x90
+[   37.968541][T15626]  key_create_or_update+0x174/0x510
+[   37.968863][T15626]  __x64_sys_add_key+0x139/0x1d0
+[   37.969165][T15626]  do_syscall_64+0x35/0xb0
+[   37.969451][T15626]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   37.969824][T15626] RIP: 0033:0x43a1f9
 
-Rework to add assembler directives [1] around the instruction. Going
-through them one by one shows that the changes should be safe.  Like
-__get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
-which according to the name is specific to power9.  And __raw_rm_read*()
-are only called in things that are powernv or book3s_hv specific.
-
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
-
-Cc: stable@vger.kernel.org
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-[mpe: Make commit subject more descriptive]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-2-anders.roxell@linaro.org
+Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Tested-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Acked-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005069.html
+Fixes: 12da59fcab5a ("rxrpc: Hand server key parsing off to the security class")
+Link: https://lore.kernel.org/r/164865013439.2941502.8966285221215590921.stgit@warthog.procyon.org.uk
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/io.h        |   40 ++++++++++++++++++++++++++++-------
- arch/powerpc/include/asm/uaccess.h   |    3 ++
- arch/powerpc/platforms/powernv/rng.c |    6 ++++-
- 3 files changed, 40 insertions(+), 9 deletions(-)
+ net/rxrpc/server_key.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/arch/powerpc/include/asm/io.h
-+++ b/arch/powerpc/include/asm/io.h
-@@ -359,25 +359,37 @@ static inline void __raw_writeq_be(unsig
-  */
- static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stbcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stbcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
+--- a/net/rxrpc/server_key.c
++++ b/net/rxrpc/server_key.c
+@@ -84,6 +84,9 @@ static int rxrpc_preparse_s(struct key_p
+ 
+ 	prep->payload.data[1] = (struct rxrpc_security *)sec;
+ 
++	if (!sec->preparse_server_key)
++		return -EINVAL;
++
+ 	return sec->preparse_server_key(prep);
  }
  
- static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
+@@ -91,7 +94,7 @@ static void rxrpc_free_preparse_s(struct
  {
--	__asm__ __volatile__("sthcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      sthcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
+ 	const struct rxrpc_security *sec = prep->payload.data[1];
+ 
+-	if (sec)
++	if (sec && sec->free_preparse_server_key)
+ 		sec->free_preparse_server_key(prep);
  }
  
- static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
+@@ -99,7 +102,7 @@ static void rxrpc_destroy_s(struct key *
  {
--	__asm__ __volatile__("stwcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stwcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
+ 	const struct rxrpc_security *sec = key->payload.data[1];
+ 
+-	if (sec)
++	if (sec && sec->destroy_server_key)
+ 		sec->destroy_server_key(key);
  }
  
- static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stdcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stdcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
-@@ -389,7 +401,10 @@ static inline void __raw_rm_writeq_be(u6
- static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
- {
- 	u8 ret;
--	__asm__ __volatile__("lbzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lbzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -397,7 +412,10 @@ static inline u8 __raw_rm_readb(volatile
- static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
- {
- 	u16 ret;
--	__asm__ __volatile__("lhzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lhzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -405,7 +423,10 @@ static inline u16 __raw_rm_readw(volatil
- static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
- {
- 	u32 ret;
--	__asm__ __volatile__("lwzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lwzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -413,7 +434,10 @@ static inline u32 __raw_rm_readl(volatil
- static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
- {
- 	u64 ret;
--	__asm__ __volatile__("ldcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      ldcix %0,0, %1;  \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
---- a/arch/powerpc/include/asm/uaccess.h
-+++ b/arch/powerpc/include/asm/uaccess.h
-@@ -125,8 +125,11 @@ do {								\
-  */
- #define __get_user_atomic_128_aligned(kaddr, uaddr, err)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine altivec\n"			\
- 		"1:	lvx  0,0,%1	# get user\n"	\
- 		" 	stvx 0,0,%2	# put kernel\n"	\
-+		".machine pop\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li %0,%3\n"			\
---- a/arch/powerpc/platforms/powernv/rng.c
-+++ b/arch/powerpc/platforms/powernv/rng.c
-@@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct p
- 	unsigned long parity;
- 
- 	/* Calculate the parity of the value */
--	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
-+	asm (".machine push;   \
-+	      .machine power7; \
-+	      popcntd %0,%1;   \
-+	      .machine pop;"
-+	     : "=r" (parity) : "r" (val));
- 
- 	/* xor our value with the previous mask */
- 	val ^= rng->mask;
 
 
