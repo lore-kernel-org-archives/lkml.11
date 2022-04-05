@@ -2,115 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3BD7C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C3BC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376574AbiDELW3 (ORCPT
+        id S1376591AbiDELWe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
+        Tue, 5 Apr 2022 07:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241821AbiDEIsf (ORCPT
+        with ESMTP id S241722AbiDEIse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:35 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E782DD73;
-        Tue,  5 Apr 2022 01:36:56 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:36:41 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147802;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pqGsUCInYJYqWGB26mzQqRN8NkW0Zsnxq2+XJepJuUU=;
-        b=ILw5lX6p/mtGsKepArwIjEXIpxARCMAfYOsmgzbd83cg+b4Nnicp2RRRKmiZ6umyPoSOMt
-        +eCyH3gvVcXXQeGZSz1fPKPneod+pnPYSEZyUAIqRUg1ufkoynT2IruzzSU69GUUN3Ob7o
-        qspTuhSrahSlS/KvPReUTvamQLr/Xvi+d40bBsiLyv0v57pwH9oserscSVLa26Jsn5FZCi
-        /xpLyjbeIwAJ6Rq1FkbKKoUa8NhUV8MHPFY5IkQboyTF9/u9h77FTqeSzKvaUAiF45yA2G
-        Jvfx21IgsXEQAz6fmQvVodcHaZA6Mka3t4b+n61eOyfx99c/D3qZqqNXXJ4oZQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147802;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pqGsUCInYJYqWGB26mzQqRN8NkW0Zsnxq2+XJepJuUU=;
-        b=6U0FV8dOtit+6wg6WFsb26EKeQ5GLFxlmBlwW8NoKUV89YMBxFcmo2Yonu2sn+aI5HX8Tr
-        9QG6wij5o6vnSSAQ==
-From:   "tip-bot2 for Stephane Eranian" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/x86/amd: Add branch-brs helper event for Fam19h BRS
-Cc:     Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220322221517.2510440-5-eranian@google.com>
-References: <20220322221517.2510440-5-eranian@google.com>
+        Tue, 5 Apr 2022 04:48:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A082C11E;
+        Tue,  5 Apr 2022 01:36:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 758B160B0E;
+        Tue,  5 Apr 2022 08:36:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85806C385A4;
+        Tue,  5 Apr 2022 08:36:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147808;
+        bh=ZjjBIg4YY41qaydTp/ZMc/HG2hPLoNVZy/9NtKAzlPs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TLsj4S1l4xiPTXPYYCP16R2EjyhWedyPDCjsemkexo7jIGnIXeVn2Wx9/YXF8lZGM
+         +B5e3TGFzrowNn0Euv3KAwVGzKTSBhV+WXn+jaWU8e05v0SdVlHTwYCnNPE84iMTzD
+         5wxdHiqPI4io37iDMxfdFhY4jp49BXaLDkdMxks0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Subject: [PATCH 5.16 0130/1017] arm64: dts: ti: k3-am65: Fix gic-v3 compatible regs
+Date:   Tue,  5 Apr 2022 09:17:23 +0200
+Message-Id: <20220405070358.058959718@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914780166.389.13309204242151647922.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+From: Nishanth Menon <nm@ti.com>
 
-Commit-ID:     44175993efbae04e8b2d7f7795ff512c3a726db0
-Gitweb:        https://git.kernel.org/tip/44175993efbae04e8b2d7f7795ff512c3a726db0
-Author:        Stephane Eranian <eranian@google.com>
-AuthorDate:    Tue, 22 Mar 2022 15:15:08 -07:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:37 +02:00
+commit 8cae268b70f387ff9e697ccd62fb2384079124e7 upstream.
 
-perf/x86/amd: Add branch-brs helper event for Fam19h BRS
+Though GIC ARE option is disabled for no GIC-v2 compatibility,
+Cortex-A53 is free to implement the CPU interface as long as it
+communicates with the GIC using the stream protocol. This requires
+that the SoC integration mark out the PERIPHBASE[1] as reserved area
+within the SoC. See longer discussion in [2] for further information.
 
-Add a pseudo event called branch-brs to help use the FAM Fam19h
-Branch Sampling feature (BRS). BRS samples taken branches, so it is best used
-when sampling on a retired taken branch event (0xc4) which is what BRS
-captures.  Instead of trying to remember the event code or actual event name,
-users can simply do:
+Update the GIC register map to indicate offsets from PERIPHBASE based
+on [3]. Without doing this, systems like kvm will not function with
+gic-v2 emulation.
 
-$ perf record -b -e cpu/branch-brs/ -c 1000037 .....
+[1] https://developer.arm.com/documentation/ddi0500/e/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
+[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
+[3] https://developer.arm.com/documentation/ddi0500/e/generic-interrupt-controller-cpu-interface/gic-programmers-model/memory-map
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220322221517.2510440-5-eranian@google.com
+Cc: stable@vger.kernel.org # 5.10+
+Fixes: ea47eed33a3f ("arm64: dts: ti: Add Support for AM654 SoC")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220215201008.15235-2-nm@ti.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/amd/core.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ arch/arm64/boot/dts/ti/k3-am65-main.dtsi |    5 ++++-
+ arch/arm64/boot/dts/ti/k3-am65.dtsi      |    1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index c7ac70d..f7bce83 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -1145,8 +1145,23 @@ static struct attribute_group group_caps_amd_brs = {
- 	.is_visible = amd_brs_is_visible,
- };
- 
-+EVENT_ATTR_STR(branch-brs, amd_branch_brs,
-+	       "event=" __stringify(AMD_FAM19H_BRS_EVENT)"\n");
-+
-+static struct attribute *amd_brs_events_attrs[] = {
-+	EVENT_PTR(amd_branch_brs),
-+	NULL,
-+};
-+
-+static struct attribute_group group_events_amd_brs = {
-+	.name       = "events",
-+	.attrs      = amd_brs_events_attrs,
-+	.is_visible = amd_brs_is_visible,
-+};
-+
- static const struct attribute_group *amd_attr_update[] = {
- 	&group_caps_amd_brs,
-+	&group_events_amd_brs,
- 	NULL,
- };
- 
+--- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+@@ -35,7 +35,10 @@
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01880000 0x00 0x90000>;	/* GICR */
++		      <0x00 0x01880000 0x00 0x90000>,	/* GICR */
++		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
++		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
++		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
+ 		/*
+ 		 * vcpumntirq:
+ 		 * virtual CPU interface maintenance interrupt
+--- a/arch/arm64/boot/dts/ti/k3-am65.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am65.dtsi
+@@ -86,6 +86,7 @@
+ 			 <0x00 0x46000000 0x00 0x46000000 0x00 0x00200000>,
+ 			 <0x00 0x47000000 0x00 0x47000000 0x00 0x00068400>,
+ 			 <0x00 0x50000000 0x00 0x50000000 0x00 0x8000000>,
++			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A53 PERIPHBASE */
+ 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x200000>,
+ 			 <0x05 0x00000000 0x05 0x00000000 0x01 0x0000000>,
+ 			 <0x07 0x00000000 0x07 0x00000000 0x01 0x0000000>;
+
+
