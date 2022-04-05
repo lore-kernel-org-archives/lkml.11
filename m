@@ -2,85 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A23EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB48C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836289AbiDFAfe (ORCPT
+        id S1836304AbiDFAfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44768 "EHLO
+        Tue, 5 Apr 2022 20:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349293AbiDEKub (ORCPT
+        with ESMTP id S1383182AbiDEMZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:50:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8FE9E9E7;
-        Tue,  5 Apr 2022 03:27:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 742C9CE1CA2;
-        Tue,  5 Apr 2022 10:27:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EDB0C385A0;
-        Tue,  5 Apr 2022 10:27:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154459;
-        bh=mWbZGA5WjKvN7hL45PwgL8mQv5NxuEjP1BrYZ/g8UvQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kt9/grcBj1ZTokMUFKUY68dGKeYqF6nR+Yqt1l9AQMRhzYWP7+aiNa/FqMvbjysxr
-         2fF8X1WULEybsP+9ecAv61oG1U3tNezemmDIu3udvmwWATIEdhUFnTWP3D1jGO7n+l
-         vjcDCceDeZiJEpHuwd7XEdjqZW9oC5d10UUOT5+0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Huang Rui <ray.huang@amd.com>
-Subject: [PATCH 5.10 569/599] ACPI: CPPC: Avoid out of bounds access when parsing _CPC data
-Date:   Tue,  5 Apr 2022 09:34:23 +0200
-Message-Id: <20220405070315.774569917@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:25:05 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EEDB9FC9;
+        Tue,  5 Apr 2022 04:32:30 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1DDB81F390;
+        Tue,  5 Apr 2022 11:32:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649158349; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=B1KHdOwVSkxc4cwioVl/fqGmb4ILJaNXLeIecIndREU=;
+        b=qXT6Q82QAwXEkqmD+YG8GK/DX6LittdLbmMiR0cLdzmaGDoXz2vs56KXY3UgDLM7nnGdzs
+        8azj5l80G5gL32IcbIBHAaccnjnLeu/slYcTyrPAcRTcEmSpJgTaHNcWHaH33+nqwT9exX
+        60vdU01v3DoeL7Nr1m2hr44/kl1TwtY=
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 13F1EA3B8A;
+        Tue,  5 Apr 2022 11:32:29 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id F4233DA80E; Tue,  5 Apr 2022 13:28:27 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 13:28:27 +0200
+From:   David Sterba <dsterba@suse.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Btrfs fixes for 5.18-rc2
+Message-ID: <cover.1649109877.git.dsterba@suse.com>
+Mail-Followup-To: David Sterba <dsterba@suse.com>,
+        torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Hi,
 
-commit 40d8abf364bcab23bc715a9221a3c8623956257b upstream.
+please pull the following fixes for btrfs, thanks.
 
-If the NumEntries field in the _CPC return package is less than 2, do
-not attempt to access the "Revision" element of that package, because
-it may not be present then.
+- prevent deleting subvolume with active swapfile
 
-Fixes: 337aadff8e45 ("ACPI: Introduce CPU performance controls using CPPC")
-BugLink: https://lore.kernel.org/lkml/20220322143534.GC32582@xsang-OptiPlex-9020/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Reviewed-by: Huang Rui <ray.huang@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/acpi/cppc_acpi.c |    5 +++++
- 1 file changed, 5 insertions(+)
+- fix qgroup reserve limit calculation overflow
 
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -719,6 +719,11 @@ int acpi_cppc_processor_probe(struct acp
- 	cpc_obj = &out_obj->package.elements[0];
- 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
- 		num_ent = cpc_obj->integer.value;
-+		if (num_ent <= 1) {
-+			pr_debug("Unexpected _CPC NumEntries value (%d) for CPU:%d\n",
-+				 num_ent, pr->id);
-+			goto out_free;
-+		}
- 	} else {
- 		pr_debug("Unexpected entry type(%d) for NumEntries\n",
- 				cpc_obj->type);
+- remove device count in superblock and its item in one transaction so
+  they cant't get out of sync
 
+- skip defragmenting an isolated sector, this could cause some extra IO
 
+- unify handling of mtime/permissions in hole punch with fallocate
+
+- zoned mode fixes:
+  - remove assert checking for only single mode, we have the DUP mode
+    implemented
+
+  - fix potential lockdep warning while traversing devices when checking
+    for zone activation
+
+----------------------------------------------------------------
+The following changes since commit d3e29967079c522ce1c5cab0e9fab2c280b977eb:
+
+  btrfs: zoned: put block group after final usage (2022-03-14 13:13:54 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc1-tag
+
+for you to fetch changes up to 60021bd754c6ca0addc6817994f20290a321d8d6:
+
+  btrfs: prevent subvol with swapfile from being deleted (2022-03-24 17:50:57 +0100)
+
+----------------------------------------------------------------
+Darrick J. Wong (1):
+      btrfs: fix fallocate to use file_modified to update permissions consistently
+
+Ethan Lien (1):
+      btrfs: fix qgroup reserve overflow the qgroup limit
+
+Johannes Thumshirn (2):
+      btrfs: zoned: traverse devices under chunk_mutex in btrfs_can_activate_zone
+      btrfs: zoned: remove left over ASSERT checking for single profile
+
+Josef Bacik (1):
+      btrfs: do not warn for free space inode in cow_file_range
+
+Kaiwen Hu (1):
+      btrfs: prevent subvol with swapfile from being deleted
+
+Qu Wenruo (2):
+      btrfs: remove device item and update super block in the same transaction
+      btrfs: avoid defragging extents whose next extents are not targets
+
+ fs/btrfs/extent_io.h |  2 +-
+ fs/btrfs/file.c      | 13 +++++++++--
+ fs/btrfs/inode.c     | 23 ++++++++++++++++++-
+ fs/btrfs/ioctl.c     | 20 +++++++++++-----
+ fs/btrfs/volumes.c   | 65 ++++++++++++++++++++++------------------------------
+ fs/btrfs/zoned.c     | 13 ++++-------
+ 6 files changed, 81 insertions(+), 55 deletions(-)
