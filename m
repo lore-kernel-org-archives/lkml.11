@@ -2,149 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB57C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34E9C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356929AbiDEKZF (ORCPT
+        id S1357004AbiDEKZ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
+        Tue, 5 Apr 2022 06:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241212AbiDEIcz (ORCPT
+        with ESMTP id S241150AbiDEIcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612A617AA7;
-        Tue,  5 Apr 2022 01:29:41 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:38 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147380;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CG5YoLwVtENTsJI0ZrkElUF1kAUax6t9VUJ60RvhJyU=;
-        b=wffzHuT9w4t8vE4ER/eAMk+5e/hBQx8EcbUsg7pU3enhphts0JZ6s2zwslkkAlVo907big
-        2pXR+XvNOjDvv7UMspTmLAV3ns+Z2HH9F02PvJpSUV/C7gjSKgwzUgVmNGHAeRtFYbK8us
-        pPzBT1YKCWup5r0g8QqsALJ88HlSUY94h8UHi6NvP1sUW/ko+SFf3ObzVh+v6Lt0cEvlbx
-        Crpawo91PVuXsp97UCNud7km3qmxm8GnZLozaxNvdULMdo68xtFYUgU3/CrVjR0do93E9u
-        0vP9C83d70JL22GkLV/z4yps34Pbx5yN0HXie9y40wNFgBh9+TsncbFcpw8qIQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147380;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CG5YoLwVtENTsJI0ZrkElUF1kAUax6t9VUJ60RvhJyU=;
-        b=JDN0WqxdBfxFnEc3qfli09GyeYL47oKKnegWtayfWO47xAP0wIs9aW6Vv1T4kDOiTI+k69
-        6PTMTx8rgs36CCDQ==
-From:   "tip-bot2 for Vincent Mailhol" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/bug: Prevent shadowing in __WARN_FLAGS
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220324023742.106546-1-mailhol.vincent@wanadoo.fr>
-References: <20220324023742.106546-1-mailhol.vincent@wanadoo.fr>
+        Tue, 5 Apr 2022 04:32:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4536B63C2;
+        Tue,  5 Apr 2022 01:28:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7AB560B0A;
+        Tue,  5 Apr 2022 08:28:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0CB0C385A1;
+        Tue,  5 Apr 2022 08:28:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147321;
+        bh=kLA0FOygvSK2hdN4Zg8kc1lbxqXXFha3+GPW5PGe0ME=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wgj0yHSNMgXCcCcp4zdNajeO1qWA0FJemxXstr+jiw+BhJ9EFXCer/Og11D4YL8ZE
+         g9Y2YF3sU3ZbPhkZL5P4CxI+ZJhMxb9OWv1DaYdd4nLLupKOf+YlI9WzueNW925G/m
+         VlefBi1GSUPwJ9A38qw3DufJSoUsvn83OWCn67k8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 1081/1126] mm/memcontrol: return 1 from cgroup.memory __setup() handler
+Date:   Tue,  5 Apr 2022 09:30:28 +0200
+Message-Id: <20220405070439.183961355@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914737896.389.7504824366044835648.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Commit-ID:     9ce02f0fc68326dd1f87a0a3a4c6ae7fdd39e6f6
-Gitweb:        https://git.kernel.org/tip/9ce02f0fc68326dd1f87a0a3a4c6ae7fdd39e6f6
-Author:        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-AuthorDate:    Thu, 24 Mar 2022 11:37:42 +09:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 10:24:40 +02:00
+commit 460a79e18842caca6fa0c415de4a3ac1e671ac50 upstream.
 
-x86/bug: Prevent shadowing in __WARN_FLAGS
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; it just pollutes init's
+environment).
 
-The macro __WARN_FLAGS() uses a local variable named "f". This being a
-common name, there is a risk of shadowing other variables.
+The only reason that this particular __setup handler does not pollute
+init's environment is that the setup string contains a '.', as in
+"cgroup.memory".  This causes init/main.c::unknown_boottoption() to
+consider it to be an "Unused module parameter" and ignore it.  (This is
+for parsing of loadable module parameters any time after kernel init.)
+Otherwise the string "cgroup.memory=whatever" would be added to init's
+environment strings.
 
-For example, GCC would yield:
+Instead of relying on this '.' quirk, just return 1 to indicate that the
+boot option has been handled.
 
-| In file included from ./include/linux/bug.h:5,
-|                  from ./include/linux/cpumask.h:14,
-|                  from ./arch/x86/include/asm/cpumask.h:5,
-|                  from ./arch/x86/include/asm/msr.h:11,
-|                  from ./arch/x86/include/asm/processor.h:22,
-|                  from ./arch/x86/include/asm/timex.h:5,
-|                  from ./include/linux/timex.h:65,
-|                  from ./include/linux/time32.h:13,
-|                  from ./include/linux/time.h:60,
-|                  from ./include/linux/stat.h:19,
-|                  from ./include/linux/module.h:13,
-|                  from virt/lib/irqbypass.mod.c:1:
-| ./include/linux/rcupdate.h: In function 'rcu_head_after_call_rcu':
-| ./arch/x86/include/asm/bug.h:80:21: warning: declaration of 'f' shadows a parameter [-Wshadow]
-|    80 |         __auto_type f = BUGFLAG_WARNING|(flags);                \
-|       |                     ^
-| ./include/asm-generic/bug.h:106:17: note: in expansion of macro '__WARN_FLAGS'
-|   106 |                 __WARN_FLAGS(BUGFLAG_ONCE |                     \
-|       |                 ^~~~~~~~~~~~
-| ./include/linux/rcupdate.h:1007:9: note: in expansion of macro 'WARN_ON_ONCE'
-|  1007 |         WARN_ON_ONCE(func != (rcu_callback_t)~0L);
-|       |         ^~~~~~~~~~~~
-| In file included from ./include/linux/rbtree.h:24,
-|                  from ./include/linux/mm_types.h:11,
-|                  from ./include/linux/buildid.h:5,
-|                  from ./include/linux/module.h:14,
-|                  from virt/lib/irqbypass.mod.c:1:
-| ./include/linux/rcupdate.h:1001:62: note: shadowed declaration is here
-|  1001 | rcu_head_after_call_rcu(struct rcu_head *rhp, rcu_callback_t f)
-|       |                                               ~~~~~~~~~~~~~~~^
+Note that there is no warning message if someone enters:
+	cgroup.memory=anything_invalid
 
-For reference, sparse also warns about it, c.f. [1].
-
-This patch renames the variable from f to __flags (with two underscore
-prefixes as suggested in the Linux kernel coding style [2]) in order
-to prevent collisions.
-
-[1] https://lore.kernel.org/all/CAFGhKbyifH1a+nAMCvWM88TK6fpNPdzFtUXPmRGnnQeePV+1sw@mail.gmail.com/
-
-[2] Linux kernel coding style, section 12) Macros, Enums and RTL,
-paragraph 5) namespace collisions when defining local variables in
-macros resembling functions
-https://www.kernel.org/doc/html/latest/process/coding-style.html#macros-enums-and-rtl
-
-Fixes: bfb1a7c91fb7 ("x86/bug: Merge annotate_reachable() into_BUG_FLAGS() asm")
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/20220324023742.106546-1-mailhol.vincent@wanadoo.fr
+Link: https://lkml.kernel.org/r/20220222005811.10672-1-rdunlap@infradead.org
+Fixes: f7e1cb6ec51b0 ("mm: memcontrol: account socket memory in unified hierarchy memory controller")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/bug.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ mm/memcontrol.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/bug.h b/arch/x86/include/asm/bug.h
-index 4d20a29..aaf0cb0 100644
---- a/arch/x86/include/asm/bug.h
-+++ b/arch/x86/include/asm/bug.h
-@@ -78,9 +78,9 @@ do {								\
-  */
- #define __WARN_FLAGS(flags)					\
- do {								\
--	__auto_type f = BUGFLAG_WARNING|(flags);		\
-+	__auto_type __flags = BUGFLAG_WARNING|(flags);		\
- 	instrumentation_begin();				\
--	_BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);			\
-+	_BUG_FLAGS(ASM_UD2, __flags, ASM_REACHABLE);		\
- 	instrumentation_end();					\
- } while (0)
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -7053,7 +7053,7 @@ static int __init cgroup_memory(char *s)
+ 		if (!strcmp(token, "nokmem"))
+ 			cgroup_memory_nokmem = true;
+ 	}
+-	return 0;
++	return 1;
+ }
+ __setup("cgroup.memory=", cgroup_memory);
  
+
+
