@@ -2,149 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EA6C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C29EAC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353413AbiDEUDY (ORCPT
+        id S1355093AbiDEUDi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
+        Tue, 5 Apr 2022 16:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443193AbiDEPjI (ORCPT
+        with ESMTP id S242193AbiDEKcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5287147AC6;
-        Tue,  5 Apr 2022 06:55:04 -0700 (PDT)
+        Tue, 5 Apr 2022 06:32:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EF8DE919;
+        Tue,  5 Apr 2022 03:18:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2940DB81BA3;
-        Tue,  5 Apr 2022 13:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAB8FC385A8;
-        Tue,  5 Apr 2022 13:55:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166901;
-        bh=VQT9QjB08IDzgtp+NOGCbEMHe3R/wkFrqbmn4S0oJGA=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E2D96176C;
+        Tue,  5 Apr 2022 10:18:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88835C385A1;
+        Tue,  5 Apr 2022 10:18:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153923;
+        bh=SHgMIsg7sWxKjDxzCiPkM4eU2XEZLf2akJirYWO4Tm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K++dJ+SVAnTf3m6paasV0tDfYHhFre6VydI/IpAf9fgWFZDIsYhbdJJFCnuhVMslY
-         j9BFeLEZbWpZdr3F3GipAaetDHRDs/MtzVGnCkngeZBECmCGLNnhsKEvjGqcfq5rA2
-         KN9JvigjywPgtoHvrMWUJwm7dIPrnoZWMHN1Y4s3llYtFsZIt+fSCqzTjkf3ZsZVI+
-         z9VKU1D4MTFsih1vd2L8tSSOZ38X3g3uKByIdKz3y0J/3ltwzEcZNfzAZ0ICf1XLhR
-         ibHlVT2myKS/unUwXlhOJJmJxqimyO/OgpQKvIdqnygCHwK1sESbuau2HCGdMGEiBv
-         VGSDGOjA2kU1g==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbje7-001q4g-EZ; Tue, 05 Apr 2022 14:54:59 +0100
-From:   Marc Zyngier <maz@kernel.org>
+        b=Gy7Tuc8vJl7RXwkXtiuc5Lo6csfFW1SHYXcy/4OybqOJyTNDnajoKPfevFwArtrKK
+         iyRr5Pe39X9icOLGMIyVAoUEaUOjeDjEyeNKyHKH/vq722JkE9MGyR+sfSRCqLBLUS
+         5SQqzQy56RYIO1p4XoGj8onT/jBgaPtseyNkSfRI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 01/10] gpio: Don't fiddle with irqchips marked as immutable
-Date:   Tue,  5 Apr 2022 14:54:35 +0100
-Message-Id: <20220405135444.199295-2-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-References: <20220405135444.199295-1-maz@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 395/599] serial: 8250: Fix race condition in RTS-after-send handling
+Date:   Tue,  5 Apr 2022 09:31:29 +0200
+Message-Id: <20220405070310.585238979@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to move away from gpiolib messing with the internals of
-unsuspecting irqchips, add a flag by which irqchips advertise
-that they are not to be messed with, and do solemnly swear that
-they correctly call into the gpiolib helpers when required.
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Also nudge the users into converting their drivers to the
-new model.
+[ Upstream commit dedab69fd650ea74710b2e626e63fd35584ef773 ]
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
+Set em485->active_timer = NULL isn't always enough to take out the stop
+timer. While there is a check that it acts in the right state (i.e.
+waiting for RTS-after-send to pass after sending some chars) but the
+following might happen:
+
+ - CPU1: some chars send, shifter becomes empty, stop tx timer armed
+ - CPU0: more chars send before RTS-after-send expired
+ - CPU0: shifter empty irq, port lock taken
+ - CPU1: tx timer triggers, waits for port lock
+ - CPU0: em485->active_timer = &em485->stop_tx_timer, hrtimer_start(),
+   releases lock()
+ - CPU1: get lock, see em485->active_timer == &em485->stop_tx_timer,
+   tear down RTS too early
+
+This fix bases on research done by Steffen Trumtrar.
+
+Fixes: b86f86e8e7c5 ("serial: 8250: fix potential deadlock in rs485-mode")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220215160236.344236-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib.c | 7 ++++++-
- include/linux/irq.h    | 2 ++
- kernel/irq/debugfs.c   | 1 +
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_port.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index e59884cc12a7..48191e62a3cc 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -1475,6 +1475,11 @@ static void gpiochip_set_irq_hooks(struct gpio_chip *gc)
- {
- 	struct irq_chip *irqchip = gc->irq.chip;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 7c07ebb37b1b..1733f03a7da7 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1620,6 +1620,18 @@ static inline void start_tx_rs485(struct uart_port *port)
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	struct uart_8250_em485 *em485 = up->em485;
  
-+	if (irqchip->flags & IRQCHIP_IMMUTABLE)
-+		return;
++	/*
++	 * While serial8250_em485_handle_stop_tx() is a noop if
++	 * em485->active_timer != &em485->stop_tx_timer, it might happen that
++	 * the timer is still armed and triggers only after the current bunch of
++	 * chars is send and em485->active_timer == &em485->stop_tx_timer again.
++	 * So cancel the timer. There is still a theoretical race condition if
++	 * the timer is already running and only comes around to check for
++	 * em485->active_timer when &em485->stop_tx_timer is armed again.
++	 */
++	if (em485->active_timer == &em485->stop_tx_timer)
++		hrtimer_try_to_cancel(&em485->stop_tx_timer);
 +
-+	chip_warn(gc, "not an immutable chip, please consider fixing it!\n");
-+
- 	if (!irqchip->irq_request_resources &&
- 	    !irqchip->irq_release_resources) {
- 		irqchip->irq_request_resources = gpiochip_irq_reqres;
-@@ -1633,7 +1638,7 @@ static void gpiochip_irqchip_remove(struct gpio_chip *gc)
- 		irq_domain_remove(gc->irq.domain);
- 	}
+ 	em485->active_timer = NULL;
  
--	if (irqchip) {
-+	if (irqchip && !(irqchip->flags & IRQCHIP_IMMUTABLE)) {
- 		if (irqchip->irq_request_resources == gpiochip_irq_reqres) {
- 			irqchip->irq_request_resources = NULL;
- 			irqchip->irq_release_resources = NULL;
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index f92788ccdba2..505308253d23 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -569,6 +569,7 @@ struct irq_chip {
-  * IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND:  Invokes __enable_irq()/__disable_irq() for wake irqs
-  *                                    in the suspend path if they are in disabled state
-  * IRQCHIP_AFFINITY_PRE_STARTUP:      Default affinity update before startup
-+ * IRQCHIP_IMMUTABLE:		      Don't ever change anything in this chip
-  */
- enum {
- 	IRQCHIP_SET_TYPE_MASKED			= (1 <<  0),
-@@ -582,6 +583,7 @@ enum {
- 	IRQCHIP_SUPPORTS_NMI			= (1 <<  8),
- 	IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND	= (1 <<  9),
- 	IRQCHIP_AFFINITY_PRE_STARTUP		= (1 << 10),
-+	IRQCHIP_IMMUTABLE			= (1 << 11),
- };
- 
- #include <linux/irqdesc.h>
-diff --git a/kernel/irq/debugfs.c b/kernel/irq/debugfs.c
-index 2b43f5f5033d..bc8e40cf2b65 100644
---- a/kernel/irq/debugfs.c
-+++ b/kernel/irq/debugfs.c
-@@ -58,6 +58,7 @@ static const struct irq_bit_descr irqchip_flags[] = {
- 	BIT_MASK_DESCR(IRQCHIP_SUPPORTS_LEVEL_MSI),
- 	BIT_MASK_DESCR(IRQCHIP_SUPPORTS_NMI),
- 	BIT_MASK_DESCR(IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND),
-+	BIT_MASK_DESCR(IRQCHIP_IMMUTABLE),
- };
- 
- static void
+ 	if (em485->tx_stopped) {
 -- 
 2.34.1
+
+
 
