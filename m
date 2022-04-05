@@ -2,214 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF4DC3527B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C7AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243014AbiDEJip (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
+        id S232344AbiDEJiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239763AbiDEIUu (ORCPT
+        with ESMTP id S239764AbiDEIUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B08B2F;
-        Tue,  5 Apr 2022 01:18:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39C8860B0F;
-        Tue,  5 Apr 2022 08:18:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 471BCC385A0;
-        Tue,  5 Apr 2022 08:18:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146728;
-        bh=PPyB38zuBoAibvBuvbbADfl/549D/slCttl/tVe3DZc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qmucHt7tXFR1H0A//7oIwDEuf4mAPOXVF5sDWppA7FJaC8If/9S77KHhsNbVHFum6
-         zgQ3ZFAlMvchaOaadlnC8MlECV9RJPuiIgsILfyaFuX/3G6btRuWO+0r4tKnuKWE7H
-         jLo0UqYpCHm12cIb43Ha9WD0kJ5B3SjuaSRrGSx8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0866/1126] parisc: Fix handling off probe non-access faults
-Date:   Tue,  5 Apr 2022 09:26:53 +0200
-Message-Id: <20220405070432.956643666@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CB8B3C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:18:48 -0700 (PDT)
+Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KXgV63YyFz67ydH;
+        Tue,  5 Apr 2022 16:17:02 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 5 Apr 2022 10:18:46 +0200
+Received: from [10.47.91.157] (10.47.91.157) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
+ 2022 09:18:45 +0100
+Message-ID: <ba5aa606-54bf-e19f-39ba-a21998781a6c@huawei.com>
+Date:   Tue, 5 Apr 2022 09:18:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 1/2] drivers/perf: hisi: Associate PMUs in SICL with
+ CPUs online
+To:     Qi Liu <liuqi115@huawei.com>, "will@kernel.org" <will@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+CC:     Zhangshaokun <zhangshaokun@hisilicon.com>,
+        Linuxarm <linuxarm@huawei.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220321070124.41338-1-liuqi115@huawei.com>
+ <20220321070124.41338-2-liuqi115@huawei.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220321070124.41338-2-liuqi115@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.91.157]
+X-ClientProxiedBy: lhreml747-chm.china.huawei.com (10.201.108.197) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+On 21/03/2022 07:01, Qi Liu wrote:
+> If a PMU is in SICL, we associate it with all CPUs online, rather
 
-[ Upstream commit e00b0a2ab8ec019c344e53bfc76e31c18bb587b7 ]
+/s/in SICL/in a SICL/ [and all other places, including the code change], 
+or maybe it is better mention "IO super cluster" as well for people who 
+would not know or remember.
 
-Currently, the parisc kernel does not fully support non-access TLB
-fault handling for probe instructions. In the fast path, we set the
-target register to zero if it is not a shadowed register. The slow
-path is not implemented, so we call do_page_fault. The architecture
-indicates that non-access faults should not cause a page fault from
-disk.
+> than CPUs in the nearest SCCL.
 
-This change adds to code to provide non-access fault support for
-probe instructions. It also modifies the handling of faults on
-userspace so that if the address lies in a valid VMA and the access
-type matches that for the VMA, the probe target register is set to
-one. Otherwise, the target register is set to zero.
+You are not really saying why. I would mention that we do it as it is 
+not appropiate to associate with a CPU die, and you can also mention 
+problems that associating with a SICL creates.
 
-This was done to make probe instructions more useful for userspace.
-Probe instructions are not very useful if they set the target register
-to zero whenever a page is not present in memory. Nominally, the
-purpose of the probe instruction is determine whether read or write
-access to a given address is allowed.
+Please also mention how changing FW definition is ok at this stage.
 
-This fixes a problem in function pointer comparison noticed in the
-glibc testsuite (stdio-common/tst-vfprintf-user-type). The same
-problem is likely in glibc (_dl_lookup_address).
+> 
+> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+> ---
+>   drivers/perf/hisilicon/hisi_uncore_pa_pmu.c | 18 +++++++-----------
+>   drivers/perf/hisilicon/hisi_uncore_pmu.c    |  4 ++++
+>   drivers/perf/hisilicon/hisi_uncore_pmu.h    |  1 +
+>   3 files changed, 12 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+> index bad99d149172..54c604c0d404 100644
+> --- a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+> +++ b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+> @@ -258,13 +258,12 @@ static int hisi_pa_pmu_init_data(struct platform_device *pdev,
+>   				   struct hisi_pmu *pa_pmu)
+>   {
+>   	/*
+> -	 * Use the SCCL_ID and the index ID to identify the PA PMU,
+> -	 * while SCCL_ID is the nearst SCCL_ID from this SICL and
+> -	 * CPU core is chosen from this SCCL to manage this PMU.
+> +	 * As PA PMU is in SICL, use the SICL_ID and the index ID
 
-V2 adds flush and lpa instruction support to handle_nadtlb_fault.
+"a SICL"
 
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/parisc/include/asm/traps.h |  1 +
- arch/parisc/kernel/traps.c      |  2 +
- arch/parisc/mm/fault.c          | 89 +++++++++++++++++++++++++++++++++
- 3 files changed, 92 insertions(+)
+> +	 * to identify the PA PMU.
+>   	 */
+>   	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
+> -				     &pa_pmu->sccl_id)) {
+> -		dev_err(&pdev->dev, "Cannot read sccl-id!\n");
+> +				     &pa_pmu->sicl_id)) {
+> +		dev_err(&pdev->dev, "Cannot read sicl-id!\n");
+>   		return -EINVAL;
+>   	}
+>   
+> @@ -275,6 +274,7 @@ static int hisi_pa_pmu_init_data(struct platform_device *pdev,
+>   	}
+>   
+>   	pa_pmu->ccl_id = -1;
+> +	pa_pmu->sccl_id = -1;
+>   
+>   	pa_pmu->base = devm_platform_ioremap_resource(pdev, 0);
+>   	if (IS_ERR(pa_pmu->base)) {
+> @@ -399,13 +399,9 @@ static int hisi_pa_pmu_probe(struct platform_device *pdev)
+>   	ret = hisi_pa_pmu_dev_probe(pdev, pa_pmu);
+>   	if (ret)
+>   		return ret;
+> -	/*
+> -	 * PA is attached in SICL and the CPU core is chosen to manage this
+> -	 * PMU which is the nearest SCCL, while its SCCL_ID is greater than
+> -	 * one with the SICL_ID.
+> -	 */
+> +
+>   	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sicl%u_pa%u",
+> -			      pa_pmu->sccl_id - 1, pa_pmu->index_id);
+> +			      pa_pmu->sicl_id, pa_pmu->index_id);
+>   	if (!name)
+>   		return -ENOMEM;
+>   
+> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+> index a738aeab5c04..31930166c34b 100644
+> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
+> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+> @@ -458,6 +458,10 @@ static bool hisi_pmu_cpu_is_associated_pmu(struct hisi_pmu *hisi_pmu)
+>   {
+>   	int sccl_id, ccl_id;
+>   
+> +	/* If SCCL_ID is -1, the PMU is in SICL and can be associated this PMU with any CPU */
 
-diff --git a/arch/parisc/include/asm/traps.h b/arch/parisc/include/asm/traps.h
-index 34619f010c63..0ccdb738a9a3 100644
---- a/arch/parisc/include/asm/traps.h
-+++ b/arch/parisc/include/asm/traps.h
-@@ -18,6 +18,7 @@ unsigned long parisc_acctyp(unsigned long code, unsigned int inst);
- const char *trap_name(unsigned long code);
- void do_page_fault(struct pt_regs *regs, unsigned long code,
- 		unsigned long address);
-+int handle_nadtlb_fault(struct pt_regs *regs);
- #endif
- 
- #endif
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index b6fdebddc8e9..39576a9245c7 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -662,6 +662,8 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 			 by hand. Technically we need to emulate:
- 			 fdc,fdce,pdc,"fic,4f",prober,probeir,probew, probeiw
- 		*/
-+		if (code == 17 && handle_nadtlb_fault(regs))
-+			return;
- 		fault_address = regs->ior;
- 		fault_space = regs->isr;
- 		break;
-diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
-index e9eabf8f14d7..f114e102aaf2 100644
---- a/arch/parisc/mm/fault.c
-+++ b/arch/parisc/mm/fault.c
-@@ -425,3 +425,92 @@ void do_page_fault(struct pt_regs *regs, unsigned long code,
- 	}
- 	pagefault_out_of_memory();
- }
-+
-+/* Handle non-access data TLB miss faults.
-+ *
-+ * For probe instructions, accesses to userspace are considered allowed
-+ * if they lie in a valid VMA and the access type matches. We are not
-+ * allowed to handle MM faults here so there may be situations where an
-+ * actual access would fail even though a probe was successful.
-+ */
-+int
-+handle_nadtlb_fault(struct pt_regs *regs)
-+{
-+	unsigned long insn = regs->iir;
-+	int breg, treg, xreg, val = 0;
-+	struct vm_area_struct *vma, *prev_vma;
-+	struct task_struct *tsk;
-+	struct mm_struct *mm;
-+	unsigned long address;
-+	unsigned long acc_type;
-+
-+	switch (insn & 0x380) {
-+	case 0x280:
-+		/* FDC instruction */
-+		fallthrough;
-+	case 0x380:
-+		/* PDC and FIC instructions */
-+		if (printk_ratelimit()) {
-+			pr_warn("BUG: nullifying cache flush/purge instruction\n");
-+			show_regs(regs);
-+		}
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x180:
-+		/* PROBE instruction */
-+		treg = insn & 0x1f;
-+		if (regs->isr) {
-+			tsk = current;
-+			mm = tsk->mm;
-+			if (mm) {
-+				/* Search for VMA */
-+				address = regs->ior;
-+				mmap_read_lock(mm);
-+				vma = find_vma_prev(mm, address, &prev_vma);
-+				mmap_read_unlock(mm);
-+
-+				/*
-+				 * Check if access to the VMA is okay.
-+				 * We don't allow for stack expansion.
-+				 */
-+				acc_type = (insn & 0x40) ? VM_WRITE : VM_READ;
-+				if (vma
-+				    && address >= vma->vm_start
-+				    && (vma->vm_flags & acc_type) == acc_type)
-+					val = 1;
-+			}
-+		}
-+		if (treg)
-+			regs->gr[treg] = val;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x300:
-+		/* LPA instruction */
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		treg = insn & 0x1f;
-+		if (treg)
-+			regs->gr[treg] = 0;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
--- 
-2.34.1
+too long, just have "The PMU is in a SICL and has no CPU affinity"
 
-
+> +	if (hisi_pmu->sccl_id == -1)
+> +		return true;
+> +
+>   	if (hisi_pmu->ccl_id == -1) {
+>   		/* If CCL_ID is -1, the PMU only shares the same SCCL */
+>   		hisi_read_sccl_and_ccl_id(&sccl_id, NULL);
+> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.h b/drivers/perf/hisilicon/hisi_uncore_pmu.h
+> index 7f5841d6f592..96eeddad55ff 100644
+> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.h
+> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.h
+> @@ -81,6 +81,7 @@ struct hisi_pmu {
+>   	struct device *dev;
+>   	struct hlist_node node;
+>   	int sccl_id;
+> +	int sicl_id;
+>   	int ccl_id;
+>   	void __iomem *base;
+>   	/* the ID of the PMU modules */
 
