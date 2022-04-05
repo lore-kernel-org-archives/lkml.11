@@ -2,67 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BBBC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA15C352A8
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235952AbiDEIQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
+        id S236726AbiDEIQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235536AbiDEH7u (ORCPT
+        with ESMTP id S235600AbiDEH7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:50 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 506E93A5D6;
-        Tue,  5 Apr 2022 00:55:07 -0700 (PDT)
-Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
-  by mx.socionext.com with ESMTP; 05 Apr 2022 16:55:07 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 422A02058B50;
-        Tue,  5 Apr 2022 16:55:07 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:55:07 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id B2787B6389;
-        Tue,  5 Apr 2022 16:55:06 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Tue, 5 Apr 2022 03:59:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B0C1ADB0;
+        Tue,  5 Apr 2022 00:55:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BAFFB81B14;
+        Tue,  5 Apr 2022 07:55:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E7C5C340EE;
+        Tue,  5 Apr 2022 07:55:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649145352;
+        bh=Af3DNXGcxmhNy43NxMC7wdVQntnZD7bR8BmZoupVJ8M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IL+XSqxY1Tzz0KvC//7HjhmAxGQ0/3yw7oZJwRYCCK/ezNeeUdMXt2fJHoc9HT+yO
+         k67YQtodMsYazz4p84obFl1QIC7fmVndp+qX8zeICPPbTKqUIUEVrJsJyo32tD8/Cg
+         GowYb4My83gDvMegzz3iR7f4i2aunjxsx2bxm0Us=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
         Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH 2/2] dt-bindings: regulator: uniphier: Use unevaluatedProperties
-Date:   Tue,  5 Apr 2022 16:55:03 +0900
-Message-Id: <1649145303-30221-3-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649145303-30221-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1649145303-30221-1-git-send-email-hayashi.kunihiko@socionext.com>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0373/1126] ASoC: acp: check the return value of devm_kzalloc() in acp_legacy_dai_links_create()
+Date:   Tue,  5 Apr 2022 09:18:40 +0200
+Message-Id: <20220405070418.575162840@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This refers common bindings, so this is preferred for
-unevaluatedProperties instead of additionalProperties.
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+[ Upstream commit 431f9a77a4a62694ce90742d1f4c5abe1b8b6612 ]
+
+The function devm_kzalloc() in acp_legacy_dai_links_create() can fail,
+so its return value should be checked.
+
+Fixes: d4c750f2c7d4 ("ASoC: amd: acp: Add generic machine driver support for ACP cards")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220225131645.27556-1-baijiaju1990@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../bindings/regulator/socionext,uniphier-regulator.yaml        | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/amd/acp/acp-mach-common.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/regulator/socionext,uniphier-regulator.yaml b/Documentation/devicetree/bindings/regulator/socionext,uniphier-regulator.yaml
-index cc40cf72a149..75087c6e001c 100644
---- a/Documentation/devicetree/bindings/regulator/socionext,uniphier-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/socionext,uniphier-regulator.yaml
-@@ -77,7 +77,7 @@ allOf:
-         reset-names:
-           const: link
+diff --git a/sound/soc/amd/acp/acp-mach-common.c b/sound/soc/amd/acp/acp-mach-common.c
+index cd05ee2802c9..5247015e8b31 100644
+--- a/sound/soc/amd/acp/acp-mach-common.c
++++ b/sound/soc/amd/acp/acp-mach-common.c
+@@ -556,6 +556,8 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
+ 		num_links++;
  
--additionalProperties: false
-+unevaluatedProperties: false
+ 	links = devm_kzalloc(dev, sizeof(struct snd_soc_dai_link) * num_links, GFP_KERNEL);
++	if (!links)
++		return -ENOMEM;
  
- required:
-   - compatible
+ 	if (drv_data->hs_cpu_id == I2S_SP) {
+ 		links[i].name = "acp-headset-codec";
 -- 
-2.25.1
+2.34.1
+
+
 
