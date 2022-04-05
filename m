@@ -2,89 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F80C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F675C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450902AbiDEW3Q (ORCPT
+        id S1450950AbiDEW3Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:29:16 -0400
+        Tue, 5 Apr 2022 18:29:24 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457518AbiDEQDT (ORCPT
+        with ESMTP id S1457298AbiDEQDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AC32BE9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:58:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3657B61840
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:58:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C52C385A1;
-        Tue,  5 Apr 2022 15:58:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649174313;
-        bh=Br6t58Tuy+glHqI224PUEoUg5nKIr3jjTEjx/ZsSSQE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=baoJ4dIFQGcser5FsYQ6mYTfHXqEb24i9lCM5didS7uQKIjna3gZD0DrE2WN2rwNb
-         2FIh7v0XPNSQ+35qsd6TlE2WCxQR/Kmb5ojXLApKoXUrIY+sdiqEVPgyzFUlRcRzha
-         E9OXeso53nAvZA23UsSqci3FjEhdh0FOufzrBEw4=
-Date:   Tue, 5 Apr 2022 17:58:30 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy linux kernel <outreachy@lists.linux.dev>
-Subject: Re: [PATCH v2] staging: rtl8723bs: fix indentation
-Message-ID: <YkxnJvJyo75c/3yk@kroah.com>
-References: <20220405150912.GA625670@euclid>
- <YkxdasBGZ3m2Yu66@kroah.com>
- <CAMWRUK7c-hqiz+KEFkqBuvu1syCwSnF4UZzbkPFw-VWABm9qOw@mail.gmail.com>
- <CAMWRUK7Jgs3evt3bC0pnRkbRw3CS1XCULPi8NzjgGh7aLTFKCQ@mail.gmail.com>
+        Tue, 5 Apr 2022 12:03:04 -0400
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 569CC2408C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:37:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=9Zptn
+        J9HIkGLxORVjLEavHV+h6BLMZSlJ7O+XMPB3t8=; b=X6drxuX2boPSFAhIJ5UNM
+        Soerm0MLgm/omF7hN5zkwwebGTrhXgI3EOsDa/DuLd2K25twH+dofSxFzNrzOB4W
+        Gx1YADMRCXJdbYqgE62AHwvlgD8vseqt5EWYdoynkeLJDhNmZdidl2aytgihBpQo
+        /qoY9srWSMq5jGMwKciuGo=
+Received: from localhost (unknown [113.116.48.218])
+        by smtp8 (Coremail) with SMTP id DMCowAAnVX4BYkxikcMtAg--.50405S2;
+        Tue, 05 Apr 2022 23:36:34 +0800 (CST)
+From:   wujunwen <wudaemon@163.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org, wujunwen <wudaemon@163.com>
+Subject: [PATCH v1] tty/sysrq: change the definition of sysrq_key_table's element to make it more readable
+Date:   Tue,  5 Apr 2022 15:36:25 +0000
+Message-Id: <20220405153625.55689-1-wudaemon@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMWRUK7Jgs3evt3bC0pnRkbRw3CS1XCULPi8NzjgGh7aLTFKCQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMCowAAnVX4BYkxikcMtAg--.50405S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uFykurWfZw47CFyDuF15Arb_yoW8Ary5pa
+        yxCryqyF15uF4jqw4xCa1jqF4ayr93Ga4a9r15Ga4S93s8Gr18JFWjyaySyryrJrW8GF1j
+        gr40vF15X3W8J37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zNXd1wUUUUU=
+X-Originating-IP: [113.116.48.218]
+X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbiLALZbVspdVcn3gAAsz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 11:45:29AM -0400, Sevinj Aghayeva wrote:
-> On Tue, Apr 5, 2022 at 11:19 AM Sevinj Aghayeva
-> <sevinj.aghayeva@gmail.com> wrote:
-> >
-> > On Tue, Apr 5, 2022 at 11:17 AM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Tue, Apr 05, 2022 at 11:09:12AM -0400, Sevinj Aghayeva wrote:
-> > > > Adhere to Linux kernel coding style.
-> > > >
-> > > > Reported by checkpatch:
-> > > >
-> > > > WARNING: suspect code indent for conditional statements
-> > >
-> > > You are also removing unneeded comments, right?  Please explain that as
-> > > the documentation link the bot pointed you to showed.
-> >
-> > I specified that under the --- line:
-> >
-> > v1 -> v2: Remove the comments that became irrelevant with proper indentation.
-> 
-> I think I misunderstood the bot's response. It looks like you
-> triggered it because you wanted me to write a more complete
-> description of what the commit is doing. I thought I received it
-> because it was the second version of the patch from a previous
-> patchset (the last bullet point in the bot response) that didn't
-> include v2 in the subject and a v1 -> v2 after the --- line.
+the definition of sysrq_key_table's elements, like sysrq_thaw_op and 
+sysrq_showallcpus_op are massive, so we should make it consistent.
 
-That is one reason, yes, but you also need to update the changelog text
-to say everything you are doing in the commit.
+Signed-off-by: wujunwen <wudaemon@163.com>
+---
+ drivers/tty/sysrq.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-> I can do a fresh patch with a complete description and no v2 stuff;
-> please let me know.
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index bbfd004449b5..9485156bf48b 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -274,6 +274,8 @@ static const struct sysrq_key_op sysrq_showallcpus_op = {
+ 	.action_msg	= "Show backtrace of all active CPUs",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
++#else
++#define sysrq_showallcpus_op (*(const struct sysrq_key_op *)NULL)
+ #endif
+ 
+ static void sysrq_handle_showregs(int key)
+@@ -405,6 +407,7 @@ static const struct sysrq_key_op sysrq_moom_op = {
+ 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
+ };
+ 
++#ifdef CONFIG_BLOCK
+ static void sysrq_handle_thaw(int key)
+ {
+ 	emergency_thaw_all();
+@@ -415,6 +418,9 @@ static const struct sysrq_key_op sysrq_thaw_op = {
+ 	.action_msg	= "Emergency Thaw of all frozen filesystems",
+ 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
+ };
++#else
++#define sysrq_thaw_op (*(const struct sysrq_key_op *)NULL)
++#endif
+ 
+ static void sysrq_handle_kill(int key)
+ {
+@@ -468,17 +474,9 @@ static const struct sysrq_key_op *sysrq_key_table[62] = {
+ 	NULL,				/* g */
+ 	NULL,				/* h - reserved for help */
+ 	&sysrq_kill_op,			/* i */
+-#ifdef CONFIG_BLOCK
+ 	&sysrq_thaw_op,			/* j */
+-#else
+-	NULL,				/* j */
+-#endif
+ 	&sysrq_SAK_op,			/* k */
+-#ifdef CONFIG_SMP
+ 	&sysrq_showallcpus_op,		/* l */
+-#else
+-	NULL,				/* l */
+-#endif
+ 	&sysrq_showmem_op,		/* m */
+ 	&sysrq_unrt_op,			/* n */
+ 	/* o: This will often be registered as 'Off' at init time */
+-- 
+2.25.1
 
-It will be a v3 patch, right?
-
-thanks,
-
-greg k-h
