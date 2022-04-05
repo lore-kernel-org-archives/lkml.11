@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43B22C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54872C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235643AbiDEH76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        id S235696AbiDEIAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232648AbiDEHrD (ORCPT
+        with ESMTP id S233668AbiDEHsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB5595A39;
-        Tue,  5 Apr 2022 00:42:43 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D079C4;
+        Tue,  5 Apr 2022 00:46:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BE5E616C1;
-        Tue,  5 Apr 2022 07:42:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B666C340EE;
-        Tue,  5 Apr 2022 07:42:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFE9EB81B98;
+        Tue,  5 Apr 2022 07:46:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1186DC340EE;
+        Tue,  5 Apr 2022 07:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144562;
-        bh=W/UlrE/LxVzFDiUFigcR5GhQ2UCLa8WeFGVohwyOJnA=;
+        s=korg; t=1649144785;
+        bh=9hCBRRhKdCVoieEBBCzN/gKOJEsz/ukjx7l7GEHMlns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0jBrrPMu6eTuF4idXlQYwlMcbe0X7NZpNVSvrrmmAYKkhb0VNdf1JSk4hL2aM4lf3
-         TM2cwa/bQYqceketcvtUbB/4mc1RakyvS3SLf/wTBhJEvyKwlghhAEgTwpj08hIYRd
-         8tz7CjUMkrk9fjDIwaB7OffM2cnPnyykGJ8gBRCk=
+        b=kuULiJawDXFHSHsxcOmldLrVGhlqdhokUFxnqPkKTWgB/eD2JE7m4qn8xg5owFIg3
+         rArj2VGuj2XL8e/hnkxO6YV364U7IaJuxzy649K966jOHCEtNs8Svt3L78pF91XhZw
+         rQO7jPJg4ORTJJYEPu7LHCefKbh1OZrvS1GNLzvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikita Shubin <n.shubin@yadro.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.17 0088/1126] riscv: Fix fill_callchain return value
-Date:   Tue,  5 Apr 2022 09:13:55 +0200
-Message-Id: <20220405070410.151739051@linuxfoundation.org>
+        stable@vger.kernel.org, Ameer Hamza <amhamza.mgc@gmail.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.17 0169/1126] media: venus: vdec: fixed possible memory leak issue
+Date:   Tue,  5 Apr 2022 09:15:16 +0200
+Message-Id: <20220405070412.559862423@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,32 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+From: Ameer Hamza <amhamza.mgc@gmail.com>
 
-commit 2b2b574ac587ec5bd7716a356492a85ab8b0ce9f upstream.
+commit 8403fdd775858a7bf04868d43daea0acbe49ddfc upstream.
 
-perf_callchain_store return 0 on success, -1 otherwise,
-fix fill_callchain to return correct bool value.
+The venus_helper_alloc_dpb_bufs() implementation allows an early return
+on an error path when checking the id from ida_alloc_min() which would
+not release the earlier buffer allocation.
 
-Fixes: dbeb90b0c1eb ("riscv: Add perf callchain support")
-Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Move the direct kfree() from the error checking of dma_alloc_attrs() to
+the common fail path to ensure that allocations are released on all
+error paths in this function.
+
+Addresses-Coverity: 1494120 ("Resource leak")
+
+cc: stable@vger.kernel.org # 5.16+
+Fixes: 40d87aafee29 ("media: venus: vdec: decoded picture buffer handling during reconfig sequence")
+Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/perf_callchain.c |    2 +-
+ drivers/media/platform/qcom/venus/helpers.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/riscv/kernel/perf_callchain.c
-+++ b/arch/riscv/kernel/perf_callchain.c
-@@ -68,7 +68,7 @@ void perf_callchain_user(struct perf_cal
+--- a/drivers/media/platform/qcom/venus/helpers.c
++++ b/drivers/media/platform/qcom/venus/helpers.c
+@@ -189,7 +189,6 @@ int venus_helper_alloc_dpb_bufs(struct v
+ 		buf->va = dma_alloc_attrs(dev, buf->size, &buf->da, GFP_KERNEL,
+ 					  buf->attrs);
+ 		if (!buf->va) {
+-			kfree(buf);
+ 			ret = -ENOMEM;
+ 			goto fail;
+ 		}
+@@ -209,6 +208,7 @@ int venus_helper_alloc_dpb_bufs(struct v
+ 	return 0;
  
- static bool fill_callchain(void *entry, unsigned long pc)
- {
--	return perf_callchain_store(entry, pc);
-+	return perf_callchain_store(entry, pc) == 0;
+ fail:
++	kfree(buf);
+ 	venus_helper_free_dpb_bufs(inst);
+ 	return ret;
  }
- 
- void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
 
 
