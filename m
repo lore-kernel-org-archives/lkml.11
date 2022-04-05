@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94604C35296
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DCFEC352A8
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348354AbiDEUBr (ORCPT
+        id S1349601AbiDEUCH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
+        Tue, 5 Apr 2022 16:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358232AbiDEK2J (ORCPT
+        with ESMTP id S1345179AbiDEJst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337922BEE;
-        Tue,  5 Apr 2022 03:17:13 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B32EEE4F4;
+        Tue,  5 Apr 2022 02:37:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC7BAB81C8A;
-        Tue,  5 Apr 2022 10:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B6B3C385A0;
-        Tue,  5 Apr 2022 10:17:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C946D6164D;
+        Tue,  5 Apr 2022 09:37:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4AFEC385A2;
+        Tue,  5 Apr 2022 09:37:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153830;
-        bh=lxz+BQxzObui3/gEC8HfqBpX8a9uvR4SZ5egarfg99A=;
+        s=korg; t=1649151469;
+        bh=IbeurulMDdnYp8aYTOTd5w6wDxHc+on3dCF14Ycz08E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JD3aqrciyUKv4RPOdGp0IzRRueRiphIT7e0mMNyd+SFU+GV7+eEOhoIVXrMPjRaLD
-         zl8g4zM5CiJ833EEZccGY2UJmx4pGfyVhRn2C6dpnqj2elEfwP3IVdPQhVc/RiieZt
-         7y7IONEJ7gGnhrMmdvINERfBkUdU7Rz95ekRG1wY=
+        b=TTG8V6lt4aZ8Mo+g1XgfvZNsSfPxn5/tTO2QywfSnGIlm3Ka21TN9lFFdjiJdsPVq
+         p6aHPRNJmOMiHIwnp7MNUuIllhaZc5sgM25nVdzcOrSUQNE6zeeaZ2LgvEBzKmUan+
+         1tUI17In8/a8U9PnYaa3/pfbsetQ4D7Ez1fMYvus=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 361/599] can: isotp: return -EADDRNOTAVAIL when reading from unbound socket
-Date:   Tue,  5 Apr 2022 09:30:55 +0200
-Message-Id: <20220405070309.574325063@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 427/913] mt76: mt7615: check sta_rates pointer in mt7615_sta_rate_tbl_update
+Date:   Tue,  5 Apr 2022 09:24:49 +0200
+Message-Id: <20220405070352.644091878@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,47 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 30ffd5332e06316bd69a654c06aa033872979b7c ]
+[ Upstream commit 6a6f457ed5fdf6777536c20644a9e42128a50ec2 ]
 
-When reading from an unbound can-isotp socket the syscall blocked
-indefinitely. As unbound sockets (without given CAN address information)
-do not make sense anyway we directly return -EADDRNOTAVAIL on read()
-analogue to the known behavior from sendmsg().
+Check sta_rates pointer value in mt7615_sta_rate_tbl_update routine
+since minstrel_ht_update_rates can fail allocating rates array.
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://github.com/linux-can/can-utils/issues/349
-Link: https://lore.kernel.org/all/20220316164258.54155-2-socketcan@hartkopp.net
-Suggested-by: Derek Will <derekrobertwill@gmail.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 04b8e65922f63 ("mt76: add mac80211 driver for MT7615 PCIe-based chipsets")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/isotp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt7615/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index d0581dc6a65f..cb5546c186bc 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1003,12 +1003,16 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- {
- 	struct sock *sk = sock->sk;
- 	struct sk_buff *skb;
-+	struct isotp_sock *so = isotp_sk(sk);
- 	int err = 0;
- 	int noblock;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/main.c b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
+index fc266da54fe7..60a41d082961 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
+@@ -682,6 +682,9 @@ static void mt7615_sta_rate_tbl_update(struct ieee80211_hw *hw,
+ 	struct ieee80211_sta_rates *sta_rates = rcu_dereference(sta->rates);
+ 	int i;
  
- 	noblock = flags & MSG_DONTWAIT;
- 	flags &= ~MSG_DONTWAIT;
- 
-+	if (!so->bound)
-+		return -EADDRNOTAVAIL;
++	if (!sta_rates)
++		return;
 +
- 	skb = skb_recv_datagram(sk, flags, noblock, &err);
- 	if (!skb)
- 		return err;
+ 	spin_lock_bh(&dev->mt76.lock);
+ 	for (i = 0; i < ARRAY_SIZE(msta->rates); i++) {
+ 		msta->rates[i].idx = sta_rates->rate[i].idx;
 -- 
 2.34.1
 
