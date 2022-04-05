@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A1BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B07AC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:09:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353372AbiDEVFO (ORCPT
+        id S1352498AbiDEVFD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43778 "EHLO
+        Tue, 5 Apr 2022 17:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354383AbiDEKOA (ORCPT
+        with ESMTP id S239531AbiDEKdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198846F4AE;
-        Tue,  5 Apr 2022 02:59:46 -0700 (PDT)
+        Tue, 5 Apr 2022 06:33:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66409183AB;
+        Tue,  5 Apr 2022 03:19:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA3D1B81C86;
-        Tue,  5 Apr 2022 09:59:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10271C385A2;
-        Tue,  5 Apr 2022 09:59:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 035AC6179E;
+        Tue,  5 Apr 2022 10:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10167C385A1;
+        Tue,  5 Apr 2022 10:18:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152783;
-        bh=WZ5lqIiERkhZAxCxhfRzo1GoFdYeuXgZNAeBjIF+Bag=;
+        s=korg; t=1649153940;
+        bh=IZM0epmLHJUcEpoj61ISpmqpX59IF2/GRyx8ce+s4oU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zh5wFgAN2ZPKAzqcB6mFrI6ylYv/YEbDt+XcqZsBclZJULsyNLzHtSfUUWkf29tH+
-         2jwFhhz4dgBlM6F3qzr89MC1Q9zu150Xq6aH5GRTx5ujzQbQG+2j7wBU+pwhy25Gxu
-         2IBCZ7Fpofe0EXY47cx1Jv4KrUPkyOyaRKGlJidI=
+        b=QaluAF2qCoeRuKYcufNnHC06xvxgpkb+m9XTh3p3U41zxMQjusBeikRa98ZFmUAIT
+         7vVaLp2SwFPA/VgPWMCe2K8VM3j3BLco/ZL0UjsfnitAQ/cJ/LDz3Iz+YbSpE23ah2
+         H3wbvaqEqYmcGvIoUP420ZBizQQWYs5d2Sg3rfWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.15 900/913] torture: Make torture.sh help message match reality
-Date:   Tue,  5 Apr 2022 09:32:42 +0200
-Message-Id: <20220405070406.797349971@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 401/599] clk: at91: sama7g5: fix parents of PDMCs GCLK
+Date:   Tue,  5 Apr 2022 09:31:35 +0200
+Message-Id: <20220405070310.764681862@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-commit f233673cd32a048f2eed69e56b61174c33fb740b upstream.
+[ Upstream commit 1a944729d8635fa59638f24e8727d5ccaa0c8c19 ]
 
-This commit fixes a couple of typos: s/--doall/--do-all/ and
-s/--doallmodconfig/--do-allmodconfig/.
+Audio PLL can be used as parent by the GCLKs of PDMCs.
 
-[ paulmck: Add Fixes: supplied by Paul Menzel. ]
-
-Fixes: a115a775a8d5 ("torture: Add "make allmodconfig" to torture.sh")
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cb783bbbcf54 ("clk: at91: sama7g5: add clock support for sama7g5")
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220304182616.1920392-1-codrin.ciubotariu@microchip.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/rcutorture/bin/torture.sh |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/clk/at91/sama7g5.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/tools/testing/selftests/rcutorture/bin/torture.sh
-+++ b/tools/testing/selftests/rcutorture/bin/torture.sh
-@@ -71,8 +71,8 @@ usage () {
- 	echo "       --configs-rcutorture \"config-file list w/ repeat factor (3*TINY01)\""
- 	echo "       --configs-locktorture \"config-file list w/ repeat factor (10*LOCK01)\""
- 	echo "       --configs-scftorture \"config-file list w/ repeat factor (2*CFLIST)\""
--	echo "       --doall"
--	echo "       --doallmodconfig / --do-no-allmodconfig"
-+	echo "       --do-all"
-+	echo "       --do-allmodconfig / --do-no-allmodconfig"
- 	echo "       --do-clocksourcewd / --do-no-clocksourcewd"
- 	echo "       --do-kasan / --do-no-kasan"
- 	echo "       --do-kcsan / --do-no-kcsan"
+diff --git a/drivers/clk/at91/sama7g5.c b/drivers/clk/at91/sama7g5.c
+index a092a940baa4..9d25b23fb99d 100644
+--- a/drivers/clk/at91/sama7g5.c
++++ b/drivers/clk/at91/sama7g5.c
+@@ -606,16 +606,16 @@ static const struct {
+ 	{ .n  = "pdmc0_gclk",
+ 	  .id = 68,
+ 	  .r = { .max = 50000000  },
+-	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
+-	  .pp_mux_table = { 5, 8, },
++	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
++	  .pp_mux_table = { 5, 9, },
+ 	  .pp_count = 2,
+ 	  .pp_chg_id = INT_MIN, },
+ 
+ 	{ .n  = "pdmc1_gclk",
+ 	  .id = 69,
+ 	  .r = { .max = 50000000, },
+-	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
+-	  .pp_mux_table = { 5, 8, },
++	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
++	  .pp_mux_table = { 5, 9, },
+ 	  .pp_count = 2,
+ 	  .pp_chg_id = INT_MIN, },
+ 
+-- 
+2.34.1
+
 
 
