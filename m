@@ -2,112 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF01C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 183EAC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358777AbiDEVPg (ORCPT
+        id S1358397AbiDEVPb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35710 "EHLO
+        Tue, 5 Apr 2022 17:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573148AbiDESCz (ORCPT
+        with ESMTP id S1354469AbiDEKOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:02:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB58EBB9D;
-        Tue,  5 Apr 2022 11:00:56 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C24F69481;
+        Tue,  5 Apr 2022 03:00:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05824B81F46;
-        Tue,  5 Apr 2022 18:00:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E3CC385A9;
-        Tue,  5 Apr 2022 18:00:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649181653;
-        bh=DEsPoEU/5E2aHVZgQZCveB9mC/4vVgGzX7eDnKQsH1g=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WMBUPiXVn4jIQOTsqBIO5vrfkhbqjHt/h5chaD/wedjcngfWcwTLh8h2oi1DE6HDX
-         dzaPOcbmTH8LZnQcfebDxTtYx2gqmevPCKAk4URCFU4AdFBqSRdcVso5GsMpG3wunl
-         eorVXyUYwCq8OJ4dXIzo1OANkewLZNXlZf4ySbWxfEjAqfqp5e85PEiEXkY4fDWO3E
-         wg3Z2xs3ne4ObjHj1ZPtBzQzLqeHHfDB0IuGDztVbIfZY8VOlMi6EXW4Uty471eAkH
-         58TvAlMhDwmLmpkSKu51sdGtU49ep+8xapGkk7+J9U82gXjbzphShbQR5EV0Xooq83
-         VWMHsLVvxbkyQ==
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-de48295467so224592fac.2;
-        Tue, 05 Apr 2022 11:00:53 -0700 (PDT)
-X-Gm-Message-State: AOAM5322x8xzMvuoZsOtOxes/AEuidd6XLZhgwhKZZWjyrrfvxnKdGWt
-        3bwn0vFzeWhdA19MJywcTKqvTSAOV4FkrWWlMX0=
-X-Google-Smtp-Source: ABdhPJyVj5hV5enQfSRyb6Ywt5+n+is6l9llY4/UZnczlt0FqbI9Kjr5WpW5ZDCur6hEypd5gKBpIfcsLtQ1wmevZ7g=
-X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id
- s37-20020a056870eaa500b000da0b3f2b45mr2221796oap.228.1649181652698; Tue, 05
- Apr 2022 11:00:52 -0700 (PDT)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 009F4B81C83;
+        Tue,  5 Apr 2022 10:00:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54756C385A2;
+        Tue,  5 Apr 2022 10:00:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152822;
+        bh=6eCefiu0qU3wHhPgqE6IGn/CVT8lbZBRCHYxck/xt6c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MczamD5pWusMNAdZe/rjLlRy5EQRat7xyCfRzZTJ33H8DMYRTAaSycVGwVnhabMtM
+         waiZAkZRV+lUA72wpm8GJ7Eaxw5BZra34uxRP0tYiuWqyNgwPkJESnz0jF7vrhN7UE
+         gpnhRaucxLlkI7b5jkGCZ/6iMKoe0CjR1i/R+KRI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
+        Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 908/913] swiotlb: Support aligned swiotlb buffers
+Date:   Tue,  5 Apr 2022 09:32:50 +0200
+Message-Id: <20220405070407.037113146@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220321045853.3324-1-akihiko.odaki@gmail.com> <87bkxfebsu.fsf@meer.lwn.net>
-In-Reply-To: <87bkxfebsu.fsf@meer.lwn.net>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 5 Apr 2022 20:00:41 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGHQm7yy2QPCEVRiXBzb8HWOHzKMCuoS+mbnBKujEXQnA@mail.gmail.com>
-Message-ID: <CAMj1kXGHQm7yy2QPCEVRiXBzb8HWOHzKMCuoS+mbnBKujEXQnA@mail.gmail.com>
-Subject: Re: [PATCH] x86/efi: Remove references of EFI earlyprintk from documentation
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Akihiko Odaki <akihiko.odaki@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-efi@vger.kernel.org, x86@kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 at 18:26, Jonathan Corbet <corbet@lwn.net> wrote:
->
-> Akihiko Odaki <akihiko.odaki@gmail.com> writes:
->
-> > x86 EFI earlyprink was removed with commit 69c1f396f25b ("efi/x86:
-> > Convert x86 EFI earlyprintk into generic earlycon implementation").
->
-> So I will confess that I don't know this area well enough to know
-> whether this patch makes sense or not.  To help with that, it would have
-> been good to CC Ard, who is the author of the patch you cite above.
-> Adding him now.
->
-> Ard, do you agree with this change (preserved below)?
->
+From: David Stevens <stevensd@chromium.org>
 
-Yes, it looks fine to me.
+commit e81e99bacc9f9347bda7808a949c1ce9fcc2bbf4 upstream.
 
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Add an argument to swiotlb_tbl_map_single that specifies the desired
+alignment of the allocated buffer. This is used by dma-iommu to ensure
+the buffer is aligned to the iova granule size when using swiotlb with
+untrusted sub-granule mappings. This addresses an issue where adjacent
+slots could be exposed to the untrusted device if IO_TLB_SIZE < iova
+granule < PAGE_SIZE.
 
->
-> > Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
-> > ---
-> >  Documentation/admin-guide/kernel-parameters.txt | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> > index f5a27f067db9..fb39337f4123 100644
-> > --- a/Documentation/admin-guide/kernel-parameters.txt
-> > +++ b/Documentation/admin-guide/kernel-parameters.txt
-> > @@ -1252,7 +1252,7 @@
-> >                       Append ",keep" to not disable it when the real console
-> >                       takes over.
-> >
-> > -                     Only one of vga, efi, serial, or usb debug port can
-> > +                     Only one of vga, serial, or usb debug port can
-> >                       be used at a time.
-> >
-> >                       Currently only ttyS0 and ttyS1 may be specified by
-> > @@ -1267,7 +1267,7 @@
-> >                       Interaction with the standard serial driver is not
-> >                       very good.
-> >
-> > -                     The VGA and EFI output is eventually overwritten by
-> > +                     The VGA output is eventually overwritten by
-> >                       the real console.
-> >
-> >                       The xen option can only be used in Xen domains.
-> > --
-> > 2.35.1
+Signed-off-by: David Stevens <stevensd@chromium.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20210929023300.335969-7-stevensd@google.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/iommu/dma-iommu.c |    4 ++--
+ drivers/xen/swiotlb-xen.c |    2 +-
+ include/linux/swiotlb.h   |    3 ++-
+ kernel/dma/swiotlb.c      |   13 ++++++++-----
+ 4 files changed, 13 insertions(+), 9 deletions(-)
+
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -818,8 +818,8 @@ static dma_addr_t iommu_dma_map_page(str
+ 		size_t padding_size;
+ 
+ 		aligned_size = iova_align(iovad, size);
+-		phys = swiotlb_tbl_map_single(dev, phys, size,
+-					      aligned_size, dir, attrs);
++		phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
++					      iova_mask(iovad), dir, attrs);
+ 
+ 		if (phys == DMA_MAPPING_ERROR)
+ 			return DMA_MAPPING_ERROR;
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -380,7 +380,7 @@ static dma_addr_t xen_swiotlb_map_page(s
+ 	 */
+ 	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
+ 
+-	map = swiotlb_tbl_map_single(dev, phys, size, size, dir, attrs);
++	map = swiotlb_tbl_map_single(dev, phys, size, size, 0, dir, attrs);
+ 	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+ 
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -45,7 +45,8 @@ extern void __init swiotlb_update_mem_at
+ 
+ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
+ 		size_t mapping_size, size_t alloc_size,
+-		enum dma_data_direction dir, unsigned long attrs);
++		unsigned int alloc_aligned_mask, enum dma_data_direction dir,
++		unsigned long attrs);
+ 
+ extern void swiotlb_tbl_unmap_single(struct device *hwdev,
+ 				     phys_addr_t tlb_addr,
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -459,7 +459,7 @@ static unsigned int wrap_index(struct io
+  * allocate a buffer from that IO TLB pool.
+  */
+ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+-			      size_t alloc_size)
++			      size_t alloc_size, unsigned int alloc_align_mask)
+ {
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+ 	unsigned long boundary_mask = dma_get_seg_boundary(dev);
+@@ -483,6 +483,7 @@ static int swiotlb_find_slots(struct dev
+ 	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
+ 	if (alloc_size >= PAGE_SIZE)
+ 		stride = max(stride, stride << (PAGE_SHIFT - IO_TLB_SHIFT));
++	stride = max(stride, (alloc_align_mask >> IO_TLB_SHIFT) + 1);
+ 
+ 	spin_lock_irqsave(&mem->lock, flags);
+ 	if (unlikely(nslots > mem->nslabs - mem->used))
+@@ -541,7 +542,8 @@ found:
+ 
+ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		size_t mapping_size, size_t alloc_size,
+-		enum dma_data_direction dir, unsigned long attrs)
++		unsigned int alloc_align_mask, enum dma_data_direction dir,
++		unsigned long attrs)
+ {
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+ 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+@@ -561,7 +563,8 @@ phys_addr_t swiotlb_tbl_map_single(struc
+ 		return (phys_addr_t)DMA_MAPPING_ERROR;
+ 	}
+ 
+-	index = swiotlb_find_slots(dev, orig_addr, alloc_size + offset);
++	index = swiotlb_find_slots(dev, orig_addr,
++				   alloc_size + offset, alloc_align_mask);
+ 	if (index == -1) {
+ 		if (!(attrs & DMA_ATTR_NO_WARN))
+ 			dev_warn_ratelimited(dev,
+@@ -680,7 +683,7 @@ dma_addr_t swiotlb_map(struct device *de
+ 	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size,
+ 			      swiotlb_force);
+ 
+-	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, size, dir,
++	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, size, 0, dir,
+ 			attrs);
+ 	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+@@ -764,7 +767,7 @@ struct page *swiotlb_alloc(struct device
+ 	if (!mem)
+ 		return NULL;
+ 
+-	index = swiotlb_find_slots(dev, 0, size);
++	index = swiotlb_find_slots(dev, 0, size, 0);
+ 	if (index == -1)
+ 		return NULL;
+ 
+
+
