@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F45DC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9B0C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835447AbiDFAbh (ORCPT
+        id S1455197AbiDFAbL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
+        Tue, 5 Apr 2022 20:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348333AbiDEJrb (ORCPT
+        with ESMTP id S1349463AbiDEJty (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:47:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFE66CA79;
-        Tue,  5 Apr 2022 02:33:44 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECA53884;
+        Tue,  5 Apr 2022 02:46:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C25C616D2;
-        Tue,  5 Apr 2022 09:33:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E77CC385A2;
-        Tue,  5 Apr 2022 09:33:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3BD4B81B76;
+        Tue,  5 Apr 2022 09:46:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE2CC385A2;
+        Tue,  5 Apr 2022 09:46:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151223;
-        bh=l24cq07F/uZePHJYQDOzOWHxywiUK86wqxjzTcVLCJM=;
+        s=korg; t=1649151994;
+        bh=UDPEKFoH/ToYUig5EmJ+UIbJ8kL+YWnd8kGY9L/aMqw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hBVLSiYNxdFApJf+hlXsajkkB9RQ7onowIqMD6WH9oQouc6wkdkaSLFB5j7T+VZVC
-         lyNblLu2qo1fShtJFqVwmZwwKoQbVRhci2eMh/zMjxng9WfSdcHVHTFTLp/ftJuQyo
-         kJgMsV92fFuvfUOryJMKO2guIy6SyQCLIoXIMKMA=
+        b=FpLe5cGMbGvoyEHu4yQGlupS7Oexv4ZnsoJlcq2T4V5Nn9XDaF/czPFH+hEoxL2DN
+         Sl5/GxcYT/Q3f7134IvVNhUxDjDR0MCKgiYWcGDedIWJ+uDd4NnwiEMK+m7Lx6mYz6
+         o9mQZbFRtahPS/sFsyFGUR/naxZrs0g/eZ5dG/4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 339/913] ASoC: atmel_ssc_dai: Handle errors for clk_enable
-Date:   Tue,  5 Apr 2022 09:23:21 +0200
-Message-Id: <20220405070350.009914326@linuxfoundation.org>
+Subject: [PATCH 5.15 579/913] mxser: fix xmit_buf leak in activate when LSR == 0xff
+Date:   Tue,  5 Apr 2022 09:27:21 +0200
+Message-Id: <20220405070357.201717601@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,38 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Jiri Slaby <jslaby@suse.cz>
 
-[ Upstream commit f9e2ca0640e59d19af0ff285ee5591ed39069b09 ]
+[ Upstream commit cd3a4907ee334b40d7aa880c7ab310b154fd5cd4 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error if fals.
+When LSR is 0xff in ->activate() (rather unlike), we return an error.
+Provided ->shutdown() is not called when ->activate() fails, nothing
+actually frees the buffer in this case.
 
-Fixes: cbaadf0f90d6 ("ASoC: atmel_ssc_dai: refactor the startup and shutdown")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301090637.3776558-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix this by properly freeing the buffer in a designated label. We jump
+there also from the "!info->type" if now too.
+
+Fixes: 6769140d3047 ("tty: mxser: use the tty_port_open method")
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220124071430.14907-6-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/atmel_ssc_dai.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/tty/mxser.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
-index 6a63e8797a0b..97533412ce11 100644
---- a/sound/soc/atmel/atmel_ssc_dai.c
-+++ b/sound/soc/atmel/atmel_ssc_dai.c
-@@ -280,7 +280,10 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index da375851af4e..3b3e169c1f69 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -711,6 +711,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 	struct mxser_port *info = container_of(port, struct mxser_port, port);
+ 	unsigned long page;
+ 	unsigned long flags;
++	int ret;
  
- 	/* Enable PMC peripheral clock for this SSC */
- 	pr_debug("atmel_ssc_dai: Starting clock\n");
--	clk_enable(ssc_p->ssc->clk);
-+	ret = clk_enable(ssc_p->ssc->clk);
-+	if (ret)
-+		return ret;
+ 	page = __get_free_page(GFP_KERNEL);
+ 	if (!page)
+@@ -720,9 +721,9 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 
+ 	if (!info->type) {
+ 		set_bit(TTY_IO_ERROR, &tty->flags);
+-		free_page(page);
+ 		spin_unlock_irqrestore(&info->slock, flags);
+-		return 0;
++		ret = 0;
++		goto err_free_xmit;
+ 	}
+ 	info->port.xmit_buf = (unsigned char *) page;
+ 
+@@ -748,8 +749,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 		if (capable(CAP_SYS_ADMIN)) {
+ 			set_bit(TTY_IO_ERROR, &tty->flags);
+ 			return 0;
+-		} else
+-			return -ENODEV;
++		}
 +
- 	ssc_p->mck_rate = clk_get_rate(ssc_p->ssc->clk);
++		ret = -ENODEV;
++		goto err_free_xmit;
+ 	}
  
- 	/* Reset the SSC unless initialized to keep it in a clean state */
+ 	/*
+@@ -794,6 +797,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 	spin_unlock_irqrestore(&info->slock, flags);
+ 
+ 	return 0;
++err_free_xmit:
++	free_page(page);
++	info->port.xmit_buf = NULL;
++	return ret;
+ }
+ 
+ /*
 -- 
 2.34.1
 
