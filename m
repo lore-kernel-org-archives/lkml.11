@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5D9C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B929FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357592AbiDEK0h (ORCPT
+        id S1358149AbiDEK2C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
+        Tue, 5 Apr 2022 06:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241101AbiDEIct (ORCPT
+        with ESMTP id S241053AbiDEIcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22D6140FF;
-        Tue,  5 Apr 2022 01:27:31 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C479BB7C46;
+        Tue,  5 Apr 2022 01:26:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F3F260AFB;
-        Tue,  5 Apr 2022 08:27:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53143C385A1;
-        Tue,  5 Apr 2022 08:27:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73963B81BC0;
+        Tue,  5 Apr 2022 08:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D122DC385A2;
+        Tue,  5 Apr 2022 08:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147250;
-        bh=4djunoAxJHOaDgEd2iZ0RMBXmqeYYQMugjYVYuIJyBs=;
+        s=korg; t=1649147174;
+        bh=6o/TkJM30UgnjB0qSBpxgAHQb1Ios5+9zW0+eXZ9Xo0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KPruNiIRmoarrl99l1ry/OYZpVdOzE4OyInA/trRXd+1hvntmF5U4jxRPK1G+9399
-         ppfDjy/CaoBfV7Uhf0xdp8kA4dzTaYauFuZ7cjOrOyZEGsBM0WmLkVkKUCQYkk/yLr
-         /pY/40z86ZCvsKp/cQEzIO2LBXQe2iQ+2ePQ8LZI=
+        b=agm8c1D6B9MJ+VQ9+qfhjgWJoBGcwDQDG+0qqYL49pbDShrcq0sWRNseUJwzS0ZR2
+         Wd4bNMtKUESiiNbXhQ5+S6pSJhHsVXdMU2925DJUULLNoJEwVZXwBUA3+xWF0LO3G+
+         AQRMy4jzqVHgAq6ppF9Qc74qhBJOp4K3XXY4DSnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Fangrui Song <maskray@google.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.17 1057/1126] riscv module: remove (NOLOAD)
-Date:   Tue,  5 Apr 2022 09:30:04 +0200
-Message-Id: <20220405070438.489563417@linuxfoundation.org>
+        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 1028/1126] loop: fix ioctl calls using compat_loop_info
+Date:   Tue,  5 Apr 2022 09:29:35 +0200
+Message-Id: <20220405070437.653961215@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,49 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fangrui Song <maskray@google.com>
+From: Carlos Llamas <cmllamas@google.com>
 
-commit 60210a3d86dc57ce4a76a366e7841dda746a33f7 upstream.
+commit f941c51eeac7ebe0f8ec30943bf78e7f60aad039 upstream.
 
-On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
-inappropriate for .plt, .got, and .got.plt sections which are always
-SHT_PROGBITS.
+Support for cryptoloop was deleted in commit 47e9624616c8 ("block:
+remove support for cryptoloop and the xor transfer"), making the usage
+of loop_info->lo_encrypt_type obsolete. However, this member was also
+removed from the compat_loop_info definition and this breaks userspace
+ioctl calls for 32-bit binaries and CONFIG_COMPAT=y.
 
-In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
-and (NOLOAD) will be essentially ignored. In ld.lld, since
-https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
-customize the output section type"), ld.lld will report a `section type
-mismatch` error (later changed to a warning). Just remove (NOLOAD) to
-fix the warning.
+This patch restores the compat_loop_info->lo_encrypt_type member and
+marks it obsolete as well as in the uapi header definitions.
 
-[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
-section should be marked as not loadable" on
-https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
-outdated for ELF.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1597
-Fixes: ab1ef68e5401 ("RISC-V: Add sections of PLT and GOT for kernel module")
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 47e9624616c8 ("block: remove support for cryptoloop and the xor transfer")
+Signed-off-by: Carlos Llamas <cmllamas@google.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220329201815.1347500-1-cmllamas@google.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/module.lds.h |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/block/loop.c      |    1 +
+ include/uapi/linux/loop.h |    4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/include/asm/module.lds.h
-+++ b/arch/riscv/include/asm/module.lds.h
-@@ -2,8 +2,8 @@
- /* Copyright (C) 2017 Andes Technology Corporation */
- #ifdef CONFIG_MODULE_SECTIONS
- SECTIONS {
--	.plt (NOLOAD) : { BYTE(0) }
--	.got (NOLOAD) : { BYTE(0) }
--	.got.plt (NOLOAD) : { BYTE(0) }
-+	.plt : { BYTE(0) }
-+	.got : { BYTE(0) }
-+	.got.plt : { BYTE(0) }
- }
- #endif
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -1592,6 +1592,7 @@ struct compat_loop_info {
+ 	compat_ulong_t	lo_inode;       /* ioctl r/o */
+ 	compat_dev_t	lo_rdevice;     /* ioctl r/o */
+ 	compat_int_t	lo_offset;
++	compat_int_t	lo_encrypt_type;        /* obsolete, ignored */
+ 	compat_int_t	lo_encrypt_key_size;    /* ioctl w/o */
+ 	compat_int_t	lo_flags;       /* ioctl r/o */
+ 	char		lo_name[LO_NAME_SIZE];
+--- a/include/uapi/linux/loop.h
++++ b/include/uapi/linux/loop.h
+@@ -45,7 +45,7 @@ struct loop_info {
+ 	unsigned long	   lo_inode; 		/* ioctl r/o */
+ 	__kernel_old_dev_t lo_rdevice; 		/* ioctl r/o */
+ 	int		   lo_offset;
+-	int		   lo_encrypt_type;
++	int		   lo_encrypt_type;		/* obsolete, ignored */
+ 	int		   lo_encrypt_key_size; 	/* ioctl w/o */
+ 	int		   lo_flags;
+ 	char		   lo_name[LO_NAME_SIZE];
+@@ -61,7 +61,7 @@ struct loop_info64 {
+ 	__u64		   lo_offset;
+ 	__u64		   lo_sizelimit;/* bytes, 0 == max available */
+ 	__u32		   lo_number;			/* ioctl r/o */
+-	__u32		   lo_encrypt_type;
++	__u32		   lo_encrypt_type;		/* obsolete, ignored */
+ 	__u32		   lo_encrypt_key_size;		/* ioctl w/o */
+ 	__u32		   lo_flags;
+ 	__u8		   lo_file_name[LO_NAME_SIZE];
 
 
