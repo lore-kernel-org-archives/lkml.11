@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5196AC38A05
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38654C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347460AbiDEKtR (ORCPT
+        id S1348869AbiDEKta (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
+        Tue, 5 Apr 2022 06:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241696AbiDEIfL (ORCPT
+        with ESMTP id S240437AbiDEIb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:35:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF7413D24;
-        Tue,  5 Apr 2022 01:32:10 -0700 (PDT)
+        Tue, 5 Apr 2022 04:31:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A789B716D6;
+        Tue,  5 Apr 2022 01:24:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53D25B81B13;
-        Tue,  5 Apr 2022 08:32:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB2AC385A0;
-        Tue,  5 Apr 2022 08:32:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF64561496;
+        Tue,  5 Apr 2022 08:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC018C385A1;
+        Tue,  5 Apr 2022 08:24:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147528;
-        bh=uLyYd0uHzhSFJRh2HuZqwzNik1WL39MUA9/Bf0wUzQ0=;
+        s=korg; t=1649147062;
+        bh=yPbW51Y7C3MLYP3n2rknBoXxKAda+YKO1ZgJgoQD8m4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdydisje7Op3GrMZA29QaqAIKoeiz85vNsMllGzoBKXOHIdmQW59WfKbRa3h6ETd8
-         U/A6MISkzBhQjYQMnu0o3zescKOZzjCsO25O4TOU+4YfsrFwwzf6tUmZxDhKjF05LY
-         RvydfZsZrEtCkSaYPVJszxDFTgwsHxmr1jlGoVzw=
+        b=jYDcs5Et+YTKTIMelbpRMjxtKQYy9WyKhr6aMVWOGn+BhS+l1iuctrF3aszR3he8U
+         lHx/tGxY1a3CDPPULGYl7F4xbhVWmqK8m1GITYfd81RI9gOOxRuqrRssovF6+yay/J
+         Kn8RPBDOnT+kLDXXYdVs0EgwZvkhejAEUu5Bsx3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH 5.16 0003/1017] dt-bindings: usb: hcd: correct usb-device path
-Date:   Tue,  5 Apr 2022 09:15:16 +0200
-Message-Id: <20220405070354.268784670@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0988/1126] scsi: qla2xxx: Fix missed DMA unmap for NVMe ls requests
+Date:   Tue,  5 Apr 2022 09:28:55 +0200
+Message-Id: <20220405070436.495506569@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Arun Easi <aeasi@marvell.com>
 
-commit 801109b1a37ad99784e6370cc7e462596f505ea3 upstream.
+commit c85ab7d9e27a80e48d5b7d7fb2fe2b0fdb2de523 upstream.
 
-The usb-device.yaml reference is absolute so it should use /schemas part
-in path.
+At NVMe ELS request time, request structure is DMA mapped and never
+unmapped. Fix this by calling the unmap on ELS completion.
 
-Fixes: 23bf6fc7046c ("dt-bindings: usb: convert usb-device.txt to YAML schema")
-Cc: <stable@vger.kernel.org>
-Reported-by: Rob Herring <robh@kernel.org>
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20220314181830.245853-1-krzysztof.kozlowski@canonical.com
+Link: https://lore.kernel.org/r/20220310092604.22950-5-njavali@marvell.com
+Fixes: e84067d74301 ("scsi: qla2xxx: Add FC-NVMe F/W initialization and transport registration")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/usb/usb-hcd.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/qla2xxx/qla_nvme.c |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
---- a/Documentation/devicetree/bindings/usb/usb-hcd.yaml
-+++ b/Documentation/devicetree/bindings/usb/usb-hcd.yaml
-@@ -33,7 +33,7 @@ patternProperties:
-   "^.*@[0-9a-f]{1,2}$":
-     description: The hard wired USB devices
-     type: object
--    $ref: /usb/usb-device.yaml
-+    $ref: /schemas/usb/usb-device.yaml
+--- a/drivers/scsi/qla2xxx/qla_nvme.c
++++ b/drivers/scsi/qla2xxx/qla_nvme.c
+@@ -175,6 +175,18 @@ out:
+ 	qla2xxx_rel_qpair_sp(sp->qpair, sp);
+ }
  
- additionalProperties: true
++static void qla_nvme_ls_unmap(struct srb *sp, struct nvmefc_ls_req *fd)
++{
++	if (sp->flags & SRB_DMA_VALID) {
++		struct srb_iocb *nvme = &sp->u.iocb_cmd;
++		struct qla_hw_data *ha = sp->fcport->vha->hw;
++
++		dma_unmap_single(&ha->pdev->dev, nvme->u.nvme.cmd_dma,
++				 fd->rqstlen, DMA_TO_DEVICE);
++		sp->flags &= ~SRB_DMA_VALID;
++	}
++}
++
+ static void qla_nvme_release_ls_cmd_kref(struct kref *kref)
+ {
+ 	struct srb *sp = container_of(kref, struct srb, cmd_kref);
+@@ -191,6 +203,8 @@ static void qla_nvme_release_ls_cmd_kref
+ 	spin_unlock_irqrestore(&priv->cmd_lock, flags);
  
+ 	fd = priv->fd;
++
++	qla_nvme_ls_unmap(sp, fd);
+ 	fd->done(fd, priv->comp_status);
+ out:
+ 	qla2x00_rel_sp(sp);
+@@ -361,6 +375,8 @@ static int qla_nvme_ls_req(struct nvme_f
+ 	dma_sync_single_for_device(&ha->pdev->dev, nvme->u.nvme.cmd_dma,
+ 	    fd->rqstlen, DMA_TO_DEVICE);
+ 
++	sp->flags |= SRB_DMA_VALID;
++
+ 	rval = qla2x00_start_sp(sp);
+ 	if (rval != QLA_SUCCESS) {
+ 		ql_log(ql_log_warn, vha, 0x700e,
+@@ -368,6 +384,7 @@ static int qla_nvme_ls_req(struct nvme_f
+ 		wake_up(&sp->nvme_ls_waitq);
+ 		sp->priv = NULL;
+ 		priv->sp = NULL;
++		qla_nvme_ls_unmap(sp, fd);
+ 		qla2x00_rel_sp(sp);
+ 		return rval;
+ 	}
 
 
