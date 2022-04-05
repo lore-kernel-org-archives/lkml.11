@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17396C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46997C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390938AbiDEWSB (ORCPT
+        id S1391955AbiDEWSX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
+        Tue, 5 Apr 2022 18:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354898AbiDEKQa (ORCPT
+        with ESMTP id S1353975AbiDEKKQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:30 -0400
+        Tue, 5 Apr 2022 06:10:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2503D6F;
-        Tue,  5 Apr 2022 03:03:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C87C4E3A;
+        Tue,  5 Apr 2022 02:56:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DBCE761676;
-        Tue,  5 Apr 2022 10:03:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECC6DC385A2;
-        Tue,  5 Apr 2022 10:03:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1609D616D7;
+        Tue,  5 Apr 2022 09:56:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25859C385A1;
+        Tue,  5 Apr 2022 09:56:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153021;
-        bh=o/wY+3yctkPi5FJvL2q9uklsoW1kryd7x+W0kjRFZwE=;
+        s=korg; t=1649152561;
+        bh=g+BIlF8aVqHMQOFVwronpp1v3eo4iKq0jRClRPv6cIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WnkU0pUHgj5rClZ8GecWVPkkshAlqgZjZvO4VqwxPRuUhfdaamQHRNsBghMx3OMxy
-         WktvYyhfYWOzjqxtxXGBJsfeqgKGGnK2TnrLSrJE+9LcepoEe8pW5q+0vRlVer55QA
-         l2Qib7FFH0nOhfVkp3L8mruKTFk1s5UeAUW/lzwA=
+        b=zMtrH3WbshfEJzOckV4BYePrkSOFzjt+4xNDSiiJ5CynqJAWLbSZo3aXNDscl+FZ5
+         UY+P8SADv0sauejqLRn96HATyGpd0hEqjfNiqakJ/og8ajyrrUsjF40qZj6qUu6GER
+         +rFilZiwegn4KALMVSD7fDBzcg0ryCWfZvyohXCw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+6e5c88838328e99c7e1c@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 072/599] ALSA: pcm: Fix potential AB/BA lock with buffer_mutex and mmap_lock
-Date:   Tue,  5 Apr 2022 09:26:06 +0200
-Message-Id: <20220405070300.968767695@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 820/913] ubifs: Fix ui->dirty race between do_tmpfile() and writeback work
+Date:   Tue,  5 Apr 2022 09:31:22 +0200
+Message-Id: <20220405070404.410883696@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,209 +49,157 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit bc55cfd5718c7c23e5524582e9fa70b4d10f2433 upstream.
+commit 60eb3b9c9f11206996f57cb89521824304b305ad upstream.
 
-syzbot caught a potential deadlock between the PCM
-runtime->buffer_mutex and the mm->mmap_lock.  It was brought by the
-recent fix to cover the racy read/write and other ioctls, and in that
-commit, I overlooked a (hopefully only) corner case that may take the
-revert lock, namely, the OSS mmap.  The OSS mmap operation
-exceptionally allows to re-configure the parameters inside the OSS
-mmap syscall, where mm->mmap_mutex is already held.  Meanwhile, the
-copy_from/to_user calls at read/write operations also take the
-mm->mmap_lock internally, hence it may lead to a AB/BA deadlock.
+'ui->dirty' is not protected by 'ui_mutex' in function do_tmpfile() which
+may race with ubifs_write_inode[wb_workfn] to access/update 'ui->dirty',
+finally dirty space is released twice.
 
-A similar problem was already seen in the past and we fixed it with a
-refcount (in commit b248371628aa).  The former fix covered only the
-call paths with OSS read/write and OSS ioctls, while we need to cover
-the concurrent access via both ALSA and OSS APIs now.
+	open(O_TMPFILE)                wb_workfn
+do_tmpfile
+  ubifs_budget_space(ino_req = { .dirtied_ino = 1})
+  d_tmpfile // mark inode(tmpfile) dirty
+  ubifs_jnl_update // without holding tmpfile's ui_mutex
+    mark_inode_clean(ui)
+      if (ui->dirty)
+        ubifs_release_dirty_inode_budget(ui)  // release first time
+                                   ubifs_write_inode
+				     mutex_lock(&ui->ui_mutex)
+                                     ubifs_release_dirty_inode_budget(ui)
+				     // release second time
+				     mutex_unlock(&ui->ui_mutex)
+      ui->dirty = 0
 
-This patch addresses the problem above by replacing the buffer_mutex
-lock in the read/write operations with a refcount similar as we've
-used for OSS.  The new field, runtime->buffer_accessing, keeps the
-number of concurrent read/write operations.  Unlike the former
-buffer_mutex protection, this protects only around the
-copy_from/to_user() calls; the other codes are basically protected by
-the PCM stream lock.  The refcount can be a negative, meaning blocked
-by the ioctls.  If a negative value is seen, the read/write aborts
-with -EBUSY.  In the ioctl side, OTOH, they check this refcount, too,
-and set to a negative value for blocking unless it's already being
-accessed.
+Run generic/476 can reproduce following message easily
+(See reproducer in [Link]):
 
-Reported-by: syzbot+6e5c88838328e99c7e1c@syzkaller.appspotmail.com
-Fixes: dca947d4d26d ("ALSA: pcm: Fix races among concurrent read/write and buffer changes")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/000000000000381a0d05db622a81@google.com
-Link: https://lore.kernel.org/r/20220330120903.4738-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+  UBIFS error (ubi0:0 pid 2578): ubifs_assert_failed [ubifs]: UBIFS assert
+  failed: c->bi.dd_growth >= 0, in fs/ubifs/budget.c:554
+  UBIFS warning (ubi0:0 pid 2578): ubifs_ro_mode [ubifs]: switched to
+  read-only mode, error -22
+  Workqueue: writeback wb_workfn (flush-ubifs_0_0)
+  Call Trace:
+    ubifs_ro_mode+0x54/0x60 [ubifs]
+    ubifs_assert_failed+0x4b/0x80 [ubifs]
+    ubifs_release_budget+0x468/0x5a0 [ubifs]
+    ubifs_release_dirty_inode_budget+0x53/0x80 [ubifs]
+    ubifs_write_inode+0x121/0x1f0 [ubifs]
+    ...
+    wb_workfn+0x283/0x7b0
+
+Fix it by holding tmpfile ubifs inode lock during ubifs_jnl_update().
+Similar problem exists in whiteout renaming, but previous fix("ubifs:
+Rename whiteout atomically") has solved the problem.
+
+Fixes: 474b93704f32163 ("ubifs: Implement O_TMPFILE")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214765
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/sound/pcm.h     |    1 +
- sound/core/pcm.c        |    1 +
- sound/core/pcm_lib.c    |    9 +++++----
- sound/core/pcm_native.c |   39 ++++++++++++++++++++++++++++++++-------
- 4 files changed, 39 insertions(+), 11 deletions(-)
+ fs/ubifs/dir.c |   60 ++++++++++++++++++++++++++++-----------------------------
+ 1 file changed, 30 insertions(+), 30 deletions(-)
 
---- a/include/sound/pcm.h
-+++ b/include/sound/pcm.h
-@@ -399,6 +399,7 @@ struct snd_pcm_runtime {
- 	struct fasync_struct *fasync;
- 	bool stop_operating;		/* sync_stop will be called */
- 	struct mutex buffer_mutex;	/* protect for buffer changes */
-+	atomic_t buffer_accessing;	/* >0: in r/w operation, <0: blocked */
- 
- 	/* -- private section -- */
- 	void *private_data;
---- a/sound/core/pcm.c
-+++ b/sound/core/pcm.c
-@@ -970,6 +970,7 @@ int snd_pcm_attach_substream(struct snd_
- 
- 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
- 	mutex_init(&runtime->buffer_mutex);
-+	atomic_set(&runtime->buffer_accessing, 0);
- 
- 	substream->runtime = runtime;
- 	substream->private_data = pcm->private_data;
---- a/sound/core/pcm_lib.c
-+++ b/sound/core/pcm_lib.c
-@@ -1871,11 +1871,9 @@ static int wait_for_avail(struct snd_pcm
- 		if (avail >= runtime->twake)
- 			break;
- 		snd_pcm_stream_unlock_irq(substream);
--		mutex_unlock(&runtime->buffer_mutex);
- 
- 		tout = schedule_timeout(wait_time);
- 
--		mutex_lock(&runtime->buffer_mutex);
- 		snd_pcm_stream_lock_irq(substream);
- 		set_current_state(TASK_INTERRUPTIBLE);
- 		switch (runtime->status->state) {
-@@ -2169,7 +2167,6 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
- 
- 	nonblock = !!(substream->f_flags & O_NONBLOCK);
- 
--	mutex_lock(&runtime->buffer_mutex);
- 	snd_pcm_stream_lock_irq(substream);
- 	err = pcm_accessible_state(runtime);
- 	if (err < 0)
-@@ -2224,10 +2221,15 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
- 			err = -EINVAL;
- 			goto _end_unlock;
- 		}
-+		if (!atomic_inc_unless_negative(&runtime->buffer_accessing)) {
-+			err = -EBUSY;
-+			goto _end_unlock;
-+		}
- 		snd_pcm_stream_unlock_irq(substream);
- 		err = writer(substream, appl_ofs, data, offset, frames,
- 			     transfer);
- 		snd_pcm_stream_lock_irq(substream);
-+		atomic_dec(&runtime->buffer_accessing);
- 		if (err < 0)
- 			goto _end_unlock;
- 		err = pcm_accessible_state(runtime);
-@@ -2257,7 +2259,6 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
- 	if (xfer > 0 && err >= 0)
- 		snd_pcm_update_state(substream, runtime);
- 	snd_pcm_stream_unlock_irq(substream);
--	mutex_unlock(&runtime->buffer_mutex);
- 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : err;
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -397,6 +397,32 @@ out_free:
+ 	return ERR_PTR(err);
  }
- EXPORT_SYMBOL(__snd_pcm_lib_xfer);
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -667,6 +667,24 @@ static int snd_pcm_hw_params_choose(stru
+ 
++/**
++ * lock_2_inodes - a wrapper for locking two UBIFS inodes.
++ * @inode1: first inode
++ * @inode2: second inode
++ *
++ * We do not implement any tricks to guarantee strict lock ordering, because
++ * VFS has already done it for us on the @i_mutex. So this is just a simple
++ * wrapper function.
++ */
++static void lock_2_inodes(struct inode *inode1, struct inode *inode2)
++{
++	mutex_lock_nested(&ubifs_inode(inode1)->ui_mutex, WB_MUTEX_1);
++	mutex_lock_nested(&ubifs_inode(inode2)->ui_mutex, WB_MUTEX_2);
++}
++
++/**
++ * unlock_2_inodes - a wrapper for unlocking two UBIFS inodes.
++ * @inode1: first inode
++ * @inode2: second inode
++ */
++static void unlock_2_inodes(struct inode *inode1, struct inode *inode2)
++{
++	mutex_unlock(&ubifs_inode(inode2)->ui_mutex);
++	mutex_unlock(&ubifs_inode(inode1)->ui_mutex);
++}
++
+ static int ubifs_tmpfile(struct user_namespace *mnt_userns, struct inode *dir,
+ 			 struct dentry *dentry, umode_t mode)
+ {
+@@ -404,7 +430,7 @@ static int ubifs_tmpfile(struct user_nam
+ 	struct ubifs_info *c = dir->i_sb->s_fs_info;
+ 	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1};
+ 	struct ubifs_budget_req ino_req = { .dirtied_ino = 1 };
+-	struct ubifs_inode *ui, *dir_ui = ubifs_inode(dir);
++	struct ubifs_inode *ui;
+ 	int err, instantiated = 0;
+ 	struct fscrypt_name nm;
+ 
+@@ -452,18 +478,18 @@ static int ubifs_tmpfile(struct user_nam
+ 	instantiated = 1;
+ 	mutex_unlock(&ui->ui_mutex);
+ 
+-	mutex_lock(&dir_ui->ui_mutex);
++	lock_2_inodes(dir, inode);
+ 	err = ubifs_jnl_update(c, dir, &nm, inode, 1, 0);
+ 	if (err)
+ 		goto out_cancel;
+-	mutex_unlock(&dir_ui->ui_mutex);
++	unlock_2_inodes(dir, inode);
+ 
+ 	ubifs_release_budget(c, &req);
+ 
+ 	return 0;
+ 
+ out_cancel:
+-	mutex_unlock(&dir_ui->ui_mutex);
++	unlock_2_inodes(dir, inode);
+ out_inode:
+ 	make_bad_inode(inode);
+ 	if (!instantiated)
+@@ -690,32 +716,6 @@ static int ubifs_dir_release(struct inod
  	return 0;
  }
  
-+/* acquire buffer_mutex; if it's in r/w operation, return -EBUSY, otherwise
-+ * block the further r/w operations
-+ */
-+static int snd_pcm_buffer_access_lock(struct snd_pcm_runtime *runtime)
-+{
-+	if (!atomic_dec_unless_positive(&runtime->buffer_accessing))
-+		return -EBUSY;
-+	mutex_lock(&runtime->buffer_mutex);
-+	return 0; /* keep buffer_mutex, unlocked by below */
-+}
-+
-+/* release buffer_mutex and clear r/w access flag */
-+static void snd_pcm_buffer_access_unlock(struct snd_pcm_runtime *runtime)
-+{
-+	mutex_unlock(&runtime->buffer_mutex);
-+	atomic_inc(&runtime->buffer_accessing);
-+}
-+
- #if IS_ENABLED(CONFIG_SND_PCM_OSS)
- #define is_oss_stream(substream)	((substream)->oss.oss)
- #else
-@@ -677,14 +695,16 @@ static int snd_pcm_hw_params(struct snd_
- 			     struct snd_pcm_hw_params *params)
+-/**
+- * lock_2_inodes - a wrapper for locking two UBIFS inodes.
+- * @inode1: first inode
+- * @inode2: second inode
+- *
+- * We do not implement any tricks to guarantee strict lock ordering, because
+- * VFS has already done it for us on the @i_mutex. So this is just a simple
+- * wrapper function.
+- */
+-static void lock_2_inodes(struct inode *inode1, struct inode *inode2)
+-{
+-	mutex_lock_nested(&ubifs_inode(inode1)->ui_mutex, WB_MUTEX_1);
+-	mutex_lock_nested(&ubifs_inode(inode2)->ui_mutex, WB_MUTEX_2);
+-}
+-
+-/**
+- * unlock_2_inodes - a wrapper for unlocking two UBIFS inodes.
+- * @inode1: first inode
+- * @inode2: second inode
+- */
+-static void unlock_2_inodes(struct inode *inode1, struct inode *inode2)
+-{
+-	mutex_unlock(&ubifs_inode(inode2)->ui_mutex);
+-	mutex_unlock(&ubifs_inode(inode1)->ui_mutex);
+-}
+-
+ static int ubifs_link(struct dentry *old_dentry, struct inode *dir,
+ 		      struct dentry *dentry)
  {
- 	struct snd_pcm_runtime *runtime;
--	int err = 0, usecs;
-+	int err, usecs;
- 	unsigned int bits;
- 	snd_pcm_uframes_t frames;
- 
- 	if (PCM_RUNTIME_CHECK(substream))
- 		return -ENXIO;
- 	runtime = substream->runtime;
--	mutex_lock(&runtime->buffer_mutex);
-+	err = snd_pcm_buffer_access_lock(runtime);
-+	if (err < 0)
-+		return err;
- 	snd_pcm_stream_lock_irq(substream);
- 	switch (runtime->status->state) {
- 	case SNDRV_PCM_STATE_OPEN:
-@@ -801,7 +821,7 @@ static int snd_pcm_hw_params(struct snd_
- 			snd_pcm_lib_free_pages(substream);
- 	}
-  unlock:
--	mutex_unlock(&runtime->buffer_mutex);
-+	snd_pcm_buffer_access_unlock(runtime);
- 	return err;
- }
- 
-@@ -846,7 +866,9 @@ static int snd_pcm_hw_free(struct snd_pc
- 	if (PCM_RUNTIME_CHECK(substream))
- 		return -ENXIO;
- 	runtime = substream->runtime;
--	mutex_lock(&runtime->buffer_mutex);
-+	result = snd_pcm_buffer_access_lock(runtime);
-+	if (result < 0)
-+		return result;
- 	snd_pcm_stream_lock_irq(substream);
- 	switch (runtime->status->state) {
- 	case SNDRV_PCM_STATE_SETUP:
-@@ -865,7 +887,7 @@ static int snd_pcm_hw_free(struct snd_pc
- 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
- 	cpu_latency_qos_remove_request(&substream->latency_pm_qos_req);
-  unlock:
--	mutex_unlock(&runtime->buffer_mutex);
-+	snd_pcm_buffer_access_unlock(runtime);
- 	return result;
- }
- 
-@@ -1350,12 +1372,15 @@ static int snd_pcm_action_nonatomic(cons
- 
- 	/* Guarantee the group members won't change during non-atomic action */
- 	down_read(&snd_pcm_link_rwsem);
--	mutex_lock(&substream->runtime->buffer_mutex);
-+	res = snd_pcm_buffer_access_lock(substream->runtime);
-+	if (res < 0)
-+		goto unlock;
- 	if (snd_pcm_stream_linked(substream))
- 		res = snd_pcm_action_group(ops, substream, state, false);
- 	else
- 		res = snd_pcm_action_single(ops, substream, state);
--	mutex_unlock(&substream->runtime->buffer_mutex);
-+	snd_pcm_buffer_access_unlock(substream->runtime);
-+ unlock:
- 	up_read(&snd_pcm_link_rwsem);
- 	return res;
- }
 
 
