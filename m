@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DBEC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5428FC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356300AbiDELza (ORCPT
+        id S1356505AbiDELzh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
+        Tue, 5 Apr 2022 07:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244940AbiDEIwt (ORCPT
+        with ESMTP id S244929AbiDEIws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5602497D;
-        Tue,  5 Apr 2022 01:47:10 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7A32496E;
+        Tue,  5 Apr 2022 01:46:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C4D361509;
-        Tue,  5 Apr 2022 08:47:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B9E9C385A0;
-        Tue,  5 Apr 2022 08:47:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89569B81BC5;
+        Tue,  5 Apr 2022 08:46:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D49DFC385A0;
+        Tue,  5 Apr 2022 08:46:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148429;
-        bh=YDTpRcSaCATao+L5CmLPyxK92OlmEXkjxf7243VK0CQ=;
+        s=korg; t=1649148408;
+        bh=p3fs+r28lnStow8fQ64ZRjbA9lfbA6oqU9NjoM6wbho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z8ul3/u9OhmKURHk1l7czvA45CRcXDwqX4MtLb5mBHNdU3VPqWvTfx9gLhHik1bwv
-         fOW8zRymojx5hVXB+fHpacwEvkGTH01+Cxp3Qbxb8TmZt5eFTGuKGb7iB+Dvs8bIKS
-         /PoCvMRBSMTwTx+jUa3w6ztHsyhoNZZDXkBMz3LQ=
+        b=cEkLrS/vRQLY8Kx3HzvwWFrnrST4xPv6tZ+hXyrSUgUwvASE3MkZNkgScyHuIjhfG
+         bwh95WWgUUCVbwvMxApSu/5/ql0mPKWccJOiqckM9gSq1RUJpydAq9+EHVb+vdvZJt
+         Oy7rSONG+1upSyCfguFbFGajUTronRRXPgLglk0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0355/1017] ALSA: spi: Add check for clk_enable()
-Date:   Tue,  5 Apr 2022 09:21:08 +0200
-Message-Id: <20220405070404.823053108@linuxfoundation.org>
+        stable@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>,
+        Lei YU <yulei.sh@bytedance.com>, Joel Stanley <joel@jms.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0307/1017] ARM: dts: Fix OpenBMC flash layout label addresses
+Date:   Tue,  5 Apr 2022 09:20:20 +0200
+Message-Id: <20220405070403.389086249@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,90 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Zev Weiss <zev@bewilderbeest.net>
 
-[ Upstream commit ca1697eb09208f0168d94b88b72f57505339cbe5 ]
+[ Upstream commit e011df3579ac980d840db8e8c3b9431f88ebddab ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+We've ended up with some inconsistencies between the addresses in the
+DT node labels and the actual offsets of the partitions; this brings
+them back in sync.
 
-Fixes: 3568459a5113 ("ALSA: at73c213: manage SSC clock")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220228022839.3547266-1-jiasheng@iscas.ac.cn
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+Fixes: 529022738c8e ("ARM: dts: Add OpenBMC flash layout")
+Fixes: 8dec60e7b8d0 ("ARM: dts: aspeed: Grow u-boot partition 64MiB OpenBMC flash layout")
+Reviewed-by: Lei YU <yulei.sh@bytedance.com>
+Link: https://lore.kernel.org/r/20220105003718.19888-1-zev@bewilderbeest.net
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/spi/at73c213.c | 27 +++++++++++++++++++++------
- 1 file changed, 21 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/openbmc-flash-layout-64.dtsi | 2 +-
+ arch/arm/boot/dts/openbmc-flash-layout.dtsi    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/spi/at73c213.c b/sound/spi/at73c213.c
-index 76c0e37a838c..8a2da6b1012e 100644
---- a/sound/spi/at73c213.c
-+++ b/sound/spi/at73c213.c
-@@ -218,7 +218,9 @@ static int snd_at73c213_pcm_open(struct snd_pcm_substream *substream)
- 	runtime->hw = snd_at73c213_playback_hw;
- 	chip->substream = substream;
+diff --git a/arch/arm/boot/dts/openbmc-flash-layout-64.dtsi b/arch/arm/boot/dts/openbmc-flash-layout-64.dtsi
+index 31f59de5190b..7af41361c480 100644
+--- a/arch/arm/boot/dts/openbmc-flash-layout-64.dtsi
++++ b/arch/arm/boot/dts/openbmc-flash-layout-64.dtsi
+@@ -28,7 +28,7 @@ partitions {
+ 		label = "rofs";
+ 	};
  
--	clk_enable(chip->ssc->clk);
-+	err = clk_enable(chip->ssc->clk);
-+	if (err)
-+		return err;
+-	rwfs@6000000 {
++	rwfs@2a00000 {
+ 		reg = <0x2a00000 0x1600000>; // 22MB
+ 		label = "rwfs";
+ 	};
+diff --git a/arch/arm/boot/dts/openbmc-flash-layout.dtsi b/arch/arm/boot/dts/openbmc-flash-layout.dtsi
+index 6c26524e93e1..b47e14063c38 100644
+--- a/arch/arm/boot/dts/openbmc-flash-layout.dtsi
++++ b/arch/arm/boot/dts/openbmc-flash-layout.dtsi
+@@ -20,7 +20,7 @@ partitions {
+ 		label = "kernel";
+ 	};
  
- 	return 0;
- }
-@@ -776,7 +778,9 @@ static int snd_at73c213_chip_init(struct snd_at73c213 *chip)
- 		goto out;
- 
- 	/* Enable DAC master clock. */
--	clk_enable(chip->board->dac_clk);
-+	retval = clk_enable(chip->board->dac_clk);
-+	if (retval)
-+		goto out;
- 
- 	/* Initialize at73c213 on SPI bus. */
- 	retval = snd_at73c213_write_reg(chip, DAC_RST, 0x04);
-@@ -889,7 +893,9 @@ static int snd_at73c213_dev_init(struct snd_card *card,
- 	chip->card = card;
- 	chip->irq = -1;
- 
--	clk_enable(chip->ssc->clk);
-+	retval = clk_enable(chip->ssc->clk);
-+	if (retval)
-+		return retval;
- 
- 	retval = request_irq(irq, snd_at73c213_interrupt, 0, "at73c213", chip);
- 	if (retval) {
-@@ -1008,7 +1014,9 @@ static int snd_at73c213_remove(struct spi_device *spi)
- 	int retval;
- 
- 	/* Stop playback. */
--	clk_enable(chip->ssc->clk);
-+	retval = clk_enable(chip->ssc->clk);
-+	if (retval)
-+		goto out;
- 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXDIS));
- 	clk_disable(chip->ssc->clk);
- 
-@@ -1088,9 +1096,16 @@ static int snd_at73c213_resume(struct device *dev)
- {
- 	struct snd_card *card = dev_get_drvdata(dev);
- 	struct snd_at73c213 *chip = card->private_data;
-+	int retval;
- 
--	clk_enable(chip->board->dac_clk);
--	clk_enable(chip->ssc->clk);
-+	retval = clk_enable(chip->board->dac_clk);
-+	if (retval)
-+		return retval;
-+	retval = clk_enable(chip->ssc->clk);
-+	if (retval) {
-+		clk_disable(chip->board->dac_clk);
-+		return retval;
-+	}
- 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXEN));
- 
- 	return 0;
+-	rofs@c0000 {
++	rofs@4c0000 {
+ 		reg = <0x4c0000 0x1740000>;
+ 		label = "rofs";
+ 	};
 -- 
 2.34.1
 
