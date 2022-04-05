@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8DC0C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7EE1C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347094AbiDEJqA (ORCPT
+        id S1347191AbiDEJqI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
+        Tue, 5 Apr 2022 05:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235676AbiDEIVd (ORCPT
+        with ESMTP id S239886AbiDEIVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:21:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933476152;
-        Tue,  5 Apr 2022 01:19:22 -0700 (PDT)
+        Tue, 5 Apr 2022 04:21:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C376368;
+        Tue,  5 Apr 2022 01:19:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFA88B81BBC;
-        Tue,  5 Apr 2022 08:19:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012D0C340EE;
-        Tue,  5 Apr 2022 08:19:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CA4360B14;
+        Tue,  5 Apr 2022 08:19:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9594C385A8;
+        Tue,  5 Apr 2022 08:19:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146759;
-        bh=sNuO6dQJvF6Vk5Tn8/d8XLokuoseHYyzEeHKBYNpZho=;
+        s=korg; t=1649146762;
+        bh=pBjIgxy2sbQ3b5Xi7k2taKqFKSHjiJX5s66jWRpPa5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k6uZ5n8aJF647GWMHzidiIEuyzwq+sPzGquD9u83C14Ktpk5pJqHGG1KpJFVIKT6Y
-         xhHlHmrtcYiltLKcTUlrk8nFyU5/nOfmATMexaJNWlvxDer9W4LO5lll+V/LaM0Tz7
-         Kc3YUSaal3Q82uW8FyXcSAYIn+36cVWnLTFEzjtk=
+        b=mibJKEzyFvlsP7Z46WRgA06rxKUW+zF090af7GGYIdgGQdBl057MjeNT5sHq4x48P
+         EFJrIWHLcBOTv1lriCZeqzbUI9Ip/2G0ROhJmjO7R5bP81aRYJD4Sl77MpU2jlFDJT
+         AgEoelOkx4PkuBYhqVqzTxmxojkvy/gpYz/loErU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com,
-        Lee Jones <lee.jones@linaro.org>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Ning Li <lining2020x@163.com>,
+        Tejun Heo <tj@kernel.org>, Chunguang Xu <brookxu@tencent.com>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0876/1126] ext4: dont BUG if someone dirty pages without asking ext4 first
-Date:   Tue,  5 Apr 2022 09:27:03 +0200
-Message-Id: <20220405070433.248084159@linuxfoundation.org>
+Subject: [PATCH 5.17 0841/1126] block: throttle split bio in case of iops limit
+Date:   Tue,  5 Apr 2022 09:26:28 +0200
+Message-Id: <20220405070432.239336896@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,82 +51,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Ming Lei <ming.lei@redhat.com>
 
-[ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
+[ Upstream commit 9f5ede3c01f9951b0ae7d68b28762ad51d9bacc8 ]
 
-[un]pin_user_pages_remote is dirtying pages without properly warning
-the file system in advance.  A related race was noted by Jan Kara in
-2018[1]; however, more recently instead of it being a very hard-to-hit
-race, it could be reliably triggered by process_vm_writev(2) which was
-discovered by Syzbot[2].
+Commit 111be8839817 ("block-throttle: avoid double charge") marks bio as
+BIO_THROTTLED unconditionally if __blk_throtl_bio() is called on this bio,
+then this bio won't be called into __blk_throtl_bio() any more. This way
+is to avoid double charge in case of bio splitting. It is reasonable for
+read/write throughput limit, but not reasonable for IOPS limit because
+block layer provides io accounting against split bio.
 
-This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
-that if some other kernel subsystem dirty pages without properly
-notifying the file system using page_mkwrite(), ext4 will BUG, while
-other file systems will not BUG (although data will still be lost).
+Chunguang Xu has already observed this issue and fixed it in commit
+4f1e9630afe6 ("blk-throtl: optimize IOPS throttle for large IO scenarios").
+However, that patch only covers bio splitting in __blk_queue_split(), and
+we have other kind of bio splitting, such as bio_split() &
+submit_bio_noacct() and other ways.
 
-So instead of crashing with a BUG, issue a warning (since there may be
-potential data loss) and just mark the page as clean to avoid
-unprivileged denial of service attacks until the problem can be
-properly fixed.  More discussion and background can be found in the
-thread starting at [2].
+This patch tries to fix the issue in one generic way by always charging
+the bio for iops limit in blk_throtl_bio(). This way is reasonable:
+re-submission & fast-cloned bio is charged if it is submitted to same
+disk/queue, and BIO_THROTTLED will be cleared if bio->bi_bdev is changed.
 
-[1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
-[2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+This new approach can get much more smooth/stable iops limit compared with
+commit 4f1e9630afe6 ("blk-throtl: optimize IOPS throttle for large IO
+scenarios") since that commit can't throttle current split bios actually.
 
-Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
-Reported-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
+Also this way won't cause new double bio iops charge in
+blk_throtl_dispatch_work_fn() in which blk_throtl_bio() won't be called
+any more.
+
+Reported-by: Ning Li <lining2020x@163.com>
+Acked-by: Tejun Heo <tj@kernel.org>
+Cc: Chunguang Xu <brookxu@tencent.com>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20220216044514.2903784-7-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/inode.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ block/blk-merge.c    |  2 --
+ block/blk-throttle.c | 10 +++++++---
+ block/blk-throttle.h |  2 --
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 01c9e4f743ba..531a94f48637 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -1993,6 +1993,15 @@ static int ext4_writepage(struct page *page,
- 	else
- 		len = PAGE_SIZE;
+diff --git a/block/blk-merge.c b/block/blk-merge.c
+index 47d253f79f32..ea6968313b4a 100644
+--- a/block/blk-merge.c
++++ b/block/blk-merge.c
+@@ -369,8 +369,6 @@ void __blk_queue_split(struct request_queue *q, struct bio **bio,
+ 		trace_block_split(split, (*bio)->bi_iter.bi_sector);
+ 		submit_bio_noacct(*bio);
+ 		*bio = split;
+-
+-		blk_throtl_charge_bio_split(*bio);
+ 	}
+ }
  
-+	/* Should never happen but for bugs in other kernel subsystems */
-+	if (!page_has_buffers(page)) {
-+		ext4_warning_inode(inode,
-+		   "page %lu does not have buffers attached", page->index);
-+		ClearPageDirty(page);
-+		unlock_page(page);
-+		return 0;
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 7c462c006b26..87769b337fc5 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -808,7 +808,8 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
+ 	unsigned long jiffy_elapsed, jiffy_wait, jiffy_elapsed_rnd;
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+-	if (bps_limit == U64_MAX) {
++	/* no need to throttle if this bio's bytes have been accounted */
++	if (bps_limit == U64_MAX || bio_flagged(bio, BIO_THROTTLED)) {
+ 		if (wait)
+ 			*wait = 0;
+ 		return true;
+@@ -920,9 +921,12 @@ static void throtl_charge_bio(struct throtl_grp *tg, struct bio *bio)
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+ 	/* Charge the bio to the group */
+-	tg->bytes_disp[rw] += bio_size;
++	if (!bio_flagged(bio, BIO_THROTTLED)) {
++		tg->bytes_disp[rw] += bio_size;
++		tg->last_bytes_disp[rw] += bio_size;
 +	}
 +
- 	page_bufs = page_buffers(page);
- 	/*
- 	 * We cannot do block allocation or other extent handling in this
-@@ -2594,6 +2603,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
- 			wait_on_page_writeback(page);
- 			BUG_ON(PageWriteback(page));
+ 	tg->io_disp[rw]++;
+-	tg->last_bytes_disp[rw] += bio_size;
+ 	tg->last_io_disp[rw]++;
  
-+			/*
-+			 * Should never happen but for buggy code in
-+			 * other subsystems that call
-+			 * set_page_dirty() without properly warning
-+			 * the file system first.  See [1] for more
-+			 * information.
-+			 *
-+			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
-+			 */
-+			if (!page_has_buffers(page)) {
-+				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
-+				ClearPageDirty(page);
-+				unlock_page(page);
-+				continue;
-+			}
-+
- 			if (mpd->map.m_len == 0)
- 				mpd->first_page = page->index;
- 			mpd->next_page = page->index + 1;
+ 	/*
+diff --git a/block/blk-throttle.h b/block/blk-throttle.h
+index 175f03abd9e4..cb43f4417d6e 100644
+--- a/block/blk-throttle.h
++++ b/block/blk-throttle.h
+@@ -170,8 +170,6 @@ static inline bool blk_throtl_bio(struct bio *bio)
+ {
+ 	struct throtl_grp *tg = blkg_to_tg(bio->bi_blkg);
+ 
+-	if (bio_flagged(bio, BIO_THROTTLED))
+-		return false;
+ 	if (!tg->has_rules[bio_data_dir(bio)])
+ 		return false;
+ 
 -- 
 2.34.1
 
