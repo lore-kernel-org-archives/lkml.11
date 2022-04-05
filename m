@@ -2,126 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 788D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA5DC35280
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583386AbiDEXwe (ORCPT
+        id S1583307AbiDEXwO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:52:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        Tue, 5 Apr 2022 19:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349239AbiDEJt2 (ORCPT
+        with ESMTP id S1457074AbiDEQCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3CD23165;
-        Tue,  5 Apr 2022 02:43:11 -0700 (PDT)
+        Tue, 5 Apr 2022 12:02:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0204810CF0F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:27:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E1A16164D;
-        Tue,  5 Apr 2022 09:43:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B03AEC385A1;
-        Tue,  5 Apr 2022 09:43:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151790;
-        bh=X0rTzsBGeb+2G6pQhnVePEmfjAUos6BVgAr1tfd3tDY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=spIvrFBHSOFA2cFIVuxA3dNtmJ5e5FjJOsMvJCNF5INfo9ZipI0kcdsgQl7d8dZKx
-         VM0qp3kZIl5DdBOCKqadjVv43c7iD/Cvgpq5tAaxtYFDTSHRHGnIF6FrBi29dmXkDm
-         PGfUkHTaHj0S6kNIfD6Bf94a2fHtvDsyUm8AMg3k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 535/913] mtd: rawnand: atmel: fix refcount issue in atmel_nand_controller_init
-Date:   Tue,  5 Apr 2022 09:26:37 +0200
-Message-Id: <20220405070355.885977918@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACD8BB81E50
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:27:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5077BC385A1;
+        Tue,  5 Apr 2022 15:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649172439;
+        bh=/DCV2yNrKkFlY3sIbdS1XuH+VrVl+6Ab+68ybP9HpLo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MQXOeijMhEla1Cj7eLgmWmBBIFH+rD4Yhwlpz5yfgJEglmi5blaz/z/69bzWNy8Hp
+         Kl8ydUGN/efnr+Anz3HD609aOSf8AXdRpRXkUcQU8BTWc6gu6i9IhO3JNGfI3zAv1t
+         Rrtwe2LSGOGJJc5yhRqqTtJ+xjk+Z6ZSxQ8ViZwNCzAw5dZ/kojGe3S4DshwYwtGl7
+         e30G+K1sCT6iLyV/s37CXqa3kJskUB/MRMiPE39QzkcBOGFqHjS3eaAmO5eeNQCAb/
+         7Wu9BcjYRSmVjbKRVCyqbzNucLjdfXMJS8I8tYYykk8PZOclYMyj4woISfh+zEjaBN
+         ttOKK2YPvID4w==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nbl5Q-001sAH-Oh; Tue, 05 Apr 2022 16:27:16 +0100
+Date:   Tue, 05 Apr 2022 16:27:16 +0100
+Message-ID: <87mtgzblez.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     xieming <xieming@kylinos.cn>, sashal@kernel.org,
+        catalin.marinas@arm.com, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, alex.williamson@redhat.com,
+        will@kernel.org, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] kvm/arm64: fixed passthrough gpu into vm on arm64
+In-Reply-To: <20220404170202.GR64706@ziepe.ca>
+References: <20220401090828.614167-1-xieming@kylinos.cn>
+        <87tubcbvgk.wl-maz@kernel.org>
+        <20220404132405.GQ64706@ziepe.ca>
+        <87o81gc3dc.wl-maz@kernel.org>
+        <20220404170202.GR64706@ziepe.ca>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: jgg@ziepe.ca, xieming@kylinos.cn, sashal@kernel.org, catalin.marinas@arm.com, linux@armlinux.org.uk, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, will@kernel.org, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+On Mon, 04 Apr 2022 18:02:02 +0100,
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> 
+> On Mon, Apr 04, 2022 at 03:47:11PM +0100, Marc Zyngier wrote:
+> > > I'm guessing it will turn into a SBSA like thing where the ARM ARM is
+> > > kind of vauge but a SOC has to implement Normal-NC in a certain way to
+> > > be functional for the server market.
+> > 
+> > The main issue is that this equivalence isn't architected, so people
+> > can build whatever they want. SBSA means nothing to KVM (or Linux at
+> > large), and there is currently no way to describe which devices are
+> > safe to map as Normal-NC vs Device.
+> 
+> And people have, we know of some ARM SOC's that don't work fully with
+> NORMAL_NC for this usage. That is already a problem for baremetal
+> Linux, let alone KVM..
+> 
+> That is why I likened it to SBSA - if you want to build a server SOC
+> that works with existing server software, you have to support
+> NORMAL_NC in this way. Even if it isn't architected.
 
-[ Upstream commit fecbd4a317c95d73c849648c406bcf1b6a0ec1cf ]
+I see it the other way around. If it isn't architected (and in this
+case not even detectable in a scalable way), it simply isn't
+supportable by SW.
 
-The reference counting issue happens in several error handling paths
-on a refcounted object "nc->dmac". In these paths, the function simply
-returns the error code, forgetting to balance the reference count of
-"nc->dmac", increased earlier by dma_request_channel(), which may
-cause refcount leaks.
+> The KVM challenge, at least, is to support a CPU with working
+> NORMAL_NC to create VM that emulates the same CPU with working
+> NORMAL_NC.
+> 
+> I didn't quite understand your other remarks though - is there a
+> problem here? It seems like yes from the other thread you pointed at?
 
-Fix it by decrementing the refcount of specific object in those error
-paths.
+The main issue is that we have no idea what the behaviour is on a
+given implementation, and no way to even detect that for a given
+device, NORMAL_NC is a memory type that won't cause any issue.
 
-Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
-Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220304085330.3610-1-xiongx18@fudan.edu.cn
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/mtd/nand/raw/atmel/nand-controller.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+> I would think that KVM should mirror the process page table
+> configuration into the KVM page table and make this into a userspace
+> problem?
 
-diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c b/drivers/mtd/nand/raw/atmel/nand-controller.c
-index f3276ee9e4fe..ddd93bc38ea6 100644
---- a/drivers/mtd/nand/raw/atmel/nand-controller.c
-+++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
-@@ -2060,13 +2060,15 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	nc->mck = of_clk_get(dev->parent->of_node, 0);
- 	if (IS_ERR(nc->mck)) {
- 		dev_err(dev, "Failed to retrieve MCK clk\n");
--		return PTR_ERR(nc->mck);
-+		ret = PTR_ERR(nc->mck);
-+		goto out_release_dma;
- 	}
- 
- 	np = of_parse_phandle(dev->parent->of_node, "atmel,smc", 0);
- 	if (!np) {
- 		dev_err(dev, "Missing or invalid atmel,smc property\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto out_release_dma;
- 	}
- 
- 	nc->smc = syscon_node_to_regmap(np);
-@@ -2074,10 +2076,16 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	if (IS_ERR(nc->smc)) {
- 		ret = PTR_ERR(nc->smc);
- 		dev_err(dev, "Could not get SMC regmap (err = %d)\n", ret);
--		return ret;
-+		goto out_release_dma;
- 	}
- 
- 	return 0;
-+
-+out_release_dma:
-+	if (nc->dmac)
-+		dma_release_channel(nc->dmac);
-+
-+	return ret;
- }
- 
- static int
+But what makes it safe to do this the first place? There are tons of
+HW out there that will simply issue a SError if you generate an
+unaligned access targeting the right device, and letting userspace
+decide on this is simply not acceptable.
+
+> That turns it into a VFIO problem to negotiate with userspace and set
+> the proper pgprot. At least VFIO has a better chance than KVM to
+> consult DT or something to learn about the specific device's
+> properties.
+> 
+> I don't know how VFIO/qemu/etc can make this all work automatically
+> correctly 100% of the time. It seems to me it is the same problem as
+> just basic baremetal "WC" is troubled on ARM in general today. Maybe
+> some tables and a command line option in qemu is the best we can hope
+> for.
+
+Having a firmware description of what can be mapped with what
+attributes would be pretty useful indeed. Not sure how that scales,
+but the platform definitely needs to advertise *something* so that we
+can allow userspace to say something.
+
+> 
+> Long ago I asked that the ARM folks could come with some Linux
+> definition of all the WC-like modes and some arch calls to indicate
+> which one(s) should be used. Nobody seemed interested in doing that,
+> so the above SOC was left non-working in mainline Linux..
+> 
+> > We either have to take userspace's word for it, or rely on some other
+> > heuristics (do this for PCIe, but not anything else). None of which
+> > are entirely safe. Not to mention that no currently available CPU
+> > implements FEAT_DGH.
+> 
+> DHG is an optimization, not a functional requirement. Currently
+> available CPUs use one of the more expensive barriers that are
+> architected to include DHG behavior.
+> 
+> In any event, this is an important optimization. It is why ARMv9 is
+> introducing a new instruction specifically to optmize it.
+
+ARMv9? No, seems like it was introduced in the v8.7 time frame, and
+allowed retroactively from v8.0. N2 has it, but A510 doesn't, while V1
+(an ARMv8.3 part) has it. But at least it is slowly creeping into
+implementations.
+
+Thanks,
+
+	M.
+
 -- 
-2.34.1
-
-
-
+Without deviation from the norm, progress is not possible.
