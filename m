@@ -2,113 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B881C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90588C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576781AbiDEXLC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
+        id S234664AbiDEXMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443622AbiDEPkA (ORCPT
+        with ESMTP id S1353169AbiDEKFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:00 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B8617DC89
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:57:19 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id dr20so26756927ejc.6
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:57:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IVfxiW6zKe0dHxT2NnEjml4pjCNh93EsN7m5exyESZw=;
-        b=UXRyAeEeXf2x76rRsTVT85Yu3qMDdIO8T76/plyF2HR/xrK6SSH+NaRviJpVZh7Qwg
-         sDlhRAI83MwCI3gbOLnBxOCANE1IcKQwEfrAwCIyDHAAtFq710fD+ZRlVWZv/xEqZlP2
-         2xaaXUL1FQTdhZiuvu+h3FVmKJ21wi4tSIvUxoAwP1nhl6vffFEzbfhRI4nAsZi2EVnd
-         pMeyjuSEWFMQCRF/nJ7z/vfgUOwNgvH2iTxe8G1ZXH7d9W9pBEqLvYhucm/tg3XSPyUf
-         uvwFMkqw+KsPAZDRjdA3KHBjqlNYwp3fE3vsEHxRyU2l/m40UVa6h2Ljee9euWBm9D1t
-         GkIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IVfxiW6zKe0dHxT2NnEjml4pjCNh93EsN7m5exyESZw=;
-        b=GYGSLcFFf3l0Bhu/MIfCpubGV2FbAsUYcGDrIoxLZ2pgHRGublOjxreXKkQSAUcgUp
-         FH8pawcqf/p/p5BNCEHl2O86gY/Wzo/jJw31X8uuUHycmdzljitothwMx+8BtEMFnW1h
-         x91eFBaeNT9GbqeRqn03zr5LyRoT9l2d4oMr5TErSXgDDadpYZXHr3utfXJtR9sJ+8Br
-         l12hb/maJeSy1bftI/sZms+r2WNjr/QWK4AbxKxqkmCIC+ElkxEKD7RhbJGSNl9rF0kz
-         FgCy6x5baR1R9nA/S2LLjZwLx8DPizVP+7NazUNuK9Q0984kb27kSpPEGOrr+C2jplxi
-         auig==
-X-Gm-Message-State: AOAM531tOBssGJo4MJJCPnQTPVhDUwXG+SyaJr78iZH2Bxc7BdJ3cCB2
-        FnFS1dkODPO4zUQaMt034zc2aFqt4m1bFkqq
-X-Google-Smtp-Source: ABdhPJzrbED2j3hKopCA4gDE01wRh9WEQTM3OOohAmICtp6UQWRL7za5ii7DlT49Qvcs5o0Kwd6rww==
-X-Received: by 2002:a17:906:3ad3:b0:6cd:382b:86e5 with SMTP id z19-20020a1709063ad300b006cd382b86e5mr3579318ejd.145.1649167038173;
-        Tue, 05 Apr 2022 06:57:18 -0700 (PDT)
-Received: from [192.168.0.182] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id v20-20020a056402349400b00419651e513asm6776474edc.45.2022.04.05.06.57.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 06:57:17 -0700 (PDT)
-Message-ID: <e3247f0f-5d3d-d981-699e-7dcedb30f881@linaro.org>
-Date:   Tue, 5 Apr 2022 15:57:16 +0200
+        Tue, 5 Apr 2022 06:05:49 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 385E2BE9D3;
+        Tue,  5 Apr 2022 02:54:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649152465; x=1680688465;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FvrfFAwIBkVcQbb44q338G+GvCQgvfd7wKltudNp7nY=;
+  b=hhOW0vpitTEhCP8nc2qeltOhLzwnDzEgjFoVOlq6WKo/MkNN8vZcojXN
+   FE0bDOvgd2gW7m+F88iRODUsH1GyVrmWrTr/Vs9J3VZetdLwXonY/p4u7
+   Ius0XkJI+OSRMCMjI1Coz4WWeUMI8A2idxgEwiA6CffOdh0TPbnIBHIum
+   UqL+xCpg/ujcZlexuK7ZD6aiBQvni8oXv5yPIPT7P1JwLU+WagVQyvX2P
+   wpDwVDc5XGE5EIjFUWywBeWIeqWtAuItnv4yNJb3+oG8/Utf2pUK52Mid
+   j2XasMRuahzsz7JZAP1mQbcCKwT9NZjpfVSn+7nz6Hg/7vJZdxx78RXfc
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="347150668"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="347150668"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:54:24 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="556460066"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 02:54:21 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 05 Apr 2022 12:54:19 +0300
+Date:   Tue, 5 Apr 2022 12:54:19 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v1 2/2] PCI: PM: Resume bus after putting the bridge into
+ D0 entirely
+Message-ID: <YkwRyxJWTFs7HnDM@lahna>
+References: <4198163.ejJDZkT8p0@kreacher>
+ <1807986.atdPhlSkOF@kreacher>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] i2c: add binding to prevent device detection
-Content-Language: en-US
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>, wsa@kernel.org
-Cc:     kernel@axis.com, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, krzk+dt@kernel.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
- <20220405121627.1560949-2-vincent.whitchurch@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220405121627.1560949-2-vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1807986.atdPhlSkOF@kreacher>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/04/2022 14:16, Vincent Whitchurch wrote:
-> When drivers with ->detect callbacks are loaded, the I2C core does a
-> bunch of transactions to try to probe for these devices, regardless of
-> whether they are specified in the devicetree or not.  (This only happens
-> on I2C controllers whose drivers enable the I2C_CLASS* flags, but this
-> is the case for generic drivers like i2c-gpio.)
+On Mon, Apr 04, 2022 at 05:42:27PM +0200, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 > 
-
-Thank you for your patch. There is something to discuss/improve.
-
-> These kinds of transactions are unnecessary on systems where the
-> devicetree specifies all the devices on the I2C bus, so add a property
-> to allow them to be disabled.
+> It is rather counter-intuitive to attempt to resume devices on a bus
+> segment before completing a transition of their parent bridge into
+> D0, so do that when the transition is complete.
 > 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> ---
->  Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
+> This matters especially when the transition in question is not
+> successful, in which case it doesn't make sense to even try to
+> resume the child devices at all.
 
-Use the subject matching the subsystem (git log --oneline -- .......).
+Good point.
 
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/i2c.txt b/Documentation/devicetree/bindings/i2c/i2c.txt
-> index fc3dd7ec0445..5f7bdf4851e8 100644
-> --- a/Documentation/devicetree/bindings/i2c/i2c.txt
-> +++ b/Documentation/devicetree/bindings/i2c/i2c.txt
-> @@ -72,6 +72,10 @@ wants to support one of the below features, it should adapt these bindings.
->  	this information to adapt power management to keep the arbitration awake
->  	all the time, for example. Can not be combined with 'single-master'.
->  
-> +- no-detect
-> +	states that the system should not attempt to automatically detect
-> +	devices which are not explicitly specified as child nodes.
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Focus on the hardware, not on system and behavior. The hardware property
-is that bus is completely described in Devicetree or detection does not
-work correctly. I guess the property name could stay like this, but the
-description could be rephrased.
-
-Best regards,
-Krzysztof
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
