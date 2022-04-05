@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8436C35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF494C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447969AbiDEUJk (ORCPT
+        id S1448032AbiDEUJo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:09:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
+        Tue, 5 Apr 2022 16:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358754AbiDELRZ (ORCPT
+        with ESMTP id S1351878AbiDEKD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:17:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE5ADF4AA;
-        Tue,  5 Apr 2022 03:19:27 -0700 (PDT)
+        Tue, 5 Apr 2022 06:03:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423AF90FE4;
+        Tue,  5 Apr 2022 02:52:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FF7A61562;
-        Tue,  5 Apr 2022 10:19:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7714C385A0;
-        Tue,  5 Apr 2022 10:19:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34412B81BAE;
+        Tue,  5 Apr 2022 09:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FC2C385A1;
+        Tue,  5 Apr 2022 09:52:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153966;
-        bh=nhQNJv/jUBJ0SsyJ4cela/5qXzYMudqB/wZC8vWrDeU=;
+        s=korg; t=1649152342;
+        bh=xm9x/FZCEUK/x/FQ/b38Amq5e9rRH5/BKJxWdvbog6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OnVPDD9Qo656gM84TBbCgofoWILM5DEHoTfE9L4NT9QskpTD1cgOEtzXJ8oYxEmL1
-         GlY2jZv6scFbzGU3rRLwucghxkYa9IZWJAv3vTyAzH7qaWRy11HrqK4RuoUBi35myz
-         c07mC65QITPDMsEIgHriM+zaIIbvrMj2JuUkKmtA=
+        b=HpW8q0NakENo6VPBU4lYGa61UblongfTdWnDll/k/M4KxIsolxDFlNwSw19MACYX7
+         a9kql096w08UCcK9Db5FN/STqerwHqLTlDf3BGzOIocgwzeuGgSx8nTrq63CU/0hxj
+         eiEWkZMyVf7YYPu18o5ApnDAdE/zpqc8xhufXLjo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Darren Hart <darren@os.amperecomputing.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 373/599] net: bcmgenet: Use stronger register read/writes to assure ordering
-Date:   Tue,  5 Apr 2022 09:31:07 +0200
-Message-Id: <20220405070309.930137754@linuxfoundation.org>
+Subject: [PATCH 5.15 704/913] ACPI/APEI: Limit printable size of BERT table data
+Date:   Tue,  5 Apr 2022 09:29:26 +0200
+Message-Id: <20220405070400.937974988@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,113 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeremy Linton <jeremy.linton@arm.com>
+From: Darren Hart <darren@os.amperecomputing.com>
 
-[ Upstream commit 8d3ea3d402db94b61075617e71b67459a714a502 ]
+[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
 
-GCC12 appears to be much smarter about its dependency tracking and is
-aware that the relaxed variants are just normal loads and stores and
-this is causing problems like:
+Platforms with large BERT table data can trigger soft lockup errors
+while attempting to print the entire BERT table data to the console at
+boot:
 
-[  210.074549] ------------[ cut here ]------------
-[  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
-[  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
-[  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
-[  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
-[  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
-[  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
-[  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
-[  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  210.161358] pc : dev_watchdog+0x234/0x240
-[  210.161364] lr : dev_watchdog+0x234/0x240
-[  210.161368] sp : ffff8000080a3a40
-[  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
-[  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
-[  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
-[  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
-[  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
-[  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
-[  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
-[  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
-[  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
-[  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
-[  210.269682] Call trace:
-[  210.272133]  dev_watchdog+0x234/0x240
-[  210.275811]  call_timer_fn+0x3c/0x15c
-[  210.279489]  __run_timers.part.0+0x288/0x310
-[  210.283777]  run_timer_softirq+0x48/0x80
-[  210.287716]  __do_softirq+0x128/0x360
-[  210.291392]  __irq_exit_rcu+0x138/0x140
-[  210.295243]  irq_exit_rcu+0x1c/0x30
-[  210.298745]  el1_interrupt+0x38/0x54
-[  210.302334]  el1h_64_irq_handler+0x18/0x24
-[  210.306445]  el1h_64_irq+0x7c/0x80
-[  210.309857]  arch_cpu_idle+0x18/0x2c
-[  210.313445]  default_idle_call+0x4c/0x140
-[  210.317470]  cpuidle_idle_call+0x14c/0x1a0
-[  210.321584]  do_idle+0xb0/0x100
-[  210.324737]  cpu_startup_entry+0x30/0x8c
-[  210.328675]  secondary_start_kernel+0xe4/0x110
-[  210.333138]  __secondary_switched+0x94/0x98
+  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
 
-The assumption when these were relaxed seems to be that device memory
-would be mapped non reordering, and that other constructs
-(spinlocks/etc) would provide the barriers to assure that packet data
-and in memory rings/queues were ordered with respect to device
-register reads/writes. This itself seems a bit sketchy, but the real
-problem with GCC12 is that it is moving the actual reads/writes around
-at will as though they were independent operations when in truth they
-are not, but the compiler can't know that. When looking at the
-assembly dumps for many of these routines its possible to see very
-clean, but not strictly in program order operations occurring as the
-compiler would be free to do if these weren't actually register
-reads/write operations.
+Observed on Ampere Altra systems with a single BERT record of ~250KB.
 
-Its possible to suppress the timeout with a liberal bit of dma_mb()'s
-sprinkled around but the device still seems unable to reliably
-send/receive data. A better plan is to use the safer readl/writel
-everywhere.
+The original bert driver appears to have assumed relatively small table
+data. Since it is impractical to reassemble large table data from
+interwoven console messages, and the table data is available in
 
-Since this partially reverts an older commit, which notes the use of
-the relaxed variants for performance reasons. I would suggest that
-any performance problems with this commit are targeted at relaxing only
-the performance critical code paths after assuring proper barriers.
+  /sys/firmware/acpi/tables/data/BERT
 
-Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
-Reported-by: Peter Robinson <pbrobinson@gmail.com>
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-Acked-by: Peter Robinson <pbrobinson@gmail.com>
-Tested-by: Peter Robinson <pbrobinson@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220310045358.224350-1-jeremy.linton@arm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+limit the size for tables printed to the console to 1024 (for no reason
+other than it seemed like a good place to kick off the discussion, would
+appreciate feedback from existing users in terms of what size would
+maintain their current usage model).
+
+Alternatively, we could make printing a CONFIG option, use the
+bert_disable boot arg (or something similar), or use a debug log level.
+However, all those solutions require extra steps or change the existing
+behavior for small table data. Limiting the size preserves existing
+behavior on existing platforms with small table data, and eliminates the
+soft lockups for platforms with large table data, while still making it
+available.
+
+Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/acpi/apei/bert.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index a2062144d7ca..7dcd5613ee56 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
- 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 		__raw_writel(value, offset);
- 	else
--		writel_relaxed(value, offset);
-+		writel(value, offset);
- }
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 86211422f4ee..598fd19b65fa 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -29,6 +29,7 @@
  
- static inline u32 bcmgenet_readl(void __iomem *offset)
-@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
- 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 		return __raw_readl(offset);
- 	else
--		return readl_relaxed(offset);
-+		return readl(offset);
- }
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++#define ACPI_BERT_PRINT_MAX_LEN 1024
  
- static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
+ static int bert_disable;
+ 
+@@ -58,8 +59,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		}
+ 
+ 		pr_info_once("Error records from previous boot:\n");
+-
+-		cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++			cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		else
++			pr_info_once("Max print length exceeded, table data is available at:\n"
++				     "/sys/firmware/acpi/tables/data/BERT");
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
 -- 
 2.34.1
 
