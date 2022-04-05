@@ -2,134 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B740C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3509FC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580039AbiDEXdk (ORCPT
+        id S1579748AbiDEXco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
+        Tue, 5 Apr 2022 19:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452785AbiDEPzb (ORCPT
+        with ESMTP id S1351007AbiDEKAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:55:31 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF1479381
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:57:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649170635; x=1680706635;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=HUuCde5QwQYg6TXe9MSQ6TekH6j3hvkYuaUQC0febew=;
-  b=h1L9i1dAUhQ3zGWOYL5d7w7x7Gh6PGKTaCXcttpiOIspqf82hgw53sVM
-   z968nfPryvMWAS30LUV7onvmaSSv7HY6dfmn3nJDRKO7iiHsBDezYlMwF
-   9v/zru+aeTmZQxcdkNrayM9k2HQDoqlXicRWxxk7gAvC1tpswEPo3dXzG
-   rq8fpUi18llLjeTPUZdqmNw+bIxfptUV+/8yHrZTUpY+9P1tf9Wn5lbeh
-   /19s/ldOK2i49KhBRzzRZfgWD5koXunrH/URzDliMvBjz6mc/59srtKVO
-   iB4m0e1QkTmybzgvD3HhEvQuvQ7jgTk7rLWt+QyGwL5WtHgFBPNUvUP82
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="242909581"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="242909581"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 07:57:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="524025802"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 07:57:11 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbkcJ-0003Rz-6j;
-        Tue, 05 Apr 2022 14:57:11 +0000
-Date:   Tue, 5 Apr 2022 22:56:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:nvme-v2 5/6] drivers/soc/apple/rtkit.c:591:21: warning:
- no previous prototype for 'apple_rtkit_init'
-Message-ID: <202204052220.DC2iBfq3-lkp@intel.com>
+        Tue, 5 Apr 2022 06:00:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBDC6B51E;
+        Tue,  5 Apr 2022 02:51:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D723F61673;
+        Tue,  5 Apr 2022 09:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2797C385A3;
+        Tue,  5 Apr 2022 09:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152283;
+        bh=Ho/BjnVNGfweAgBtMiS7dBtzUEAbt0AM1Wjb60i/UUs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mCIKgTDNw+1jfcsujP7ADwosykErR2SJTsBZX21fv47T/IfSDfMyLWbs8b/97gDpd
+         tZYJoDBWw8qL91Wuhe8j5qsJ8dshPjmzDVWq0bqBW14KXTlMiGE49h21GSlqyMwcYs
+         Pvr+7OkyClyz3+NvV31a4DQ1viuZuEMsNGdhCPd8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 721/913] f2fs: use spin_lock to avoid hang
+Date:   Tue,  5 Apr 2022 09:29:43 +0200
+Message-Id: <20220405070401.444903220@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux nvme-v2
-head:   76835054c23e3e3505f5967d8580d86618aca6ec
-commit: 689dd69e59bb68b19066104c34670d5dc272c946 [5/6] soc: apple: Add RTKit IPC library
-config: ia64-buildonly-randconfig-r002-20220405 (https://download.01.org/0day-ci/archive/20220405/202204052220.DC2iBfq3-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/689dd69e59bb68b19066104c34670d5dc272c946
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux nvme-v2
-        git checkout 689dd69e59bb68b19066104c34670d5dc272c946
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/soc/apple/
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[ Upstream commit 98237fcda4a24e67b0a4498c17d5aa4ad4537bc7 ]
 
-All warnings (new ones prefixed by >>):
+[14696.634553] task:cat             state:D stack:    0 pid:1613738 ppid:1613735 flags:0x00000004
+[14696.638285] Call Trace:
+[14696.639038]  <TASK>
+[14696.640032]  __schedule+0x302/0x930
+[14696.640969]  schedule+0x58/0xd0
+[14696.641799]  schedule_preempt_disabled+0x18/0x30
+[14696.642890]  __mutex_lock.constprop.0+0x2fb/0x4f0
+[14696.644035]  ? mod_objcg_state+0x10c/0x310
+[14696.645040]  ? obj_cgroup_charge+0xe1/0x170
+[14696.646067]  __mutex_lock_slowpath+0x13/0x20
+[14696.647126]  mutex_lock+0x34/0x40
+[14696.648070]  stat_show+0x25/0x17c0 [f2fs]
+[14696.649218]  seq_read_iter+0x120/0x4b0
+[14696.650289]  ? aa_file_perm+0x12a/0x500
+[14696.651357]  ? lru_cache_add+0x1c/0x20
+[14696.652470]  seq_read+0xfd/0x140
+[14696.653445]  full_proxy_read+0x5c/0x80
+[14696.654535]  vfs_read+0xa0/0x1a0
+[14696.655497]  ksys_read+0x67/0xe0
+[14696.656502]  __x64_sys_read+0x1a/0x20
+[14696.657580]  do_syscall_64+0x3b/0xc0
+[14696.658671]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[14696.660068] RIP: 0033:0x7efe39df1cb2
+[14696.661133] RSP: 002b:00007ffc8badd948 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+[14696.662958] RAX: ffffffffffffffda RBX: 0000000000020000 RCX: 00007efe39df1cb2
+[14696.664757] RDX: 0000000000020000 RSI: 00007efe399df000 RDI: 0000000000000003
+[14696.666542] RBP: 00007efe399df000 R08: 00007efe399de010 R09: 00007efe399de010
+[14696.668363] R10: 0000000000000022 R11: 0000000000000246 R12: 0000000000000000
+[14696.670155] R13: 0000000000000003 R14: 0000000000020000 R15: 0000000000020000
+[14696.671965]  </TASK>
+[14696.672826] task:umount          state:D stack:    0 pid:1614985 ppid:1614984 flags:0x00004000
+[14696.674930] Call Trace:
+[14696.675903]  <TASK>
+[14696.676780]  __schedule+0x302/0x930
+[14696.677927]  schedule+0x58/0xd0
+[14696.679019]  schedule_preempt_disabled+0x18/0x30
+[14696.680412]  __mutex_lock.constprop.0+0x2fb/0x4f0
+[14696.681783]  ? destroy_inode+0x65/0x80
+[14696.683006]  __mutex_lock_slowpath+0x13/0x20
+[14696.684305]  mutex_lock+0x34/0x40
+[14696.685442]  f2fs_destroy_stats+0x1e/0x60 [f2fs]
+[14696.686803]  f2fs_put_super+0x158/0x390 [f2fs]
+[14696.688238]  generic_shutdown_super+0x7a/0x120
+[14696.689621]  kill_block_super+0x27/0x50
+[14696.690894]  kill_f2fs_super+0x7f/0x100 [f2fs]
+[14696.692311]  deactivate_locked_super+0x35/0xa0
+[14696.693698]  deactivate_super+0x40/0x50
+[14696.694985]  cleanup_mnt+0x139/0x190
+[14696.696209]  __cleanup_mnt+0x12/0x20
+[14696.697390]  task_work_run+0x64/0xa0
+[14696.698587]  exit_to_user_mode_prepare+0x1b7/0x1c0
+[14696.700053]  syscall_exit_to_user_mode+0x27/0x50
+[14696.701418]  do_syscall_64+0x48/0xc0
+[14696.702630]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
->> drivers/soc/apple/rtkit.c:591:21: warning: no previous prototype for 'apple_rtkit_init' [-Wmissing-prototypes]
-     591 | struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
-         |                     ^~~~~~~~~~~~~~~~
->> drivers/soc/apple/rtkit.c:805:6: warning: no previous prototype for 'apple_rtkit_free' [-Wmissing-prototypes]
-     805 | void apple_rtkit_free(struct apple_rtkit *rtk)
-         |      ^~~~~~~~~~~~~~~~
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/f2fs/debug.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-
-vim +/apple_rtkit_init +591 drivers/soc/apple/rtkit.c
-
-   590	
- > 591	struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
-   592					     const char *mbox_name, int mbox_idx,
-   593					     const struct apple_rtkit_ops *ops)
-   594	{
-   595		struct apple_rtkit *rtk;
-   596		int ret;
-   597	
-   598		if (!ops)
-   599			return ERR_PTR(-EINVAL);
-   600	
-   601		rtk = kzalloc(sizeof(*rtk), GFP_KERNEL);
-   602		if (!rtk)
-   603			return ERR_PTR(-ENOMEM);
-   604	
-   605		rtk->dev = dev;
-   606		rtk->cookie = cookie;
-   607		rtk->ops = ops;
-   608	
-   609		init_completion(&rtk->epmap_completion);
-   610		init_completion(&rtk->reinit_completion);
-   611		init_completion(&rtk->iop_pwr_ack_completion);
-   612		init_completion(&rtk->ap_pwr_ack_completion);
-   613	
-   614		bitmap_zero(rtk->endpoints, APPLE_RTKIT_MAX_ENDPOINTS);
-   615		set_bit(APPLE_RTKIT_EP_MGMT, rtk->endpoints);
-   616	
-   617		rtk->mbox_name = mbox_name;
-   618		rtk->mbox_idx = mbox_idx;
-   619		rtk->mbox_cl.dev = dev;
-   620		rtk->mbox_cl.tx_block = true;
-   621		rtk->mbox_cl.knows_txdone = false;
-   622		rtk->mbox_cl.rx_callback = &apple_rtkit_rx_callback;
-   623	
-   624		ret = apple_rtkit_request_mbox_chan(rtk);
-   625		if (ret)
-   626			return (struct apple_rtkit *)ERR_PTR(ret);
-   627	
-   628		return rtk;
-   629	}
-   630	
-
+diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
+index 07ad0d81f0c5..b449c7a372a4 100644
+--- a/fs/f2fs/debug.c
++++ b/fs/f2fs/debug.c
+@@ -21,7 +21,7 @@
+ #include "gc.h"
+ 
+ static LIST_HEAD(f2fs_stat_list);
+-static DEFINE_MUTEX(f2fs_stat_mutex);
++static DEFINE_RAW_SPINLOCK(f2fs_stat_lock);
+ #ifdef CONFIG_DEBUG_FS
+ static struct dentry *f2fs_debugfs_root;
+ #endif
+@@ -345,8 +345,9 @@ static int stat_show(struct seq_file *s, void *v)
+ {
+ 	struct f2fs_stat_info *si;
+ 	int i = 0, j = 0;
++	unsigned long flags;
+ 
+-	mutex_lock(&f2fs_stat_mutex);
++	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
+ 	list_for_each_entry(si, &f2fs_stat_list, stat_list) {
+ 		update_general_status(si->sbi);
+ 
+@@ -574,7 +575,7 @@ static int stat_show(struct seq_file *s, void *v)
+ 		seq_printf(s, "  - paged : %llu KB\n",
+ 				si->page_mem >> 10);
+ 	}
+-	mutex_unlock(&f2fs_stat_mutex);
++	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
+ 	return 0;
+ }
+ 
+@@ -585,6 +586,7 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
+ {
+ 	struct f2fs_super_block *raw_super = F2FS_RAW_SUPER(sbi);
+ 	struct f2fs_stat_info *si;
++	unsigned long flags;
+ 	int i;
+ 
+ 	si = f2fs_kzalloc(sbi, sizeof(struct f2fs_stat_info), GFP_KERNEL);
+@@ -620,9 +622,9 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
+ 	atomic_set(&sbi->max_aw_cnt, 0);
+ 	atomic_set(&sbi->max_vw_cnt, 0);
+ 
+-	mutex_lock(&f2fs_stat_mutex);
++	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
+ 	list_add_tail(&si->stat_list, &f2fs_stat_list);
+-	mutex_unlock(&f2fs_stat_mutex);
++	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
+ 
+ 	return 0;
+ }
+@@ -630,10 +632,11 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
+ void f2fs_destroy_stats(struct f2fs_sb_info *sbi)
+ {
+ 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
++	unsigned long flags;
+ 
+-	mutex_lock(&f2fs_stat_mutex);
++	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
+ 	list_del(&si->stat_list);
+-	mutex_unlock(&f2fs_stat_mutex);
++	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
+ 
+ 	kfree(si);
+ }
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
+
+
