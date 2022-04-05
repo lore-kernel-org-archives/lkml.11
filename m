@@ -2,91 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 757F4C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90319C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356836AbiDEKY6 (ORCPT
+        id S1356876AbiDEKZB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33832 "EHLO
+        Tue, 5 Apr 2022 06:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241206AbiDEIcy (ORCPT
+        with ESMTP id S241211AbiDEIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFA417A97;
-        Tue,  5 Apr 2022 01:29:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D88ECB81BC6;
-        Tue,  5 Apr 2022 08:29:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C1EEC385A2;
-        Tue,  5 Apr 2022 08:29:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147373;
-        bh=edHvhWt4iLm2OPP6xPUH7et3os8yqttfATwOvklfX6k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D0anh5nuvoUPvbIOGN3dK7WRmX4ZgZwkz94fmk2S2G2vdXwA8daSykLT0Yc0TJhzX
-         7nWULBoQPRFiE2LutyCVawSGXBmZtX3qRQEUmUJAPeJjEAshgw+ns6hlhvlwg6nJ3r
-         W2zGiiarlT9JW2ZCqZFvTKdWx/KucDaQGoofnkeY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 1102/1126] ASoC: topology: Allow TLV control to be either read or write
-Date:   Tue,  5 Apr 2022 09:30:49 +0200
-Message-Id: <20220405070439.784836453@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5676E17A9B;
+        Tue,  5 Apr 2022 01:29:39 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:36 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147378;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rVp4aRHgsclhL8EJ9iZFPn/4+bvKhNrDLh1shDagL2c=;
+        b=zMlfh/PxrJOZ8vGaMmjA4p2/ZaPgx5r3H0AbHeZgRL4TIdsXUpNL+jY6SyJ07jSg/j2y/u
+        88x2iZ9oRzVP10AEyJ5biBeq8J2fusLom50Rk0fuRJaf1f8gWnUICBqsrlQK4E65H6xuW8
+        XLGg6mH+me+vOvEfct+IcRNicAQtnWHe1SbmPnNhzBAzIEEqqukCpyr5wpRKOCGlvD3XEC
+        qidd4D5Us92VNhSDN4oif6qwp8vQhfxzQhfw+U3jYpj+5u3hCxLLFjxTKy6ZvXr7KKJbiV
+        pLGFqNnfXgr6sbLdpFmS19fFTt1BkdFK2OrKn3hPHGftJc83ZAzl43y1+VyEwg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147378;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rVp4aRHgsclhL8EJ9iZFPn/4+bvKhNrDLh1shDagL2c=;
+        b=yaKJS7IpU3azwEtJ/GCcjVDTMoQMwXqhXPoCYVFBp11Ife3vzblPjEQ4gomMOEZmX9CK7d
+        pVzumFGcjVOvjDBA==
+From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] objtool: Fix SLS validation for kcov tail-call replacement
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220323230712.GA8939@worktop.programming.kicks-ass.net>
+References: <20220323230712.GA8939@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914737698.389.9382250857229759152.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+The following commit has been merged into the x86/urgent branch of tip:
 
-commit feb00b736af64875560f371fe7f58b0b7f239046 upstream.
+Commit-ID:     7a53f408902d913cd541b4f8ad7dbcd4961f5b82
+Gitweb:        https://git.kernel.org/tip/7a53f408902d913cd541b4f8ad7dbcd4961f5b82
+Author:        Peter Zijlstra <peterz@infradead.org>
+AuthorDate:    Wed, 23 Mar 2022 23:35:01 +01:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 10:24:40 +02:00
 
-There is no reason to force readwrite access on TLV controls. It can be
-either read, write or both. This is further evidenced in code where it
-performs following checks:
-                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ) && !sbe->get)
-                        return -EINVAL;
-                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE) && !sbe->put)
-                        return -EINVAL;
+objtool: Fix SLS validation for kcov tail-call replacement
 
-Fixes: 1a3232d2f61d ("ASoC: topology: Add support for TLV bytes controls")
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220112170030.569712-3-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Since not all compilers have a function attribute to disable KCOV
+instrumentation, objtool can rewrite KCOV instrumentation in noinstr
+functions as per commit:
+
+  f56dae88a81f ("objtool: Handle __sanitize_cov*() tail calls")
+
+However, this has subtle interaction with the SLS validation from
+commit:
+
+  1cc1e4c8aab4 ("objtool: Add straight-line-speculation validation")
+
+In that when a tail-call instrucion is replaced with a RET an
+additional INT3 instruction is also written, but is not represented in
+the decoded instruction stream.
+
+This then leads to false positive missing INT3 objtool warnings in
+noinstr code.
+
+Instead of adding additional struct instruction objects, mark the RET
+instruction with retpoline_safe to suppress the warning (since we know
+there really is an INT3).
+
+Fixes: 1cc1e4c8aab4 ("objtool: Add straight-line-speculation validation")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220323230712.GA8939@worktop.programming.kicks-ass.net
 ---
- sound/soc/soc-topology.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/objtool/check.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/sound/soc/soc-topology.c
-+++ b/sound/soc/soc-topology.c
-@@ -512,7 +512,8 @@ static int soc_tplg_kcontrol_bind_io(str
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index b848e1d..bd0c2c8 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1155,6 +1155,17 @@ static void annotate_call_site(struct objtool_file *file,
+ 			               : arch_nop_insn(insn->len));
  
- 	if (le32_to_cpu(hdr->ops.info) == SND_SOC_TPLG_CTL_BYTES
- 		&& k->iface & SNDRV_CTL_ELEM_IFACE_MIXER
--		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READWRITE
-+		&& (k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ
-+		    || k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE)
- 		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK) {
- 		struct soc_bytes_ext *sbe;
- 		struct snd_soc_tplg_bytes_control *be;
-
-
+ 		insn->type = sibling ? INSN_RETURN : INSN_NOP;
++
++		if (sibling) {
++			/*
++			 * We've replaced the tail-call JMP insn by two new
++			 * insn: RET; INT3, except we only have a single struct
++			 * insn here. Mark it retpoline_safe to avoid the SLS
++			 * warning, instead of adding another insn.
++			 */
++			insn->retpoline_safe = true;
++		}
++
+ 		return;
+ 	}
+ 
