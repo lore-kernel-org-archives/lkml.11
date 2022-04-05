@@ -2,174 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FC9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF8BC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451354AbiDEUKy (ORCPT
+        id S1451935AbiDEUK5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
+        Tue, 5 Apr 2022 16:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444196AbiDEPlA (ORCPT
+        with ESMTP id S1349589AbiDEJu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:00 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C74B5FD3;
-        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 235E2k8L021295;
-        Tue, 5 Apr 2022 23:02:48 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8L021295
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649167369;
-        bh=EKCTJzUdUAuHIhmyqzQO5DkjoUd5sMZA3XV4MtVgo6g=;
+        Tue, 5 Apr 2022 05:50:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319C9E5;
+        Tue,  5 Apr 2022 02:48:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C236E615E3;
+        Tue,  5 Apr 2022 09:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CED33C385A2;
+        Tue,  5 Apr 2022 09:48:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152109;
+        bh=d7UCBwQEaTY8MrbFc29WL+NlLOS9fxPm1wuHsv6tbLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MhOn01GySX77Cjemm3oCakRXcI11I2w6P7ivi9W6aTx/LVS2cBOtPIlxCUtLi1XMM
-         UpIEidA/FLeoegbtsbJ4/sdSb+QIYKiholVhbkRs14VfO5a8SmIA5lVXKJEyllOpEN
-         R9mxoFcDJOkucbF9KGVhv4v43bYIPNv/7vtI3Q7J6Pp9ShrpIRo2BqKM2mpYed4G0k
-         n4DMa3IbYZIedsY0Bw2Sx2LKxzSa0bjSFOPCd7++CSU37EnQOmYchsmyyTcqCDuhv1
-         lSnj/CWnQhjiSbrwuViSX9jr9CpwKiZY1MEpzwoGpgw7CUednaT7hqrP27tQm8HsjG
-         pJDiGd/SUxbJA==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Michal Marek <michal.lkml@markovi.net>
-Subject: [PATCH v2 03/10] modpost: remove useless export_from_sec()
-Date:   Tue,  5 Apr 2022 23:02:22 +0900
-Message-Id: <20220405140229.2895394-4-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
-References: <20220405140229.2895394-1-masahiroy@kernel.org>
+        b=pkAPSsrPogt7Ji2VztF20pZvh8YYCAX7V8XO6c8yKc413BWsGc5rpg/mzhkUlbfw5
+         +4f1/OlsHIm9vTjtkuCuDjKsCdv2gzNzi16cVaaovAvrCgMePYawsi9r5EoTsIP946
+         82BTNc6vvK7XccH4gnGhqLxz8w7K3+YtOUGzcIbU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 656/913] vsock/virtio: read the negotiated features before using VQs
+Date:   Tue,  5 Apr 2022 09:28:38 +0200
+Message-Id: <20220405070359.502183607@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With commit 1743694eb235 ("modpost: stop symbol preloading for
-modversion CRC") applied, now export_from_sec() is useless.
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-handle_symbol() is called for every symbol in the ELF.
+[ Upstream commit c1011c0b3a9c8d2065f425407475cbcc812540b7 ]
 
-When 'symname' does not start with "__ksymtab", export_from_sec() is
-called, and the returned value is stored in 'export'.
+Complete the driver configuration, reading the negotiated features,
+before using the VQs in the virtio_vsock_probe().
 
-It is used in the last part of handle_symbol():
-
-    if (strstarts(symname, "__ksymtab_")) {
-            name = symname + strlen("__ksymtab_");
-            sym_add_exported(name, mod, export);
-    }
-
-'export' is used only when 'symname' starts with "__ksymtab_".
-
-So, the value returned by export_from_sec() is never used.
-
-Remove useless export_from_sec(). This makes further cleanups possible.
-
-I put the temporary code:
-
-    export = export_unknown;
-
-Otherwise, I would get the compiler warning:
-
-    warning: 'export' may be used uninitialized in this function [-Wmaybe-uninitialized]
-
-This is apparently false positive because
-
-    if (strstarts(symname, "__ksymtab_")
-
-... is a stronger condition than:
-
-    if (strstarts(symname, "__ksymtab")
-
-Anyway, this part will be cleaned up by the next commit.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fixes: 53efbba12cc7 ("virtio/vsock: enable SEQPACKET for transport")
+Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ net/vmw_vsock/virtio_transport.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Changes in v2:
-  - Fix compiler warning
-
- scripts/mod/modpost.c | 17 ++---------------
- scripts/mod/modpost.h |  4 ----
- 2 files changed, 2 insertions(+), 19 deletions(-)
-
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index ed9d056d2108..eebb32689816 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -369,16 +369,6 @@ static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
- 		return export_unknown;
- }
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index fb1b8f99f679..4a8548bdf86c 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -622,6 +622,9 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
+ 	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
  
--static enum export export_from_sec(struct elf_info *elf, unsigned int sec)
--{
--	if (sec == elf->export_sec)
--		return export_plain;
--	else if (sec == elf->export_gpl_sec)
--		return export_gpl;
--	else
--		return export_unknown;
--}
++	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
++		vsock->seqpacket_allow = true;
++
+ 	vdev->priv = vsock;
+ 
+ 	mutex_lock(&vsock->tx_lock);
+@@ -638,9 +641,6 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	vsock->event_run = true;
+ 	mutex_unlock(&vsock->event_lock);
+ 
+-	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
+-		vsock->seqpacket_allow = true;
 -
- static const char *namespace_from_kstrtabns(const struct elf_info *info,
- 					    const Elf_Sym *sym)
- {
-@@ -576,10 +566,7 @@ static int parse_elf(struct elf_info *info, const char *filename)
- 				fatal("%s has NOBITS .modinfo\n", filename);
- 			info->modinfo = (void *)hdr + sechdrs[i].sh_offset;
- 			info->modinfo_len = sechdrs[i].sh_size;
--		} else if (strcmp(secname, "__ksymtab") == 0)
--			info->export_sec = i;
--		else if (strcmp(secname, "__ksymtab_gpl") == 0)
--			info->export_gpl_sec = i;
-+		}
+ 	rcu_assign_pointer(the_virtio_vsock, vsock);
  
- 		if (sechdrs[i].sh_type == SHT_SYMTAB) {
- 			unsigned int sh_link_idx;
-@@ -703,7 +690,7 @@ static void handle_symbol(struct module *mod, struct elf_info *info,
- 	if (strstarts(symname, "__ksymtab"))
- 		export = export_from_secname(info, get_secindex(info, sym));
- 	else
--		export = export_from_sec(info, get_secindex(info, sym));
-+		export = export_unknown;
- 
- 	switch (sym->st_shndx) {
- 	case SHN_COMMON:
-diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
-index 0c47ff95c0e2..a85dcec3669a 100644
---- a/scripts/mod/modpost.h
-+++ b/scripts/mod/modpost.h
-@@ -25,7 +25,6 @@
- #define Elf_Sym     Elf32_Sym
- #define Elf_Addr    Elf32_Addr
- #define Elf_Sword   Elf64_Sword
--#define Elf_Section Elf32_Half
- #define ELF_ST_BIND ELF32_ST_BIND
- #define ELF_ST_TYPE ELF32_ST_TYPE
- 
-@@ -40,7 +39,6 @@
- #define Elf_Sym     Elf64_Sym
- #define Elf_Addr    Elf64_Addr
- #define Elf_Sword   Elf64_Sxword
--#define Elf_Section Elf64_Half
- #define ELF_ST_BIND ELF64_ST_BIND
- #define ELF_ST_TYPE ELF64_ST_TYPE
- 
-@@ -138,8 +136,6 @@ struct elf_info {
- 	Elf_Shdr     *sechdrs;
- 	Elf_Sym      *symtab_start;
- 	Elf_Sym      *symtab_stop;
--	Elf_Section  export_sec;
--	Elf_Section  export_gpl_sec;
- 	char         *strtab;
- 	char	     *modinfo;
- 	unsigned int modinfo_len;
+ 	mutex_unlock(&the_virtio_vsock_mutex);
 -- 
-2.32.0
+2.34.1
+
+
 
