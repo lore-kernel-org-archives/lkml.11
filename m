@@ -2,148 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22602C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD79C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbiDEG6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
+        id S231264AbiDEG6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbiDEG56 (ORCPT
+        with ESMTP id S231234AbiDEG62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:57:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7531004;
-        Mon,  4 Apr 2022 23:55:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 840ADB81B9C;
-        Tue,  5 Apr 2022 06:55:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0100CC3410F;
-        Tue,  5 Apr 2022 06:55:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649141755;
-        bh=l8dvUlb3U48S/MWZxo9VRCxlg4l3/8kSPeGWEIhVYNQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rPX15kAdYpktxUsJlFKHWTZ0Na9i/R4938XmSH4yARwnto9kzAjKsnLu2dLuN99vA
-         kgmw23OI22neTl/WRymI7gOwKCkgWpIQrP/r1/8TXYz4z3cYMoiFBCF7fyFZ9b6vPu
-         mGeYZ7fPY97pCibs0mUPqyldJqrQvpHP80tBInNDuwtmY3d1P6cw4KX+08jyADemPP
-         /ZfLX9MU3zzEFEEIhR8lzZsv+12n4HG7ly4dC6Jw/5pyuPYTtaFot0D4V7NXtuAjiV
-         idWIWpe7m6e0peiWRa639Ld+wjAwasZVdaMPzXbZ9uJIbu/CjTz5bj/YN/fDvQwuWS
-         Yfk+2OT2jxa6w==
-Date:   Tue, 5 Apr 2022 09:57:06 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
-        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
-        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
-        cathy.zhang@intel.com, cedric.xing@intel.com,
-        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3 07/30] x86/sgx: Rename sgx_encl_ewb_cpumask() as
- sgx_encl_cpumask()
-Message-ID: <YkvoQgvOiNe5n5g2@kernel.org>
-References: <cover.1648847675.git.reinette.chatre@intel.com>
- <c42cb6298d69cacd48872f97d11df694074803d8.1648847675.git.reinette.chatre@intel.com>
+        Tue, 5 Apr 2022 02:58:28 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32273636C;
+        Mon,  4 Apr 2022 23:56:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649141791; x=1680677791;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XCuwsMkc/RYY+FxUw+6XukXX24ukq5d/45lTk16U5nY=;
+  b=ri921db6EtU+4zyQxJM8nsbRJFiRblUm6SzZJsb4gsvuWN5hGxPnCmgs
+   knTKzozLNJZ+xFsTZivjJhuY2adrD44JSIETL893rSOmz4CXYjFWFZQKU
+   ZxKUPpoeGrZyMWV9Se5cFb1MhyhgwyuOJ1nYxwY2vKbJDtaadZZjvUwXO
+   +n6Jgp3V410M8jvJPUKOagjepHauW6f+fBbBT64Oo0Vk9y0MLsfmeJb1C
+   yPGdQG1KShQ1pZo23HEUtb59MyBD+roce9EbTtU+0eR8qaG5JVAI0bAfM
+   4CLCJiTjic4Grb8Fi8c9aYFTXZ1er/N8XhF5cqL05Z9veU07Yhb3oSsIi
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
+   d="scan'208";a="159319232"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Apr 2022 23:56:30 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 4 Apr 2022 23:56:29 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 4 Apr 2022 23:56:28 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <Divya.Koppera@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net] net: micrel: Fix KS8851 Kconfig
+Date:   Tue, 5 Apr 2022 08:59:36 +0200
+Message-ID: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c42cb6298d69cacd48872f97d11df694074803d8.1648847675.git.reinette.chatre@intel.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 09:49:15AM -0700, Reinette Chatre wrote:
-> sgx_encl_ewb_cpumask() is no longer unique to the reclaimer where it
-> is used during the EWB ENCLS leaf function when EPC pages are written
-> out to main memory and sgx_encl_ewb_cpumask() is used to learn which
-> CPUs might have executed the enclave to ensure that TLBs are cleared.
-> 
-> Upcoming SGX2 enabling will use sgx_encl_ewb_cpumask() during the
-> EMODPR and EMODT ENCLS leaf functions that make changes to enclave
-> pages. The function is needed for the same reason it is used now: to
-> learn which CPUs might have executed the enclave to ensure that TLBs
-> no longer point to the changed pages.
-> 
-> Rename sgx_encl_ewb_cpumask() to sgx_encl_cpumask() to reflect the
-> broader usage.
-> 
-> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-> ---
-> No changes since V2
-> 
-> Changes since V1:
-> - New patch split from original "x86/sgx: Use more generic name for
->   enclave cpumask function" (Jarkko).
-> 
->  arch/x86/kernel/cpu/sgx/encl.c | 6 +++---
->  arch/x86/kernel/cpu/sgx/encl.h | 2 +-
->  arch/x86/kernel/cpu/sgx/main.c | 2 +-
->  3 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-> index c6525eba74e8..8de9bebc4d81 100644
-> --- a/arch/x86/kernel/cpu/sgx/encl.c
-> +++ b/arch/x86/kernel/cpu/sgx/encl.c
-> @@ -614,7 +614,7 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
->  }
->  
->  /**
-> - * sgx_encl_ewb_cpumask() - Query which CPUs might be accessing the enclave
-> + * sgx_encl_cpumask() - Query which CPUs might be accessing the enclave
->   * @encl: the enclave
->   *
->   * Some SGX functions require that no cached linear-to-physical address
-> @@ -639,7 +639,7 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
->   * The following flow is used to support SGX functions that require that
->   * no cached linear-to-physical address mappings are present:
->   * 1) Execute ENCLS[ETRACK] to initiate hardware tracking.
-> - * 2) Use this function (sgx_encl_ewb_cpumask()) to query which CPUs might be
-> + * 2) Use this function (sgx_encl_cpumask()) to query which CPUs might be
->   *    accessing the enclave.
->   * 3) Send IPI to identified CPUs, kicking them out of the enclave and
->   *    thus flushing all locally cached linear-to-physical address mappings.
-> @@ -656,7 +656,7 @@ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm)
->   *
->   * Return: cpumask of CPUs that might be accessing @encl
->   */
-> -const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl)
-> +const cpumask_t *sgx_encl_cpumask(struct sgx_encl *encl)
->  {
->  	cpumask_t *cpumask = &encl->cpumask;
->  	struct sgx_encl_mm *encl_mm;
-> diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
-> index d2acb4debde5..e59c2cbf71e2 100644
-> --- a/arch/x86/kernel/cpu/sgx/encl.h
-> +++ b/arch/x86/kernel/cpu/sgx/encl.h
-> @@ -105,7 +105,7 @@ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
->  
->  void sgx_encl_release(struct kref *ref);
->  int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
-> -const cpumask_t *sgx_encl_ewb_cpumask(struct sgx_encl *encl);
-> +const cpumask_t *sgx_encl_cpumask(struct sgx_encl *encl);
->  int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
->  			 struct sgx_backing *backing);
->  void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
-> diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
-> index 2de85f459492..fa33922879bf 100644
-> --- a/arch/x86/kernel/cpu/sgx/main.c
-> +++ b/arch/x86/kernel/cpu/sgx/main.c
-> @@ -249,7 +249,7 @@ static void sgx_encl_ewb(struct sgx_epc_page *epc_page,
->  			 * miss cpus that entered the enclave between
->  			 * generating the mask and incrementing epoch.
->  			 */
-> -			on_each_cpu_mask(sgx_encl_ewb_cpumask(encl),
-> +			on_each_cpu_mask(sgx_encl_cpumask(encl),
->  					 sgx_ipi_cb, NULL, 1);
->  			ret = __sgx_encl_ewb(epc_page, va_slot, backing);
->  		}
-> -- 
-> 2.25.1
-> 
+KS8851 selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL, so
+make KS8851 also depend on PTP_1588_CLOCK_OPTIONAL.
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes kconfig warning and build errors:
 
-BR, Jarkko
+WARNING: unmet direct dependencies detected for MICREL_PHY
+  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
+    Selected by [y]:
+      - KS8851 [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && SPI [=y]
+
+ld.lld: error: undefined symbol: ptp_clock_register referenced by micrel.c
+net/phy/micrel.o:(lan8814_probe) in archive drivers/built-in.a
+ld.lld: error: undefined symbol: ptp_clock_index referenced by micrel.c
+net/phy/micrel.o:(lan8814_ts_info) in archive drivers/built-in.a
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/net/ethernet/micrel/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
+index 1b632cdd7630..830363bafcce 100644
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -28,6 +28,7 @@ config KS8842
+ config KS8851
+ 	tristate "Micrel KS8851 SPI"
+ 	depends on SPI
++	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select MII
+ 	select CRC32
+ 	select EEPROM_93CX6
+-- 
+2.33.0
 
