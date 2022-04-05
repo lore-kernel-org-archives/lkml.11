@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD62C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBCE7C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379651AbiDEO7S (ORCPT
+        id S1379913AbiDEO7l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
+        Tue, 5 Apr 2022 10:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344722AbiDEJmi (ORCPT
+        with ESMTP id S1344788AbiDEJmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:42:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3BE7BF019;
-        Tue,  5 Apr 2022 02:27:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:42:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05644BF01F;
+        Tue,  5 Apr 2022 02:28:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 535A561698;
-        Tue,  5 Apr 2022 09:27:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60113C385A0;
-        Tue,  5 Apr 2022 09:27:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A568FB81C6E;
+        Tue,  5 Apr 2022 09:28:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB60EC385A2;
+        Tue,  5 Apr 2022 09:28:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150877;
-        bh=G/l9aUJULJwmI7YT0KaZ81Zov+Y/RRth+XG3A6aSc6U=;
+        s=korg; t=1649150883;
+        bh=OMzaquygvnwXRE8+bxUxmK+dmLmjZOJtxQr8nX4eWDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bqxvNd+YSePTtSvIo9Ou8egV3llgNgVyQaCJAZsroJq4MqBpBXxC+0TQzlObYo0wP
-         W9NWUApAGS2Jhy+5shUMBcfB6uP0wyOYSj6ADxFGrNHg3NdKabMi0cnuIKgrsK9TA5
-         pKbx4iLJ4iqetqFrFk+cISuy2uf91AfvGhfLNli4=
+        b=ke2yxTBaKxvxNUnMSZuoQZQqFCXYZzPYiHSb1ImLAsbWnAqCIUPtvw5v0t4UlPpqc
+         v3H/53lOT82RdwP6o485zySQmF8dWFxT5/a69otbKwaVPm3VsXEhhSdoHuyFlqGyqP
+         OQTyaJXEbPKGBAp3gcqwy2yZF9B1MMknzxHHEhm0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christoph Anton Mitterer <calestyo@scientia.org>,
-        David Sterba <dsterba@suse.com>, ree.com@vger.kernel.org
-Subject: [PATCH 5.15 171/913] btrfs: verify the tranisd of the to-be-written dirty extent buffer
-Date:   Tue,  5 Apr 2022 09:20:33 +0200
-Message-Id: <20220405070344.976550703@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 216/913] nvme: cleanup __nvme_check_ids
+Date:   Tue,  5 Apr 2022 09:21:18 +0200
+Message-Id: <20220405070346.333252726@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,96 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit 3777369ff1518b579560611a0d0c33f930154f64 upstream.
+[ Upstream commit fd8099e7918cd2df39ef306dd1d1af7178a15b81 ]
 
-[BUG]
-There is a bug report that a bitflip in the transid part of an extent
-buffer makes btrfs to reject certain tree blocks:
+Pass the actual nvme_ns_ids used for the comparison instead of the
+ns_head that isn't needed and use a more descriptive function name.
 
-  BTRFS error (device dm-0): parent transid verify failed on 1382301696 wanted 262166 found 22
-
-[CAUSE]
-Note the failed transid check, hex(262166) = 0x40016, while
-hex(22) = 0x16.
-
-It's an obvious bitflip.
-
-Furthermore, the reporter also confirmed the bitflip is from the
-hardware, so it's a real hardware caused bitflip, and such problem can
-not be detected by the existing tree-checker framework.
-
-As tree-checker can only verify the content inside one tree block, while
-generation of a tree block can only be verified against its parent.
-
-So such problem remain undetected.
-
-[FIX]
-Although tree-checker can not verify it at write-time, we still have a
-quick (but not the most accurate) way to catch such obvious corruption.
-
-Function csum_one_extent_buffer() is called before we submit metadata
-write.
-
-Thus it means, all the extent buffer passed in should be dirty tree
-blocks, and should be newer than last committed transaction.
-
-Using that we can catch the above bitflip.
-
-Although it's not a perfect solution, as if the corrupted generation is
-higher than the correct value, we have no way to catch it at all.
-
-Reported-by: Christoph Anton Mitterer <calestyo@scientia.org>
-Link: https://lore.kernel.org/linux-btrfs/2dfcbc130c55cc6fd067b93752e90bd2b079baca.camel@scientia.org/
-CC: stable@vger.kernel.org # 5.15+
-Signed-off-by: Qu Wenruo <wqu@sus,ree.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/disk-io.c |   26 ++++++++++++++++++++------
- 1 file changed, 20 insertions(+), 6 deletions(-)
+ drivers/nvme/host/core.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -441,17 +441,31 @@ static int csum_one_extent_buffer(struct
- 	else
- 		ret = btrfs_check_leaf_full(eb);
- 
--	if (ret < 0) {
--		btrfs_print_tree(eb, 0);
-+	if (ret < 0)
-+		goto error;
-+
-+	/*
-+	 * Also check the generation, the eb reached here must be newer than
-+	 * last committed. Or something seriously wrong happened.
-+	 */
-+	if (unlikely(btrfs_header_generation(eb) <= fs_info->last_trans_committed)) {
-+		ret = -EUCLEAN;
- 		btrfs_err(fs_info,
--			"block=%llu write time tree block corruption detected",
--			eb->start);
--		WARN_ON(IS_ENABLED(CONFIG_BTRFS_DEBUG));
--		return ret;
-+			"block=%llu bad generation, have %llu expect > %llu",
-+			  eb->start, btrfs_header_generation(eb),
-+			  fs_info->last_trans_committed);
-+		goto error;
- 	}
- 	write_extent_buffer(eb, result, 0, fs_info->csum_size);
- 
- 	return 0;
-+
-+error:
-+	btrfs_print_tree(eb, 0);
-+	btrfs_err(fs_info, "block=%llu write time tree block corruption detected",
-+		  eb->start);
-+	WARN_ON(IS_ENABLED(CONFIG_BTRFS_DEBUG));
-+	return ret;
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index d5d5d035d677..e06d6026e7fa 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3534,16 +3534,15 @@ static struct nvme_ns_head *nvme_find_ns_head(struct nvme_subsystem *subsys,
+ 	return NULL;
  }
  
- /* Checksum all dirty extent buffers in one bio_vec */
+-static int __nvme_check_ids(struct nvme_subsystem *subsys,
+-		struct nvme_ns_head *new)
++static int nvme_subsys_check_duplicate_ids(struct nvme_subsystem *subsys,
++		struct nvme_ns_ids *ids)
+ {
+ 	struct nvme_ns_head *h;
+ 
+ 	lockdep_assert_held(&subsys->lock);
+ 
+ 	list_for_each_entry(h, &subsys->nsheads, entry) {
+-		if (nvme_ns_ids_valid(&new->ids) &&
+-		    nvme_ns_ids_equal(&new->ids, &h->ids))
++		if (nvme_ns_ids_valid(ids) && nvme_ns_ids_equal(ids, &h->ids))
+ 			return -EINVAL;
+ 	}
+ 
+@@ -3642,7 +3641,7 @@ static struct nvme_ns_head *nvme_alloc_ns_head(struct nvme_ctrl *ctrl,
+ 	head->ids = *ids;
+ 	kref_init(&head->ref);
+ 
+-	ret = __nvme_check_ids(ctrl->subsys, head);
++	ret = nvme_subsys_check_duplicate_ids(ctrl->subsys, &head->ids);
+ 	if (ret) {
+ 		dev_err(ctrl->device,
+ 			"duplicate IDs for nsid %d\n", nsid);
+-- 
+2.34.1
+
 
 
