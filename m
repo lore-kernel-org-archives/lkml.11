@@ -2,86 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5DC2C3527E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F517C47082
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839778AbiDFBFo (ORCPT
+        id S1839901AbiDFBGT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48456 "EHLO
+        Tue, 5 Apr 2022 21:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452834AbiDEPzf (ORCPT
+        with ESMTP id S1573147AbiDESCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:55:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4157CB18
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:57:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 598D061741
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:57:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB50C385A0;
-        Tue,  5 Apr 2022 14:57:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649170648;
-        bh=pgAEikqG7Zu0fteM7CcdkQX3ljjFVaexnnlWX6gjnYA=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=AszIqGU56P25oO/C4b4jSBYGtGn5jS0yTdm1BWO4z5e1pSiXELgYyNOxmElD2gb3s
-         wtcSkC8x8vK1NLyn91vAKM5CmV/tNeFfZcUbZQSuKRPL7AHataWxC81cfSuSbCwHzm
-         X1O4IKmwBZ1JtOlsnFY42yyY6xYkmAgC+Zw5C7dle3C1lqop1VgIq3J1PaFA89NKTN
-         ZSLM7gN7i8A1mata5Qqf9TbS53+fac6APmsDf6wwzfOOzDTUlTMTSeeqpPmmfVn93e
-         C9YfjvnXwzPNMfiXf3KejZrm17+LFXU1/IDuqdxp0H01uRprd/iMr5OWXuMdISgxQq
-         0GVtUCKDTPkwg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 616685C0245; Tue,  5 Apr 2022 07:57:28 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 07:57:28 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     bigeasy@linutronix.de, linux-kernel@vger.kernel.org
-Subject: Re: Typical PREEMPT_RT .config?
-Message-ID: <20220405145728.GG4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220404231654.GA3445712@paulmck-ThinkPad-P17-Gen-1>
- <20220405094048.30a75670@gandalf.local.home>
- <20220405094202.0823ce48@gandalf.local.home>
+        Tue, 5 Apr 2022 14:02:01 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC68EBB9D;
+        Tue,  5 Apr 2022 11:00:01 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id w4so20488284wrg.12;
+        Tue, 05 Apr 2022 11:00:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ps9sabn/FLiol/hOAkHVK8/MzrVBlohNvXit/I8IEYc=;
+        b=R44RXszOTrCfg9a6xQntX7eXLlcenLZQ79iHWwZfWh9PijVC/UjlQitBO/Yt/Wq/W5
+         dTA4dRF74W0DLZK0MUpa6PxqZxtBFxQmoUyDUjy0e4JVi5WXu/xU+Y1Hzb7op13pN/t1
+         Vco1rVX5eqUYMewLGvFa+zlth4/k7DCJ+ThdQOvI7x0KHIQ5FaPPk/UWHJC1orymLQX4
+         7XSCpRaubPqT0f6R2D/NEp8qzZ0wueIQDW44oLsn/B677uMWwY0PSYg/po63Ac2Z5RkA
+         BLP8vayDRRtqY/sys3mO8EU3v1ruGqddsM+LoJibpZoG4yzJujdjCt1+X2uICb0xzSeQ
+         swXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ps9sabn/FLiol/hOAkHVK8/MzrVBlohNvXit/I8IEYc=;
+        b=1OAgLFHfQ6LCXk2se/Fx8MowrtwgUHu+r+8eR2bLNVxhV+7Px0ZkBgV4mI2BgYS1fv
+         fvSgyS/DOxllkVRBNVLsdP8WXXUr7ft9TAP7cdjtXgTrGaVvlm4w/uqFe7T5gMniWA6t
+         E/YQpMxKW6zc6ZS2IKk+hWJkh/QgdhSTPjKPPTJPDp1mTXnB36ozXtTf98+b3qPqM/n2
+         Aw79UVnTh5pd1SIJLktRXcHTwMNfb4QjC/9r/Hf4w7N/KZ76Z9cBc/CRXO9gCi+Uihb2
+         GNJclavOv2Hnq9pQkZTyqYdhiIxVlObnD+54t+giQqode3fLTzlRcIsB5UM2RqpzXN4E
+         uKUg==
+X-Gm-Message-State: AOAM5309NQ0h/oYmjB2wHLcF0dNCP5wx751JG6Go4dd0zCEnSYTzlfUw
+        6dD+nUQeQhhOU1Z4hraB/PQ=
+X-Google-Smtp-Source: ABdhPJzPk+TK/I+NTaHUbvTpHCArFr87ss2K8cjZe77v1loJE5zgGUwLw+jFL7OH+UyTRqfqB5ZSBw==
+X-Received: by 2002:a5d:5608:0:b0:206:11c2:b65d with SMTP id l8-20020a5d5608000000b0020611c2b65dmr3663036wrv.215.1649181600255;
+        Tue, 05 Apr 2022 11:00:00 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id k9-20020adfb349000000b00206101fc58fsm6898756wrd.110.2022.04.05.10.59.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 10:59:59 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] media: platform: samsung: remove redundant assignment to variable m
+Date:   Tue,  5 Apr 2022 18:59:59 +0100
+Message-Id: <20220405175959.223443-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405094202.0823ce48@gandalf.local.home>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 09:42:02AM -0400, Steven Rostedt wrote:
-> On Tue, 5 Apr 2022 09:40:48 -0400
-> Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
-> > On Mon, 4 Apr 2022 16:16:54 -0700
-> > "Paul E. McKenney" <paulmck@kernel.org> wrote:
-> > 
-> > > OK, now that PREEMPT_RT is mostly into mainline, I should probably create
-> > > an rcutorture scenario more closely reflecting it.  The closest at the
-> > > moment is probably tools/testing/selftests/rcutorture/configs/rcu/TREE03,
-> > > but I figured that before beating on it I should check to see if you
-> > > already have a PREEMPT_RT rcutorture scenario file.  
-> > 
-> > I don't have one.
-> 
-> And now reading the subject line and not just the body, are you asking
-> about what configs are normally added? I had several I used for testing,
-> but will have to go back and look at them.
+The variable m is being assigned a value that is never read, it
+is being re-assigned in both paths of the following if-statement.
+The assignment is redundant and can be removed.
 
-That would be great!  I can easily add CONFIG_PREEMPT_RT=y.  Maybe I also
-should add CONFIG_RT_DELAYED_SIGNALS, though rcutorture probably doesn't
-care about this one.  Maybe threaded interrupts happen automatically?
-Sleeping spinlocks?
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-If no advice is forthcoming, I will make something up based on my best
-guesses, but I guarantee you that this will result in me missing important
-bugs in my testing.  ;-)
+diff --git a/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c b/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c
+index 01b47b3df1e7..33e6e85dfd78 100644
+--- a/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c
++++ b/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c
+@@ -52,7 +52,6 @@ void s5p_jpeg_proc_mode(void __iomem *regs, unsigned long mode)
+ {
+ 	unsigned long reg, m;
+ 
+-	m = S5P_PROC_MODE_DECOMPR;
+ 	if (mode == S5P_JPEG_ENCODE)
+ 		m = S5P_PROC_MODE_COMPR;
+ 	else
+-- 
+2.35.1
 
-So it would be great to have a list of the Kconfig options normally
-selected when building CONFIG_PREEMPT_RT=y kernels.
-
-							Thanx, Paul
