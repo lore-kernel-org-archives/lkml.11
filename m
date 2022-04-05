@@ -2,103 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF6DC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C276C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839531AbiDFBEh (ORCPT
+        id S1839475AbiDFBDs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
+        Tue, 5 Apr 2022 21:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457671AbiDEQc6 (ORCPT
+        with ESMTP id S1354815AbiDEKQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:32:58 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261B6BF00C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:30:57 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2eb543fe73eso82962807b3.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:30:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KMTS6ZzHfqr0cBt89fdY6xnjYm43a4DPuwzvi/5KFcU=;
-        b=GfRipIriW+4Gj99TqghbKjqPOWjqvQue0SDRC4xYdndLHj14kAu4g3o3HbRpq6OgaD
-         Sn5pT4Z+6R1oJj23BSQ3wpF7CHtOUv1KqyofptkTp7Zjl47B9Y3A3JwDNhcn3tuTwLvP
-         Ur2dd8w+slSKU4TcOWV01cvwPCEC1SpHjBtjbb5VvcqSJGQCubjtJbLpzVirhDpU+S8w
-         pQBn9XJtkFGu1pwS/xFAkRR612gGqFmLkKD5w4ZeCdC1JeNlITkXhKL/EI3/g/5k1qXR
-         JYfMlyH0cOCO2YB8okcmQzy934x3VMAmYrn20RlsTdQON1UeQZGjZbsdDhgXhNHVxOdi
-         mV6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KMTS6ZzHfqr0cBt89fdY6xnjYm43a4DPuwzvi/5KFcU=;
-        b=t34DoLdAbC8m0ngyTZrb1w1BvYOiXBGW/VlkPFCJ1oSOB8AWcbAFp0uUne8nz4Kjla
-         rff/OdCEJf+Ir46XvclE8ZKbhS8UD9YG9IHu0sEeFqYmnRVqJYgsLmE14vTQsc5zJk//
-         AEBT16KzH2HycPKHM/x4Jl6ZmCRIFOCqg+7QBaHGDJzSOI5PxH+H8ogETSrHOfgDfeqN
-         ull/jfy7YP943MBex6V+RNn4ewfDQhC+uFuoXWKFZ1OIJaQixUMdD9Dbnymd/WSuU+9r
-         FeS6kk1NaHATX5g0wAjA6Rqa3g8CNkNiyiitE1gdeRT4j23m7UANWW2KI4dheEF7459K
-         +JDA==
-X-Gm-Message-State: AOAM533TEzPV7NL24BCuETnys9vl6jl7Gz1ZjBBQrwFpYGmrVUjG4jY6
-        dJZIEYJCdzZtOX52+QF5IFvRuHXQXShza/PD0UiCig==
-X-Google-Smtp-Source: ABdhPJyIgna9axSeomjEBQ4XMEGPKbQbe9lvwwQnq3ep9YudH9QmF87Opki8o1yO4mskUXTOYwEcNk+E7wb+6fxKfmM=
-X-Received: by 2002:a0d:cc55:0:b0:2eb:994c:1b56 with SMTP id
- o82-20020a0dcc55000000b002eb994c1b56mr3445672ywd.437.1649176256367; Tue, 05
- Apr 2022 09:30:56 -0700 (PDT)
+        Tue, 5 Apr 2022 06:16:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD084A3EF;
+        Tue,  5 Apr 2022 03:02:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBFFAB81B7A;
+        Tue,  5 Apr 2022 10:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21C59C385A2;
+        Tue,  5 Apr 2022 10:02:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152974;
+        bh=gXLc8Nmru/OE480BeQnP0EBfJ2//XCu6TqSqJ64TlP0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2RwB5jSvOXwXzDawimK4mPbEfTbW9VyQPQ9WmDkkuPFwkNOINCYkVLkQNNdwsh2VQ
+         xxNfZl2HGMLA8YfWCZ+iEwgb898ilZu2yZk+1oRyP50x/xMbCBgoQ8Q/4MdugeeeVq
+         pydvHxcZJhBYPQJMBw5YRbEi/aQCj2/gHNCHb5io=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.10 056/599] jffs2: fix use-after-free in jffs2_clear_xattr_subsystem
+Date:   Tue,  5 Apr 2022 09:25:50 +0200
+Message-Id: <20220405070300.494430291@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220405091750.3076973-1-arnd@kernel.org> <20220405091750.3076973-2-arnd@kernel.org>
-In-Reply-To: <20220405091750.3076973-2-arnd@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 5 Apr 2022 18:30:43 +0200
-Message-ID: <CACRpkdZHFmxB+dHyeFSJjgXeBc-KPtBNS50m-EZDUOjd2EHKZw@mail.gmail.com>
-Subject: Re: [PATCH 01/12] ARM: versatile: move integrator/realview/vexpress
- to versatile
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Hubert Feurstein <hubert.feurstein@contec.at>,
-        Lukasz Majewski <lukma@denx.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Imre Kaloz <kaloz@openwrt.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Simtec Linux Team <linux@simtec.co.uk>,
-        Liviu Dudau <Liviu.Dudau@arm.com>,
-        Sudeep Holla <Sudeep.Holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, patches@opensource.cirrus.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 11:18 AM Arnd Bergmann <arnd@kernel.org> wrote:
+From: Baokun Li <libaokun1@huawei.com>
 
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> These are all fairly small platforms by now, and they are
-> closely related. Just move them all into a single directory.
->
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Tested-by: Sudeep Holla <sudeep.holla@arm.com>
-> Acked-by: Sudeep Holla <sudeep.holla@arm.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+commit 4c7c44ee1650677fbe89d86edbad9497b7679b5c upstream.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+When we mount a jffs2 image, assume that the first few blocks of
+the image are normal and contain at least one xattr-related inode,
+but the next block is abnormal. As a result, an error is returned
+in jffs2_scan_eraseblock(). jffs2_clear_xattr_subsystem() is then
+called in jffs2_build_filesystem() and then again in
+jffs2_do_fill_super().
 
-I can't test much right now, but I sure trust you with this!
+Finally we can observe the following report:
+ ==================================================================
+ BUG: KASAN: use-after-free in jffs2_clear_xattr_subsystem+0x95/0x6ac
+ Read of size 8 at addr ffff8881243384e0 by task mount/719
 
-Yours,
-Linus Walleij
+ Call Trace:
+  dump_stack+0x115/0x16b
+  jffs2_clear_xattr_subsystem+0x95/0x6ac
+  jffs2_do_fill_super+0x84f/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+  mtd_get_sb+0x254/0x400
+  mtd_get_sb_by_nr+0x4f/0xd0
+  get_tree_mtd+0x498/0x840
+  jffs2_get_tree+0x25/0x30
+  vfs_get_tree+0x8d/0x2e0
+  path_mount+0x50f/0x1e50
+  do_mount+0x107/0x130
+  __se_sys_mount+0x1c5/0x2f0
+  __x64_sys_mount+0xc7/0x160
+  do_syscall_64+0x45/0x70
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+ Allocated by task 719:
+  kasan_save_stack+0x23/0x60
+  __kasan_kmalloc.constprop.0+0x10b/0x120
+  kasan_slab_alloc+0x12/0x20
+  kmem_cache_alloc+0x1c0/0x870
+  jffs2_alloc_xattr_ref+0x2f/0xa0
+  jffs2_scan_medium.cold+0x3713/0x4794
+  jffs2_do_mount_fs.cold+0xa7/0x2253
+  jffs2_do_fill_super+0x383/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+ [...]
+
+ Freed by task 719:
+  kmem_cache_free+0xcc/0x7b0
+  jffs2_free_xattr_ref+0x78/0x98
+  jffs2_clear_xattr_subsystem+0xa1/0x6ac
+  jffs2_do_mount_fs.cold+0x5e6/0x2253
+  jffs2_do_fill_super+0x383/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+ [...]
+
+ The buggy address belongs to the object at ffff8881243384b8
+  which belongs to the cache jffs2_xattr_ref of size 48
+ The buggy address is located 40 bytes inside of
+  48-byte region [ffff8881243384b8, ffff8881243384e8)
+ [...]
+ ==================================================================
+
+The triggering of the BUG is shown in the following stack:
+-----------------------------------------------------------
+jffs2_fill_super
+  jffs2_do_fill_super
+    jffs2_do_mount_fs
+      jffs2_build_filesystem
+        jffs2_scan_medium
+          jffs2_scan_eraseblock        <--- ERROR
+        jffs2_clear_xattr_subsystem    <--- free
+    jffs2_clear_xattr_subsystem        <--- free again
+-----------------------------------------------------------
+
+An error is returned in jffs2_do_mount_fs(). If the error is returned
+by jffs2_sum_init(), the jffs2_clear_xattr_subsystem() does not need to
+be executed. If the error is returned by jffs2_build_filesystem(), the
+jffs2_clear_xattr_subsystem() also does not need to be executed again.
+So move jffs2_clear_xattr_subsystem() from 'out_inohash' to 'out_root'
+to fix this UAF problem.
+
+Fixes: aa98d7cf59b5 ("[JFFS2][XATTR] XATTR support on JFFS2 (version. 5)")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/jffs2/fs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/fs/jffs2/fs.c
++++ b/fs/jffs2/fs.c
+@@ -602,8 +602,8 @@ out_root:
+ 	jffs2_free_ino_caches(c);
+ 	jffs2_free_raw_node_refs(c);
+ 	kvfree(c->blocks);
+- out_inohash:
+ 	jffs2_clear_xattr_subsystem(c);
++ out_inohash:
+ 	kfree(c->inocache_list);
+  out_wbuf:
+ 	jffs2_flash_cleanup(c);
+
+
