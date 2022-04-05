@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B609C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43CCDC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356645AbiDELPi (ORCPT
+        id S1356345AbiDELPX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
+        Tue, 5 Apr 2022 07:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237091AbiDEIRl (ORCPT
+        with ESMTP id S237141AbiDEIRo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2987B0A4F;
-        Tue,  5 Apr 2022 01:05:05 -0700 (PDT)
+        Tue, 5 Apr 2022 04:17:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B68FB0D08;
+        Tue,  5 Apr 2022 01:05:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FD43B81BB0;
-        Tue,  5 Apr 2022 08:05:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51DBAC385A1;
-        Tue,  5 Apr 2022 08:05:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E544C61725;
+        Tue,  5 Apr 2022 08:05:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4214C385A1;
+        Tue,  5 Apr 2022 08:05:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145902;
-        bh=7kR5Em9KAFPcdr/UzJk7L2Vdy1QzIZOvLSTG4t3zRps=;
+        s=korg; t=1649145925;
+        bh=JHETf6kArsf/97BPwP8PKkdh+DPkqOvTkbRkJV+dBFc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sy4oiWvy7873qRMDO+moYKD+SU1RjK2eyjNvs3Yu/kt+wBi5DnacRLqnaJkPXL/bM
-         UfIcFPiFlW6GP4zxOAf0tu+tb3kMBmm2hchkEHV0EekCS5jsQ4qsRsk/xHW/Il/d2G
-         6ysqHHu7j4hw1oaLTwYygCFFuPx8yX+P7Amj2oUA=
+        b=qDX9oglZ6e+1IdTn0mEIkRyYuoQeWfvydebxKqdqIGvTj3UlyIAruwM4EF3BM8DSd
+         kb4h9As0tFfTS6HQdpkhRP7ANWgWh0SdeyMEB0aQfjQsnJrj2VwU9lxC+hMeGbRB0E
+         OpJ157Sj1WP0gLN0t40PJf4B3NF3MhEFgpuIHTTE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Nemanja Rakovic <nemanja.rakovic@syrmia.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0571/1126] drm/msm/dsi/phy: fix 7nm v4.0 settings for C-PHY mode
-Date:   Tue,  5 Apr 2022 09:21:58 +0200
-Message-Id: <20220405070424.394652316@linuxfoundation.org>
+Subject: [PATCH 5.17 0578/1126] mips: Enable KCSAN
+Date:   Tue,  5 Apr 2022 09:22:05 +0200
+Message-Id: <20220405070424.598071434@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,65 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Nemanja Rakovic <nemanja.rakovic@syrmia.com>
 
-[ Upstream commit bb07af2ed2a47dc6c4d0681f275bb27d4f845465 ]
+[ Upstream commit e0a8b93efa2382d370be44bf289157de7e5dacb4 ]
 
-The dsi_7nm_phy_enable() disagrees with downstream for
-glbl_str_swi_cal_sel_ctrl and glbl_hstx_str_ctrl_0 values. Update
-programmed settings to match downstream driver. To remove the
-possibility for such errors in future drop less_than_1500_mhz
-assignment and specify settings explicitly.
+This patch enables KCSAN for the 64-bit version. Updated rules
+for the incompatible compilation units (vdso, boot/compressed).
 
-Fixes: 5ac178381d26 ("drm/msm/dsi: support CPHY mode for 7nm pll/phy")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/20220217000837.435340-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Nemanja Rakovic <nemanja.rakovic@syrmia.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ arch/mips/Kconfig                  | 1 +
+ arch/mips/boot/compressed/Makefile | 1 +
+ arch/mips/vdso/Makefile            | 3 +++
+ 3 files changed, 5 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
-index 36eb6109cb88..6e506feb111f 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
-@@ -864,20 +864,26 @@ static int dsi_7nm_phy_enable(struct msm_dsi_phy *phy,
- 	/* Alter PHY configurations if data rate less than 1.5GHZ*/
- 	less_than_1500_mhz = (clk_req->bitclk_rate <= 1500000000);
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 058446f01487..651d4fe355da 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -101,6 +101,7 @@ config MIPS
+ 	select TRACE_IRQFLAGS_SUPPORT
+ 	select VIRT_TO_BUS
+ 	select ARCH_HAS_ELFCORE_COMPAT
++	select HAVE_ARCH_KCSAN if 64BIT
  
--	/* For C-PHY, no low power settings for lower clk rate */
--	if (phy->cphy_mode)
--		less_than_1500_mhz = false;
--
- 	if (phy->cfg->quirks & DSI_PHY_7NM_QUIRK_V4_1) {
- 		vreg_ctrl_0 = less_than_1500_mhz ? 0x53 : 0x52;
--		glbl_rescode_top_ctrl = less_than_1500_mhz ? 0x3d :  0x00;
--		glbl_rescode_bot_ctrl = less_than_1500_mhz ? 0x39 :  0x3c;
-+		if (phy->cphy_mode) {
-+			glbl_rescode_top_ctrl = 0x00;
-+			glbl_rescode_bot_ctrl = 0x3c;
-+		} else {
-+			glbl_rescode_top_ctrl = less_than_1500_mhz ? 0x3d :  0x00;
-+			glbl_rescode_bot_ctrl = less_than_1500_mhz ? 0x39 :  0x3c;
-+		}
- 		glbl_str_swi_cal_sel_ctrl = 0x00;
- 		glbl_hstx_str_ctrl_0 = 0x88;
- 	} else {
- 		vreg_ctrl_0 = less_than_1500_mhz ? 0x5B : 0x59;
--		glbl_str_swi_cal_sel_ctrl = less_than_1500_mhz ? 0x03 : 0x00;
--		glbl_hstx_str_ctrl_0 = less_than_1500_mhz ? 0x66 : 0x88;
-+		if (phy->cphy_mode) {
-+			glbl_str_swi_cal_sel_ctrl = 0x03;
-+			glbl_hstx_str_ctrl_0 = 0x66;
-+		} else {
-+			glbl_str_swi_cal_sel_ctrl = less_than_1500_mhz ? 0x03 : 0x00;
-+			glbl_hstx_str_ctrl_0 = less_than_1500_mhz ? 0x66 : 0x88;
-+		}
- 		glbl_rescode_top_ctrl = 0x03;
- 		glbl_rescode_bot_ctrl = 0x3c;
- 	}
+ config MIPS_FIXUP_BIGPHYS_ADDR
+ 	bool
+diff --git a/arch/mips/boot/compressed/Makefile b/arch/mips/boot/compressed/Makefile
+index 5a15d51e8884..a35f78212ea9 100644
+--- a/arch/mips/boot/compressed/Makefile
++++ b/arch/mips/boot/compressed/Makefile
+@@ -38,6 +38,7 @@ KBUILD_AFLAGS := $(KBUILD_AFLAGS) -D__ASSEMBLY__ \
+ KCOV_INSTRUMENT		:= n
+ GCOV_PROFILE := n
+ UBSAN_SANITIZE := n
++KASAN_SANITIZE			:= n
+ 
+ # decompressor objects (linked with vmlinuz)
+ vmlinuzobjs-y := $(obj)/head.o $(obj)/decompress.o $(obj)/string.o $(obj)/bswapsi.o
+diff --git a/arch/mips/vdso/Makefile b/arch/mips/vdso/Makefile
+index d65f55f67e19..f72658b3a53f 100644
+--- a/arch/mips/vdso/Makefile
++++ b/arch/mips/vdso/Makefile
+@@ -1,6 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Objects to go into the VDSO.
+ 
++# Sanitizer runtimes are unavailable and cannot be linked here.
++ KCSAN_SANITIZE			:= n
++
+ # Absolute relocation type $(ARCH_REL_TYPE_ABS) needs to be defined before
+ # the inclusion of generic Makefile.
+ ARCH_REL_TYPE_ABS := R_MIPS_JUMP_SLOT|R_MIPS_GLOB_DAT
 -- 
 2.34.1
 
