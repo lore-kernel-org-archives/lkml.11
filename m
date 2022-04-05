@@ -2,111 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A80C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7874CC35294
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244060AbiDEVA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        id S244301AbiDEVBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356630AbiDEKYm (ORCPT
+        with ESMTP id S1345448AbiDENFV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:24:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BACBE9DB;
-        Tue,  5 Apr 2022 03:08:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D924C616E7;
-        Tue,  5 Apr 2022 10:08:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61B6C385A1;
-        Tue,  5 Apr 2022 10:08:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153318;
-        bh=d1tlUuSpZuo2hesHm0/XcOMp7eNHk5Xpfa4sm0aMJX8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bi/FzN6tvjgp4e1zJ22GZBKDi0rCmK4YYPJPMp1FAYLSP+FfV8RmQT36IsXI1m89s
-         aFvY4aqomAw4EGgsLnlugtuHsKmAWWt1hv8C1dj3hqGyiOD9RJDcG7KLf6Kzrj/iJS
-         5J6TlTvBy/fBLSoprz98g5VJa7+9GEbzVplbJ6k0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 180/599] nfsd: more robust allocation failure handling in nfsd_file_cache_init
-Date:   Tue,  5 Apr 2022 09:27:54 +0200
-Message-Id: <20220405070304.197556969@linuxfoundation.org>
+        Tue, 5 Apr 2022 09:05:21 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9C970CE6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:06:31 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id u3so19014198wrg.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:06:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=9elements.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Uuy/oSrqPfKVMfFVdZlb83GjMVmrKFP4k9YDPQWDMGE=;
+        b=KlmKzPs++IYx5FTaDoGXSl1qs3hrr/00SCAaOP/FJu6mlkJaYvksrnCElB52Rloy6n
+         zREeVaGKzvRBPgtlUd6+6t9vJiwIVUBwSHaijo2i/0mm9Kn6LVOzPLEp64RbyKaa6dHv
+         dJWrvIzHcTjjEhwKj4PZVMGErl5caRKftsBQSj70/3Ifv+4PnjAahlkS/qhZU/yrbZam
+         ItR7BKa65xH+yrgWSkbAeLHFYa8vuXGmESX66vo+7pp8uJc5Cte8U/KR+i7AFa9GvbxZ
+         PXtl0McwO9Yy7MzaaDa7yinO2NxTk8JMRK4IrwcBV/U1Dtatzjly1HqyhddOV/XoGCt5
+         YnaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Uuy/oSrqPfKVMfFVdZlb83GjMVmrKFP4k9YDPQWDMGE=;
+        b=1IPUwDXo2ZkmnikNVf64lXmGeEwk4kOc/8rdqotubElxx5DUKWbxEJ4EDGwY0DiNL3
+         aZ6HBiAWMYvgsKkLNxvEhpHJgCbyoO1IbG0JSCWuJNZscg41GzkAnlnLJG+SLIKCW68G
+         Hv7uudSPUnUWXzvDIILkp9OyhzNgqm4tEvB8Z+YGRz83Hwp5fqAzj8UVmydaiKQR7Lb9
+         LFMXPA5rjC5i+2aPtpEQIxMGA8kYuA7N7fuEx91HvWx/2KHf6Y54TWCoXsvETWBsvgAF
+         lmaduMoT+ReaSqnplXF30tw/dwSVCR4/YOd5Kp6FxSxptzmoeUBSNWtlM2e6V0J4/9Fj
+         rzNw==
+X-Gm-Message-State: AOAM5308GCslW+QBMN/wBKFMdQWI/DmG5VEh+GIyKEulgKERI0E0qhDX
+        rkC4gyIYZTuUHng2F3FmZjgLKA==
+X-Google-Smtp-Source: ABdhPJz97+aMaGG8He5+J24ubzUoWrE9dXq/VRTjoheWERDGZngEHr4Gy/Taci3KYvzSADEOUfE0YQ==
+X-Received: by 2002:adf:dc41:0:b0:205:8df5:464c with SMTP id m1-20020adfdc41000000b002058df5464cmr2401463wrj.445.1649160390155;
+        Tue, 05 Apr 2022 05:06:30 -0700 (PDT)
+Received: from fedora.lab.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
+        by smtp.gmail.com with ESMTPSA id r16-20020a7bc090000000b0038e73023334sm1994323wmh.2.2022.04.05.05.06.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 05:06:28 -0700 (PDT)
+From:   Patrick Rudolph <patrick.rudolph@9elements.com>
+To:     Peter Rosin <peda@axentia.se>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v7 1/3] dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
+Date:   Tue,  5 Apr 2022 14:05:49 +0200
+Message-Id: <20220405120552.433415-2-patrick.rudolph@9elements.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405120552.433415-1-patrick.rudolph@9elements.com>
+References: <20220405120552.433415-1-patrick.rudolph@9elements.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+Update the pca954x bindings to add support for the Maxim MAX735x/MAX736x
+chips. The functionality will be provided by the exisintg pca954x driver.
 
-[ Upstream commit 4d2eeafecd6c83b4444db3dc0ada201c89b1aa44 ]
+While on it make the interrupts support conditionally as not all of the
+existing chips have interrupts.
 
-The nfsd file cache table can be pretty large and its allocation
-may require as many as 80 contigious pages.
+For chips that are powered off by default add an optional regulator
+called vdd-supply.
 
-Employ the same fix that was employed for similar issue that was
-reported for the reply cache hash table allocation several years ago
-by commit 8f97514b423a ("nfsd: more robust allocation failure handling
-in nfsd_reply_cache_init").
-
-Fixes: 65294c1f2c5e ("nfsd: add a new struct file caching facility to nfsd")
-Link: https://lore.kernel.org/linux-nfs/e3cdaeec85a6cfec980e87fc294327c0381c1778.camel@kernel.org/
-Suggested-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Tested-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
 ---
- fs/nfsd/filecache.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ .../bindings/i2c/i2c-mux-pca954x.yaml         | 44 ++++++++++++++-----
+ 1 file changed, 34 insertions(+), 10 deletions(-)
 
-diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index e5aad1c10ea3..acd0898e3866 100644
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -641,7 +641,7 @@ nfsd_file_cache_init(void)
- 	if (!nfsd_filecache_wq)
- 		goto out;
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
+index 9f1726d0356b..132c3e54e7ab 100644
+--- a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
++++ b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
+@@ -4,21 +4,48 @@
+ $id: http://devicetree.org/schemas/i2c/i2c-mux-pca954x.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
--	nfsd_file_hashtbl = kcalloc(NFSD_FILE_HASH_SIZE,
-+	nfsd_file_hashtbl = kvcalloc(NFSD_FILE_HASH_SIZE,
- 				sizeof(*nfsd_file_hashtbl), GFP_KERNEL);
- 	if (!nfsd_file_hashtbl) {
- 		pr_err("nfsd: unable to allocate nfsd_file_hashtbl\n");
-@@ -708,7 +708,7 @@ nfsd_file_cache_init(void)
- 	nfsd_file_slab = NULL;
- 	kmem_cache_destroy(nfsd_file_mark_slab);
- 	nfsd_file_mark_slab = NULL;
--	kfree(nfsd_file_hashtbl);
-+	kvfree(nfsd_file_hashtbl);
- 	nfsd_file_hashtbl = NULL;
- 	destroy_workqueue(nfsd_filecache_wq);
- 	nfsd_filecache_wq = NULL;
-@@ -854,7 +854,7 @@ nfsd_file_cache_shutdown(void)
- 	fsnotify_wait_marks_destroyed();
- 	kmem_cache_destroy(nfsd_file_mark_slab);
- 	nfsd_file_mark_slab = NULL;
--	kfree(nfsd_file_hashtbl);
-+	kvfree(nfsd_file_hashtbl);
- 	nfsd_file_hashtbl = NULL;
- 	destroy_workqueue(nfsd_filecache_wq);
- 	nfsd_filecache_wq = NULL;
+-title: NXP PCA954x I2C bus switch
++title: NXP PCA954x I2C and compatible bus switches
+ 
+ maintainers:
+   - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+ 
+ description:
+-  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices.
++  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices,
++  and the Maxim MAX735x and MAX736x I2C mux/switch devices.
+ 
+ allOf:
+   - $ref: /schemas/i2c/i2c-mux.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - maxim,max7367
++              - maxim,max7369
++              - nxp,pca9542
++              - nxp,pca9543
++              - nxp,pca9544
++              - nxp,pca9545
++    then:
++      properties:
++        interrupts:
++          maxItems: 1
++
++        "#interrupt-cells":
++          const: 2
++
++        interrupt-controller: true
+ 
+ properties:
+   compatible:
+     oneOf:
+       - enum:
++          - maxim,max7356
++          - maxim,max7357
++          - maxim,max7358
++          - maxim,max7367
++          - maxim,max7368
++          - maxim,max7369
+           - nxp,pca9540
+           - nxp,pca9542
+           - nxp,pca9543
+@@ -38,14 +65,6 @@ properties:
+   reg:
+     maxItems: 1
+ 
+-  interrupts:
+-    maxItems: 1
+-
+-  "#interrupt-cells":
+-    const: 2
+-
+-  interrupt-controller: true
+-
+   reset-gpios:
+     maxItems: 1
+ 
+@@ -59,6 +78,9 @@ properties:
+     description: if present, overrides i2c-mux-idle-disconnect
+     $ref: /schemas/mux/mux-controller.yaml#/properties/idle-state
+ 
++  vdd-supply:
++    description: A voltage regulator supplying power to the chip.
++
+ required:
+   - compatible
+   - reg
+@@ -79,6 +101,8 @@ examples:
+             #size-cells = <0>;
+             reg = <0x74>;
+ 
++            vdd-supply = <&p3v3>;
++
+             interrupt-parent = <&ipic>;
+             interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
+             interrupt-controller;
 -- 
-2.34.1
-
-
+2.35.1
 
