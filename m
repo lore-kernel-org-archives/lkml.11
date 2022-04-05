@@ -2,162 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CDAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D33C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444063AbiDEUIB (ORCPT
+        id S1443629AbiDEUHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
+        Tue, 5 Apr 2022 16:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572988AbiDERlD (ORCPT
+        with ESMTP id S1351740AbiDEKDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:41:03 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2057.outbound.protection.outlook.com [40.107.220.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DBAB91A9;
-        Tue,  5 Apr 2022 10:39:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NDDewTOwxkkDnWKE85xJ1Hxqw27rtbMuSrjCvlyeTvVd1PrGhNUSg8+sqQZBrnNmaUOw7Kr3mNosS8TGoIyyZQQT14rFICTn+zlRCqYYqMEQxZHun16KebI9/G9J1JVf2cuojXzLsZ3NpR7E16xcZA2U/Kwrh5mc90zIEv9R21pPUQmw+Is7li7Mp0iNlafuk36nGYuG9mp9K5WnkbDxJqqwNxL3HojV2quobcaahLKGdKLGwxEgIzbubNFog//ZkR81zxzMF0PacCWhyQUP+k7pPUOyRctdu3vG0ipIPQdANnPARlWX+I6Z/VNQTXxwHyL/Ewk0704m3rXp6+Q6dQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=grgU7SAGCr5pUr4X/HfT+ylw87P1MnbK7ZvY7HY1ILg=;
- b=LXxHi6xmP3VyUqFrvqq5aZylvmp78sFK4jOtioBh112mVMHajtSFPQW3XwLMeXdeNlpajcYULzt7/euNsMIkqPjRGMvXDfxbt98RWz6iCI2Lh8BnbHkVVh5HV8hxabBBwBZ0P5ZchUr4YKsZEu6OBl5FhTOXKmDn1khStpCg3Kld20WaJzVxsgSB9FSoYYsypPgARvviHg0k8g6+yYSplgSw0fvgr3/IWPNv3G97f6psxHVX/VZOeIIeOLSPnU2VOGXE8PE/0xz8OrnKvXSxLW8IMz4gQXg23Jfqju/Nl5SgkT/iNQlxC0L8s+lVrfYPu1P0FSpcoqrs9YGm5/4iWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=grgU7SAGCr5pUr4X/HfT+ylw87P1MnbK7ZvY7HY1ILg=;
- b=c02lpARcJn5U036HQmqskHPXB1uLu9YPnhP1YIeTbIE4TAoJFmKNuIsSa6Ot3PajUlVtUjTyUsFW44UdgsSzQZ66btm5jEVr5fM3V/igeUt7G8dgDdXKx/vxymEjOYYyWLxobj4/b0hgCh6WgRa/mdV1dEES5BcP0SjwsTONmBA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3108.namprd12.prod.outlook.com (2603:10b6:408:40::20)
- by DM6PR12MB3226.namprd12.prod.outlook.com (2603:10b6:5:186::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 17:39:02 +0000
-Received: from BN8PR12MB3108.namprd12.prod.outlook.com
- ([fe80::a941:fe42:23a5:c501]) by BN8PR12MB3108.namprd12.prod.outlook.com
- ([fe80::a941:fe42:23a5:c501%3]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
- 17:39:02 +0000
-Date:   Tue, 5 Apr 2022 17:38:59 +0000
-From:   Yazen Ghannam <yazen.ghannam@amd.com>
-To:     Carlos Bilbao <carlos.bilbao@amd.com>
-Cc:     bp@alien8.de, tglx@linutronix.de, mingo@redhat.com,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        bilbao@vt.edu
-Subject: Re: [PATCH v2 2/2] x86/mce: Add messages to describe panic machine
- errors on AMD's MCEs grading
-Message-ID: <Ykx+swi/SBjaEzLq@yaz-ubuntu>
-References: <20220331163849.6850-1-carlos.bilbao@amd.com>
- <20220331163849.6850-3-carlos.bilbao@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220331163849.6850-3-carlos.bilbao@amd.com>
-X-ClientProxiedBy: MN2PR18CA0020.namprd18.prod.outlook.com
- (2603:10b6:208:23c::25) To BN8PR12MB3108.namprd12.prod.outlook.com
- (2603:10b6:408:40::20)
+        Tue, 5 Apr 2022 06:03:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDF47561F;
+        Tue,  5 Apr 2022 02:52:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93F3B61750;
+        Tue,  5 Apr 2022 09:52:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1901C385A1;
+        Tue,  5 Apr 2022 09:52:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152329;
+        bh=l+m77C9idI4jM2I/cxdJVqKxviVUkNS+iBU28/SrWOs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nrxUOpJ5btxwc5GUxemxUxUBG3LoYNAjJD7xcWUtDi2oZj/mXt9vNRJm26CBkpKpf
+         EGUERJShbpzWSE9xhRBaRiC+Da86t8Dq5MFFA1PuEmeR4k0TGZRuDdXPzVz77JpiUl
+         pTINqcuaIlaJ7TZlqeXWAeU+3+Iyr2JkiSbHzjDo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomasz Figa <tfiga@chromium.org>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <jroedel@suse.de>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: [PATCH 5.15 736/913] media: iommu/mediatek: Add device_link between the consumer and the larb devices
+Date:   Tue,  5 Apr 2022 09:29:58 +0200
+Message-Id: <20220405070401.895534074@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 026e821a-cb4d-46c7-45b5-08da172b2c64
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3226:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB32265C9921CEEB5C471159AAF8E49@DM6PR12MB3226.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JIJsbqjxtI0Eo/j6uJ3X1E4/tw0brr27t8QHS9UgYpgdWZuxVTGW1CFhCKxSIJVdfZWuWWAEXarViG8jX6qPqSMdXRv8rbgVCpQd+qXVbzWqL5hmf2NGk1bpmMiVPVPdku2WMoVerW1USlAC4nFTf0Hf86Hi0SKkdyS80f+1l3RqZsEpk2dII4shf48+BamuNuJtceDHEv63jYEnXmPJe6s2Rg+4mXX715y6V6X2z6LczCtVn12e9qnvttD7ZsBdItu3XtBluktoYHMn1c4udrs8p/fX0JnfO+PBoQa1xuxyLqHr7xHsxDrCRXgvYMmP5hufcgrqwJjQz7PUPh81LgG+7YKQFnhA7nKJuz7R4zrnBlXDOMGyhjFSIgfkqRVdrvQmRUpfe1l8IHJQsdIL5wdnWmMhpncijW6IXaQ+kmKpIxw5BrGcUosiQAF7IRjwVYdsj9cfHEAiWQhBuKnb3lMlbbTYdwgKfDNkjoEv9qXcv50csu67V96dImcs1xfxvqqA2+4v1k5aOqjsXy//QzOZCzhdNyf4i0WAfHMsyt1ajve9Z80o8yw/DHxzuxn7GUGb1eArM6k7ljIuOQ9m64JmIgUT3crX9E7GGeLCV6cY9nPlarqIUet2tIb6JKR2kfgAMhL+JxPfj/Z1FS1e2Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3108.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(44832011)(6506007)(8936002)(33716001)(38100700002)(6486002)(508600001)(66476007)(5660300002)(316002)(6862004)(6636002)(86362001)(26005)(6666004)(66946007)(66556008)(4326008)(186003)(8676002)(83380400001)(9686003)(2906002)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1YVhyDev0ieWpFJB7fKcEsRr7BT67TQ0LpHBHZWGhfHBE6fafTXg9NxAv0Po?=
- =?us-ascii?Q?YcYVR3/bG8KhlMmQ89gu+4pR8x2E/8tINlKJWvAHDuU/3OWyv8MnJMkdZjjA?=
- =?us-ascii?Q?/jdx+TsZGVJz2Y0/Y6gkvG7EtIGyC9CBDOa8IA3AMTOOkDM8Ud5zPwvWQQRn?=
- =?us-ascii?Q?OhorgQrATkTxWWGPfUl/4FM9bsQOLA+PSjchNK9ijcd+93bx4MjePa0ekGbN?=
- =?us-ascii?Q?HZ0cPD7ti6DFa1HlfM3SA5o49hi+MuwnfWMr2J8byt7FDnC6gkFP2ED4ZbRy?=
- =?us-ascii?Q?KF/uSy/7mfiZmptRQwI5Dt8W8CMEXb1tDwujnh9/DDc0DyCir8F8S2h70Qvd?=
- =?us-ascii?Q?45gRP1mcAHFBHsrz55A0+ym455ga8z9J9ZGzgdHsjlz/1+GfjaU/97YvV3e3?=
- =?us-ascii?Q?i4Mm6FFz9MPAceYqYEdpZlEN5c9d3A6myssMFHYg/JCWIfQZ/d4gp4tYhi1v?=
- =?us-ascii?Q?oF8TW7x5cqq6A12K3h40CfD3D2DF5wDYiAZ7lLoH3ndq0xqcaED1ioWdaram?=
- =?us-ascii?Q?ny7ZGBq0ferkMMIQo4ecn2ggMCq/5rAMyp+VD4z1SVrM1SC9ixQlWCLF50iB?=
- =?us-ascii?Q?SOTyizq9iW7MoFmblovZxTaGrUZS5lbZVAtyZX1xiwxR3gaJBhA6umnDq1DQ?=
- =?us-ascii?Q?XIKMSitwu7EHqYQ9279icUxOrFBpHP9hYdAD0t4M3eXmFxBObNrqrd50ARCB?=
- =?us-ascii?Q?QSBPesWJWRvoq9xq+ejJNvprb3itWI/58zx+ZxVCDnwyV9Oip2G7WQt2bdxe?=
- =?us-ascii?Q?SmIsyk7tGq+6WfX45JC5kUrJU8PKimbgFAM0/vU/V5mAdAaOLdPmXd2lqs4F?=
- =?us-ascii?Q?PUjPp6q2/eKxkacfo4LAKP7dLA7yU/ngfBm6Ck+icrOBc/AuplobMDKcVmeu?=
- =?us-ascii?Q?RZkAgDktVQoWxW9sDSy06DnxZ+WcRVP7ibcE7+2b+bloGvbDZ959rGe9qqN1?=
- =?us-ascii?Q?/IckDMeHkbX+aXsIjjh0+LJEgAQ342RDB7pI2KrICYXwLoHiCyeIZkHWvqKq?=
- =?us-ascii?Q?R57mWnHW+3MH9lCXxd/1I6iPsiVEl+PWAzDdHGPOXRaJAv+OKz/riYp7r6ic?=
- =?us-ascii?Q?jnmoGksm91r5Uo1ZiDgjlP3ifxNgAmObF8nWiaeV5mMujI1mJoMzKviptj0Z?=
- =?us-ascii?Q?dcF+HY6p38SnyMrmpAS+ZZvM0dgBaKizDfAMlP7wytakrlbXMt9KoBt1K3rZ?=
- =?us-ascii?Q?B2thi3yx3KOzEKtBXkLDsex8UuVvvc8UCRDDRT/F4SNfCWtTrZU8Tu0/S6wO?=
- =?us-ascii?Q?mqneWDgBTtiDuvDoxSJcGVxrLxbGag+G0cM73iezw1DXmNHBreTblCpI9eKz?=
- =?us-ascii?Q?N99Rs00YMsuVlx7eNI82zrb393oa71Zra2HyQgHyMEFeUoY8yuIuy51C8A+u?=
- =?us-ascii?Q?XZJ/b20ubaCHO+p0YpWntxOD4suKL1IA6+PkywCoQIdM8TfAp7o5VHn2Vjrf?=
- =?us-ascii?Q?RvUNiBydQcQTukeTEN7oH/DVJ4JqipZFYm9s+wUiwDs/LYP5NOJ88jsgKHrm?=
- =?us-ascii?Q?BkuQwftGpmgX4mf+IkNY/ddwPjIr2VKVRb22WvY8oLJfEMj0UeNiLBDJv9kj?=
- =?us-ascii?Q?8V5Pp/tMq+BKbdVwZKx51lOTnnn9pZhK72b7T5jESvYO8yEMouPfCkAsMFZ7?=
- =?us-ascii?Q?3iX4IKkLIQzkXqTkFWUGkBVRK/YpPD+Yr7ij2bybH1t7Q0e+bwYSks6rqVR7?=
- =?us-ascii?Q?wU68ceRGumolI4ADBthneZLylhdLJNp1Z1JXRYeSWSY5CcKKO3EXwToRCgHV?=
- =?us-ascii?Q?/EykJZKStw=3D=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 026e821a-cb4d-46c7-45b5-08da172b2c64
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3108.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 17:39:02.4022
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OLMCdZgI+xwpcJGufoGGDNzpuI7TUIZIBXPLWCnX+mDR5OkzQTl/IVUwrQHFclamDHqTqjAnZgEpSgEWzV8a9A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3226
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 11:38:50AM -0500, Carlos Bilbao wrote:
+From: Yong Wu <yong.wu@mediatek.com>
 
-...
+[ Upstream commit 635319a4a7444ca97124d781cd96deb277ff4d40 ]
 
->  static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **msg, bool is_excp)
->  {
->  	int ret;
-> +	char *panic_msg;
+MediaTek IOMMU-SMI diagram is like below. all the consumer connect with
+smi-larb, then connect with smi-common.
 
-Order variable lines from longest to shortest.
+        M4U
+         |
+    smi-common
+         |
+  -------------
+  |         |    ...
+  |         |
+larb1     larb2
+  |         |
+vdec       venc
 
-And the pointer should be initiliazed to NULL like Mike said also.
+When the consumer works, it should enable the smi-larb's power which
+also need enable the smi-common's power firstly.
 
->  
->  	/*
->  	 * Default return value: Action required, the error must be handled
-> @@ -316,6 +317,7 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
->  
->  	/* Processor Context Corrupt, no need to fumble too much, die! */
->  	if (m->status & MCI_STATUS_PCC) {
-> +		panic_msg = "Processor Context Corrupt";
->  		ret = MCE_PANIC_SEVERITY;
->  		goto amd_severity;
->  	}
-> @@ -339,16 +341,21 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
->  
->  	if (((m->status & MCI_STATUS_OVER) && !mce_flags.overflow_recov)
->  	     || !mce_flags.succor) {
-> +		panic_msg = "Uncorrected unrecoverable error";
+Thus, First of all, use the device link connect the consumer and the
+smi-larbs. then add device link between the smi-larb and smi-common.
 
-So these two cases should definitely be separate. One is "Overflowed
-uncorrected error without MCA Overflow Recovery", and the other is
-"Uncorrected error without MCA Recovery".
+This patch adds device_link between the consumer and the larbs.
 
->  		ret = MCE_PANIC_SEVERITY;
->  		goto amd_severity;
->  	}
->  
->  	if (error_context(m, regs) == IN_KERNEL) {
-> +		panic_msg = "Uncorrected error in kernel context";
+When device_link_add, I add the flag DL_FLAG_STATELESS to avoid calling
+pm_runtime_xx to keep the original status of clocks. It can avoid two
+issues:
+1) Display HW show fastlogo abnormally reported in [1]. At the beggining,
+all the clocks are enabled before entering kernel, but the clocks for
+display HW(always in larb0) will be gated after clk_enable and clk_disable
+called from device_link_add(->pm_runtime_resume) and rpm_idle. The clock
+operation happened before display driver probe. At that time, the display
+HW will be abnormal.
 
-This should be "Uncorrected unrecoverable error in kernel context". There is
-the IN_KERNEL_RECOV error context for a recoverable error in kernel context.
+2) A deadlock issue reported in [2]. Use DL_FLAG_STATELESS to skip
+pm_runtime_xx to avoid the deadlock.
 
-Thanks,
-Yazen
+Corresponding, DL_FLAG_AUTOREMOVE_CONSUMER can't be added, then
+device_link_removed should be added explicitly.
+
+Meanwhile, Currently we don't have a device connect with 2 larbs at the
+same time. Disallow this case, print the error log.
+
+[1] https://lore.kernel.org/linux-mediatek/1564213888.22908.4.camel@mhfsdcap03/
+[2] https://lore.kernel.org/patchwork/patch/1086569/
+
+Suggested-by: Tomasz Figa <tfiga@chromium.org>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/mtk_iommu.c    | 30 ++++++++++++++++++++++++++++++
+ drivers/iommu/mtk_iommu_v1.c | 29 ++++++++++++++++++++++++++++-
+ 2 files changed, 58 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 77ae20ff9b35..5971a1168666 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -562,22 +562,52 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct mtk_iommu_data *data;
++	struct device_link *link;
++	struct device *larbdev;
++	unsigned int larbid, larbidx, i;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return ERR_PTR(-ENODEV); /* Not a iommu client device */
+ 
+ 	data = dev_iommu_priv_get(dev);
+ 
++	/*
++	 * Link the consumer device with the smi-larb device(supplier).
++	 * The device that connects with each a larb is a independent HW.
++	 * All the ports in each a device should be in the same larbs.
++	 */
++	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
++	for (i = 1; i < fwspec->num_ids; i++) {
++		larbidx = MTK_M4U_TO_LARB(fwspec->ids[i]);
++		if (larbid != larbidx) {
++			dev_err(dev, "Can only use one larb. Fail@larb%d-%d.\n",
++				larbid, larbidx);
++			return ERR_PTR(-EINVAL);
++		}
++	}
++	larbdev = data->larb_imu[larbid].dev;
++	link = device_link_add(dev, larbdev,
++			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++	if (!link)
++		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
+ 	return &data->iommu;
+ }
+ 
+ static void mtk_iommu_release_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct mtk_iommu_data *data;
++	struct device *larbdev;
++	unsigned int larbid;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return;
+ 
++	data = dev_iommu_priv_get(dev);
++	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
++	larbdev = data->larb_imu[larbid].dev;
++	device_link_remove(dev, larbdev);
++
+ 	iommu_fwspec_free(dev);
+ }
+ 
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 68bf02f87cfd..bc7ee90b9373 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -423,7 +423,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct of_phandle_args iommu_spec;
+ 	struct mtk_iommu_data *data;
+-	int err, idx = 0;
++	int err, idx = 0, larbid, larbidx;
++	struct device_link *link;
++	struct device *larbdev;
+ 
+ 	/*
+ 	 * In the deferred case, free the existed fwspec.
+@@ -453,6 +455,23 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 
+ 	data = dev_iommu_priv_get(dev);
+ 
++	/* Link the consumer device with the smi-larb device(supplier) */
++	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
++	for (idx = 1; idx < fwspec->num_ids; idx++) {
++		larbidx = mt2701_m4u_to_larb(fwspec->ids[idx]);
++		if (larbid != larbidx) {
++			dev_err(dev, "Can only use one larb. Fail@larb%d-%d.\n",
++				larbid, larbidx);
++			return ERR_PTR(-EINVAL);
++		}
++	}
++
++	larbdev = data->larb_imu[larbid].dev;
++	link = device_link_add(dev, larbdev,
++			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++	if (!link)
++		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
++
+ 	return &data->iommu;
+ }
+ 
+@@ -473,10 +492,18 @@ static void mtk_iommu_probe_finalize(struct device *dev)
+ static void mtk_iommu_release_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct mtk_iommu_data *data;
++	struct device *larbdev;
++	unsigned int larbid;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return;
+ 
++	data = dev_iommu_priv_get(dev);
++	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
++	larbdev = data->larb_imu[larbid].dev;
++	device_link_remove(dev, larbdev);
++
+ 	iommu_fwspec_free(dev);
+ }
+ 
+-- 
+2.34.1
+
+
+
