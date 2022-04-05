@@ -2,134 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18101C35276
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D08C46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576076AbiDEXKQ (ORCPT
+        id S1576030AbiDEXKF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        Tue, 5 Apr 2022 19:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352938AbiDEKFX (ORCPT
+        with ESMTP id S1458143AbiDERKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:05:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C50377F1;
-        Tue,  5 Apr 2022 02:54:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6D54614E9;
-        Tue,  5 Apr 2022 09:54:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE94FC385A1;
-        Tue,  5 Apr 2022 09:54:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152445;
-        bh=Ytr58gnACPtIgX8wj6A+Rgu50Y/LfhHdm8jAbP6A5yc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cLETTHxeX29X5QdGoKj5F22l+kNJvB+nvl7FaNNM1o1AbDGGhi/tJ10ua2lJBZDWa
-         N10k9mXR69ovXM66iKRcPHWoYmKJGMEZsM6LP4yHR0bmttheL72rZNccRGRWXD2Qu0
-         BkCdhuu3VN9SQ1pdl6bBUEWO+sx82H+GpMgYgtao=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Jingwen <chenjingwen6@huawei.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 778/913] powerpc/kasan: Fix early region not updated correctly
-Date:   Tue,  5 Apr 2022 09:30:40 +0200
-Message-Id: <20220405070403.154530407@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:10:17 -0400
+X-Greylist: delayed 520 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 10:08:15 PDT
+Received: from 10.mo576.mail-out.ovh.net (10.mo576.mail-out.ovh.net [46.105.73.241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD926C1DA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:08:13 -0700 (PDT)
+Received: from player771.ha.ovh.net (unknown [10.111.172.191])
+        by mo576.mail-out.ovh.net (Postfix) with ESMTP id A322523CC8
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:00:25 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player771.ha.ovh.net (Postfix) with ESMTPSA id 3AE23293E39B6;
+        Tue,  5 Apr 2022 17:00:20 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-106R006bbcc4550-8b60-44cb-b1ac-2dcbc4224a37,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 13/14] ASoC: ts3a227e: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:58:35 +0200
+Message-Id: <20220405165836.2165310-14-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
+References: <20220405165836.2165310-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8478307775260690054
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpeejnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Jingwen <chenjingwen6@huawei.com>
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-commit dd75080aa8409ce10d50fb58981c6b59bf8707d3 upstream.
+This avoids scanning the identifier tables during probes.
 
-The shadow's page table is not updated when PTE_RPN_SHIFT is 24
-and PAGE_SHIFT is 12. It not only causes false positives but
-also false negative as shown the following text.
-
-Fix it by bringing the logic of kasan_early_shadow_page_entry here.
-
-1. False Positive:
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in pcpu_alloc+0x508/0xa50
-Write of size 16 at addr f57f3be0 by task swapper/0/1
-
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.0-12267-gdebe436e77c7 #1
-Call Trace:
-[c80d1c20] [c07fe7b8] dump_stack_lvl+0x4c/0x6c (unreliable)
-[c80d1c40] [c02ff668] print_address_description.constprop.0+0x88/0x300
-[c80d1c70] [c02ff45c] kasan_report+0x1ec/0x200
-[c80d1cb0] [c0300b20] kasan_check_range+0x160/0x2f0
-[c80d1cc0] [c03018a4] memset+0x34/0x90
-[c80d1ce0] [c0280108] pcpu_alloc+0x508/0xa50
-[c80d1d40] [c02fd7bc] __kmem_cache_create+0xfc/0x570
-[c80d1d70] [c0283d64] kmem_cache_create_usercopy+0x274/0x3e0
-[c80d1db0] [c2036580] init_sd+0xc4/0x1d0
-[c80d1de0] [c00044a0] do_one_initcall+0xc0/0x33c
-[c80d1eb0] [c2001624] kernel_init_freeable+0x2c8/0x384
-[c80d1ef0] [c0004b14] kernel_init+0x24/0x170
-[c80d1f10] [c001b26c] ret_from_kernel_thread+0x5c/0x64
-
-Memory state around the buggy address:
- f57f3a80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- f57f3b00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->f57f3b80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-                                               ^
- f57f3c00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- f57f3c80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-==================================================================
-
-2. False Negative (with KASAN tests):
-==================================================================
-Before fix:
-    ok 45 - kmalloc_double_kzfree
-    # vmalloc_oob: EXPECTATION FAILED at lib/test_kasan.c:1039
-    KASAN failure expected in "((volatile char *)area)[3100]", but none occurred
-    not ok 46 - vmalloc_oob
-    not ok 1 - kasan
-
-==================================================================
-After fix:
-    ok 1 - kasan
-
-Fixes: cbd18991e24fe ("powerpc/mm: Fix an Oops in kasan_mmu_init()")
-Cc: stable@vger.kernel.org # 5.4.x
-Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211229035226.59159-1-chenjingwen6@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
- arch/powerpc/mm/kasan/kasan_init_32.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/soc/codecs/ts3a227e.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/arch/powerpc/mm/kasan/kasan_init_32.c
-+++ b/arch/powerpc/mm/kasan/kasan_init_32.c
-@@ -83,13 +83,12 @@ void __init
- kasan_update_early_region(unsigned long k_start, unsigned long k_end, pte_t pte)
+diff --git a/sound/soc/codecs/ts3a227e.c b/sound/soc/codecs/ts3a227e.c
+index 962f5d48378a..d8ab0810fceb 100644
+--- a/sound/soc/codecs/ts3a227e.c
++++ b/sound/soc/codecs/ts3a227e.c
+@@ -282,8 +282,7 @@ static int ts3a227e_parse_device_property(struct ts3a227e *ts3a227e,
+ 	return 0;
+ }
+ 
+-static int ts3a227e_i2c_probe(struct i2c_client *i2c,
+-			      const struct i2c_device_id *id)
++static int ts3a227e_i2c_probe(struct i2c_client *i2c)
  {
- 	unsigned long k_cur;
--	phys_addr_t pa = __pa(kasan_early_shadow_page);
- 
- 	for (k_cur = k_start; k_cur != k_end; k_cur += PAGE_SIZE) {
- 		pmd_t *pmd = pmd_off_k(k_cur);
- 		pte_t *ptep = pte_offset_kernel(pmd, k_cur);
- 
--		if ((pte_val(*ptep) & PTE_RPN_MASK) != pa)
-+		if (pte_page(*ptep) != virt_to_page(lm_alias(kasan_early_shadow_page)))
- 			continue;
- 
- 		__set_pte_at(&init_mm, k_cur, ptep, pte, 0);
-
+ 	struct ts3a227e *ts3a227e;
+ 	struct device *dev = &i2c->dev;
+@@ -389,7 +388,7 @@ static struct i2c_driver ts3a227e_driver = {
+ 		.of_match_table = of_match_ptr(ts3a227e_of_match),
+ 		.acpi_match_table = ACPI_PTR(ts3a227e_acpi_match),
+ 	},
+-	.probe = ts3a227e_i2c_probe,
++	.probe_new = ts3a227e_i2c_probe,
+ 	.id_table = ts3a227e_i2c_ids,
+ };
+ module_i2c_driver(ts3a227e_driver);
+-- 
+2.27.0
 
