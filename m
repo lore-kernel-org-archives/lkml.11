@@ -2,64 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A08C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA7BDC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352391AbiDEW50 (ORCPT
+        id S1357578AbiDEW57 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:57:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        Tue, 5 Apr 2022 18:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344188AbiDENKo (ORCPT
+        with ESMTP id S1349825AbiDENGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:10:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9BBDF47DE
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:12:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649160748;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
-        b=MAJqkVE8coKur4368g2tPl5HdGhGqnFMR1EOgEyG5ZFIt5Anye37P3FmA1Wlwj33WvxG/h
-        XopOXGrkRsGClTgE9JjAj8MVPydvpGiC9xZvwaSXX0O6SjC0F+uI2g/gwXZO8nXaidXq+N
-        pNGyqITQEngPp8sBVB/r1nZFSAZ6nlQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-451-NishBBujPcuOqY_jJyppfA-1; Tue, 05 Apr 2022 08:12:21 -0400
-X-MC-Unique: NishBBujPcuOqY_jJyppfA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8724F100BAAB;
-        Tue,  5 Apr 2022 12:12:19 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 29C514021A6;
-        Tue,  5 Apr 2022 12:12:19 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linux-doc@vger.kernel.org, Anup Patel <anup.patel@wdc.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH RESEND] Documentation: kvm: Add missing line break in api.rst
-Date:   Tue,  5 Apr 2022 08:12:12 -0400
-Message-Id: <20220405121215.605894-1-pbonzini@redhat.com>
-In-Reply-To: <20220403065735.23859-1-bagasdotme@gmail.com>
-References: 
+        Tue, 5 Apr 2022 09:06:07 -0400
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8800175625;
+        Tue,  5 Apr 2022 05:07:16 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id g9so22971564ybf.1;
+        Tue, 05 Apr 2022 05:07:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=knCnV41xjhnnJ0VL0WEqN+kHikKWH8noX35ww6a147E=;
+        b=O7lckBcjELkuaLNv/vx9Zk/dwxb9uNuvdTAK9RfD2UeFpLI+xa1ocEs2O+vfLgUcsy
+         E6lMViABScXgrmVNn0UwQsQhGsBMZjx2E+J1SF4r6LWvm47xalDPaI0XJ2x+wI7/O4VW
+         hLWnU8IchmREOD59IjWNEVY3v3AhTniApfIMW+33/WKIqoHL00Cc5FpHrYpe82q0Sw5f
+         yYlqC0H9t+ZUIzWY9yhWmmJlA9jlW+JvfvfUm1iPBPJBlGqg44x1XmHa5Mx2jl+5l5Nx
+         YtKYSoqyZDYZ+I2EUT8bGKLtTFar7nvRsKdGKsStiFkHJo53hRUX/Zyy2PYRi16wMF4W
+         oWMw==
+X-Gm-Message-State: AOAM531oN2BMuSlLOg4c+fubzN47QHtqt6CXO/IXNgKM6WoRUnL+NEHf
+        dOMvpaK3MYr/99JV7bZnf1StMsg1GNX/S5tJN+ueJseC
+X-Google-Smtp-Source: ABdhPJzm72VVZWMJatZlptDAM3D3/uPEoLzUPr4PBmAZeVrej6UKEUv7t6NBnltKTsOgvbQB0rfxyKF5TOgeLVOvss8=
+X-Received: by 2002:a25:cc08:0:b0:63d:2c6d:162 with SMTP id
+ l8-20020a25cc08000000b0063d2c6d0162mr2240396ybf.137.1649160435809; Tue, 05
+ Apr 2022 05:07:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+References: <21439956.EfDdHjke4D@kreacher> <YkwQAKcFU4CzYX5E@lahna>
+In-Reply-To: <YkwQAKcFU4CzYX5E@lahna>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 5 Apr 2022 14:07:03 +0200
+Message-ID: <CAJZ5v0ja5OKUh004wEMhrgVtk-yp_Dzvmk33xNhabjDqzV0JsQ@mail.gmail.com>
+Subject: Re: [PATCH v1 0/3] ACPI: PCI: PM: Power up PCI devices with ACPI
+ companions upfront
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Queued, thanks.
+On Tue, Apr 5, 2022 at 1:45 PM Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+>
+> Hi Rafael,
+>
+> On Mon, Apr 04, 2022 at 05:20:30PM +0200, Rafael J. Wysocki wrote:
+> > Hi All,
+> >
+> > There are cases in which the power state of a PCI device depends on an ACPI
+> > power resource (or more of them) in such a way that when the given power
+> > resource is in the "off" state, the PCI device depending on it is in D3cold.
+> >
+> > On some systems, the initial state of these power resources is "off", so the
+> > kernel should not access the config space of PCI devices depending on them,
+> > until the power resources in question are turned "on", but currently that is
+> > not respected during PCI device enumeration.  Namely, the PCI device
+> > enumeration code walks the entire bus and enumerates all of the devices it
+> > can find, including the ones whose initial power state in principle depends on
+> > the ACPI power resources in the "off" state.
+>
+> I guess these devices do not have _PRE() method either.
 
-Paolo
+Personally, I haven't seen any ACPI tables containing any _PRE yet.
 
+> > Apparently, most of the time, the config space of such devices is accessible
+> > regardless of the state of the ACPI power resource associated with the PCI
+> > device, so the device enumeration is successful, but there are two potential
+> > issues related to this behavior.  First off, even if the given PCI device
+> > is accessible when the ACPI power resource depended on by it is "off",
+> > changing its configuration may confuse the platform firmware and lead to
+> > problems when the ACPI power resource in question is turned "on".  Second,
+> > the PCI device may not be actually accessible at all when the ACPI power
+> > resource depended on by it is "off", in which case it won't be found during
+> > the PCI enumeration of devices.
+> >
+> > This patch series addresses that problem by turning "on" all ACPI power
+> > resources depended on by PCI devices before attempting to access the config
+> > space of those devices for the first time.
+>
+> Makes sense.
+>
+> For the series,
+>
+> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+
+Thanks!
