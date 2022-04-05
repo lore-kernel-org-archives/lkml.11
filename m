@@ -2,98 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B0CC352A1
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87295C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845940AbiDFCCD (ORCPT
+        id S1846141AbiDFCC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
+        Tue, 5 Apr 2022 22:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457461AbiDEQDP (ORCPT
+        with ESMTP id S1454028AbiDEP5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:15 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7A7A6E2A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:47:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649173639; x=1680709639;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=A+rkSrQ9YlVDO5qD3GUl3Wuak+sW+zKmsgvd5IM6ge8=;
-  b=NYB3pXXTDZK/WpSPr6wEqyRaJrN+RExEawEAxS50vvT3g9++v++SCfb4
-   RSh+WZtL1oL1yCqkMV6aDPNd+QKvrbkxWsDUl378stQbFgBCCwWMgj0Jp
-   CBtwtF6k0y2I8G68WbtfvGRZLg0d1Ta4qODgYMrbdfCEmJgUQ7tgVNnEV
-   C4yQ8Pd3ETB5PqRnv2fzkZXqRD6zCf4EywhAJCUUoJTO/+ROWBfHlRfLY
-   D+ohX+B+Mbi/PBUbjcLOIeuwnJECxCDUF6UgyDBCcLg1lQfzhKKA4NXJn
-   2G0ygZEKtjds1Hd9G1cJ3lKrL+X4qvQKBxkfhOb1chlpP9MnM5kyDBZNg
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240718958"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="240718958"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:47:18 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="549107626"
-Received: from nldesimo-desk1.amr.corp.intel.com (HELO [10.212.148.3]) ([10.212.148.3])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:47:17 -0700
-Message-ID: <5873a444-bb32-f0d5-27f1-173f469baf21@intel.com>
-Date:   Tue, 5 Apr 2022 08:47:20 -0700
+        Tue, 5 Apr 2022 11:57:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D545167F87;
+        Tue,  5 Apr 2022 08:03:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEB3C6179F;
+        Tue,  5 Apr 2022 15:02:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB57BC385A4;
+        Tue,  5 Apr 2022 15:02:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649170979;
+        bh=qNv9WCGw+H4LJDj4fT2rA98UYD02WLOHpYP7c+6zAxU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Jxc7Wj5dW0eM8sgkO1wX3113Q5/56VIuZs3gNSexvnbVAgzV2iDk7oiXCV9x/jAOr
+         Hbs1KRTXzrpGvuCd9gnbxAURMYmfjIW6T7bkvOG2sZqHPkX8ZFEGRekFM1VFcOc9Sy
+         x8qkS/8jN/R2vWMCk8/RlnYuB3Xs1y2A1cZKBJcI=
+Date:   Tue, 5 Apr 2022 17:02:56 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     linux-usb@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>,
+        Felipe Balbi <balbi@kernel.org>, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH 0/4] usb: phy: generic: Support enabling/disabling VBUS
+Message-ID: <YkxaIK/y+7H8HgwZ@kroah.com>
+References: <20220114170941.800068-1-sean.anderson@seco.com>
+ <ffee044a-d34f-6be5-1fa9-c14cf3bb30de@seco.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Karny, Wyes" <Wyes.Karny@amd.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Carroll, Lewis" <Lewis.Carroll@amd.com>,
-        "Shenoy, Gautham Ranjal" <gautham.shenoy@amd.com>,
-        "Narayan, Ananth" <Ananth.Narayan@amd.com>,
-        "Rao, Bharata Bhasker" <bharata@amd.com>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "metze@samba.org" <metze@samba.org>,
-        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>
-References: <20220405130021.557880-1-wyes.karny@amd.com>
- <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
- <7cdc2103-c6d4-e1b6-9804-6739112eee4d@intel.com>
- <BL1PR12MB515745615F4C92627033CD5BE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
-In-Reply-To: <BL1PR12MB515745615F4C92627033CD5BE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ffee044a-d34f-6be5-1fa9-c14cf3bb30de@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 08:34, Limonciello, Mario wrote:
->>>         if (!static_cpu_has(X86_FEATURE_ZEN)) {
->>>                 msr |= ssbd_tif_to_amd_ls_cfg(tifn);
->>>                 wrmsrl(MSR_AMD64_LS_CFG, msr);
->>>                 return;
->>>         }
->> This seem _bit_ at odds with the commit message (and the AMD SSBD
->> whitepaper):
->>
->>>     Add the necessary synchronization logic for AMD family 17H.
->> So, is X86_FEATURE_ZEN for family==0x17, or family>=0x17?
-> There are Zen family CPUs and APUs from family 0x19.  Perhaps at the
-> time of the whitepaper there weren't yet though.
+On Tue, Apr 05, 2022 at 10:51:34AM -0400, Sean Anderson wrote:
+> 
+> 
+> On 1/14/22 12:09 PM, Sean Anderson wrote:
+> > The generic USB phy has had VBUS-related code for a long time, but it
+> > has always been broken, since the regulator was never gotten from the
+> > device tree. However, the support itself seems not very useful, since
+> > e.g.  usb_phy_vbus_on/off has no users and usb_phy_set_power is only
+> > used by gadgets to make sure they don't draw too much current. Instead,
+> > use the VBUS regulator to implement otg_set_vbus, which is called from
+> > several drivers. This results in a change in semantics of VBUS, but
+> > since support was always broken I don't think this will have any affect.
+> > 
+> > 
+> > Sean Anderson (4):
+> >   dt-bindings: usb: usb-nop-xceiv: Repurpose vbus-regulator
+> >   usb: phy: generic: Get the vbus supply
+> >   usb: phy: generic: Implement otg->set_vbus
+> >   usb: phy: generic: Disable vbus on removal
+> > 
+> >  .../bindings/usb/usb-nop-xceiv.yaml           |  8 +--
+> >  drivers/usb/phy/phy-generic.c                 | 55 +++++++++----------
+> >  2 files changed, 31 insertions(+), 32 deletions(-)
+> > 
+> 
+> ping?
+> 
+> When this was submitted I got an email saying that the merge window was
+> closed... but I think it has opened and closed again during the
+> intervening time.
 
-Is this a gap in the documentation, then?  Is there some documentation
-of the availability of SSBD mitigations on family 0x19?
+It opened yesterday.  Please give us a chance to catch up.
 
-Anyway, back to MWAIT...  It would be really great to include the
-assumptions about what X86_FEATURE_ZEN means in the context of this
-patch.  Does this patch *really* mean "Zen microarchitecture" only?
+While that happens, please take the time to review other changes on the
+mailing lists, we can always use the help.
+
+thanks,
+
+greg k-h
