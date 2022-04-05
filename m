@@ -2,110 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA441C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E978C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352705AbiDEKE6 (ORCPT
+        id S1353024AbiDEKF1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        Tue, 5 Apr 2022 06:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238284AbiDEIa1 (ORCPT
+        with ESMTP id S239488AbiDEIbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:30:27 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072B424F2E;
-        Tue,  5 Apr 2022 01:22:03 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:22:00 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649146921;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=n+duiD32iMvOs7dnQ0Ve1PZwuaC4V1bdhbWLDOYKenw=;
-        b=chCsgVPjZfQX/R6PhO14giuawgRJTUop2TWpJfXrr7zTnkrVw/28FNWKVJCtGY8yNXSfEh
-        aQS9NTIYkFRS2TzrA0X8gw3XseAG+OT2itmxhbnnX9F/LhkFJQClnqRjgI8wyfOzMlhqCR
-        ipfFVH+PqYaOqrs9DBGy0BPkuKivEJk3HoiM4G/Kdqli2udnUkGcRjdijraYqGJ8FEjKu1
-        N6QvPyOTMERyW1ENJQDmn6HQbTfR7bTXJ5fQ6KbAblPWcKHPZ5uAkMNeBhkHenJbvlxJxX
-        AdhbpNIjkL1oWDPr+runaDJBCrPj6DclnZjfU+a3w6OqhPPDBmqqw0FGoit9lA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649146921;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=n+duiD32iMvOs7dnQ0Ve1PZwuaC4V1bdhbWLDOYKenw=;
-        b=EB1uS2Id7A4PZsS3NE1y8bmGcrI6KLBEAqCZ9jqSn2JrQIxfS9gR596j/KqpdBpjfY98tC
-        Tv2Bi8mRhLgcSGAQ==
-From:   "tip-bot2 for Sven Schnelle" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/urgent] entry: Fix compile error in
- dynamic_irqentry_exit_cond_resched()
-Cc:     Sven Schnelle <svens@linux.ibm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220330084328.1805665-1-svens@linux.ibm.com>
-References: <20220330084328.1805665-1-svens@linux.ibm.com>
+        Tue, 5 Apr 2022 04:31:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511BF69CD1;
+        Tue,  5 Apr 2022 01:23:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52E2FB81BC3;
+        Tue,  5 Apr 2022 08:23:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98EBEC385A0;
+        Tue,  5 Apr 2022 08:23:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147007;
+        bh=Isa5lLGUypQQZmnkX08Z4fxZNNXOrlB9B2FkkAfrJds=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MC/J1vMoKqcepF/fz97+nq2fmfuHkSlG5J7vDBCA3FjG4zBOrk7W7j0v8K+XZpM9L
+         srPjDON5t+SD27Zri5JyUOcOldm8/aaN5117ftb7M6qth8c9uSLeWP4+dRCw9l6Ne5
+         oklQjunnh98F9bVWkrMDQFc6waWE5svmCgWZpdV0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Michael Neuling <mikey@neuling.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.17 0961/1126] powerpc/tm: Fix more userspace r13 corruption
+Date:   Tue,  5 Apr 2022 09:28:28 +0200
+Message-Id: <20220405070435.713928313@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914692031.389.12455051042732550539.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/urgent branch of tip:
+From: Nicholas Piggin <npiggin@gmail.com>
 
-Commit-ID:     0a70045ed8516dfcff4b5728557e1ef3fd017c53
-Gitweb:        https://git.kernel.org/tip/0a70045ed8516dfcff4b5728557e1ef3fd0=
-17c53
-Author:        Sven Schnelle <svens@linux.ibm.com>
-AuthorDate:    Wed, 30 Mar 2022 10:43:28 +02:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 09:59:36 +02:00
+commit 9d71165d3934e607070c4e48458c0cf161b1baea upstream.
 
-entry: Fix compile error in dynamic_irqentry_exit_cond_resched()
+Commit cf13435b730a ("powerpc/tm: Fix userspace r13 corruption") fixes a
+problem in treclaim where a SLB miss can occur on the
+thread_struct->ckpt_regs while SCRATCH0 is live with the saved user r13
+value, clobbering it with the kernel r13 and ultimately resulting in
+kernel r13 being stored in ckpt_regs.
 
-kernel/entry/common.c: In function =E2=80=98dynamic_irqentry_exit_cond_resche=
-d=E2=80=99:
-kernel/entry/common.c:409:14: error: implicit declaration of function =E2=80=
-=98static_key_unlikely=E2=80=99; did you mean =E2=80=98static_key_enable=E2=
-=80=99? [-Werror=3Dimplicit-function-declaration]
-  409 |         if (!static_key_unlikely(&sk_dynamic_irqentry_exit_cond_resch=
-ed))
-      |              ^~~~~~~~~~~~~~~~~~~
-      |              static_key_enable
+There is an equivalent problem in trechkpt where the user r13 value is
+loaded into r13 from chkpt_regs to be recheckpointed, but a SLB miss
+could occur on ckpt_regs accesses after that, which will result in r13
+being clobbered with a kernel value and that will get recheckpointed and
+then restored to user registers.
 
-static_key_unlikely() should be static_branch_unlikely().
+The same memory page is accessed right before this critical window where
+a SLB miss could cause corruption, so hitting the bug requires the SLB
+entry be removed within a small window of instructions, which is
+possible if a SLB related MCE hits there. PAPR also permits the
+hypervisor to discard this SLB entry (because slb_shadow->persistent is
+only set to SLB_NUM_BOLTED) although it's not known whether any
+implementations would do this (KVM does not). So this is an extremely
+unlikely bug, only found by inspection.
 
-Fixes: 99cf983cc8bca ("sched/preempt: Add PREEMPT_DYNAMIC using static keys")
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Mark Rutland <mark.rutland@arm.com>
-Link: https://lore.kernel.org/r/20220330084328.1805665-1-svens@linux.ibm.com
+Fix this by also storing user r13 in a temporary location on the kernel
+stack and don't change the r13 register from kernel r13 until the RI=0
+critical section that does not fault.
+
+The SCRATCH0 change is not strictly part of the fix, it's only used in
+the RI=0 section so it does not have the same problem as the previous
+SCRATCH0 bug.
+
+Fixes: 98ae22e15b43 ("powerpc: Add helper functions for transactional memory context switching")
+Cc: stable@vger.kernel.org # v3.9+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Acked-by: Michael Neuling <mikey@neuling.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220311024733.48926-1-npiggin@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/entry/common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/tm.S |   25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index e57a224..93c3b86 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -392,7 +392,7 @@ DEFINE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqent=
-ry_exit_cond_resched);
- DEFINE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
- void dynamic_irqentry_exit_cond_resched(void)
- {
--	if (!static_key_unlikely(&sk_dynamic_irqentry_exit_cond_resched))
-+	if (!static_branch_unlikely(&sk_dynamic_irqentry_exit_cond_resched))
- 		return;
- 	raw_irqentry_exit_cond_resched();
- }
+--- a/arch/powerpc/kernel/tm.S
++++ b/arch/powerpc/kernel/tm.S
+@@ -443,7 +443,8 @@ restore_gprs:
+ 
+ 	REST_GPR(0, r7)				/* GPR0 */
+ 	REST_GPRS(2, 4, r7)			/* GPR2-4 */
+-	REST_GPRS(8, 31, r7)			/* GPR8-31 */
++	REST_GPRS(8, 12, r7)			/* GPR8-12 */
++	REST_GPRS(14, 31, r7)			/* GPR14-31 */
+ 
+ 	/* Load up PPR and DSCR here so we don't run with user values for long */
+ 	mtspr	SPRN_DSCR, r5
+@@ -479,18 +480,24 @@ restore_gprs:
+ 	REST_GPR(6, r7)
+ 
+ 	/*
+-	 * Store r1 and r5 on the stack so that we can access them after we
+-	 * clear MSR RI.
++	 * Store user r1 and r5 and r13 on the stack (in the unused save
++	 * areas / compiler reserved areas), so that we can access them after
++	 * we clear MSR RI.
+ 	 */
+ 
+ 	REST_GPR(5, r7)
+ 	std	r5, -8(r1)
+-	ld	r5, GPR1(r7)
++	ld	r5, GPR13(r7)
+ 	std	r5, -16(r1)
++	ld	r5, GPR1(r7)
++	std	r5, -24(r1)
+ 
+ 	REST_GPR(7, r7)
+ 
+-	/* Clear MSR RI since we are about to use SCRATCH0. EE is already off */
++	/* Stash the stack pointer away for use after recheckpoint */
++	std	r1, PACAR1(r13)
++
++	/* Clear MSR RI since we are about to clobber r13. EE is already off */
+ 	li	r5, 0
+ 	mtmsrd	r5, 1
+ 
+@@ -501,9 +508,9 @@ restore_gprs:
+ 	 * until we turn MSR RI back on.
+ 	 */
+ 
+-	SET_SCRATCH0(r1)
+ 	ld	r5, -8(r1)
+-	ld	r1, -16(r1)
++	ld	r13, -16(r1)
++	ld	r1, -24(r1)
+ 
+ 	/* Commit register state as checkpointed state: */
+ 	TRECHKPT
+@@ -519,9 +526,9 @@ restore_gprs:
+ 	 */
+ 
+ 	GET_PACA(r13)
+-	GET_SCRATCH0(r1)
++	ld	r1, PACAR1(r13)
+ 
+-	/* R1 is restored, so we are recoverable again.  EE is still off */
++	/* R13, R1 is restored, so we are recoverable again.  EE is still off */
+ 	li	r4, MSR_RI
+ 	mtmsrd	r4, 1
+ 
+
+
