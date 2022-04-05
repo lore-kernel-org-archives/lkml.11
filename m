@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B45C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 502C1C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349984AbiDEOzr (ORCPT
+        id S1351517AbiDEO4C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41744 "EHLO
+        Tue, 5 Apr 2022 10:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343994AbiDEJl5 (ORCPT
+        with ESMTP id S244295AbiDEJlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:57 -0400
+        Tue, 5 Apr 2022 05:41:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CFEBD7F8;
-        Tue,  5 Apr 2022 02:27:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA127BB0A3;
+        Tue,  5 Apr 2022 02:26:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97B7D6144D;
-        Tue,  5 Apr 2022 09:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7A1FC385A2;
-        Tue,  5 Apr 2022 09:27:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6819F6165C;
+        Tue,  5 Apr 2022 09:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75385C385A0;
+        Tue,  5 Apr 2022 09:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150850;
-        bh=t7zuJu+RdC6rv7No6foqPNPTASGSj0hg90vUn6Vk3p8=;
+        s=korg; t=1649150760;
+        bh=9XcM0C1skRBFfRnxRk7Z+cajpzXiJDVLI1QQNgGD96I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wWE/Hu97h/mLiW71/kD8FJxs4MLGYnt89BjBKDfYnnPDGIQd4Y5B2ksldwsrDHM5K
-         ahGp3DMhen+yyoaQ+mQ7i8aln+lelrC+TvJSnLJ39eoi5MbdFPj3QZ1ip1Zjm0sIo6
-         kcT6ryja715NNkXBxkt9YbbqHqnDEbfTa7dqJSC4=
+        b=rh2wxqx60W3vDl1xR1AAkZ5CIauICiDFN1h1apq5U20dQQY6q4ZSazuKFQzZNUVqb
+         naqTThBmqeck4lqCy2RPcs5wwu4VW6s/UqsK1UNWnHGwbpyRD56Q/77TIjhgVqofHt
+         Z7wA/kT2gwtkHr8biFeijyDWKySlm2G7jXHfi1C8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 202/913] spi: tegra210-quad: Fix missin IRQ check in tegra_qspi_probe
-Date:   Tue,  5 Apr 2022 09:21:04 +0200
-Message-Id: <20220405070345.913802108@linuxfoundation.org>
+        stable@vger.kernel.org, Jordan Crouse <jordan@cosmicpenguin.net>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.15 123/913] arm64: dts: qcom: sm8250: Fix MSI IRQ for PCIe1 and PCIe2
+Date:   Tue,  5 Apr 2022 09:19:45 +0200
+Message-Id: <20220405070343.514843428@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,39 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-[ Upstream commit 47c3e06ed95aa9b74932dbc6b23b544f644faf84 ]
+commit 1b7101e8124b450f2d6a35591e9cbb478c143ace upstream.
 
-This func misses checking for platform_get_irq()'s call and may passes the
-negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
-causing it to fail with -EINVAL, overriding an original error code.
-Stop calling request_threaded_irq() with invalid IRQ #s.
+Fix the MSI IRQ used for PCIe instances 1 and 2.
 
-Fixes: 921fc1838fb0 ("spi: tegra210-quad: Add support for Tegra210 QSPI controller")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220128165956.27821-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: e53bdfc00977 ("arm64: dts: qcom: sm8250: Add PCIe support")
+Reported-by: Jordan Crouse <jordan@cosmicpenguin.net>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220112035556.5108-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-tegra210-quad.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/boot/dts/qcom/sm8250.dtsi |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra210-quad.c b/drivers/spi/spi-tegra210-quad.c
-index 2354ca1e3858..7967073c1354 100644
---- a/drivers/spi/spi-tegra210-quad.c
-+++ b/drivers/spi/spi-tegra210-quad.c
-@@ -1249,6 +1249,8 @@ static int tegra_qspi_probe(struct platform_device *pdev)
+--- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+@@ -1495,7 +1495,7 @@
+ 			ranges = <0x01000000 0x0 0x40200000 0x0 0x40200000 0x0 0x100000>,
+ 				 <0x02000000 0x0 0x40300000 0x0 0x40300000 0x0 0x1fd00000>;
  
- 	tqspi->phys = r->start;
- 	qspi_irq = platform_get_irq(pdev, 0);
-+	if (qspi_irq < 0)
-+		return qspi_irq;
- 	tqspi->irq = qspi_irq;
+-			interrupts = <GIC_SPI 306 IRQ_TYPE_EDGE_RISING>;
++			interrupts = <GIC_SPI 307 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "msi";
+ 			#interrupt-cells = <1>;
+ 			interrupt-map-mask = <0 0 0 0x7>;
+@@ -1601,7 +1601,7 @@
+ 			ranges = <0x01000000 0x0 0x64200000 0x0 0x64200000 0x0 0x100000>,
+ 				 <0x02000000 0x0 0x64300000 0x0 0x64300000 0x0 0x3d00000>;
  
- 	tqspi->clk = devm_clk_get(&pdev->dev, "qspi");
--- 
-2.34.1
-
+-			interrupts = <GIC_SPI 236 IRQ_TYPE_EDGE_RISING>;
++			interrupts = <GIC_SPI 243 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "msi";
+ 			#interrupt-cells = <1>;
+ 			interrupt-map-mask = <0 0 0 0x7>;
 
 
