@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D321AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBD8C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347560AbiDEJ1d (ORCPT
+        id S1347584AbiDEJ1n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
+        Tue, 5 Apr 2022 05:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239570AbiDEIUO (ORCPT
+        with ESMTP id S239574AbiDEIUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072956384;
-        Tue,  5 Apr 2022 01:16:38 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05BBE6404;
+        Tue,  5 Apr 2022 01:16:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 983AE60AFB;
-        Tue,  5 Apr 2022 08:16:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82316C385A0;
-        Tue,  5 Apr 2022 08:16:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97F2960AFB;
+        Tue,  5 Apr 2022 08:16:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EADFC385A0;
+        Tue,  5 Apr 2022 08:16:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146597;
-        bh=skwGjJleA6WjxDdMKnkBNDhJLVUBgPnr7tJN0zUUfos=;
+        s=korg; t=1649146608;
+        bh=96OvkCivmFseK7bEObf6KFbVIP+u0ZzPNMVNOVGBOvk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rERXY6cI4vcy2iob7q2RfjO0RM/VIz4caK9hpFica1Y5NOViV51GcK/w0ogzMjqvb
-         Hh9ChAwPQEYhIsPOocB9/D593yf7UxC0n1l4gmDNUMO61pvGgLgFW05fUAimr6WbXa
-         WrHxMvqm3eHbsy2ukx7Q4urywXKSmg2McYdlj7Es=
+        b=VKMU0cyUYgyzczRsAPt5Iq2rLIbr+/PmZK/yehYm0U/j/jK8wzFKmTWv2CIioffaj
+         crXT+V/nOwEyEaklgbq9c7ri+u4tW9cGBxpxqDn4ZyLH223iOwsEdagjWG1+H0pTha
+         wzgd6rhu8DOr7WjwCa8A7qdavmImlxfmvSbdcD0s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0821/1126] net: sparx5: depends on PTP_1588_CLOCK_OPTIONAL
-Date:   Tue,  5 Apr 2022 09:26:08 +0200
-Message-Id: <20220405070431.660045388@linuxfoundation.org>
+Subject: [PATCH 5.17 0824/1126] net: sparx5: switchdev: fix possible NULL pointer dereference
+Date:   Tue,  5 Apr 2022 09:26:11 +0200
+Message-Id: <20220405070431.750556747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -58,54 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 08be6b13db23f68146c600dd5adfd92e99d9ec6e ]
+[ Upstream commit 0906f3a3df07835e37077d8971aac65347f2ed57 ]
 
-Fix build errors when PTP_1588_CLOCK=m and SPARX5_SWTICH=y.
+As the possible failure of the allocation, devm_kzalloc() may return NULL
+pointer.
+Therefore, it should be better to check the 'db' in order to prevent
+the dereference of NULL pointer.
 
-arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.o: in function `sparx5_get_ts_info':
-sparx5_ethtool.c:(.text+0x146): undefined reference to `ptp_clock_index'
-arc-linux-ld: sparx5_ethtool.c:(.text+0x146): undefined reference to `ptp_clock_index'
-arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o: in function `sparx5_ptp_init':
-sparx5_ptp.c:(.text+0xd56): undefined reference to `ptp_clock_register'
-arc-linux-ld: sparx5_ptp.c:(.text+0xd56): undefined reference to `ptp_clock_register'
-arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o: in function `sparx5_ptp_deinit':
-sparx5_ptp.c:(.text+0xf30): undefined reference to `ptp_clock_unregister'
-arc-linux-ld: sparx5_ptp.c:(.text+0xf30): undefined reference to `ptp_clock_unregister'
-arc-linux-ld: sparx5_ptp.c:(.text+0xf38): undefined reference to `ptp_clock_unregister'
-arc-linux-ld: sparx5_ptp.c:(.text+0xf46): undefined reference to `ptp_clock_unregister'
-arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o:sparx5_ptp.c:(.text+0xf46): more undefined references to `ptp_clock_unregister' follow
-
-Fixes: 3cfa11bac9bb ("net: sparx5: add the basic sparx5 driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc: UNGLinuxDriver@microchip.com
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Steen Hegelund <steen.hegelund@microchip.com>
-Cc: Bjarni Jonasson <bjarni.jonasson@microchip.com>
-Cc: Lars Povlsen <lars.povlsen@microchip.com>
+Fixes: 10615907e9b51 ("net: sparx5: switchdev: adding frame DMA functionality")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/sparx5/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/Kconfig b/drivers/net/ethernet/microchip/sparx5/Kconfig
-index 7bdbb2d09a14..85b24edb65d5 100644
---- a/drivers/net/ethernet/microchip/sparx5/Kconfig
-+++ b/drivers/net/ethernet/microchip/sparx5/Kconfig
-@@ -4,6 +4,7 @@ config SPARX5_SWITCH
- 	depends on HAS_IOMEM
- 	depends on OF
- 	depends on ARCH_SPARX5 || COMPILE_TEST
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	select PHYLINK
- 	select PHY_SPARX5_SERDES
- 	select RESET_CONTROLLER
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c b/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
+index 7436f62fa152..174ad95e746a 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
+@@ -420,6 +420,8 @@ static int sparx5_fdma_tx_alloc(struct sparx5 *sparx5)
+ 			db_hw->dataptr = phys;
+ 			db_hw->status = 0;
+ 			db = devm_kzalloc(sparx5->dev, sizeof(*db), GFP_KERNEL);
++			if (!db)
++				return -ENOMEM;
+ 			db->cpu_addr = cpu_addr;
+ 			list_add_tail(&db->list, &tx->db_list);
+ 		}
 -- 
 2.34.1
 
