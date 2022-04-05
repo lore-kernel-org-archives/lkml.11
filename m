@@ -2,238 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C05C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB220C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242642AbiDEU6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
+        id S241923AbiDEU55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353517AbiDEPLw (ORCPT
+        with ESMTP id S1458158AbiDERLc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:11:52 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E221109A49
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:43 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649165140;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vCqmcIsjQhjlsizLtSjuYMGPoSNu/EUhYwTtgU6s6Kw=;
-        b=1hzmEMqB9EKNoE5JBFRlA4eMbd3igRAH45cAXctFrViaWY0hFB6V86q6tgCcEJToO+DN+7
-        sxo7S+yfITRySa7SwcGDeZk/X1V5BmRfNLcsHawn68tMynTVnZj9K8EsvrKlN9j5yA84kH
-        VVWTYRE0XBSdopR31SKrZn9TDMHImZqpi6FC4bnT4WN7F2jrFiBL3Edr31ihIt0wrzpx+z
-        WmYe+v9nH0RQmd0wAKETve5e+6Atv24gGp1JnnveM4AM+qqeeE+pgJD6B4Tq9pGzydyVW6
-        yixlyRzFE1lDKNouGMtQJmjA5oqUd9xAyRZ3h4NTLBdt2E5OFYBTfpAyUXV05g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649165140;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vCqmcIsjQhjlsizLtSjuYMGPoSNu/EUhYwTtgU6s6Kw=;
-        b=T7Y31PyF+fAnDahO6XXYuCQ0QKZg6HgmMFwrcy91vF9YPPLG4HDkYvVNsjBBn/UOogOLi/
-        MEimoKCOil/FKEAw==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH printk v2 08/12] printk: add pr_flush()
-Date:   Tue,  5 Apr 2022 15:31:31 +0206
-Message-Id: <20220405132535.649171-9-john.ogness@linutronix.de>
-In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
+        Tue, 5 Apr 2022 13:11:32 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FD210FC9;
+        Tue,  5 Apr 2022 10:09:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649178574; x=1680714574;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8FLDvBJ8TPT/3p6/EmiWMYN4z3XTwsiEyt2sJI3V2fI=;
+  b=Lzy0JYR86o+X4VigqAaVWXVJDQJyiMgoghpPm8W3MDy9/poV918bG09L
+   /TyU+hb2GDklmj7fBpNG8/0nHP/OGvvtmihZ1evfWwwLg9T5hoVyTx5Nn
+   eGiFf2kwwlhaQKU70Mbt0rHV2lQEyq83CUXrPwbufqYjPT3YJ6CIoJzdY
+   IWsz82DuLhgZ7NKtn1/KJGvvzjuuzkMYj6FlDzbr3JdUFXbDBqBTgfZiU
+   Zd2BolqpLjLFsYxpL+NvfcxVaNOO9bWO5Yvn5OKlQYFFL6ZzFPDvnxpcT
+   j62nJHYJE9tH3TuNzpdNIyILFpsr/nx8ITOkLduOWweK0t8Y8VEkC97Zl
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260983259"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="260983259"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:08:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="505361177"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2022 10:08:05 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 16FFA32E; Tue,  5 Apr 2022 20:02:54 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v1 1/1] pinctrl: alderlake: Fix register offsets for ADL-N variant
+Date:   Tue,  5 Apr 2022 20:02:51 +0300
+Message-Id: <20220405170251.72154-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide a might-sleep function to allow waiting for console printers
-to catch up to the latest logged message.
+It appears that almost traditionally the N variants have deviations
+in the register offsets in comparison to S one. This is the case
+for Intel Alder Lake as well. Fix register offsets for ADL-N variant.
 
-Use pr_flush() whenever it is desirable to get buffered messages
-printed before continuing: suspend_console(), resume_console(),
-console_stop(), console_start(), console_unblank().
-
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Fixes: 114b610b9048 ("pinctrl: alderlake: Add Intel Alder Lake-N pin controller support")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- include/linux/printk.h |  7 ++++
- kernel/printk/printk.c | 83 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 90 insertions(+)
+ drivers/pinctrl/intel/pinctrl-alderlake.c | 60 +++++++++++++++--------
+ 1 file changed, 40 insertions(+), 20 deletions(-)
 
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index b70a42f94031..091fba7283e1 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -170,6 +170,8 @@ extern void __printk_safe_exit(void);
- #define printk_deferred_enter __printk_safe_enter
- #define printk_deferred_exit __printk_safe_exit
+diff --git a/drivers/pinctrl/intel/pinctrl-alderlake.c b/drivers/pinctrl/intel/pinctrl-alderlake.c
+index 32ba50efbceb..62dbd1e67513 100644
+--- a/drivers/pinctrl/intel/pinctrl-alderlake.c
++++ b/drivers/pinctrl/intel/pinctrl-alderlake.c
+@@ -14,11 +14,17 @@
  
-+extern bool pr_flush(int timeout_ms, bool reset_on_progress);
-+
- /*
-  * Please don't use printk_ratelimit(), because it shares ratelimiting state
-  * with all other unrelated printk_ratelimit() callsites.  Instead use
-@@ -220,6 +222,11 @@ static inline void printk_deferred_exit(void)
- {
- }
+ #include "pinctrl-intel.h"
  
-+static inline bool pr_flush(int timeout_ms, bool reset_on_progress)
-+{
-+	return true;
-+}
+-#define ADL_PAD_OWN	0x0a0
+-#define ADL_PADCFGLOCK	0x110
+-#define ADL_HOSTSW_OWN	0x150
+-#define ADL_GPI_IS	0x200
+-#define ADL_GPI_IE	0x220
++#define ADL_N_PAD_OWN		0x020
++#define ADL_N_PADCFGLOCK	0x080
++#define ADL_N_HOSTSW_OWN	0x0b0
++#define ADL_N_GPI_IS		0x100
++#define ADL_N_GPI_IE		0x120
 +
- static inline int printk_ratelimit(void)
- {
- 	return 0;
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 06f0b29d909d..d0369afaf365 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2274,6 +2274,8 @@ asmlinkage __visible int _printk(const char *fmt, ...)
- }
- EXPORT_SYMBOL(_printk);
++#define ADL_S_PAD_OWN		0x0a0
++#define ADL_S_PADCFGLOCK	0x110
++#define ADL_S_HOSTSW_OWN	0x150
++#define ADL_S_GPI_IS		0x200
++#define ADL_S_GPI_IE		0x220
  
-+static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress);
-+
- #else /* CONFIG_PRINTK */
+ #define ADL_GPP(r, s, e, g)				\
+ 	{						\
+@@ -28,14 +34,28 @@
+ 		.gpio_base = (g),			\
+ 	}
  
- #define CONSOLE_LOG_MAX		0
-@@ -2306,6 +2308,7 @@ static void call_console_driver(struct console *con, const char *text, size_t le
- {
- }
- static bool suppress_message_printing(int level) { return false; }
-+static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress) { return true; }
- 
- #endif /* CONFIG_PRINTK */
- 
-@@ -2493,6 +2496,7 @@ void suspend_console(void)
- 	if (!console_suspend_enabled)
- 		return;
- 	pr_info("Suspending console(s) (use no_console_suspend to debug)\n");
-+	pr_flush(1000, true);
- 	console_lock();
- 	console_suspended = 1;
- 	up_console_sem();
-@@ -2505,6 +2509,7 @@ void resume_console(void)
- 	down_console_sem();
- 	console_suspended = 0;
- 	console_unlock();
-+	pr_flush(1000, true);
- }
- 
- /**
-@@ -2882,6 +2887,9 @@ void console_unblank(void)
- 		if ((c->flags & CON_ENABLED) && c->unblank)
- 			c->unblank();
- 	console_unlock();
-+
-+	if (!oops_in_progress)
-+		pr_flush(1000, true);
- }
- 
- /**
-@@ -2940,6 +2948,7 @@ struct tty_driver *console_device(int *index)
-  */
- void console_stop(struct console *console)
- {
-+	__pr_flush(console, 1000, true);
- 	console_lock();
- 	console->flags &= ~CON_ENABLED;
- 	console_unlock();
-@@ -2951,6 +2960,7 @@ void console_start(struct console *console)
- 	console_lock();
- 	console->flags |= CON_ENABLED;
- 	console_unlock();
-+	__pr_flush(console, 1000, true);
- }
- EXPORT_SYMBOL(console_start);
- 
-@@ -3321,6 +3331,79 @@ static int __init printk_late_init(void)
- late_initcall(printk_late_init);
- 
- #if defined CONFIG_PRINTK
-+/* If @con is specified, only wait for that console. Otherwise wait for all. */
-+static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress)
-+{
-+	int remaining = timeout_ms;
-+	struct console *c;
-+	u64 last_diff = 0;
-+	u64 printk_seq;
-+	u64 diff;
-+	u64 seq;
-+
-+	might_sleep();
-+
-+	seq = prb_next_seq(prb);
-+
-+	for (;;) {
-+		diff = 0;
-+
-+		console_lock();
-+		for_each_console(c) {
-+			if (con && con != c)
-+				continue;
-+			if (!console_is_usable(c))
-+				continue;
-+			printk_seq = c->seq;
-+			if (printk_seq < seq)
-+				diff += seq - printk_seq;
-+		}
-+		console_unlock();
-+
-+		if (diff != last_diff && reset_on_progress)
-+			remaining = timeout_ms;
-+
-+		if (diff == 0 || remaining == 0)
-+			break;
-+
-+		if (remaining < 0) {
-+			/* no timeout limit */
-+			msleep(100);
-+		} else if (remaining < 100) {
-+			msleep(remaining);
-+			remaining = 0;
-+		} else {
-+			msleep(100);
-+			remaining -= 100;
-+		}
-+
-+		last_diff = diff;
+-#define ADL_COMMUNITY(b, s, e, g)			\
++#define ADL_N_COMMUNITY(b, s, e, g)			\
++	{						\
++		.barno = (b),				\
++		.padown_offset = ADL_N_PAD_OWN,		\
++		.padcfglock_offset = ADL_N_PADCFGLOCK,	\
++		.hostown_offset = ADL_N_HOSTSW_OWN,	\
++		.is_offset = ADL_N_GPI_IS,		\
++		.ie_offset = ADL_N_GPI_IE,		\
++		.pin_base = (s),			\
++		.npins = ((e) - (s) + 1),		\
++		.gpps = (g),				\
++		.ngpps = ARRAY_SIZE(g),			\
 +	}
 +
-+	return (diff == 0);
-+}
-+
-+/**
-+ * pr_flush() - Wait for printing threads to catch up.
-+ *
-+ * @timeout_ms:        The maximum time (in ms) to wait.
-+ * @reset_on_progress: Reset the timeout if forward progress is seen.
-+ *
-+ * A value of 0 for @timeout_ms means no waiting will occur. A value of -1
-+ * represents infinite waiting.
-+ *
-+ * If @reset_on_progress is true, the timeout will be reset whenever any
-+ * printer has been seen to make some forward progress.
-+ *
-+ * Context: Process context. May sleep while acquiring console lock.
-+ * Return: true if all enabled printers are caught up.
-+ */
-+bool pr_flush(int timeout_ms, bool reset_on_progress)
-+{
-+	return __pr_flush(NULL, timeout_ms, reset_on_progress);
-+}
-+EXPORT_SYMBOL(pr_flush);
-+
- /*
-  * Delayed printk version, for scheduler-internal messages:
-  */
++#define ADL_S_COMMUNITY(b, s, e, g)			\
+ 	{						\
+ 		.barno = (b),				\
+-		.padown_offset = ADL_PAD_OWN,		\
+-		.padcfglock_offset = ADL_PADCFGLOCK,	\
+-		.hostown_offset = ADL_HOSTSW_OWN,	\
+-		.is_offset = ADL_GPI_IS,		\
+-		.ie_offset = ADL_GPI_IE,		\
++		.padown_offset = ADL_S_PAD_OWN,		\
++		.padcfglock_offset = ADL_S_PADCFGLOCK,	\
++		.hostown_offset = ADL_S_HOSTSW_OWN,	\
++		.is_offset = ADL_S_GPI_IS,		\
++		.ie_offset = ADL_S_GPI_IE,		\
+ 		.pin_base = (s),			\
+ 		.npins = ((e) - (s) + 1),		\
+ 		.gpps = (g),				\
+@@ -342,10 +362,10 @@ static const struct intel_padgroup adln_community5_gpps[] = {
+ };
+ 
+ static const struct intel_community adln_communities[] = {
+-	ADL_COMMUNITY(0, 0, 66, adln_community0_gpps),
+-	ADL_COMMUNITY(1, 67, 168, adln_community1_gpps),
+-	ADL_COMMUNITY(2, 169, 248, adln_community4_gpps),
+-	ADL_COMMUNITY(3, 249, 256, adln_community5_gpps),
++	ADL_N_COMMUNITY(0, 0, 66, adln_community0_gpps),
++	ADL_N_COMMUNITY(1, 67, 168, adln_community1_gpps),
++	ADL_N_COMMUNITY(2, 169, 248, adln_community4_gpps),
++	ADL_N_COMMUNITY(3, 249, 256, adln_community5_gpps),
+ };
+ 
+ static const struct intel_pinctrl_soc_data adln_soc_data = {
+@@ -713,11 +733,11 @@ static const struct intel_padgroup adls_community5_gpps[] = {
+ };
+ 
+ static const struct intel_community adls_communities[] = {
+-	ADL_COMMUNITY(0, 0, 94, adls_community0_gpps),
+-	ADL_COMMUNITY(1, 95, 150, adls_community1_gpps),
+-	ADL_COMMUNITY(2, 151, 199, adls_community3_gpps),
+-	ADL_COMMUNITY(3, 200, 269, adls_community4_gpps),
+-	ADL_COMMUNITY(4, 270, 303, adls_community5_gpps),
++	ADL_S_COMMUNITY(0, 0, 94, adls_community0_gpps),
++	ADL_S_COMMUNITY(1, 95, 150, adls_community1_gpps),
++	ADL_S_COMMUNITY(2, 151, 199, adls_community3_gpps),
++	ADL_S_COMMUNITY(3, 200, 269, adls_community4_gpps),
++	ADL_S_COMMUNITY(4, 270, 303, adls_community5_gpps),
+ };
+ 
+ static const struct intel_pinctrl_soc_data adls_soc_data = {
 -- 
-2.30.2
+2.35.1
 
