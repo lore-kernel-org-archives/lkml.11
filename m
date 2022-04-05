@@ -2,110 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB77C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D88C4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849018AbiDFCcq (ORCPT
+        id S1849057AbiDFCc7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49240 "EHLO
+        Tue, 5 Apr 2022 22:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388343AbiDEVyD (ORCPT
+        with ESMTP id S1442140AbiDEWTG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 17:54:03 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D064114FEF;
-        Tue,  5 Apr 2022 13:50:18 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 20:50:14 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649191816;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P9NEylB5TuZS1uQcuZiivIHTEA7/w5XCamuX+Zjn7SA=;
-        b=r69UORCsb3ybinH4tqd+de10IlVJYWVTvHqN0t6ctCOa2mLgLkRGMhNSQY8R5BEb3C+20R
-        8jMiVS8Mh6BFFvqhluXavjV/05wOc5p+fmRag6lqn07kULKxr5mh0x7/WC1ogdzl3FGWVn
-        MW4z9gE7FceO8Q1ZMP7ge1oh/DEmkm+g17t7EZYV7YHDcjpVrY02vH4G6VIBl3jTFLjkP0
-        8IO/hLjNdGfLs8/icta3QzFC1eWw7kzj1j2zl+rE+MI/6Yz/jOPlJU62qSdvuTE4UzyKFY
-        +NOpRO3ETOgVUofAw1MnZLkREF0MtrGwNrxhs7teD8K2hfx/Xm3nRu7Cqi2FGw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649191816;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P9NEylB5TuZS1uQcuZiivIHTEA7/w5XCamuX+Zjn7SA=;
-        b=YRNXRje8iO7luFN9DfbfZW4izUXf+1bdcXyGI6jZkp3BcZL0mDjfqy/2anoWe1ILcbxMFR
-        PPPK5u7LeJMMGVCQ==
-From:   "tip-bot2 for Ammar Faizi" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/misc] x86/delay: Fix the wrong asm constraint in delay_loop()
-Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220329104705.65256-2-ammarfaizi2@gnuweeb.org>
-References: <20220329104705.65256-2-ammarfaizi2@gnuweeb.org>
+        Tue, 5 Apr 2022 18:19:06 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DC270F55;
+        Tue,  5 Apr 2022 13:44:43 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id 94D421F441AB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649191482;
+        bh=p/CNjMUurjHMQVHA7WJucC4cA80P6l/szurKGX62Y7M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mskQK/nH0vpAgfYoAirxVigo8RjEmumNogd53c4rEWQscB5g8VBotwTkA/ulPot+U
+         R5eQSMXE02jbBrqzZS1FIhAcTGnK3i0EopGf6x/tx/wTwEH3ptl6YBspGtdfo7YCxS
+         uUGbpNbUxwRbxzPXqa+7u5evZOsRIeIYoUTemb7SN4BoQg02v/AGEY1SfcEuJZdxKl
+         WlTCPLsfU8/D3jmDu2RfzOTkc7XBvllTNvaawWSNGbAsUYTeWgbQ08do4H+9FQGUWm
+         WrOhqKtB/2VXlPcoeOoEA3FIV2yspu48EngJCIgQaIhSibp+cVlVdpCZzGZHRHlrTx
+         5gVj6LzmTTLjw==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        linux-media@vger.kernel.org
+Subject: [PATCH v3 01/24] media: doc: Document dual use of H.264 pic_num/frame_num
+Date:   Tue,  5 Apr 2022 16:44:02 -0400
+Message-Id: <20220405204426.259074-2-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-Message-ID: <164919181468.389.4278489978925909227.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/misc branch of tip:
+These two fields need documentation as they have dual meaning. It is also
+confusing since pic_num is a derived value from frame_num, so this should
+help application developers. If we ever need to make a V2 of this API, I
+would suggest to remove pic_num entirely.
 
-Commit-ID:     b86eb74098a92afd789da02699b4b0dd3f73b889
-Gitweb:        https://git.kernel.org/tip/b86eb74098a92afd789da02699b4b0dd3f73b889
-Author:        Ammar Faizi <ammarfaizi2@gnuweeb.org>
-AuthorDate:    Tue, 29 Mar 2022 17:47:04 +07:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 05 Apr 2022 21:21:57 +02:00
-
-x86/delay: Fix the wrong asm constraint in delay_loop()
-
-The asm constraint does not reflect the fact that the asm statement can
-modify the value of the local variable loops. Which it does.
-
-Specifying the wrong constraint may lead to undefined behavior, it may
-clobber random stuff (e.g. local variable, important temporary value in
-regs, etc.). This is especially dangerous when the compiler decides to
-inline the function and since it doesn't know that the value gets
-modified, it might decide to use it from a register directly without
-reloading it.
-
-Change the constraint to "+a" to denote that the first argument is an
-input and an output argument.
-
-  [ bp: Fix typo, massage commit message. ]
-
-Fixes: e01b70ef3eb3 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220329104705.65256-2-ammarfaizi2@gnuweeb.org
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
 ---
- arch/x86/lib/delay.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../media/v4l/ext-ctrls-codec-stateless.rst            | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
-index 65d15df..0e65d00 100644
---- a/arch/x86/lib/delay.c
-+++ b/arch/x86/lib/delay.c
-@@ -54,8 +54,8 @@ static void delay_loop(u64 __loops)
- 		"	jnz 2b		\n"
- 		"3:	dec %0		\n"
- 
--		: /* we don't need output */
--		:"a" (loops)
-+		: "+a" (loops)
-+		:
- 	);
- }
- 
+diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
+index 6541e4c32b26..49f89b702068 100644
+--- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
++++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
+@@ -649,10 +649,16 @@ Stateless Codec Control ID
+         :c:type:`timeval` in struct :c:type:`v4l2_buffer` to a __u64.
+     * - __u32
+       - ``pic_num``
+-      -
++      - For short term references, this should match the derived value PicNum
++	(8-28) and for long term references it should match the derived value
++	LongTermPicNum (8-29). Note that pic_num is the same as FrameNumWrap
++	for frame decoding.
+     * - __u16
+       - ``frame_num``
+-      -
++      - For short term references, this should match the frame_num value from
++	the slice header syntax (the driver will wrap the value if neeeded). For
++	long term references, this should be set to the value of
++	long_term_frame_idx described in the dec_ref_pic_marking() syntax.
+     * - __u8
+       - ``fields``
+       - Specifies how the DPB entry is referenced. See :ref:`Reference Fields <h264_ref_fields>`
+-- 
+2.34.1
+
