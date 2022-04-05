@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7A8C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E55B4C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233070AbiDEH4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
+        id S233197AbiDEH46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233583AbiDEHsD (ORCPT
+        with ESMTP id S233271AbiDEHrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:48:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A8222F;
-        Tue,  5 Apr 2022 00:46:05 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E698BB7C4;
+        Tue,  5 Apr 2022 00:43:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 191BEB81BA7;
-        Tue,  5 Apr 2022 07:46:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 694F7C340EE;
-        Tue,  5 Apr 2022 07:46:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1735616BF;
+        Tue,  5 Apr 2022 07:43:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9725C340EE;
+        Tue,  5 Apr 2022 07:43:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144762;
-        bh=wxo5Qgm4ML6MQghSIyIPjrQXgvNxgJgLaqb67pNgPhk=;
+        s=korg; t=1649144626;
+        bh=PwoYvdv/B8jGc1fJpLaxWKJ5aWs33AsXDs0Dcffi23s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PbALRs1XrjO1hQi68GyXRvQP4Q7stZ6/RhNQJcKgWAEBxMhjtsxs4KTXsOsnMS/pf
-         a9e5TZn/9IvA2b+vsJMPw8H/+A8+aMN6X2CaYRCk1hfqTYwGxG1vcew5F5yxPzJQV8
-         nPgbY5/5Q+H/CI3NhQRmeCvu/sYiZOzUJmPEyHaM=
+        b=Qk5YAqJpDu78BULHfc7PtXUqhZITz+cU1uKCwrTsJzswhio/nPrj6Lzfh9GvwjxjO
+         4ygTaKIGRXPn3uthXDaQcQG9n+hEW8LKL0kpdO5R2NO9AJKe6mQ3i/LQDsuhKqRxku
+         rC9xTSuXfQSQ9UUI+90FDZPHO6UT569usRCcIn78=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Vitaly Chikunov <vt@altlinux.org>,
-        Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.17 0162/1126] crypto: rsa-pkcs1pad - restore signature length check
-Date:   Tue,  5 Apr 2022 09:15:09 +0200
-Message-Id: <20220405070412.348174075@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>
+Subject: [PATCH 5.17 0113/1126] dm: interlock pending dm_io and dm_wait_for_bios_completion
+Date:   Tue,  5 Apr 2022 09:14:20 +0200
+Message-Id: <20220405070410.887516282@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,46 +48,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Mike Snitzer <snitzer@redhat.com>
 
-commit d3481accd974541e6a5d6a1fb588924a3519c36e upstream.
+commit 9f6dc633761006f974701d4c88da71ab68670749 upstream.
 
-RSA PKCS#1 v1.5 signatures are required to be the same length as the RSA
-key size.  RFC8017 specifically requires the verifier to check this
-(https://datatracker.ietf.org/doc/html/rfc8017#section-8.2.2).
+Commit d208b89401e0 ("dm: fix mempool NULL pointer race when
+completing IO") didn't go far enough.
 
-Commit a49de377e051 ("crypto: Add hash param to pkcs1pad") changed the
-kernel to allow longer signatures, but didn't explain this part of the
-change; it seems to be unrelated to the rest of the commit.
+When bio_end_io_acct ends the count of in-flight I/Os may reach zero
+and the DM device may be suspended. There is a possibility that the
+suspend races with dm_stats_account_io.
 
-Revert this change, since it doesn't appear to be correct.
+Fix this by adding percpu "pending_io" counters to track outstanding
+dm_io. Move kicking of suspend queue to dm_io_dec_pending(). Also,
+rename md_in_flight_bios() to dm_in_flight_bios() and update it to
+iterate all pending_io counters.
 
-We can be pretty sure that no one is relying on overly-long signatures
-(which would have to be front-padded with zeroes) being supported, given
-that they would have been broken since commit c7381b012872
-("crypto: akcipher - new verify API for public key algorithms").
-
-Fixes: a49de377e051 ("crypto: Add hash param to pkcs1pad")
-Cc: <stable@vger.kernel.org> # v4.6+
-Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
-Suggested-by: Vitaly Chikunov <vt@altlinux.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: d208b89401e0 ("dm: fix mempool NULL pointer race when completing IO")
+Cc: stable@vger.kernel.org
+Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/rsa-pkcs1pad.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-core.h |    2 ++
+ drivers/md/dm.c      |   35 +++++++++++++++++++++++------------
+ 2 files changed, 25 insertions(+), 12 deletions(-)
 
---- a/crypto/rsa-pkcs1pad.c
-+++ b/crypto/rsa-pkcs1pad.c
-@@ -538,7 +538,7 @@ static int pkcs1pad_verify(struct akciph
+--- a/drivers/md/dm-core.h
++++ b/drivers/md/dm-core.h
+@@ -65,6 +65,8 @@ struct mapped_device {
+ 	struct gendisk *disk;
+ 	struct dax_device *dax_dev;
  
- 	if (WARN_ON(req->dst) ||
- 	    WARN_ON(!req->dst_len) ||
--	    !ctx->key_size || req->src_len < ctx->key_size)
-+	    !ctx->key_size || req->src_len != ctx->key_size)
- 		return -EINVAL;
++	unsigned long __percpu *pending_io;
++
+ 	/*
+ 	 * A list of ios that arrived while we were suspended.
+ 	 */
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -507,10 +507,6 @@ static void end_io_acct(struct mapped_de
+ 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
+ 				    bio->bi_iter.bi_sector, bio_sectors(bio),
+ 				    true, duration, stats_aux);
+-
+-	/* nudge anyone waiting on suspend queue */
+-	if (unlikely(wq_has_sleeper(&md->wait)))
+-		wake_up(&md->wait);
+ }
  
- 	req_ctx->out_buf = kmalloc(ctx->key_size + req->dst_len, GFP_KERNEL);
+ static struct dm_io *alloc_io(struct mapped_device *md, struct bio *bio)
+@@ -531,6 +527,7 @@ static struct dm_io *alloc_io(struct map
+ 	io->magic = DM_IO_MAGIC;
+ 	io->status = 0;
+ 	atomic_set(&io->io_count, 1);
++	this_cpu_inc(*md->pending_io);
+ 	io->orig_bio = bio;
+ 	io->md = md;
+ 	spin_lock_init(&io->endio_lock);
+@@ -828,6 +825,12 @@ void dm_io_dec_pending(struct dm_io *io,
+ 		stats_aux = io->stats_aux;
+ 		free_io(md, io);
+ 		end_io_acct(md, bio, start_time, &stats_aux);
++		smp_wmb();
++		this_cpu_dec(*md->pending_io);
++
++		/* nudge anyone waiting on suspend queue */
++		if (unlikely(wq_has_sleeper(&md->wait)))
++			wake_up(&md->wait);
+ 
+ 		if (io_error == BLK_STS_DM_REQUEUE)
+ 			return;
+@@ -1622,6 +1625,11 @@ static void cleanup_mapped_device(struct
+ 		blk_cleanup_disk(md->disk);
+ 	}
+ 
++	if (md->pending_io) {
++		free_percpu(md->pending_io);
++		md->pending_io = NULL;
++	}
++
+ 	cleanup_srcu_struct(&md->io_barrier);
+ 
+ 	mutex_destroy(&md->suspend_lock);
+@@ -1723,6 +1731,10 @@ static struct mapped_device *alloc_dev(i
+ 	if (!md->wq)
+ 		goto bad;
+ 
++	md->pending_io = alloc_percpu(unsigned long);
++	if (!md->pending_io)
++		goto bad;
++
+ 	dm_stats_init(&md->stats);
+ 
+ 	/* Populate the mapping, nobody knows we exist yet */
+@@ -2130,16 +2142,13 @@ void dm_put(struct mapped_device *md)
+ }
+ EXPORT_SYMBOL_GPL(dm_put);
+ 
+-static bool md_in_flight_bios(struct mapped_device *md)
++static bool dm_in_flight_bios(struct mapped_device *md)
+ {
+ 	int cpu;
+-	struct block_device *part = dm_disk(md)->part0;
+-	long sum = 0;
++	unsigned long sum = 0;
+ 
+-	for_each_possible_cpu(cpu) {
+-		sum += part_stat_local_read_cpu(part, in_flight[0], cpu);
+-		sum += part_stat_local_read_cpu(part, in_flight[1], cpu);
+-	}
++	for_each_possible_cpu(cpu)
++		sum += *per_cpu_ptr(md->pending_io, cpu);
+ 
+ 	return sum != 0;
+ }
+@@ -2152,7 +2161,7 @@ static int dm_wait_for_bios_completion(s
+ 	while (true) {
+ 		prepare_to_wait(&md->wait, &wait, task_state);
+ 
+-		if (!md_in_flight_bios(md))
++		if (!dm_in_flight_bios(md))
+ 			break;
+ 
+ 		if (signal_pending_state(task_state, current)) {
+@@ -2164,6 +2173,8 @@ static int dm_wait_for_bios_completion(s
+ 	}
+ 	finish_wait(&md->wait, &wait);
+ 
++	smp_rmb();
++
+ 	return r;
+ }
+ 
 
 
