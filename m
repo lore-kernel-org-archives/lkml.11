@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25207C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F17C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386895AbiDEO0U (ORCPT
+        id S1386840AbiDEO0H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
+        Tue, 5 Apr 2022 10:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238975AbiDEJdO (ORCPT
+        with ESMTP id S239011AbiDEJdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC15B65BE;
-        Tue,  5 Apr 2022 02:21:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:33:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44992253C;
+        Tue,  5 Apr 2022 02:21:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 592DF61659;
-        Tue,  5 Apr 2022 09:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D8C1C385A0;
-        Tue,  5 Apr 2022 09:21:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CD9E3CE1B55;
+        Tue,  5 Apr 2022 09:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6863C385A0;
+        Tue,  5 Apr 2022 09:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150473;
-        bh=J8mG5Pfp5AfAZ4u+oOLHAH5QWR4BiWuX80fwZm8JEp8=;
+        s=korg; t=1649150501;
+        bh=RM0KKzpT8cLsJyrZoDbIHvg0ONgKHvUQdCMuQWGyK5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0RBe74Q5KUruw5CdKe4tfDongElvGsWUq1iUjBp2aILjBi5O7TEfYHYhfx0JycdWU
-         yQI8MWK7GM07M4JpPjIpEPl8QbhjX/mcCD8KTwbO0rrLOBJxnCNBrIAhhN60s9+gKp
-         zXxwvZTbA3ja0T7zUk8xekbpATUpszih30wXPHUA=
+        b=YYllX3CCcY12mp+dfZiNgCVJSrVGQ3pH1ufYXbl8hca3DSyq91bn6iagbjym3dyy7
+         vkOZufzv+J0QW4ayPgvumXii+f4LpJhw2ua6UuaqrskmE092lcHXp/L3L8YNMm4FP8
+         T2UiFOITOzAbMvVBRUm5XSyEBDvoeKwMfZae14nk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juhyung Park <qkrwngud825@gmail.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.15 068/913] f2fs: quota: fix loop condition at f2fs_quota_sync()
-Date:   Tue,  5 Apr 2022 09:18:50 +0200
-Message-Id: <20220405070341.861641025@linuxfoundation.org>
+        stable@vger.kernel.org, Sebastian Haas <haas@ems-wuensche.com>,
+        Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 077/913] can: ems_usb: ems_usb_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Tue,  5 Apr 2022 09:18:59 +0200
+Message-Id: <20220405070342.132216232@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,95 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juhyung Park <qkrwngud825@gmail.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 680af5b824a52faa819167628665804a14f0e0df upstream.
+commit c70222752228a62135cee3409dccefd494a24646 upstream.
 
-cnt should be passed to sb_has_quota_active() instead of type to check
-active quota properly.
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+beacause can_put_echo_skb() deletes the original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-Moreover, when the type is -1, the compiler with enough inline knowledge
-can discard sb_has_quota_active() check altogether, causing a NULL pointer
-dereference at the following inode_lock(dqopt->files[cnt]):
-
-[    2.796010] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000a0
-[    2.796024] Mem abort info:
-[    2.796025]   ESR = 0x96000005
-[    2.796028]   EC = 0x25: DABT (current EL), IL = 32 bits
-[    2.796029]   SET = 0, FnV = 0
-[    2.796031]   EA = 0, S1PTW = 0
-[    2.796032] Data abort info:
-[    2.796034]   ISV = 0, ISS = 0x00000005
-[    2.796035]   CM = 0, WnR = 0
-[    2.796046] user pgtable: 4k pages, 39-bit VAs, pgdp=00000003370d1000
-[    2.796048] [00000000000000a0] pgd=0000000000000000, pud=0000000000000000
-[    2.796051] Internal error: Oops: 96000005 [#1] PREEMPT SMP
-[    2.796056] CPU: 7 PID: 640 Comm: f2fs_ckpt-259:7 Tainted: G S                5.4.179-arter97-r8-64666-g2f16e087f9d8 #1
-[    2.796057] Hardware name: Qualcomm Technologies, Inc. Lahaina MTP lemonadep (DT)
-[    2.796059] pstate: 80c00005 (Nzcv daif +PAN +UAO)
-[    2.796065] pc : down_write+0x28/0x70
-[    2.796070] lr : f2fs_quota_sync+0x100/0x294
-[    2.796071] sp : ffffffa3f48ffc30
-[    2.796073] x29: ffffffa3f48ffc30 x28: 0000000000000000
-[    2.796075] x27: ffffffa3f6d718b8 x26: ffffffa415fe9d80
-[    2.796077] x25: ffffffa3f7290048 x24: 0000000000000001
-[    2.796078] x23: 0000000000000000 x22: ffffffa3f7290000
-[    2.796080] x21: ffffffa3f72904a0 x20: ffffffa3f7290110
-[    2.796081] x19: ffffffa3f77a9800 x18: ffffffc020aae038
-[    2.796083] x17: ffffffa40e38e040 x16: ffffffa40e38e6d0
-[    2.796085] x15: ffffffa40e38e6cc x14: ffffffa40e38e6d0
-[    2.796086] x13: 00000000000004f6 x12: 00162c44ff493000
-[    2.796088] x11: 0000000000000400 x10: ffffffa40e38c948
-[    2.796090] x9 : 0000000000000000 x8 : 00000000000000a0
-[    2.796091] x7 : 0000000000000000 x6 : 0000d1060f00002a
-[    2.796093] x5 : ffffffa3f48ff718 x4 : 000000000000000d
-[    2.796094] x3 : 00000000060c0000 x2 : 0000000000000001
-[    2.796096] x1 : 0000000000000000 x0 : 00000000000000a0
-[    2.796098] Call trace:
-[    2.796100]  down_write+0x28/0x70
-[    2.796102]  f2fs_quota_sync+0x100/0x294
-[    2.796104]  block_operations+0x120/0x204
-[    2.796106]  f2fs_write_checkpoint+0x11c/0x520
-[    2.796107]  __checkpoint_and_complete_reqs+0x7c/0xd34
-[    2.796109]  issue_checkpoint_thread+0x6c/0xb8
-[    2.796112]  kthread+0x138/0x414
-[    2.796114]  ret_from_fork+0x10/0x18
-[    2.796117] Code: aa0803e0 aa1f03e1 52800022 aa0103e9 (c8e97d02)
-[    2.796120] ---[ end trace 96e942e8eb6a0b53 ]---
-[    2.800116] Kernel panic - not syncing: Fatal exception
-[    2.800120] SMP: stopping secondary CPUs
-
-Fixes: 9de71ede81e6 ("f2fs: quota: fix potential deadlock")
-Cc: <stable@vger.kernel.org> # v5.15+
-Signed-off-by: Juhyung Park <qkrwngud825@gmail.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Link: https://lore.kernel.org/all/20220228083639.38183-1-hbh25y@gmail.com
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
+Cc: stable@vger.kernel.org
+Cc: Sebastian Haas <haas@ems-wuensche.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/super.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/can/usb/ems_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -2676,7 +2676,7 @@ int f2fs_quota_sync(struct super_block *
- 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
- 	struct quota_info *dqopt = sb_dqopt(sb);
- 	int cnt;
--	int ret;
-+	int ret = 0;
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -823,7 +823,6 @@ static netdev_tx_t ems_usb_start_xmit(st
  
- 	/*
- 	 * Now when everything is written we can discard the pagecache so
-@@ -2687,8 +2687,8 @@ int f2fs_quota_sync(struct super_block *
- 		if (type != -1 && cnt != type)
- 			continue;
+ 		usb_unanchor_urb(urb);
+ 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
+-		dev_kfree_skb(skb);
  
--		if (!sb_has_quota_active(sb, type))
--			return 0;
-+		if (!sb_has_quota_active(sb, cnt))
-+			continue;
- 
- 		inode_lock(dqopt->files[cnt]);
+ 		atomic_dec(&dev->active_tx_urbs);
  
 
 
