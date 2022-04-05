@@ -2,429 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A348C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A70ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582660AbiDEXtH (ORCPT
+        id S1582689AbiDEXtP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
+        Tue, 5 Apr 2022 19:49:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458006AbiDEREa (ORCPT
+        with ESMTP id S1351951AbiDEKDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:04:30 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B95736B74
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:02:30 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id y6so11423666plg.2
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:02:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yO8HbIMVJgMW92Isut2vOmUaNAYMH1DhCX86wHWJRSo=;
-        b=tHoByH669Szdsl21UDdyYcrAEwgfn57/nEFHCCWGLnAW2OsToxC+wap4hC2m2CFRAl
-         trycQUQ11z24buiTdAHPYeCPKgFs/eznc3xu2uup5hJvdlp8V5TL+7wPS6BC2um9unhf
-         hcxbB5j/9u+1OVIWDMCbW4ja+iO7sEReGDJMRvEUrrf5OxIz8J162VM/RHkwdfrY09qe
-         1PZoGUmeymn9j6UW/NDhiY91+amYrTrK9lWuaezy+Z3K/5uP2PX+aec19HC+1JaKIhaI
-         m23qxAgniw+XmquyPgw7G/AA79tqhnxEtc3x8BVu7uh314cN8NyFtUrFq5iAR0dBbb43
-         IzAQ==
+        Tue, 5 Apr 2022 06:03:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8CB16A5E84
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:52:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649152357;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EKqNwDVXh0g59f1MR986HOwdQbf3gnXSvWESiK0Rw5E=;
+        b=dZk79HK2Dk5tchMGLY3feQ7LkJpvYstLKmrLMx3XsUshgn4gMsVjdEDaasvjKUY4oYeoOH
+        HW4jQNW02MgIZHFaxHBGZF2GNIYajW5nxJKBbWriaFNRjWFOgb5ZXhjXitEi/n52yNvaif
+        60lBxdWR/TRcdb18il6mFPmQqCnGY1Q=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-315-oVfmL2kMOO6gmjXV3AykAw-1; Tue, 05 Apr 2022 05:52:36 -0400
+X-MC-Unique: oVfmL2kMOO6gmjXV3AykAw-1
+Received: by mail-wr1-f71.google.com with SMTP id v30-20020adfa1de000000b002060d11eb63so1387249wrv.7
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:52:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yO8HbIMVJgMW92Isut2vOmUaNAYMH1DhCX86wHWJRSo=;
-        b=rBxxO973ApV4M1n28m8JL/tHw8H/zvEvK+f7FdCM9Hrc5wnPWlRyd6ekZ/QML1sVMI
-         ahdVvU/talU0jsXf1Q8cEpTvmCuKkhDXDcD2OJN2XBCfb+s/ZIrQdiZqseUTElxtHaWo
-         SvsqxX81o0RMvZh/aKBpbAlsyhV5D/YL9IGPvBKHdzN/BRdmsa3uqOfaC5Fjf2WUg+Qk
-         QH+hZ665XZV54AIOmbX9VQAQ4jvMLByjQcJq7NUOt8TG9Sgwa4O4i5JcIBSJbYm/MoAz
-         kZllw+swEXUun3QdMBKQNmGx0ntq+CYISsFqCErPr3vN3Q9YwVMLN/SHTB1hUrj32jEB
-         jeNw==
-X-Gm-Message-State: AOAM5335oFPdLraYfiO/E6HoKEK9MzXdb+EA8J6hJiNVpIZ1BZgmLodc
-        a5w1F00QMKkPrJdpanHEYq0asg==
-X-Google-Smtp-Source: ABdhPJzKSi5DdnjoR2l0Nmc2GMfO1SmhjMFV5BVTWYvenktsc0lHTuNfpNSQWBGXgTVrADjQczjokQ==
-X-Received: by 2002:a17:902:8306:b0:14f:a386:6a44 with SMTP id bd6-20020a170902830600b0014fa3866a44mr4455290plb.140.1649178149924;
-        Tue, 05 Apr 2022 10:02:29 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id z2-20020aa79902000000b004fb05c04b53sm17240460pff.103.2022.04.05.10.02.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 10:02:27 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 11:02:23 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Mike Leach <mike.leach@linaro.org>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        linux-perf-users@vger.kernel.org, leo.yan@linaro.org
-Subject: Re: [PATCH 01/10] coresight: trace-id: Add API to dynamically assign
- trace ID values
-Message-ID: <20220405170223.GA4151723@p14s>
-References: <20220308205000.27646-1-mike.leach@linaro.org>
- <20220308205000.27646-2-mike.leach@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EKqNwDVXh0g59f1MR986HOwdQbf3gnXSvWESiK0Rw5E=;
+        b=Y5yA/hupr64lVL5oKJgWpsyS6UH3a7hy+cZ8RA7lUibVS9Ve/zd3+ZgoEpgOlfi9UE
+         BjR8C0QTkNfIMmph1LQ5lQ0G82ZFiGosJ7TJZdB7AWcVce0+eq+c4P2SJ4P/hyVrUIX8
+         JhVV5tzUb4IN9SMN0hLqTp2B945BIYJhqtvfuMfPS/s/qrOBVDDweFIhgqsAZh0wSLit
+         B3kShXEqA2QIsdegOQB8/QjqiD+ok217rxnX/lEwRhAGSfhJLnVWr9VvbWjQHw7yV7n+
+         8N1o2kiwzZZB8Z5P8reQOYK6ghLFbEcNH5X/kagnn6zj/LFkdM7ANwWbosJQ8hiGcws1
+         44Qw==
+X-Gm-Message-State: AOAM531w+IVxVM5nwyBpCw7Yl98bJqfHv1+ZGXGWam0fQ7IENR0DC2M1
+        Ry7ToPWXFzUSdPWvrsTy/vGRv7AC4lQw90HvXTcUyUU1GSDk7S3DvzqusuIGRajEHQttwtYfg2m
+        D4cV428IKyf8vOnpObHMSsK54
+X-Received: by 2002:a1c:770e:0:b0:38e:75d3:16f2 with SMTP id t14-20020a1c770e000000b0038e75d316f2mr2244424wmi.204.1649152354885;
+        Tue, 05 Apr 2022 02:52:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwmRwRtyUQRVrKEcfVYMrKeLB3/oCcKnV0ten450p4GScIETbruCyXTcG+eLnrIWu6wGR5FQg==
+X-Received: by 2002:a1c:770e:0:b0:38e:75d3:16f2 with SMTP id t14-20020a1c770e000000b0038e75d316f2mr2244401wmi.204.1649152354614;
+        Tue, 05 Apr 2022 02:52:34 -0700 (PDT)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id p15-20020a05600c358f00b0038cc046cb2esm2655361wmq.32.2022.04.05.02.52.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 02:52:34 -0700 (PDT)
+Message-ID: <e124af06-4f24-277a-543a-82b383f48cea@redhat.com>
+Date:   Tue, 5 Apr 2022 11:52:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220308205000.27646-2-mike.leach@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 18/19] Revert "fbdev: Prevent probing generic drivers
+ if a FB is already registered"
+Content-Language: en-US
+To:     Daniel Vetter <daniel@ffwll.ch>
+Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Zack Rusin <zackr@vmware.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Ilya Trukhanov <lahvuun@gmail.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Peter Jones <pjones@redhat.com>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+ <20220208210824.2238981-19-daniel.vetter@ffwll.ch>
+ <4ae20b63-f452-fdb4-ced6-d4968a8d69f0@redhat.com>
+ <Ykv/k/WoVemoCJJA@phenom.ffwll.local> <YkwAhSt9HlbxcuZo@phenom.ffwll.local>
+ <408ffe9b-f09f-dc7e-7f5e-a93b311a06fa@redhat.com>
+ <CAKMK7uHf6H8mhSm6eDHUruWK5Xc2cSPkJUX6v-jpeQfjS19dKw@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAKMK7uHf6H8mhSm6eDHUruWK5Xc2cSPkJUX6v-jpeQfjS19dKw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Good morning,
+On 4/5/22 11:24, Daniel Vetter wrote:
+> On Tue, 5 Apr 2022 at 11:19, Javier Martinez Canillas
 
-To avoid getting tunnel vision, I haven't red any of the comments already posted
-about this set.  As such some of my observations may be redundant.
+[snip]
 
-On Tue, Mar 08, 2022 at 08:49:51PM +0000, Mike Leach wrote:
-> The existing mechanism to assign Trace ID values to sources is limited
-> and does not scale for larger multicore / multi trace source systems.
+>>
+>> This is how I think that work, please let me know if you see something
+>> wrong in my logic:
+>>
+>> 1) A PCI device of OF device is registered for the GPU, this attempt to
+>>    match a registered driver but no driver was registered that match yet.
+>>
+>> 2) The efifb driver is built-in, will be initialized according to the link
+>>    order of the objects under drivers/video and the fbdev driver is registered.
+>>
+>>    There is no platform device or PCI/OF device registered that matches.
+>>
+>> 3) The DRM driver is built-in, will be initialized according to the link
+>>    order of the objects under drivers/gpu and the DRM driver is registered.
+>>
+>>    This matches the device registered in (1) and the DRM driver probes.
+>>
+>> 4) The DRM driver .probe kicks out any conflicting DRM drivers and pdev
+>>    before registering the DRM device.
+>>
+>>    There are no conflicting drivers or platform device at this point.
+>>
+>> 5) Latter at some point the drivers/firmware/sysfb.c init function is
+>>    executed, and this registers a platform device for the generic fb.
+>>
+>>    This device matches the efifb driver registered in (2) and the fbdev
+>>    driver probes.
+>>
+>>    Since that happens *after* the DRM driver already matched, probed
+>>    and registered the DRM device, that is a bug and what the reverted
+>>    patch worked around.
+>>
+>> So we need to prevent (5) if (1) and (3) already happened. Having a flag
+>> set in the fbdev core somewhere when remove_conflicting_framebuffers()
+>> is called could be a solution indeed.
+>>
+>> That is, the fbdev core needs to know that a DRM driver already probed
+>> and make register_framebuffer() fail if info->flag & FBINFO_MISC_FIRMWARE
+>>
+>> I can attempt to write a patch for that.
 > 
-> The API introduces functions that reserve IDs based on availabilty
-> represented by a coresight_trace_id_map structure. This records the
-> used and free IDs in a bitmap.
-> 
-> CPU bound sources such as ETMs use the coresight_trace_id_get_cpu_id /
-> coresight_trace_id_put_cpu_id pair of functions. The API will record
-> the ID associated with the CPU. This ensures that the same ID will be
-> re-used while perf events are active on the CPU. The put_cpu_id function
-> will pend release of the ID until all perf cs_etm sessions are complete.
-> 
-> Non-cpu sources, such as the STM can use coresight_trace_id_get_system_id /
-> coresight_trace_id_put_system_id.
-> 
-> Signed-off-by: Mike Leach <mike.leach@linaro.org>
-> ---
->  drivers/hwtracing/coresight/Makefile          |   2 +-
->  .../hwtracing/coresight/coresight-trace-id.c  | 222 ++++++++++++++++++
->  .../hwtracing/coresight/coresight-trace-id.h  |  69 ++++++
->  3 files changed, 292 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.c
->  create mode 100644 drivers/hwtracing/coresight/coresight-trace-id.h
-> 
-> diff --git a/drivers/hwtracing/coresight/Makefile b/drivers/hwtracing/coresight/Makefile
-> index b6c4a48140ec..329a0c704b87 100644
-> --- a/drivers/hwtracing/coresight/Makefile
-> +++ b/drivers/hwtracing/coresight/Makefile
-> @@ -6,7 +6,7 @@ obj-$(CONFIG_CORESIGHT) += coresight.o
->  coresight-y := coresight-core.o  coresight-etm-perf.o coresight-platform.o \
->  		coresight-sysfs.o coresight-syscfg.o coresight-config.o \
->  		coresight-cfg-preload.o coresight-cfg-afdo.o \
-> -		coresight-syscfg-configfs.o
-> +		coresight-syscfg-configfs.o coresight-trace-id.o
->  obj-$(CONFIG_CORESIGHT_LINK_AND_SINK_TMC) += coresight-tmc.o
->  coresight-tmc-y := coresight-tmc-core.o coresight-tmc-etf.o \
->  		      coresight-tmc-etr.o
-> diff --git a/drivers/hwtracing/coresight/coresight-trace-id.c b/drivers/hwtracing/coresight/coresight-trace-id.c
-> new file mode 100644
-> index 000000000000..ce6c7d7b55d6
-> --- /dev/null
-> +++ b/drivers/hwtracing/coresight/coresight-trace-id.c
-> @@ -0,0 +1,222 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2022, Linaro Limited, All rights reserved.
-> + * Author: Mike Leach <mike.leach@linaro.org>
-> + */
-> +#include <linux/kernel.h>
-> +#include <linux/types.h>
-> +#include <linux/spinlock.h>
-> +
-> +#include "coresight-trace-id.h"
-> +
-> +/* need to keep data on ids & association with cpus. */
-> +struct cpu_id_info {
-> +	int id;
-> +	bool pend_rel;
-> +};
-> +
-> +/* maintain a record of the current mapping of cpu IDs */
-> +static DEFINE_PER_CPU(struct cpu_id_info, cpu_ids);
-> +
-> +/* a list of currently used id_maps */
-> +static LIST_HEAD(id_map_list);
-> +
-> +/* perf session active flag */
-> +static int perf_cs_etm_session_active;
-> +
-> +/* lock to protect id_map list and cpu data  */
-> +static DEFINE_SPINLOCK(id_map_lock);
-> +
-> +/* ID 0 is reserved */
-> +#define CORESIGHT_TRACE_ID_RES_0 0
-> +
-> +/* ID 0x70 onwards are reserved */
-> +#define CORESIGHT_TRACE_ID_RES_RANGE_LO 0x70
-> +#define CORESIGHT_TRACE_ID_RES_RANGE_HI 0x7F
-> +
-> +#define IS_VALID_ID(id)	\
-> +	((id > CORESIGHT_TRACE_ID_RES_0) && (id < CORESIGHT_TRACE_ID_RES_RANGE_LO))
-> +
-> +static void coresight_trace_id_set_inuse(int id, struct coresight_trace_id_map *id_map)
-> +{
-> +	if (IS_VALID_ID(id))
-> +		set_bit(id, id_map->avail_ids);
-> +}
-> +
-> +static void coresight_trace_id_clear_inuse(int id, struct coresight_trace_id_map *id_map)
-> +{
-> +	if (IS_VALID_ID(id))
-> +		clear_bit(id, id_map->avail_ids);
-> +}
-> +
-> +static void coresight_trace_id_set_pend_rel(int id, struct coresight_trace_id_map *id_map)
-> +{
-> +	if (IS_VALID_ID(id))
-> +		set_bit(id, id_map->pend_rel_ids);
-> +}
-> +
-> +static void coresight_trace_id_clear_pend_rel(int id, struct coresight_trace_id_map *id_map)
-> +{
-> +	if (IS_VALID_ID(id))
-> +		clear_bit(id, id_map->pend_rel_ids);
-> +}
-> +
-> +static int coresight_trace_id_find_new_id(struct coresight_trace_id_map *id_map)
-> +{
-> +	int id;
-> +
-> +	id = find_first_zero_bit(id_map->avail_ids, CORESIGHT_TRACE_IDS_MAX);
-> +	if (id >= CORESIGHT_TRACE_IDS_MAX)
-> +		id = -EINVAL;
-> +	return id;
-> +}
-> +
-> +/* release all pending IDs for all current maps & clear CPU associations */
-> +static void coresight_trace_id_release_all_pending(void)
-> +{
-> +	struct coresight_trace_id_map *id_map;
-> +	int cpu, bit;
-> +
-> +	list_for_each_entry(id_map, &id_map_list, node) {
-> +		for_each_set_bit(bit, id_map->pend_rel_ids, CORESIGHT_TRACE_IDS_MAX) {
-> +			clear_bit(bit, id_map->avail_ids);
-> +			clear_bit(bit, id_map->pend_rel_ids);
-> +		}
-> +	}
-> +
-> +	for_each_possible_cpu(cpu) {
-> +		if (per_cpu(cpu_ids, cpu).pend_rel) {
-> +			per_cpu(cpu_ids, cpu).pend_rel = false;
-> +			per_cpu(cpu_ids, cpu).id = 0;
-> +		}
-> +	}
-> +}
-> +
-> +int coresight_trace_id_get_cpu_id(int cpu, struct coresight_trace_id_map *id_map)
-> +{
-> +	unsigned long flags;
-> +	int id;
-> +
-> +	spin_lock_irqsave(&id_map_lock, flags);
-> +	id = per_cpu(cpu_ids, cpu).id;
-> +	if (!id) {
-> +		id = coresight_trace_id_find_new_id(id_map);
-> +		if (id < 0)
-> +			goto get_cpu_id_out;
-> +	}
-> +
-> +	per_cpu(cpu_ids, cpu).id = id;
-> +	per_cpu(cpu_ids, cpu).pend_rel = false;
-> +	coresight_trace_id_set_inuse(id, id_map);
-> +	coresight_trace_id_clear_pend_rel(id, id_map);
+> Ah yeah that could be an issue. I think the right fix is to replace
+> the platform dev unregister with a sysfb_unregister() function in
+> sysfb.c, which is synced with a common lock with the sysfb_init
+> function and a small boolean. I think I can type that up quickly for
+> v3.
 
-The above should have been done when the ID for this CPU has been set for the
-first time.  Therefore we should simply release the spinlock and return if an ID
-has already been set.
+It's more complicated than that since sysfb is just *one* of the several
+places where platform devices can be registered for video devices.
 
-> +
-> +get_cpu_id_out:
-> +	spin_unlock_irqrestore(&id_map_lock, flags);
-> +	return id;
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_trace_id_get_cpu_id);
-> +
-> +void coresight_trace_id_put_cpu_id(int cpu, struct coresight_trace_id_map *id_map)
-> +{
-> +	unsigned long flags;
-> +	int id;
-> +
-> +	spin_lock_irqsave(&id_map_lock, flags);
-> +	id = per_cpu(cpu_ids, cpu).id;
-> +	if (!id)
-> +		goto put_cpu_id_out;
-> +
-> +	if (perf_cs_etm_session_active) {
-> +		/* set release at pending if perf still active */
-> +		coresight_trace_id_set_pend_rel(id, id_map);
-> +		per_cpu(cpu_ids, cpu).pend_rel = true;
-> +	} else {
-> +		/* otherwise clear id */
-> +		coresight_trace_id_clear_inuse(id, id_map);
-> +		per_cpu(cpu_ids, cpu).id = 0;
-> +	}
-> +
-> + put_cpu_id_out:
-> +	spin_unlock_irqrestore(&id_map_lock, flags);
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_trace_id_put_cpu_id);
-> +
-> +int coresight_trace_id_get_system_id(struct coresight_trace_id_map *id_map)
-> +{
+For instance, the vga16fb driver registers its own platform device in
+its module_init() function so that can also happen after the conflicting
+framebuffers (and associated devices) were removed by a DRM driver probe.
 
-So far I have reviewed until patch 05 and I find passing the id_map every time
-we need an ID quite heavy, especially since it is always the same one. 
+I tried to minimize the issue for that particular driver with commit:
 
-> +	unsigned long flags;
-> +	int id;
-> +
-> +	spin_lock_irqsave(&id_map_lock, flags);
-> +	id = coresight_trace_id_find_new_id(id_map);
-> +	if (id > 0)
-> +		coresight_trace_id_set_inuse(id, id_map);
-> +	spin_unlock_irqrestore(&id_map_lock, flags);
-> +
-> +	return id;
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_trace_id_get_system_id);
-> +
-> +void coresight_trace_id_put_system_id(struct coresight_trace_id_map *id_map, int id)
-> +{
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&id_map_lock, flags);
-> +	coresight_trace_id_clear_inuse(id, id_map);
-> +	spin_unlock_irqrestore(&id_map_lock, flags);
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_trace_id_put_system_id);
-> +
-> +void coresight_trace_id_perf_start(void)
-> +{
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&id_map_lock, flags);
-> +	perf_cs_etm_session_active++;
-> +	spin_unlock_irqrestore(&id_map_lock, flags);
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_trace_id_perf_start);
-> +
-> +void coresight_trace_id_perf_stop(void)
-> +{
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&id_map_lock, flags);
-> +	perf_cs_etm_session_active--;
-> +	if (!perf_cs_etm_session_active)
-> +		coresight_trace_id_release_all_pending();
-> +	spin_unlock_irqrestore(&id_map_lock, flags);
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_trace_id_perf_stop);
-> +
-> +void coresight_trace_id_init_id_map(struct coresight_trace_id_map *id_map)
-> +{
-> +	unsigned long flags;
-> +	int bit;
-> +
-> +	/* set all reserved bits as in-use */
-> +	set_bit(CORESIGHT_TRACE_ID_RES_0, id_map->avail_ids);
-> +	for (bit = CORESIGHT_TRACE_ID_RES_RANGE_LO;
-> +	     bit <= CORESIGHT_TRACE_ID_RES_RANGE_HI; bit++)
-> +		set_bit(bit, id_map->avail_ids);
-> +
-> +	spin_lock_irqsave(&id_map_lock, flags);
-> +
-> +	/* add id_map to the list */
-> +	list_add(&id_map->node, &id_map_list);
-> +
-> +	spin_unlock_irqrestore(&id_map_lock, flags);
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_trace_id_init_id_map);
-> +
-> +void coresight_trace_id_release_id_map(struct coresight_trace_id_map *id_map)
-> +{
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&id_map_lock, flags);
-> +
-> +	/* remove id_map from list */
-> +	list_del(&id_map->node);
-> +
-> +	spin_unlock_irqrestore(&id_map_lock, flags);
-> +}
-> +EXPORT_SYMBOL_GPL(coresight_trace_id_release_id_map);
-> diff --git a/drivers/hwtracing/coresight/coresight-trace-id.h b/drivers/hwtracing/coresight/coresight-trace-id.h
-> new file mode 100644
-> index 000000000000..01db2441cee6
-> --- /dev/null
-> +++ b/drivers/hwtracing/coresight/coresight-trace-id.h
-> @@ -0,0 +1,69 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Copyright(C) 2022 Linaro Limited. All rights reserved.
-> + * Author: Mike Leach <mike.leach@linaro.org>
-> + */
-> +
-> +#ifndef _CORESIGHT_TRACE_ID_H
-> +#define _CORESIGHT_TRACE_ID_H
-> +
-> +/*
-> + * Coresight trace ID allocation API
-> + *
-> + * With multi cpu systems, and more additional trace sources a scalable
-> + * trace ID reservation system is required.
-> + *
-> + * The system will allocate Ids on a demand basis, and allow them to be
-> + * released when done.
-> + *
-> + * In order to ensure that a consistent cpu / ID matching is maintained
-> + * throughout a perf cs_etm event session - a session in progress flag will
-> + * be maintained, and released IDs not cleared until the perf session is
-> + * complete. This allows the same CPU to be re-allocated its prior ID.
-> + *
-> + *
-> + * Trace ID maps will be created and initialised to prevent architecturally
-> + * reserved IDs from being allocated.
-> + *
-> + * API permits multiple maps to be maintained - for large systems where
-> + * different sets of cpus trace into different independent sinks.
-> + */
-> +
-> +#include <linux/bitops.h>
-> +#include <linux/types.h>
-> +
-> +
-> +/* architecturally we have 128 IDs some of which are reserved */
-> +#define CORESIGHT_TRACE_IDS_MAX 128
-> +
-> +/**
-> + * Trace ID map.
-> + *
-> + * @avail_ids:	Bitmap to register available (bit = 0) and in use (bit = 1) IDs.
-> + *		Initialised so that the reserved IDs are permanently marked as in use.
-> + * @pend_rel_ids: CPU IDs that have been released by the trace source but not yet marked
-> + *                as available, to allow re-allocation to the same CPU during a perf session.
-> + * @node:	List entry to add to list of managed trace id maps.
-> + */
-> +struct coresight_trace_id_map {
-> +	DECLARE_BITMAP(avail_ids, CORESIGHT_TRACE_IDS_MAX);
-> +	DECLARE_BITMAP(pend_rel_ids, CORESIGHT_TRACE_IDS_MAX);
-> +	struct list_head node;
-> +};
-> +
-> +/* Allocate and release IDs */
-> +int coresight_trace_id_get_cpu_id(int cpu, struct coresight_trace_id_map *id_map);
-> +int coresight_trace_id_get_system_id(struct coresight_trace_id_map *id_map);
-> +void coresight_trace_id_put_cpu_id(int cpu, struct coresight_trace_id_map *id_map);
-> +void coresight_trace_id_put_system_id(struct coresight_trace_id_map *id_map, int id);
-> +
-> +/* initialise ID map - block reserved IDs, add to list of ID maps */
-> +void coresight_trace_id_init_id_map(struct coresight_trace_id_map *id_map);
-> +/* remove ID maps from list of maps */
-> +void coresight_trace_id_release_id_map(struct coresight_trace_id_map *id_map);
-> +
-> +/* notifiers for perf session start and stop */
-> +void coresight_trace_id_perf_start(void);
-> +void coresight_trace_id_perf_stop(void);
-> +
-> +#endif /* _CORESIGHT_TRACE_ID_H */
-> -- 
-> 2.17.1
-> 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0499f419b76f
+
+But the point stands, it all boils down to the fact that you have two
+different subsystems registering video drivers and they don't know all
+about each other to take a proper decision.
+
+Right now the drm_aperture_remove_conflicting_framebuffers() call signals
+in one direction from DRM to fbdev but there isn't a communication in the
+other direction, from fbdev to DRM.
+
+I believe the correct fix would be for the fbdev core to keep a list of
+the apertures struct that are passed to remove_conflicting_framebuffers(),
+that way it will know what apertures are not available anymore and prevent
+to register any fbdev framebuffer that conflicts with one already present.
+
+Let me know if you think that makes sense and I can attempt to write a fix.
+
+-- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
