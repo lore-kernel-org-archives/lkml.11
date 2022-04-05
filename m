@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF849C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 923EBC47080
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379322AbiDEUk3 (ORCPT
+        id S1377694AbiDEUkM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52548 "EHLO
+        Tue, 5 Apr 2022 16:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344198AbiDEKjp (ORCPT
+        with ESMTP id S1358045AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34DB167F8;
-        Tue,  5 Apr 2022 03:25:05 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A7F1D336;
+        Tue,  5 Apr 2022 03:13:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 810D0B81C8A;
-        Tue,  5 Apr 2022 10:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E82DCC385A1;
-        Tue,  5 Apr 2022 10:25:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61336B81BC5;
+        Tue,  5 Apr 2022 10:13:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1D2CC385A1;
+        Tue,  5 Apr 2022 10:13:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154303;
-        bh=vSWwKbrR19XdVO7iI7iBtjrl3iBpFXIU9WwNPn5PLvc=;
+        s=korg; t=1649153618;
+        bh=LvCTi8cFUKIEG52KnNtJJNe8rxzXwQARNshcH/HLx/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VJgYycZmPECV0oIKA+6dnvTRL+HMDbc6gZ33gs+zfpKUHoWiRDZ6VgeAARcRctCBO
-         tShBKaQQ43tFBNHHS8/yCUwk6GWGNvCF4GXfXNvfPvNurAbMsrQqTV3NlWBFn2x7rz
-         Lq8EGal1b9rYuan0gaWz383XZdwKSq44ex9/zyQw=
+        b=yb0/H6krviRwsEtY6g5JXrRvzn3NgbZQH4vxfbvd91pH6c1stdhvYhMyOHsa8kZ7B
+         p8YfZRmbyb7+aNEtbTxjLpYuMDJx3vJHPhLmeHcDSwAFSWOt184auRi8XIwOChmqe1
+         xhR/gKyP9D+F80unxGwV6JQKES9cAPUXlXi26Y/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 494/599] arm64: defconfig: build imx-sdma as a module
-Date:   Tue,  5 Apr 2022 09:33:08 +0200
-Message-Id: <20220405070313.529133383@linuxfoundation.org>
+Subject: [PATCH 5.10 248/599] ASoC: SOF: Add missing of_node_put() in imx8m_probe
+Date:   Tue,  5 Apr 2022 09:29:02 +0200
+Message-Id: <20220405070306.219805828@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,37 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit e95622289f263662240544a9f0009b25c19e64d4 ]
+[ Upstream commit 5575f7f49134c7386a684335c9007737c606d3b5 ]
 
-This avoids firmware load error and sysfs fallback reported as follows:
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-[    0.199448] imx-sdma 302c0000.dma-controller: Direct firmware load
- for imx/sdma/sdma-imx7d.bin failed with error -2
-[    0.199487] imx-sdma 302c0000.dma-controller: Falling back to sysfs
- fallback for: imx/sdma/sdma-imx7d.bin
-
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: afb93d716533 ("ASoC: SOF: imx: Add i.MX8M HW support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220308023325.31702-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/configs/defconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/sof/imx/imx8m.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 5cfe3cf6f2ac..2bdf38d05fa5 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -837,7 +837,7 @@ CONFIG_DMADEVICES=y
- CONFIG_DMA_BCM2835=y
- CONFIG_DMA_SUN6I=m
- CONFIG_FSL_EDMA=y
--CONFIG_IMX_SDMA=y
-+CONFIG_IMX_SDMA=m
- CONFIG_K3_DMA=y
- CONFIG_MV_XOR=y
- CONFIG_MV_XOR_V2=y
+diff --git a/sound/soc/sof/imx/imx8m.c b/sound/soc/sof/imx/imx8m.c
+index cb822d953767..6943c05273ae 100644
+--- a/sound/soc/sof/imx/imx8m.c
++++ b/sound/soc/sof/imx/imx8m.c
+@@ -191,6 +191,7 @@ static int imx8m_probe(struct snd_sof_dev *sdev)
+ 	}
+ 
+ 	ret = of_address_to_resource(res_node, 0, &res);
++	of_node_put(res_node);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to get reserved region address\n");
+ 		goto exit_pdev_unregister;
 -- 
 2.34.1
 
