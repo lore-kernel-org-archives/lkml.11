@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DE0C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058C7C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343886AbiDEUiW (ORCPT
+        id S1349727AbiDEUi6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:38:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        Tue, 5 Apr 2022 16:38:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356157AbiDEKXB (ORCPT
+        with ESMTP id S1358257AbiDEK2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5E2BA328;
-        Tue,  5 Apr 2022 03:07:12 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BA2DF53;
+        Tue,  5 Apr 2022 03:17:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1224B81C98;
-        Tue,  5 Apr 2022 10:07:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4272EC385A1;
-        Tue,  5 Apr 2022 10:07:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6792617AC;
+        Tue,  5 Apr 2022 10:17:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA655C385A1;
+        Tue,  5 Apr 2022 10:17:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153229;
-        bh=eDJaTrxhffV10w/kMeoNpwmv2L902VAwr21OzAVA9Cs=;
+        s=korg; t=1649153850;
+        bh=CciwU1bw+4WCz0Ui3+SMQBEO+ntSeXsekj6+OZdaYfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gfZMgpW6Mprj/xL92mTKoO4Yo5GT65sVf90YgeerSAh+u4TsxxjyG96ksfaUxz45N
-         8k0/XP1Gj2XuQKVkuo7Nf6NLliEp5czdz9uLq2ocIhaiJKcHBIdUwVr6triPmwauqR
-         DV6b/NOpdagEUETZ6HsWi3pZu54k7eCX6gzeSIug=
+        b=fdS0KzhWyAr1ycsoN4X53GkGI5mEoIJugtCsroW7Q2NgdktML0PccXnwQubxl2spl
+         7jaHZjiVpMOimyoWKjUHTzr0kFWjtuXxSPbWseeINm2/jQtDmemqrjQNtnYDiGMMT0
+         djRFrk9tmKpVw4IAsF47drvuY8FjZ37oAOaOEcwQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Eric Biggers <ebiggers@google.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Ping Fang <pifang@redhat.com>,
+        Daniel Henrique Barboza <danielhb413@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 147/599] block: dont delete queue kobject before its children
-Date:   Tue,  5 Apr 2022 09:27:21 +0200
-Message-Id: <20220405070303.216643436@linuxfoundation.org>
+Subject: [PATCH 5.10 331/599] powerpc/mm/numa: skip NUMA_NO_NODE onlining in parse_numa_properties()
+Date:   Tue,  5 Apr 2022 09:30:25 +0200
+Message-Id: <20220405070308.683131039@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -52,69 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Daniel Henrique Barboza <danielhb413@gmail.com>
 
-[ Upstream commit 0f69288253e9fc7c495047720e523b9f1aba5712 ]
+[ Upstream commit 749ed4a20657bcea66a6e082ca3dc0d228cbec80 ]
 
-kobjects aren't supposed to be deleted before their child kobjects are
-deleted.  Apparently this is usually benign; however, a WARN will be
-triggered if one of the child kobjects has a named attribute group:
+Executing node_set_online() when nid = NUMA_NO_NODE results in an
+undefined behavior. node_set_online() will call node_set_state(), into
+__node_set(), into set_bit(), and since NUMA_NO_NODE is -1 we'll end up
+doing a negative shift operation inside
+arch/powerpc/include/asm/bitops.h. This potential UB was detected
+running a kernel with CONFIG_UBSAN.
 
-    sysfs group 'modes' not found for kobject 'crypto'
-    WARNING: CPU: 0 PID: 1 at fs/sysfs/group.c:278 sysfs_remove_group+0x72/0x80
-    ...
-    Call Trace:
-      sysfs_remove_groups+0x29/0x40 fs/sysfs/group.c:312
-      __kobject_del+0x20/0x80 lib/kobject.c:611
-      kobject_cleanup+0xa4/0x140 lib/kobject.c:696
-      kobject_release lib/kobject.c:736 [inline]
-      kref_put include/linux/kref.h:65 [inline]
-      kobject_put+0x53/0x70 lib/kobject.c:753
-      blk_crypto_sysfs_unregister+0x10/0x20 block/blk-crypto-sysfs.c:159
-      blk_unregister_queue+0xb0/0x110 block/blk-sysfs.c:962
-      del_gendisk+0x117/0x250 block/genhd.c:610
+The behavior was introduced by commit 10f78fd0dabb ("powerpc/numa: Fix a
+regression on memoryless node 0"), where the check for nid > 0 was
+removed to fix a problem that was happening with nid = 0, but the result
+is that now we're trying to online NUMA_NO_NODE nids as well.
 
-Fix this by moving the kobject_del() and the corresponding
-kobject_uevent() to the correct place.
+Checking for nid >= 0 will allow node 0 to be onlined while avoiding
+this UB with NUMA_NO_NODE.
 
-Fixes: 2c2086afc2b8 ("block: Protect less code with sysfs_lock in blk_{un,}register_queue()")
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220124215938.2769-3-ebiggers@kernel.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 10f78fd0dabb ("powerpc/numa: Fix a regression on memoryless node 0")
+Reported-by: Ping Fang <pifang@redhat.com>
+Signed-off-by: Daniel Henrique Barboza <danielhb413@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220224182312.1012527-1-danielhb413@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-sysfs.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/powerpc/mm/numa.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-index b513f1683af0..8c5816364dd1 100644
---- a/block/blk-sysfs.c
-+++ b/block/blk-sysfs.c
-@@ -958,15 +958,17 @@ void blk_unregister_queue(struct gendisk *disk)
- 	 */
- 	if (queue_is_mq(q))
- 		blk_mq_unregister_dev(disk_to_dev(disk), q);
--
--	kobject_uevent(&q->kobj, KOBJ_REMOVE);
--	kobject_del(&q->kobj);
- 	blk_trace_remove_sysfs(disk_to_dev(disk));
+diff --git a/arch/powerpc/mm/numa.c b/arch/powerpc/mm/numa.c
+index 094a1076fd1f..275c60f92a7c 100644
+--- a/arch/powerpc/mm/numa.c
++++ b/arch/powerpc/mm/numa.c
+@@ -742,7 +742,9 @@ static int __init parse_numa_properties(void)
+ 			of_node_put(cpu);
+ 		}
  
- 	mutex_lock(&q->sysfs_lock);
- 	if (q->elevator)
- 		elv_unregister_queue(q);
- 	mutex_unlock(&q->sysfs_lock);
-+
-+	/* Now that we've deleted all child objects, we can delete the queue. */
-+	kobject_uevent(&q->kobj, KOBJ_REMOVE);
-+	kobject_del(&q->kobj);
-+
- 	mutex_unlock(&q->sysfs_dir_lock);
+-		node_set_online(nid);
++		/* node_set_online() is an UB if 'nid' is negative */
++		if (likely(nid >= 0))
++			node_set_online(nid);
+ 	}
  
- 	kobject_put(&disk_to_dev(disk)->kobj);
+ 	get_n_mem_cells(&n_mem_addr_cells, &n_mem_size_cells);
 -- 
 2.34.1
 
