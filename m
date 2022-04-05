@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C863AC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE983C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233715AbiDEXUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
+        id S1577856AbiDEXRM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348339AbiDEKqo (ORCPT
+        with ESMTP id S1349871AbiDEJvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:46:44 -0400
+        Tue, 5 Apr 2022 05:51:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC91E3EA8D;
-        Tue,  5 Apr 2022 03:27:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF8029818;
+        Tue,  5 Apr 2022 02:49:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C8B7617AF;
-        Tue,  5 Apr 2022 10:27:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58DDEC385A0;
-        Tue,  5 Apr 2022 10:27:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5776761673;
+        Tue,  5 Apr 2022 09:49:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63889C385A1;
+        Tue,  5 Apr 2022 09:49:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154426;
-        bh=OmfsfMu7icEH0HKY0Ecjaqr8pqfFMPj/l9JUfgzSvPE=;
+        s=korg; t=1649152191;
+        bh=MUa2LqDpzla2SRdH+L/Qkg29At5/s5tMgWJM3bkEicQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eLD85lSTj9ZYQ1mQFfBNda+3nd0jAJpKjnPN4QiKNeysG519WpYpHBZ1vMAFzu1QT
-         VuNPirwBIPt6vwJrzhOAgyU/eUFmpcR68ISMl/BCrDaYEUqXv1K83Gj3+kYENoz0ab
-         WnE772xxc8c2ZNyOhOCWY8Zk3DZiYrCDmLsa8YRM=
+        b=rGg9v10myw7rjIFiBoaB873Fkv/ub0jvdp6Tsps03kPYLJ1OQJQ9q/2H6aR/7hWLK
+         mpsUcmeXfrMAl67pKRIf6Z1kO/zc+IXu3LwfTSUit5+PhkXTD6gU6Zy9oV/uV/uXzN
+         C048nhV2t9QSYr90lg7AUy3DZBgBq5Xomi71lwL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 526/599] scsi: qla2xxx: Fix incorrect reporting of task management failure
-Date:   Tue,  5 Apr 2022 09:33:40 +0200
-Message-Id: <20220405070314.492786870@linuxfoundation.org>
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 661/913] net: hns3: fix bug when PF set the duplicate MAC address for VFs
+Date:   Tue,  5 Apr 2022 09:28:43 +0200
+Message-Id: <20220405070359.651514045@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,37 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-commit 58ca5999e0367d131de82a75257fbfd5aed0195d upstream.
+[ Upstream commit ccb18f05535c96d26e2d559d402acb87700fc5a7 ]
 
-User experienced no task management error while target device is responding
-with error. The RSP_CODE field in the status IOCB is in little endian.
-Driver assumes it's big endian and it picked up erroneous data.
+If the MAC address A is configured to vport A and then vport B. The MAC
+address of vport A in the hardware becomes invalid. If the address of
+vport A is changed to MAC address B, the driver needs to delete the MAC
+address A of vport A. Due to the MAC address A of vport A has become
+invalid in the hardware entry, so "-ENOENT" is returned. In this case, the
+"used_umv_size" value recorded in driver is not updated. As a result, the
+MAC entry status of the software is inconsistent with that of the hardware.
 
-Convert the data back to big endian as is on the wire.
+Therefore, the driver updates the umv size even if the MAC entry cannot be
+found. Ensure that the software and hardware status is consistent.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-2-njavali@marvell.com
-Fixes: faef62d13463 ("[SCSI] qla2xxx: Fix Task Management command asynchronous handling")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ee4bcd3b7ae4 ("net: hns3: refactor the MAC address configure")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_isr.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -2248,6 +2248,7 @@ qla24xx_tm_iocb_entry(scsi_qla_host_t *v
- 		iocb->u.tmf.data = QLA_FUNCTION_FAILED;
- 	} else if ((le16_to_cpu(sts->scsi_status) &
- 	    SS_RESPONSE_INFO_LEN_VALID)) {
-+		host_to_fcp_swap(sts->data, sizeof(sts->data));
- 		if (le32_to_cpu(sts->rsp_data_len) < 4) {
- 			ql_log(ql_log_warn, fcport->vha, 0x503b,
- 			    "Async-%s error - hdl=%x not enough response(%d).\n",
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 66c407d0d507..b78de80d6c05 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -8714,12 +8714,11 @@ int hclge_rm_uc_addr_common(struct hclge_vport *vport,
+ 	hnae3_set_bit(req.entry_type, HCLGE_MAC_VLAN_BIT0_EN_B, 0);
+ 	hclge_prepare_mac_addr(&req, addr, false);
+ 	ret = hclge_remove_mac_vlan_tbl(vport, &req);
+-	if (!ret) {
++	if (!ret || ret == -ENOENT) {
+ 		mutex_lock(&hdev->vport_lock);
+ 		hclge_update_umv_space(vport, true);
+ 		mutex_unlock(&hdev->vport_lock);
+-	} else if (ret == -ENOENT) {
+-		ret = 0;
++		return 0;
+ 	}
+ 
+ 	return ret;
+-- 
+2.34.1
+
 
 
