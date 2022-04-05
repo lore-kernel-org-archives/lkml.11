@@ -2,164 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB220C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F9DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241923AbiDEU55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56602 "EHLO
+        id S236170AbiDEU4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458158AbiDERLc (ORCPT
+        with ESMTP id S237967AbiDENKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:11:32 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FD210FC9;
-        Tue,  5 Apr 2022 10:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649178574; x=1680714574;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8FLDvBJ8TPT/3p6/EmiWMYN4z3XTwsiEyt2sJI3V2fI=;
-  b=Lzy0JYR86o+X4VigqAaVWXVJDQJyiMgoghpPm8W3MDy9/poV918bG09L
-   /TyU+hb2GDklmj7fBpNG8/0nHP/OGvvtmihZ1evfWwwLg9T5hoVyTx5Nn
-   eGiFf2kwwlhaQKU70Mbt0rHV2lQEyq83CUXrPwbufqYjPT3YJ6CIoJzdY
-   IWsz82DuLhgZ7NKtn1/KJGvvzjuuzkMYj6FlDzbr3JdUFXbDBqBTgfZiU
-   Zd2BolqpLjLFsYxpL+NvfcxVaNOO9bWO5Yvn5OKlQYFFL6ZzFPDvnxpcT
-   j62nJHYJE9tH3TuNzpdNIyILFpsr/nx8ITOkLduOWweK0t8Y8VEkC97Zl
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260983259"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="260983259"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:08:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="505361177"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2022 10:08:05 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 16FFA32E; Tue,  5 Apr 2022 20:02:54 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 1/1] pinctrl: alderlake: Fix register offsets for ADL-N variant
-Date:   Tue,  5 Apr 2022 20:02:51 +0300
-Message-Id: <20220405170251.72154-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 5 Apr 2022 09:10:33 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76BEB89CDB;
+        Tue,  5 Apr 2022 05:11:59 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 077B5D6E;
+        Tue,  5 Apr 2022 05:11:59 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3680E3F5A1;
+        Tue,  5 Apr 2022 05:11:58 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     alex.williamson@redhat.com
+Cc:     cohuck@redhat.com, iommu@lists.linux-foundation.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] vfio: Stop using iommu_present()
+Date:   Tue,  5 Apr 2022 13:11:54 +0100
+Message-Id: <537103bbd7246574f37f2c88704d7824a3a889f2.1649160714.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It appears that almost traditionally the N variants have deviations
-in the register offsets in comparison to S one. This is the case
-for Intel Alder Lake as well. Fix register offsets for ADL-N variant.
+IOMMU groups have been mandatory for some time now, so a device without
+one is necessarily a device without any usable IOMMU, therefore the
+iommu_present() check is redundant (or at best unhelpful).
 
-Fixes: 114b610b9048 ("pinctrl: alderlake: Add Intel Alder Lake-N pin controller support")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/pinctrl/intel/pinctrl-alderlake.c | 60 +++++++++++++++--------
- 1 file changed, 40 insertions(+), 20 deletions(-)
+ drivers/vfio/vfio.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pinctrl/intel/pinctrl-alderlake.c b/drivers/pinctrl/intel/pinctrl-alderlake.c
-index 32ba50efbceb..62dbd1e67513 100644
---- a/drivers/pinctrl/intel/pinctrl-alderlake.c
-+++ b/drivers/pinctrl/intel/pinctrl-alderlake.c
-@@ -14,11 +14,17 @@
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index a4555014bd1e..7b0a7b85e77e 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -745,11 +745,11 @@ static struct vfio_group *vfio_group_find_or_alloc(struct device *dev)
  
- #include "pinctrl-intel.h"
- 
--#define ADL_PAD_OWN	0x0a0
--#define ADL_PADCFGLOCK	0x110
--#define ADL_HOSTSW_OWN	0x150
--#define ADL_GPI_IS	0x200
--#define ADL_GPI_IE	0x220
-+#define ADL_N_PAD_OWN		0x020
-+#define ADL_N_PADCFGLOCK	0x080
-+#define ADL_N_HOSTSW_OWN	0x0b0
-+#define ADL_N_GPI_IS		0x100
-+#define ADL_N_GPI_IE		0x120
-+
-+#define ADL_S_PAD_OWN		0x0a0
-+#define ADL_S_PADCFGLOCK	0x110
-+#define ADL_S_HOSTSW_OWN	0x150
-+#define ADL_S_GPI_IS		0x200
-+#define ADL_S_GPI_IE		0x220
- 
- #define ADL_GPP(r, s, e, g)				\
- 	{						\
-@@ -28,14 +34,28 @@
- 		.gpio_base = (g),			\
- 	}
- 
--#define ADL_COMMUNITY(b, s, e, g)			\
-+#define ADL_N_COMMUNITY(b, s, e, g)			\
-+	{						\
-+		.barno = (b),				\
-+		.padown_offset = ADL_N_PAD_OWN,		\
-+		.padcfglock_offset = ADL_N_PADCFGLOCK,	\
-+		.hostown_offset = ADL_N_HOSTSW_OWN,	\
-+		.is_offset = ADL_N_GPI_IS,		\
-+		.ie_offset = ADL_N_GPI_IE,		\
-+		.pin_base = (s),			\
-+		.npins = ((e) - (s) + 1),		\
-+		.gpps = (g),				\
-+		.ngpps = ARRAY_SIZE(g),			\
-+	}
-+
-+#define ADL_S_COMMUNITY(b, s, e, g)			\
- 	{						\
- 		.barno = (b),				\
--		.padown_offset = ADL_PAD_OWN,		\
--		.padcfglock_offset = ADL_PADCFGLOCK,	\
--		.hostown_offset = ADL_HOSTSW_OWN,	\
--		.is_offset = ADL_GPI_IS,		\
--		.ie_offset = ADL_GPI_IE,		\
-+		.padown_offset = ADL_S_PAD_OWN,		\
-+		.padcfglock_offset = ADL_S_PADCFGLOCK,	\
-+		.hostown_offset = ADL_S_HOSTSW_OWN,	\
-+		.is_offset = ADL_S_GPI_IS,		\
-+		.ie_offset = ADL_S_GPI_IE,		\
- 		.pin_base = (s),			\
- 		.npins = ((e) - (s) + 1),		\
- 		.gpps = (g),				\
-@@ -342,10 +362,10 @@ static const struct intel_padgroup adln_community5_gpps[] = {
- };
- 
- static const struct intel_community adln_communities[] = {
--	ADL_COMMUNITY(0, 0, 66, adln_community0_gpps),
--	ADL_COMMUNITY(1, 67, 168, adln_community1_gpps),
--	ADL_COMMUNITY(2, 169, 248, adln_community4_gpps),
--	ADL_COMMUNITY(3, 249, 256, adln_community5_gpps),
-+	ADL_N_COMMUNITY(0, 0, 66, adln_community0_gpps),
-+	ADL_N_COMMUNITY(1, 67, 168, adln_community1_gpps),
-+	ADL_N_COMMUNITY(2, 169, 248, adln_community4_gpps),
-+	ADL_N_COMMUNITY(3, 249, 256, adln_community5_gpps),
- };
- 
- static const struct intel_pinctrl_soc_data adln_soc_data = {
-@@ -713,11 +733,11 @@ static const struct intel_padgroup adls_community5_gpps[] = {
- };
- 
- static const struct intel_community adls_communities[] = {
--	ADL_COMMUNITY(0, 0, 94, adls_community0_gpps),
--	ADL_COMMUNITY(1, 95, 150, adls_community1_gpps),
--	ADL_COMMUNITY(2, 151, 199, adls_community3_gpps),
--	ADL_COMMUNITY(3, 200, 269, adls_community4_gpps),
--	ADL_COMMUNITY(4, 270, 303, adls_community5_gpps),
-+	ADL_S_COMMUNITY(0, 0, 94, adls_community0_gpps),
-+	ADL_S_COMMUNITY(1, 95, 150, adls_community1_gpps),
-+	ADL_S_COMMUNITY(2, 151, 199, adls_community3_gpps),
-+	ADL_S_COMMUNITY(3, 200, 269, adls_community4_gpps),
-+	ADL_S_COMMUNITY(4, 270, 303, adls_community5_gpps),
- };
- 
- static const struct intel_pinctrl_soc_data adls_soc_data = {
+ 	iommu_group = iommu_group_get(dev);
+ #ifdef CONFIG_VFIO_NOIOMMU
+-	if (!iommu_group && noiommu && !iommu_present(dev->bus)) {
++	if (!iommu_group && noiommu) {
+ 		/*
+ 		 * With noiommu enabled, create an IOMMU group for devices that
+-		 * don't already have one and don't have an iommu_ops on their
+-		 * bus.  Taint the kernel because we're about to give a DMA
++		 * don't already have one, implying no IOMMU hardware/driver
++		 * exists.  Taint the kernel because we're about to give a DMA
+ 		 * capable device to a user without IOMMU protection.
+ 		 */
+ 		group = vfio_noiommu_group_alloc(dev, VFIO_NO_IOMMU);
 -- 
-2.35.1
+2.28.0.dirty
 
