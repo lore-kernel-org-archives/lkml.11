@@ -2,132 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC96C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE6BC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238645AbiDEUhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:37:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
+        id S242757AbiDEUiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442389AbiDEPhh (ORCPT
+        with ESMTP id S1457977AbiDERCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:37:37 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734BE11176C;
-        Tue,  5 Apr 2022 06:51:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649166709; x=1680702709;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=3CrOD25U3ySH2uSvK1Gaz4RsMlsq+CbHlHbLLw9go20=;
-  b=JljUFUuXV3jwSeCr5L3ws9/DyLSa+YFTffiph6whYqcM7I4RCAhY7SBp
-   YGyRRrnKBlq3P7vnEPwESzxPim8R5WTwFjlY+0Ux9UZW92cefpz0dfdnj
-   8UVn0cQBaeziusCF13lG9LX4DF5q2aIkFHUVZfjLGCM/9U1O7LiZApUOD
-   g=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 06:51:49 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:32 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:32 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:28 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V9 5/6] arm64: dts: qcom: pm8008: Add base dts file
-Date:   Tue, 5 Apr 2022 19:20:32 +0530
-Message-ID: <1649166633-25872-6-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 5 Apr 2022 13:02:32 -0400
+Received: from 9.mo584.mail-out.ovh.net (9.mo584.mail-out.ovh.net [46.105.40.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC57B2E9C6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:00:32 -0700 (PDT)
+Received: from player771.ha.ovh.net (unknown [10.108.1.181])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 183F62353B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:00:31 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player771.ha.ovh.net (Postfix) with ESMTPSA id 9880C293E39E0;
+        Tue,  5 Apr 2022 17:00:25 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-106R0067464f05e-4097-4c7c-a65a-96236ca073ef,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 14/14] ASoC: uda1380: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:58:36 +0200
+Message-Id: <20220405165836.2165310-15-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
+References: <20220405165836.2165310-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8479715150873462406
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add base DTS file for pm8008 with infra and regulator nodes.
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+This avoids scanning the identifier tables during probes.
+
+Signed-off-by: Stephen Kitt <steve@sk2.org>
 ---
-Changes in V9:
- - Add single dt file for pm8008 instead of adding files like in V8.
+ sound/soc/codecs/uda1380.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
- arch/arm64/boot/dts/qcom/pm8008.dtsi | 47 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
-
-diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-new file mode 100644
-index 0000000..24bd832
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-@@ -0,0 +1,47 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+// Copyright (c) 2022, The Linux Foundation. All rights reserved.
-+
-+&pm8008_bus {
-+	pm8008: pm8008@8 {
-+		compatible = "qcom,pm8008";
-+		reg = <0x8>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		#interrupt-cells = <2>;
-+	};
-+
-+	pm8008_regulators: pm8008@9 {
-+		compatible = "qcom,pm8008-regulators";
-+		reg = <0x9>;
-+		#address-cells = <0>;
-+		#size-cells = <0>;
-+
-+		pm8008_l1: ldo1 {
-+			regulator-name = "pm8008_l1";
-+		};
-+
-+		pm8008_l2: ldo2 {
-+			regulator-name = "pm8008_l2";
-+		};
-+
-+		pm8008_l3: ldo3 {
-+			regulator-name = "pm8008_l3";
-+		};
-+
-+		pm8008_l4: ldo4 {
-+			regulator-name = "pm8008_l4";
-+		};
-+
-+		pm8008_l5: ldo5 {
-+			regulator-name = "pm8008_l5";
-+		};
-+
-+		pm8008_l6: ldo6 {
-+			regulator-name = "pm8008_l6";
-+		};
-+
-+		pm8008_l7: ldo7 {
-+			regulator-name = "pm8008_l7";
-+		};
-+	};
-+};
+diff --git a/sound/soc/codecs/uda1380.c b/sound/soc/codecs/uda1380.c
+index 13060a9a2388..b5004842520b 100644
+--- a/sound/soc/codecs/uda1380.c
++++ b/sound/soc/codecs/uda1380.c
+@@ -739,8 +739,7 @@ static const struct snd_soc_component_driver soc_component_dev_uda1380 = {
+ 	.non_legacy_dai_naming	= 1,
+ };
+ 
+-static int uda1380_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
++static int uda1380_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct uda1380_platform_data *pdata = i2c->dev.platform_data;
+ 	struct uda1380_priv *uda1380;
+@@ -800,7 +799,7 @@ static struct i2c_driver uda1380_i2c_driver = {
+ 		.name =  "uda1380-codec",
+ 		.of_match_table = uda1380_of_match,
+ 	},
+-	.probe =    uda1380_i2c_probe,
++	.probe_new = uda1380_i2c_probe,
+ 	.id_table = uda1380_i2c_id,
+ };
+ 
 -- 
-2.7.4
+2.27.0
 
