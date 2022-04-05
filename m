@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B99AC47084
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64403C47088
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239861AbiDEIVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43840 "EHLO
+        id S239331AbiDEIT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235572AbiDEH7v (ORCPT
+        with ESMTP id S235677AbiDEIAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F46A40E7B;
-        Tue,  5 Apr 2022 00:55:44 -0700 (PDT)
+        Tue, 5 Apr 2022 04:00:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C072193F1;
+        Tue,  5 Apr 2022 00:57:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52999B81B90;
-        Tue,  5 Apr 2022 07:55:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0DEDC3410F;
-        Tue,  5 Apr 2022 07:55:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCD6C61668;
+        Tue,  5 Apr 2022 07:57:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2148C340EE;
+        Tue,  5 Apr 2022 07:57:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145342;
-        bh=3lJ3J/Hn5KmINnLVJmAiRUoqx4L93qq6dyLbb8I1oE8=;
+        s=korg; t=1649145463;
+        bh=iRMLrCcmHK2o0zFZt5G8QCNBCZd5OLcLajl8zPkZ1nU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=afjn+/O7YrBHlvPNrGb25wZz48olqEbzzpwdzS/8PuXsST4sL8YIfCYLrdsF8gZ3L
-         TzNjW9LoPkf5VRTezh+KFTDAu9ua++KgtXKk+gNi7TegKFXEZ5jogh2N8gEVNzPYkh
-         1FiX+SIbqIFZJlnswLIIjRmIoRebd1xSqKlo9ztg=
+        b=K+Q0eFR5CHjpBlThgkVMPqN1HKVYZf6XV3mtgRjnQ3drT4sET1q+YWm7PqqqzxmSF
+         SUIzb+qI3778vIWRfJ8or+lT3uGdMaS1DMMXKynXGd3KZORjToaB4WtVwduu8xF2AW
+         saFFwJRjuWhmyiicykWoKU45k/3k7QJU7i64PO4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Clark Williams <williams@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0343/1126] ARM: dts: sun8i: v3s: Move the csi1 block to follow address order
-Date:   Tue,  5 Apr 2022 09:18:10 +0200
-Message-Id: <20220405070417.683974050@linuxfoundation.org>
+Subject: [PATCH 5.17 0413/1126] rtla/osnoise: Fix osnoise hist stop tracing message
+Date:   Tue,  5 Apr 2022 09:19:20 +0200
+Message-Id: <20220405070419.748490721@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,62 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-[ Upstream commit c4af51698c4fb4fc683f2ac67f482cdf9ba2cd13 ]
+[ Upstream commit 7d38c35167c58153e8b5bea839616d00e90564b9 ]
 
-The csi1 block node was mistakenly added before the gic node, although
-its address comes after the gic's. Move the node to its correct
-position.
+rtla osnoise hist is printing the following message when hitting stop
+tracing:
 
-Fixes: 90e048101fa1 ("ARM: dts: sun8i: V3/V3s/S3/S3L: add CSI1 device node")
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220205185429.2278860-2-paul.kocialkowski@bootlin.com
+  printf("rtla timelat hit stop tracing\n");
+
+which is obviosly wrong.
+
+s/timerlat/osnoise/ fixing the printf.
+
+Link: https://lkml.kernel.org/r/2b8f090556fe37b81d183b74ce271421f131c77b.1646247211.git.bristot@kernel.org
+
+Fixes: 829a6c0b5698 ("rtla/osnoise: Add the hist mode")
+Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc: Clark Williams <williams@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sun8i-v3s.dtsi | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ tools/tracing/rtla/src/osnoise_hist.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/sun8i-v3s.dtsi b/arch/arm/boot/dts/sun8i-v3s.dtsi
-index b30bc1a25ebb..084323d5c61c 100644
---- a/arch/arm/boot/dts/sun8i-v3s.dtsi
-+++ b/arch/arm/boot/dts/sun8i-v3s.dtsi
-@@ -593,6 +593,17 @@
- 			#size-cells = <0>;
- 		};
+diff --git a/tools/tracing/rtla/src/osnoise_hist.c b/tools/tracing/rtla/src/osnoise_hist.c
+index 52c053cc1789..e88f5c870141 100644
+--- a/tools/tracing/rtla/src/osnoise_hist.c
++++ b/tools/tracing/rtla/src/osnoise_hist.c
+@@ -782,7 +782,7 @@ int osnoise_hist_main(int argc, char *argv[])
+ 	return_value = 0;
  
-+		gic: interrupt-controller@1c81000 {
-+			compatible = "arm,gic-400";
-+			reg = <0x01c81000 0x1000>,
-+			      <0x01c82000 0x2000>,
-+			      <0x01c84000 0x2000>,
-+			      <0x01c86000 0x2000>;
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
-+		};
-+
- 		csi1: camera@1cb4000 {
- 			compatible = "allwinner,sun8i-v3s-csi";
- 			reg = <0x01cb4000 0x3000>;
-@@ -604,16 +615,5 @@
- 			resets = <&ccu RST_BUS_CSI>;
- 			status = "disabled";
- 		};
--
--		gic: interrupt-controller@1c81000 {
--			compatible = "arm,gic-400";
--			reg = <0x01c81000 0x1000>,
--			      <0x01c82000 0x2000>,
--			      <0x01c84000 0x2000>,
--			      <0x01c86000 0x2000>;
--			interrupt-controller;
--			#interrupt-cells = <3>;
--			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
--		};
- 	};
- };
+ 	if (!tracefs_trace_is_on(trace->inst)) {
+-		printf("rtla timelat hit stop tracing\n");
++		printf("rtla osnoise hit stop tracing\n");
+ 		if (params->trace_output) {
+ 			printf("  Saving trace to %s\n", params->trace_output);
+ 			save_trace_to_file(record->trace.inst, params->trace_output);
 -- 
 2.34.1
 
