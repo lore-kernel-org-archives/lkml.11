@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 803D9C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C736FC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578501AbiDEXXm (ORCPT
+        id S1578574AbiDEXYH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43208 "EHLO
+        Tue, 5 Apr 2022 19:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354630AbiDEKO5 (ORCPT
+        with ESMTP id S1348903AbiDEJsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:57 -0400
+        Tue, 5 Apr 2022 05:48:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88376BDCA;
-        Tue,  5 Apr 2022 03:01:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C96A2056;
+        Tue,  5 Apr 2022 02:37:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45B3A61676;
-        Tue,  5 Apr 2022 10:01:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 520BDC385A2;
-        Tue,  5 Apr 2022 10:01:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40408615E5;
+        Tue,  5 Apr 2022 09:37:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FFF2C385A3;
+        Tue,  5 Apr 2022 09:37:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152899;
-        bh=TOHOU80nAEDJOHOVA9Ggqo7X+R5Neb+VHBK7nnlSFOE=;
+        s=korg; t=1649151430;
+        bh=nfzYUEHmVjBI8/t16EA5oHKdr/xnKdTbSxXCL6KLiZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fmzBSymc2f13GiJzw/EQ13ujlJ8Acuz0t2KCDR8Are6ww1yhbS0xrNJLN8h/MplD/
-         lTtiFvXSoMvM/iMPjZWwP6FwgUDg4WsCnSdc0uDAZiTflWZ5gO276XgA8tmVxnYcAE
-         j+5rciAHdzGe0Jb3gPSNLHA9J/yLs0ZGmxtxiqLM=
+        b=y2iBKoys3mD+DywKm/l7/QM6wv5Ea60nbTqmFNkSs36+06nt5XoJAzyNfIxkTmTkz
+         7txXhRBYt3sRKnQVKkA/dbn3rC4SIH2tml7TyuTo3HwsEzwxBdMwCO3z6MI0LyBTdW
+         f2V22Mo/lccz7ZR2sxhbKo8pfvxQWlfV4Wu7lVoI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.10 029/599] xhci: fix uninitialized string returned by xhci_decode_ctrl_ctx()
-Date:   Tue,  5 Apr 2022 09:25:23 +0200
-Message-Id: <20220405070259.689734553@linuxfoundation.org>
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 373/913] ARM: configs: multi_v5_defconfig: re-enable DRM_PANEL and FB_xxx
+Date:   Tue,  5 Apr 2022 09:23:55 +0200
+Message-Id: <20220405070351.027713984@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,43 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anssi Hannula <anssi.hannula@bitwise.fi>
+From: Andre Przywara <andre.przywara@arm.com>
 
-commit 05519b8589a679edb8fa781259893d20bece04ad upstream.
+[ Upstream commit 9c44d0805f949c56121b4ae6949fb064537bf198 ]
 
-xhci_decode_ctrl_ctx() returns the untouched buffer as-is if both "drop"
-and "add" parameters are zero.
+Commit 91185d55b32e ("drm: Remove DRM_KMS_FB_HELPER Kconfig option")
+led to de-selection of CONFIG_FB, which was a prerequisite for
+BACKLIGHT_CLASS_DEVICE, which CONFIG_DRM_PANEL_SIMPLE depended on.
+Explicitly set CONFIG_FB, to bring DRM_PANEL_SIMPLE, DRM_PANEL_EDP,
+FB_IMX and FB_ATMEL back into the generated .config.
+This also adds some new FB related features like fonts and the
+framebuffer console.
 
-Fix the function to return an empty string in that case.
+See also commit 8c1768967e27 ("ARM: config: mutli v7: Reenable FB
+dependency"), which solved the same problem for multi_v7_defconfig.
 
-It was not immediately clear from the possible call chains whether this
-issue is currently actually triggerable or not.
+This relies on [1], to fix a broken Kconfig dependency.
 
-Note that before commit 4843b4b5ec64 ("xhci: fix even more unsafe memory
-usage in xhci tracing") the result effect in the failure case was different
-as a static buffer was used here, but the code still worked incorrectly.
+[1] https://lore.kernel.org/dri-devel/20220315084559.23510-1-tzimmermann@suse.de/raw
 
-Fixes: 90d6d5731da7 ("xhci: Add tracing for input control context")
-Cc: stable@vger.kernel.org
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-commit 4843b4b5ec64 ("xhci: fix even more unsafe memory usage in xhci tracing")
-Link: https://lore.kernel.org/r/20220303110903.1662404-4-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 91185d55b32e ("drm: Remove DRM_KMS_FB_HELPER Kconfig option")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Link: https://lore.kernel.org/r/20220317183043.948432-4-andre.przywara@arm.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci.h |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/configs/multi_v5_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/host/xhci.h
-+++ b/drivers/usb/host/xhci.h
-@@ -2458,6 +2458,8 @@ static inline const char *xhci_decode_ct
- 	unsigned int	bit;
- 	int		ret = 0;
- 
-+	str[0] = '\0';
-+
- 	if (drop) {
- 		ret = sprintf(str, "Drop:");
- 		for_each_set_bit(bit, &drop, 32)
+diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
+index 6f789e8483c9..e883cb6dc645 100644
+--- a/arch/arm/configs/multi_v5_defconfig
++++ b/arch/arm/configs/multi_v5_defconfig
+@@ -196,6 +196,7 @@ CONFIG_DRM=y
+ CONFIG_DRM_ATMEL_HLCDC=m
+ CONFIG_DRM_PANEL_SIMPLE=y
+ CONFIG_DRM_ASPEED_GFX=m
++CONFIG_FB=y
+ CONFIG_FB_IMX=y
+ CONFIG_FB_ATMEL=y
+ CONFIG_BACKLIGHT_ATMEL_LCDC=y
+-- 
+2.34.1
+
 
 
