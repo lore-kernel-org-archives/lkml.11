@@ -2,79 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A88DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E31C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845365AbiDFByW (ORCPT
+        id S1845405AbiDFBya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
+        Tue, 5 Apr 2022 21:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446406AbiDEPof (ORCPT
+        with ESMTP id S1380517AbiDELmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:44:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB42F55F0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:15:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAB3560AF3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:15:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 065EEC385A1;
-        Tue,  5 Apr 2022 14:15:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649168111;
-        bh=9snd2J+IFOny+x+vO6FjBRT2ONIjM/C5Zx5DF6aGf3Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=it+8FRw91Co+V+C46WDIbd4XicXEtbW66WkyVLbmmeKIfLREQlcs4iN8815gsav5W
-         WJsq9j51Kv2NZvE+OcGaQVfQ3bjVN5yMH58fDTzPEQmcRn3iSfR10Rb0iicccG6CMh
-         VbKyQ4L5eBRkEuX7BLifd/ZtECVTnuUR6wuTk9j0=
-Date:   Tue, 5 Apr 2022 16:15:08 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     xkernel.wang@foxmail.com
-Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: rtl8712: fix a potential memory leak in
- r871xu_drv_init()
-Message-ID: <YkxO7HPTsF4CvPe6@kroah.com>
-References: <tencent_B8048C592777830380A23A7C4409F9DF1305@qq.com>
+        Tue, 5 Apr 2022 07:42:39 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B2A10CF2A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:07:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649156827; x=1680692827;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=e1INeSFg7esnR3hcJTDuT1auTFvTvVTZvHOFhQxsoT4=;
+  b=UERP7xjelMVBrbB6uANhWzPE/RQU/fOg9qnPa9dH1coLkYLrQKKZpJXP
+   tpky6uI47tSsuPhUTbVI53Qpr1nb0EsJLWLdRSuiV5qZQcHT8TFZz58M3
+   AYgllhpp6WLTRHGuLV4EiYf/t2NQfNN2szdHb6FOMh3pUZ/oDUn5s2Aoa
+   geJKEbtj65vWMmyekBuPPw/6N1xbLMcoIV10aXcZDAX7lw5kSD16x2EGh
+   gjrw+YSAtURoLrngm5qq+vG+IiKP04sIQHgzQlqPdUPSm+6gmUTpZvL4G
+   phPqdlIAIKXUafibAZyaxUSSX05IBZqAJjCKDMm0ZhRyld7uIg3DGLqid
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="258306556"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="258306556"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:07:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="523416957"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 05 Apr 2022 04:07:05 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbh1c-00036b-SH;
+        Tue, 05 Apr 2022 11:07:04 +0000
+Date:   Tue, 5 Apr 2022 19:07:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 26/40]
+ fs/netfs/crypto.c:76:31: sparse: sparse: incompatible types in comparison
+ expression (different type sizes):
+Message-ID: <202204051933.fe6riDOF-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <tencent_B8048C592777830380A23A7C4409F9DF1305@qq.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 12:43:07PM +0800, xkernel.wang@foxmail.com wrote:
-> From: Xiaoke Wang <xkernel.wang@foxmail.com>
-> 
-> In r871xu_drv_init(), if r8712_init_drv_sw() fails, then the memory
-> allocated by r8712_alloc_io_queue() in r8712_usb_dvobj_init() is not
-> properly released as there is no action will be performed by
-> r8712_usb_dvobj_deinit().
-> To properly release it, we should call r8712_free_io_queue() in
-> r8712_usb_dvobj_deinit().
-> 
-> Besides, in r871xu_dev_remove(), r8712_usb_dvobj_deinit() will be called
-> by r871x_dev_unload() under condition `padapter->bup` and
-> r8712_free_io_queue() is called by r8712_free_drv_sw().
-> However, r8712_usb_dvobj_deinit() does not rely on `padapter->bup` and
-> calling r8712_free_io_queue() in r8712_free_drv_sw() is negative for
-> better understading the code.
-> So I move r8712_usb_dvobj_deinit() into r871xu_dev_remove(), and remove
-> r8712_free_io_queue() from r8712_free_drv_sw().
-> 
-> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-> ---
->  drivers/staging/rtl8712/os_intfs.c | 1 -
->  drivers/staging/rtl8712/usb_intf.c | 6 +++---
->  2 files changed, 3 insertions(+), 4 deletions(-)
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   674eea41fc70a740ff83ec590f9833f805852464
+commit: fc693b2e39df6567a0312f21bb9004e1d7983286 [26/40] netfs: Perform content encryption
+config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220405/202204051933.fe6riDOF-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/fc693b2e39df6567a0312f21bb9004e1d7983286
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout fc693b2e39df6567a0312f21bb9004e1d7983286
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash fs/netfs/
 
-I've applied this patch, but dropped all of your other pending ones.
-Please fix up the remaining ones like this and resend.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-thanks,
 
-greg k-h
+sparse warnings: (new ones prefixed by >>)
+>> fs/netfs/crypto.c:76:31: sparse: sparse: incompatible types in comparison expression (different type sizes):
+>> fs/netfs/crypto.c:76:31: sparse:    unsigned int *
+>> fs/netfs/crypto.c:76:31: sparse:    unsigned long *
+
+vim +76 fs/netfs/crypto.c
+
+    45	
+    46	/*
+    47	 * Populate a scatterlist from folios in an xarray.
+    48	 */
+    49	static int netfs_xarray_to_sglist(struct xarray *xa, loff_t pos, size_t len,
+    50					  struct scatterlist *sg, unsigned int n_sg)
+    51	{
+    52		struct scatterlist *p = sg;
+    53		struct folio *folio = NULL;
+    54		size_t seg, offset, skip = 0;
+    55		loff_t start = pos;
+    56		pgoff_t index = start >> PAGE_SHIFT;
+    57		int j;
+    58	
+    59		XA_STATE(xas, xa, index);
+    60	
+    61		sg_init_table(sg, n_sg);
+    62	
+    63		rcu_read_lock();
+    64	
+    65		xas_for_each(&xas, folio, ULONG_MAX) {
+    66			if (xas_retry(&xas, folio))
+    67				continue;
+    68			if (WARN_ON(xa_is_value(folio)) || WARN_ON(folio_test_hugetlb(folio)))
+    69				break;
+    70			for (j = (folio_index(folio) < index) ? index - folio_index(folio) : 0;
+    71			     j < folio_nr_pages(folio); j++
+    72			     ) {
+    73				struct page *subpage = folio_file_page(folio, j);
+    74	
+    75				offset = (pos + skip) & ~PAGE_MASK;
+  > 76				seg = min(len, PAGE_SIZE - offset);
+    77	
+    78				sg_set_page(p++, subpage, seg, offset);
+    79	
+    80				len -= seg;
+    81				skip += seg;
+    82				if (len == 0)
+    83					break;
+    84			}
+    85			if (len == 0)
+    86				break;
+    87		}
+    88	
+    89		rcu_read_unlock();
+    90		if (len > 0) {
+    91			kdebug("*** Insufficient source (%zx)", len);
+    92			//WARN_ON(len > 0);
+    93			return -EIO;
+    94		}
+    95	
+    96		sg_mark_end(p - 1);
+    97		return p - sg;
+    98	}
+    99	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
