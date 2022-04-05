@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 996D3C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE4FC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352960AbiDEKFY (ORCPT
+        id S1351565AbiDEKCn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
+        Tue, 5 Apr 2022 06:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239125AbiDEIbL (ORCPT
+        with ESMTP id S237733AbiDEISS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:11 -0400
+        Tue, 5 Apr 2022 04:18:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19740496B3;
-        Tue,  5 Apr 2022 01:23:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4EEB714B;
+        Tue,  5 Apr 2022 01:07:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5828CB81BD6;
-        Tue,  5 Apr 2022 08:23:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48E5C385B4;
-        Tue,  5 Apr 2022 08:23:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25BE5B81BB0;
+        Tue,  5 Apr 2022 08:07:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73860C385A1;
+        Tue,  5 Apr 2022 08:07:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146988;
-        bh=Iq2ZvXe9ADabMGnOc1m2KwnYvzAf0dQnMn6C1TUJ2QA=;
+        s=korg; t=1649146038;
+        bh=EiD2outIWfFC46bZJ3egPCZBTRSu+xJQiDUM5rGAR1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jEY5HTEuUy52xcqnIf3YhC79PsF4NV9Ez311b1I8w7cw54TDTQpx4V2LMLcM7NTSW
-         djcUOZXEdhPSFzlrPnS5xcuq/JL5SNG7DDm/tb8Hlr4+W5/eeUAqb7LDXqp0aKIGcs
-         TVpkDAB+9/iAfYW15JKFCoAjZvL3p+MXHc/58NbM=
+        b=Qd5RDGgokoeiaG1gzjyoSe7FfSMZMksfzgPG0Tr2FOlh1s9oVPcWHkYQL5wPrt8Y8
+         Y2oGPd11f05i4sniu+rSbJcN6x0wSqg9DkRSELFFy+7s/S0yJid+0Uk3D0W8f/1Iny
+         oV0qjTVauws/5s1uGg/tGjby/+6uXjNePlublQBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 0959/1126] KVM: x86: hyper-v: HVCALL_SEND_IPI_EX is an XMM fast hypercall
-Date:   Tue,  5 Apr 2022 09:28:26 +0200
-Message-Id: <20220405070435.653745066@linuxfoundation.org>
+        stable@vger.kernel.org, Xu Kuohai <xukuohai@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0619/1126] libbpf: Skip forward declaration when counting duplicated type names
+Date:   Tue,  5 Apr 2022 09:22:46 +0200
+Message-Id: <20220405070425.805243227@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,127 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Xu Kuohai <xukuohai@huawei.com>
 
-commit 47d3e5cdfe607ec6883eb0faa7acf05b8cb3f92a upstream.
+[ Upstream commit 4226961b0019b2e1612029e8950a9e911affc995 ]
 
-It has been proven on practice that at least Windows Server 2019 tries
-using HVCALL_SEND_IPI_EX in 'XMM fast' mode when it has more than 64 vCPUs
-and it needs to send an IPI to a vCPU > 63. Similarly to other XMM Fast
-hypercalls (HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}{,_EX}), this
-information is missing in TLFS as of 6.0b. Currently, KVM returns an error
-(HV_STATUS_INVALID_HYPERCALL_INPUT) and Windows crashes.
+Currently if a declaration appears in the BTF before the definition, the
+definition is dumped as a conflicting name, e.g.:
 
-Note, HVCALL_SEND_IPI is a 'standard' fast hypercall (not 'XMM fast') as
-all its parameters fit into RDX:R8 and this is handled by KVM correctly.
+    $ bpftool btf dump file vmlinux format raw | grep "'unix_sock'"
+    [81287] FWD 'unix_sock' fwd_kind=struct
+    [89336] STRUCT 'unix_sock' size=1024 vlen=14
 
-Cc: stable@vger.kernel.org # 5.14.x: 3244867af8c0: KVM: x86: Ignore sparse banks size for an "all CPUs", non-sparse IPI req
-Cc: stable@vger.kernel.org # 5.14.x
-Fixes: d8f5537a8816 ("KVM: hyper-v: Advertise support for fast XMM hypercalls")
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220222154642.684285-5-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    $ bpftool btf dump file vmlinux format c | grep "struct unix_sock"
+    struct unix_sock;
+    struct unix_sock___2 {	<--- conflict, the "___2" is unexpected
+		    struct unix_sock___2 *unix_sk;
+
+This causes a compilation error if the dump output is used as a header file.
+
+Fix it by skipping declaration when counting duplicated type names.
+
+Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
+Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20220301053250.1464204-2-xukuohai@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/hyperv.c |   52 ++++++++++++++++++++++++++++++++------------------
- 1 file changed, 34 insertions(+), 18 deletions(-)
+ tools/lib/bpf/btf_dump.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1890,6 +1890,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 	int sparse_banks_len;
- 	u32 vector;
- 	bool all_cpus;
-+	int i;
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index 07ebe70d3a30..6b1bc1f43728 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -1505,6 +1505,11 @@ static const char *btf_dump_resolve_name(struct btf_dump *d, __u32 id,
+ 	if (s->name_resolved)
+ 		return *cached_name ? *cached_name : orig_name;
  
- 	if (hc->code == HVCALL_SEND_IPI) {
- 		if (!hc->fast) {
-@@ -1910,9 +1911,15 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 
- 		trace_kvm_hv_send_ipi(vector, sparse_banks[0]);
- 	} else {
--		if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
--					    sizeof(send_ipi_ex))))
--			return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		if (!hc->fast) {
-+			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
-+						    sizeof(send_ipi_ex))))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		} else {
-+			send_ipi_ex.vector = (u32)hc->ingpa;
-+			send_ipi_ex.vp_set.format = hc->outgpa;
-+			send_ipi_ex.vp_set.valid_bank_mask = sse128_lo(hc->xmm[0]);
-+		}
- 
- 		trace_kvm_hv_send_ipi_ex(send_ipi_ex.vector,
- 					 send_ipi_ex.vp_set.format,
-@@ -1920,8 +1927,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 
- 		vector = send_ipi_ex.vector;
- 		valid_bank_mask = send_ipi_ex.vp_set.valid_bank_mask;
--		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64) *
--			sizeof(sparse_banks[0]);
-+		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64);
- 
- 		all_cpus = send_ipi_ex.vp_set.format == HV_GENERIC_SET_ALL;
- 
-@@ -1931,12 +1937,27 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 		if (!sparse_banks_len)
- 			goto ret_success;
- 
--		if (kvm_read_guest(kvm,
--				   hc->ingpa + offsetof(struct hv_send_ipi_ex,
--							vp_set.bank_contents),
--				   sparse_banks,
--				   sparse_banks_len))
--			return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		if (!hc->fast) {
-+			if (kvm_read_guest(kvm,
-+					   hc->ingpa + offsetof(struct hv_send_ipi_ex,
-+								vp_set.bank_contents),
-+					   sparse_banks,
-+					   sparse_banks_len * sizeof(sparse_banks[0])))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		} else {
-+			/*
-+			 * The lower half of XMM0 is already consumed, each XMM holds
-+			 * two sparse banks.
-+			 */
-+			if (sparse_banks_len > (2 * HV_HYPERCALL_MAX_XMM_REGISTERS - 1))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+			for (i = 0; i < sparse_banks_len; i++) {
-+				if (i % 2)
-+					sparse_banks[i] = sse128_lo(hc->xmm[(i + 1) / 2]);
-+				else
-+					sparse_banks[i] = sse128_hi(hc->xmm[i / 2]);
-+			}
-+		}
- 	}
- 
- check_and_send_ipi:
-@@ -2098,6 +2119,7 @@ static bool is_xmm_fast_hypercall(struct
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX:
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX:
-+	case HVCALL_SEND_IPI_EX:
- 		return true;
- 	}
- 
-@@ -2265,14 +2287,8 @@ int kvm_hv_hypercall(struct kvm_vcpu *vc
- 		ret = kvm_hv_flush_tlb(vcpu, &hc);
- 		break;
- 	case HVCALL_SEND_IPI:
--		if (unlikely(hc.rep)) {
--			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
--			break;
--		}
--		ret = kvm_hv_send_ipi(vcpu, &hc);
--		break;
- 	case HVCALL_SEND_IPI_EX:
--		if (unlikely(hc.fast || hc.rep)) {
-+		if (unlikely(hc.rep)) {
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
- 			break;
- 		}
++	if (btf_is_fwd(t) || (btf_is_enum(t) && btf_vlen(t) == 0)) {
++		s->name_resolved = 1;
++		return orig_name;
++	}
++
+ 	dup_cnt = btf_dump_name_dups(d, name_map, orig_name);
+ 	if (dup_cnt > 1) {
+ 		const size_t max_len = 256;
+-- 
+2.34.1
+
 
 
