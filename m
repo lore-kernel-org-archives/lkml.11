@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB507C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29AC1C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446604AbiDFBWY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48202 "EHLO
+        id S243503AbiDFB2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:28:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242805AbiDEKfT (ORCPT
+        with ESMTP id S1349207AbiDEJt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF82B517E0;
-        Tue,  5 Apr 2022 03:21:19 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A98432253D;
+        Tue,  5 Apr 2022 02:42:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4204ECE0B18;
-        Tue,  5 Apr 2022 10:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BEBDC385A0;
-        Tue,  5 Apr 2022 10:21:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53261B818F3;
+        Tue,  5 Apr 2022 09:42:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A883DC385A1;
+        Tue,  5 Apr 2022 09:42:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154076;
-        bh=HVTqkZTjsWRzsiky7DRmPVUh7R7XLN+qV9anCZQoTPU=;
+        s=korg; t=1649151761;
+        bh=u8PxMLCYo4rYp2EXONipyGluuU3I5q0QkRQTH2Ha+LM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XlWPSwS2cNte+WF5KjvhKn8lx1okCxWTXiYITWWo0k1fR9gxPHuZA8ecMIX9pfhhy
-         Ar05rHpoZkp31kBG994z+0qxR87GlY62SObJkUIxskMs7EL0S8817/jCyTAQGMsvID
-         iV8stCwIcoQfrrrMeGngG4b4BC7ZbpgBRCkS83as=
+        b=1lVs05GRpXcBBO+qOUANVF2UhKmBtiCBn2AXDgUhP54FkG3ujQuYiD4dJ92wg93J0
+         b75qqRt3+Q0gO1/AM9lC4UTtIfoZxfd23IkfWFSf+rgBLs7a4kvedkABYRqiCxwKKz
+         OvzwYE4h5yGOdMs+ugNuGr/V6VT/BuL2kJVv/41I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Jeff Johnson <quic_jjohnson@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 412/599] clk: tegra: tegra124-emc: Fix missing put_device() call in emc_ensure_emc_driver
-Date:   Tue,  5 Apr 2022 09:31:46 +0200
-Message-Id: <20220405070311.092929253@linuxfoundation.org>
+Subject: [PATCH 5.15 531/913] ath10k: Fix error handling in ath10k_setup_msa_resources
+Date:   Tue,  5 Apr 2022 09:26:33 +0200
+Message-Id: <20220405070355.766997510@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,34 +52,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6d6ef58c2470da85a99119f74d34216c8074b9f0 ]
+[ Upstream commit 9747a78d5f758a5284751a10aee13c30d02bd5f1 ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fixes: 2db04f16b589 ("clk: tegra: Add EMC clock driver")
+This function only calls of_node_put() in the regular path.
+And it will cause refcount leak in error path.
+
+Fixes: 727fec790ead ("ath10k: Setup the msa resources before qmi init")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Link: https://lore.kernel.org/r/20220112104501.30655-1-linmq006@gmail.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220308070238.19295-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/tegra/clk-tegra124-emc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/tegra/clk-tegra124-emc.c b/drivers/clk/tegra/clk-tegra124-emc.c
-index 745f9faa98d8..733a962ff521 100644
---- a/drivers/clk/tegra/clk-tegra124-emc.c
-+++ b/drivers/clk/tegra/clk-tegra124-emc.c
-@@ -191,6 +191,7 @@ static struct tegra_emc *emc_ensure_emc_driver(struct tegra_clk_emc *tegra)
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index 9513ab696fff..f79dd9a71690 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -1556,11 +1556,11 @@ static int ath10k_setup_msa_resources(struct ath10k *ar, u32 msa_size)
+ 	node = of_parse_phandle(dev->of_node, "memory-region", 0);
+ 	if (node) {
+ 		ret = of_address_to_resource(node, 0, &r);
++		of_node_put(node);
+ 		if (ret) {
+ 			dev_err(dev, "failed to resolve msa fixed region\n");
+ 			return ret;
+ 		}
+-		of_node_put(node);
  
- 	tegra->emc = platform_get_drvdata(pdev);
- 	if (!tegra->emc) {
-+		put_device(&pdev->dev);
- 		pr_err("%s: cannot find EMC driver\n", __func__);
- 		return NULL;
- 	}
+ 		ar->msa.paddr = r.start;
+ 		ar->msa.mem_size = resource_size(&r);
 -- 
 2.34.1
 
