@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 251F6C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B525C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385266AbiDEVtX (ORCPT
+        id S1385511AbiDEVtq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        Tue, 5 Apr 2022 17:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354930AbiDEKQg (ORCPT
+        with ESMTP id S1348932AbiDEJst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:36 -0400
+        Tue, 5 Apr 2022 05:48:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E367521810;
-        Tue,  5 Apr 2022 03:04:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE89798F76;
+        Tue,  5 Apr 2022 02:37:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93F8BB81C83;
-        Tue,  5 Apr 2022 10:04:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B7BCC385A2;
-        Tue,  5 Apr 2022 10:03:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90006B818F3;
+        Tue,  5 Apr 2022 09:37:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D441FC385A2;
+        Tue,  5 Apr 2022 09:37:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153040;
-        bh=GHdBnWH3UX1Xlg0sRoZEr/y66U2ZsPElXuujtK71+AE=;
+        s=korg; t=1649151477;
+        bh=jqWhiNEuxzqJJdkO6Zr2C7vC3Glh0GLN0fChM3HRWgQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i3rF14GhoSeL6bKWctbdAT5E3HXMbO7x0viTfRfgQ2Z/vUjrGq3YqQ/ODDXKhE5cy
-         7FgxPUjgYlPN/EnAGITw1/7zQWeUZX19Va9MwSqnGOneA9NPpwODxlCHrbmZUvzxt+
-         nf6iG0Gj079TVPkA3Qc4b6cM38KgDVpSkI7+xojY=
+        b=JZf3aA9/OljTrt1OQRe5gQ7aAVF+juJUuenxLn/IZFEW+nXmCOAXtk0g6HDx6lfV4
+         iSTPqXIdteZcrmU8sn23FW4w5lIaw/9gCGYP4dLjeLj49idlZYpPRbl/E3G/EEFhku
+         Y7QzYjp2HZhbL5sisjkqQPstBzAPTrGd1WLI2n00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 5.10 042/599] Documentation: update stable tree link
-Date:   Tue,  5 Apr 2022 09:25:36 +0200
-Message-Id: <20220405070300.079386711@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 412/913] igc: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:24:34 +0200
+Message-Id: <20220405070352.195960180@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bagas Sanjaya <bagasdotme@gmail.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit 555d44932c67e617d89bc13c81c7efac5b51fcfa upstream.
+[ Upstream commit f9e61d365bafdee40fe2586fc6be490c3e824dad ]
 
-The link to stable tree is redirected to
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git. Update
-accordingly.
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, igc_construct_skb_zc() currently allocates and reserves
+additional `xdp->data_meta - xdp->data_hard_start`, which is about
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only (+ meta) to
+__napi_alloc_skb() and don't reserve anything. This will give
+enough headroom for stack processing.
+Also, net_prefetch() xdp->data_meta and align the copy size to
+speed-up memcpy() a little and better match igc_construct_skb().
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Link: https://lore.kernel.org/r/20220314113329.485372-6-bagasdotme@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/process/stable-kernel-rules.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
---- a/Documentation/process/stable-kernel-rules.rst
-+++ b/Documentation/process/stable-kernel-rules.rst
-@@ -168,7 +168,7 @@ Trees
-  - The finalized and tagged releases of all stable kernels can be found
-    in separate branches per version at:
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index c7fa978cdf02..a514cfc6c8a0 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2434,19 +2434,20 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
+ static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
+ 					    struct xdp_buff *xdp)
+ {
++	unsigned int totalsize = xdp->data_end - xdp->data_meta;
+ 	unsigned int metasize = xdp->data - xdp->data_meta;
+-	unsigned int datasize = xdp->data_end - xdp->data;
+-	unsigned int totalsize = metasize + datasize;
+ 	struct sk_buff *skb;
  
--	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-+	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+-	skb = __napi_alloc_skb(&ring->q_vector->napi,
+-			       xdp->data_end - xdp->data_hard_start,
++	net_prefetch(xdp->data_meta);
++
++	skb = __napi_alloc_skb(&ring->q_vector->napi, totalsize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		return NULL;
  
-  - The release candidate of all stable kernel versions can be found at:
- 
+-	skb_reserve(skb, xdp->data_meta - xdp->data_hard_start);
+-	memcpy(__skb_put(skb, totalsize), xdp->data_meta, totalsize);
++	memcpy(__skb_put(skb, totalsize), xdp->data_meta,
++	       ALIGN(totalsize, sizeof(long)));
++
+ 	if (metasize) {
+ 		skb_metadata_set(skb, metasize);
+ 		__skb_pull(skb, metasize);
+-- 
+2.34.1
+
 
 
