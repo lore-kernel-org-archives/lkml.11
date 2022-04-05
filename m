@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F16C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABE1C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355263AbiDENHg (ORCPT
+        id S1356766AbiDENIO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38306 "EHLO
+        Tue, 5 Apr 2022 09:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343989AbiDEJQo (ORCPT
+        with ESMTP id S1344026AbiDEJQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC8C22A;
-        Tue,  5 Apr 2022 02:03:01 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5B71EED8;
+        Tue,  5 Apr 2022 02:03:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9601EB81B75;
-        Tue,  5 Apr 2022 09:03:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E47D2C385A0;
-        Tue,  5 Apr 2022 09:02:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0FEE61003;
+        Tue,  5 Apr 2022 09:03:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF58BC385A1;
+        Tue,  5 Apr 2022 09:03:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149379;
-        bh=HYcewj2BuG6dKg1wIJIE7kOiw6YDqyV3kNgUDJ3qnvQ=;
+        s=korg; t=1649149423;
+        bh=/vXsamBdSnO41BjFWNF63X0LjmmtbeaDPUrPjiNI93w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uiuocRYMR8jl/AC7ECqIbYuTSGt41OvWoJT3E876k7ov5YYpqgxqtn/RA9+LSrcp6
-         BwDrFrv0zmyN7Kx3hJ0dq+rtlPb865kJWLo1WV+t2WbFG3Bu3uhPlXIaPgHRqO9ebG
-         pC9cZ0GF7wJ7cjbABckQQkbFi+hzhasLI5EeouQE=
+        b=dtYM2HmN25vmPdUgzWHPKq0m5bbYLsycqePUX8O4uKXiVPq6BPlYarFMSxirWb3/Y
+         R1yr2gBhmE5y6O53O+nSTXUCMEiCuH6TiXjtc44S6XxurzoJNIqKvnLGTgNP6IIpwA
+         jcAUZzrBwRP7t1H8gEN87ACK5ukvDIfsIukzGeEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0693/1017] staging: mt7621-dts: fix formatting
-Date:   Tue,  5 Apr 2022 09:26:46 +0200
-Message-Id: <20220405070414.844178436@linuxfoundation.org>
+        Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        Fei Li <fei1.li@intel.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0708/1017] virt: acrn: fix a memory leak in acrn_dev_ioctl()
+Date:   Tue,  5 Apr 2022 09:27:01 +0200
+Message-Id: <20220405070415.286563038@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,109 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+From: Xiaolong Huang <butterflyhuangxx@gmail.com>
 
-[ Upstream commit 7eeec44d33f6be7caca4fe9ca4e653cf315a36c1 ]
+[ Upstream commit ecd1735f14d6ac868ae5d8b7a2bf193fa11f388b ]
 
-Fix formatting on mt7621.dtsi.
+The vm_param and cpu_regs need to be freed via kfree()
+before return -EINVAL error.
 
-Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220125153903.1469-2-arinc.unal@arinc9.com
+Fixes: 9c5137aedd11 ("virt: acrn: Introduce VM management interfaces")
+Fixes: 2ad2aaee1bc9 ("virt: acrn: Introduce an ioctl to set vCPU registers state")
+Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Signed-off-by: Fei Li <fei1.li@intel.com>
+Link: https://lore.kernel.org/r/20220308092047.1008409-1-butterflyhuangxx@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/mt7621-dts/mt7621.dtsi | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/virt/acrn/hsm.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
-index 6d158e4f4b8c..25687f4fa671 100644
---- a/drivers/staging/mt7621-dts/mt7621.dtsi
-+++ b/drivers/staging/mt7621-dts/mt7621.dtsi
-@@ -44,9 +44,9 @@
- 		regulator-max-microvolt = <3300000>;
- 		enable-active-high;
- 		regulator-always-on;
--	  };
-+	};
+diff --git a/drivers/virt/acrn/hsm.c b/drivers/virt/acrn/hsm.c
+index 5419794fccf1..423ea888d79a 100644
+--- a/drivers/virt/acrn/hsm.c
++++ b/drivers/virt/acrn/hsm.c
+@@ -136,8 +136,10 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
+ 		if (IS_ERR(vm_param))
+ 			return PTR_ERR(vm_param);
  
--	  mmc_fixed_1v8_io: fixedregulator@1 {
-+	mmc_fixed_1v8_io: fixedregulator@1 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "mmc_io";
- 		regulator-min-microvolt = <1800000>;
-@@ -363,17 +363,18 @@
+-		if ((vm_param->reserved0 | vm_param->reserved1) != 0)
++		if ((vm_param->reserved0 | vm_param->reserved1) != 0) {
++			kfree(vm_param);
+ 			return -EINVAL;
++		}
  
- 		mediatek,ethsys = <&sysc>;
+ 		vm = acrn_vm_create(vm, vm_param);
+ 		if (!vm) {
+@@ -182,21 +184,29 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
+ 			return PTR_ERR(cpu_regs);
  
--
- 		gmac0: mac@0 {
- 			compatible = "mediatek,eth-mac";
- 			reg = <0>;
- 			phy-mode = "rgmii";
-+
- 			fixed-link {
- 				speed = <1000>;
- 				full-duplex;
- 				pause;
- 			};
- 		};
-+
- 		gmac1: mac@1 {
- 			compatible = "mediatek,eth-mac";
- 			reg = <1>;
-@@ -381,6 +382,7 @@
- 			phy-mode = "rgmii-rxid";
- 			phy-handle = <&phy_external>;
- 		};
-+
- 		mdio-bus {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -411,36 +413,43 @@
- 					#address-cells = <1>;
- 					#size-cells = <0>;
- 					reg = <0>;
-+
- 					port@0 {
- 						status = "off";
- 						reg = <0>;
- 						label = "lan0";
- 					};
-+
- 					port@1 {
- 						status = "off";
- 						reg = <1>;
- 						label = "lan1";
- 					};
-+
- 					port@2 {
- 						status = "off";
- 						reg = <2>;
- 						label = "lan2";
- 					};
-+
- 					port@3 {
- 						status = "off";
- 						reg = <3>;
- 						label = "lan3";
- 					};
-+
- 					port@4 {
- 						status = "off";
- 						reg = <4>;
- 						label = "lan4";
- 					};
-+
- 					port@6 {
- 						reg = <6>;
- 						label = "cpu";
- 						ethernet = <&gmac0>;
- 						phy-mode = "trgmii";
-+
- 						fixed-link {
- 							speed = <1000>;
- 							full-duplex;
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->reserved); i++)
+-			if (cpu_regs->reserved[i])
++			if (cpu_regs->reserved[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
+ 
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_32); i++)
+-			if (cpu_regs->vcpu_regs.reserved_32[i])
++			if (cpu_regs->vcpu_regs.reserved_32[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
+ 
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_64); i++)
+-			if (cpu_regs->vcpu_regs.reserved_64[i])
++			if (cpu_regs->vcpu_regs.reserved_64[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
+ 
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.gdt.reserved); i++)
+ 			if (cpu_regs->vcpu_regs.gdt.reserved[i] |
+-			    cpu_regs->vcpu_regs.idt.reserved[i])
++			    cpu_regs->vcpu_regs.idt.reserved[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
+ 
+ 		ret = hcall_set_vcpu_regs(vm->vmid, virt_to_phys(cpu_regs));
+ 		if (ret < 0)
 -- 
 2.34.1
 
