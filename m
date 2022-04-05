@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0238FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60187C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579770AbiDEXcs (ORCPT
+        id S1579873AbiDEXdM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
+        Tue, 5 Apr 2022 19:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351410AbiDEKCY (ORCPT
+        with ESMTP id S244669AbiDEKjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:02:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E2A6D4E1;
-        Tue,  5 Apr 2022 02:51:41 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB548BE2D;
+        Tue,  5 Apr 2022 03:23:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F29D3B818F3;
-        Tue,  5 Apr 2022 09:51:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4440BC385A1;
-        Tue,  5 Apr 2022 09:51:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5D95B81C8A;
+        Tue,  5 Apr 2022 10:23:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A13AC385A0;
+        Tue,  5 Apr 2022 10:23:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152298;
-        bh=1mzmburc3X+szuNAEo1tXUhYMeph1aGhucbEOTahC2s=;
+        s=korg; t=1649154236;
+        bh=GsAv312AdYmmt1e+wMqZIwMIBSqRjZ1+lgs4z1QfSXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HJpMjeyalV/lhbM3/NYaLVeH8qDojrV/j94qB62wTAFbAgYM89PEC2Ft7XYoxV/fw
-         jv+tLm0+9MC3JTgi+npS8+qfperGqZ5wOgzCvg0dha7MISMzhCIWvZKjMQj98tAwfX
-         xg3bYRCkut1tjrlRsNdARjpJjaUL0xMAUln3aXBo=
+        b=OAuFN6CZMTzJOrimv5dgHUbNbrwJY8C2hR+dzufKYyBaXsHIYZ08r6Vj820oS5NJJ
+         KAY2vHgKnJLaSbVGAyRJ4AB3WH67evBq1egi/EaiNdb0U4OWgpo6uIiTPqPPckYyJP
+         +lSNv7NKBc44jAkODpiztzr3CD6uOY8GXqhp+IA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 726/913] media: staging: media: zoran: calculate the right buffer number for zoran_reap_stat_com
-Date:   Tue,  5 Apr 2022 09:29:48 +0200
-Message-Id: <20220405070401.593671596@linuxfoundation.org>
+Subject: [PATCH 5.10 507/599] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
+Date:   Tue,  5 Apr 2022 09:33:21 +0200
+Message-Id: <20220405070313.916449724@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,48 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit e3b86f4e558cea9eed71d894df2f19b10d60a207 ]
+[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
 
-On the case tmp_dcim=1, the index of buffer is miscalculated.
-This generate a NULL pointer dereference later.
+hdpvr_register_videodev is responsible to initialize a worker in
+hdpvr_device. However, the worker is only initialized at
+hdpvr_start_streaming other than hdpvr_register_videodev.
+When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
+will encounter one WARN in flush_work.The stack trace is as follows:
 
-So let's fix the calcul and add a check to prevent this to reappear.
+ hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
+ usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
+ __device_release_driver drivers/base/dd.c:1206 [inline]
+ device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
+ bus_remove_device+0x108/0x160 drivers/base/bus.c:529
+ device_del+0x1fe/0x510 drivers/base/core.c:3592
+ usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
+ usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Fix this by moving the initialization of dev->worker to the starting of
+hdpvr_register_videodev
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/zoran/zoran_device.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/zoran/zoran_device.c b/drivers/staging/media/zoran/zoran_device.c
-index 5b12a730a229..fb1f0465ca87 100644
---- a/drivers/staging/media/zoran/zoran_device.c
-+++ b/drivers/staging/media/zoran/zoran_device.c
-@@ -814,7 +814,7 @@ static void zoran_reap_stat_com(struct zoran *zr)
- 		if (zr->jpg_settings.tmp_dcm == 1)
- 			i = (zr->jpg_dma_tail - zr->jpg_err_shift) & BUZ_MASK_STAT_COM;
- 		else
--			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2 + 1;
-+			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2;
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 563128d11731..60e57e0f1927 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -308,7 +308,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
  
- 		stat_com = le32_to_cpu(zr->stat_com[i]);
- 		if ((stat_com & 1) == 0) {
-@@ -826,6 +826,11 @@ static void zoran_reap_stat_com(struct zoran *zr)
- 		size = (stat_com & GENMASK(22, 1)) >> 1;
+ 	dev->status = STATUS_STREAMING;
  
- 		buf = zr->inuse[i];
-+		if (!buf) {
-+			spin_unlock_irqrestore(&zr->queued_bufs_lock, flags);
-+			pci_err(zr->pci_dev, "No buffer at slot %d\n", i);
-+			return;
-+		}
- 		buf->vbuf.vb2_buf.timestamp = ktime_get_ns();
+-	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+ 	schedule_work(&dev->worker);
  
- 		if (zr->codec_mode == BUZ_MODE_MOTION_COMPRESS) {
+ 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
+@@ -1165,6 +1164,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
+ 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
+ 	int res;
+ 
++	// initialize dev->worker
++	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
++
+ 	dev->cur_std = V4L2_STD_525_60;
+ 	dev->width = 720;
+ 	dev->height = 480;
 -- 
 2.34.1
 
