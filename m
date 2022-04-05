@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01B3C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4235C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386462AbiDEMna (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        id S235134AbiDEMoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242641AbiDEJIP (ORCPT
+        with ESMTP id S242634AbiDEJIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:08:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3741C7004D;
-        Tue,  5 Apr 2022 01:57:05 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8BA70F4F;
+        Tue,  5 Apr 2022 01:57:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1655AB81BBF;
-        Tue,  5 Apr 2022 08:57:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C21AC385A0;
-        Tue,  5 Apr 2022 08:57:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EEAF61561;
+        Tue,  5 Apr 2022 08:57:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FB9FC385A1;
+        Tue,  5 Apr 2022 08:57:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149020;
-        bh=rlFhRVc8ynRlyfX9WdX+N6hMopQiKNSSEzEufzT5nN0=;
+        s=korg; t=1649149026;
+        bh=Okagw7fie1fM2en2TnMuv+aoslOZlViKQELnMUuOEYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sLif4sLbtvslBxwWIhzLnQszNY55aCzZLJHJT43mWLcH6B287tJ/XxCei9zUbU5qx
-         tR7wUKAKhI5dfucOpTsFlQANlSDeFQjJWg/Nyqf/IIYdJ4d+PNzn8TZAM/HTap0m91
-         i7/dtzeme92/0GIlESgEIfbDR7eIjeC6YBq0yNwk=
+        b=lH3VtSZhsJuwjEVTkp4SwuxA8j/YjMpeFrTZJdS7TIzTA057a3dOYwuJ03VUYA0vV
+         K+H5joTCV0NQciL8tS8amEbHJMEKzmUzCjGm5FKz6h3sFxxmHGXneq1hIzgQzgQWXA
+         HTztLkIAVy9A9kgxQIySzngkejpNWpIhcBxfGRlw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0566/1017] hv_balloon: rate-limit "Unhandled message" warning
-Date:   Tue,  5 Apr 2022 09:24:39 +0200
-Message-Id: <20220405070411.081109325@linuxfoundation.org>
+        stable@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0550/1017] power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
+Date:   Tue,  5 Apr 2022 09:24:23 +0200
+Message-Id: <20220405070410.610995853@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,49 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anssi Hannula <anssi.hannula@bitwise.fi>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 1d7286729aa616772be334eb908e11f527e1e291 ]
+[ Upstream commit f7731754fdce33dad19be746f647d6ac47c5d695 ]
 
-For a couple of times I have encountered a situation where
+The datasheet says that the BQ24190_REG_POC_CHG_CONFIG bits can
+have a value of either 10(0x2) or 11(0x3) for OTG (5V boost regulator)
+mode.
 
-  hv_balloon: Unhandled message: type: 12447
+Sofar bq24190_vbus_is_enabled() was only checking for 10 but some BIOS-es
+uses 11 when enabling the regulator at boot.
 
-is being flooded over 1 million times per second with various values,
-filling the log and consuming cycles, making debugging difficult.
+Make bq24190_vbus_is_enabled() also check for 11 so that it does not
+wrongly returns false when the bits are set to 11.
 
-Add rate limiting to the message.
-
-Most other Hyper-V drivers already have similar rate limiting in their
-message callbacks.
-
-The cause of the floods in my case was probably fixed by 96d9d1fa5cd5
-("Drivers: hv: balloon: account for vmbus packet header in
-max_pkt_size").
-
-Fixes: 9aa8b50b2b3d ("Drivers: hv: Add Hyper-V balloon driver")
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20220222141400.98160-1-anssi.hannula@bitwise.fi
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Fixes: 66b6bef2c4e0 ("power: supply: bq24190_charger: Export 5V boost converter as regulator")
+Cc: Bastien Nocera <hadess@hadess.net>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/hv_balloon.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/power/supply/bq24190_charger.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-index f2d05bff4245..439f99b8b5de 100644
---- a/drivers/hv/hv_balloon.c
-+++ b/drivers/hv/hv_balloon.c
-@@ -1563,7 +1563,7 @@ static void balloon_onchannelcallback(void *context)
- 			break;
+diff --git a/drivers/power/supply/bq24190_charger.c b/drivers/power/supply/bq24190_charger.c
+index 35ff0c8fe96f..16c4876fe5af 100644
+--- a/drivers/power/supply/bq24190_charger.c
++++ b/drivers/power/supply/bq24190_charger.c
+@@ -39,6 +39,7 @@
+ #define BQ24190_REG_POC_CHG_CONFIG_DISABLE		0x0
+ #define BQ24190_REG_POC_CHG_CONFIG_CHARGE		0x1
+ #define BQ24190_REG_POC_CHG_CONFIG_OTG			0x2
++#define BQ24190_REG_POC_CHG_CONFIG_OTG_ALT		0x3
+ #define BQ24190_REG_POC_SYS_MIN_MASK		(BIT(3) | BIT(2) | BIT(1))
+ #define BQ24190_REG_POC_SYS_MIN_SHIFT		1
+ #define BQ24190_REG_POC_SYS_MIN_MIN			3000
+@@ -550,7 +551,11 @@ static int bq24190_vbus_is_enabled(struct regulator_dev *dev)
+ 	pm_runtime_mark_last_busy(bdi->dev);
+ 	pm_runtime_put_autosuspend(bdi->dev);
  
- 		default:
--			pr_warn("Unhandled message: type: %d\n", dm_hdr->type);
-+			pr_warn_ratelimited("Unhandled message: type: %d\n", dm_hdr->type);
+-	return ret ? ret : val == BQ24190_REG_POC_CHG_CONFIG_OTG;
++	if (ret)
++		return ret;
++
++	return (val == BQ24190_REG_POC_CHG_CONFIG_OTG ||
++		val == BQ24190_REG_POC_CHG_CONFIG_OTG_ALT);
+ }
  
- 		}
- 	}
+ static const struct regulator_ops bq24190_vbus_ops = {
 -- 
 2.34.1
 
