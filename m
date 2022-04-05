@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC83C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80695C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346220AbiDEKnC (ORCPT
+        id S1346312AbiDEKnL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33840 "EHLO
+        Tue, 5 Apr 2022 06:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241188AbiDEIcy (ORCPT
+        with ESMTP id S241184AbiDEIcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:54 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CCD17079;
-        Tue,  5 Apr 2022 01:29:14 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:12 -0000
+        Tue, 5 Apr 2022 04:32:53 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B504917061;
+        Tue,  5 Apr 2022 01:29:10 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:08 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147353;
+        s=2020; t=1649147349;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=E+FXe1f5zmjyKSWYJfD7CbEkVYcWfT20iHGjiGdqNXg=;
-        b=H+hhm3swfUasbQ76dTILXhrORpE72us0YDpYy7ERKA+xTmVO6Eb4WC9hOgfbDbdKD9y+4M
-        h8PZITFwW5z4aObV8HJfsPxjDnxJxCJSK1ElK+cNI23XFgplEQAIDyVUx/M8l2fSvcQkGq
-        O2WwG6bOryVc9WElSSk2D1pIdr6EDuHKK3z93roveCn/hckHrGelbYMxjxpesRqsQke2C6
-        544SCsLI/wWc7tTQ9JNDaTrOcf7fPYMLBW1UDu1w08SthfsnoTQk8C73xHWgemOzPoKJks
-        0qT23xsmSs2O8mslwMtBf0IXEA9tznK7s0zhm5r6RQul3WfsZ/wkcDsznxnrbA==
+        bh=yt0rYyrwZxg63pG0971ROdocgPh4CTPB8CHSHPagIyA=;
+        b=p6iXMl/rfQ/Y7vvlKS1VEXu5kSfghGKVsqKGvbZ7SWsX+xNbCMpYpgZwwjJo0RiruMxy9/
+        Ih+UWOQ7YSjStiobddeOCMz9ptG1O9q9n5JpO/TplYdlZwORj/TC9gQXSPlko0Tnua529j
+        DK40lhSnIz0MkVxcodS1eRJyBSWxlfy5YKqqRCqC/p2DMnPC6I5WRg9wF7MLY6Vl4zwnMm
+        xE5e6uBFHxlzaySZrCKe46Q+kQQq+2ZKvr4th0WvLHJvga2UrqAtl2W/RlFZ0F8Cls7e7F
+        jkAtO1jId0KsGYXAqOR/N3+ro8Miq2BFS1qhgT2PvZYtQ2bbyEADQ2gFg8Ya+A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147353;
+        s=2020e; t=1649147349;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=E+FXe1f5zmjyKSWYJfD7CbEkVYcWfT20iHGjiGdqNXg=;
-        b=InNndmzVcr4FtQN8848pcBnuPmGlThffrlr/JJioEVab9I+uIIST2zz9xPUdmD2+ejlZJt
-        dDQnSHJ0hhNk/ZBg==
-From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
+        bh=yt0rYyrwZxg63pG0971ROdocgPh4CTPB8CHSHPagIyA=;
+        b=6FeYv2OHDQblpguOMp8R9bMIFDZRgJYQRIHrzJM8UMLF2/SCDGcUcaSdbNobM2UoTz0JiU
+        +oha2wS0j1IXC8AQ==
+From:   "tip-bot2 for Namhyung Kim" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] perf/x86: Add Intel Raptor Lake support
-Cc:     Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+Subject: [tip: perf/urgent] perf/core: Inherit event_caps
+Cc:     Namhyung Kim <namhyung@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        <stable@vger.kernel.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <1647366360-82824-1-git-send-email-kan.liang@linux.intel.com>
-References: <1647366360-82824-1-git-send-email-kan.liang@linux.intel.com>
+In-Reply-To: <20220328200112.457740-1-namhyung@kernel.org>
+References: <20220328200112.457740-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164914735235.389.727657081152348358.tip-bot2@tip-bot2>
+Message-ID: <164914734824.389.11482584782909269521.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,35 +63,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the perf/urgent branch of tip:
 
-Commit-ID:     c61759e581576d3330bd1d9490b4d7552e24da6b
-Gitweb:        https://git.kernel.org/tip/c61759e581576d3330bd1d9490b4d7552e24da6b
-Author:        Kan Liang <kan.liang@linux.intel.com>
-AuthorDate:    Tue, 15 Mar 2022 10:45:57 -07:00
+Commit-ID:     e3265a4386428d3d157d9565bb520aabff8b4bf0
+Gitweb:        https://git.kernel.org/tip/e3265a4386428d3d157d9565bb520aabff8b4bf0
+Author:        Namhyung Kim <namhyung@kernel.org>
+AuthorDate:    Mon, 28 Mar 2022 13:01:12 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 09:59:43 +02:00
+CommitterDate: Tue, 05 Apr 2022 09:59:44 +02:00
 
-perf/x86: Add Intel Raptor Lake support
+perf/core: Inherit event_caps
 
->From PMU's perspective, Raptor Lake is the same as the Alder Lake. The
-only difference is the event list, which will be supported in the perf
-tool later.
+It was reported that some perf event setup can make fork failed on
+ARM64.  It was the case of a group of mixed hw and sw events and it
+failed in perf_event_init_task() due to armpmu_event_init().
 
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+The ARM PMU code checks if all the events in a group belong to the
+same PMU except for software events.  But it didn't set the event_caps
+of inherited events and no longer identify them as software events.
+Therefore the test failed in a child process.
+
+A simple reproducer is:
+
+  $ perf stat -e '{cycles,cs,instructions}' perf bench sched messaging
+  # Running 'sched/messaging' benchmark:
+  perf: fork(): Invalid argument
+
+The perf stat was fine but the perf bench failed in fork().  Let's
+inherit the event caps from the parent.
+
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/1647366360-82824-1-git-send-email-kan.liang@linux.intel.com
+Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/20220328200112.457740-1-namhyung@kernel.org
 ---
- arch/x86/events/intel/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/events/core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index e88791b..28f075e 100644
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -6212,6 +6212,7 @@ __init int intel_pmu_init(void)
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index cfde994..3980efc 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -11635,6 +11635,9 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
  
- 	case INTEL_FAM6_ALDERLAKE:
- 	case INTEL_FAM6_ALDERLAKE_L:
-+	case INTEL_FAM6_RAPTORLAKE:
- 		/*
- 		 * Alder Lake has 2 types of CPU, core and atom.
- 		 *
+ 	event->state		= PERF_EVENT_STATE_INACTIVE;
+ 
++	if (parent_event)
++		event->event_caps = parent_event->event_caps;
++
+ 	if (event->attr.sigtrap)
+ 		atomic_set(&event->event_limit, 1);
+ 
