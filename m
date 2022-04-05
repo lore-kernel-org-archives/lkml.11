@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89662C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 980ECC35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379657AbiDEPNX (ORCPT
+        id S1379788AbiDEPN1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:13:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
+        Tue, 5 Apr 2022 11:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346353AbiDEJov (ORCPT
+        with ESMTP id S1344743AbiDEJmm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:44:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE5DD9E94;
-        Tue,  5 Apr 2022 02:30:26 -0700 (PDT)
+        Tue, 5 Apr 2022 05:42:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842C6BF009;
+        Tue,  5 Apr 2022 02:28:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3DC9B81CAE;
-        Tue,  5 Apr 2022 09:30:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CD9C385A0;
-        Tue,  5 Apr 2022 09:30:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21DC361659;
+        Tue,  5 Apr 2022 09:28:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CE93C385A2;
+        Tue,  5 Apr 2022 09:28:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151023;
-        bh=1xsjRKMqP5RqWtFVtYhBnlBrA69egcb28RKZGj3GV+Q=;
+        s=korg; t=1649150880;
+        bh=DaKU9tzGBNC8vhMrAakJ4TImi/mLVIJ8Z1GA0IsQzmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vy6R+J5c28tJE7nYqyWi4aPk2ISYRxha6PYtGSgBj+A6HkvFzM4RdjKYiAqe0lNGj
-         j4/gYls42YlZdHNlUhNeVcBr/Qa/fRLPT1e7XWcoY0vIpYaq4KmvQ9lGfgivYluxs+
-         CVh7FpbMWorSQ0PavSWpu3hvwiVWwsE3eNe+T78k=
+        b=H4iUu7H2UIZS6hZ76uynBSagWAMmeuBrVLZWcqAtnmy72w4uwGDPqdgkUof01Ads8
+         UoXO9gITXPHBxmumVyTUzaqV1/0foAF+aOSJWxqphISZcMhlbnCDVxwPXH4YgTiAda
+         /JmGkZdYgjryMADHZXnCxFRuYMxwkbkJAfgUclhc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-        Robert Foss <robert.foss@linaro.org>,
-        Julian Grahsl <jgrahsl@snap.com>,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 266/913] media: camss: csid-170: fix non-10bit formats
-Date:   Tue,  5 Apr 2022 09:22:08 +0200
-Message-Id: <20220405070347.830005965@linuxfoundation.org>
+Subject: [PATCH 5.15 207/913] selftests/sgx: Treat CC as one argument
+Date:   Tue,  5 Apr 2022 09:21:09 +0200
+Message-Id: <20220405070346.063840285@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -54,50 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Marek <jonathan@marek.ca>
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-[ Upstream commit 14d510e040f85ff05734fd6db8bae44b47886464 ]
+[ Upstream commit 6170abb21e2380477080b25145da9747ad467d3d ]
 
-Use the decode_format/data_type from the "format" struct instead of a
-hardcoded 10-bit format.
+CC can have multiple sub-strings like "ccache gcc". For check_cc.sh,
+CC needs to be treated like one argument. Put double quotes around it to
+make CC one string and hence one argument.
 
-Fixes: eebe6d00e9bf ("media: camss: Add support for CSID hardware version Titan 170")
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Tested-by: Julian Grahsl <jgrahsl@snap.com>
-Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 2adcba79e69d ("selftests/x86: Add a selftest for SGX")
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220214184109.3739179-3-usama.anjum@collabora.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/camss/camss-csid-170.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/testing/selftests/sgx/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/qcom/camss/camss-csid-170.c b/drivers/media/platform/qcom/camss/camss-csid-170.c
-index ac22ff29d2a9..aa65043c3303 100644
---- a/drivers/media/platform/qcom/camss/camss-csid-170.c
-+++ b/drivers/media/platform/qcom/camss/camss-csid-170.c
-@@ -366,7 +366,7 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
- 			val |= input_format->width & 0x1fff << TPG_DT_n_CFG_0_FRAME_WIDTH;
- 			writel_relaxed(val, csid->base + CSID_TPG_DT_n_CFG_0(0));
+diff --git a/tools/testing/selftests/sgx/Makefile b/tools/testing/selftests/sgx/Makefile
+index 7f12d55b97f8..472b27ccd7dc 100644
+--- a/tools/testing/selftests/sgx/Makefile
++++ b/tools/testing/selftests/sgx/Makefile
+@@ -4,7 +4,7 @@ include ../lib.mk
  
--			val = DATA_TYPE_RAW_10BIT << TPG_DT_n_CFG_1_DATA_TYPE;
-+			val = format->data_type << TPG_DT_n_CFG_1_DATA_TYPE;
- 			writel_relaxed(val, csid->base + CSID_TPG_DT_n_CFG_1(0));
+ .PHONY: all clean
  
- 			val = tg->mode << TPG_DT_n_CFG_2_PAYLOAD_MODE;
-@@ -382,8 +382,9 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
- 		val = 1 << RDI_CFG0_BYTE_CNTR_EN;
- 		val |= 1 << RDI_CFG0_FORMAT_MEASURE_EN;
- 		val |= 1 << RDI_CFG0_TIMESTAMP_EN;
-+		/* note: for non-RDI path, this should be format->decode_format */
- 		val |= DECODE_FORMAT_PAYLOAD_ONLY << RDI_CFG0_DECODE_FORMAT;
--		val |= DATA_TYPE_RAW_10BIT << RDI_CFG0_DATA_TYPE;
-+		val |= format->data_type << RDI_CFG0_DATA_TYPE;
- 		val |= vc << RDI_CFG0_VIRTUAL_CHANNEL;
- 		val |= dt_id << RDI_CFG0_DT_ID;
- 		writel_relaxed(val, csid->base + CSID_RDI_CFG0(0));
+-CAN_BUILD_X86_64 := $(shell ../x86/check_cc.sh $(CC) \
++CAN_BUILD_X86_64 := $(shell ../x86/check_cc.sh "$(CC)" \
+ 			    ../x86/trivial_64bit_program.c)
+ 
+ ifndef OBJCOPY
 -- 
 2.34.1
 
