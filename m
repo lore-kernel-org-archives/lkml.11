@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C259DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1395BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234714AbiDEIN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        id S234823AbiDEIOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234701AbiDEH6q (ORCPT
+        with ESMTP id S234899AbiDEH7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56E1A9950;
-        Tue,  5 Apr 2022 00:53:12 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51770E094;
+        Tue,  5 Apr 2022 00:53:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58078B81BA7;
-        Tue,  5 Apr 2022 07:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF610C36AE3;
-        Tue,  5 Apr 2022 07:53:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D6CBB81BAF;
+        Tue,  5 Apr 2022 07:53:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF488C340EE;
+        Tue,  5 Apr 2022 07:53:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145190;
-        bh=5a4w0X02E9XeqceD8KGfG2dRL/J743LjSjuw3PThuj0=;
+        s=korg; t=1649145201;
+        bh=zEeKefMZYRslSx40JLS5O+6+t08QoeqPa7ZuL/Iyqg4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m0I7+mTXVX+HUY9n37JzqKrQWCKcKNyK2H8bfz4tv1RkNGJ8Fkl5kjRBOIQo8C6jZ
-         lCURqE+8Nn+P99/KPZhY5z3OE4z2oThkkBOOq5zous8BLYH+E1RJRK7A1uSFko6KPu
-         EqbLcAViCkxFq8ie7+Td3mdthTwwZ7GS1rnSq0Ho=
+        b=U/C3R/o9zsgn5VKBMfkfq65/ar2+WqOhIPAJx59dHD8H2zYbU8CxEqS9ADGMh7mtX
+         efQaaXDQIYrDRLMnSjtKyh8O+qX7LcDtm3wgsoZac0pQqBadzyhWqONc+szHsUHcA0
+         eZdeE8u3yQdSpfozk7MQR/G5ylP8F6XJlvagY+ow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0300/1126] media: imx: imx8mq-mipi-csi2: remove wrong irq config write operation
-Date:   Tue,  5 Apr 2022 09:17:27 +0200
-Message-Id: <20220405070416.420881581@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0321/1126] video: fbdev: fbcvt.c: fix printing in fb_cvt_print_name()
+Date:   Tue,  5 Apr 2022 09:17:48 +0200
+Message-Id: <20220405070417.037970983@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,39 +48,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Kepplinger <martin.kepplinger@puri.sm>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 59c2b6d51803ad6b7af28f2a60a843b24374e692 ]
+[ Upstream commit 78482af095abd9f4f29f1aa3fe575d25c6ae3028 ]
 
-The place where this register writel() that masks one interrupt is placed
-does not guarantee that the device is powered so that's not allowed.
-Moreover imx8mq_mipi_csi_start_stream() masks the interrupt anyway so the
-write is not even needed. Remove it as this is a mistake that slipped in
-with the driver.
+This code has two bugs:
+1) "cnt" is 255 but the size of the buffer is 256 so the last byte is
+   not used.
+2) If we try to print more than 255 characters then "cnt" will be
+   negative and that will trigger a WARN() in snprintf(). The fix for
+   this is to use scnprintf() instead of snprintf().
 
-Fixes: f33fd8d77dd0 ("media: imx: add a driver for i.MX8MQ mipi csi rx phy and controller")
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+We can re-write this code to be cleaner:
+1) Rename "offset" to "off" because that's shorter.
+2) Get rid of the "cnt" variable and just use "size - off" directly.
+3) Get rid of the "read" variable and just increment "off" directly.
+
+Fixes: 96fe6a2109db ("fbdev: Add VESA Coordinated Video Timings (CVT) support")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/imx/imx8mq-mipi-csi2.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/video/fbdev/core/fbcvt.c | 53 +++++++++++++-------------------
+ 1 file changed, 21 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/staging/media/imx/imx8mq-mipi-csi2.c b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-index 7adbdd14daa9..8f3cc138c52c 100644
---- a/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-+++ b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
-@@ -398,9 +398,6 @@ static int imx8mq_mipi_csi_s_stream(struct v4l2_subdev *sd, int enable)
- 	struct csi_state *state = mipi_sd_to_csi2_state(sd);
- 	int ret = 0;
+diff --git a/drivers/video/fbdev/core/fbcvt.c b/drivers/video/fbdev/core/fbcvt.c
+index 55d2bd0ce5c0..64843464c661 100644
+--- a/drivers/video/fbdev/core/fbcvt.c
++++ b/drivers/video/fbdev/core/fbcvt.c
+@@ -214,9 +214,11 @@ static u32 fb_cvt_aspect_ratio(struct fb_cvt_data *cvt)
+ static void fb_cvt_print_name(struct fb_cvt_data *cvt)
+ {
+ 	u32 pixcount, pixcount_mod;
+-	int cnt = 255, offset = 0, read = 0;
+-	u8 *buf = kzalloc(256, GFP_KERNEL);
++	int size = 256;
++	int off = 0;
++	u8 *buf;
  
--	imx8mq_mipi_csi_write(state, CSI2RX_IRQ_MASK,
--			      CSI2RX_IRQ_MASK_ULPS_STATUS_CHANGE);
++	buf = kzalloc(size, GFP_KERNEL);
+ 	if (!buf)
+ 		return;
+ 
+@@ -224,43 +226,30 @@ static void fb_cvt_print_name(struct fb_cvt_data *cvt)
+ 	pixcount_mod = (cvt->xres * (cvt->yres/cvt->interlace)) % 1000000;
+ 	pixcount_mod /= 1000;
+ 
+-	read = snprintf(buf+offset, cnt, "fbcvt: %dx%d@%d: CVT Name - ",
+-			cvt->xres, cvt->yres, cvt->refresh);
+-	offset += read;
+-	cnt -= read;
++	off += scnprintf(buf + off, size - off, "fbcvt: %dx%d@%d: CVT Name - ",
++			    cvt->xres, cvt->yres, cvt->refresh);
+ 
+-	if (cvt->status)
+-		snprintf(buf+offset, cnt, "Not a CVT standard - %d.%03d Mega "
+-			 "Pixel Image\n", pixcount, pixcount_mod);
+-	else {
+-		if (pixcount) {
+-			read = snprintf(buf+offset, cnt, "%d", pixcount);
+-			cnt -= read;
+-			offset += read;
+-		}
++	if (cvt->status) {
++		off += scnprintf(buf + off, size - off,
++				 "Not a CVT standard - %d.%03d Mega Pixel Image\n",
++				 pixcount, pixcount_mod);
++	} else {
++		if (pixcount)
++			off += scnprintf(buf + off, size - off, "%d", pixcount);
+ 
+-		read = snprintf(buf+offset, cnt, ".%03dM", pixcount_mod);
+-		cnt -= read;
+-		offset += read;
++		off += scnprintf(buf + off, size - off, ".%03dM", pixcount_mod);
+ 
+ 		if (cvt->aspect_ratio == 0)
+-			read = snprintf(buf+offset, cnt, "3");
++			off += scnprintf(buf + off, size - off, "3");
+ 		else if (cvt->aspect_ratio == 3)
+-			read = snprintf(buf+offset, cnt, "4");
++			off += scnprintf(buf + off, size - off, "4");
+ 		else if (cvt->aspect_ratio == 1 || cvt->aspect_ratio == 4)
+-			read = snprintf(buf+offset, cnt, "9");
++			off += scnprintf(buf + off, size - off, "9");
+ 		else if (cvt->aspect_ratio == 2)
+-			read = snprintf(buf+offset, cnt, "A");
+-		else
+-			read = 0;
+-		cnt -= read;
+-		offset += read;
 -
- 	if (enable) {
- 		ret = pm_runtime_resume_and_get(state->dev);
- 		if (ret < 0)
+-		if (cvt->flags & FB_CVT_FLAG_REDUCED_BLANK) {
+-			read = snprintf(buf+offset, cnt, "-R");
+-			cnt -= read;
+-			offset += read;
+-		}
++			off += scnprintf(buf + off, size - off, "A");
++
++		if (cvt->flags & FB_CVT_FLAG_REDUCED_BLANK)
++			off += scnprintf(buf + off, size - off, "-R");
+ 	}
+ 
+ 	printk(KERN_INFO "%s\n", buf);
 -- 
 2.34.1
 
