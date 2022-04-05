@@ -2,88 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD7DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A67C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:41:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445320AbiDFCly (ORCPT
+        id S1447777AbiDFCm0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
+        Tue, 5 Apr 2022 22:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575956AbiDEXJp (ORCPT
+        with ESMTP id S1577837AbiDEXRF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 19:09:45 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13623A5D6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:40:32 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id m12-20020a17090b068c00b001cabe30a98dso3899693pjz.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 14:40:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=/v6MKITyj/7SAzMcTXcAwa1zUE4C9+wVBGJFdG8EEDE=;
-        b=dMZUydk4BKA2ZeYjg1PSrdz2fBoVyivYvhTiBoIV9Mr2TlcJDNYVyntFb40XA1gQYB
-         eM+njiTLhPUe5RcXcs5RnVyiBlIFBeUe6tcbTu83MTGNM4XE375eEkP2Jvw8ohfpY3XM
-         kvwgJxX1VtRaQsPeBaN1LozUCYLkXHpchiKzCw/sK1o9GdOvYl1s0hoC61wST+pSs6kn
-         DtH1bIaqUuFEmKskIBaWDJOGR8tXtZfKAHe/N5YjK3NqzLbVCjfrxW6mOEAVjc9VuZYt
-         WnHG0LZOTnGEDjMHEeK2zQ13LuYSsjHhUUUM30Jj4bqc3YJ7mhAQkGpW1q6F0hgYSCTd
-         q9Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=/v6MKITyj/7SAzMcTXcAwa1zUE4C9+wVBGJFdG8EEDE=;
-        b=6A5/azqVUoNPAska/yPGaRnDQv4xyK3jgSgvPxtdWQtM9YrTMvbQBOBfmXNKo2YneB
-         7WRYFuInQP3gX0vlJ4wkHCeUk6QtPdOKL5pmSwNo3GkAxm/iUkDJoo9VVzHPJMOukNcP
-         g4NkV1gPhe0tbk/u45EGP5JuyjPlWrvpQ0Pm1RkmEeR16Z7s4jd/P4sxgm0tS1RJcsOg
-         OQV8veUsblJLNgdNVNYF7bfZ9MeKzQvm5G5+1xu/BAdqdCU3dhcI/wb9tqDCUmJ94kmp
-         gMOdt1qrfX08re0rm9rmFZ1oairJYc/P4eznQm2xJCzp4vEvlDrK8b9IAjxfth0tCXpm
-         RbtA==
-X-Gm-Message-State: AOAM531VCxp8shFS+cIC9W3VX9uAy7lxyjiRAjFH0GQMfioQifIGNtFZ
-        iaWaCx5Ca7/27Ta9Uu2emrLezA==
-X-Google-Smtp-Source: ABdhPJxJC/R0lJ9hIIlMX047W4yaxdR92GjHCZrTF7CLNQHhTZByKUAE/BPyRg7wZqj8mUY+XULNIg==
-X-Received: by 2002:a17:90b:3802:b0:1c6:905c:af2e with SMTP id mq2-20020a17090b380200b001c6905caf2emr6287692pjb.236.1649194822900;
-        Tue, 05 Apr 2022 14:40:22 -0700 (PDT)
-Received: from [2620:15c:29:204:be3e:5e1c:99cc:513f] ([2620:15c:29:204:be3e:5e1c:99cc:513f])
-        by smtp.gmail.com with ESMTPSA id a9-20020aa78649000000b004fe3d6c1731sm3693466pfo.175.2022.04.05.14.40.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 14:40:22 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 14:40:21 -0700 (PDT)
-From:   David Rientjes <rientjes@google.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-cc:     Christoph Lameter <cl@linux.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Oliver Glitta <glittao@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Imran Khan <imran.f.khan@oracle.com>
-Subject: Re: [PATCH v3 5/6] mm/slub: sort debugfs output by frequency of
- stack traces
-In-Reply-To: <20220404164112.18372-6-vbabka@suse.cz>
-Message-ID: <cb22b4b-4ec-90da-6820-f62e431791a@google.com>
-References: <20220404164112.18372-1-vbabka@suse.cz> <20220404164112.18372-6-vbabka@suse.cz>
+        Tue, 5 Apr 2022 19:17:05 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3268018360
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:45:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649195144; x=1680731144;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IoZ0YEf7Vy+Q1Fh2wK3+jZxdonw3Uvgx7J0i/KZYsAg=;
+  b=AyTF9BoAy/iQ0bVutU7VhxmpU8LGT9SysTrp1xk3Vp9xviWebjqdvNW9
+   iE/UpasT3ZY6IAUqTaLl/5/fpqop3ylopmF+MM+XGOHVTl/xxw7TTWtMX
+   H7c5FeJWy1QYuoh0wizGK07A/kBqZI0Aiwfl0MS1BAx3NahqupJvr56io
+   HARDJEuq1vo2lNDBNQkgG2z/Otw6phtsb28m0DxgZpHo2GVxjGFQzwb8C
+   xcWy7VvkYTtcRdaYb0gG4N18I3uBgfnOInylFILdzEznNAJvjjes4gkP1
+   Cykq585vETXMXXCRwS71tLvn2fLvFY8/8G26yMM6aXTrwn9lV2EelA+2m
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243011377"
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="243011377"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 14:45:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="620522211"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 05 Apr 2022 14:45:35 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbqzW-0003my-P6;
+        Tue, 05 Apr 2022 21:45:34 +0000
+Date:   Wed, 06 Apr 2022 05:44:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:locking/core] BUILD SUCCESS
+ dc1f7893a70fe403983bd8492f177bf993940e2c
+Message-ID: <624cb852.XrRch9pNV1WLDudU%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Apr 2022, Vlastimil Babka wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking/core
+branch HEAD: dc1f7893a70fe403983bd8492f177bf993940e2c  locking/mutex: Make contention tracepoints more consistent wrt adaptive spinning
 
-> From: Oliver Glitta <glittao@gmail.com>
-> 
-> Sort the output of debugfs alloc_traces and free_traces by the frequency
-> of allocation/freeing stack traces. Most frequently used stack traces
-> will be printed first, e.g. for easier memory leak debugging.
-> 
-> Signed-off-by: Oliver Glitta <glittao@gmail.com>
-> Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
-> Reviewed-and-tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+elapsed time: 720m
 
-Acked-by: David Rientjes <rientjes@google.com>
+configs tested: 148
+configs skipped: 4
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+arm                         s3c6400_defconfig
+mips                         db1xxx_defconfig
+openrisc                 simple_smp_defconfig
+arm                         at91_dt_defconfig
+m68k                        m5407c3_defconfig
+powerpc                     pq2fads_defconfig
+sparc64                          alldefconfig
+sparc                       sparc32_defconfig
+powerpc                  storcenter_defconfig
+arc                            hsdk_defconfig
+riscv                    nommu_k210_defconfig
+arm                      jornada720_defconfig
+arm                       imx_v6_v7_defconfig
+sh                     magicpanelr2_defconfig
+openrisc                  or1klitex_defconfig
+mips                        vocore2_defconfig
+mips                         cobalt_defconfig
+arc                      axs103_smp_defconfig
+ia64                            zx1_defconfig
+arm                         lpc18xx_defconfig
+sh                           se7343_defconfig
+sh                         ap325rxa_defconfig
+sh                           se7722_defconfig
+powerpc                      tqm8xx_defconfig
+powerpc                     tqm8548_defconfig
+sh                             sh03_defconfig
+powerpc                         wii_defconfig
+arm                             ezx_defconfig
+mips                  maltasmvp_eva_defconfig
+m68k                       m5249evb_defconfig
+ia64                        generic_defconfig
+arm                           viper_defconfig
+arm                           stm32_defconfig
+powerpc                 mpc837x_mds_defconfig
+powerpc                     tqm8541_defconfig
+xtensa                    smp_lx200_defconfig
+arm                          exynos_defconfig
+openrisc                            defconfig
+h8300                            allyesconfig
+powerpc                     stx_gp3_defconfig
+nios2                         10m50_defconfig
+arm                            hisi_defconfig
+arm                        keystone_defconfig
+powerpc                         ps3_defconfig
+arm                        realview_defconfig
+m68k                          multi_defconfig
+xtensa                       common_defconfig
+sh                        edosk7760_defconfig
+sparc                       sparc64_defconfig
+arm                          iop32x_defconfig
+riscv             nommu_k210_sdcard_defconfig
+s390                                defconfig
+ia64                          tiger_defconfig
+arm                       multi_v4t_defconfig
+powerpc                        warp_defconfig
+xtensa                          iss_defconfig
+arm                            qcom_defconfig
+m68k                        mvme147_defconfig
+ia64                             allyesconfig
+arm                             pxa_defconfig
+mips                  decstation_64_defconfig
+h8300                       h8s-sim_defconfig
+arm                           sama5_defconfig
+mips                           xway_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220405
+ia64                             allmodconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220405
+riscv                randconfig-c006-20220405
+mips                 randconfig-c004-20220405
+arm                  randconfig-c002-20220405
+arm                          moxart_defconfig
+powerpc                        icon_defconfig
+powerpc                   bluestone_defconfig
+arm                      tct_hammer_defconfig
+powerpc                  mpc885_ads_defconfig
+arm                     am200epdkit_defconfig
+arm                       aspeed_g4_defconfig
+arm                            mmp2_defconfig
+arm                              alldefconfig
+riscv                    nommu_virt_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+hexagon              randconfig-r045-20220405
+riscv                randconfig-r042-20220405
+hexagon              randconfig-r041-20220405
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
