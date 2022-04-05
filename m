@@ -2,191 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F24FC35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 031E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574049AbiDEWyQ (ORCPT
+        id S1574074AbiDEWyV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59464 "EHLO
+        Tue, 5 Apr 2022 18:54:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349918AbiDEJwD (ORCPT
+        with ESMTP id S1358873AbiDELRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576C730547;
-        Tue,  5 Apr 2022 02:50:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFD5EB817D3;
-        Tue,  5 Apr 2022 09:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20EE2C385A1;
-        Tue,  5 Apr 2022 09:50:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152202;
-        bh=ocxmqrhFe+3/lIramiGQhKBRQ/Os4hCCByY+saZzH/k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Be+YkoRFzJpjtDiM/ooJbYxsIabx+mSv0HsEE6iW1/F46Gm4IWvZ/bNvg8tTtP9i+
-         CrkW6pRgBOtNjDdtOssnY590vPCgZbWTrtT6l7Ycie5V8ZJvIvW13EBQrcQFWJ2LQz
-         zeiSXp+2Ij2LK5iia1ssUD6Ab58Dj5aq+BfoV0U4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 691/913] block, bfq: dont move oom_bfqq
-Date:   Tue,  5 Apr 2022 09:29:13 +0200
-Message-Id: <20220405070400.548531119@linuxfoundation.org>
+        Tue, 5 Apr 2022 07:17:40 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC28D89CF0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:49:29 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id qh7so15792622ejb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 03:49:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DdE0cWQr6i8HJhNHJBVncn9A4zrQB0bj2Lr35kMyNmk=;
+        b=CWQ2TqmLik4q8+yl73JOsZj5n+wxS+EVpOHhkpJexOg6GbcnUHH3dCdjFKcSmYysma
+         kOWBR/Zrsl5/fZEf/1CcoEqOJYcZ3gpXa3eYWI7X/sOSe5ty83bac33uYZ2AcLbBTo/k
+         ZiLFHBht5P2+ZJ6jgDeO8vhvU0xXqYdn59qaSz1XJy8Jntfy2fV6Es19Doo1I6x+Ant4
+         KouAqcvyUgPzgLxeXyXX4FtGaR8hrK/1Wu5+0r2rPzsRn3MZnDMt0CFKLflG80wFbELz
+         2EblNgLwjvxhcMSCdwjMhEuxw/p3xJtVr3nOzcE4e+N9b84wap7Y2mXL5Az3Judso/1L
+         bMtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DdE0cWQr6i8HJhNHJBVncn9A4zrQB0bj2Lr35kMyNmk=;
+        b=tNeLc+KvU8I5z6CbmvFtqfa8EZd2DbUB9wcnkChXo8ckKHkpZABqDl7m28RP9e3tPJ
+         VyLRybc1LfoyyTpIPLqlcR68TSkDVHUole7CbNzLryVUw1WcuOEvz/FvUIN+pEU1Ozin
+         D8yZzMhH9hFu5g88dRmE40wbDNYiqEOX1R0/ufiLZHbuayW+JdQfzj6b5bZEzTqNr2Pk
+         D8BzDLJGZlAQihLt2iZ4ZptHV48LsavTWSTSmdRCqj9n1u5ezjvz7GJUDZCOYxIgzMbv
+         bxalyGXimIPskAcAQsERvXSBYJk2rONdqWz6FfN3a/hFS9Du5yF1eNOQB4wHCjdBZgqn
+         i05Q==
+X-Gm-Message-State: AOAM531hEBqx9nGC3ZbdvZkUThjecBg0gmz4gUBuNsdIZ+dU6ORIQl6T
+        NoAIaBHmkRtGpHDDpof1YlU=
+X-Google-Smtp-Source: ABdhPJzJVrMx3iD6K5VVfUAuj2M5QlJy/tVSJ3xDQ0LPjP9PckN3Tv9IgWrskNJ97ZmX1VgAcuh3zA==
+X-Received: by 2002:a17:906:c104:b0:6e4:a223:1af9 with SMTP id do4-20020a170906c10400b006e4a2231af9mr2749446ejc.441.1649155768137;
+        Tue, 05 Apr 2022 03:49:28 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm2436702edl.28.2022.04.05.03.49.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 03:49:27 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH v2 3/4] staging: r8188eu: remove HAL_DEF_CURRENT_ANTENNA
+Date:   Tue,  5 Apr 2022 12:49:09 +0200
+Message-Id: <20220405104910.9769-4-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405104910.9769-1-straube.linux@gmail.com>
+References: <20220405104910.9769-1-straube.linux@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+In order to get rid of the function GetHalDefVar8188EUsb(), remove
+the HAL_DEF_CURRENT_ANTENNA case from it and move the functionality
+into a new function. This is part of the ongoing effort to get rid of
+the unwanted hal layer.
 
-[ Upstream commit 8410f70977734f21b8ed45c37e925d311dfda2e7 ]
-
-Our test report a UAF:
-
-[ 2073.019181] ==================================================================
-[ 2073.019188] BUG: KASAN: use-after-free in __bfq_put_async_bfqq+0xa0/0x168
-[ 2073.019191] Write of size 8 at addr ffff8000ccf64128 by task rmmod/72584
-[ 2073.019192]
-[ 2073.019196] CPU: 0 PID: 72584 Comm: rmmod Kdump: loaded Not tainted 4.19.90-yk #5
-[ 2073.019198] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-[ 2073.019200] Call trace:
-[ 2073.019203]  dump_backtrace+0x0/0x310
-[ 2073.019206]  show_stack+0x28/0x38
-[ 2073.019210]  dump_stack+0xec/0x15c
-[ 2073.019216]  print_address_description+0x68/0x2d0
-[ 2073.019220]  kasan_report+0x238/0x2f0
-[ 2073.019224]  __asan_store8+0x88/0xb0
-[ 2073.019229]  __bfq_put_async_bfqq+0xa0/0x168
-[ 2073.019233]  bfq_put_async_queues+0xbc/0x208
-[ 2073.019236]  bfq_pd_offline+0x178/0x238
-[ 2073.019240]  blkcg_deactivate_policy+0x1f0/0x420
-[ 2073.019244]  bfq_exit_queue+0x128/0x178
-[ 2073.019249]  blk_mq_exit_sched+0x12c/0x160
-[ 2073.019252]  elevator_exit+0xc8/0xd0
-[ 2073.019256]  blk_exit_queue+0x50/0x88
-[ 2073.019259]  blk_cleanup_queue+0x228/0x3d8
-[ 2073.019267]  null_del_dev+0xfc/0x1e0 [null_blk]
-[ 2073.019274]  null_exit+0x90/0x114 [null_blk]
-[ 2073.019278]  __arm64_sys_delete_module+0x358/0x5a0
-[ 2073.019282]  el0_svc_common+0xc8/0x320
-[ 2073.019287]  el0_svc_handler+0xf8/0x160
-[ 2073.019290]  el0_svc+0x10/0x218
-[ 2073.019291]
-[ 2073.019294] Allocated by task 14163:
-[ 2073.019301]  kasan_kmalloc+0xe0/0x190
-[ 2073.019305]  kmem_cache_alloc_node_trace+0x1cc/0x418
-[ 2073.019308]  bfq_pd_alloc+0x54/0x118
-[ 2073.019313]  blkcg_activate_policy+0x250/0x460
-[ 2073.019317]  bfq_create_group_hierarchy+0x38/0x110
-[ 2073.019321]  bfq_init_queue+0x6d0/0x948
-[ 2073.019325]  blk_mq_init_sched+0x1d8/0x390
-[ 2073.019330]  elevator_switch_mq+0x88/0x170
-[ 2073.019334]  elevator_switch+0x140/0x270
-[ 2073.019338]  elv_iosched_store+0x1a4/0x2a0
-[ 2073.019342]  queue_attr_store+0x90/0xe0
-[ 2073.019348]  sysfs_kf_write+0xa8/0xe8
-[ 2073.019351]  kernfs_fop_write+0x1f8/0x378
-[ 2073.019359]  __vfs_write+0xe0/0x360
-[ 2073.019363]  vfs_write+0xf0/0x270
-[ 2073.019367]  ksys_write+0xdc/0x1b8
-[ 2073.019371]  __arm64_sys_write+0x50/0x60
-[ 2073.019375]  el0_svc_common+0xc8/0x320
-[ 2073.019380]  el0_svc_handler+0xf8/0x160
-[ 2073.019383]  el0_svc+0x10/0x218
-[ 2073.019385]
-[ 2073.019387] Freed by task 72584:
-[ 2073.019391]  __kasan_slab_free+0x120/0x228
-[ 2073.019394]  kasan_slab_free+0x10/0x18
-[ 2073.019397]  kfree+0x94/0x368
-[ 2073.019400]  bfqg_put+0x64/0xb0
-[ 2073.019404]  bfqg_and_blkg_put+0x90/0xb0
-[ 2073.019408]  bfq_put_queue+0x220/0x228
-[ 2073.019413]  __bfq_put_async_bfqq+0x98/0x168
-[ 2073.019416]  bfq_put_async_queues+0xbc/0x208
-[ 2073.019420]  bfq_pd_offline+0x178/0x238
-[ 2073.019424]  blkcg_deactivate_policy+0x1f0/0x420
-[ 2073.019429]  bfq_exit_queue+0x128/0x178
-[ 2073.019433]  blk_mq_exit_sched+0x12c/0x160
-[ 2073.019437]  elevator_exit+0xc8/0xd0
-[ 2073.019440]  blk_exit_queue+0x50/0x88
-[ 2073.019443]  blk_cleanup_queue+0x228/0x3d8
-[ 2073.019451]  null_del_dev+0xfc/0x1e0 [null_blk]
-[ 2073.019459]  null_exit+0x90/0x114 [null_blk]
-[ 2073.019462]  __arm64_sys_delete_module+0x358/0x5a0
-[ 2073.019467]  el0_svc_common+0xc8/0x320
-[ 2073.019471]  el0_svc_handler+0xf8/0x160
-[ 2073.019474]  el0_svc+0x10/0x218
-[ 2073.019475]
-[ 2073.019479] The buggy address belongs to the object at ffff8000ccf63f00
- which belongs to the cache kmalloc-1024 of size 1024
-[ 2073.019484] The buggy address is located 552 bytes inside of
- 1024-byte region [ffff8000ccf63f00, ffff8000ccf64300)
-[ 2073.019486] The buggy address belongs to the page:
-[ 2073.019492] page:ffff7e000333d800 count:1 mapcount:0 mapping:ffff8000c0003a00 index:0x0 compound_mapcount: 0
-[ 2073.020123] flags: 0x7ffff0000008100(slab|head)
-[ 2073.020403] raw: 07ffff0000008100 ffff7e0003334c08 ffff7e00001f5a08 ffff8000c0003a00
-[ 2073.020409] raw: 0000000000000000 00000000001c001c 00000001ffffffff 0000000000000000
-[ 2073.020411] page dumped because: kasan: bad access detected
-[ 2073.020412]
-[ 2073.020414] Memory state around the buggy address:
-[ 2073.020420]  ffff8000ccf64000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020424]  ffff8000ccf64080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020428] >ffff8000ccf64100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020430]                                   ^
-[ 2073.020434]  ffff8000ccf64180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020438]  ffff8000ccf64200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020439] ==================================================================
-
-The same problem exist in mainline as well.
-
-This is because oom_bfqq is moved to a non-root group, thus root_group
-is freed earlier.
-
-Thus fix the problem by don't move oom_bfqq.
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Acked-by: Paolo Valente <paolo.valente@linaro.org>
-Link: https://lore.kernel.org/r/20220129015924.3958918-4-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- block/bfq-cgroup.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+v2:
+- added rtw_ prefix to the function name
+- added the function in rtw_mlme.c
 
-diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
-index 85b8e1c3a762..e37af3f8a733 100644
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -644,6 +644,12 @@ void bfq_bfqq_move(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- {
- 	struct bfq_entity *entity = &bfqq->entity;
+ drivers/staging/r8188eu/core/rtw_mlme.c     | 12 ++++++++++--
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c |  2 +-
+ drivers/staging/r8188eu/hal/usb_halinit.c   |  3 ---
+ drivers/staging/r8188eu/include/hal_intf.h  |  1 -
+ drivers/staging/r8188eu/include/rtw_mlme.h  |  2 ++
+ 5 files changed, 13 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index 24ceb8028f89..e98d77676e6d 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -464,6 +464,13 @@ static void update_current_network(struct adapter *adapter, struct wlan_bssid_ex
  
-+	/*
-+	 * oom_bfqq is not allowed to move, oom_bfqq will hold ref to root_group
-+	 * until elevator exit.
-+	 */
-+	if (bfqq == &bfqd->oom_bfqq)
-+		return;
- 	/*
- 	 * Get extra reference to prevent bfqq from being freed in
- 	 * next possible expire or deactivate.
+ }
+ 
++u8 rtw_current_antenna(struct adapter *adapter)
++{
++	struct hal_data_8188e *haldata = &adapter->haldata;
++
++	return haldata->CurAntenna;
++}
++
+ /*
+ Caller must hold pmlmepriv->lock first.
+ */
+@@ -497,7 +504,8 @@ void rtw_update_scanned_network(struct adapter *adapter, struct wlan_bssid_ex *t
+ 			/* If there are no more slots, expire the oldest */
+ 			pnetwork = oldest;
+ 
+-			GetHalDefVar8188EUsb(adapter, HAL_DEF_CURRENT_ANTENNA, &target->PhyInfo.Optimum_antenna);
++			target->PhyInfo.Optimum_antenna = rtw_current_antenna(adapter);
++
+ 			memcpy(&pnetwork->network, target,  get_wlan_bssid_ex_sz(target));
+ 			/*  variable initialize */
+ 			pnetwork->fixed = false;
+@@ -520,7 +528,7 @@ void rtw_update_scanned_network(struct adapter *adapter, struct wlan_bssid_ex *t
+ 
+ 			bssid_ex_sz = get_wlan_bssid_ex_sz(target);
+ 			target->Length = bssid_ex_sz;
+-			GetHalDefVar8188EUsb(adapter, HAL_DEF_CURRENT_ANTENNA, &target->PhyInfo.Optimum_antenna);
++			target->PhyInfo.Optimum_antenna = rtw_current_antenna(adapter);
+ 			memcpy(&pnetwork->network, target, bssid_ex_sz);
+ 
+ 			pnetwork->last_scanned = jiffies;
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index 2c073219c13f..6207fd8cccae 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -5995,7 +5995,7 @@ u8 collect_bss_info(struct adapter *padapter, struct recv_frame *precv_frame, st
+ 	bssid->Rssi = precv_frame->attrib.phy_info.recvpower; /*  in dBM.raw data */
+ 	bssid->PhyInfo.SignalQuality = precv_frame->attrib.phy_info.SignalQuality;/* in percentage */
+ 	bssid->PhyInfo.SignalStrength = precv_frame->attrib.phy_info.SignalStrength;/* in percentage */
+-	GetHalDefVar8188EUsb(padapter, HAL_DEF_CURRENT_ANTENNA,  &bssid->PhyInfo.Optimum_antenna);
++	bssid->PhyInfo.Optimum_antenna = rtw_current_antenna(padapter);
+ 
+ 	/*  checking SSID */
+ 	p = rtw_get_ie(bssid->IEs + ie_offset, _SSID_IE_, &len, bssid->IELength - ie_offset);
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index 805460bd6340..9d39c5ca56a7 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -1204,9 +1204,6 @@ void GetHalDefVar8188EUsb(struct adapter *Adapter, enum hal_def_variable eVariab
+ 	struct hal_data_8188e *haldata = &Adapter->haldata;
+ 
+ 	switch (eVariable) {
+-	case HAL_DEF_CURRENT_ANTENNA:
+-		*((u8 *)pValue) = haldata->CurAntenna;
+-		break;
+ 	case HAL_DEF_DBG_DM_FUNC:
+ 		*((u32 *)pValue) = haldata->odmpriv.SupportAbility;
+ 		break;
+diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
+index 6a80e517a7ad..0bc274a695d9 100644
+--- a/drivers/staging/r8188eu/include/hal_intf.h
++++ b/drivers/staging/r8188eu/include/hal_intf.h
+@@ -28,7 +28,6 @@ enum hw_variables {
+ };
+ 
+ enum hal_def_variable {
+-	HAL_DEF_CURRENT_ANTENNA,
+ 	HAL_DEF_DBG_DM_FUNC,/* for dbg */
+ };
+ 
+diff --git a/drivers/staging/r8188eu/include/rtw_mlme.h b/drivers/staging/r8188eu/include/rtw_mlme.h
+index 37d217aaf524..1dc1fbf049af 100644
+--- a/drivers/staging/r8188eu/include/rtw_mlme.h
++++ b/drivers/staging/r8188eu/include/rtw_mlme.h
+@@ -598,4 +598,6 @@ void rtw_set_max_rpt_macid(struct adapter *adapter, u8 macid);
+ void rtw_sta_media_status_rpt(struct adapter *adapter, struct sta_info *psta,
+ 			      u32 mstatus);
+ 
++u8 rtw_current_antenna(struct adapter *adapter);
++
+ #endif /* __RTL871X_MLME_H_ */
 -- 
-2.34.1
-
-
+2.35.1
 
