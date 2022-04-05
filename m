@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF49C3527A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390119AbiDENg6 (ORCPT
+        id S1390143AbiDENhL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
+        Tue, 5 Apr 2022 09:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347194AbiDEJZU (ORCPT
+        with ESMTP id S237914AbiDEJQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:25:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15789DBD1B;
-        Tue,  5 Apr 2022 02:14:56 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E79ED370B;
+        Tue,  5 Apr 2022 02:01:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5DED61675;
-        Tue,  5 Apr 2022 09:14:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D09CEC385A0;
-        Tue,  5 Apr 2022 09:14:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54BB8B818F3;
+        Tue,  5 Apr 2022 09:01:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94111C385A1;
+        Tue,  5 Apr 2022 09:01:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150094;
-        bh=I/i7T7HEoLFH2UMaMusK0AA1SCLAgIME1qWj9t4fiAA=;
+        s=korg; t=1649149311;
+        bh=5EUR9cSlcMInxngPG2Ezg5AvlyNCr6r7//n4SAg9MXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ZMEyi92zZUz+wvcOpTzFOs/iP1BwY5cYPU65x4dmGodwfLlv5DJTbCtxwbtyezOF
-         D9CeI5FJAubiZ7tkmvOhwQJruemfKa7yMcjlR6t7DsT8KtodkMJH7dgrigxLw3vYcs
-         ykk3Aa6pD1LRTMS/VKg1tDQgMQsMfQanL9O46Meg=
+        b=axJaz7z2/dIzHuddNTwAcIPgIh12twMqkyOEgONuEZG0mHbqjNdqyH8uvBqkNoKlp
+         hrSru1Bo5h3PvUisn8FmL5UrrnNg4kKV+NSoek2Qg+CJ1cDz7/cWgDy1Uua0sV/JgD
+         hEW71Jb/hE3cGNBsvh7W6rUWw0zEfowTALzC+KdU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.16 0951/1017] Revert "virtio_pci: harden MSI-X interrupts"
-Date:   Tue,  5 Apr 2022 09:31:04 +0200
-Message-Id: <20220405070422.440629901@linuxfoundation.org>
+        stable@vger.kernel.org, Dumitru Ceara <dceara@redhat.com>,
+        Numan Siddique <nusiddiq@redhat.com>,
+        Aaron Conole <aconole@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0633/1017] openvswitch: always update flow key after nat
+Date:   Tue,  5 Apr 2022 09:25:46 +0200
+Message-Id: <20220405070413.073762703@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,159 +53,200 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Aaron Conole <aconole@redhat.com>
 
-commit eb4cecb453a19b34d5454b49532e09e9cb0c1529 upstream.
+[ Upstream commit 60b44ca6bd7518dd38fa2719bc9240378b6172c3 ]
 
-This reverts commit 9e35276a5344f74d4a3600fc4100b3dd251d5c56. Issue
-were reported for the drivers that are using affinity managed IRQ
-where manually toggling IRQ status is not expected. And we forget to
-enable the interrupts in the restore path as well.
+During NAT, a tuple collision may occur.  When this happens, openvswitch
+will make a second pass through NAT which will perform additional packet
+modification.  This will update the skb data, but not the flow key that
+OVS uses.  This means that future flow lookups, and packet matches will
+have incorrect data.  This has been supported since
+5d50aa83e2c8 ("openvswitch: support asymmetric conntrack").
 
-In the future, we will rework on the interrupt hardening.
+That commit failed to properly update the sw_flow_key attributes, since
+it only called the ovs_ct_nat_update_key once, rather than each time
+ovs_ct_nat_execute was called.  As these two operations are linked, the
+ovs_ct_nat_execute() function should always make sure that the
+sw_flow_key is updated after a successful call through NAT infrastructure.
 
-Fixes: 9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
-Reported-by: Marc Zyngier <maz@kernel.org>
-Reported-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Link: https://lore.kernel.org/r/20220323031524.6555-2-jasowang@redhat.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5d50aa83e2c8 ("openvswitch: support asymmetric conntrack")
+Cc: Dumitru Ceara <dceara@redhat.com>
+Cc: Numan Siddique <nusiddiq@redhat.com>
+Signed-off-by: Aaron Conole <aconole@redhat.com>
+Acked-by: Eelco Chaudron <echaudro@redhat.com>
+Link: https://lore.kernel.org/r/20220318124319.3056455-1-aconole@redhat.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_pci_common.c |   27 ++++++---------------------
- drivers/virtio/virtio_pci_common.h |    6 ++----
- drivers/virtio/virtio_pci_legacy.c |    5 ++---
- drivers/virtio/virtio_pci_modern.c |    6 ++----
- 4 files changed, 12 insertions(+), 32 deletions(-)
+ net/openvswitch/conntrack.c | 118 ++++++++++++++++++------------------
+ 1 file changed, 59 insertions(+), 59 deletions(-)
 
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -24,8 +24,8 @@ MODULE_PARM_DESC(force_legacy,
- 		 "Force legacy mode for transitional virtio 1 devices");
- #endif
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index 1b5eae57bc90..8f47f4e78d32 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -732,6 +732,57 @@ static bool skb_nfct_cached(struct net *net,
+ }
  
--/* disable irq handlers */
--void vp_disable_cbs(struct virtio_device *vdev)
-+/* wait for pending irq handlers */
-+void vp_synchronize_vectors(struct virtio_device *vdev)
+ #if IS_ENABLED(CONFIG_NF_NAT)
++static void ovs_nat_update_key(struct sw_flow_key *key,
++			       const struct sk_buff *skb,
++			       enum nf_nat_manip_type maniptype)
++{
++	if (maniptype == NF_NAT_MANIP_SRC) {
++		__be16 src;
++
++		key->ct_state |= OVS_CS_F_SRC_NAT;
++		if (key->eth.type == htons(ETH_P_IP))
++			key->ipv4.addr.src = ip_hdr(skb)->saddr;
++		else if (key->eth.type == htons(ETH_P_IPV6))
++			memcpy(&key->ipv6.addr.src, &ipv6_hdr(skb)->saddr,
++			       sizeof(key->ipv6.addr.src));
++		else
++			return;
++
++		if (key->ip.proto == IPPROTO_UDP)
++			src = udp_hdr(skb)->source;
++		else if (key->ip.proto == IPPROTO_TCP)
++			src = tcp_hdr(skb)->source;
++		else if (key->ip.proto == IPPROTO_SCTP)
++			src = sctp_hdr(skb)->source;
++		else
++			return;
++
++		key->tp.src = src;
++	} else {
++		__be16 dst;
++
++		key->ct_state |= OVS_CS_F_DST_NAT;
++		if (key->eth.type == htons(ETH_P_IP))
++			key->ipv4.addr.dst = ip_hdr(skb)->daddr;
++		else if (key->eth.type == htons(ETH_P_IPV6))
++			memcpy(&key->ipv6.addr.dst, &ipv6_hdr(skb)->daddr,
++			       sizeof(key->ipv6.addr.dst));
++		else
++			return;
++
++		if (key->ip.proto == IPPROTO_UDP)
++			dst = udp_hdr(skb)->dest;
++		else if (key->ip.proto == IPPROTO_TCP)
++			dst = tcp_hdr(skb)->dest;
++		else if (key->ip.proto == IPPROTO_SCTP)
++			dst = sctp_hdr(skb)->dest;
++		else
++			return;
++
++		key->tp.dst = dst;
++	}
++}
++
+ /* Modelled after nf_nat_ipv[46]_fn().
+  * range is only used for new, uninitialized NAT state.
+  * Returns either NF_ACCEPT or NF_DROP.
+@@ -739,7 +790,7 @@ static bool skb_nfct_cached(struct net *net,
+ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 			      enum ip_conntrack_info ctinfo,
+ 			      const struct nf_nat_range2 *range,
+-			      enum nf_nat_manip_type maniptype)
++			      enum nf_nat_manip_type maniptype, struct sw_flow_key *key)
  {
- 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
- 	int i;
-@@ -34,20 +34,7 @@ void vp_disable_cbs(struct virtio_device
- 		synchronize_irq(vp_dev->pci_dev->irq);
+ 	int hooknum, nh_off, err = NF_ACCEPT;
  
- 	for (i = 0; i < vp_dev->msix_vectors; ++i)
--		disable_irq(pci_irq_vector(vp_dev->pci_dev, i));
+@@ -811,58 +862,11 @@ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ push:
+ 	skb_push_rcsum(skb, nh_off);
+ 
+-	return err;
 -}
 -
--/* enable irq handlers */
--void vp_enable_cbs(struct virtio_device *vdev)
+-static void ovs_nat_update_key(struct sw_flow_key *key,
+-			       const struct sk_buff *skb,
+-			       enum nf_nat_manip_type maniptype)
 -{
--	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
--	int i;
+-	if (maniptype == NF_NAT_MANIP_SRC) {
+-		__be16 src;
 -
--	if (vp_dev->intx_enabled)
--		return;
+-		key->ct_state |= OVS_CS_F_SRC_NAT;
+-		if (key->eth.type == htons(ETH_P_IP))
+-			key->ipv4.addr.src = ip_hdr(skb)->saddr;
+-		else if (key->eth.type == htons(ETH_P_IPV6))
+-			memcpy(&key->ipv6.addr.src, &ipv6_hdr(skb)->saddr,
+-			       sizeof(key->ipv6.addr.src));
+-		else
+-			return;
 -
--	for (i = 0; i < vp_dev->msix_vectors; ++i)
--		enable_irq(pci_irq_vector(vp_dev->pci_dev, i));
-+		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+-		if (key->ip.proto == IPPROTO_UDP)
+-			src = udp_hdr(skb)->source;
+-		else if (key->ip.proto == IPPROTO_TCP)
+-			src = tcp_hdr(skb)->source;
+-		else if (key->ip.proto == IPPROTO_SCTP)
+-			src = sctp_hdr(skb)->source;
+-		else
+-			return;
+-
+-		key->tp.src = src;
+-	} else {
+-		__be16 dst;
+-
+-		key->ct_state |= OVS_CS_F_DST_NAT;
+-		if (key->eth.type == htons(ETH_P_IP))
+-			key->ipv4.addr.dst = ip_hdr(skb)->daddr;
+-		else if (key->eth.type == htons(ETH_P_IPV6))
+-			memcpy(&key->ipv6.addr.dst, &ipv6_hdr(skb)->daddr,
+-			       sizeof(key->ipv6.addr.dst));
+-		else
+-			return;
+-
+-		if (key->ip.proto == IPPROTO_UDP)
+-			dst = udp_hdr(skb)->dest;
+-		else if (key->ip.proto == IPPROTO_TCP)
+-			dst = tcp_hdr(skb)->dest;
+-		else if (key->ip.proto == IPPROTO_SCTP)
+-			dst = sctp_hdr(skb)->dest;
+-		else
+-			return;
++	/* Update the flow key if NAT successful. */
++	if (err == NF_ACCEPT)
++		ovs_nat_update_key(key, skb, maniptype);
+ 
+-		key->tp.dst = dst;
+-	}
++	return err;
  }
  
- /* the notify function used when creating a virt queue */
-@@ -154,8 +141,7 @@ static int vp_request_msix_vectors(struc
- 	snprintf(vp_dev->msix_names[v], sizeof *vp_dev->msix_names,
- 		 "%s-config", name);
- 	err = request_irq(pci_irq_vector(vp_dev->pci_dev, v),
--			  vp_config_changed, IRQF_NO_AUTOEN,
--			  vp_dev->msix_names[v],
-+			  vp_config_changed, 0, vp_dev->msix_names[v],
- 			  vp_dev);
- 	if (err)
- 		goto error;
-@@ -174,8 +160,7 @@ static int vp_request_msix_vectors(struc
- 		snprintf(vp_dev->msix_names[v], sizeof *vp_dev->msix_names,
- 			 "%s-virtqueues", name);
- 		err = request_irq(pci_irq_vector(vp_dev->pci_dev, v),
--				  vp_vring_interrupt, IRQF_NO_AUTOEN,
--				  vp_dev->msix_names[v],
-+				  vp_vring_interrupt, 0, vp_dev->msix_names[v],
- 				  vp_dev);
- 		if (err)
- 			goto error;
-@@ -352,7 +337,7 @@ static int vp_find_vqs_msix(struct virti
- 			 "%s-%s",
- 			 dev_name(&vp_dev->vdev.dev), names[i]);
- 		err = request_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec),
--				  vring_interrupt, IRQF_NO_AUTOEN,
-+				  vring_interrupt, 0,
- 				  vp_dev->msix_names[msix_vec],
- 				  vqs[i]);
- 		if (err)
---- a/drivers/virtio/virtio_pci_common.h
-+++ b/drivers/virtio/virtio_pci_common.h
-@@ -101,10 +101,8 @@ static struct virtio_pci_device *to_vp_d
- 	return container_of(vdev, struct virtio_pci_device, vdev);
+ /* Returns NF_DROP if the packet should be dropped, NF_ACCEPT otherwise. */
+@@ -904,7 +908,7 @@ static int ovs_ct_nat(struct net *net, struct sw_flow_key *key,
+ 	} else {
+ 		return NF_ACCEPT; /* Connection is not NATed. */
+ 	}
+-	err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype);
++	err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype, key);
+ 
+ 	if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
+ 		if (ct->status & IPS_SRC_NAT) {
+@@ -914,17 +918,13 @@ static int ovs_ct_nat(struct net *net, struct sw_flow_key *key,
+ 				maniptype = NF_NAT_MANIP_SRC;
+ 
+ 			err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range,
+-						 maniptype);
++						 maniptype, key);
+ 		} else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
+ 			err = ovs_ct_nat_execute(skb, ct, ctinfo, NULL,
+-						 NF_NAT_MANIP_SRC);
++						 NF_NAT_MANIP_SRC, key);
+ 		}
+ 	}
+ 
+-	/* Mark NAT done if successful and update the flow key. */
+-	if (err == NF_ACCEPT)
+-		ovs_nat_update_key(key, skb, maniptype);
+-
+ 	return err;
  }
- 
--/* disable irq handlers */
--void vp_disable_cbs(struct virtio_device *vdev);
--/* enable irq handlers */
--void vp_enable_cbs(struct virtio_device *vdev);
-+/* wait for pending irq handlers */
-+void vp_synchronize_vectors(struct virtio_device *vdev);
- /* the notify function used when creating a virt queue */
- bool vp_notify(struct virtqueue *vq);
- /* the config->del_vqs() implementation */
---- a/drivers/virtio/virtio_pci_legacy.c
-+++ b/drivers/virtio/virtio_pci_legacy.c
-@@ -98,8 +98,8 @@ static void vp_reset(struct virtio_devic
- 	/* Flush out the status write, and flush in device writes,
- 	 * including MSi-X interrupts, if any. */
- 	vp_legacy_get_status(&vp_dev->ldev);
--	/* Disable VQ/configuration callbacks. */
--	vp_disable_cbs(vdev);
-+	/* Flush pending VQ/configuration callbacks. */
-+	vp_synchronize_vectors(vdev);
- }
- 
- static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16 vector)
-@@ -185,7 +185,6 @@ static void del_vq(struct virtio_pci_vq_
- }
- 
- static const struct virtio_config_ops virtio_pci_config_ops = {
--	.enable_cbs	= vp_enable_cbs,
- 	.get		= vp_get,
- 	.set		= vp_set,
- 	.get_status	= vp_get_status,
---- a/drivers/virtio/virtio_pci_modern.c
-+++ b/drivers/virtio/virtio_pci_modern.c
-@@ -172,8 +172,8 @@ static void vp_reset(struct virtio_devic
- 	 */
- 	while (vp_modern_get_status(mdev))
- 		msleep(1);
--	/* Disable VQ/configuration callbacks. */
--	vp_disable_cbs(vdev);
-+	/* Flush pending VQ/configuration callbacks. */
-+	vp_synchronize_vectors(vdev);
- }
- 
- static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16 vector)
-@@ -380,7 +380,6 @@ static bool vp_get_shm_region(struct vir
- }
- 
- static const struct virtio_config_ops virtio_pci_config_nodev_ops = {
--	.enable_cbs	= vp_enable_cbs,
- 	.get		= NULL,
- 	.set		= NULL,
- 	.generation	= vp_generation,
-@@ -398,7 +397,6 @@ static const struct virtio_config_ops vi
- };
- 
- static const struct virtio_config_ops virtio_pci_config_ops = {
--	.enable_cbs	= vp_enable_cbs,
- 	.get		= vp_get,
- 	.set		= vp_set,
- 	.generation	= vp_generation,
+ #else /* !CONFIG_NF_NAT */
+-- 
+2.34.1
+
 
 
