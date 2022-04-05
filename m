@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B14C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52734C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580105AbiDEXd5 (ORCPT
+        id S1580264AbiDEXeH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48994 "EHLO
+        Tue, 5 Apr 2022 19:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349054AbiDEJtC (ORCPT
+        with ESMTP id S1348834AbiDEJsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A296DA94E4;
-        Tue,  5 Apr 2022 02:39:21 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE138B6E61;
+        Tue,  5 Apr 2022 02:36:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5192BB81C14;
-        Tue,  5 Apr 2022 09:39:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C97CC385A2;
-        Tue,  5 Apr 2022 09:39:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B30B61368;
+        Tue,  5 Apr 2022 09:36:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 567A7C385A0;
+        Tue,  5 Apr 2022 09:36:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151559;
-        bh=o7C32F3i+PJr0RVLaJ/A++tomV2VND/4bsNJ7OCF4as=;
+        s=korg; t=1649151396;
+        bh=+4XtIDU7IJzqKUTUpgbfhvg1y9IkZUPpjCHunj8auZA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AwU4FkACMVkRBMc6gB9LI2v7p6xZnPCnfG7w4KRoWiq30S57/GfUO60gGvlk6/bNh
-         ZoF5P6+/36HuNaPIYTQvYoIaBfnnyDcwEKzWVTMWTUuX1z1GeQJvEhNvTy9gZNdZse
-         x1KzgkeZFRKzMYOIKhUySYczEnaUoW2MD7/l5TeA=
+        b=J75JA7TGqQ/BTxVJmBw+vbxE7MlsQsu6av83UY6oZ85f8j3Ar2+MLIwmTg0d/5r/v
+         nufTGcs6vcMVmSeq21JXIrV25f3LLPTfaGpeydTqGnc9OpLIEwpSmNc0BCSnUgcTNO
+         Aafk/StbWVc8Dz+nsWxPCGeFtS3A9nBzNu0Id3WA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 452/913] HID: i2c-hid: fix GET/SET_REPORT for unnumbered reports
-Date:   Tue,  5 Apr 2022 09:25:14 +0200
-Message-Id: <20220405070353.397482580@linuxfoundation.org>
+        stable@vger.kernel.org, Brett Creeley <brett@pensando.io>,
+        Shannon Nelson <snelson@pensando.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 399/913] ionic: Dont send reset commands if FW isnt running
+Date:   Tue,  5 Apr 2022 09:24:21 +0200
+Message-Id: <20220405070351.807678597@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,88 +51,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Brett Creeley <brett@pensando.io>
 
-[ Upstream commit a5e5e03e94764148a01757b2fa4737d3445c13a6 ]
+[ Upstream commit b8fd0271dad00b953caaabe73474788d3d19e252 ]
 
-Internally kernel prepends all report buffers, for both numbered and
-unnumbered reports, with report ID, therefore to properly handle unnumbered
-reports we should prepend it ourselves.
+It's possible the FW is already shutting down while the driver is being
+removed and/or when the driver is going through reset. This can cause
+unexpected/unnecessary errors to be printed:
 
-For the same reason we should skip the first byte of the buffer when
-calling i2c_hid_set_or_send_report() which then will take care of properly
-formatting the transfer buffer based on its separate report ID argument
-along with report payload.
+eth0: DEV_CMD IONIC_CMD_PORT_RESET (12) error, IONIC_RC_ERROR (29) failed
+eth1: DEV_CMD IONIC_CMD_RESET (3) error, IONIC_RC_ERROR (29) failed
 
-[jkosina@suse.cz: finalize trimmed sentence in changelog as spotted by Benjamin]
-Fixes: 9b5a9ae88573 ("HID: i2c-hid: implement ll_driver transport-layer callbacks")
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fix this by checking the FW status register before issuing the reset
+commands.
+
+Also, since err may not be assigned in ionic_port_reset(), assign it a
+default value of 0, and remove an unnecessary log message.
+
+Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+Signed-off-by: Brett Creeley <brett@pensando.io>
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/i2c-hid/i2c-hid-core.c | 32 ++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_dev.c    | 17 ++++++++++++-----
+ .../net/ethernet/pensando/ionic/ionic_dev.h    |  1 +
+ .../net/ethernet/pensando/ionic/ionic_main.c   | 18 ++++++++++--------
+ 3 files changed, 23 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
-index 4804d71e5293..65c1f20ec420 100644
---- a/drivers/hid/i2c-hid/i2c-hid-core.c
-+++ b/drivers/hid/i2c-hid/i2c-hid-core.c
-@@ -615,6 +615,17 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
- 	if (report_type == HID_OUTPUT_REPORT)
- 		return -EINVAL;
- 
-+	/*
-+	 * In case of unnumbered reports the response from the device will
-+	 * not have the report ID that the upper layers expect, so we need
-+	 * to stash it the buffer ourselves and adjust the data size.
-+	 */
-+	if (!report_number) {
-+		buf[0] = 0;
-+		buf++;
-+		count--;
-+	}
-+
- 	/* +2 bytes to include the size of the reply in the query buffer */
- 	ask_count = min(count + 2, (size_t)ihid->bufsize);
- 
-@@ -636,6 +647,9 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
- 	count = min(count, ret_count - 2);
- 	memcpy(buf, ihid->rawbuf + 2, count);
- 
-+	if (!report_number)
-+		count++;
-+
- 	return count;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+index 1b7730308d6a..b778d8264bca 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+@@ -129,6 +129,16 @@ int ionic_dev_setup(struct ionic *ionic)
  }
  
-@@ -652,17 +666,19 @@ static int i2c_hid_output_raw_report(struct hid_device *hid, __u8 *buf,
- 
- 	mutex_lock(&ihid->reset_lock);
- 
--	if (report_id) {
--		buf++;
--		count--;
--	}
--
-+	/*
-+	 * Note that both numbered and unnumbered reports passed here
-+	 * are supposed to have report ID stored in the 1st byte of the
-+	 * buffer, so we strip it off unconditionally before passing payload
-+	 * to i2c_hid_set_or_send_report which takes care of encoding
-+	 * everything properly.
+ /* Devcmd Interface */
++bool ionic_is_fw_running(struct ionic_dev *idev)
++{
++	u8 fw_status = ioread8(&idev->dev_info_regs->fw_status);
++
++	/* firmware is useful only if the running bit is set and
++	 * fw_status != 0xff (bad PCI read)
 +	 */
- 	ret = i2c_hid_set_or_send_report(client,
- 				report_type == HID_FEATURE_REPORT ? 0x03 : 0x02,
--				report_id, buf, count, use_data);
-+				report_id, buf + 1, count - 1, use_data);
++	return (fw_status != 0xff) && (fw_status & IONIC_FW_STS_F_RUNNING);
++}
++
+ int ionic_heartbeat_check(struct ionic *ionic)
+ {
+ 	struct ionic_dev *idev = &ionic->idev;
+@@ -152,13 +162,10 @@ int ionic_heartbeat_check(struct ionic *ionic)
+ 		goto do_check_time;
+ 	}
  
--	if (report_id && ret >= 0)
--		ret++; /* add report_id to the number of transfered bytes */
-+	if (ret >= 0)
-+		ret++; /* add report_id to the number of transferred bytes */
+-	/* firmware is useful only if the running bit is set and
+-	 * fw_status != 0xff (bad PCI read)
+-	 * If fw_status is not ready don't bother with the generation.
+-	 */
+ 	fw_status = ioread8(&idev->dev_info_regs->fw_status);
  
- 	mutex_unlock(&ihid->reset_lock);
+-	if (fw_status == 0xff || !(fw_status & IONIC_FW_STS_F_RUNNING)) {
++	/* If fw_status is not ready don't bother with the generation */
++	if (!ionic_is_fw_running(idev)) {
+ 		fw_status_ready = false;
+ 	} else {
+ 		fw_generation = fw_status & IONIC_FW_STS_F_GENERATION;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+index 8311086fb1f4..922bb6c9e01d 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+@@ -357,5 +357,6 @@ void ionic_q_rewind(struct ionic_queue *q, struct ionic_desc_info *start);
+ void ionic_q_service(struct ionic_queue *q, struct ionic_cq_info *cq_info,
+ 		     unsigned int stop_index);
+ int ionic_heartbeat_check(struct ionic *ionic);
++bool ionic_is_fw_running(struct ionic_dev *idev);
+ 
+ #endif /* _IONIC_DEV_H_ */
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index f4af760cfa73..480f85bc17f9 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -488,6 +488,9 @@ int ionic_reset(struct ionic *ionic)
+ 	struct ionic_dev *idev = &ionic->idev;
+ 	int err;
+ 
++	if (!ionic_is_fw_running(idev))
++		return 0;
++
+ 	mutex_lock(&ionic->dev_cmd_lock);
+ 	ionic_dev_cmd_reset(idev);
+ 	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+@@ -560,15 +563,17 @@ int ionic_port_init(struct ionic *ionic)
+ int ionic_port_reset(struct ionic *ionic)
+ {
+ 	struct ionic_dev *idev = &ionic->idev;
+-	int err;
++	int err = 0;
+ 
+ 	if (!idev->port_info)
+ 		return 0;
+ 
+-	mutex_lock(&ionic->dev_cmd_lock);
+-	ionic_dev_cmd_port_reset(idev);
+-	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+-	mutex_unlock(&ionic->dev_cmd_lock);
++	if (ionic_is_fw_running(idev)) {
++		mutex_lock(&ionic->dev_cmd_lock);
++		ionic_dev_cmd_port_reset(idev);
++		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
++		mutex_unlock(&ionic->dev_cmd_lock);
++	}
+ 
+ 	dma_free_coherent(ionic->dev, idev->port_info_sz,
+ 			  idev->port_info, idev->port_info_pa);
+@@ -576,9 +581,6 @@ int ionic_port_reset(struct ionic *ionic)
+ 	idev->port_info = NULL;
+ 	idev->port_info_pa = 0;
+ 
+-	if (err)
+-		dev_err(ionic->dev, "Failed to reset port\n");
+-
+ 	return err;
+ }
  
 -- 
 2.34.1
