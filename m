@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A74DC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AE95C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244947AbiDEVBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
+        id S1343669AbiDEVCB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352485AbiDEKEi (ORCPT
+        with ESMTP id S1353565AbiDEKIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4047EBABAF;
-        Tue,  5 Apr 2022 02:53:20 -0700 (PDT)
+        Tue, 5 Apr 2022 06:08:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A48C1CAA;
+        Tue,  5 Apr 2022 02:55:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAEFEB81B13;
-        Tue,  5 Apr 2022 09:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A61DC385A3;
-        Tue,  5 Apr 2022 09:53:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88E22B818F3;
+        Tue,  5 Apr 2022 09:55:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2FDBC385A1;
+        Tue,  5 Apr 2022 09:55:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152397;
-        bh=zUUeeZnaMW+gV0tRTgNtHUinIBWwkI9x7zikir/8Uio=;
+        s=korg; t=1649152520;
+        bh=p9O+8Tvi0wcwbsXJFhXsAa2PBSpAFZ0ekhzLJYDmsGw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ywnkCbhpP2iTKCgpduU2MsIOb1HuXH2JZ49rdnswWT4KZkSjY4y93QTRN2em6NrH2
-         XqRYMYI7A5uuBziuAnOeQBPLW7Y4bL5rSoF4mYdBNqq295jUG9IpoFk7giDspcChZS
-         9XoYO39Xqm88sQGOyYGzDc+ZWz50OpHZ1Y+NmIRM=
+        b=b2QA2uU0TroUH1ySNXMoU5JMcvDLIcppugjLsZt21TbauiJex17VmG2MSGH7scN9J
+         bvguIUzuqxoF4Bzojk679cu4RjQGa6W56ySzZya8B92tB1F64DN4gcqqI9vPWhE9Qa
+         gUulLk0w7Lkyxs2xSLDp7QIWymphvplA58PD2os0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 762/913] media: i2c: ov5648: Fix lockdep error
-Date:   Tue,  5 Apr 2022 09:30:24 +0200
-Message-Id: <20220405070402.673138606@linuxfoundation.org>
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 806/913] scsi: qla2xxx: Fix stuck session of PRLI reject
+Date:   Tue,  5 Apr 2022 09:31:08 +0200
+Message-Id: <20220405070403.992132185@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,53 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit d4cb5d3c4cee28aa89b02bc33d930a6cf75e7f79 ]
+commit f3502e2e98a92981601edc3dadf4b0f43c79836b upstream.
 
-ov5648_state_init() calls ov5648_state_mipi_configure() which uses
-__v4l2_ctrl_s_ctrl[_int64](). This means that sensor->mutex (which
-is also sensor->ctrls.handler.lock) must be locked before calling
-ov5648_state_init().
+Remove stale recovery code that prevents normal path recovery.
 
-ov5648_state_mipi_configure() is also used in other places where
-the lock is already held so it cannot be changed itself.
-
-Note this is based on an identical (tested) fix for the ov8865 driver,
-this has only been compile-tested.
-
-Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-11-njavali@marvell.com
+Fixes: 1cbc0efcd9be ("scsi: qla2xxx: Fix retry for PRLI RJT with reason of BUSY")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/i2c/ov5648.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
-index 78040f0ac02f..ef8b52dc9401 100644
---- a/drivers/media/i2c/ov5648.c
-+++ b/drivers/media/i2c/ov5648.c
-@@ -1778,8 +1778,14 @@ static int ov5648_state_configure(struct ov5648_sensor *sensor,
- 
- static int ov5648_state_init(struct ov5648_sensor *sensor)
- {
--	return ov5648_state_configure(sensor, &ov5648_modes[0],
--				      ov5648_mbus_codes[0]);
-+	int ret;
-+
-+	mutex_lock(&sensor->mutex);
-+	ret = ov5648_state_configure(sensor, &ov5648_modes[0],
-+				     ov5648_mbus_codes[0]);
-+	mutex_unlock(&sensor->mutex);
-+
-+	return ret;
- }
- 
- /* Sensor Base */
--- 
-2.34.1
-
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -2085,13 +2085,6 @@ qla24xx_handle_prli_done_event(struct sc
+ 		qla24xx_post_gpdb_work(vha, ea->fcport, 0);
+ 		break;
+ 	default:
+-		if ((ea->iop[0] == LSC_SCODE_ELS_REJECT) &&
+-		    (ea->iop[1] == 0x50000)) {   /* reson 5=busy expl:0x0 */
+-			set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+-			ea->fcport->fw_login_state = DSC_LS_PLOGI_COMP;
+-			break;
+-		}
+-
+ 		sp = ea->sp;
+ 		ql_dbg(ql_dbg_disc, vha, 0x2118,
+ 		       "%s %d %8phC priority %s, fc4type %x prev try %s\n",
 
 
