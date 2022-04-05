@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8A9C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F34E4C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385014AbiDEMay (ORCPT
+        id S1385041AbiDEMbB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:30:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
+        Tue, 5 Apr 2022 08:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245756AbiDEI4z (ORCPT
+        with ESMTP id S234868AbiDEIOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:56:55 -0400
+        Tue, 5 Apr 2022 04:14:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E6619C2B;
-        Tue,  5 Apr 2022 01:52:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33551986F5;
+        Tue,  5 Apr 2022 01:03:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4409609D0;
-        Tue,  5 Apr 2022 08:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5472C385A0;
-        Tue,  5 Apr 2022 08:52:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBF22617D4;
+        Tue,  5 Apr 2022 08:03:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 076E4C385A0;
+        Tue,  5 Apr 2022 08:03:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148765;
-        bh=G+tlzkSO4tf9ZQVjfwUjPYMxK5+NilPHHkn+It7OI2I=;
+        s=korg; t=1649145789;
+        bh=xKmTIuWGghxPlamgA+4jpkdwdalBgdMukXmT3MDoh0Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZQWL6/s5R3TdT1Oya95zqBKDaCaASNTkv/C4v2TpcAO5XuIlPXlceiYg2PTkR0S/E
-         ru2Yjqf6Gki8jEDk05fNL2ClcUqsC+CKETfr+84rZor9HTCWdKsIAB1nvTZVbMaxJl
-         RAFQAouh3mFmIll/9eCRlVg3NEg+p3lxAurhG/aQ=
+        b=oxGEe6a4fcS3d+6/+KsRtIL6YAqBqahdLlk/gTc+ga04568xBkRg5cFBG6uAWwOSw
+         XJTVQYUOB1JoAfm2QxGyOSDqe6JZIvoBEQ31LCmTeEUHqO8H2FtpOXPAveYk/7MN75
+         +tW/UjScEPdmr5T0mlEnsYA9FyNHJyzJz9Wk3TxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0435/1017] RDMA/core: Set MR type in ib_reg_user_mr
-Date:   Tue,  5 Apr 2022 09:22:28 +0200
-Message-Id: <20220405070407.206922578@linuxfoundation.org>
+Subject: [PATCH 5.17 0530/1126] cxl/core: Fix cxl_probe_component_regs() error message
+Date:   Tue,  5 Apr 2022 09:21:17 +0200
+Message-Id: <20220405070423.188083070@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,34 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 32a88d16615c2be295571c29273c4ac94cb75309 ]
+[ Upstream commit d621bc2e7282f9955033a6359877fd4ac4be60e1 ]
 
-Add missing assignment of MR type to IB_MR_TYPE_USER.
+Fix a '\n' vs '/n' typo.
 
-Fixes: 33006bd4f37f ("IB/core: Introduce ib_reg_user_mr")
-Link: https://lore.kernel.org/r/be2e91bcd6e52dc36be289ae92f30d3a5cc6dcb1.1642491047.git.leonro@nvidia.com
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 08422378c4ad ("cxl/pci: Add HDM decoder capabilities")
+Acked-by: Ben Widawsky <ben.widawsky@intel.com
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Link: https://lore.kernel.org/r/164298418268.3018233.17790073375430834911.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/verbs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/cxl/core/regs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index c18634bec212..e821dc94a43e 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -2153,6 +2153,7 @@ struct ib_mr *ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
- 		return mr;
+diff --git a/drivers/cxl/core/regs.c b/drivers/cxl/core/regs.c
+index e37e23bf4355..cdc0b75d94f2 100644
+--- a/drivers/cxl/core/regs.c
++++ b/drivers/cxl/core/regs.c
+@@ -49,7 +49,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
  
- 	mr->device = pd->device;
-+	mr->type = IB_MR_TYPE_USER;
- 	mr->pd = pd;
- 	mr->dm = NULL;
- 	atomic_inc(&pd->usecnt);
+ 	if (FIELD_GET(CXL_CM_CAP_HDR_ID_MASK, cap_array) != CM_CAP_HDR_CAP_ID) {
+ 		dev_err(dev,
+-			"Couldn't locate the CXL.cache and CXL.mem capability array header./n");
++			"Couldn't locate the CXL.cache and CXL.mem capability array header.\n");
+ 		return;
+ 	}
+ 
 -- 
 2.34.1
 
