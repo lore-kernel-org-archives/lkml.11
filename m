@@ -2,139 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FEF9C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF17C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573996AbiDEWyC (ORCPT
+        id S1574026AbiDEWyH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
+        Tue, 5 Apr 2022 18:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457520AbiDEQDU (ORCPT
+        with ESMTP id S1354547AbiDEKOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:20 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E31112601
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:58:48 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id l26so11342139ejx.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:58:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5cr/uUizgr/4LNpusvZFcNmm9oWq5EZAD+WYWV0PPzE=;
-        b=b7tog62pv2fPQ1TZ9Jj5qy6e3KfwSPJR3+W/BOcdKx/d3vb140ht/lRhz4S8v2WkCy
-         o2GYojOl9q6tty2rR1vAj4wJaMYkLbzu9C3jFOULVo3NXjsPKXS31hQ2unsjguxrupMt
-         ps28ABr+7ajK98jOzYsA36byYngqlC4boPYFE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5cr/uUizgr/4LNpusvZFcNmm9oWq5EZAD+WYWV0PPzE=;
-        b=E32bWuoIOiF/yxklnKXrkMrGe9IpM8Q1Yv/mIv58gEJXf6POPqbEk1G6A4K/8sNgIq
-         88bWgxsMt/lA6w5Wr/Q6QZRx7HH73ozCNEZpjEZmhamqoVdtA7aD/vbrDUe/gDlGu2M/
-         3Xkr232CLkFj71gU4WF9b2KntNGX9x+1ft4GD2g5WJPb1OarKwhQu5xuGPq5fEkxKfUw
-         TunfC25E8bOE0iQtcArS2TUPjxKDpu+HjiCjWN5ytlqjct3lvwl2vVKTlPhZWnrymm5K
-         nXBRxQwcpIpR5KniyF5AE7OuEvv/JkAuz52lZ0/9MWiegSagptZmrPMBLpJn4hssK/4K
-         1bRw==
-X-Gm-Message-State: AOAM531CL7jdwCrimmTR3oNLa88uVgicYM3vg0TGqiKtPkWm+6mhsrC5
-        LNF7HkAs3VwJEnveq5AaNG4cm47lktvAhiRYraNyd2w/HvQVu2PU
-X-Google-Smtp-Source: ABdhPJzilsgNVvKQDJzpKqS53Wp6YBs1ihzZ9U8NbTzdYYs6GM+QQv3uAUJcWClXu8eKUS9vMxO9yfcEcTtMuykHP5w=
-X-Received: by 2002:a17:907:3e16:b0:6df:b4f0:5cc2 with SMTP id
- hp22-20020a1709073e1600b006dfb4f05cc2mr4278368ejc.285.1649174326720; Tue, 05
- Apr 2022 08:58:46 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C719F6B0B4;
+        Tue,  5 Apr 2022 03:00:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9FDF61745;
+        Tue,  5 Apr 2022 10:00:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E664BC385A3;
+        Tue,  5 Apr 2022 10:00:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152847;
+        bh=M9qg1+MP8/boX48RlfUxEw5j6AKp+bmFAwZvpIQBwdA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=W2hmfR6ggbDvciMX1Au0NIlA5bPPl4QuYhCmAD4nZ2VWJZhVVzjgUUzgR5L845yHI
+         4Nted6gnJWnUstJgejhi/xffVGgjE3YsGTrvhJwNStjFQUzeq+GorDffL3o+U9snV4
+         kjhm6A3lFUQhSvMuGA3CPYjZPCxwE672nvCzbjZM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 011/599] tools/virtio: fix virtio_test execution
+Date:   Tue,  5 Apr 2022 09:25:05 +0200
+Message-Id: <20220405070259.151211501@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <cover.1649109877.git.dsterba@suse.com>
-In-Reply-To: <cover.1649109877.git.dsterba@suse.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 5 Apr 2022 08:58:35 -0700
-Message-ID: <CAADWXX-XPrfiD0TLGwMuzmGfs9pZ+HiTo1v9cs-mxb6x0OXpZw@mail.gmail.com>
-Subject: Re: [GIT PULL] Btrfs fixes for 5.18-rc2
-To:     David Sterba <dsterba@suse.com>
-Cc:     linux-btrfs <linux-btrfs@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 6:28 AM David Sterba <dsterba@suse.com> wrote:
->
-> please pull the following fixes for btrfs, thanks.
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-Hmm. I got two copies of this...
+[ Upstream commit 32f1b53fe8f03d962423ba81f8e92af5839814da ]
 
-...and both were in my spam folder.
+virtio_test hangs on __vring_new_virtqueue() because `vqs_list_lock`
+is not initialized.
 
-I don't see anything wrong with the message (spf and dkim both
-fine).so I assume it's something about suse.sz or suse.de that gmail
-doesn't like. Presumably some spammer sitting on a nearby network on
-the same ISP.
+Let's initialize it in vdev_info_init().
 
-Anyway, not much you can do about it except perhaps ask whatever MIS
-people to see if they got put on some blacklist or whatever.
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Link: https://lore.kernel.org/r/20220118150631.167015-1-sgarzare@redhat.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/virtio/virtio_test.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I've obviously noticed the pull request despite it being in my spam folder.
+diff --git a/tools/virtio/virtio_test.c b/tools/virtio/virtio_test.c
+index cb3f29c09aff..23f142af544a 100644
+--- a/tools/virtio/virtio_test.c
++++ b/tools/virtio/virtio_test.c
+@@ -130,6 +130,7 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
+ 	memset(dev, 0, sizeof *dev);
+ 	dev->vdev.features = features;
+ 	INIT_LIST_HEAD(&dev->vdev.vqs);
++	spin_lock_init(&dev->vdev.vqs_list_lock);
+ 	dev->buf_size = 1024;
+ 	dev->buf = malloc(dev->buf_size);
+ 	assert(dev->buf);
+-- 
+2.34.1
 
-              Linus
 
->
-> - prevent deleting subvolume with active swapfile
->
-> - fix qgroup reserve limit calculation overflow
->
-> - remove device count in superblock and its item in one transaction so
->   they cant't get out of sync
->
-> - skip defragmenting an isolated sector, this could cause some extra IO
->
-> - unify handling of mtime/permissions in hole punch with fallocate
->
-> - zoned mode fixes:
->   - remove assert checking for only single mode, we have the DUP mode
->     implemented
->
->   - fix potential lockdep warning while traversing devices when checking
->     for zone activation
->
-> ----------------------------------------------------------------
-> The following changes since commit d3e29967079c522ce1c5cab0e9fab2c280b977eb:
->
->   btrfs: zoned: put block group after final usage (2022-03-14 13:13:54 +0100)
->
-> are available in the Git repository at:
->
->   git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc1-tag
->
-> for you to fetch changes up to 60021bd754c6ca0addc6817994f20290a321d8d6:
->
->   btrfs: prevent subvol with swapfile from being deleted (2022-03-24 17:50:57 +0100)
->
-> ----------------------------------------------------------------
-> Darrick J. Wong (1):
->       btrfs: fix fallocate to use file_modified to update permissions consistently
->
-> Ethan Lien (1):
->       btrfs: fix qgroup reserve overflow the qgroup limit
->
-> Johannes Thumshirn (2):
->       btrfs: zoned: traverse devices under chunk_mutex in btrfs_can_activate_zone
->       btrfs: zoned: remove left over ASSERT checking for single profile
->
-> Josef Bacik (1):
->       btrfs: do not warn for free space inode in cow_file_range
->
-> Kaiwen Hu (1):
->       btrfs: prevent subvol with swapfile from being deleted
->
-> Qu Wenruo (2):
->       btrfs: remove device item and update super block in the same transaction
->       btrfs: avoid defragging extents whose next extents are not targets
->
->  fs/btrfs/extent_io.h |  2 +-
->  fs/btrfs/file.c      | 13 +++++++++--
->  fs/btrfs/inode.c     | 23 ++++++++++++++++++-
->  fs/btrfs/ioctl.c     | 20 +++++++++++-----
->  fs/btrfs/volumes.c   | 65 ++++++++++++++++++++++------------------------------
->  fs/btrfs/zoned.c     | 13 ++++-------
->  6 files changed, 81 insertions(+), 55 deletions(-)
+
