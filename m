@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2AFCC47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25305C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357659AbiDEK0l (ORCPT
+        id S1357807AbiDEK1Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
+        Tue, 5 Apr 2022 06:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241112AbiDEIct (ORCPT
+        with ESMTP id S241126AbiDEIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD3015A03;
-        Tue,  5 Apr 2022 01:27:47 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A50E15FFD;
+        Tue,  5 Apr 2022 01:28:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38AA6609D0;
-        Tue,  5 Apr 2022 08:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BABEC385A1;
-        Tue,  5 Apr 2022 08:27:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DFD9B81B13;
+        Tue,  5 Apr 2022 08:28:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8375C385A2;
+        Tue,  5 Apr 2022 08:28:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147266;
-        bh=EnA4E1E6YC+Ts/nEjs3dxfm5+HpqhwGpXCsmYHQ1Iew=;
+        s=korg; t=1649147294;
+        bh=2cT+2fN9BWDAbDMBdt2nyr/WEUKFueq/21+yNuMyO5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YKV1F5fsYRU6H1/K6SZdhwv1GxZBiBSjaDfMfyOClbOOgJfm6lbEXOypuqEx0YO4n
-         P9z/6ma/GP5Ba9kywAOkF1FFVnnNip/GEW7crJLB4v8HzLGeoaxtMQGbjtD3K2gioN
-         EiUiostJJZZO+qHC5is1gbbsMcz+BAEoCiMYp90c=
+        b=W7SenovWsSRu+QTn/W7BhYfAqQxU1xRdL687m+aI/5pvwSAt/YxVweHTkX2M9e8bM
+         RcjoJonoVjgrl3uFGl9O4+uA/AaSuQOZb6leXp0xc+z+2VAaYE+YQ6vrRYd10BsnCL
+         bKCM8qlNIi+9MgBRz9+jSV6za3Sx0sJ9AuEoIT4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 1045/1126] ASoC: rockchip: i2s_tdm: Fixup config for SND_SOC_DAIFMT_DSP_A/B
-Date:   Tue,  5 Apr 2022 09:29:52 +0200
-Message-Id: <20220405070438.145487194@linuxfoundation.org>
+Subject: [PATCH 5.17 1072/1126] ASoC: soc-compress: Change the check for codec_dai
+Date:   Tue,  5 Apr 2022 09:30:19 +0200
+Message-Id: <20220405070438.921150507@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,44 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Tang <tangmeng@uniontech.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 2f45a4e2897793cc6ae25f5fe78b485ce7fd01d0 upstream.
+commit ccb4214f7f2a8b75acf493f31128e464ee1a3536 upstream.
 
-SND_SOC_DAIFMT_DSP_A: PCM delay 1 bit mode, L data MSB after FRM LRC
-SND_SOC_DAIFMT_DSP_B: PCM no delay mode, L data MSB during FRM LRC
+It should be better to reverse the check on codec_dai
+and returned early in order to be easier to understand.
 
-Fixes: 081068fd64140 (ASoC: rockchip: add support for i2s-tdm controller)
-
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Link: https://lore.kernel.org/r/20220318100146.23991-1-tangmeng@uniontech.com
+Fixes: de2c6f98817f ("ASoC: soc-compress: prevent the potentially use of null pointer")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220310030041.1556323-1-jiasheng@iscas.ac.cn
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/rockchip/rockchip_i2s_tdm.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ sound/soc/soc-compress.c |   19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
---- a/sound/soc/rockchip/rockchip_i2s_tdm.c
-+++ b/sound/soc/rockchip/rockchip_i2s_tdm.c
-@@ -469,14 +469,14 @@ static int rockchip_i2s_tdm_set_fmt(stru
- 		txcr_val = I2S_TXCR_IBM_NORMAL;
- 		rxcr_val = I2S_RXCR_IBM_NORMAL;
- 		break;
--	case SND_SOC_DAIFMT_DSP_A: /* PCM no delay mode */
--		txcr_val = I2S_TXCR_TFS_PCM;
--		rxcr_val = I2S_RXCR_TFS_PCM;
--		break;
--	case SND_SOC_DAIFMT_DSP_B: /* PCM delay 1 mode */
-+	case SND_SOC_DAIFMT_DSP_A: /* PCM delay 1 mode */
- 		txcr_val = I2S_TXCR_TFS_PCM | I2S_TXCR_PBM_MODE(1);
- 		rxcr_val = I2S_RXCR_TFS_PCM | I2S_RXCR_PBM_MODE(1);
- 		break;
-+	case SND_SOC_DAIFMT_DSP_B: /* PCM no delay mode */
-+		txcr_val = I2S_TXCR_TFS_PCM;
-+		rxcr_val = I2S_RXCR_TFS_PCM;
-+		break;
- 	default:
- 		ret = -EINVAL;
- 		goto err_pm_put;
+--- a/sound/soc/soc-compress.c
++++ b/sound/soc/soc-compress.c
+@@ -567,16 +567,19 @@ int snd_soc_new_compress(struct snd_soc_
+ 		return -EINVAL;
+ 	}
+ 
+-	/* check client and interface hw capabilities */
+-	if (codec_dai) {
+-		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
+-		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
+-			playback = 1;
+-		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
+-		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
+-			capture = 1;
++	if (!codec_dai) {
++		dev_err(rtd->card->dev, "Missing codec\n");
++		return -EINVAL;
+ 	}
+ 
++	/* check client and interface hw capabilities */
++	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
++	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
++		playback = 1;
++	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
++	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
++		capture = 1;
++
+ 	/*
+ 	 * Compress devices are unidirectional so only one of the directions
+ 	 * should be set, check for that (xor)
 
 
