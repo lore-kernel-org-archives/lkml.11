@@ -2,110 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1D4C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91C8C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574271AbiDEWzR (ORCPT
+        id S1574256AbiDEWzM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        Tue, 5 Apr 2022 18:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348824AbiDEJsj (ORCPT
+        with ESMTP id S1573615AbiDETZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4322B0A40;
-        Tue,  5 Apr 2022 02:36:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61394B81C86;
-        Tue,  5 Apr 2022 09:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B86F8C385A2;
-        Tue,  5 Apr 2022 09:36:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151380;
-        bh=CdfFcO1jIDuNdd+SI4m8yeunLS9mZcmGE5cesvhcQZA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0rAAEPYvPSloGQUfJSo3fQurlhmtvD2k5UC8/TGGl+P4COKikFtXOkAuxN62/PSrt
-         6I1+Fgb1Se3I4D0kYhBQ+rE+ZSYkR0F1cANVAPZupXDqxBGkkYRVVzdil93K1fijOs
-         Fd9FRx4KG6ajAI3cDqjnfZVBXP10imN0JsC7qcKI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
+        Tue, 5 Apr 2022 15:25:51 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27FD1FA70;
+        Tue,  5 Apr 2022 12:23:49 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235JMjDv005917;
+        Tue, 5 Apr 2022 14:22:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649186565;
+        bh=gyTjrVE6XZL0s0mFe2hpv610AmkYDUb5iT13rkgmKRc=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=PKBKT8masPEuR2LOHeC3RosC3UfwVAOBbmci39ci03yRnQIY7L693HlQISqV5EhBi
+         Pf851tANHiSV/1GhVdsERrDoEtTUvfdEe//BrbqWiTHGsHPqvSkgPqqMtwCcOjlfxA
+         b+oHaewX2Mtkj8jRegPfopO8NDUb3Ee1k9Dei77w=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235JMjtb023636
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Apr 2022 14:22:45 -0500
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Apr 2022 14:22:45 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Apr 2022 14:22:45 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235JMiEb104214;
+        Tue, 5 Apr 2022 14:22:45 -0500
+Date:   Wed, 6 Apr 2022 00:52:43 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     =?utf-8?Q?C=C3=A9dric?= Le Goater <clg@kaod.org>
+CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 394/913] mtd: rawnand: gpmi: fix controller timings setting
-Date:   Tue,  5 Apr 2022 09:24:16 +0200
-Message-Id: <20220405070351.658328390@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Tao Ren <rentao.bupt@gmail.com>
+Subject: Re: [PATCH v4 08/11] spi: aspeed: Calibrate read timings
+Message-ID: <20220405192243.7ilibbsyomg42uwg@ti.com>
+References: <20220325100849.2019209-1-clg@kaod.org>
+ <20220325100849.2019209-9-clg@kaod.org>
+ <20220331164115.w5q3wxlmwcg3w4ns@ti.com>
+ <8c88e726-0ddb-e2ba-35df-676cfc3d0475@kaod.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <8c88e726-0ddb-e2ba-35df-676cfc3d0475@kaod.org>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+On 04/04/22 09:30AM, Cédric Le Goater wrote:
+> On 3/31/22 18:41, Pratyush Yadav wrote:
+> > Hi,
+> > 
+> > On 25/03/22 11:08AM, Cédric Le Goater wrote:
+> > > To accommodate the different response time of SPI transfers on different
+> > > boards and different SPI NOR devices, the Aspeed controllers provide a
+> > > set of Read Timing Compensation registers to tune the timing delays
+> > > depending on the frequency being used. The AST2600 SoC has one of these
+> > > registers per device. On the AST2500 and AST2400 SoCs, the timing
+> > > register is shared by all devices which is problematic to get good
+> > > results other than for one device.
+> > > 
+> > > The algorithm first reads a golden buffer at low speed and then performs
+> > > reads with different clocks and delay cycle settings to find a breaking
+> > > point. This selects a default good frequency for the CEx control register.
+> > > The current settings are a bit optimistic as we pick the first delay giving
+> > > good results. A safer approach would be to determine an interval and
+> > > choose the middle value.
+> > > 
+> > > Calibration is performed when the direct mapping for reads is created.
+> > > Since the underlying spi-nor object needs to be initialized to create
+> > > the spi_mem operation for direct mapping, we should be fine. Having a
+> > > specific API would clarify the requirements though.
+> > > 
+> > > Cc: Pratyush Yadav <p.yadav@ti.com>
+> > > Reviewed-by: Joel Stanley <joel@jms.id.au>
+> > > Tested-by: Joel Stanley <joel@jms.id.au>
+> > > Tested-by: Tao Ren <rentao.bupt@gmail.com>
+> > > Signed-off-by: Cédric Le Goater <clg@kaod.org>
+> > > ---
+> > >   drivers/spi/spi-aspeed-smc.c | 281 +++++++++++++++++++++++++++++++++++
+> > >   1 file changed, 281 insertions(+)
+> > > 
+> > [...]
+> > > @@ -517,6 +527,8 @@ static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
+> > >   	return 0;
+> > >   }
+> > > +static int aspeed_spi_do_calibration(struct aspeed_spi_chip *chip);
+> > > +
+> > >   static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
+> > >   {
+> > >   	struct aspeed_spi *aspi = spi_controller_get_devdata(desc->mem->spi->master);
+> > > @@ -565,6 +577,8 @@ static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
+> > >   	chip->ctl_val[ASPEED_SPI_READ] = ctl_val;
+> > >   	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
+> > > +	ret = aspeed_spi_do_calibration(chip);
+> > > +
+> > 
+> > I am still not convinced this is a good idea. The API does not say
+> > anywhere what dirmap_create must be called after the flash is completely
+> > initialized, though that is what is done currently in practice.
+> 
+> Yes because we wouldn't have a correct 'spi_mem_dirmap_info' if it wasn't
+> the case. May be change the documentation ?
 
-[ Upstream commit 2970bf5a32f079e1e9197411db4fe9faccb1503a ]
+SPI NOR knows what protocol and opcodes it would use before it actually 
+puts the flash in that mode. So in theory it could call dirmap_create() 
+before it has put the flash in say 8D-8D-8D mode. I don't see much 
+reason to do so in practice, but who knows, that might change. This is 
+why I would like to hear what other people think.
 
-Set the controller registers according to the real clock rate. The
-controller registers configuration (setup, hold, timeout, ... cycles)
-depends on the clock rate of the GPMI. Using the real rate instead of
-the ideal one, avoids that this inaccuracy (required_rate - real_rate)
-affects the registers setting.
+> 
+> > I think
+> > an explicit API to mark flash as "ready for calibration" would be a
+> > better idea.
+> 
+> OK. Since the above is a oneliner, it should not be a problem to move
+> it under a new handler if needed.
+> 
+> The dirmap_create() handler expects the spi-mem descriptor and the field
+> 'desc->info.op_tmpl' to be correctly initialized in order to compute the
+> control register value, which is a requirement for dirmap_read(). The
+> calibration sequence simply comes after.
+> 
+> AFAICT, there is nothing incorrect today.
 
-This patch has been tested on two custom boards with i.MX28 and i.MX6
-SOCs:
-- i.MX28:
-  required rate 100MHz, real rate 99.3MHz
-- i.MX6
-  required rate 100MHz, real rate 99MHz
+In practice, no there is nothing incorrect. But as I explained above, it 
+is certainly possible to call dirmap_create() before the flash is ready.
 
-Fixes: b1206122069a ("mtd: rawnand: gpmi: use core timings instead of an empirical derivation")
-Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220118095434.35081-3-dario.binacchi@amarulasolutions.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 3 +++
- 1 file changed, 3 insertions(+)
+> 
+> > Tudor/Mark/Miquel, what do you think?
+> 
+> 
+> Thanks,
+> 
+> C.
 
-diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-index 668d69fe4cf2..b72b387c08ef 100644
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -648,6 +648,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
- 				     const struct nand_sdr_timings *sdr)
- {
- 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
-+	struct resources *r = &this->resources;
- 	unsigned int dll_threshold_ps = this->devdata->max_chain_delay;
- 	unsigned int period_ps, reference_period_ps;
- 	unsigned int data_setup_cycles, data_hold_cycles, addr_setup_cycles;
-@@ -671,6 +672,8 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
- 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
- 	}
- 
-+	hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
-+
- 	/* SDR core timings are given in picoseconds */
- 	period_ps = div_u64((u64)NSEC_PER_SEC * 1000, hw->clk_rate);
- 
 -- 
-2.34.1
-
-
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
