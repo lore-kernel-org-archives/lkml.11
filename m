@@ -2,167 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8837FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C22C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345714AbiDEKl7 (ORCPT
+        id S1345782AbiDEKmH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
+        Tue, 5 Apr 2022 06:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241205AbiDEIcy (ORCPT
+        with ESMTP id S241202AbiDEIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:54 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6A517072;
-        Tue,  5 Apr 2022 01:29:13 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:11 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147352;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xVssBcL6rymXgzZTC6veDngOKwXKTJKSIcpdjfi2604=;
-        b=vDqsj8ydGq5mP5fsT7WPXhZCNpoUo5W7DjfVDWTFJaWPvg1nmQQ/GTIPuWx7h6VRsA/Wxi
-        161VH2u9zyvpAwAI4vSFC54c3hBUunQh0KOahGJuJijedg07NvKHruUKNapwoPOFD82m5Z
-        uNl69pdPt7IaJuaUBpoDAen8FUkgd3WhXPf/46waRx2hrd5n7S9FUe8hT/PPdiXB6oFcfF
-        lp/obselpup1DhzzoE3DGNKZ2FWtpr1WX+b94pVrhBr43VCY1KhWQKIONQSTyVE7DZOu3u
-        unCWvAsJcdtbgFW0iuQKe2VFLKvQ0qF/JP5e9hMYC0DXuaPQQnsyTGXW5GddxQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147352;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xVssBcL6rymXgzZTC6veDngOKwXKTJKSIcpdjfi2604=;
-        b=SjfwP9bh2tMXm0dhIKtW5hnpkPz7A4pTqDXXCQjB0umXAw3rdo62jZvaeopDecODeLlgGs
-        Jvp/kwsxfaiF2JAg==
-From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] perf/x86/cstate: Add Raptor Lake support
-Cc:     Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <1647366360-82824-2-git-send-email-kan.liang@linux.intel.com>
-References: <1647366360-82824-2-git-send-email-kan.liang@linux.intel.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D1A1DA;
+        Tue,  5 Apr 2022 01:29:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBF5D6062B;
+        Tue,  5 Apr 2022 08:29:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E884DC385A2;
+        Tue,  5 Apr 2022 08:29:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147365;
+        bh=58RmXMaSK5PuvhFzkytvjVsSYIvGzU7PtUDOIzpbiJs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iBZZxk4AZo1XRshkaBGaIFJSv7bbn2mBq9Ua9noB+P7+aA9L/A/iuhQLsJhmZS+l3
+         MCbCk86yGNH4BHLqVSTsPNYs1ms5wZWEFfsNUPHHD+/kBz2jCCc/cFSB9dydkX3kwn
+         osC52s5D4NSamOI7qqNCcXQ54/8+UHgvYWqdWQcg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 1099/1126] ubi: fastmap: Return error code if memory allocation fails in add_aeb()
+Date:   Tue,  5 Apr 2022 09:30:46 +0200
+Message-Id: <20220405070439.698946781@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914735134.389.8966372231911344728.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/urgent branch of tip:
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-Commit-ID:     2da202aa1c38bfe8841611a3d339892eb5579e2b
-Gitweb:        https://git.kernel.org/tip/2da202aa1c38bfe8841611a3d339892eb5579e2b
-Author:        Kan Liang <kan.liang@linux.intel.com>
-AuthorDate:    Tue, 15 Mar 2022 10:45:58 -07:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 09:59:43 +02:00
+commit c3c07fc25f37c157fde041b3a0c3dfcb1590cbce upstream.
 
-perf/x86/cstate: Add Raptor Lake support
+Abort fastmap scanning and return error code if memory allocation fails
+in add_aeb(). Otherwise ubi will get wrong peb statistics information
+after scanning.
 
-Raptor Lake is Intel's successor to Alder lake. From the perspective of
-Intel cstate residency counters, there is nothing changed compared with
-Alder lake.
-
-Share adl_cstates with Alder lake.
-Update the comments for Raptor Lake.
-
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/1647366360-82824-2-git-send-email-kan.liang@linux.intel.com
+Fixes: dbb7d2a88d2a7b ("UBI: Add fastmap core")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/cstate.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/mtd/ubi/fastmap.c |   28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/events/intel/cstate.c b/arch/x86/events/intel/cstate.c
-index c6262b1..5d77622 100644
---- a/arch/x86/events/intel/cstate.c
-+++ b/arch/x86/events/intel/cstate.c
-@@ -40,7 +40,7 @@
-  * Model specific counters:
-  *	MSR_CORE_C1_RES: CORE C1 Residency Counter
-  *			 perf code: 0x00
-- *			 Available model: SLM,AMT,GLM,CNL,ICX,TNT,ADL
-+ *			 Available model: SLM,AMT,GLM,CNL,ICX,TNT,ADL,RPL
-  *			 Scope: Core (each processor core has a MSR)
-  *	MSR_CORE_C3_RESIDENCY: CORE C3 Residency Counter
-  *			       perf code: 0x01
-@@ -51,49 +51,50 @@
-  *			       perf code: 0x02
-  *			       Available model: SLM,AMT,NHM,WSM,SNB,IVB,HSW,BDW,
-  *						SKL,KNL,GLM,CNL,KBL,CML,ICL,ICX,
-- *						TGL,TNT,RKL,ADL
-+ *						TGL,TNT,RKL,ADL,RPL
-  *			       Scope: Core
-  *	MSR_CORE_C7_RESIDENCY: CORE C7 Residency Counter
-  *			       perf code: 0x03
-  *			       Available model: SNB,IVB,HSW,BDW,SKL,CNL,KBL,CML,
-- *						ICL,TGL,RKL,ADL
-+ *						ICL,TGL,RKL,ADL,RPL
-  *			       Scope: Core
-  *	MSR_PKG_C2_RESIDENCY:  Package C2 Residency Counter.
-  *			       perf code: 0x00
-  *			       Available model: SNB,IVB,HSW,BDW,SKL,KNL,GLM,CNL,
-- *						KBL,CML,ICL,ICX,TGL,TNT,RKL,ADL
-+ *						KBL,CML,ICL,ICX,TGL,TNT,RKL,ADL,
-+ *						RPL
-  *			       Scope: Package (physical package)
-  *	MSR_PKG_C3_RESIDENCY:  Package C3 Residency Counter.
-  *			       perf code: 0x01
-  *			       Available model: NHM,WSM,SNB,IVB,HSW,BDW,SKL,KNL,
-  *						GLM,CNL,KBL,CML,ICL,TGL,TNT,RKL,
-- *						ADL
-+ *						ADL,RPL
-  *			       Scope: Package (physical package)
-  *	MSR_PKG_C6_RESIDENCY:  Package C6 Residency Counter.
-  *			       perf code: 0x02
-  *			       Available model: SLM,AMT,NHM,WSM,SNB,IVB,HSW,BDW,
-  *						SKL,KNL,GLM,CNL,KBL,CML,ICL,ICX,
-- *						TGL,TNT,RKL,ADL
-+ *						TGL,TNT,RKL,ADL,RPL
-  *			       Scope: Package (physical package)
-  *	MSR_PKG_C7_RESIDENCY:  Package C7 Residency Counter.
-  *			       perf code: 0x03
-  *			       Available model: NHM,WSM,SNB,IVB,HSW,BDW,SKL,CNL,
-- *						KBL,CML,ICL,TGL,RKL,ADL
-+ *						KBL,CML,ICL,TGL,RKL,ADL,RPL
-  *			       Scope: Package (physical package)
-  *	MSR_PKG_C8_RESIDENCY:  Package C8 Residency Counter.
-  *			       perf code: 0x04
-  *			       Available model: HSW ULT,KBL,CNL,CML,ICL,TGL,RKL,
-- *						ADL
-+ *						ADL,RPL
-  *			       Scope: Package (physical package)
-  *	MSR_PKG_C9_RESIDENCY:  Package C9 Residency Counter.
-  *			       perf code: 0x05
-  *			       Available model: HSW ULT,KBL,CNL,CML,ICL,TGL,RKL,
-- *						ADL
-+ *						ADL,RPL
-  *			       Scope: Package (physical package)
-  *	MSR_PKG_C10_RESIDENCY: Package C10 Residency Counter.
-  *			       perf code: 0x06
-  *			       Available model: HSW ULT,KBL,GLM,CNL,CML,ICL,TGL,
-- *						TNT,RKL,ADL
-+ *						TNT,RKL,ADL,RPL
-  *			       Scope: Package (physical package)
-  *
-  */
-@@ -680,6 +681,7 @@ static const struct x86_cpu_id intel_cstates_match[] __initconst = {
- 	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&icl_cstates),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_cstates),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&adl_cstates),
-+	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE,		&adl_cstates),
- 	{ },
- };
- MODULE_DEVICE_TABLE(x86cpu, intel_cstates_match);
+--- a/drivers/mtd/ubi/fastmap.c
++++ b/drivers/mtd/ubi/fastmap.c
+@@ -468,7 +468,9 @@ static int scan_pool(struct ubi_device *
+ 			if (err == UBI_IO_FF_BITFLIPS)
+ 				scrub = 1;
+ 
+-			add_aeb(ai, free, pnum, ec, scrub);
++			ret = add_aeb(ai, free, pnum, ec, scrub);
++			if (ret)
++				goto out;
+ 			continue;
+ 		} else if (err == 0 || err == UBI_IO_BITFLIPS) {
+ 			dbg_bld("Found non empty PEB:%i in pool", pnum);
+@@ -638,8 +640,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
+ 
+-		add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 0);
++		ret = add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 0);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	/* read EC values from used list */
+@@ -649,8 +653,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
+ 
+-		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 0);
++		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 0);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	/* read EC values from scrub list */
+@@ -660,8 +666,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
+ 
+-		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 1);
++		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 1);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	/* read EC values from erase list */
+@@ -671,8 +679,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
+ 
+-		add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 1);
++		ret = add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 1);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	ai->mean_ec = div_u64(ai->ec_sum, ai->ec_count);
+
+
