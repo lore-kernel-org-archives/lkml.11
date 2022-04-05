@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBADEC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 376F8C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245190AbiDEJLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
+        id S245347AbiDEJLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239565AbiDEIUO (ORCPT
+        with ESMTP id S239547AbiDEIUN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D088B2603;
-        Tue,  5 Apr 2022 01:16:18 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9BE1132;
+        Tue,  5 Apr 2022 01:16:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FD5C60B0B;
-        Tue,  5 Apr 2022 08:16:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D6D4C385A0;
-        Tue,  5 Apr 2022 08:16:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEBD7B81BAC;
+        Tue,  5 Apr 2022 08:16:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD13C385A0;
+        Tue,  5 Apr 2022 08:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146577;
-        bh=jGIt1ZGHk2ZNqu7SMJGSKzTlEhP30eEkEnh7L+phfIw=;
+        s=korg; t=1649146561;
+        bh=rdK5mcYAvYDBjTtpXFY1r65fy+A1YkLBs/XFQ/Eway0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M6dW8IfYLBxDgTfWbwl7ikUAOYOKKVSwWpdOva58j+tlhNG9GTT2EX+drYraVkUj6
-         RyLUfBt/GZIA930/ua2PpN9TiDNYofem7Ah1VhcinIOFjlAPXFFk2IEhlL0r1mEzCD
-         qSiFMZsj+I9YRkAz583ODIEhxec6a7i54PplC7XA=
+        b=tG2t1tZ6SK+1+Idx8Xh9toGTUAGLBoYNXucaQNKALsnA1Np/ixassOzKD10wD7c7z
+         CJCt3C+2IDFzcwFLPjD+5xT8F/1wHKh9Kec0toEqWVJBGXJ9Ts+IKg/a7wSJ1LBJfR
+         JISTa7NK7xjmKICMIQfcFqHSQIbUMa8Ij9edDnCM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0814/1126] libperf tests: Fix typo in perf_evlist__open() failure error messages
-Date:   Tue,  5 Apr 2022 09:26:01 +0200
-Message-Id: <20220405070431.457256451@linuxfoundation.org>
+Subject: [PATCH 5.17 0809/1126] net: hns3: add vlan list lock to protect vlan list
+Date:   Tue,  5 Apr 2022 09:25:56 +0200
+Message-Id: <20220405070431.312604781@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -55,67 +50,179 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shunsuke Nakamura <nakamura.shun@fujitsu.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit c2eeac985657f61543e6c5a333b94f3bd18e6b9d ]
+[ Upstream commit 1932a624ab88ff407d1a1d567fe581faa15dc725 ]
 
-This patch corrects typos in error messages. I should be "evlist", not
-"evsel" as the function that fails is perf_evlist__open().
+When adding port base VLAN, vf VLAN need to remove from HW and modify
+the vlan state in vf VLAN list as false. If the periodicity task is
+freeing the same node, it may cause "use after free" error.
+This patch adds a vlan list lock to protect the vlan list.
 
-Fixes: 3ce311afb5583cf3 ("libperf: Move to tools/lib/perf")
-Fixes: a7f3713f6bf207e6 ("libperf tests: Add test_stat_multiplexing test")
-Signed-off-by: Shunsuke Nakamura <nakamura.shun@fujitsu.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: http://lore.kernel.org/lkml/20220325043829.224045-2-nakamura.shun@fujitsu.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: c6075b193462 ("net: hns3: Record VF vlan tables")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/perf/tests/test-evlist.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 38 +++++++++++++++++--
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  1 +
+ 2 files changed, 35 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/perf/tests/test-evlist.c b/tools/lib/perf/tests/test-evlist.c
-index fa854c83b7e7..ed616fc19b4f 100644
---- a/tools/lib/perf/tests/test-evlist.c
-+++ b/tools/lib/perf/tests/test-evlist.c
-@@ -69,7 +69,7 @@ static int test_stat_cpu(void)
- 	perf_evlist__set_maps(evlist, cpus, NULL);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index d4fe92b22fb9..9655a7d2c200 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -9809,19 +9809,28 @@ static void hclge_add_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 				       bool writen_to_tbl)
+ {
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
++	struct hclge_dev *hdev = vport->back;
  
- 	err = perf_evlist__open(evlist);
--	__T("failed to open evsel", err == 0);
-+	__T("failed to open evlist", err == 0);
+-	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node)
+-		if (vlan->vlan_id == vlan_id)
++	mutex_lock(&hdev->vport_lock);
++
++	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
++		if (vlan->vlan_id == vlan_id) {
++			mutex_unlock(&hdev->vport_lock);
+ 			return;
++		}
++	}
  
- 	perf_evlist__for_each_evsel(evlist, evsel) {
- 		cpus = perf_evsel__cpus(evsel);
-@@ -130,7 +130,7 @@ static int test_stat_thread(void)
- 	perf_evlist__set_maps(evlist, NULL, threads);
+ 	vlan = kzalloc(sizeof(*vlan), GFP_KERNEL);
+-	if (!vlan)
++	if (!vlan) {
++		mutex_unlock(&hdev->vport_lock);
+ 		return;
++	}
  
- 	err = perf_evlist__open(evlist);
--	__T("failed to open evsel", err == 0);
-+	__T("failed to open evlist", err == 0);
+ 	vlan->hd_tbl_status = writen_to_tbl;
+ 	vlan->vlan_id = vlan_id;
  
- 	perf_evlist__for_each_evsel(evlist, evsel) {
- 		perf_evsel__read(evsel, 0, 0, &counts);
-@@ -187,7 +187,7 @@ static int test_stat_thread_enable(void)
- 	perf_evlist__set_maps(evlist, NULL, threads);
+ 	list_add_tail(&vlan->node, &vport->vlan_list);
++	mutex_unlock(&hdev->vport_lock);
+ }
  
- 	err = perf_evlist__open(evlist);
--	__T("failed to open evsel", err == 0);
-+	__T("failed to open evlist", err == 0);
+ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+@@ -9830,6 +9839,8 @@ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+ 	struct hclge_dev *hdev = vport->back;
+ 	int ret;
  
- 	perf_evlist__for_each_evsel(evlist, evsel) {
- 		perf_evsel__read(evsel, 0, 0, &counts);
-@@ -507,7 +507,7 @@ static int test_stat_multiplexing(void)
- 	perf_evlist__set_maps(evlist, NULL, threads);
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (!vlan->hd_tbl_status) {
+ 			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
+@@ -9839,12 +9850,16 @@ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+ 				dev_err(&hdev->pdev->dev,
+ 					"restore vport vlan list failed, ret=%d\n",
+ 					ret);
++
++				mutex_unlock(&hdev->vport_lock);
+ 				return ret;
+ 			}
+ 		}
+ 		vlan->hd_tbl_status = true;
+ 	}
  
- 	err = perf_evlist__open(evlist);
--	__T("failed to open evsel", err == 0);
-+	__T("failed to open evlist", err == 0);
++	mutex_unlock(&hdev->vport_lock);
++
+ 	return 0;
+ }
  
- 	perf_evlist__enable(evlist);
+@@ -9854,6 +9869,8 @@ static void hclge_rm_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
+ 	struct hclge_dev *hdev = vport->back;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (vlan->vlan_id == vlan_id) {
+ 			if (is_write_tbl && vlan->hd_tbl_status)
+@@ -9868,6 +9885,8 @@ static void hclge_rm_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 			break;
+ 		}
+ 	}
++
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+@@ -9875,6 +9894,8 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
+ 	struct hclge_dev *hdev = vport->back;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (vlan->hd_tbl_status)
+ 			hclge_set_vlan_filter_hw(hdev,
+@@ -9890,6 +9911,7 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+ 		}
+ 	}
+ 	clear_bit(vport->vport_id, hdev->vf_vlan_full);
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+@@ -9898,6 +9920,8 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+ 	struct hclge_vport *vport;
+ 	int i;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	for (i = 0; i < hdev->num_alloc_vport; i++) {
+ 		vport = &hdev->vport[i];
+ 		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+@@ -9905,6 +9929,8 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+ 			kfree(vlan);
+ 		}
+ 	}
++
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ void hclge_restore_vport_port_base_vlan_config(struct hclge_dev *hdev)
+@@ -9944,6 +9970,8 @@ void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
+ 	struct hclge_dev *hdev = vport->back;
+ 	int ret;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	if (vport->port_base_vlan_cfg.state == HNAE3_PORT_BASE_VLAN_DISABLE) {
+ 		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
+@@ -9954,6 +9982,8 @@ void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
+ 			vlan->hd_tbl_status = true;
+ 		}
+ 	}
++
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ /* For global reset and imp reset, hardware will clear the mac table,
+@@ -11854,8 +11884,8 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	hclge_misc_irq_uninit(hdev);
+ 	hclge_devlink_uninit(hdev);
+ 	hclge_pci_uninit(hdev);
+-	mutex_destroy(&hdev->vport_lock);
+ 	hclge_uninit_vport_vlan_table(hdev);
++	mutex_destroy(&hdev->vport_lock);
+ 	ae_dev->priv = NULL;
+ }
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 31fef46b93b3..63197257dd4e 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -1025,6 +1025,7 @@ struct hclge_vport {
+ 	spinlock_t mac_list_lock; /* protect mac address need to add/detele */
+ 	struct list_head uc_mac_list;   /* Store VF unicast table */
+ 	struct list_head mc_mac_list;   /* Store VF multicast table */
++
+ 	struct list_head vlan_list;     /* Store VF vlan table */
+ };
  
 -- 
 2.34.1
