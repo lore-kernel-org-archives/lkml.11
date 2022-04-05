@@ -2,90 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8824EC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDACC46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245555AbiDEUdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
+        id S1344866AbiDEUeC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:34:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345329AbiDEKlH (ORCPT
+        with ESMTP id S1384129AbiDEM1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:41:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4903A64C7;
-        Tue,  5 Apr 2022 03:26:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E62DFB81C98;
-        Tue,  5 Apr 2022 10:26:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C09C385A0;
-        Tue,  5 Apr 2022 10:26:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154390;
-        bh=/jXyjXnKVL7ginhzj5vU2rBOllvhtBJIJKYKH7J0cos=;
+        Tue, 5 Apr 2022 08:27:12 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F60574BE;
+        Tue,  5 Apr 2022 04:35:18 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 235BYCGo000464;
+        Tue, 5 Apr 2022 20:34:14 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 235BYCGo000464
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649158454;
+        bh=8ckilN9UB4blZbcYmDCNzJh4V9ShLvfJ5JTGztZasQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jJNrKmzJEqVoruQ9cwDLI+seScKLJZsXG+Yz45rEQA7jH8fzh+c+3b1uHFX8O7CML
-         SQqjTSgp/FU6SzmCTIBoWwkEePMjmyZhns6rLRkCC4smBCsfiffFiB3AQXLjYX+COc
-         zkvLMVwd5FhZEhRPnptiAdY7pLnTL7m1dQyazNSU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.10 560/599] pinctrl: pinconf-generic: Print arguments for bias-pull-*
-Date:   Tue,  5 Apr 2022 09:34:14 +0200
-Message-Id: <20220405070315.506333453@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=bFVtcHGeE5Sc3eTAlXo6PVCIP1lQHMaFttQj3YsSu9T5CzBWdWQJEj0QpycKNUzYl
+         46pD8XVdwiOiF3Y1DHkLOP+KBMu75pTvVBBzIz6rcHlIE/g+lvDF06y2o7zJEWgqQL
+         G33sfKrOMLXJ8zXmee9CDbYX3RwuLoAGnml/s1RvJ6E9079yf9JV41GaS6JB3mfK7J
+         sgY4590M0WGPIn5AtY6WLQZJYnsYL5YNOba1SgrtgABViXTPbOhe4k8qXb4mCczSdW
+         iy1UMIAHz7NqL9DR1VG9skM9amXj4MHQ7H06IOlnbqL4z9tsMOIvU324KbQ2CCNdev
+         XvOZYwYkBDfwg==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH v2 02/10] kbuild: do not remove empty *.symtypes explicitly
+Date:   Tue,  5 Apr 2022 20:33:50 +0900
+Message-Id: <20220405113359.2880241-3-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405113359.2880241-1-masahiroy@kernel.org>
+References: <20220405113359.2880241-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+Presumably, 'test -s $@ || rm -f $@' intends to remove the output when
+the genksyms command fails.
 
-commit 188e5834b930acd03ad3cf7c5e7aa24db9665a29 upstream.
+It is unneeded because .DELETE_ON_ERROR automatically removes the output
+on failure.
 
-The bias-pull-* properties, or PIN_CONFIG_BIAS_PULL_* pin config
-parameters, accept optional arguments in ohms denoting the strength of
-the pin bias.
-
-Print these values out in debugfs as well.
-
-Fixes: eec450713e5c ("pinctrl: pinconf-generic: Add flag to print arguments")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-2-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/pinctrl/pinconf-generic.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/pinctrl/pinconf-generic.c
-+++ b/drivers/pinctrl/pinconf-generic.c
-@@ -30,10 +30,10 @@ static const struct pin_config_item conf
- 	PCONFDUMP(PIN_CONFIG_BIAS_BUS_HOLD, "input bias bus hold", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_BIAS_DISABLE, "input bias disabled", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_BIAS_HIGH_IMPEDANCE, "input bias high impedance", NULL, false),
--	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", NULL, false),
-+	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", "ohms", true),
- 	PCONFDUMP(PIN_CONFIG_BIAS_PULL_PIN_DEFAULT,
--				"input bias pull to pin specific state", NULL, false),
--	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", NULL, false),
-+				"input bias pull to pin specific state", "ohms", true),
-+	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", "ohms", true),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_DRAIN, "output drive open drain", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_SOURCE, "output drive open source", NULL, false),
- 	PCONFDUMP(PIN_CONFIG_DRIVE_PUSH_PULL, "output drive push pull", NULL, false),
+Changes in v2:
+  - Fix accidental drop of '> /dev/null'
 
+ scripts/Makefile.build | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 31e0e33dfe5d..3ef2373f0a57 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -135,9 +135,7 @@ genksyms = scripts/genksyms/genksyms		\
+ cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
+ 
+ quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
+-cmd_cc_symtypes_c =                                                         \
+-    $(call cmd_gensymtypes_c,true,$@) >/dev/null;                           \
+-    test -s $@ || rm -f $@
++      cmd_cc_symtypes_c = $(call cmd_gensymtypes_c,true,$@) >/dev/null
+ 
+ $(obj)/%.symtypes : $(src)/%.c FORCE
+ 	$(call cmd,cc_symtypes_c)
+@@ -348,9 +346,7 @@ cmd_gensymtypes_S =                                                         \
+     $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
+ 
+ quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
+-cmd_cc_symtypes_S =                                                         \
+-    $(call cmd_gensymtypes_S,true,$@) >/dev/null;                           \
+-    test -s $@ || rm -f $@
++      cmd_cc_symtypes_S = $(call cmd_gensymtypes_S,true,$@) >/dev/null
+ 
+ $(obj)/%.symtypes : $(src)/%.S FORCE
+ 	$(call cmd,cc_symtypes_S)
+-- 
+2.32.0
 
