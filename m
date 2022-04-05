@@ -2,105 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC42C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C9DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbiDEGO6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
+        id S230100AbiDEGPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiDEGOy (ORCPT
+        with ESMTP id S230052AbiDEGPB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:14:54 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D2D62D2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 23:12:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649139176; x=1680675176;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=OiuiIFuVfxEdjhgvAec/5+Kjr8IxCBzKKOhId+Or194=;
-  b=Jht/QcyQQCz7wKLo4J0JVdjO4ybKvY2arzrMmiU3nJGpdFYHONBXBj6Q
-   wRD/d4IKfweC5Qy03kccz8SRBraBFhJRsBl3D7M6YufyyobzqpVb1JdB5
-   QjnPlt8LVIV4hfbLOCNFWEl8NrdxgZRyvI69E13RBDa9GehNYqy2t/MOP
-   EsAycxbAG8uLmAUhwnkSBKTlHQXSGvhVFsO14EaWsKOdUnfXAwz0PO0mY
-   +jIMk4S6wBTO3Iom55YmNQwbxhCp7NpmICcSMK9EBrEYO2bDY6zv6P+vB
-   pbl2R/By90x3rbEDFbuL/kgOxmA1Ol5fGVl9BN//WvKrzz0yufFkHrVlk
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323847931"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="323847931"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 23:12:47 -0700
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="548932439"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.115]) ([10.254.212.115])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 23:12:44 -0700
-Message-ID: <5ca5d34a-2394-b8bd-837b-cd6bf3301989@linux.intel.com>
-Date:   Tue, 5 Apr 2022 14:12:42 +0800
+        Tue, 5 Apr 2022 02:15:01 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F9C6A019
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 23:13:03 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a6so13534044ejk.0
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 23:13:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rZeprPWOtqKRGMgfqMRvv0PvLM+lTF/w3B6BQ9TTNXg=;
+        b=Ng5jt/B96yk3lkXFR+3TAdD6coPaC5Hx76Pu8opMabaJwCQN7vIv975l6acHKa66cP
+         mukI7V/b36aEA3niPOEAvU83i4RROk+mfgoJtY6nrHiFzgyUry0PuX1oxclM9TU1bkjl
+         6wEQi9waenyT9WCNeHYBHg8klOAinEYbMIB6iSaVd4MKIQ6Qsrfv0ebOOhTzHYwWYelE
+         LdOtc584ihPlzczA45nWxtdd/RCDDhTf73SKi3kYGAtwXn31Fd2zg/1c+G9Wrlh3sX3i
+         +I7V6PRRT2wXRz8yv3LzP+bES6codvmVGrNdte6zmsFLNr+I9FxbIiRfQYn7AFL22Jip
+         P2sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rZeprPWOtqKRGMgfqMRvv0PvLM+lTF/w3B6BQ9TTNXg=;
+        b=hYoNWTwnnhUd9g5agIGAPkUNdpqHxrMC/fs2BdTSgPwntp9CRkBJIB4yWX6GUJZpT3
+         iADfjdUXbbx66CGfQoGM1bwez8f9E5FiV7ATMoXNKc70Pc/IU/241f7Nz0gYm+SAY5WS
+         fcQalcQ9rejXJeSPSJy0TfZpr7nJG3akQPp0MosDBVLRXIRAw2Lsykd9sOJaRs61Unbs
+         3bzjnkZkBR/GX4ydXa8znQUv0zgO9lCqP3psnT2l/Rjw1MTuKWMOxGXHZUhdt6ZHHvMz
+         1WkAqex6IR4l6hLxOUwwuwuQvEVTnlxJ1wwBzjqQcWjAdn5XBrUVw0rg2r/bWJLV/YzK
+         XvHA==
+X-Gm-Message-State: AOAM532AfRxPMyjBUK0bHhuR+If2McDKpyYI4HdTy/3tLVScFa6OZbmm
+        cnh+ftlBwyYAxbzLXnCFJ+xZvg==
+X-Google-Smtp-Source: ABdhPJzhiqjVHwaMmE2HIwa9wbO5hpaWli1dKwQoRSQSdZPVfVvMH4WtmdyYT/m5YYLIABIsNv0ZtQ==
+X-Received: by 2002:a17:907:3e1c:b0:6e4:e1b3:5384 with SMTP id hp28-20020a1709073e1c00b006e4e1b35384mr1892893ejc.700.1649139182083;
+        Mon, 04 Apr 2022 23:13:02 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id p13-20020a50d88d000000b0041cd1a083f7sm2655884edj.1.2022.04.04.23.13.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 23:13:01 -0700 (PDT)
+Message-ID: <a50638db-d131-2083-d64e-a8164d377759@linaro.org>
+Date:   Tue, 5 Apr 2022 08:13:00 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Cc:     baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] arm64: dts: rockchip: Add Hardkernel ODROID-M1 board
 Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
- <20220329053800.3049561-3-baolu.lu@linux.intel.com>
- <BN9PR11MB52760F455B3319789BAB1E0E8C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220329114259.GB1716663@nvidia.com>
- <BN9PR11MB5276239993592FF808726EF68C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220330115820.GE1716663@nvidia.com>
- <6ebd4f9b-5824-9489-43c3-7810963ec918@linux.intel.com>
- <20220404172403.GO2120790@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH RFC v2 02/11] iommu: Add iommu_group_singleton_lockdown()
-In-Reply-To: <20220404172403.GO2120790@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Dongjin Kim <tobetter@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220329094446.415219-1-tobetter@gmail.com>
+ <20220329094446.415219-2-tobetter@gmail.com>
+ <2a5f002f-8a61-e5b0-a574-ee99591c4c12@kernel.org> <YkuqTBAi8d48NAOR@anyang>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YkuqTBAi8d48NAOR@anyang>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/5 1:24, Jason Gunthorpe wrote:
-> On Mon, Apr 04, 2022 at 01:43:49PM +0800, Lu Baolu wrote:
->> On 2022/3/30 19:58, Jason Gunthorpe wrote:
->>>>> Testing the group size is inherently the wrong test to make.
->>>> What is your suggestion then?
->>> Add a flag to the group that positively indicates the group can never
->>> have more than one member, even after hot plug. eg because it is
->>> impossible due to ACS, or lack of bridges, and so on.
+On 05/04/2022 04:32, Dongjin Kim wrote:
+> On Tue, Mar 29, 2022 at 07:12:16PM +0200, Krzysztof Kozlowski wrote:
+>> On 29/03/2022 11:44, Dongjin Kim wrote:
+>>> This patch is to add a device tree for new board Hardkernel ODROID-M1
+>>> based on Rockchip RK3568, includes basic peripherals -
+>>> uart/eMMC/uSD/i2c and on-board ethernet.
 >>
->> The check method seems to be bus specific. For platform devices, perhaps
->> this kind of information should be retrieved from firmware interfaces
->> like APCI or DT.
+>> I think the email got corrupted (incorrect To addresses).
 >>
->>  From this point of view, would it be simpler and more reasonable for the
->> device driver to do such check? After all, it is the device driver that
->> decides whether to provide SVA services to the application via uacce.
-> 
-> The check has to do with the interconnect, not the device - I don't
-> see how a device driver would know any better.
+> Thank you for reviewing and sorry for late reply.
+>>>
+>>> Signed-off-by: Dongjin Kim <tobetter@gmail.com>
+>>> ---
+>>>  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+>>>  .../boot/dts/rockchip/rk3568-odroid-m1.dts    | 406 ++++++++++++++++++
+>>>  2 files changed, 407 insertions(+)
+>>>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
+>>>
+>>> diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+>>> index 4ae9f35434b8..81d160221227 100644
+>>> --- a/arch/arm64/boot/dts/rockchip/Makefile
+>>> +++ b/arch/arm64/boot/dts/rockchip/Makefile
+>>> @@ -61,3 +61,4 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-pinenote-v1.2.dtb
+>>>  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-quartz64-a.dtb
+>>>  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
+>>>  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bpi-r2-pro.dtb
+>>> +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-odroid-m1.dtb
+>>> diff --git a/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts b/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
+>>> new file mode 100644
+>>> index 000000000000..d1a5d43127e9
+>>> --- /dev/null
+>>> +++ b/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
+>>> @@ -0,0 +1,406 @@
+>>> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+>>> +/*
+>>> + * Copyright (c) 2022 Hardkernel Co., Ltd.
+>>> + *
+>>> + */
+>>> +
+>>> +/dts-v1/;
+>>> +#include <dt-bindings/gpio/gpio.h>
+>>> +#include <dt-bindings/leds/common.h>
+>>> +#include <dt-bindings/pinctrl/rockchip.h>
+>>> +#include "rk3568.dtsi"
+>>> +
+>>> +/ {
+>>> +	model = "Hardkernel ODROID-M1";
+>>> +	compatible = "rockchip,rk3568-odroid-m1", "rockchip,rk3568";
+>>> +
+>>> +	aliases {
+>>> +		ethernet0 = &gmac0;
+>>> +		i2c0 = &i2c3;
+>>> +		i2c3 = &i2c0;
+>>> +		mmc0 = &sdhci;
+>>> +		mmc1 = &sdmmc0;
+>>> +		serial0 = &uart1;
+>>> +		serial1 = &uart0;
+>>> +	};
+>>> +
+>>> +	chosen: chosen {
+>>
+>> No need for label.
+>>
+> Ok. Will fix it.
+>>> +		stdout-path = "serial2:1500000n8";
+>>> +	};
+>>> +
+>>> +	dc_12v: dc-12v {
+>>
+>> Generic node name, so "regulator" or "regulator-0"
+>>
+> I've followed the node names as already merged device tree files
+> for other boards and thought this would be acceptable. Same for other
+> node names 'vcc3v3-sys' and node names with underscore below.
 
-I'm worried about how to support this group flag for devices that are
-not connected to the system through PCI buses. If IOMMU can support
-sva_bind() only when this flag is set, the SVA on many devices cannot
-be supported. Or this flag is always set for non PCI devices by default?
+Poor code once it gets in, it's difficult to get it out... Don't use it
+as an example. :)
 
-> 
-> Why do you bring up uacce? Nothing should need uacce to access SVA.
-
-The uacce is irrelevant here.
 
 Best regards,
-baolu
+Krzysztof
