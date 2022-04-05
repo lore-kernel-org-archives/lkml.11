@@ -2,87 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE54AC43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 734AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836422AbiDFAgJ (ORCPT
+        id S1836477AbiDFAgQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
+        Tue, 5 Apr 2022 20:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349537AbiDEJuK (ORCPT
+        with ESMTP id S1457452AbiDEQDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:50:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED1ED2;
-        Tue,  5 Apr 2022 02:48:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32AAFB818F3;
-        Tue,  5 Apr 2022 09:48:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 968E9C385A2;
-        Tue,  5 Apr 2022 09:48:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152090;
-        bh=PqrFbKAQyXKwl0v7cOGh1pHbYwGlR3OhlpPtiYy8umo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DjnDIsLm2/IpyMcKyttFE+2YHXypBVEb0tVDWehm/213GELyPOSLd8oH3Zfvm73l1
-         /TfhFb+Mi64HN6w3oBZvRZFeXof3qxL/FVYrk41UEgyQKlmp2gFnxEu/jLIQry3Yj6
-         v+Srcw6z1YjXyyecn8pCuOHwqs90p+8LGXrPd89s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 650/913] SUNRPC dont resend a task on an offlined transport
-Date:   Tue,  5 Apr 2022 09:28:32 +0200
-Message-Id: <20220405070359.322380929@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:03:15 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A4D83B1A;
+        Tue,  5 Apr 2022 08:46:09 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ot30so17621337ejb.12;
+        Tue, 05 Apr 2022 08:46:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=7kpsGMmBzpfBM9jAlxaQhQ6QOVa8yPc2XChn38jewUY=;
+        b=I5g0SlH/NucKf4U+Po0XGGhkZOjwxqIjt9E4hxyBJg0pvtGoLR0KIdFJrb0oGRicdZ
+         OM1/ePde9Gbn5UEx1Ws+Qdpe7nfnQ0YdTPVjI6Swb8DHXaWdV/xcnjQ1QkqaazJ04+gL
+         vsDF96pQWUkp2OvuQuGRSC+dGesVGoohUMm7bBMoC6weHrUz9+3atn5QsuEKe0wqz9IK
+         AnGeYH/RgmF+ttX06xfQ9O70V76DJfDJD2t5UreZm3Gs8mipmWLqiVzrkFLJVGSA6Tc8
+         Joi29ALUmcai5dyjkgJe00qXX8QJnutTDM1yJZMXK0KGOoI8w0jyum7lN8b7C1SQQNDr
+         Sn3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=7kpsGMmBzpfBM9jAlxaQhQ6QOVa8yPc2XChn38jewUY=;
+        b=7dyJ1gtJD5llitJc/rjMBicpuy5vMMJJhyyNPuBt9xfzWsvm2d8mXw0kYffRTs7Sec
+         CDEnXQTb0vtAGa7ANZBW/ktoWut0QY3TlkGfshuIZMw3gn9VhOz8BJANOJzUcwiaWPP6
+         L6yA0exQORllghHXV6zz7rTDKyb+ovnhhQQZy8zXGvGTohhvXdkQAkubN+EKkEjoqtvY
+         yeqKsgYDMbF9S9sFqceBTvomKxb2Ilz3u864DBKzTQnSV/Lk6TsSlzW0/H/vjH32l27b
+         jnVCTmzN4p7zbEV69pXIrCNzXy8bSSM01/J0PCzXmcTOxv9J9oTyyAMufFcvjD6yy0gb
+         n2Ag==
+X-Gm-Message-State: AOAM531ubsh0dpYRgCInYeXtTei435OaZKhNIJGckAZPrwXwKy1wmsT3
+        sIw31ARo5nsqPS//a7YKpbRPbGbuCLc=
+X-Google-Smtp-Source: ABdhPJyEkIwTEUwce8H9FP20psOugoXTbBXDIbSo+wHBBaa2NYCuFO8E8gtxoJdmK5qt2Ye4zfh4JA==
+X-Received: by 2002:a17:907:6d8b:b0:6e7:5610:d355 with SMTP id sb11-20020a1709076d8b00b006e75610d355mr4089958ejc.369.1649173567528;
+        Tue, 05 Apr 2022 08:46:07 -0700 (PDT)
+Received: from hoboy.vegasvil.org (81-223-89-254.static.upcbusiness.at. [81.223.89.254])
+        by smtp.gmail.com with ESMTPSA id f26-20020a170906825a00b006e7efc52be8sm2649201ejx.166.2022.04.05.08.46.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 08:46:06 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 08:46:04 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
+        grygorii.strashko@ti.com, kuba@kernel.org, kurt@linutronix.de,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        mlichvar@redhat.com, netdev@vger.kernel.org,
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <20220405154604.GA6509@hoboy.vegasvil.org>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
+ <20220404150508.3945833-1-michael@walle.cc>
+ <YksMvHgXZxA+YZci@lunn.ch>
+ <e5a6f6193b86388ed7a081939b8745be@walle.cc>
+ <20220405055954.GB91955@hoboy.vegasvil.org>
+ <d38744cbe67474b3c83b84547ec3cb4f@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d38744cbe67474b3c83b84547ec3cb4f@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+On Tue, Apr 05, 2022 at 10:48:21AM +0200, Michael Walle wrote:
+> Can the ethernet driver select the default one? So any current
+> driver which has "if phy_has_hwtstamp() forward_ioctl;" can set
+> it to PHY while newer drivers can (or should actually) leave it as
+> MAC.
 
-[ Upstream commit 82ee41b85cef16b4be1f4732650012d9baaedddd ]
+I want to remove all of the phy_has_ stuff from MAC drivers.
+MAC/PHY drivers should just implement the in-kernel interfaces.
+IMO that is the clean way forward.
 
-When a task is being retried, due to an NFS error, if the assigned
-transport has been put offline and the task is relocatable pick a new
-transport.
-
-Fixes: 6f081693e7b2b ("sunrpc: remove an offlined xprt using sysfs")
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/sunrpc/clnt.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index 5da1d7e8468a..5d5627bf3b18 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -1065,7 +1065,9 @@ rpc_task_get_next_xprt(struct rpc_clnt *clnt)
- static
- void rpc_task_set_transport(struct rpc_task *task, struct rpc_clnt *clnt)
- {
--	if (task->tk_xprt)
-+	if (task->tk_xprt &&
-+			!(test_bit(XPRT_OFFLINE, &task->tk_xprt->state) &&
-+                        (task->tk_flags & RPC_TASK_MOVEABLE)))
- 		return;
- 	if (task->tk_flags & RPC_TASK_NO_ROUND_ROBIN)
- 		task->tk_xprt = rpc_task_get_first_xprt(clnt);
--- 
-2.34.1
-
-
-
+Thanks,
+Richard
