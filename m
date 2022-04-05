@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C01EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231421AbiDEHpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
+        id S231899AbiDEHpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232118AbiDEHoX (ORCPT
+        with ESMTP id S232033AbiDEHnO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:44:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F2BB972A4;
-        Tue,  5 Apr 2022 00:41:00 -0700 (PDT)
+        Tue, 5 Apr 2022 03:43:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578A5931B9;
+        Tue,  5 Apr 2022 00:40:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCA81616A1;
-        Tue,  5 Apr 2022 07:40:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4022C340EE;
-        Tue,  5 Apr 2022 07:40:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F25CBB81B92;
+        Tue,  5 Apr 2022 07:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42A26C340EE;
+        Tue,  5 Apr 2022 07:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144459;
-        bh=AIwGneCgQREljoh3n2S10EY9Q3wkZzrK2N0v2FayM6A=;
+        s=korg; t=1649144420;
+        bh=h46s61eTOw3K/so5Fb4otBH2wA/GpX9mBE1XqOcPSco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T+42olP49Sf+U5lgrXKoiGjwiDtX9Lf+Kov+Ebku/p79l6tDBEAfpfE1HuMiLHsDV
-         sr6uxWDi1oI25Wt6QNXyKaDIXBOvfagQuNQrlCfDHqjYpLAdWqBxGmHC+/ye00pKzD
-         gLLMxmvs6q0laTvn8fPrvVTWHvP3TuNPUmiwSYnQ=
+        b=kZPh9gPnI1LD9qzXOk1C2AYbfRtrE0MtlWqR0FJN0U7x76IqOZUpp97ptESzccuT7
+         zsQbr8Qji3nKlcrTIdyL1jSoCOl1qKvfs6P1yGlRYoPZjSjDUgKoUE3qBygR84vPZW
+         2GbF9JOgYSL4+TkOjz5pawfNeKfgqWg9ttv63mrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ang Tien Sung <tien.sung.ang@intel.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.17 0051/1126] firmware: stratix10-svc: add missing callback parameter on RSU
-Date:   Tue,  5 Apr 2022 09:13:18 +0200
-Message-Id: <20220405070409.063650515@linuxfoundation.org>
+        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
+        Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.17 0038/1126] iio: inkern: make a best effort on offset calculation
+Date:   Tue,  5 Apr 2022 09:13:05 +0200
+Message-Id: <20220405070408.675586397@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,35 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ang Tien Sung <tien.sung.ang@intel.com>
+From: Liam Beguin <liambeguin@gmail.com>
 
-commit b850b7a8b369322adf699ef48ceff4d902525c8c upstream.
+commit ca85123354e1a65a22170286387b4791997fe864 upstream.
 
-Fix a bug whereby, the return response of parameter a1 from an
-SMC call is not properly set to the callback data during an
-INTEL_SIP_SMC_RSU_ERROR command.
+iio_convert_raw_to_processed_unlocked() assumes the offset is an
+integer. Make a best effort to get a valid offset value for fractional
+cases without breaking implicit truncations.
 
-Link: https://lore.kernel.org/lkml/20220216081513.28319-1-tien.sung.ang@intel.com
-Fixes: 6b50d882d38d ("firmware: add remote status update client support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Link: https://lore.kernel.org/r/20220223144146.399263-1-dinguyen@kernel.org
+Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
+Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220108205319.2046348-4-liambeguin@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/stratix10-svc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/inkern.c |   32 +++++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
 
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -477,7 +477,7 @@ static int svc_normal_to_secure_thread(v
- 		case INTEL_SIP_SMC_RSU_ERROR:
- 			pr_err("%s: STATUS_ERROR\n", __func__);
- 			cbdata->status = BIT(SVC_STATUS_ERROR);
--			cbdata->kaddr1 = NULL;
-+			cbdata->kaddr1 = &res.a1;
- 			cbdata->kaddr2 = NULL;
- 			cbdata->kaddr3 = NULL;
- 			pdata->chan->scl->receive_cb(pdata->chan->scl, cbdata);
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -595,13 +595,35 @@ EXPORT_SYMBOL_GPL(iio_read_channel_avera
+ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
+ 	int raw, int *processed, unsigned int scale)
+ {
+-	int scale_type, scale_val, scale_val2, offset;
++	int scale_type, scale_val, scale_val2;
++	int offset_type, offset_val, offset_val2;
+ 	s64 raw64 = raw;
+-	int ret;
+ 
+-	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET);
+-	if (ret >= 0)
+-		raw64 += offset;
++	offset_type = iio_channel_read(chan, &offset_val, &offset_val2,
++				       IIO_CHAN_INFO_OFFSET);
++	if (offset_type >= 0) {
++		switch (offset_type) {
++		case IIO_VAL_INT:
++			break;
++		case IIO_VAL_INT_PLUS_MICRO:
++		case IIO_VAL_INT_PLUS_NANO:
++			/*
++			 * Both IIO_VAL_INT_PLUS_MICRO and IIO_VAL_INT_PLUS_NANO
++			 * implicitely truncate the offset to it's integer form.
++			 */
++			break;
++		case IIO_VAL_FRACTIONAL:
++			offset_val /= offset_val2;
++			break;
++		case IIO_VAL_FRACTIONAL_LOG2:
++			offset_val >>= offset_val2;
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		raw64 += offset_val;
++	}
+ 
+ 	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
+ 					IIO_CHAN_INFO_SCALE);
 
 
