@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 244C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42EEEC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389628AbiDEOpK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        id S233893AbiDEOpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244367AbiDEJlP (ORCPT
+        with ESMTP id S244331AbiDEJlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:15 -0400
+        Tue, 5 Apr 2022 05:41:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95F7BB90A;
-        Tue,  5 Apr 2022 02:26:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF15BB0B3;
+        Tue,  5 Apr 2022 02:26:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F696144D;
-        Tue,  5 Apr 2022 09:26:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F7F6C385A0;
-        Tue,  5 Apr 2022 09:26:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D00F061680;
+        Tue,  5 Apr 2022 09:26:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC31AC385A3;
+        Tue,  5 Apr 2022 09:26:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150777;
-        bh=Yb/Qsv5HlnFq2Ze6nGZxoMM9ffO70zuocXfIM8QKSw4=;
+        s=korg; t=1649150769;
+        bh=/LOOwWxADR70oUQ6lKCBYnij1x7THp3OofmlkedM3f8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ppBTMh3fYh9QoixpYuOUj6mzM7QG0pSbZF8Qcksz/+wrjKQCxioStZcaDi8e44h64
-         Xsrq1hj4P5/IPgnLInC6uNb0iAM0inHWsyp5hvAoT3xGjtTJ+Jru2PlctG2GixGd3U
-         SW/EDgiE9QS20rdlXfjmVTeLSMyOr4Y08y42uWwQ=
+        b=SWSbRRD7zRFAnI7gvnS+CrCo2K+Sxfhzt2Oj8+WkvHHViSNA5+6x53ndXN/cRu0F0
+         I0qVeMZx32j0yVHy4B1oS1PnIkgRsMCS5Y7cG1/nDWA+NBmqhv4kCc0pLMz8XUMcz1
+         qA7dR3fjKRd3uQe7MJj8qjRanwsamo+ZOVowZERQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Niels Dossche <niels.dossche@ugent.be>,
-        Niels Dossche <dossche.niels@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 170/913] btrfs: extend locking to all space_info members accesses
-Date:   Tue,  5 Apr 2022 09:20:32 +0200
-Message-Id: <20220405070344.945810759@linuxfoundation.org>
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Lad@vger.kernel.org
+Subject: [PATCH 5.15 167/913] media: davinci: vpif: fix unbalanced runtime PM get
+Date:   Tue,  5 Apr 2022 09:20:29 +0200
+Message-Id: <20220405070344.853322187@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,49 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 06bae876634ebf837ba70ea3de532b288326103d upstream.
+commit 4a321de239213300a714fa0353a5f1272d381a44 upstream.
 
-bytes_pinned is always accessed under space_info->lock, except in
-btrfs_preempt_reclaim_metadata_space, however the other members are
-accessed under that lock. The reserved member of the rsv's are also
-partially accessed under a lock and partially not. Move all these
-accesses into the same lock to ensure consistency.
+Make sure to balance the runtime PM usage counter on driver unbind.
 
-This could potentially race and lead to a flush instead of a commit but
-it's not a big problem as it's only for preemptive flush.
-
-CC: stable@vger.kernel.org # 5.15+
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 407ccc65bfd2 ("[media] davinci: vpif: add pm_runtime support")
+Cc: stable@vger.kernel.org      # 3.9
+Cc: Lad, Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Lad Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/space-info.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/platform/davinci/vpif.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/btrfs/space-info.c
-+++ b/fs/btrfs/space-info.c
-@@ -1054,7 +1054,6 @@ static void btrfs_preempt_reclaim_metada
- 			trans_rsv->reserved;
- 		if (block_rsv_size < space_info->bytes_may_use)
- 			delalloc_size = space_info->bytes_may_use - block_rsv_size;
--		spin_unlock(&space_info->lock);
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -496,6 +496,7 @@ static int vpif_probe(struct platform_de
  
- 		/*
- 		 * We don't want to include the global_rsv in our calculation,
-@@ -1085,6 +1084,8 @@ static void btrfs_preempt_reclaim_metada
- 			flush = FLUSH_DELAYED_REFS_NR;
- 		}
- 
-+		spin_unlock(&space_info->lock);
-+
- 		/*
- 		 * We don't want to reclaim everything, just a portion, so scale
- 		 * down the to_reclaim by 1/4.  If it takes us down to 0,
+ static int vpif_remove(struct platform_device *pdev)
+ {
++	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+ 	return 0;
+ }
 
 
