@@ -2,95 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 04:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiDEE44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 00:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
+        id S229554AbiDEFCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 01:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbiDEE4l (ORCPT
+        with ESMTP id S229482AbiDEFBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 00:56:41 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857D358390;
-        Mon,  4 Apr 2022 21:53:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649134396; x=1680670396;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KsPTLE7Nz91fYwJnF0OStlCu2cPHLPfrkrKyxaT8oYk=;
-  b=fTPF1JZiI/dRfgY8HmhOP8b6HMZed5qn5ibmoSv/3Me2SV4oNVEa27WW
-   6+apw2m+dPfN0zuLRRIpfZLONgAQ3vqjlPEmDTqQEA1KYH/M4uoaSEQ6O
-   R38G/7aJJtOcBAUcCcx9XHh5wQJmzgbjlJWvuGCzQOkiMLE+2b3BvjgZ2
-   E=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 04 Apr 2022 21:53:16 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 21:53:16 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 4 Apr 2022 21:53:15 -0700
-Received: from [10.216.10.223] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 4 Apr 2022
- 21:53:11 -0700
-Message-ID: <ef4c0532-dbf2-7ce3-3852-4b3887567423@quicinc.com>
-Date:   Tue, 5 Apr 2022 10:23:08 +0530
+        Tue, 5 Apr 2022 01:01:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A5855B2;
+        Mon,  4 Apr 2022 21:59:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C0C7B818F8;
+        Tue,  5 Apr 2022 04:59:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B5CC340EE;
+        Tue,  5 Apr 2022 04:59:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649134761;
+        bh=hQ6crrbeRkUVyd50CCzPbUas+awrOppZgAoYpwGZNKc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xS31rscFR9ifHj5xO13B4MyYRkbzdHVkHpmUSR1w1xJwFyZCtULWor+NCb2pi734h
+         3lAUM6rEnu99Gs9JRUkfZZ3yrzWyVbHingsCSe0Czar6yJ0fWjca4olmskJ645/T/p
+         /QmdZatgn5GWkFT/76lkquARMIpU5IzXI24ptkbg=
+Date:   Tue, 5 Apr 2022 06:59:17 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Richard Gong <richard.gong@amd.com>
+Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-usb@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mario.limonciello@amd.com,
+        amit.bhutani@amd.com
+Subject: Re: [PATCH] HID: usbhid: set mouse as a wakeup resource
+Message-ID: <YkvMpWYMhgtDI7aN@kroah.com>
+References: <20220404214557.3329796-1-richard.gong@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v5 3/3] arm64: dts: qcom: sc7280: Add dt nodes for sound
- card
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <devicetree@vger.kernel.org>,
-        <dianders@chromium.org>, <judyhsiao@chromium.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <robh+dt@kernel.org>, <rohitkr@codeaurora.org>,
-        <srinivas.kandagatla@linaro.org>
-CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1647865696-19192-1-git-send-email-quic_srivasam@quicinc.com>
- <1647865696-19192-4-git-send-email-quic_srivasam@quicinc.com>
- <CAE-0n535vbyis3APbVpSoKg8p7017HcYZHSoC=rtfngKp-3U9w@mail.gmail.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <CAE-0n535vbyis3APbVpSoKg8p7017HcYZHSoC=rtfngKp-3U9w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404214557.3329796-1-richard.gong@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Apr 04, 2022 at 04:45:57PM -0500, Richard Gong wrote:
+> USB HID transport layer doesn't set mouse as a wakeup resource by default
+> so user can't wake system from s0i3 using wired USB mouse. However, users
+> can wake the same system from s0i3 with the same wired USB mouse
+> on Windows.
 
-On 3/22/2022 1:24 AM, Stephen Boyd wrote:
-Thanks for your time Stephen!!
-> Quoting Srinivasa Rao Mandadapu (2022-03-21 05:28:16)
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> index ca799c2..369c1e9 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> @@ -84,6 +84,99 @@
->>                  pinctrl-names = "default";
->>                  pinctrl-0 = <&nvme_pwren>;
->>          };
->> +
->> +       sound: sound-card {
-> How about
->
-> 	sound: sound {
->
-> It's not an actual sound card that you can plug in right?
-Yes, it's not plug in sound-card. will change accordingly.
->
->> +               compatible = "google,sc7280-herobrine";
->> +               model = "sc7280-wcd938x-max98360a-1mic";
->> +               status = "okay";
-> This status can be left out as it's the default.
-Okay. will change accordingly.
+Is that because of the huge good/bad list that Windows has for USB mice?
+Or is it this way now on Windows for _ALL_ USB mice?
+
+We have been loath to make this change because not all USB mice could
+support this, as well as the "wake up a laptop in a backpack that gets
+the touchpad touched" issue.
+
+> 
+> To work around this wakeup issue on Linux, the user must manually enable
+> wakeup via the following command:
+> 	echo enabled > /sys/bus/usb/device/*/power/wakeup
+> 
+> The mouse is set to wake resource by default to ensure the same behavior
+> across operating systems.
+> 
+> Signed-off-by: Richard Gong <richard.gong@amd.com>
+> ---
+>  drivers/hid/usbhid/hid-core.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/hid/usbhid/hid-core.c b/drivers/hid/usbhid/hid-core.c
+> index 54752c85604b..571dded02b3d 100644
+> --- a/drivers/hid/usbhid/hid-core.c
+> +++ b/drivers/hid/usbhid/hid-core.c
+> @@ -1183,8 +1183,10 @@ static int usbhid_start(struct hid_device *hid)
+>  	 * devices supporting the boot protocol.
+>  	 */
+>  	if (interface->desc.bInterfaceSubClass == USB_INTERFACE_SUBCLASS_BOOT &&
+> -			interface->desc.bInterfaceProtocol ==
+> -				USB_INTERFACE_PROTOCOL_KEYBOARD) {
+> +			((interface->desc.bInterfaceProtocol ==
+> +				USB_INTERFACE_PROTOCOL_KEYBOARD)
+> +			|| (interface->desc.bInterfaceProtocol ==
+> +				USB_INTERFACE_PROTOCOL_MOUSE))) {
+
+This is a big change, how many different systems and devices did you
+test it on?  What about userspace tools that previously assumed the old
+behavior?
+
+Why change this now 20 years later?  What changed to require this now?
+
+In short, unless there is a really good reason now to make this change,
+we shouldn't for all the reasons we never did so in the past.  Oh, and
+proof of loads of testing will be required as well.
+
+thanks,
+
+greg k-h
