@@ -2,98 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E26CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD892C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbiDEXx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
+        id S235716AbiDEXyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455462AbiDEQAD (ORCPT
+        with ESMTP id S1354825AbiDEKQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:03 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D3C57485;
-        Tue,  5 Apr 2022 08:15:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649171743; x=1680707743;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=3lIdhrvOWJSsLIjp6xNITFKNThnKqW6h1bviJyyMAjg=;
-  b=XMsqnVXGGgjbW6EuHpdbyhCpKFuITO/nxpf3iEkNb6e+6NDE80pQECpw
-   cZNO8EQGS6nPdT6oyYasZBtkuvRn2bYm/CaRVb0lHu2t/tM11hg5UoFSx
-   5UESQwr7rZnaXioNiarXLzKpcwkUINi569qkSGNha9xtXL7Ry2BSOt5Ps
-   qFVlu3cdSRQrUj5Q5iI6eGRmBm/OBbKQHAt4xRpTDGmq+aTx9NU+dBSm1
-   CLh722SWKlXDr2PK+YgW53l4ASy2tQ/vr5Y1pveszMYif/8jzHOQWxlJW
-   wRtjkHqA3FbWSTU9isMETkTGZawc1SYlVqGLVaUpTS7oGEwM5INF/n9N7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260765093"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="260765093"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:13:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="657974108"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2022 08:13:39 -0700
-Subject: Re: [PATCH] xhci: stop polling roothubs after shutdown
-To:     Henry Lin <henryl@nvidia.com>,
-        Mathias Nyman <mathias.nyman@intel.com>
+        Tue, 5 Apr 2022 06:16:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AC26C954;
+        Tue,  5 Apr 2022 03:03:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2785B616E7;
+        Tue,  5 Apr 2022 10:03:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1534EC385A2;
+        Tue,  5 Apr 2022 10:03:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152982;
+        bh=rMkDyMAy8tgZhH5NoxgtKM/qQKn45VbcqeVtM9To590=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XU3z7/xBlMBv9+JScfsburHoY+ilzEgEEv+iWzo6zRceah95bC8bgh8TABhxRyTRb
+         Fwkp0/DFMDbF6PXLNXkE866flGAsD5WlyLgO9kfTE/AZqJSyGgMX4eNu2R/AeKL6rM
+         +6meoq4Isj24bL0CR23TXFdzOtyH8nWh6rZCw474=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220401115916.104527-1-henryl@nvidia.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Message-ID: <e4796a11-7571-b54e-cb82-87bb749709f1@linux.intel.com>
-Date:   Tue, 5 Apr 2022 18:15:31 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 059/599] mm/pages_alloc.c: dont create ZONE_MOVABLE beyond the end of a node
+Date:   Tue,  5 Apr 2022 09:25:53 +0200
+Message-Id: <20220405070300.584276718@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20220401115916.104527-1-henryl@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1.4.2022 14.59, Henry Lin wrote:
-> While rebooting, XHCI controller and its bus device will be shut down
-> in order by .shutdown callback. Stopping roothubs polling in
-> xhci_shutdown() can prevent XHCI driver from accessing port status
-> after its bus device shutdown.
-> 
-> Take PCIe XHCI controller as example, if XHCI driver doesn't stop roothubs
-> polling, XHCI driver may access PCIe BAR register for port status after
-> parent PCIe root port driver is shutdown and cause PCIe bus error.
-> 
-> Signed-off-by: Henry Lin <henryl@nvidia.com>
-> ---
->  drivers/usb/host/xhci.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-> index 2d378543bc3a..e7ae6766220e 100644
-> --- a/drivers/usb/host/xhci.c
-> +++ b/drivers/usb/host/xhci.c
-> @@ -780,6 +780,14 @@ void xhci_shutdown(struct usb_hcd *hcd)
->  	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
->  		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
->  
-> +	/* Don't poll the roothubs after shutdown. */
-> +	xhci_dbg(xhci, "%s: stopping usb%d port polling.\n",
-> +			__func__, hcd->self.busnum);
-> +	clear_bit(HCD_FLAG_POLL_RH, &hcd->flags);
-> +	del_timer_sync(&hcd->rh_timer);
-> +	clear_bit(HCD_FLAG_POLL_RH, &xhci->shared_hcd->flags);
-> +	del_timer_sync(&xhci->shared_hcd->rh_timer);
-> +
->  	spin_lock_irq(&xhci->lock);
->  	xhci_halt(xhci);
->  	/* Workaround for spurious wakeups at shutdown with HSW */
-> 
+From: Alistair Popple <apopple@nvidia.com>
 
-Thanks, adding to queue
+commit ddbc84f3f595cf1fc8234a191193b5d20ad43938 upstream.
 
--Mathias
+ZONE_MOVABLE uses the remaining memory in each node.  Its starting pfn
+is also aligned to MAX_ORDER_NR_PAGES.  It is possible for the remaining
+memory in a node to be less than MAX_ORDER_NR_PAGES, meaning there is
+not enough room for ZONE_MOVABLE on that node.
+
+Unfortunately this condition is not checked for.  This leads to
+zone_movable_pfn[] getting set to a pfn greater than the last pfn in a
+node.
+
+calculate_node_totalpages() then sets zone->present_pages to be greater
+than zone->spanned_pages which is invalid, as spanned_pages represents
+the maximum number of pages in a zone assuming no holes.
+
+Subsequently it is possible free_area_init_core() will observe a zone of
+size zero with present pages.  In this case it will skip setting up the
+zone, including the initialisation of free_lists[].
+
+However populated_zone() checks zone->present_pages to see if a zone has
+memory available.  This is used by iterators such as
+walk_zones_in_node().  pagetypeinfo_showfree() uses this to walk the
+free_list of each zone in each node, which are assumed to be initialised
+due to the zone not being empty.
+
+As free_area_init_core() never initialised the free_lists[] this results
+in the following kernel crash when trying to read /proc/pagetypeinfo:
+
+  BUG: kernel NULL pointer dereference, address: 0000000000000000
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD 0 P4D 0
+  Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC NOPTI
+  CPU: 0 PID: 456 Comm: cat Not tainted 5.16.0 #461
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+  RIP: 0010:pagetypeinfo_show+0x163/0x460
+  Code: 9e 82 e8 80 57 0e 00 49 8b 06 b9 01 00 00 00 4c 39 f0 75 16 e9 65 02 00 00 48 83 c1 01 48 81 f9 a0 86 01 00 0f 84 48 02 00 00 <48> 8b 00 4c 39 f0 75 e7 48 c7 c2 80 a2 e2 82 48 c7 c6 79 ef e3 82
+  RSP: 0018:ffffc90001c4bd10 EFLAGS: 00010003
+  RAX: 0000000000000000 RBX: ffff88801105f638 RCX: 0000000000000001
+  RDX: 0000000000000001 RSI: 000000000000068b RDI: ffff8880163dc68b
+  RBP: ffffc90001c4bd90 R08: 0000000000000001 R09: ffff8880163dc67e
+  R10: 656c6261766f6d6e R11: 6c6261766f6d6e55 R12: ffff88807ffb4a00
+  R13: ffff88807ffb49f8 R14: ffff88807ffb4580 R15: ffff88807ffb3000
+  FS:  00007f9c83eff5c0(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 0000000000000000 CR3: 0000000013c8e000 CR4: 0000000000350ef0
+  Call Trace:
+   seq_read_iter+0x128/0x460
+   proc_reg_read_iter+0x51/0x80
+   new_sync_read+0x113/0x1a0
+   vfs_read+0x136/0x1d0
+   ksys_read+0x70/0xf0
+   __x64_sys_read+0x1a/0x20
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fix this by checking that the aligned zone_movable_pfn[] does not exceed
+the end of the node, and if it does skip creating a movable zone on this
+node.
+
+Link: https://lkml.kernel.org/r/20220215025831.2113067-1-apopple@nvidia.com
+Fixes: 2a1e274acf0b ("Create the ZONE_MOVABLE zone")
+Signed-off-by: Alistair Popple <apopple@nvidia.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: Oscar Salvador <osalvador@suse.de>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ mm/page_alloc.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -7402,10 +7402,17 @@ restart:
+ 
+ out2:
+ 	/* Align start of ZONE_MOVABLE on all nids to MAX_ORDER_NR_PAGES */
+-	for (nid = 0; nid < MAX_NUMNODES; nid++)
++	for (nid = 0; nid < MAX_NUMNODES; nid++) {
++		unsigned long start_pfn, end_pfn;
++
+ 		zone_movable_pfn[nid] =
+ 			roundup(zone_movable_pfn[nid], MAX_ORDER_NR_PAGES);
+ 
++		get_pfn_range_for_nid(nid, &start_pfn, &end_pfn);
++		if (zone_movable_pfn[nid] >= end_pfn)
++			zone_movable_pfn[nid] = 0;
++	}
++
+ out:
+ 	/* restore the node_state */
+ 	node_states[N_MEMORY] = saved_node_state;
+
+
