@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC99C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70469C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:43:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231865AbiDEHow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
+        id S231877AbiDEHpC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231997AbiDEHoW (ORCPT
+        with ESMTP id S231986AbiDEHoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:44:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1AF99682D;
-        Tue,  5 Apr 2022 00:40:54 -0700 (PDT)
+        Tue, 5 Apr 2022 03:44:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3323C95A2B;
+        Tue,  5 Apr 2022 00:40:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5453F6123C;
-        Tue,  5 Apr 2022 07:40:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C8A3C340EE;
-        Tue,  5 Apr 2022 07:40:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADC94B81B75;
+        Tue,  5 Apr 2022 07:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1306FC3410F;
+        Tue,  5 Apr 2022 07:40:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144453;
-        bh=L+a2SzSVzn4E/4douuC9asR0dAPEwbbhzHSIRnZEM04=;
+        s=korg; t=1649144445;
+        bh=Utz1YvWbSMLmkIEVCdwmAdUPQ3ARE9UXbQLDcRmNtww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jueFW5exVtBSWvnF0uwWyEfH61d2HxSZSP2bgsQHzq9gLDpj3pE5MXJ4Jn5FF4bNp
-         F7TMx57T8cbc6PwfWyeft5WiXEJ1zbkKMiZ6vhXBSiiev6f+6BcTzifIxmL9O1bM5r
-         IwSYEOi7G4XUiNNDZTO3WGIHy2d11OVWyNXblYPU=
+        b=vTU2XbjGgIHRPagMbXtscVIFa4V+ioEHqLYyFNpE8vPuIZ9Mh0IgkMQHWwrE7UteA
+         eRNGFQb3GRoTuyKrA5tuvDj/SJcJPQVt0XVU+rlFj8BusDYG4RVu+b5/v0myVxWSfS
+         9cFh+jrqumoGv9yQDVxGQJCy2kytyclcWHCpztxk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 5.17 0049/1126] Documentation: add link to stable release candidate tree
-Date:   Tue,  5 Apr 2022 09:13:16 +0200
-Message-Id: <20220405070409.004012486@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.17 0046/1126] KEYS: fix length validation in keyctl_pkey_params_get_2()
+Date:   Tue,  5 Apr 2022 09:13:13 +0200
+Message-Id: <20220405070408.912322032@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,42 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bagas Sanjaya <bagasdotme@gmail.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 587d39b260c4d090166314d64be70b1f6a26b0b5 upstream.
+commit c51abd96837f600d8fd940b6ab8e2da578575504 upstream.
 
-There is also stable release candidate tree. Mention it, however with a
-warning that the tree is for testing purposes.
+In many cases, keyctl_pkey_params_get_2() is validating the user buffer
+lengths against the wrong algorithm properties.  Fix it to check against
+the correct properties.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Link: https://lore.kernel.org/r/20220314113329.485372-5-bagasdotme@gmail.com
+Probably this wasn't noticed before because for all asymmetric keys of
+the "public_key" subtype, max_data_size == max_sig_size == max_enc_size
+== max_dec_size.  However, this isn't necessarily true for the
+"asym_tpm" subtype (it should be, but it's not strictly validated).  Of
+course, future key types could have different values as well.
+
+Fixes: 00d60fd3b932 ("KEYS: Provide keyctls to drive the new key type ops for asymmetric keys [ver #2]")
+Cc: <stable@vger.kernel.org> # v4.20+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/process/stable-kernel-rules.rst |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ security/keys/keyctl_pkey.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/Documentation/process/stable-kernel-rules.rst
-+++ b/Documentation/process/stable-kernel-rules.rst
-@@ -170,6 +170,15 @@ Trees
+--- a/security/keys/keyctl_pkey.c
++++ b/security/keys/keyctl_pkey.c
+@@ -135,15 +135,23 @@ static int keyctl_pkey_params_get_2(cons
  
- 	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+ 	switch (op) {
+ 	case KEYCTL_PKEY_ENCRYPT:
++		if (uparams.in_len  > info.max_dec_size ||
++		    uparams.out_len > info.max_enc_size)
++			return -EINVAL;
++		break;
+ 	case KEYCTL_PKEY_DECRYPT:
+ 		if (uparams.in_len  > info.max_enc_size ||
+ 		    uparams.out_len > info.max_dec_size)
+ 			return -EINVAL;
+ 		break;
+ 	case KEYCTL_PKEY_SIGN:
++		if (uparams.in_len  > info.max_data_size ||
++		    uparams.out_len > info.max_sig_size)
++			return -EINVAL;
++		break;
+ 	case KEYCTL_PKEY_VERIFY:
+-		if (uparams.in_len  > info.max_sig_size ||
+-		    uparams.out_len > info.max_data_size)
++		if (uparams.in_len  > info.max_data_size ||
++		    uparams.in2_len > info.max_sig_size)
+ 			return -EINVAL;
+ 		break;
+ 	default:
+@@ -151,7 +159,7 @@ static int keyctl_pkey_params_get_2(cons
+ 	}
  
-+ - The release candidate of all stable kernel versions can be found at:
-+
-+        https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/
-+
-+   .. warning::
-+      The -stable-rc tree is a snapshot in time of the stable-queue tree and
-+      will change frequently, hence will be rebased often. It should only be
-+      used for testing purposes (e.g. to be consumed by CI systems).
-+
+ 	params->in_len  = uparams.in_len;
+-	params->out_len = uparams.out_len;
++	params->out_len = uparams.out_len; /* Note: same as in2_len */
+ 	return 0;
+ }
  
- Review committee
- ----------------
 
 
