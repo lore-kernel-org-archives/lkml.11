@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9422EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48555C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233002AbiDEH4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        id S232935AbiDEH42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233597AbiDEHsH (ORCPT
+        with ESMTP id S233550AbiDEHr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:48:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FEA2AC;
-        Tue,  5 Apr 2022 00:46:09 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B42C92850;
+        Tue,  5 Apr 2022 00:45:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B42EB616BF;
-        Tue,  5 Apr 2022 07:46:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F7EC340EE;
-        Tue,  5 Apr 2022 07:46:07 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B1F22CE1BE7;
+        Tue,  5 Apr 2022 07:45:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1A0AC340EE;
+        Tue,  5 Apr 2022 07:45:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144768;
-        bh=FUcnqxzjXH5u3vbw4nDqrygn9TouK/7YERh2EEo0v3w=;
+        s=korg; t=1649144722;
+        bh=yBbyE8EqpaD0c7RBH8tGs5onihBgPfwlqM3hNHU6kOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eDuzgrhlNeklkZzJdNsL+RRPXrVCFmpVD0vpiONQz65KGU2gLUyV+TA3KITRTq4Kh
-         v8pMdfoojP1gJg+Yd47V5tRaKNkTKgO/ytcSYoEfff5a3cer1HK0+P2lERJ3BegWWk
-         3u4EBi7GEeL/bQL4uTQeheynNLpWYoxxws106m3E=
+        b=19AqjmdTh1X+Vr+RomcqSU1UEs3K/QDGQE9k2z3QwX9zw2qUyGPea/pM4Iei/0Pac
+         9tsADm8FggRni9pSMm+S3mthoidXzLP/dUVbW1LUSAkxmkRY9RQU8tN1jbDRT5D7z5
+         1/ldJjkgy6z5AapRdEm0SJyZfK09D7DNCWJmdgQE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mingzhe Zou <mingzhe.zou@easystack.cn>,
-        Coly Li <colyli@suse.de>
-Subject: [PATCH 5.17 0164/1126] bcache: fixup multiple threads crash
-Date:   Tue,  5 Apr 2022 09:15:11 +0200
-Message-Id: <20220405070412.409301981@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.17 0148/1126] rfkill: make new event layout opt-in
+Date:   Tue,  5 Apr 2022 09:14:55 +0200
+Message-Id: <20220405070411.927143460@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,67 +48,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mingzhe Zou <mingzhe.zou@easystack.cn>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 887554ab96588de2917b6c8c73e552da082e5368 upstream.
+commit 54f586a9153201c6cff55e1f561990c78bd99aa7 upstream.
 
-When multiple threads to check btree nodes in parallel, the main
-thread wait for all threads to stop or CACHE_SET_IO_DISABLE flag:
+Again new complaints surfaced that we had broken the ABI here,
+although previously all the userspace tools had agreed that it
+was their mistake and fixed it. Yet now there are cases (e.g.
+RHEL) that want to run old userspace with newer kernels, and
+thus are broken.
 
-wait_event_interruptible(check_state->wait,
-                         atomic_read(&check_state->started) == 0 ||
-                         test_bit(CACHE_SET_IO_DISABLE, &c->flags));
+Since this is a bit of a whack-a-mole thing, change the whole
+extensibility scheme of rfkill to no longer just rely on the
+message lengths, but instead require userspace to opt in via a
+new ioctl to a given maximum event size that it is willing to
+understand.
 
-However, the bch_btree_node_read and bch_btree_node_read_done
-maybe call bch_cache_set_error, then the CACHE_SET_IO_DISABLE
-will be set. If the flag already set, the main thread return
-error. At the same time, maybe some threads still running and
-read NULL pointer, the kernel will crash.
+By default, set that to RFKILL_EVENT_SIZE_V1 (8), so that the
+behaviour for userspace not calling the ioctl will look as if
+it's just running on an older kernel.
 
-This patch change the event wait condition, the main thread must
-wait for all threads to stop.
-
-Fixes: 8e7102273f597 ("bcache: make bch_btree_check() to be multithreaded")
-Signed-off-by: Mingzhe Zou <mingzhe.zou@easystack.cn>
-Cc: stable@vger.kernel.org # v5.7+
-Signed-off-by: Coly Li <colyli@suse.de>
+Fixes: 14486c82612a ("rfkill: add a reason to the HW rfkill state")
+Cc: stable@vger.kernel.org # 5.11+
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220316212749.16491491b270.Ifcb1950998330a596f29a2a162e00b7546a1d6d0@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/bcache/btree.c     |    6 ++++--
- drivers/md/bcache/writeback.c |    6 ++++--
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ include/uapi/linux/rfkill.h |   14 +++++++++++-
+ net/rfkill/core.c           |   48 +++++++++++++++++++++++++++++++-------------
+ 2 files changed, 46 insertions(+), 16 deletions(-)
 
---- a/drivers/md/bcache/btree.c
-+++ b/drivers/md/bcache/btree.c
-@@ -2060,9 +2060,11 @@ int bch_btree_check(struct cache_set *c)
- 		}
+--- a/include/uapi/linux/rfkill.h
++++ b/include/uapi/linux/rfkill.h
+@@ -159,8 +159,16 @@ struct rfkill_event_ext {
+  * old behaviour for all userspace, unless it explicitly opts in to the
+  * rules outlined here by using the new &struct rfkill_event_ext.
+  *
+- * Userspace using &struct rfkill_event_ext must adhere to the following
+- * rules
++ * Additionally, some other userspace (bluez, g-s-d) was reading with a
++ * large size but as streaming reads rather than message-based, or with
++ * too strict checks for the returned size. So eventually, we completely
++ * reverted this, and extended messages need to be opted in to by using
++ * an ioctl:
++ *
++ *  ioctl(fd, RFKILL_IOCTL_MAX_SIZE, sizeof(struct rfkill_event_ext));
++ *
++ * Userspace using &struct rfkill_event_ext and the ioctl must adhere to
++ * the following rules:
+  *
+  * 1. accept short writes, optionally using them to detect that it's
+  *    running on an older kernel;
+@@ -175,6 +183,8 @@ struct rfkill_event_ext {
+ #define RFKILL_IOC_MAGIC	'R'
+ #define RFKILL_IOC_NOINPUT	1
+ #define RFKILL_IOCTL_NOINPUT	_IO(RFKILL_IOC_MAGIC, RFKILL_IOC_NOINPUT)
++#define RFKILL_IOC_MAX_SIZE	2
++#define RFKILL_IOCTL_MAX_SIZE	_IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_EXT_SIZE, __u32)
+ 
+ /* and that's all userspace gets */
+ 
+--- a/net/rfkill/core.c
++++ b/net/rfkill/core.c
+@@ -78,6 +78,7 @@ struct rfkill_data {
+ 	struct mutex		mtx;
+ 	wait_queue_head_t	read_wait;
+ 	bool			input_handler;
++	u8			max_size;
+ };
+ 
+ 
+@@ -1153,6 +1154,8 @@ static int rfkill_fop_open(struct inode
+ 	if (!data)
+ 		return -ENOMEM;
+ 
++	data->max_size = RFKILL_EVENT_SIZE_V1;
++
+ 	INIT_LIST_HEAD(&data->events);
+ 	mutex_init(&data->mtx);
+ 	init_waitqueue_head(&data->read_wait);
+@@ -1235,6 +1238,7 @@ static ssize_t rfkill_fop_read(struct fi
+ 				list);
+ 
+ 	sz = min_t(unsigned long, sizeof(ev->ev), count);
++	sz = min_t(unsigned long, sz, data->max_size);
+ 	ret = sz;
+ 	if (copy_to_user(buf, &ev->ev, sz))
+ 		ret = -EFAULT;
+@@ -1249,6 +1253,7 @@ static ssize_t rfkill_fop_read(struct fi
+ static ssize_t rfkill_fop_write(struct file *file, const char __user *buf,
+ 				size_t count, loff_t *pos)
+ {
++	struct rfkill_data *data = file->private_data;
+ 	struct rfkill *rfkill;
+ 	struct rfkill_event_ext ev;
+ 	int ret;
+@@ -1263,6 +1268,7 @@ static ssize_t rfkill_fop_write(struct f
+ 	 * our API version even in a write() call, if it cares.
+ 	 */
+ 	count = min(count, sizeof(ev));
++	count = min_t(size_t, count, data->max_size);
+ 	if (copy_from_user(&ev, buf, count))
+ 		return -EFAULT;
+ 
+@@ -1322,31 +1328,47 @@ static int rfkill_fop_release(struct ino
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_RFKILL_INPUT
+ static long rfkill_fop_ioctl(struct file *file, unsigned int cmd,
+ 			     unsigned long arg)
+ {
+ 	struct rfkill_data *data = file->private_data;
++	int ret = -ENOSYS;
++	u32 size;
+ 
+ 	if (_IOC_TYPE(cmd) != RFKILL_IOC_MAGIC)
+ 		return -ENOSYS;
+ 
+-	if (_IOC_NR(cmd) != RFKILL_IOC_NOINPUT)
+-		return -ENOSYS;
+-
+ 	mutex_lock(&data->mtx);
+-
+-	if (!data->input_handler) {
+-		if (atomic_inc_return(&rfkill_input_disabled) == 1)
+-			printk(KERN_DEBUG "rfkill: input handler disabled\n");
+-		data->input_handler = true;
++	switch (_IOC_NR(cmd)) {
++#ifdef CONFIG_RFKILL_INPUT
++	case RFKILL_IOC_NOINPUT:
++		if (!data->input_handler) {
++			if (atomic_inc_return(&rfkill_input_disabled) == 1)
++				printk(KERN_DEBUG "rfkill: input handler disabled\n");
++			data->input_handler = true;
++		}
++		ret = 0;
++		break;
++#endif
++	case RFKILL_IOC_MAX_SIZE:
++		if (get_user(size, (__u32 __user *)arg)) {
++			ret = -EFAULT;
++			break;
++		}
++		if (size < RFKILL_EVENT_SIZE_V1 || size > U8_MAX) {
++			ret = -EINVAL;
++			break;
++		}
++		data->max_size = size;
++		ret = 0;
++		break;
++	default:
++		break;
  	}
+-
+ 	mutex_unlock(&data->mtx);
  
-+	/*
-+	 * Must wait for all threads to stop.
-+	 */
- 	wait_event_interruptible(check_state->wait,
--				 atomic_read(&check_state->started) == 0 ||
--				  test_bit(CACHE_SET_IO_DISABLE, &c->flags));
-+				 atomic_read(&check_state->started) == 0);
+-	return 0;
++	return ret;
+ }
+-#endif
  
- 	for (i = 0; i < check_state->total_threads; i++) {
- 		if (check_state->infos[i].result) {
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -998,9 +998,11 @@ void bch_sectors_dirty_init(struct bcach
- 		}
- 	}
+ static const struct file_operations rfkill_fops = {
+ 	.owner		= THIS_MODULE,
+@@ -1355,10 +1377,8 @@ static const struct file_operations rfki
+ 	.write		= rfkill_fop_write,
+ 	.poll		= rfkill_fop_poll,
+ 	.release	= rfkill_fop_release,
+-#ifdef CONFIG_RFKILL_INPUT
+ 	.unlocked_ioctl	= rfkill_fop_ioctl,
+ 	.compat_ioctl	= compat_ptr_ioctl,
+-#endif
+ 	.llseek		= no_llseek,
+ };
  
-+	/*
-+	 * Must wait for all threads to stop.
-+	 */
- 	wait_event_interruptible(state->wait,
--		 atomic_read(&state->started) == 0 ||
--		 test_bit(CACHE_SET_IO_DISABLE, &c->flags));
-+		 atomic_read(&state->started) == 0);
- 
- out:
- 	kfree(state);
 
 
