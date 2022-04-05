@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D79C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AA9C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354769AbiDEVYq (ORCPT
+        id S1355021AbiDEVYv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
+        Tue, 5 Apr 2022 17:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350031AbiDEKvD (ORCPT
+        with ESMTP id S1357933AbiDEK13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:51:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D72A7758;
-        Tue,  5 Apr 2022 03:27:51 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30288EB76;
+        Tue,  5 Apr 2022 03:11:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6AC2B81B18;
-        Tue,  5 Apr 2022 10:27:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12294C385A0;
-        Tue,  5 Apr 2022 10:27:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6FB2B81B7A;
+        Tue,  5 Apr 2022 10:11:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CBD6C385A0;
+        Tue,  5 Apr 2022 10:11:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154468;
-        bh=wXCQH6QP5X6EUlJs4U9BH9qhWh3wALpbUoz21iTuBFA=;
+        s=korg; t=1649153479;
+        bh=TSkjUvSIf7iqr5LKRP7s/684quQnt42SIhJS2ZaWp8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zKbdUiSpTouF49qPrY8nmAe9+HJ0W6rdGGJeD5VLoLqjWog4CZkeZpQNyQuErByta
-         oitywbc5YcpM3mo4p6gpDSZKPYx9v1BdNutHNja1V2LoV/4f0AxKcul1sBnhG+rxwc
-         HboaLZ08m98R6uLdhYk1iO0aew7s8zeUoJYCiUqM=
+        b=B3lcp7DNnHaYkTroSGl85J8O3IPh3a8x1g+sqknYKkoeXGKnxR040g0H8wNqMFFax
+         eZgaGpiJNOT7Jtj+ST7ST6io0HDAzz6dNHIkCmP9J0UGgq1ILBDRHlI9dkSPwyC0le
+         tYRjn1CYTkZvwZYm8mUydhMKPA9lBKVd+7yygHbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.10 589/599] um: Fix uml_mconsole stop/go
-Date:   Tue,  5 Apr 2022 09:34:43 +0200
-Message-Id: <20220405070316.368502131@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 235/599] arm64: dts: rockchip: Fix SDIO regulator supply properties on rk3399-firefly
+Date:   Tue,  5 Apr 2022 09:28:49 +0200
+Message-Id: <20220405070305.833345505@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,39 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+From: Rob Herring <robh@kernel.org>
 
-commit 1a3a6a2a035bb6c3a7ef4c788d8fd69a7b2d6284 upstream.
+[ Upstream commit 37cbd3c522869247ed4525b5042ff4c6a276c813 ]
 
-Moving to an EPOLL based IRQ controller broke uml_mconsole stop/go
-commands. This fixes it and restores stop/go functionality.
+A label reference without brackets is a path string, not a phandle as
+intended. Add the missing brackets.
 
-Fixes: ff6a17989c08 ("Epoll based IRQ controller")
-Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a5002c41c383 ("arm64: dts: rockchip: add WiFi module support for Firefly-RK3399")
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220304202559.317749-1-robh@kernel.org
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/drivers/mconsole_kern.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/rockchip/rk3399-firefly.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/um/drivers/mconsole_kern.c
-+++ b/arch/um/drivers/mconsole_kern.c
-@@ -223,7 +223,7 @@ void mconsole_go(struct mc_request *req)
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
+index 6db18808b9c5..dc45ec372ada 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
+@@ -665,8 +665,8 @@
+ 	sd-uhs-sdr104;
  
- void mconsole_stop(struct mc_request *req)
- {
--	deactivate_fd(req->originating_fd, MCONSOLE_IRQ);
-+	block_signals();
- 	os_set_fd_block(req->originating_fd, 1);
- 	mconsole_reply(req, "stopped", 0, 0);
- 	for (;;) {
-@@ -246,6 +246,7 @@ void mconsole_stop(struct mc_request *re
- 	}
- 	os_set_fd_block(req->originating_fd, 0);
- 	mconsole_reply(req, "", 0, 0);
-+	unblock_signals();
- }
+ 	/* Power supply */
+-	vqmmc-supply = &vcc1v8_s3;	/* IO line */
+-	vmmc-supply = &vcc_sdio;	/* card's power */
++	vqmmc-supply = <&vcc1v8_s3>;	/* IO line */
++	vmmc-supply = <&vcc_sdio>;	/* card's power */
  
- static DEFINE_SPINLOCK(mc_devices_lock);
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
+-- 
+2.34.1
+
 
 
