@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7089C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76044C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244748AbiDELoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48748 "EHLO
+        id S1352678AbiDELpE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244833AbiDEIwm (ORCPT
+        with ESMTP id S244845AbiDEIwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B2022512;
-        Tue,  5 Apr 2022 01:44:31 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B49422B18;
+        Tue,  5 Apr 2022 01:44:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 415E5CE1C6D;
-        Tue,  5 Apr 2022 08:44:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58907C385A0;
-        Tue,  5 Apr 2022 08:44:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC33A609D0;
+        Tue,  5 Apr 2022 08:44:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1FBEC385A0;
+        Tue,  5 Apr 2022 08:44:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148268;
-        bh=iWedxj7YTagci/gi3EDpl5fIirs9sNJC96Xu5blLHW8=;
+        s=korg; t=1649148282;
+        bh=ANnWnXAWNmsF5BifAwyhc0RFu55PfW6rBe5GXpCYMlk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TNY1v7BuWUWRVYEMOtiB/QNDzRqXnF9xXL/PtY8yBPGG/sBN5Wn3J7Ev0GC8CKCMi
-         a6jshQd6MuiA2PMycfFgWi0fWYJowOGR1wPuR4IKy8vb/DEBtqL9XxrBGlRvl78ziQ
-         lTcv1ZaPwwh6FoMOGOLwu6qzNuLPTQddCiQmXmsw=
+        b=Zb/KhT8mBVIBxd2jSGyWzLBnGnUWjHXybUZ8xtoEkMuCcL9/l0P9ugQdVm0SbJPE/
+         vZORj7tOYv+Y8FWgSMxSUETsGC8QOUYFjxt/QmzsqlPto9+6jiFvgwQWR3pnxbbNEw
+         CJ3iE9hrBTxJyz8j7CCxxC8tqmYWrCwUaiDuf8mI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0294/1017] memory: tegra20-emc: Correct memory device mask
-Date:   Tue,  5 Apr 2022 09:20:07 +0200
-Message-Id: <20220405070403.001122645@linuxfoundation.org>
+Subject: [PATCH 5.16 0299/1017] media: v4l: Avoid unaligned access warnings when printing 4cc modifiers
+Date:   Tue,  5 Apr 2022 09:20:12 +0200
+Message-Id: <20220405070403.150447315@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,36 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <digetx@gmail.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-[ Upstream commit 9ff684342ee7d3ea2755c6e9b60bc43085baa3ad ]
+[ Upstream commit 24bb30c8c894ec7213ad810b46e2a6a4c12136c1 ]
 
-Memory chip select is swapped when we read mode register, correct it.
-We didn't have devices that use a single LPDDR chip and both chips are
-always identical, hence this change is just a minor improvement.
+Pointers V4L2 pixelformat and dataformat fields in a few packed structs
+are directly passed to printk family of functions. This could result in an
+unaligned access albeit no such possibility appears to exist at the
+moment i.e. this clang warning appears to be a false positive.
 
-Fixes: 131dd9a436d8 ("memory: tegra20-emc: Support matching timings by LPDDR2 configuration")
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Link: https://lore.kernel.org/r/20211222043215.28237-2-digetx@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Address the warning by copying the pixelformat or dataformat value to a
+local variable first.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: e927e1e0f0dd ("v4l: ioctl: Use %p4cc printk modifier to print FourCC codes")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/tegra/tegra20-emc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/v4l2-core/v4l2-ioctl.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/memory/tegra/tegra20-emc.c b/drivers/memory/tegra/tegra20-emc.c
-index 497b6edbf3ca..25ba3c5e4ad6 100644
---- a/drivers/memory/tegra/tegra20-emc.c
-+++ b/drivers/memory/tegra/tegra20-emc.c
-@@ -540,7 +540,7 @@ static int emc_read_lpddr_mode_register(struct tegra_emc *emc,
- 					unsigned int register_addr,
- 					unsigned int *register_data)
- {
--	u32 memory_dev = emem_dev + 1;
-+	u32 memory_dev = emem_dev ? 1 : 2;
- 	u32 val, mr_mask = 0xff;
- 	int err;
+diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+index 69b74d0e8a90..059d6debb25d 100644
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -279,8 +279,8 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 	const struct v4l2_vbi_format *vbi;
+ 	const struct v4l2_sliced_vbi_format *sliced;
+ 	const struct v4l2_window *win;
+-	const struct v4l2_sdr_format *sdr;
+ 	const struct v4l2_meta_format *meta;
++	u32 pixelformat;
+ 	u32 planes;
+ 	unsigned i;
  
+@@ -299,8 +299,9 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
+ 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
+ 		mp = &p->fmt.pix_mp;
++		pixelformat = mp->pixelformat;
+ 		pr_cont(", width=%u, height=%u, format=%p4cc, field=%s, colorspace=%d, num_planes=%u, flags=0x%x, ycbcr_enc=%u, quantization=%u, xfer_func=%u\n",
+-			mp->width, mp->height, &mp->pixelformat,
++			mp->width, mp->height, &pixelformat,
+ 			prt_names(mp->field, v4l2_field_names),
+ 			mp->colorspace, mp->num_planes, mp->flags,
+ 			mp->ycbcr_enc, mp->quantization, mp->xfer_func);
+@@ -343,14 +344,15 @@ static void v4l_print_format(const void *arg, bool write_only)
+ 		break;
+ 	case V4L2_BUF_TYPE_SDR_CAPTURE:
+ 	case V4L2_BUF_TYPE_SDR_OUTPUT:
+-		sdr = &p->fmt.sdr;
+-		pr_cont(", pixelformat=%p4cc\n", &sdr->pixelformat);
++		pixelformat = p->fmt.sdr.pixelformat;
++		pr_cont(", pixelformat=%p4cc\n", &pixelformat);
+ 		break;
+ 	case V4L2_BUF_TYPE_META_CAPTURE:
+ 	case V4L2_BUF_TYPE_META_OUTPUT:
+ 		meta = &p->fmt.meta;
++		pixelformat = meta->dataformat;
+ 		pr_cont(", dataformat=%p4cc, buffersize=%u\n",
+-			&meta->dataformat, meta->buffersize);
++			&pixelformat, meta->buffersize);
+ 		break;
+ 	}
+ }
 -- 
 2.34.1
 
