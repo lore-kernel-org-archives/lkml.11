@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB78C46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A08F6C4707E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353875AbiDEKJm (ORCPT
+        id S1353900AbiDEKJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33828 "EHLO
+        Tue, 5 Apr 2022 06:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241094AbiDEIcs (ORCPT
+        with ESMTP id S241109AbiDEIct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA19140F6;
-        Tue,  5 Apr 2022 01:27:18 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A59415739;
+        Tue,  5 Apr 2022 01:27:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D09C461001;
-        Tue,  5 Apr 2022 08:27:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE6B2C385A2;
-        Tue,  5 Apr 2022 08:27:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25348609D0;
+        Tue,  5 Apr 2022 08:27:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37D87C385A2;
+        Tue,  5 Apr 2022 08:27:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147237;
-        bh=AxMd18gbofm6w4krU29ftLJswZhLQ32cx6ujG2KM8Xk=;
+        s=korg; t=1649147258;
+        bh=MOk/RdGK+fojtYaaJuzFPNg01OhU29vMlA4QzjbvP3Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4gmTpRyN1b9/jjzOAekH0kQK8tBhGdPya5qrfToy0H8HkDmW4vh4yiabyemK+vGq
-         xkWZc5UsrSX4UTw3QK21eLqodFvDexafv99XIgs+BOdRxgXzJjaeNnLHQEtHfxRH3M
-         6KwQ8fw89IRTI1c2ePNCRr4kbgwlZzuc0W4Qs3zg=
+        b=NrYgc+wLkOdUWQs7eIDZv8LfH3CCXavpVeW0pvOB0FTMvEGCouJ5pMxzE6PIFia+w
+         HIPEmhLlK+CRfuahipArLMQctWbOIeUGNYj87/CcjjxX7Xt3OTegk4pypnpW4JmGYj
+         lcD8Gxl4tMznCyX7sBLzzS/ZIDwFe5ZlLVl/OKTU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.17 1044/1126] pinctrl: nuvoton: npcm7xx: Use %zu printk format for ARRAY_SIZE()
-Date:   Tue,  5 Apr 2022 09:29:51 +0200
-Message-Id: <20220405070438.116405741@linuxfoundation.org>
+        stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.17 1060/1126] spi: Fix Tegra QSPI example
+Date:   Tue,  5 Apr 2022 09:30:07 +0200
+Message-Id: <20220405070438.575943824@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,35 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Jon Hunter <jonathanh@nvidia.com>
 
-commit 9d0f18bca3b557ae5d2128661ac06d33b3f45c0a upstream.
+commit 320689a1b543ca1396b3ed43bb18045e4a7ffd79 upstream.
 
-When compile-testing on 64-bit architectures, GCC complains about the
-mismatch of types between the %d format specifier and value returned by
-ARRAY_LENGTH(). Use %zu, which is correct everywhere.
+When running dt_binding_check on the nvidia,tegra210-quad.yaml binding
+document the following error is reported ...
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 3b588e43ee5c7 ("pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO driver")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220205155332.1308899-2-j.neuschaefer@gmx.net
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+ nvidia,tegra210-quad.example.dt.yaml:0:0: /example-0/spi@70410000/flash@0:
+ 	failed to match any schema with compatible: ['spi-nor']
+
+Update the example in the binding document to fix the above error.
+
+Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+Fixes: 9684752e5fe3 ("dt-bindings: spi: Add Tegra Quad SPI device tree  binding")
+Link: https://lore.kernel.org/r/20220307113529.315685-1-jonathanh@nvidia.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c |    2 +-
+ Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-+++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-@@ -1560,7 +1560,7 @@ static int npcm7xx_get_groups_count(stru
- {
- 	struct npcm7xx_pinctrl *npcm = pinctrl_dev_get_drvdata(pctldev);
+--- a/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml
++++ b/Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml
+@@ -106,7 +106,7 @@ examples:
+             dma-names = "rx", "tx";
  
--	dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-+	dev_dbg(npcm->dev, "group size: %zu\n", ARRAY_SIZE(npcm7xx_groups));
- 	return ARRAY_SIZE(npcm7xx_groups);
- }
- 
+             flash@0 {
+-                    compatible = "spi-nor";
++                    compatible = "jedec,spi-nor";
+                     reg = <0>;
+                     spi-max-frequency = <104000000>;
+                     spi-tx-bus-width = <2>;
 
 
