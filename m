@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96FABC3527D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7549CC41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349955AbiDEUPP (ORCPT
+        id S1345146AbiDEUOS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45146 "EHLO
+        Tue, 5 Apr 2022 16:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354938AbiDEKQg (ORCPT
+        with ESMTP id S1357238AbiDEKZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C5521816;
-        Tue,  5 Apr 2022 03:04:04 -0700 (PDT)
+        Tue, 5 Apr 2022 06:25:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0054C2615;
+        Tue,  5 Apr 2022 03:09:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E411C61673;
-        Tue,  5 Apr 2022 10:04:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF2C3C385A1;
-        Tue,  5 Apr 2022 10:04:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EEBB6172B;
+        Tue,  5 Apr 2022 10:09:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2AD0C385A0;
+        Tue,  5 Apr 2022 10:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153043;
-        bh=AIwGneCgQREljoh3n2S10EY9Q3wkZzrK2N0v2FayM6A=;
+        s=korg; t=1649153389;
+        bh=zoYpNU1P9KxMTB0DBviALlq0odM9WbOfIh/NLNkV6lI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mHwt02+ECcjSvQWIN5LPheRBZjUPeNGU+moc6qdLICa0jATuj863rM46R4FMYKpS/
-         k8AGNk8YM1IFuR53in90ov8bFuU1Kr1vLBgYEul541cLkbLtqJv+Ysbhuxs0+zf6hz
-         2cUunZbcCxCepn6PNgvNkXbsFMzjeUuWer4Sxv2s=
+        b=OseRmB4YEvgH1fAfSqI7nXWIs3cuhiQDb30alJo0kMUoIrghCr7HHAWJ6zMKuJcC7
+         grBBm9pQ5y1MsPOViSxrex4J4nE7BHgLQ0A7VfEa4kBIIHVLKqzb6vpAeCDNmLrHqp
+         4XLFZWDsxwab4Ft1cCsV8SET31DMaLNdWwHGf9ik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ang Tien Sung <tien.sung.ang@intel.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.10 043/599] firmware: stratix10-svc: add missing callback parameter on RSU
-Date:   Tue,  5 Apr 2022 09:25:37 +0200
-Message-Id: <20220405070300.109136732@linuxfoundation.org>
+        stable@vger.kernel.org, Brandon Wyman <bjwyman@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 167/599] hwmon: (pmbus) Add Vin unit off handling
+Date:   Tue,  5 Apr 2022 09:27:41 +0200
+Message-Id: <20220405070303.812743923@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,35 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ang Tien Sung <tien.sung.ang@intel.com>
+From: Brandon Wyman <bjwyman@gmail.com>
 
-commit b850b7a8b369322adf699ef48ceff4d902525c8c upstream.
+[ Upstream commit a5436af598779219b375c1977555c82def1c35d0 ]
 
-Fix a bug whereby, the return response of parameter a1 from an
-SMC call is not properly set to the callback data during an
-INTEL_SIP_SMC_RSU_ERROR command.
+If there is an input undervoltage fault, reported in STATUS_INPUT
+command response, there is quite likely a "Unit Off For Insufficient
+Input Voltage" condition as well.
 
-Link: https://lore.kernel.org/lkml/20220216081513.28319-1-tien.sung.ang@intel.com
-Fixes: 6b50d882d38d ("firmware: add remote status update client support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Link: https://lore.kernel.org/r/20220223144146.399263-1-dinguyen@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Add a constant for bit 3 of STATUS_INPUT. Update the Vin limit
+attributes to include both bits in the mask for clearing faults.
+
+If an input undervoltage fault occurs, causing a unit off for
+insufficient input voltage, but the unit is off bit is not cleared, the
+STATUS_WORD will not be updated to clear the input fault condition.
+Including the unit is off bit (bit 3) allows for the input fault
+condition to completely clear.
+
+Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
+Link: https://lore.kernel.org/r/20220317232123.2103592-1-bjwyman@gmail.com
+Fixes: b4ce237b7f7d3 ("hwmon: (pmbus) Introduce infrastructure to detect sensors and limit registers")
+[groeck: Dropped unnecessary ()]
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/stratix10-svc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hwmon/pmbus/pmbus.h      | 1 +
+ drivers/hwmon/pmbus/pmbus_core.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -477,7 +477,7 @@ static int svc_normal_to_secure_thread(v
- 		case INTEL_SIP_SMC_RSU_ERROR:
- 			pr_err("%s: STATUS_ERROR\n", __func__);
- 			cbdata->status = BIT(SVC_STATUS_ERROR);
--			cbdata->kaddr1 = NULL;
-+			cbdata->kaddr1 = &res.a1;
- 			cbdata->kaddr2 = NULL;
- 			cbdata->kaddr3 = NULL;
- 			pdata->chan->scl->receive_cb(pdata->chan->scl, cbdata);
+diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
+index 88a5df2633fb..de27837e8527 100644
+--- a/drivers/hwmon/pmbus/pmbus.h
++++ b/drivers/hwmon/pmbus/pmbus.h
+@@ -319,6 +319,7 @@ enum pmbus_fan_mode { percent = 0, rpm };
+ /*
+  * STATUS_VOUT, STATUS_INPUT
+  */
++#define PB_VOLTAGE_VIN_OFF		BIT(3)
+ #define PB_VOLTAGE_UV_FAULT		BIT(4)
+ #define PB_VOLTAGE_UV_WARNING		BIT(5)
+ #define PB_VOLTAGE_OV_WARNING		BIT(6)
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 7a13057007d9..117e3ce9c76a 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -1360,7 +1360,7 @@ static const struct pmbus_limit_attr vin_limit_attrs[] = {
+ 		.reg = PMBUS_VIN_UV_FAULT_LIMIT,
+ 		.attr = "lcrit",
+ 		.alarm = "lcrit_alarm",
+-		.sbit = PB_VOLTAGE_UV_FAULT,
++		.sbit = PB_VOLTAGE_UV_FAULT | PB_VOLTAGE_VIN_OFF,
+ 	}, {
+ 		.reg = PMBUS_VIN_OV_WARN_LIMIT,
+ 		.attr = "max",
+-- 
+2.34.1
+
 
 
