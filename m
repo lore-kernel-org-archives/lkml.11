@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB753C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA53EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiDEJm5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        id S1345142AbiDEJnE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239491AbiDEIUI (ORCPT
+        with ESMTP id S239509AbiDEIUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230AEB0F;
-        Tue,  5 Apr 2022 01:14:25 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9850E52;
+        Tue,  5 Apr 2022 01:14:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B444560AFB;
-        Tue,  5 Apr 2022 08:14:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B71F1C385A0;
-        Tue,  5 Apr 2022 08:14:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7150FB81BAC;
+        Tue,  5 Apr 2022 08:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B762FC385A0;
+        Tue,  5 Apr 2022 08:14:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146464;
-        bh=0pLrrcavlwd3qxQF80d5IMDqCTbwJ3B3LJCH2xkpo4w=;
+        s=korg; t=1649146491;
+        bh=GJWTx2va9kVPJ+UsHarwUFYycQHMaT1jG3zkI1xGkhM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QsjczJtEoHYb4bZplUsPgqw5p+AfO2bHu80VZkVEJ8WH7gK/XBNwdtCZjc4xtS5re
-         o1NKMQ2vtApBE/O5ez0tYchqvRC/wnrw4/yl5jPUG4pqP7J3AWYULUxCKiYdzzNdDl
-         87pJvvrATWY2sHKa+EpglYsJW7dJztDQa2xdp1Qo=
+        b=FlfQ2g8XcPwohdZ28PSN+YSkLHEhX7/8lt2qkZQthyXLwPlIPOKGaEAoRwyxzO3iY
+         PVp0y5/iuXq8fnramskQuc9N4qzoqjVE+gqShBisUeKuV0xwC6B1qVz9/3nLiAGPoT
+         ptLI5AJKTqcXM0WrZLMsDuxaR+FcbuG0v+9a/f/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0773/1126] pinctrl: mediatek: paris: Skip custom extra pin config dump for virtual GPIOs
-Date:   Tue,  5 Apr 2022 09:25:20 +0200
-Message-Id: <20220405070430.269850584@linuxfoundation.org>
+Subject: [PATCH 5.17 0756/1126] clk: loongson1: Terminate clk_div_table with sentinel element
+Date:   Tue,  5 Apr 2022 09:25:03 +0200
+Message-Id: <20220405070429.775437519@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,40 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-[ Upstream commit 1763933d377ecb05454f8d20e3c8922480db2ac0 ]
+[ Upstream commit 3eb00f89162e80083dfcaa842468b510462cfeaa ]
 
-Virtual GPIOs do not have any hardware state associated with them. Any
-attempt to read back hardware state for these pins result in error
-codes.
+In order that the end of a clk_div_table can be detected, it must be
+terminated with a sentinel element (.div = 0).
 
-Skip dumping extra pin config information for these virtual GPIOs.
-
-Fixes: 184d8e13f9b1 ("pinctrl: mediatek: Add support for pin configuration dump via debugfs.")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-7-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: b4626a7f4892 ("CLK: Add Loongson1C clock support")
+Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
+Link: https://lore.kernel.org/r/20220218000922.134857-3-j.neuschaefer@gmx.net
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/clk/loongson1/clk-loongson1c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
-index 3bda1aac650b..02dac17db51d 100644
---- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-@@ -581,6 +581,9 @@ ssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,
- 	if (gpio >= hw->soc->npins)
- 		return -EINVAL;
+diff --git a/drivers/clk/loongson1/clk-loongson1c.c b/drivers/clk/loongson1/clk-loongson1c.c
+index 703f87622cf5..1ebf740380ef 100644
+--- a/drivers/clk/loongson1/clk-loongson1c.c
++++ b/drivers/clk/loongson1/clk-loongson1c.c
+@@ -37,6 +37,7 @@ static const struct clk_div_table ahb_div_table[] = {
+ 	[1] = { .val = 1, .div = 4 },
+ 	[2] = { .val = 2, .div = 3 },
+ 	[3] = { .val = 3, .div = 3 },
++	[4] = { /* sentinel */ }
+ };
  
-+	if (mtk_is_virt_gpio(hw, gpio))
-+		return -EINVAL;
-+
- 	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
- 	pinmux = mtk_pctrl_get_pinmux(hw, gpio);
- 	if (pinmux >= hw->soc->nfuncs)
+ void __init ls1x_clk_init(void)
 -- 
 2.34.1
 
