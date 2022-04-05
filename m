@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F022C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8100C4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841076AbiDFBPG (ORCPT
+        id S1841108AbiDFBPT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
+        Tue, 5 Apr 2022 21:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354776AbiDEKPs (ORCPT
+        with ESMTP id S1349899AbiDEJv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:15:48 -0400
+        Tue, 5 Apr 2022 05:51:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CB149C83;
-        Tue,  5 Apr 2022 03:02:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7F22DAA8;
+        Tue,  5 Apr 2022 02:49:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99C05B81C8B;
-        Tue,  5 Apr 2022 10:02:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17892C385A1;
-        Tue,  5 Apr 2022 10:02:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82128B81B76;
+        Tue,  5 Apr 2022 09:49:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE823C385A2;
+        Tue,  5 Apr 2022 09:49:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152963;
-        bh=3TnHiDcoE4UN7piXzw8IEQIziQxDeP2KahwoBf8cuVg=;
+        s=korg; t=1649152197;
+        bh=p4qOkgGo1/eyoeVeoSnjF3H2g47JG7CGB9P5oxsXQkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SJYjXxRc8m1RbNetZo3orsE7L7WKKxzlJcvlpQA3GArXcLp0l1/eGibsZSxVbkgrG
-         59rhFq8iqsiY1HSAkivy/H5uJTeS/cDP8P2OQExwpHLSJrcSeubSoVpctWFyYPQ6x+
-         D9FRmUG7Ya3eipyyI89HcVDh4KfhHrJgos/l1I4Q=
+        b=SxdP/ZPEtgv/iqCT2HMpGi9NbjdhGvR7LH+T1AEPC0Qhe4qX1goSUFZZWIYDOt0Jv
+         iXsYidtQsmbJEESefVf4dCeKhyV8Iwo+TWEj01QlkzigzjMFIESgcd5LuLfhieGxwI
+         TvF82pqJpBLDhbem6GRb7GVHCo+YC5vWg1p5DvOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mason Yang <masonccyang@mxic.com.tw>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Zhengxun Li <zhengxunli@mxic.com.tw>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.10 053/599] spi: mxic: Fix the transmit path
-Date:   Tue,  5 Apr 2022 09:25:47 +0200
-Message-Id: <20220405070300.406181228@linuxfoundation.org>
+        stable@vger.kernel.org, rftc <rftc@gmx.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 689/913] crypto: xts - Add softdep on ecb
+Date:   Tue,  5 Apr 2022 09:29:11 +0200
+Message-Id: <20220405070400.487601863@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,66 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit 5fd6739e0df7e320bcac103dfb95fe75941fea17 upstream.
+[ Upstream commit dfe085d8dcd0bb1fe20cc2327e81c8064cead441 ]
 
-By working with external hardware ECC engines, we figured out that
-Under certain circumstances, it is needed for the SPI controller to
-check INT_TX_EMPTY and INT_RX_NOT_EMPTY in both receive and transmit
-path (not only in the receive path). The delay penalty being
-negligible, move this code in the common path.
+The xts module needs ecb to be present as it's meant to work
+on top of ecb.  This patch adds a softdep so ecb can be included
+automatically into the initramfs.
 
-Fixes: b942d80b0a39 ("spi: Add MXIC controller driver")
-Cc: stable@vger.kernel.org
-Suggested-by: Mason Yang <masonccyang@mxic.com.tw>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Reviewed-by: Zhengxun Li <zhengxunli@mxic.com.tw>
-Reviewed-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/linux-mtd/20220127091808.1043392-10-miquel.raynal@bootlin.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: rftc <rftc@gmx.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-mxic.c |   26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+ crypto/xts.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/spi/spi-mxic.c
-+++ b/drivers/spi/spi-mxic.c
-@@ -304,25 +304,21 @@ static int mxic_spi_data_xfer(struct mxi
- 
- 		writel(data, mxic->regs + TXD(nbytes % 4));
- 
--		if (rxbuf) {
--			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
--						 sts & INT_TX_EMPTY, 0,
--						 USEC_PER_SEC);
--			if (ret)
--				return ret;
-+		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
-+					 sts & INT_TX_EMPTY, 0, USEC_PER_SEC);
-+		if (ret)
-+			return ret;
- 
--			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
--						 sts & INT_RX_NOT_EMPTY, 0,
--						 USEC_PER_SEC);
--			if (ret)
--				return ret;
-+		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
-+					 sts & INT_RX_NOT_EMPTY, 0,
-+					 USEC_PER_SEC);
-+		if (ret)
-+			return ret;
- 
--			data = readl(mxic->regs + RXD);
-+		data = readl(mxic->regs + RXD);
-+		if (rxbuf) {
- 			data >>= (8 * (4 - nbytes));
- 			memcpy(rxbuf + pos, &data, nbytes);
--			WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
--		} else {
--			readl(mxic->regs + RXD);
- 		}
- 		WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
- 
+diff --git a/crypto/xts.c b/crypto/xts.c
+index 6c12f30dbdd6..63c85b9e64e0 100644
+--- a/crypto/xts.c
++++ b/crypto/xts.c
+@@ -466,3 +466,4 @@ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("XTS block cipher mode");
+ MODULE_ALIAS_CRYPTO("xts");
+ MODULE_IMPORT_NS(CRYPTO_INTERNAL);
++MODULE_SOFTDEP("pre: ecb");
+-- 
+2.34.1
+
 
 
