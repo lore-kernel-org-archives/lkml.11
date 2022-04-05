@@ -2,150 +2,305 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BE2C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 791E2C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456381AbiDEWpp (ORCPT
+        id S1456307AbiDEWpl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
+        Tue, 5 Apr 2022 18:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358035AbiDEK14 (ORCPT
+        with ESMTP id S1388908AbiDEPUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB6D694AC;
-        Tue,  5 Apr 2022 03:13:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B3DE61562;
-        Tue,  5 Apr 2022 10:13:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A3F5C385A0;
-        Tue,  5 Apr 2022 10:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153595;
-        bh=6teVxoPhBawGeWELxNYk1AiLJDt6H6dR+P6fL/PEkA8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pR800msCUzh6fRFGpsNAslH2rHhd973zmbs2enWnxSi2H1QVNvkLnbSR56X6d2Y4g
-         T+8LNL83ZTagMMBZzq3FrnQAQTSJscoiwrrrLi+6oyIr0NiJv4FGSmmd2Gkhv6KpQE
-         iLUdJn5lyrjM2I2nuBf/XMEgaleCUvBwsuKY6iBU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 277/599] ath9k_htc: fix uninit value bugs
-Date:   Tue,  5 Apr 2022 09:29:31 +0200
-Message-Id: <20220405070307.080278984@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:20:44 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1033C625B;
+        Tue,  5 Apr 2022 06:35:13 -0700 (PDT)
+X-UUID: cc3c544588a74722b01236958dfe2cf2-20220405
+X-UUID: cc3c544588a74722b01236958dfe2cf2-20220405
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1758654438; Tue, 05 Apr 2022 21:35:05 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 5 Apr 2022 21:35:03 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 5 Apr 2022 21:35:03 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <pmladek@suse.com>
+CC:     <acme@kernel.org>, <akpm@linux-foundation.org>,
+        <alexander.shishkin@linux.intel.com>, <catalin.marinas@arm.com>,
+        <davem@davemloft.net>, <jolsa@redhat.com>, <jthierry@redhat.com>,
+        <keescook@chromium.org>, <kernelfans@gmail.com>,
+        <lecopzer.chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
+        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
+        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
+        <nixiaoming@huawei.com>, <peterz@infradead.org>,
+        <sparclinux@vger.kernel.org>, <sumit.garg@linaro.org>,
+        <wangqing@vivo.com>, <will@kernel.org>, <yj.chiang@mediatek.com>
+Subject: Re: [PATCH v3 4/5] kernel/watchdog: Adapt the watchdog_hld interface for async model 
+Date:   Tue, 5 Apr 2022 21:35:03 +0800
+Message-ID: <20220405133503.4487-1-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220404144113.GB26840@pathway.suse.cz>
+References: <20220404144113.GB26840@pathway.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+> On Thu 2022-03-24 22:14:04, Lecopzer Chen wrote:
+> > When lockup_detector_init()->watchdog_nmi_probe(), PMU may be not ready
+> > yet. E.g. on arm64, PMU is not ready until
+> > device_initcall(armv8_pmu_driver_init).  And it is deeply integrated
+> > with the driver model and cpuhp. Hence it is hard to push this
+> > initialization before smp_init().
+> > 
+> > But it is easy to take an opposite approach and try to initialize
+> > the watchdog once again later.
+> > The delayed probe is called using workqueues. It need to allocate
+> > memory and must be proceed in a normal context.
+> > The delayed probe is queued only when the early one returns -EBUSY.
+> > It is the return code returned when PMU is not ready yet.
+> > 
+> > Provide an API - retry_lockup_detector_init() for anyone who needs
+> > to delayed init lockup detector.
+> > 
+> > The original assumption is: nobody should use delayed probe after
+> > lockup_detector_check() which has __init attribute.
+> > That is, anyone uses this API must call between lockup_detector_init()
+> > and lockup_detector_check(), and the caller must have __init attribute
+> > 
+> > Co-developed-by: Pingfan Liu <kernelfans@gmail.com>
+> > Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
+> > Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
+> > Suggested-by: Petr Mladek <pmladek@suse.com>
+> > ---
+> >  include/linux/nmi.h |  3 ++
+> >  kernel/watchdog.c   | 69 +++++++++++++++++++++++++++++++++++++++++++--
+> >  2 files changed, 70 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/include/linux/nmi.h b/include/linux/nmi.h
+> > index b7bcd63c36b4..1d84c9a8b460 100644
+> > --- a/include/linux/nmi.h
+> > +++ b/include/linux/nmi.h
+> > @@ -118,6 +118,9 @@ static inline int hardlockup_detector_perf_init(void) { return 0; }
+> >  
+> >  void watchdog_nmi_stop(void);
+> >  void watchdog_nmi_start(void);
+> > +
+> > +extern bool allow_lockup_detector_init_retry;
+> > +void retry_lockup_detector_init(void);
+> >  int watchdog_nmi_probe(void);
+> >  void watchdog_nmi_enable(unsigned int cpu);
+> >  void watchdog_nmi_disable(unsigned int cpu);
+> > diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+> > index b71d434cf648..308ba29f8f0f 100644
+> > --- a/kernel/watchdog.c
+> > +++ b/kernel/watchdog.c
+> > @@ -103,7 +103,13 @@ void __weak watchdog_nmi_disable(unsigned int cpu)
+> >  	hardlockup_detector_perf_disable();
+> >  }
+> >  
+> > -/* Return 0, if a NMI watchdog is available. Error code otherwise */
+> > +/*
+> > + * Arch specific API.
+> > + *
+> > + * Return 0 when NMI watchdog is available, negative value otherwise.
+> > + * The error code -EBUSY is special. It means that a deferred probe
+> > + * might succeed later.
+> > + */
+> >  int __weak __init watchdog_nmi_probe(void)
+> >  {
+> >  	return hardlockup_detector_perf_init();
+> > @@ -839,16 +845,75 @@ static void __init watchdog_sysctl_init(void)
+> >  #define watchdog_sysctl_init() do { } while (0)
+> >  #endif /* CONFIG_SYSCTL */
+> >  
+> > +static void lockup_detector_delay_init(struct work_struct *work);
+> > +bool allow_lockup_detector_init_retry __initdata;
+> > +
+> > +static struct work_struct detector_work __initdata =
+> > +		__WORK_INITIALIZER(detector_work, lockup_detector_delay_init);
+> > +
+> > +static void __init lockup_detector_delay_init(struct work_struct *work)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret = watchdog_nmi_probe();
+> > +	if (ret) {
+> > +		pr_info("Delayed init of the lockup detector failed: %d\n", ret);
+> > +		pr_info("Perf NMI watchdog permanently disabled\n");
+> > +		return;
+> > +	}
+> > +
+> > +	nmi_watchdog_available = true;
+> > +	lockup_detector_setup();
+> 
+> The name of the variable "allow_lockup_detector_init_retry" is
+> slightly confusing in this context. I suggest to add a comment:
+> 
+> 	/* Retry is not needed any longer. */
+> > +	allow_lockup_detector_init_retry = false;
+> 
 
-[ Upstream commit d1e0df1c57bd30871dd1c855742a7c346dbca853 ]
+Got it, I'll add it, thanks.
 
-Syzbot reported 2 KMSAN bugs in ath9k. All of them are caused by missing
-field initialization.
 
-In htc_connect_service() svc_meta_len and pad are not initialized. Based
-on code it looks like in current skb there is no service data, so simply
-initialize svc_meta_len to 0.
+> 
+> > +}
+> > +
+> > +/*
+> > + * retry_lockup_detector_init - retry init lockup detector if possible.
+> > + *
+> > + * Only take effect when allow_lockup_detector_init_retry is true, which
+> > + * means it must call between lockup_detector_init() and lockup_detector_check().
+> > + * Be aware that caller must have __init attribute, relative functions
+> > + * will be freed after kernel initialization.
+> > + */
+> > +void __init retry_lockup_detector_init(void)
+> > +{
+> > +	if (!allow_lockup_detector_init_retry)
+> > +		return;
+> > +
+> > +	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
+> > +}
+> > +
+> > +/* Ensure the check is called after the initialization of driver */
+> > +static int __init lockup_detector_check(void)
+> > +{
+> > +	/* Make sure no work is pending. */
+> > +	flush_work(&detector_work);
+> 
+> This is racy. We should first disable
+> "allow_lockup_detector_init_retry" to make sure
+> that retry_lockup_detector_init() will not queue
+> the work any longer.
 
-htc_issue_send() does not initialize htc_frame_hdr::control array. Based
-on firmware code, it will initialize it by itself, so simply zero whole
-array to make KMSAN happy
+But disable before flush_work will make the 
+    lockup_detector_delay_init() ->
+    watchdog_nmi_probe ->
+    +	if (!allow_lockup_detector_init_retry)
+    +		return -EBUSY;
 
-Fail logs:
+Plese check the code I provide below.
 
-BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
- hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
- htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
- htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
+
+> 
+> > +	if (!allow_lockup_detector_init_retry)
+> > +		return 0;
+> > +
+> > +	allow_lockup_detector_init_retry = false;
+> > +	pr_info("Delayed init checking failed, please check your driver.\n");
+> 
+> This prints that the init failed without checking the state
+> of the watchdog. I guess that it works but it is far from
+> obvious and any further change might break it.
+> 
+> Is the message really needed?
+> Does it help?
+> What exact driver needs checking?
+> 
+> IMHO, it just makes the code more complicated and
+> it is not worth it.
+> 
+
+I think you're right, the message was needed in the patch v2 because we
+did another retry in lockup_detector_check().
+But now we only do "checking" and the failed message in
+lockup_detector_delay_init should be enough.
+
+
+> I suggest to keep it simple:
+> 
+> /*
+>  * Ensure the check is called after the initialization of driver
+>  * and before removing init code.
+>  */
+> static int __init lockup_detector_check(void)
+> {
+> 	allow_lockup_detector_init_retry = false;
+> 	flush_work(&detector_work);
+> 
+> 	return 0;
+> }
+> 
+
+
+Combine with the first racy problem, let me limit retry_lockup_detector_init
+can be called only once.
+
+how about:
 ...
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
+static bool __init delayed_init_allowed = true;
 ...
+/*
+ * retry_lockup_detector_init - retry init lockup detector if possible.
+ *
+ * Only take effect when allow_lockup_detector_init_retry is true, which
+ * means it must call between lockup_detector_init() and lockup_detector_check().
+ * Be aware that caller must have __init attribute, relative functions
+ * will be freed after kernel initialization.
+ */
+void __init retry_lockup_detector_init(void)
+{
+	if (!allow_lockup_detector_init_retry || !delayed_init_allowed)
+		return;
 
-Bytes 4-7 of 18 are uninitialized
-Memory access of size 18 starts at ffff888027377e00
+	/* 
+	 * we shouldn't queue any delayed init work twice to avoid
+	 * any unwanted racy.
+	 */
+	delayed_init_allowed = false;
+	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
+}
 
-BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
- hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
- htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
- htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
-...
 
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
-...
+/*
+ * Ensure the check is called after the initialization of driver
+ * and before removing init code.
+ */
+static int __init lockup_detector_check(void)
+{
+	delayed_init_allowed = false;
+	flush_work(&detector_work);
+	allow_lockup_detector_init_retry = false;
 
-Bytes 16-17 of 18 are uninitialized
-Memory access of size 18 starts at ffff888027377e00
-
-Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220115122733.11160-1-paskripkin@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/ath/ath9k/htc_hst.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
-index 510e61e97dbc..994ec48b2f66 100644
---- a/drivers/net/wireless/ath/ath9k/htc_hst.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
-@@ -30,6 +30,7 @@ static int htc_issue_send(struct htc_target *target, struct sk_buff* skb,
- 	hdr->endpoint_id = epid;
- 	hdr->flags = flags;
- 	hdr->payload_len = cpu_to_be16(len);
-+	memset(hdr->control, 0, sizeof(hdr->control));
- 
- 	status = target->hif->send(target->hif_dev, endpoint->ul_pipeid, skb);
- 
-@@ -272,6 +273,10 @@ int htc_connect_service(struct htc_target *target,
- 	conn_msg->dl_pipeid = endpoint->dl_pipeid;
- 	conn_msg->ul_pipeid = endpoint->ul_pipeid;
- 
-+	/* To prevent infoleak */
-+	conn_msg->svc_meta_len = 0;
-+	conn_msg->pad = 0;
-+
- 	ret = htc_issue_send(target, skb, skb->len, 0, ENDPOINT0);
- 	if (ret)
- 		goto err;
--- 
-2.34.1
+	return 0;
+}
 
 
 
+> or if you really want that message then I would do:
+> 
+> /*
+>  * Ensure the check is called after the initialization of driver
+>  * and before removing init code.
+>  */
+> static int __init lockup_detector_check(void)
+> {
+> 	bool delayed_init_allowed = allow_lockup_detector_init_retry;
+> 
+> 	allow_lockup_detector_init_retry = false;
+> 	flush_work(&detector_work);
+> 
+> 	if (delayed_init_allowed && !nmi_watchdog_available)
+> 		pr_info("Delayed init failed. Please, check your driver.\n");
+> 
+> 	return 0;
+> }
+> 
+
+
+thanks
+BRs,
+Lecopzer
