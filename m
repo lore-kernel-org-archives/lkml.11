@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAA3C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F558C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842378AbiDFBbW (ORCPT
+        id S1842354AbiDFBbI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:31:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57072 "EHLO
+        Tue, 5 Apr 2022 21:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351851AbiDEKDZ (ORCPT
+        with ESMTP id S1354574AbiDEKOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4808975C18;
-        Tue,  5 Apr 2022 02:52:17 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500E848E55;
+        Tue,  5 Apr 2022 03:01:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3525BCE1C9E;
-        Tue,  5 Apr 2022 09:52:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B4D7C385A1;
-        Tue,  5 Apr 2022 09:52:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14036B81B96;
+        Tue,  5 Apr 2022 10:01:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74372C385A1;
+        Tue,  5 Apr 2022 10:01:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152334;
-        bh=/hJvC2gf0i2zGMllIvwBp0yhdrPxL94SQLzsN5wb/G8=;
+        s=korg; t=1649152877;
+        bh=zTkIlxHMHoKKV9SZz13H6R9GwmKrGgfVELCZXZEtKxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tq+LJKJZ9+Pxw9HHy3F3oZTxdMHRK2OTecyuB9f2Csxh4YL+83vVnLyva+iQCwtmI
-         cb0l84qdOVPFBNuKvqEW8iTq/0cVxsOahuOAlMJ2kZjQ/oEGcVl2cDMiiXcnJ29/mW
-         YTajjNRuNRkQ2TtIhbpcF1zlKuQM6XqzYtQvrBUQ=
+        b=ajdHqvhKzRh0kbYzIvjKDtoXl7XwunMyB6IEjbLnIm3tiVexgcLb2i/9y9Wgqm0oX
+         0eqehz8h1/oZscDSEqcoI1XsbfKiX7ufGcNHk9hcjUt0A3aoPBFwrgEykimxM9DUHB
+         KbpzdenUyIGiSfloRUmY2s3XAXtzzH6sdNyfJvvA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evgeny Novikov <novikov@ispras.ru>,
-        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 738/913] video: fbdev: w100fb: Reset global state
-Date:   Tue,  5 Apr 2022 09:30:00 +0200
-Message-Id: <20220405070401.956283853@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Waiman Long <longman@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
+Subject: [PATCH 5.10 021/599] locking/lockdep: Avoid potential access of invalid memory in lock_class
+Date:   Tue,  5 Apr 2022 09:25:15 +0200
+Message-Id: <20220405070259.447667012@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,68 +53,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Novikov <novikov@ispras.ru>
+From: Waiman Long <longman@redhat.com>
 
-[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
+commit 61cc4534b6550997c97a03759ab46b29d44c0017 upstream.
 
-w100fb_probe() did not reset the global state to its initial state. This
-can result in invocation of iounmap() even when there was not the
-appropriate successful call of ioremap(). For instance, this may be the
-case if first probe fails after two successful ioremap() while second
-probe fails when first ioremap() fails. The similar issue is with
-w100fb_remove(). The patch fixes both bugs.
+It was found that reading /proc/lockdep after a lockdep splat may
+potentially cause an access to freed memory if lockdep_unregister_key()
+is called after the splat but before access to /proc/lockdep [1]. This
+is due to the fact that graph_lock() call in lockdep_unregister_key()
+fails after the clearing of debug_locks by the splat process.
 
-Found by Linux Driver Verification project (linuxtesting.org).
+After lockdep_unregister_key() is called, the lock_name may be freed
+but the corresponding lock_class structure still have a reference to
+it. That invalid memory pointer will then be accessed when /proc/lockdep
+is read by a user and a use-after-free (UAF) error will be reported if
+KASAN is enabled.
 
-Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
-Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+To fix this problem, lockdep_unregister_key() is now modified to always
+search for a matching key irrespective of the debug_locks state and
+zap the corresponding lock class if a matching one is found.
+
+[1] https://lore.kernel.org/lkml/77f05c15-81b6-bddd-9650-80d5f23fe330@i-love.sakura.ne.jp/
+
+Fixes: 8b39adbee805 ("locking/lockdep: Make lockdep_unregister_key() honor 'debug_locks' again")
+Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Signed-off-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Cc: Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
+Link: https://lkml.kernel.org/r/20220103023558.1377055-1-longman@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ kernel/locking/lockdep.c |   24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
-index d96ab28f8ce4..4e641a780726 100644
---- a/drivers/video/fbdev/w100fb.c
-+++ b/drivers/video/fbdev/w100fb.c
-@@ -770,12 +770,18 @@ static int w100fb_probe(struct platform_device *pdev)
- 		fb_dealloc_cmap(&info->cmap);
- 		kfree(info->pseudo_palette);
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -6209,7 +6209,13 @@ void lockdep_reset_lock(struct lockdep_m
+ 		lockdep_reset_lock_reg(lock);
+ }
+ 
+-/* Unregister a dynamically allocated key. */
++/*
++ * Unregister a dynamically allocated key.
++ *
++ * Unlike lockdep_register_key(), a search is always done to find a matching
++ * key irrespective of debug_locks to avoid potential invalid access to freed
++ * memory in lock_class entry.
++ */
+ void lockdep_unregister_key(struct lock_class_key *key)
+ {
+ 	struct hlist_head *hash_head = keyhashentry(key);
+@@ -6224,10 +6230,8 @@ void lockdep_unregister_key(struct lock_
+ 		return;
+ 
+ 	raw_local_irq_save(flags);
+-	if (!graph_lock())
+-		goto out_irq;
++	lockdep_lock();
+ 
+-	pf = get_pending_free();
+ 	hlist_for_each_entry_rcu(k, hash_head, hash_entry) {
+ 		if (k == key) {
+ 			hlist_del_rcu(&k->hash_entry);
+@@ -6235,11 +6239,13 @@ void lockdep_unregister_key(struct lock_
+ 			break;
+ 		}
  	}
--	if (remapped_fbuf != NULL)
-+	if (remapped_fbuf != NULL) {
- 		iounmap(remapped_fbuf);
--	if (remapped_regs != NULL)
-+		remapped_fbuf = NULL;
+-	WARN_ON_ONCE(!found);
+-	__lockdep_free_key_range(pf, key, 1);
+-	call_rcu_zapped(pf);
+-	graph_unlock();
+-out_irq:
++	WARN_ON_ONCE(!found && debug_locks);
++	if (found) {
++		pf = get_pending_free();
++		__lockdep_free_key_range(pf, key, 1);
++		call_rcu_zapped(pf);
 +	}
-+	if (remapped_regs != NULL) {
- 		iounmap(remapped_regs);
--	if (remapped_base != NULL)
-+		remapped_regs = NULL;
-+	}
-+	if (remapped_base != NULL) {
- 		iounmap(remapped_base);
-+		remapped_base = NULL;
-+	}
- 	if (info)
- 		framebuffer_release(info);
- 	return err;
-@@ -795,8 +801,11 @@ static int w100fb_remove(struct platform_device *pdev)
- 	fb_dealloc_cmap(&info->cmap);
++	lockdep_unlock();
+ 	raw_local_irq_restore(flags);
  
- 	iounmap(remapped_base);
-+	remapped_base = NULL;
- 	iounmap(remapped_regs);
-+	remapped_regs = NULL;
- 	iounmap(remapped_fbuf);
-+	remapped_fbuf = NULL;
- 
- 	framebuffer_release(info);
- 
--- 
-2.34.1
-
+ 	/* Wait until is_dynamic_key() has finished accessing k->hash_entry. */
 
 
