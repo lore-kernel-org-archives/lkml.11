@@ -2,107 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3FBC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B191C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380162AbiDEVgc (ORCPT
+        id S1380027AbiDEVfw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
+        Tue, 5 Apr 2022 17:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381985AbiDEORL (ORCPT
+        with ESMTP id S1345169AbiDEKkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 10:17:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC3521606B0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:01:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649163681;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=c1Lv+i1PBgFa+gfs5DRpbJ6m0eCPENa4LFWCMUe7Pgk=;
-        b=fxvIN8WwOn87c6DahdYexpN8Ka3Hj0FlsXDrSfK/c34qYlYxSLBwFAeJrzZkQ5ZOaQIWWx
-        efZDThHgyY571qHgLXf9qGU6ouN14q+NUsaojS3s8/ul/M2xM9JkDKsHGqGjtgwc3PvvYp
-        qiD5ytBSPM2f6Bj5gXIKyefuwxdcfKs=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-556--VAqhSEkMXCvVMot_Lv7lQ-1; Tue, 05 Apr 2022 09:01:17 -0400
-X-MC-Unique: -VAqhSEkMXCvVMot_Lv7lQ-1
-Received: by mail-wm1-f70.google.com with SMTP id m3-20020a05600c3b0300b0038e74402cb6so1217631wms.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:01:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=c1Lv+i1PBgFa+gfs5DRpbJ6m0eCPENa4LFWCMUe7Pgk=;
-        b=V/fkrxMsh6dY8jrYWTQ4+TXSB2ZyzNAQIXjF6fA+U98gVYidO6oWtkGBb/wib5JrOj
-         NWgwt9o5zeWymbVvmbIRSvlhgRxDVmgrWSMEBYadoDssnkzEfQaB1AkQAYvVW5pg5TuJ
-         o9HRvU8dS9ctOmKKZ3YOg2mUGTTDUyY3wuw6NQs1CJqwMqY+7lNXJpNm9zDp4P0NKASN
-         ew71FO3Crqvnyq/pgcSZ3L/vjV743l61wjPi0BzQFa5OAAolfWESBoSCg9cWvQxuaVOq
-         jKls/Trmc2IhuFVJPomTG9Zbj+YJtL/qkJJPvRnxv5flD3oEP0AQXhBkXQ5GS/uJ6XBe
-         2lUA==
-X-Gm-Message-State: AOAM530zgmjsHxxgjsKlmZjgkNfr9fqweKxG5sP9WQDPGTrkneTYsDVa
-        Y/AJvroGZbBUk25PXKN+t+5bosy4KHo6Q+kzD952tjweRmzftlJ+FSSrTmk1iiZEyyLND45xMo0
-        t21YUDDhmerwIfEovcLHVzz3O
-X-Received: by 2002:adf:ba8f:0:b0:1e9:4afb:179b with SMTP id p15-20020adfba8f000000b001e94afb179bmr2726493wrg.57.1649163671583;
-        Tue, 05 Apr 2022 06:01:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxNzI5PD1sS5Vh0+bMeeZnomXZHkWuWTcu1XLTQ/uRuaUVRxMlYuIfdB8IaN0F1ErzpxtndZQ==
-X-Received: by 2002:adf:ba8f:0:b0:1e9:4afb:179b with SMTP id p15-20020adfba8f000000b001e94afb179bmr2726472wrg.57.1649163671377;
-        Tue, 05 Apr 2022 06:01:11 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id n2-20020adfb742000000b00205eda3b3c1sm12716780wre.34.2022.04.05.06.01.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 06:01:10 -0700 (PDT)
-Message-ID: <6e370d39-fcb6-c158-e5fb-690cd3802150@redhat.com>
-Date:   Tue, 5 Apr 2022 15:01:09 +0200
+        Tue, 5 Apr 2022 06:40:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B63D6F;
+        Tue,  5 Apr 2022 03:26:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CBEF61425;
+        Tue,  5 Apr 2022 10:26:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE328C385A0;
+        Tue,  5 Apr 2022 10:26:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154380;
+        bh=ESkcmHT5QNJOLkTp+IQ9C2+sFrBYSsnmmTEbq51Tz4Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Lsn/vkWAFtLJBW6LNbn1VqpEf/SOGYaNSJQsFt2EKxTJD3t/i4bKP+z2dYAB1EUMm
+         8CwABrDaKPOhiOZ8SJjqMWze70DUdZgQoIgLmpZd6qRWJ2RE4AlBFyxB0SmBcLa1Yl
+         lx7u+DvmIGq3xJl7Bo6LCpoIXH2RiUSKwNEnZox8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org, Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.10 556/599] rxrpc: Fix call timer start racing with call destruction
+Date:   Tue,  5 Apr 2022 09:34:10 +0200
+Message-Id: <20220405070315.387103225@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 027/104] KVM: TDX: initialize VM with TDX specific
- parameters
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <c3b37cf5c83f92be0e153075d81a80729bf1031e.1646422845.git.isaku.yamahata@intel.com>
- <509fb6fb5c581e6bf14149dff17d7426a6b061f2.camel@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <509fb6fb5c581e6bf14149dff17d7426a6b061f2.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/31/22 06:55, Kai Huang wrote:
->>   
->> +struct kvm_tdx_init_vm {
->> +	__u32 max_vcpus;
->> +	__u32 tsc_khz;
->> +	__u64 attributes;
->> +	__u64 cpuid;
-> Is it better to append all CPUIDs directly into this structure, perhaps at end
-> of this structure, to make it more consistent with TD_PARAMS?
-> 
-> Also, I think somewhere in commit message or comments we should explain why
-> CPUIDs are passed here (why existing KVM_SET_CUPID2 is not sufficient).
-> 
+From: David Howells <dhowells@redhat.com>
 
-Indeed, it would be easier to use the existing cpuid data in struct 
-kvm_vcpu, because right now there is no way to ensure that they are 
-consistent.
+commit 4a7f62f91933c8ae5308f9127fd8ea48188b6bc3 upstream.
 
-Why is KVM_SET_CPUID2 not enough?  Are there any modifications done by 
-KVM that affect the measurement?
+The rxrpc_call struct has a timer used to handle various timed events
+relating to a call.  This timer can get started from the packet input
+routines that are run in softirq mode with just the RCU read lock held.
+Unfortunately, because only the RCU read lock is held - and neither ref or
+other lock is taken - the call can start getting destroyed at the same time
+a packet comes in addressed to that call.  This causes the timer - which
+was already stopped - to get restarted.  Later, the timer dispatch code may
+then oops if the timer got deallocated first.
 
-Thanks,
+Fix this by trying to take a ref on the rxrpc_call struct and, if
+successful, passing that ref along to the timer.  If the timer was already
+running, the ref is discarded.
 
-Paolo
+The timer completion routine can then pass the ref along to the call's work
+item when it queues it.  If the timer or work item where already
+queued/running, the extra ref is discarded.
+
+Fixes: a158bdd3247b ("rxrpc: Fix call timeouts")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005073.html
+Link: https://lore.kernel.org/r/164865115696.2943015.11097991776647323586.stgit@warthog.procyon.org.uk
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/trace/events/rxrpc.h |    8 +++++++-
+ net/rxrpc/ar-internal.h      |   15 +++++++--------
+ net/rxrpc/call_event.c       |    2 +-
+ net/rxrpc/call_object.c      |   40 +++++++++++++++++++++++++++++++++++-----
+ 4 files changed, 50 insertions(+), 15 deletions(-)
+
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -83,12 +83,15 @@ enum rxrpc_call_trace {
+ 	rxrpc_call_error,
+ 	rxrpc_call_got,
+ 	rxrpc_call_got_kernel,
++	rxrpc_call_got_timer,
+ 	rxrpc_call_got_userid,
+ 	rxrpc_call_new_client,
+ 	rxrpc_call_new_service,
+ 	rxrpc_call_put,
+ 	rxrpc_call_put_kernel,
+ 	rxrpc_call_put_noqueue,
++	rxrpc_call_put_notimer,
++	rxrpc_call_put_timer,
+ 	rxrpc_call_put_userid,
+ 	rxrpc_call_queued,
+ 	rxrpc_call_queued_ref,
+@@ -278,12 +281,15 @@ enum rxrpc_tx_point {
+ 	EM(rxrpc_call_error,			"*E*") \
+ 	EM(rxrpc_call_got,			"GOT") \
+ 	EM(rxrpc_call_got_kernel,		"Gke") \
++	EM(rxrpc_call_got_timer,		"GTM") \
+ 	EM(rxrpc_call_got_userid,		"Gus") \
+ 	EM(rxrpc_call_new_client,		"NWc") \
+ 	EM(rxrpc_call_new_service,		"NWs") \
+ 	EM(rxrpc_call_put,			"PUT") \
+ 	EM(rxrpc_call_put_kernel,		"Pke") \
+-	EM(rxrpc_call_put_noqueue,		"PNQ") \
++	EM(rxrpc_call_put_noqueue,		"PnQ") \
++	EM(rxrpc_call_put_notimer,		"PnT") \
++	EM(rxrpc_call_put_timer,		"PTM") \
+ 	EM(rxrpc_call_put_userid,		"Pus") \
+ 	EM(rxrpc_call_queued,			"QUE") \
+ 	EM(rxrpc_call_queued_ref,		"QUR") \
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -760,14 +760,12 @@ void rxrpc_propose_ACK(struct rxrpc_call
+ 		       enum rxrpc_propose_ack_trace);
+ void rxrpc_process_call(struct work_struct *);
+ 
+-static inline void rxrpc_reduce_call_timer(struct rxrpc_call *call,
+-					   unsigned long expire_at,
+-					   unsigned long now,
+-					   enum rxrpc_timer_trace why)
+-{
+-	trace_rxrpc_timer(call, why, now);
+-	timer_reduce(&call->timer, expire_at);
+-}
++void rxrpc_reduce_call_timer(struct rxrpc_call *call,
++			     unsigned long expire_at,
++			     unsigned long now,
++			     enum rxrpc_timer_trace why);
++
++void rxrpc_delete_call_timer(struct rxrpc_call *call);
+ 
+ /*
+  * call_object.c
+@@ -791,6 +789,7 @@ void rxrpc_release_calls_on_socket(struc
+ bool __rxrpc_queue_call(struct rxrpc_call *);
+ bool rxrpc_queue_call(struct rxrpc_call *);
+ void rxrpc_see_call(struct rxrpc_call *);
++bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op);
+ void rxrpc_get_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_put_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_cleanup_call(struct rxrpc_call *);
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -310,7 +310,7 @@ recheck_state:
+ 	}
+ 
+ 	if (call->state == RXRPC_CALL_COMPLETE) {
+-		del_timer_sync(&call->timer);
++		rxrpc_delete_call_timer(call);
+ 		goto out_put;
+ 	}
+ 
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -53,10 +53,30 @@ static void rxrpc_call_timer_expired(str
+ 
+ 	if (call->state < RXRPC_CALL_COMPLETE) {
+ 		trace_rxrpc_timer(call, rxrpc_timer_expired, jiffies);
+-		rxrpc_queue_call(call);
++		__rxrpc_queue_call(call);
++	} else {
++		rxrpc_put_call(call, rxrpc_call_put);
++	}
++}
++
++void rxrpc_reduce_call_timer(struct rxrpc_call *call,
++			     unsigned long expire_at,
++			     unsigned long now,
++			     enum rxrpc_timer_trace why)
++{
++	if (rxrpc_try_get_call(call, rxrpc_call_got_timer)) {
++		trace_rxrpc_timer(call, why, now);
++		if (timer_reduce(&call->timer, expire_at))
++			rxrpc_put_call(call, rxrpc_call_put_notimer);
+ 	}
+ }
+ 
++void rxrpc_delete_call_timer(struct rxrpc_call *call)
++{
++	if (del_timer_sync(&call->timer))
++		rxrpc_put_call(call, rxrpc_call_put_timer);
++}
++
+ static struct lock_class_key rxrpc_call_user_mutex_lock_class_key;
+ 
+ /*
+@@ -463,6 +483,17 @@ void rxrpc_see_call(struct rxrpc_call *c
+ 	}
+ }
+ 
++bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
++{
++	const void *here = __builtin_return_address(0);
++	int n = atomic_fetch_add_unless(&call->usage, 1, 0);
++
++	if (n == 0)
++		return false;
++	trace_rxrpc_call(call->debug_id, op, n, here, NULL);
++	return true;
++}
++
+ /*
+  * Note the addition of a ref on a call.
+  */
+@@ -510,8 +541,7 @@ void rxrpc_release_call(struct rxrpc_soc
+ 	spin_unlock_bh(&call->lock);
+ 
+ 	rxrpc_put_call_slot(call);
+-
+-	del_timer_sync(&call->timer);
++	rxrpc_delete_call_timer(call);
+ 
+ 	/* Make sure we don't get any more notifications */
+ 	write_lock_bh(&rx->recvmsg_lock);
+@@ -618,6 +648,8 @@ static void rxrpc_destroy_call(struct wo
+ 	struct rxrpc_call *call = container_of(work, struct rxrpc_call, processor);
+ 	struct rxrpc_net *rxnet = call->rxnet;
+ 
++	rxrpc_delete_call_timer(call);
++
+ 	rxrpc_put_connection(call->conn);
+ 	rxrpc_put_peer(call->peer);
+ 	kfree(call->rxtx_buffer);
+@@ -652,8 +684,6 @@ void rxrpc_cleanup_call(struct rxrpc_cal
+ 
+ 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
+ 
+-	del_timer_sync(&call->timer);
+-
+ 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+ 	ASSERT(test_bit(RXRPC_CALL_RELEASED, &call->flags));
+ 
+
 
