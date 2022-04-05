@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E11EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D79C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391002AbiDENqf (ORCPT
+        id S1391060AbiDENrC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
+        Tue, 5 Apr 2022 09:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347339AbiDEJ0B (ORCPT
+        with ESMTP id S240032AbiDEJZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:26:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707E2DE92D;
-        Tue,  5 Apr 2022 02:15:22 -0700 (PDT)
+        Tue, 5 Apr 2022 05:25:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C772DE0BF;
+        Tue,  5 Apr 2022 02:15:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B72EB81B75;
-        Tue,  5 Apr 2022 09:15:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCCF6C385A0;
-        Tue,  5 Apr 2022 09:15:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 953FF61673;
+        Tue,  5 Apr 2022 09:14:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1DF2C385A2;
+        Tue,  5 Apr 2022 09:14:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150119;
-        bh=a6oPxCJzwFg+auaLybS3Cz5xCfoOmB6qPAWpGmmbt78=;
+        s=korg; t=1649150086;
+        bh=LuZ72yR3zA8xYuhPdNlrC+HdmP3HwSUgVvw+BOohrac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SvMPhZaRdqwzMm7sQTiiU53rPmf6/jFTSm5IWaUHQM1601SGqxAcpNS0xcczTdauh
-         s4qRps5G30Krs9YD3Dwl7hxZzkroZ0EncoML4wm8y85AuDS66bNBcSgI0clvoL/5fG
-         ie6IAaGCOaKDihgKGIOkxH36SfUrEJXKErlbFYQo=
+        b=HN8UlHMAYLkut6isRhXYCQT8dT6EP9WtNsOb98qFcEOgTeDmLFW03EkQAajrmiwMC
+         Fawnl0LTJyTxsS9zsUNoVVeq5I8X6xxVV0U4zHZ6wkKuEmOHHXBbH/fK/9AbAAG2aw
+         zgloVXS11GwGSjuMzl6sQWezj5kWaI6172lbwg48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 5.16 0922/1017] XArray: Fix xas_create_range() when multi-order entry present
-Date:   Tue,  5 Apr 2022 09:30:35 +0200
-Message-Id: <20220405070421.586364516@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH 5.16 0948/1017] ARM: iop32x: offset IRQ numbers by 1
+Date:   Tue,  5 Apr 2022 09:31:01 +0200
+Message-Id: <20220405070422.352220484@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,85 +52,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Arnd Bergmann <arnd@arndb.de>
 
-commit 3e3c658055c002900982513e289398a1aad4a488 upstream.
+commit 9d67412f24cc3a2c05f35f7c856addb07a2960ce upstream.
 
-If there is already an entry present that is of order >= XA_CHUNK_SHIFT
-when we call xas_create_range(), xas_create_range() will misinterpret
-that entry as a node and dereference xa_node->parent, generally leading
-to a crash that looks something like this:
+iop32x is one of the last platforms to use IRQ 0, and this has apparently
+stopped working in a 2014 cleanup without anyone noticing. This interrupt
+is used for the DMA engine, so most likely this has not actually worked
+in the past 7 years, but it's also not essential for using this board.
 
-general protection fault, probably for non-canonical address 0xdffffc0000000001:
-0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 32 Comm: khugepaged Not tainted 5.17.0-rc8-syzkaller-00003-g56e337f2cf13 #0
-RIP: 0010:xa_parent_locked include/linux/xarray.h:1207 [inline]
-RIP: 0010:xas_create_range+0x2d9/0x6e0 lib/xarray.c:725
+I'm splitting out this change from my GENERIC_IRQ_MULTI_HANDLER
+conversion so it can be backported if anyone cares.
 
-It's deterministically reproducable once you know what the problem is,
-but producing it in a live kernel requires khugepaged to hit a race.
-While the problem has been present since xas_create_range() was
-introduced, I'm not aware of a way to hit it before the page cache was
-converted to use multi-index entries.
-
-Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
-Reported-by: syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Fixes: a71b092a9c68 ("ARM: Convert handle_IRQ to use __handle_domain_irq")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+[ardb: take +1 offset into account in mask/unmask and init as well]
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Marc Zyngier <maz@kernel.org>
+Tested-by: Vladimir Murzin <vladimir.murzin@arm.com> # ARMv7M
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/test_xarray.c |   22 ++++++++++++++++++++++
- lib/xarray.c      |    2 ++
- 2 files changed, 24 insertions(+)
+ arch/arm/mach-iop32x/include/mach/entry-macro.S |    2 
+ arch/arm/mach-iop32x/include/mach/irqs.h        |    2 
+ arch/arm/mach-iop32x/irq.c                      |    6 +-
+ arch/arm/mach-iop32x/irqs.h                     |   60 ++++++++++++------------
+ 4 files changed, 37 insertions(+), 33 deletions(-)
 
---- a/lib/test_xarray.c
-+++ b/lib/test_xarray.c
-@@ -1463,6 +1463,25 @@ unlock:
- 	XA_BUG_ON(xa, !xa_empty(xa));
+--- a/arch/arm/mach-iop32x/include/mach/entry-macro.S
++++ b/arch/arm/mach-iop32x/include/mach/entry-macro.S
+@@ -20,7 +20,7 @@
+ 	mrc     p6, 0, \irqstat, c8, c0, 0	@ Read IINTSRC
+ 	cmp     \irqstat, #0
+ 	clzne   \irqnr, \irqstat
+-	rsbne   \irqnr, \irqnr, #31
++	rsbne   \irqnr, \irqnr, #32
+ 	.endm
+ 
+ 	.macro arch_ret_to_user, tmp1, tmp2
+--- a/arch/arm/mach-iop32x/include/mach/irqs.h
++++ b/arch/arm/mach-iop32x/include/mach/irqs.h
+@@ -9,6 +9,6 @@
+ #ifndef __IRQS_H
+ #define __IRQS_H
+ 
+-#define NR_IRQS			32
++#define NR_IRQS			33
+ 
+ #endif
+--- a/arch/arm/mach-iop32x/irq.c
++++ b/arch/arm/mach-iop32x/irq.c
+@@ -32,14 +32,14 @@ static void intstr_write(u32 val)
+ static void
+ iop32x_irq_mask(struct irq_data *d)
+ {
+-	iop32x_mask &= ~(1 << d->irq);
++	iop32x_mask &= ~(1 << (d->irq - 1));
+ 	intctl_write(iop32x_mask);
  }
  
-+static noinline void check_create_range_5(struct xarray *xa,
-+		unsigned long index, unsigned int order)
-+{
-+	XA_STATE_ORDER(xas, xa, index, order);
-+	unsigned int i;
-+
-+	xa_store_order(xa, index, order, xa_mk_index(index), GFP_KERNEL);
-+
-+	for (i = 0; i < order + 10; i++) {
-+		do {
-+			xas_lock(&xas);
-+			xas_create_range(&xas);
-+			xas_unlock(&xas);
-+		} while (xas_nomem(&xas, GFP_KERNEL));
-+	}
-+
-+	xa_destroy(xa);
-+}
-+
- static noinline void check_create_range(struct xarray *xa)
+ static void
+ iop32x_irq_unmask(struct irq_data *d)
  {
- 	unsigned int order;
-@@ -1490,6 +1509,9 @@ static noinline void check_create_range(
- 		check_create_range_4(xa, (3U << order) + 1, order);
- 		check_create_range_4(xa, (3U << order) - 1, order);
- 		check_create_range_4(xa, (1U << 24) + 1, order);
-+
-+		check_create_range_5(xa, 0, order);
-+		check_create_range_5(xa, (1U << order), order);
+-	iop32x_mask |= 1 << d->irq;
++	iop32x_mask |= 1 << (d->irq - 1);
+ 	intctl_write(iop32x_mask);
+ }
+ 
+@@ -65,7 +65,7 @@ void __init iop32x_init_irq(void)
+ 	    machine_is_em7210())
+ 		*IOP3XX_PCIIRSR = 0x0f;
+ 
+-	for (i = 0; i < NR_IRQS; i++) {
++	for (i = 1; i < NR_IRQS; i++) {
+ 		irq_set_chip_and_handler(i, &ext_chip, handle_level_irq);
+ 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
  	}
+--- a/arch/arm/mach-iop32x/irqs.h
++++ b/arch/arm/mach-iop32x/irqs.h
+@@ -7,36 +7,40 @@
+ #ifndef __IOP32X_IRQS_H
+ #define __IOP32X_IRQS_H
  
- 	check_create_range_3();
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -722,6 +722,8 @@ void xas_create_range(struct xa_state *x
++/* Interrupts in Linux start at 1, hardware starts at 0 */
++
++#define IOP_IRQ(x) ((x) + 1)
++
+ /*
+  * IOP80321 chipset interrupts
+  */
+-#define IRQ_IOP32X_DMA0_EOT	0
+-#define IRQ_IOP32X_DMA0_EOC	1
+-#define IRQ_IOP32X_DMA1_EOT	2
+-#define IRQ_IOP32X_DMA1_EOC	3
+-#define IRQ_IOP32X_AA_EOT	6
+-#define IRQ_IOP32X_AA_EOC	7
+-#define IRQ_IOP32X_CORE_PMON	8
+-#define IRQ_IOP32X_TIMER0	9
+-#define IRQ_IOP32X_TIMER1	10
+-#define IRQ_IOP32X_I2C_0	11
+-#define IRQ_IOP32X_I2C_1	12
+-#define IRQ_IOP32X_MESSAGING	13
+-#define IRQ_IOP32X_ATU_BIST	14
+-#define IRQ_IOP32X_PERFMON	15
+-#define IRQ_IOP32X_CORE_PMU	16
+-#define IRQ_IOP32X_BIU_ERR	17
+-#define IRQ_IOP32X_ATU_ERR	18
+-#define IRQ_IOP32X_MCU_ERR	19
+-#define IRQ_IOP32X_DMA0_ERR	20
+-#define IRQ_IOP32X_DMA1_ERR	21
+-#define IRQ_IOP32X_AA_ERR	23
+-#define IRQ_IOP32X_MSG_ERR	24
+-#define IRQ_IOP32X_SSP		25
+-#define IRQ_IOP32X_XINT0	27
+-#define IRQ_IOP32X_XINT1	28
+-#define IRQ_IOP32X_XINT2	29
+-#define IRQ_IOP32X_XINT3	30
+-#define IRQ_IOP32X_HPI		31
++#define IRQ_IOP32X_DMA0_EOT	IOP_IRQ(0)
++#define IRQ_IOP32X_DMA0_EOC	IOP_IRQ(1)
++#define IRQ_IOP32X_DMA1_EOT	IOP_IRQ(2)
++#define IRQ_IOP32X_DMA1_EOC	IOP_IRQ(3)
++#define IRQ_IOP32X_AA_EOT	IOP_IRQ(6)
++#define IRQ_IOP32X_AA_EOC	IOP_IRQ(7)
++#define IRQ_IOP32X_CORE_PMON	IOP_IRQ(8)
++#define IRQ_IOP32X_TIMER0	IOP_IRQ(9)
++#define IRQ_IOP32X_TIMER1	IOP_IRQ(10)
++#define IRQ_IOP32X_I2C_0	IOP_IRQ(11)
++#define IRQ_IOP32X_I2C_1	IOP_IRQ(12)
++#define IRQ_IOP32X_MESSAGING	IOP_IRQ(13)
++#define IRQ_IOP32X_ATU_BIST	IOP_IRQ(14)
++#define IRQ_IOP32X_PERFMON	IOP_IRQ(15)
++#define IRQ_IOP32X_CORE_PMU	IOP_IRQ(16)
++#define IRQ_IOP32X_BIU_ERR	IOP_IRQ(17)
++#define IRQ_IOP32X_ATU_ERR	IOP_IRQ(18)
++#define IRQ_IOP32X_MCU_ERR	IOP_IRQ(19)
++#define IRQ_IOP32X_DMA0_ERR	IOP_IRQ(20)
++#define IRQ_IOP32X_DMA1_ERR	IOP_IRQ(21)
++#define IRQ_IOP32X_AA_ERR	IOP_IRQ(23)
++#define IRQ_IOP32X_MSG_ERR	IOP_IRQ(24)
++#define IRQ_IOP32X_SSP		IOP_IRQ(25)
++#define IRQ_IOP32X_XINT0	IOP_IRQ(27)
++#define IRQ_IOP32X_XINT1	IOP_IRQ(28)
++#define IRQ_IOP32X_XINT2	IOP_IRQ(29)
++#define IRQ_IOP32X_XINT3	IOP_IRQ(30)
++#define IRQ_IOP32X_HPI		IOP_IRQ(31)
  
- 		for (;;) {
- 			struct xa_node *node = xas->xa_node;
-+			if (node->shift >= shift)
-+				break;
- 			xas->xa_node = xa_parent_locked(xas->xa, node);
- 			xas->xa_offset = node->offset - 1;
- 			if (node->offset != 0)
+ #endif
 
 
