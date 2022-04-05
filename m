@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB42BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C40BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233802AbiDEIXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
+        id S233898AbiDEIXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235538AbiDEH7u (ORCPT
+        with ESMTP id S235544AbiDEH7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:59:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A9E3EBAC;
-        Tue,  5 Apr 2022 00:55:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19A23FBD8;
+        Tue,  5 Apr 2022 00:55:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16DB161668;
-        Tue,  5 Apr 2022 07:55:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24816C34110;
-        Tue,  5 Apr 2022 07:55:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FE1A61748;
+        Tue,  5 Apr 2022 07:55:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FBCBC340EE;
+        Tue,  5 Apr 2022 07:55:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145309;
-        bh=HNcaj8pxkaHvVNgXI8qUhk/xiw6pJnSiFyMlMkidhQw=;
+        s=korg; t=1649145322;
+        bh=VaIBzpGhnu+uHQ70qJiNQarluFXMh5+V/TQ9YCs8l+0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ByMjxZMqIn6emWuKrSEmNnrs5L+yeiRkRb81aB/O8UKpHzCpE7gRfcHVNswF/tMnB
-         r6JMJJLoV4Bd4gRUipNl5NT+6pC9uPrl1RD8KzLst07yazf3PLUPn6dtcoYowadPjo
-         99I479fZcLHdCXN6BJSewsnfkKxGaUT7UJAqcJIU=
+        b=H/yvot7J5pbmdelZX86c1h8eg+q32sopzrZZN9m00dw7Q6K2PwdatZG3SkGHnVTtG
+         TdkNPrVroMqsBtRlf9MDnxSvSPA89ZtqFe7bh4Dt7UVB0+vDPu8/lTCVhZP9xtK6gN
+         ak7b7U7Fsp9fj9EjSt/LBuSYWYLKNaIRkfH9YGXk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0360/1126] ASoC: codecs: va-macro: fix accessing array out of bounds for enum type
-Date:   Tue,  5 Apr 2022 09:18:27 +0200
-Message-Id: <20220405070418.195055601@linuxfoundation.org>
+Subject: [PATCH 5.17 0363/1126] ASoC: codecs: wcd934x: fix kcontrol max values
+Date:   Tue,  5 Apr 2022 09:18:30 +0200
+Message-Id: <20220405070418.282682584@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,43 +52,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 0ea5eff7c6063a8f124188424f8e4c6727f35051 ]
+[ Upstream commit 61163c3e7480106804269182e24db05244866493 ]
 
-Accessing enums using integer would result in array out of bounds access
-on platforms like aarch64 where sizeof(long) is 8 compared to enum size
-which is 4 bytes.
+set "HPH Type" Kcontrol max value of WCD_MBHC_HPH_STEREO instead of UINT_MAX.
+set "HPHL/R Impedance" Kcontrols max value to INT_MAX instead of UINT_MAX as
+max field is integer type.
 
-Fixes: 908e6b1df26e ("ASoC: codecs: lpass-va-macro: Add support to VA Macro")
+Without this patch amixer for these controls will show -1 as max value to userspace.
+
+Fixes: 9fb9b1690f0b ("ASoC: codecs: wcd934x: add mbhc support")
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220222183212.11580-5-srinivas.kandagatla@linaro.org
+Link: https://lore.kernel.org/r/20220222183212.11580-9-srinivas.kandagatla@linaro.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/lpass-va-macro.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wcd934x.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
-index 11147e35689b..e14c277e6a8b 100644
---- a/sound/soc/codecs/lpass-va-macro.c
-+++ b/sound/soc/codecs/lpass-va-macro.c
-@@ -780,7 +780,7 @@ static int va_macro_dec_mode_get(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	int path = e->shift_l;
- 
--	ucontrol->value.integer.value[0] = va->dec_mode[path];
-+	ucontrol->value.enumerated.item[0] = va->dec_mode[path];
- 
+diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
+index 6c468527fec6..f2674905a4a7 100644
+--- a/sound/soc/codecs/wcd934x.c
++++ b/sound/soc/codecs/wcd934x.c
+@@ -3023,14 +3023,14 @@ static int wcd934x_hph_impedance_get(struct snd_kcontrol *kcontrol,
  	return 0;
  }
-@@ -789,7 +789,7 @@ static int va_macro_dec_mode_put(struct snd_kcontrol *kcontrol,
- 				 struct snd_ctl_elem_value *ucontrol)
- {
- 	struct snd_soc_component *comp = snd_soc_kcontrol_component(kcontrol);
--	int value = ucontrol->value.integer.value[0];
-+	int value = ucontrol->value.enumerated.item[0];
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	int path = e->shift_l;
- 	struct va_macro *va = snd_soc_component_get_drvdata(comp);
+ static const struct snd_kcontrol_new hph_type_detect_controls[] = {
+-	SOC_SINGLE_EXT("HPH Type", 0, 0, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPH Type", 0, 0, WCD_MBHC_HPH_STEREO, 0,
+ 		       wcd934x_get_hph_type, NULL),
+ };
+ 
+ static const struct snd_kcontrol_new impedance_detect_controls[] = {
+-	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, INT_MAX, 0,
+ 		       wcd934x_hph_impedance_get, NULL),
+-	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, INT_MAX, 0,
+ 		       wcd934x_hph_impedance_get, NULL),
+ };
+ 
 -- 
 2.34.1
 
