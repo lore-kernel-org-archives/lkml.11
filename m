@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 187EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C30AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231933AbiDEHym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
+        id S232483AbiDEHys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233532AbiDEHr4 (ORCPT
+        with ESMTP id S233536AbiDEHr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:47:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1697C92311;
-        Tue,  5 Apr 2022 00:45:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7EB4C41F;
+        Tue,  5 Apr 2022 00:45:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9691616D9;
-        Tue,  5 Apr 2022 07:45:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B965EC340EE;
-        Tue,  5 Apr 2022 07:44:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 286E8615E7;
+        Tue,  5 Apr 2022 07:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3845DC340EE;
+        Tue,  5 Apr 2022 07:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144700;
-        bh=bx4OA99MuLSgu/uivGIVAzDDUaMtJVDBOqgY/wRuEHM=;
+        s=korg; t=1649144705;
+        bh=JcNB7m7xPsWbJUQSYIJK0Yj58mA6uZ2/++E2mu812L8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3rbG+B2Tag6GGNJZrExzVTyeQjBRBJ6L+gsHXUVeokYXpnjdeuclUX8seS8hdw6+
-         jXBXFOSuoIRRsAhhNQ5pC22aTSUqg+jlqcEt4nxN+0jXUCQ6EhnF5QTPq6MkdIaDlG
-         nBXki8zbwdNYK7yi+g2vGmQz00r3aEDT7DKkWRIo=
+        b=M5GwBCbzuN8GLJ7TyGtzvgRQLqE8iZaAmxMTnzURHYFlJmK3zXUeQHqRaZByW8wBr
+         Xq097k1l/lEfC6/m2qvt6hjyTHOhQP/AOe1qDelinxVmXG6e5h8dSwxD4slHUEFPGv
+         Uh1QAOWTKznKJeFJWga2fb00+dNejKKTtcm8wJAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.17 0100/1126] rtc: mc146818-lib: fix locking in mc146818_set_time
-Date:   Tue,  5 Apr 2022 09:14:07 +0200
-Message-Id: <20220405070410.504194009@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 0102/1126] io_uring: ensure that fsnotify is always called
+Date:   Tue,  5 Apr 2022 09:14:09 +0200
+Message-Id: <20220405070410.562967057@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,43 +47,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 811f5559270f25c34c338d6eaa2ece2544c3d3bd upstream.
+commit f63cf5192fe3418ad5ae1a4412eba5694b145f79 upstream.
 
-In mc146818_set_time(), CMOS_READ(RTC_CONTROL) was performed without the
-rtc_lock taken, which is required for CMOS accesses. Fix this.
+Ensure that we call fsnotify_modify() if we write a file, and that we
+do fsnotify_access() if we read it. This enables anyone using inotify
+on the file to get notified.
 
-Nothing in kernel modifies RTC_DM_BINARY, so a separate critical section
-is allowed here.
+Ditto for fallocate, ensure that fsnotify_modify() is called.
 
-Fixes: dcf257e92622 ("rtc: mc146818: Reduce spinlock section in mc146818_set_time()")
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220220090403.153928-1-mat.jonczyk@o2.pl
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/rtc-mc146818-lib.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/io_uring.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -232,8 +232,10 @@ int mc146818_set_time(struct rtc_time *t
- 	if (yrs >= 100)
- 		yrs -= 100;
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -2813,8 +2813,12 @@ static bool io_rw_should_reissue(struct
  
--	if (!(CMOS_READ(RTC_CONTROL) & RTC_DM_BINARY)
--	    || RTC_ALWAYS_BCD) {
-+	spin_lock_irqsave(&rtc_lock, flags);
-+	save_control = CMOS_READ(RTC_CONTROL);
-+	spin_unlock_irqrestore(&rtc_lock, flags);
-+	if (!(save_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
- 		sec = bin2bcd(sec);
- 		min = bin2bcd(min);
- 		hrs = bin2bcd(hrs);
+ static bool __io_complete_rw_common(struct io_kiocb *req, long res)
+ {
+-	if (req->rw.kiocb.ki_flags & IOCB_WRITE)
++	if (req->rw.kiocb.ki_flags & IOCB_WRITE) {
+ 		kiocb_end_write(req);
++		fsnotify_modify(req->file);
++	} else {
++		fsnotify_access(req->file);
++	}
+ 	if (unlikely(res != req->result)) {
+ 		if ((res == -EAGAIN || res == -EOPNOTSUPP) &&
+ 		    io_rw_should_reissue(req)) {
+@@ -4301,6 +4305,8 @@ static int io_fallocate(struct io_kiocb
+ 				req->sync.len);
+ 	if (ret < 0)
+ 		req_set_fail(req);
++	else
++		fsnotify_modify(req->file);
+ 	io_req_complete(req, ret);
+ 	return 0;
+ }
 
 
