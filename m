@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D90C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39977C3A59F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236274AbiDEIQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55886 "EHLO
+        id S236670AbiDEIQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235617AbiDEH7x (ORCPT
+        with ESMTP id S235598AbiDEH7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B8426F2;
-        Tue,  5 Apr 2022 00:56:14 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914331AD93;
+        Tue,  5 Apr 2022 00:55:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B268B81B14;
-        Tue,  5 Apr 2022 07:56:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A79C34110;
-        Tue,  5 Apr 2022 07:56:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B2E6B81B14;
+        Tue,  5 Apr 2022 07:55:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1D08C340EE;
+        Tue,  5 Apr 2022 07:55:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145371;
-        bh=YJXH7IdVDgTm1oCOYv1/51U7kUuK/WAkFB+ds2mzus0=;
+        s=korg; t=1649145350;
+        bh=3739oQgdb/geZIZN2jKhqTo7WUCFX1HT8z90/QnwQvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ADWvoGBhjbS1Q/HJuqnIO43wc6EB4VdrLsr+w18xLI4xfi8HA8RdPAYE6Ck/iGPUV
-         mN8eoD6u3fACuDcexZN64PpcJPsUIsILfkcCS0O8ZQ/oVp7/ITzTX/RIyndCzGCnwf
-         18kt9cZ9Dp/tRkPUd1WLWtM8czWV6Cg/SHFA1/7M=
+        b=MpESuKtOdGdualCumZ/RwzMgltfVSyBs3k90nbVP15UJyWTHX1bnXtsWoro35e/6P
+         lvhdZecoZrsOMW8b3d2pDxMOq3dTdOaMk60O6zgx4JVcUMnOo3PwYoTDON2ZpwG6zu
+         5BQo2gyjMfD4qbL2EmMLUGsVMC3shik0bXaviImo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0344/1126] ARM: dts: stm32: fix AV96 board SAI2 pin muxing on stm32mp15
-Date:   Tue,  5 Apr 2022 09:18:11 +0200
-Message-Id: <20220405070417.712764155@linuxfoundation.org>
+Subject: [PATCH 5.17 0372/1126] ASoC: rt5663: check the return value of devm_kzalloc() in rt5663_parse_dp()
+Date:   Tue,  5 Apr 2022 09:18:39 +0200
+Message-Id: <20220405070418.546182286@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,35 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olivier Moysan <olivier.moysan@foss.st.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit ee2aacb6f3a901a95b1dd68964b69c92cdbbf213 ]
+[ Upstream commit 4d06f92f38b799295ae22c98be7a20cac3e2a1a7 ]
 
-Replace sai2a-2 node name by sai2a-sleep-2, to avoid name
-duplication.
+The function devm_kzalloc() in rt5663_parse_dp() can fail, so its return
+value should be checked.
 
-Fixes: 1a9a9d226f0f ("ARM: dts: stm32: fix AV96 board SAI2 pin muxing on stm32mp15")
-
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Fixes: 457c25efc592 ("ASoC: rt5663: Add the function of impedance sensing")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220225131030.27248-1-baijiaju1990@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/stm32mp15-pinctrl.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/rt5663.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
-index 3b65130affec..6161f5906ec1 100644
---- a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
-+++ b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
-@@ -1190,7 +1190,7 @@
- 		};
- 	};
- 
--	sai2a_sleep_pins_c: sai2a-2 {
-+	sai2a_sleep_pins_c: sai2a-sleep-2 {
- 		pins {
- 			pinmux = <STM32_PINMUX('D', 13, ANALOG)>, /* SAI2_SCK_A */
- 				 <STM32_PINMUX('D', 11, ANALOG)>, /* SAI2_SD_A */
+diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
+index 2138f62e6af5..3a8fba101b20 100644
+--- a/sound/soc/codecs/rt5663.c
++++ b/sound/soc/codecs/rt5663.c
+@@ -3478,6 +3478,8 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ 		table_size = sizeof(struct impedance_mapping_table) *
+ 			rt5663->pdata.impedance_sensing_num;
+ 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
++		if (!rt5663->imp_table)
++			return -ENOMEM;
+ 		ret = device_property_read_u32_array(dev,
+ 			"realtek,impedance_sensing_table",
+ 			(u32 *)rt5663->imp_table, table_size);
 -- 
 2.34.1
 
