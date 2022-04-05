@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85728C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF06CC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244198AbiDEOVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
+        id S1384389AbiDEOVs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240078AbiDEJeB (ORCPT
+        with ESMTP id S239653AbiDEJeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:34:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E2527B32;
-        Tue,  5 Apr 2022 02:23:28 -0700 (PDT)
+        Tue, 5 Apr 2022 05:34:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9931C4;
+        Tue,  5 Apr 2022 02:22:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BD9C61645;
-        Tue,  5 Apr 2022 09:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D990C385A0;
-        Tue,  5 Apr 2022 09:23:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85BED6164E;
+        Tue,  5 Apr 2022 09:22:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 976D0C385A0;
+        Tue,  5 Apr 2022 09:22:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150607;
-        bh=GSyj3xxP9PHs0hr0AIMx9kLbS7m90QYmAvEN2o1MDIM=;
+        s=korg; t=1649150561;
+        bh=wlmFr2b3C5Fy7AKv86kvgZ3YLzVJKOPbSeAkty2RuEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vdCwa4WHVuOMBeYFve15Gp7ScmGD5RVSgppnAcHv9lHa2HJei0hINYBQIu6Go6DjX
-         cxLMLjYQf1VsnWSHXjJJfH3kHJZYNaMHopVuLU+ZF6ivcmmOX03mbHC6DaOcMfmPfA
-         ssosXMzWN9HRlhAQQ1XpOVKlBtV60YyMdgeu28JM=
+        b=wl+d6W847q0x9bccY37hvPiun22Lnxu43NMShyNgabXmlaunZhrWae7NpeYpj/yEE
+         kZ5S0nZWFAVGjIc+7Koa+j0Fna5IFrYfauDwE5mSpr1/elN57A4qLEM802x+X3fQ/a
+         cxwChO3zLS2kAaXkmxsj3UbF4Rxc43k2ev5Sw6TM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>
-Subject: [PATCH 5.15 114/913] dm: interlock pending dm_io and dm_wait_for_bios_completion
-Date:   Tue,  5 Apr 2022 09:19:36 +0200
-Message-Id: <20220405070343.243951982@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 099/913] ALSA: cs4236: fix an incorrect NULL check on list iterator
+Date:   Tue,  5 Apr 2022 09:19:21 +0200
+Message-Id: <20220405070342.795163469@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -48,139 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 9f6dc633761006f974701d4c88da71ab68670749 upstream.
+commit 0112f822f8a6d8039c94e0bc9b264d7ffc5d4704 upstream.
 
-Commit d208b89401e0 ("dm: fix mempool NULL pointer race when
-completing IO") didn't go far enough.
+The bug is here:
+	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
 
-When bio_end_io_acct ends the count of in-flight I/Os may reach zero
-and the DM device may be suspended. There is a possibility that the
-suspend races with dm_stats_account_io.
+The list iterator value 'cdev' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
 
-Fix this by adding percpu "pending_io" counters to track outstanding
-dm_io. Move kicking of suspend queue to dm_io_dec_pending(). Also,
-rename md_in_flight_bios() to dm_in_flight_bios() and update it to
-iterate all pending_io counters.
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'cdev' as a dedicated pointer
+to point to the found element. And snd_card_cs423x_pnp() itself
+has NULL check for cdev.
 
-Fixes: d208b89401e0 ("dm: fix mempool NULL pointer race when completing IO")
 Cc: stable@vger.kernel.org
-Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Fixes: c2b73d1458014 ("ALSA: cs4236: cs4232 and cs4236 driver merge to solve PnP BIOS detection")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327060822.4735-1-xiam0nd.tong@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-core.h |    2 ++
- drivers/md/dm.c      |   35 +++++++++++++++++++++++------------
- 2 files changed, 25 insertions(+), 12 deletions(-)
+ sound/isa/cs423x/cs4236.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/md/dm-core.h
-+++ b/drivers/md/dm-core.h
-@@ -65,6 +65,8 @@ struct mapped_device {
- 	struct gendisk *disk;
- 	struct dax_device *dax_dev;
+--- a/sound/isa/cs423x/cs4236.c
++++ b/sound/isa/cs423x/cs4236.c
+@@ -494,7 +494,7 @@ static int snd_cs423x_pnpbios_detect(str
+ 	static int dev;
+ 	int err;
+ 	struct snd_card *card;
+-	struct pnp_dev *cdev;
++	struct pnp_dev *cdev, *iter;
+ 	char cid[PNP_ID_LEN];
  
-+	unsigned long __percpu *pending_io;
-+
- 	/*
- 	 * A list of ios that arrived while we were suspended.
- 	 */
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -507,10 +507,6 @@ static void end_io_acct(struct mapped_de
- 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
- 				    bio->bi_iter.bi_sector, bio_sectors(bio),
- 				    true, duration, stats_aux);
--
--	/* nudge anyone waiting on suspend queue */
--	if (unlikely(wq_has_sleeper(&md->wait)))
--		wake_up(&md->wait);
- }
- 
- static struct dm_io *alloc_io(struct mapped_device *md, struct bio *bio)
-@@ -531,6 +527,7 @@ static struct dm_io *alloc_io(struct map
- 	io->magic = DM_IO_MAGIC;
- 	io->status = 0;
- 	atomic_set(&io->io_count, 1);
-+	this_cpu_inc(*md->pending_io);
- 	io->orig_bio = bio;
- 	io->md = md;
- 	spin_lock_init(&io->endio_lock);
-@@ -828,6 +825,12 @@ void dm_io_dec_pending(struct dm_io *io,
- 		stats_aux = io->stats_aux;
- 		free_io(md, io);
- 		end_io_acct(md, bio, start_time, &stats_aux);
-+		smp_wmb();
-+		this_cpu_dec(*md->pending_io);
-+
-+		/* nudge anyone waiting on suspend queue */
-+		if (unlikely(wq_has_sleeper(&md->wait)))
-+			wake_up(&md->wait);
- 
- 		if (io_error == BLK_STS_DM_REQUEUE)
- 			return;
-@@ -1697,6 +1700,11 @@ static void cleanup_mapped_device(struct
- 		blk_cleanup_disk(md->disk);
- 	}
- 
-+	if (md->pending_io) {
-+		free_percpu(md->pending_io);
-+		md->pending_io = NULL;
-+	}
-+
- 	cleanup_srcu_struct(&md->io_barrier);
- 
- 	mutex_destroy(&md->suspend_lock);
-@@ -1794,6 +1802,10 @@ static struct mapped_device *alloc_dev(i
- 	if (!md->wq)
- 		goto bad;
- 
-+	md->pending_io = alloc_percpu(unsigned long);
-+	if (!md->pending_io)
-+		goto bad;
-+
- 	dm_stats_init(&md->stats);
- 
- 	/* Populate the mapping, nobody knows we exist yet */
-@@ -2209,16 +2221,13 @@ void dm_put(struct mapped_device *md)
- }
- EXPORT_SYMBOL_GPL(dm_put);
- 
--static bool md_in_flight_bios(struct mapped_device *md)
-+static bool dm_in_flight_bios(struct mapped_device *md)
- {
- 	int cpu;
--	struct block_device *part = dm_disk(md)->part0;
--	long sum = 0;
-+	unsigned long sum = 0;
- 
--	for_each_possible_cpu(cpu) {
--		sum += part_stat_local_read_cpu(part, in_flight[0], cpu);
--		sum += part_stat_local_read_cpu(part, in_flight[1], cpu);
--	}
-+	for_each_possible_cpu(cpu)
-+		sum += *per_cpu_ptr(md->pending_io, cpu);
- 
- 	return sum != 0;
- }
-@@ -2231,7 +2240,7 @@ static int dm_wait_for_bios_completion(s
- 	while (true) {
- 		prepare_to_wait(&md->wait, &wait, task_state);
- 
--		if (!md_in_flight_bios(md))
-+		if (!dm_in_flight_bios(md))
+ 	if (pnp_device_is_isapnp(pdev))
+@@ -510,9 +510,11 @@ static int snd_cs423x_pnpbios_detect(str
+ 	strcpy(cid, pdev->id[0].id);
+ 	cid[5] = '1';
+ 	cdev = NULL;
+-	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
+-		if (!strcmp(cdev->id[0].id, cid))
++	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
++		if (!strcmp(iter->id[0].id, cid)) {
++			cdev = iter;
  			break;
- 
- 		if (signal_pending_state(task_state, current)) {
-@@ -2243,6 +2252,8 @@ static int dm_wait_for_bios_completion(s
++		}
  	}
- 	finish_wait(&md->wait, &wait);
- 
-+	smp_rmb();
-+
- 	return r;
- }
- 
+ 	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
+ 	if (err < 0)
 
 
