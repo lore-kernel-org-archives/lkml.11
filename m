@@ -2,94 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA27C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BABEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbiDEC5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
+        id S230487AbiDEC5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231409AbiDEC4h (ORCPT
+        with ESMTP id S231501AbiDEC4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:56:37 -0400
+        Mon, 4 Apr 2022 22:56:43 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A957D224514
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:06:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CDD4096BA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:06:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649124384; x=1680660384;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=0UMmqY4Wx6ejR5qQpD5MVqGgAO4U/to+JQIHPyY6qWc=;
-  b=GgsEdMa/W+GnfXp4dqK85Bge6A2WZKheBtnkca5zacIwweK1EXfJhldP
-   6QIFPHm9U7eN4ErR7Mn0ho+JRIFA0Dl4L4/a2yUk4bwGoY/ADReC0CjwV
-   mUnAlQEl8EhjIEIpulTwe65hTn1Ux05kGezRiN6sSCJF00Spnv0rc3Q7P
-   oXuBaZf/9qjDwoqxc2xBZEWoeL7YaYu3g6c0KbeR/FA15zqV80Zwidc9+
-   oUX3R7jvGeF8xvQJTEBEfVo2o8ZBzffGX3V2Y2n2uXbeZ/ncTxMMbzuTc
-   47BOtZQegn+nmJD8IeoNgAZB6GhEMKAWmmCsVPJhgPLELTFjW7yRAic5u
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="347073698"
+  t=1649124390; x=1680660390;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YzdBJ3M54EZS3crIo7do3ZbrEz3YRHCmFK7qH0ZuUxM=;
+  b=IwwzzoyXn80GJ444Db9Yzhr63G++BeTfUBAxkNiqr+aE+SgMqG8xRWxL
+   x8Yc6gGXNoyWwet46LhuLJFqLbPQaNwzVLXydcndrdhcge+2DHXikOrxg
+   X3HeZFhyA8U57mhL9m9f5GkmJbdHn9n16kcXfysUxShJP8t1u0b9Ll1lT
+   G6w0Tfal/+3W53buKNHghdEcyvLM5MwKLWm83Nn2eJ9iWLdbKvdN2+9z8
+   7v6UAyU3iNuH7YfeLA82lXYwFHiO1lX5qt+x6joc8gZ6d+OH9JeBs/rYa
+   VzbYatm8hiUwCZB9S/dv54l5YGtlWbDDbuuAw5cPqARm8BmlZejehyEMP
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="347084589"
 X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="347073698"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 17:01:27 -0700
+   d="scan'208";a="347084589"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 18:38:10 -0700
 X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="641413179"
-Received: from sunjie1-mobl3.amr.corp.intel.com (HELO [10.209.28.63]) ([10.209.28.63])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 17:01:26 -0700
-Message-ID: <5263978a-19ef-fff3-cc61-b272a833171f@intel.com>
-Date:   Mon, 4 Apr 2022 17:01:27 -0700
+   d="scan'208";a="569645614"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.208]) ([10.254.211.208])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 18:38:08 -0700
+Message-ID: <806562e6-04b0-9ad9-e3cc-45e0bc12335e@linux.intel.com>
+Date:   Tue, 5 Apr 2022 09:38:05 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
+Cc:     baolu.lu@linux.intel.com, kernel@collabora.com,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/vt-d: remove unneeded validity check on dev
 Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        bp@alien8.de
-Cc:     aarcange@redhat.com, ak@linux.intel.com, brijesh.singh@amd.com,
-        dan.j.williams@intel.com, dave.hansen@linux.intel.com,
-        david@redhat.com, hpa@zytor.com, jgross@suse.com,
-        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
-        knsathya@kernel.org, linux-kernel@vger.kernel.org, luto@kernel.org,
-        mingo@redhat.com, pbonzini@redhat.com, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
-        seanjc@google.com, tglx@linutronix.de, thomas.lendacky@amd.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org
-References: <YjXtK4awY6utz3wE@zn.tnic>
- <20220321160245.42886-1-kirill.shutemov@linux.intel.com>
- <9f8f57fdbbf76e70471541dc42b04f8a89be4a56.camel@intel.com>
- <dd5c52ad-9c61-54c3-6654-7a30c56b1917@intel.com>
- <2fcd12bb42c7d30f0e7bd09a7f66d76122493b32.camel@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv7.1 02/30] x86/tdx: Provide common base for SEAMCALL and
- TDCALL C wrappers
-In-Reply-To: <2fcd12bb42c7d30f0e7bd09a7f66d76122493b32.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+References: <20220313150337.593650-1-usama.anjum@collabora.com>
+ <ace47a96-4e43-697a-4cfe-04544f014940@collabora.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <ace47a96-4e43-697a-4cfe-04544f014940@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 16:35, Kai Huang wrote:
-> Both error code formats defined by P-SEAMLDR and TDX module has some reserved
-> bits which will never be set to 1.  I think we can just add a simple comment
-> explaining that and choose a value which has 1 set for those reserved bits (even
-> doesn't have to be -1). For example:
+On 2022/4/4 15:52, Muhammad Usama Anjum wrote:
+> Any thoughts?
+
+It looks good to me. I will queue it for v5.19.
+
+Best regards,
+baolu
+
 > 
-> 	/*
-> 	 * Use -1ULL which will never conflict with any actual error code
-> 	 * returned by both the P-SEAMLDR and the TDX module to represent
-> 	 * VMfailInvalid.  Both error code definitions defined by the
-> 	 * P-SEAMLDR and the TDX module have some reserved bits which will
-> 	 * never be set to 1.
-> 	 */
-> 	#define TDX_SEAMCALL_VMFAILINVALID	GENMASK_ULL(63, 0)
-
-The vague "some reserved bits" magic works for exactly *one* error code.
- If you ever want to make it two, then you subject some some poor future
-dope to a trip to TDX documentation purgatory.
-
-All I'm asking is that this code stand on its own.  Just declare what
-the *ACTUAL* reserved bits are.  Not some vague reference to "some
-bits".  There are *REAL* documented bits.  Use them, please.
+> On 3/13/22 8:03 PM, Muhammad Usama Anjum wrote:
+>> dev_iommu_priv_get() is being used at the top of this function which
+>> dereferences dev. Dev cannot be NULL after this. Remove the validity
+>> check on dev and simplify the code.
+>>
+>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index df5c62ecf942b..f79edbbd651a4 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -2502,7 +2502,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+>>   		}
+>>   	}
+>>   
+>> -	if (dev && domain_context_mapping(domain, dev)) {
+>> +	if (domain_context_mapping(domain, dev)) {
+>>   		dev_err(dev, "Domain context map failed\n");
+>>   		dmar_remove_one_dev_info(dev);
+>>   		return NULL;
+> 
