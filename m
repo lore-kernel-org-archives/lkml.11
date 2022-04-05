@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9578C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFD8C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235011AbiDEH7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
+        id S235461AbiDEH7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233572AbiDEHr6 (ORCPT
+        with ESMTP id S233344AbiDEHrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2821B6;
-        Tue,  5 Apr 2022 00:45:49 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8628E18348;
+        Tue,  5 Apr 2022 00:43:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A2C0B81A22;
-        Tue,  5 Apr 2022 07:45:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67E4CC3410F;
-        Tue,  5 Apr 2022 07:45:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB703616C4;
+        Tue,  5 Apr 2022 07:43:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1829C34110;
+        Tue,  5 Apr 2022 07:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144746;
-        bh=7Rkrs3sSrSyd8jDFyNshJ53iysc72CbfSpCQdoARRUk=;
+        s=korg; t=1649144637;
+        bh=Vzkuek3OGudFGGEQmXnCuyUEkLDe9dutJWVZUZbctRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M0abJs02pVdj7cAKOvNJKUYIa9WhPbNdb982bu20Uzg9HSDM8CjYlNn4RY7eVU27d
-         24jhg9ZJ647zNxPCkMpaPwNQLLKvHcWrJxE2RKjaCvb9MKNc+ABLduTVlziUi2IxZ5
-         QdnCPKwRZOSMacrALQqypLmnSTRzJfzVOxYgFavU=
+        b=uN6XLtaoKoIX5H8zgkENG5dD9EpMjuAirJVrm1kgcfKPvRtc+wlfIt4f2SDjjABXB
+         OXDaQXtY/OdM+260gA7mtftMcJ9/lIYhNkCHcFdVLp4C7H5IJGqHin29XnxL2ARaat
+         RUhtXbA69jycG2Avp7S/CWTWSfGIwcsrHAyMVmZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pekka Pessi <ppessi@nvidia.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>
-Subject: [PATCH 5.17 0139/1126] mailbox: tegra-hsp: Flush whole channel
-Date:   Tue,  5 Apr 2022 09:14:46 +0200
-Message-Id: <20220405070411.659077323@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.17 0116/1126] tracing: Have trace event string test handle zero length strings
+Date:   Tue,  5 Apr 2022 09:14:23 +0200
+Message-Id: <20220405070410.976791998@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,41 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pekka Pessi <ppessi@nvidia.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 60de2d2dc284e0dd1c2c897d08625bde24ef3454 upstream.
+commit eca344a7362e0f34f179298fd8366bcd556eede1 upstream.
 
-The txdone can re-fill the mailbox. Keep polling the mailbox during the
-flush until all the messages have been delivered.
+If a trace event has in its TP_printk():
 
-This fixes an issue with the Tegra Combined UART (TCU) where output can
-get truncated under high traffic load.
+ "%*.s", len, len ? __get_str(string) : NULL
 
-Signed-off-by: Pekka Pessi <ppessi@nvidia.com>
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Fixes: 91b1b1c3da8a ("mailbox: tegra-hsp: Add support for shared mailboxes")
+It is perfectly valid if len is zero and passing in the NULL.
+Unfortunately, the runtime string check at time of reading the trace sees
+the NULL and flags it as a bad string and produces a WARN_ON().
+
+Handle this case by passing into the test function if the format has an
+asterisk (star) and if so, if the length is zero, then mark it as safe.
+
+Link: https://lore.kernel.org/all/YjsWzuw5FbWPrdqq@bfoster/
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+Reported-by: Brian Foster <bfoster@redhat.com>
+Tested-by: Brian Foster <bfoster@redhat.com>
+Fixes: 9a6944fee68e2 ("tracing: Add a verifier to check string pointers for trace events")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mailbox/tegra-hsp.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ kernel/trace/trace.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/drivers/mailbox/tegra-hsp.c
-+++ b/drivers/mailbox/tegra-hsp.c
-@@ -412,6 +412,11 @@ static int tegra_hsp_mailbox_flush(struc
- 		value = tegra_hsp_channel_readl(ch, HSP_SM_SHRD_MBOX);
- 		if ((value & HSP_SM_SHRD_MBOX_FULL) == 0) {
- 			mbox_chan_txdone(chan, 0);
-+
-+			/* Wait until channel is empty */
-+			if (chan->active_req != NULL)
-+				continue;
-+
- 			return 0;
- 		}
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -3663,12 +3663,17 @@ static char *trace_iter_expand_format(st
+ }
  
+ /* Returns true if the string is safe to dereference from an event */
+-static bool trace_safe_str(struct trace_iterator *iter, const char *str)
++static bool trace_safe_str(struct trace_iterator *iter, const char *str,
++			   bool star, int len)
+ {
+ 	unsigned long addr = (unsigned long)str;
+ 	struct trace_event *trace_event;
+ 	struct trace_event_call *event;
+ 
++	/* Ignore strings with no length */
++	if (star && !len)
++		return true;
++
+ 	/* OK if part of the event data */
+ 	if ((addr >= (unsigned long)iter->ent) &&
+ 	    (addr < (unsigned long)iter->ent + iter->ent_size))
+@@ -3854,7 +3859,7 @@ void trace_check_vprintf(struct trace_it
+ 		 * instead. See samples/trace_events/trace-events-sample.h
+ 		 * for reference.
+ 		 */
+-		if (WARN_ONCE(!trace_safe_str(iter, str),
++		if (WARN_ONCE(!trace_safe_str(iter, str, star, len),
+ 			      "fmt: '%s' current_buffer: '%s'",
+ 			      fmt, show_buffer(&iter->seq))) {
+ 			int ret;
 
 
