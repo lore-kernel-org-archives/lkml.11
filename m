@@ -2,82 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C0AC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3DEC35294
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388749AbiDEOk6 (ORCPT
+        id S1388788AbiDEOlJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42986 "EHLO
+        Tue, 5 Apr 2022 10:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243878AbiDEJkf (ORCPT
+        with ESMTP id S233133AbiDEJka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:40:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7CEBA312;
-        Tue,  5 Apr 2022 02:25:04 -0700 (PDT)
+        Tue, 5 Apr 2022 05:40:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7A3B91A6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:25:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3813F61659;
-        Tue,  5 Apr 2022 09:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 456F6C385A2;
-        Tue,  5 Apr 2022 09:25:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150703;
-        bh=kHivgI89ExcwhIzHs0s0eahszGcG5QZveN98bO2rNkA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PK3+5p4+ACdA8Y85tVazSMEYCZcMDYuTUbapoBHfX0Jztvrz7t1BkMPxkpVJiV7FZ
-         vODIpCWuLXL3eB93eNO9zmJIet6XBmh99RaR9OL1WqVI+JzYSg05K4s7jS4wBJ2za1
-         D96QoPYLkeDOwRXHWNSgFTc/tC49O11jFUeBXmRI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH 5.15 150/913] ARM: dts: exynos: add missing HDMI supplies on SMDK5420
-Date:   Tue,  5 Apr 2022 09:20:12 +0200
-Message-Id: <20220405070344.333212523@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37BD76164E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:25:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CDBAC385A4;
+        Tue,  5 Apr 2022 09:25:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649150702;
+        bh=kogP6nO7wU0ilpGa8JtIr5fN9KE3TnBqzaKz14TEHYA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ijeYoLORnSLf/AoiqG4azMEprQrMRfuFMpyxCeV8qw1UTVmW8dOxNKVseYbED+vAe
+         231KKUQL50gbav6+5GJbGHqonejP5dzlB6OZkwJV2KTcH9z9OQUX8HkylsCFhrb6pP
+         nn4c81PFSrWCxQpyGOu4i3SolWFCSmu3aL9SF7rVQInCux5C3pvUgmyS4upGC3vc60
+         EEWxKVFp3wo+T3WYgIHw+Mrpoz8EF209VEKQaowwNeLawEXOJ/wDHI52uUkASeHP4N
+         vPrXct/qNzUUqv5GpDnlZIdqn7o8IGOr6y5NcRR5CPn/5fBMFZwDp2DQt35NPLaMeb
+         AEL2hHqkxmE+g==
+Date:   Tue, 5 Apr 2022 10:24:57 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v7 11/70] arch/arm64: Remove the merge workaround for
+ VMA_ITERATOR
+Message-ID: <20220405092456.GA24387@willie-the-truck>
+References: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
+ <20220404143501.2016403-12-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404143501.2016403-12-Liam.Howlett@oracle.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Hi Liam,
 
-commit 453a24ded415f7fce0499c6b0a2c7b28f84911f2 upstream.
+On Mon, Apr 04, 2022 at 02:35:36PM +0000, Liam Howlett wrote:
+> Now that the vma iterator is in the kernel, remove the workaround.
+> 
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+> ---
+>  arch/arm64/kernel/elfcore.c | 7 -------
+>  1 file changed, 7 deletions(-)
+> 
+> diff --git a/arch/arm64/kernel/elfcore.c b/arch/arm64/kernel/elfcore.c
+> index 3ed39c61a510..930a0bc4cac4 100644
+> --- a/arch/arm64/kernel/elfcore.c
+> +++ b/arch/arm64/kernel/elfcore.c
+> @@ -8,13 +8,6 @@
+>  #include <asm/cpufeature.h>
+>  #include <asm/mte.h>
+>  
+> -#ifndef VMA_ITERATOR
+> -#define VMA_ITERATOR(name, mm, addr)	\
+> -	struct mm_struct *name = mm
+> -#define for_each_vma(vmi, vma)		\
+> -	for (vma = vmi->mmap; vma; vma = vma->vm_next)
+> -#endif
 
-Add required VDD supplies to HDMI block on SMDK5420.  Without them, the
-HDMI driver won't probe.  Because of lack of schematics, use same
-supplies as on Arndale Octa and Odroid XU3 boards (voltage matches).
+I already have this revert queued up as an arm64 fix:
 
-Cc: <stable@vger.kernel.org> # v3.15+
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20220208171823.226211-3-krzysztof.kozlowski@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm/boot/dts/exynos5420-smdk5420.dts |    3 +++
- 1 file changed, 3 insertions(+)
+https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/commit/?h=for-next/fixes&id=a0ab7e5bc9651d65637f50ee9c09e083919677ed
 
---- a/arch/arm/boot/dts/exynos5420-smdk5420.dts
-+++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-@@ -124,6 +124,9 @@
- 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&hdmi_hpd_irq>;
-+	vdd-supply = <&ldo6_reg>;
-+	vdd_osc-supply = <&ldo7_reg>;
-+	vdd_pll-supply = <&ldo6_reg>;
- };
- 
- &hsi2c_4 {
+Should land for -rc2.
 
-
+Will
