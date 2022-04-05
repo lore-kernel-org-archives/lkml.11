@@ -2,67 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4092C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49429C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844735AbiDFBv7 (ORCPT
+        id S1844755AbiDFBwR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45854 "EHLO
+        Tue, 5 Apr 2022 21:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383922AbiDEPOu (ORCPT
+        with ESMTP id S1573594AbiDETXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:14:50 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4C9176D2B;
-        Tue,  5 Apr 2022 06:28:10 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 5C7E11F45039
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649165288;
-        bh=Z7ly7VhlEOXC12e1olu1To154Rm7ZW9SK4TYqH7rDZo=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=YHL0QdBT1QmRtgT1WU9noVhfECYnV9pv95Lc/V6R++QnDzUSC2k02WMDvZxPYIqfC
-         gLEPY9mGBOB3Ne3oJ9Fvio2HgVmNjVcTPPJywzKLqnLMgSHzyyxNm2VU+OKPP7xUgS
-         NxHwaXlNkMsQ/0RoyXHb0SeMz7dJ9xRxhR6tUCYcwGWgKSpCG91s4GtEhC5WjcfAQ8
-         fdMxOZq/UtoMGw2siwvAgd0HgX4GvVXbRt1i/W+IOsTvRtIQZFxYAEieFZrDEHzDRx
-         TsPLd3kKeLSeWHpX3guu/wf6Vy4idnvwHtLUOAFiBAH4HGkH1w0w6y+HElgwdZltN7
-         8yKI1tAXvkkaw==
-Message-ID: <4bf0e4e0-6b87-5de3-22ff-b1f6b4cde0b4@collabora.com>
-Date:   Tue, 5 Apr 2022 15:28:05 +0200
+        Tue, 5 Apr 2022 15:23:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB3B4C788;
+        Tue,  5 Apr 2022 12:21:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE896618CD;
+        Tue,  5 Apr 2022 19:21:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A36F0C385A5;
+        Tue,  5 Apr 2022 19:21:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186474;
+        bh=X1L6/wSKaDTpim1XpoJnpAgGMETaa+8EmWzAIXZ00gU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WAbgfrhtoy5Sg+CRvEU3jPw5dlTccrhLVEjqBezzHxrwoRfdA4Sugg7I5/we2/5qh
+         VjYiVx+SkN6deDnpy0CG/hTJ1D+OKnWhYD4PZ8/UjNQ66ynQ+QgAuKhx3sTXRBeJ/m
+         6eO+VQsKQMYYNaWLSpcocP93NoL3TE+hDJLx4uZT/NDQkLnxHCBEC+Mrw4ncARdX09
+         YYQK3BfJs0lsBHx7P/esthLyd9mG/NTAtIpGUc8c4y7jF6rT4JUpFWvO2CMiqg8iPR
+         nAvtMobnrz25BZm33+RP4eG7bwJr3SQ2w0nGpqPAnQ/dmiS5kcj2Ma4UDtX7CdIZtH
+         UrOzn7R1rr4Jg==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 46/59] ceph: add object version support for sync read
+Date:   Tue,  5 Apr 2022 15:20:17 -0400
+Message-Id: <20220405192030.178326-47-jlayton@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] rtc: mt6397: Fix potential NULL dereference in
- mtk_rtc_probe
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Eddie Huang <eddie.huang@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tianping Fang <tianping.fang@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-rtc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220404132553.28064-1-linmq006@gmail.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220404132553.28064-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 04/04/22 15:25, Miaoqian Lin ha scritto:
-> platform_get_resource() may return NULL, add proper check to
-> avoid potential NULL dereferencing.
-> 
-> Fixes: fc2979118f3f ("rtc: mediatek: Add MT6397 RTC driver")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Always return the last object's version.
+
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+---
+ fs/ceph/file.c  | 12 ++++++++++--
+ fs/ceph/super.h |  3 ++-
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+index c4300381851e..175a59277726 100644
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -928,7 +928,8 @@ enum {
+  * only return a short read to the caller if we hit EOF.
+  */
+ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+-			 struct iov_iter *to, int *retry_op)
++			 struct iov_iter *to, int *retry_op,
++			 u64 *last_objver)
+ {
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
+@@ -938,6 +939,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+ 	u64 len = iov_iter_count(to);
+ 	u64 i_size = i_size_read(inode);
+ 	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
++	u64 objver = 0;
+ 
+ 	dout("sync_read on inode %p %llx~%llx\n", inode, *ki_pos, len);
+ 
+@@ -1008,6 +1010,9 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+ 					 req->r_end_latency,
+ 					 len, ret);
+ 
++		if (ret > 0)
++			objver = req->r_version;
++
+ 		i_size = i_size_read(inode);
+ 		dout("sync_read %llu~%llu got %zd i_size %llu%s\n",
+ 		     off, len, ret, i_size, (more ? " MORE" : ""));
+@@ -1069,6 +1074,9 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+ 		}
+ 	}
+ 
++	if (last_objver && ret > 0)
++		*last_objver = objver;
++
+ 	dout("sync_read result %zd retry_op %d\n", ret, *retry_op);
+ 	return ret;
+ }
+@@ -1082,7 +1090,7 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
+ 	dout("sync_read on file %p %llx~%zx %s\n", file, iocb->ki_pos,
+ 	     iov_iter_count(to), (file->f_flags & O_DIRECT) ? "O_DIRECT" : "");
+ 
+-	return __ceph_sync_read(inode, &iocb->ki_pos, to, retry_op);
++	return __ceph_sync_read(inode, &iocb->ki_pos, to, retry_op, NULL);
+ }
+ 
+ struct ceph_aio_request {
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index d7ab820aed34..9809bc97b89e 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -1259,7 +1259,8 @@ extern int ceph_open(struct inode *inode, struct file *file);
+ extern int ceph_atomic_open(struct inode *dir, struct dentry *dentry,
+ 			    struct file *file, unsigned flags, umode_t mode);
+ extern ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
+-				struct iov_iter *to, int *retry_op);
++				struct iov_iter *to, int *retry_op,
++				u64 *last_objver);
+ extern int ceph_release(struct inode *inode, struct file *filp);
+ extern void ceph_fill_inline_data(struct inode *inode, struct page *locked_page,
+ 				  char *data, size_t len);
+-- 
+2.35.1
 
