@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 717FAC35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD65C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388963AbiDEV56 (ORCPT
+        id S1389194AbiDEV65 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:57:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        Tue, 5 Apr 2022 17:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241130AbiDEKsd (ORCPT
+        with ESMTP id S1354387AbiDEKOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:48:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9F49969B;
-        Tue,  5 Apr 2022 03:27:35 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443856C91A;
+        Tue,  5 Apr 2022 02:59:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E575F6142E;
-        Tue,  5 Apr 2022 10:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01519C385A0;
-        Tue,  5 Apr 2022 10:27:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3CF7B81C86;
+        Tue,  5 Apr 2022 09:59:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5907CC385A1;
+        Tue,  5 Apr 2022 09:59:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154454;
-        bh=58RmXMaSK5PuvhFzkytvjVsSYIvGzU7PtUDOIzpbiJs=;
+        s=korg; t=1649152780;
+        bh=1Y2tJszXJ8mM7Vg/4Mf9uvXQFr8vz3unAZ/gygB5MPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HkLs97RDxNKtJgVhHj68sC03zCjvxu95OcxARfL+jQCd0cSm4GTNP3fwHjZTIwSmo
-         TP2xQEbJXZQw7UTdQN4IZKtef5GSw4KqNP541N68gc/aCYu3GkGHXC0WYFz1hNjo45
-         IYhSlQ84hBHvsgAi8WJL30/jFgDgXPUoe4ytxzFU=
+        b=FQ0X5md+nJs0B8cqsnJW0l13TpKPlZOl2RtKGejqDHvF3Eqjtru/j/PBgW1/nCLtK
+         t2/H5Lpk7CR00iO6i8NxM2pitUh2hvxJlUyuVuumgSPuRtCfKh8WMTPyv6r3zFby5c
+         7B08kapqxH+mCEUSMW0A+QV8JSQ7KoGNs9+qOXPg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.10 585/599] ubi: fastmap: Return error code if memory allocation fails in add_aeb()
-Date:   Tue,  5 Apr 2022 09:34:39 +0200
-Message-Id: <20220405070316.250759440@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Martin Varghese <martin.varghese@nokia.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.15 899/913] openvswitch: Fixed nd target mask field in the flow dump.
+Date:   Tue,  5 Apr 2022 09:32:41 +0200
+Message-Id: <20220405070406.767887542@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,86 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Martin Varghese <martin.varghese@nokia.com>
 
-commit c3c07fc25f37c157fde041b3a0c3dfcb1590cbce upstream.
+commit f19c44452b58a84d95e209b847f5495d91c9983a upstream.
 
-Abort fastmap scanning and return error code if memory allocation fails
-in add_aeb(). Otherwise ubi will get wrong peb statistics information
-after scanning.
+IPv6 nd target mask was not getting populated in flow dump.
 
-Fixes: dbb7d2a88d2a7b ("UBI: Add fastmap core")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+In the function __ovs_nla_put_key the icmp code mask field was checked
+instead of icmp code key field to classify the flow as neighbour discovery.
+
+ufid:bdfbe3e5-60c2-43b0-a5ff-dfcac1c37328, recirc_id(0),dp_hash(0/0),
+skb_priority(0/0),in_port(ovs-nm1),skb_mark(0/0),ct_state(0/0),
+ct_zone(0/0),ct_mark(0/0),ct_label(0/0),
+eth(src=00:00:00:00:00:00/00:00:00:00:00:00,
+dst=00:00:00:00:00:00/00:00:00:00:00:00),
+eth_type(0x86dd),
+ipv6(src=::/::,dst=::/::,label=0/0,proto=58,tclass=0/0,hlimit=0/0,frag=no),
+icmpv6(type=135,code=0),
+nd(target=2001::2/::,
+sll=00:00:00:00:00:00/00:00:00:00:00:00,
+tll=00:00:00:00:00:00/00:00:00:00:00:00),
+packets:10, bytes:860, used:0.504s, dp:ovs, actions:ovs-nm2
+
+Fixes: e64457191a25 (openvswitch: Restructure datapath.c and flow.c)
+Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+Link: https://lore.kernel.org/r/20220328054148.3057-1-martinvarghesenokia@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/ubi/fastmap.c |   28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ net/openvswitch/flow_netlink.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/ubi/fastmap.c
-+++ b/drivers/mtd/ubi/fastmap.c
-@@ -468,7 +468,9 @@ static int scan_pool(struct ubi_device *
- 			if (err == UBI_IO_FF_BITFLIPS)
- 				scrub = 1;
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2201,8 +2201,8 @@ static int __ovs_nla_put_key(const struc
+ 			icmpv6_key->icmpv6_type = ntohs(output->tp.src);
+ 			icmpv6_key->icmpv6_code = ntohs(output->tp.dst);
  
--			add_aeb(ai, free, pnum, ec, scrub);
-+			ret = add_aeb(ai, free, pnum, ec, scrub);
-+			if (ret)
-+				goto out;
- 			continue;
- 		} else if (err == 0 || err == UBI_IO_BITFLIPS) {
- 			dbg_bld("Found non empty PEB:%i in pool", pnum);
-@@ -638,8 +640,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
+-			if (icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_SOLICITATION ||
+-			    icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
++			if (swkey->tp.src == htons(NDISC_NEIGHBOUR_SOLICITATION) ||
++			    swkey->tp.src == htons(NDISC_NEIGHBOUR_ADVERTISEMENT)) {
+ 				struct ovs_key_nd *nd_key;
  
--		add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 0);
-+		ret = add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 0);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	/* read EC values from used list */
-@@ -649,8 +653,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 0);
-+		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 0);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	/* read EC values from scrub list */
-@@ -660,8 +666,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 1);
-+		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 1);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	/* read EC values from erase list */
-@@ -671,8 +679,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 1);
-+		ret = add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 1);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	ai->mean_ec = div_u64(ai->ec_sum, ai->ec_count);
+ 				nla = nla_reserve(skb, OVS_KEY_ATTR_ND, sizeof(*nd_key));
 
 
