@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB89C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386758AbiDEOZ3 (ORCPT
+        id S1386825AbiDEOZ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55690 "EHLO
+        Tue, 5 Apr 2022 10:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238998AbiDEJdP (ORCPT
+        with ESMTP id S238976AbiDEJdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:33:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88B81A81D;
-        Tue,  5 Apr 2022 02:21:32 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DAF6464;
+        Tue,  5 Apr 2022 02:21:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DF4BB81C6F;
-        Tue,  5 Apr 2022 09:21:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06FEDC385A0;
-        Tue,  5 Apr 2022 09:21:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D7418CE1C6A;
+        Tue,  5 Apr 2022 09:21:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEA9CC385A2;
+        Tue,  5 Apr 2022 09:21:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150490;
-        bh=GrLKfpMAhDiFsA9sctGu5r6LDF039bw7+aj2UbXwqKE=;
+        s=korg; t=1649150479;
+        bh=z03uRE2H7zmi68R1Q0lvr3LCmd3ruYnHuWykD/0EvBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UTAnjUYSsRfKo6gWywXvUFZjhu5mpYjbq3r+kwyKmANUPR/tajU4CWpGiFCH9oEvr
-         cGdz2qY16h0DjdAcue9MjHI/ynnAanbLzHrTdXx9bzx14TxTMawO1TxkcWn6rB1uTf
-         6EY9g26veLFlC1IaIl8ZnKvICgk/W2jb1vmkGHBs=
+        b=E5zeVMupNafqz2+c+ynklQr8xIOZJpwP1Ts7UWd5fnMwr/3m9/aoNXNv6lMqYVn68
+         OTYNmgueebrGvkkSX/99v342b7Eignk1Am9FPF+5TND4NaT4J8yr25uLiyF4ogRa95
+         C5NOfQ/Xv7UGCmeOgtx1XYLBUXI+RJNu+ezF8i00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Chanho Park <chanho61.park@samsung.com>
-Subject: [PATCH 5.15 073/913] pinctrl: samsung: drop pin banks references on error paths
-Date:   Tue,  5 Apr 2022 09:18:55 +0200
-Message-Id: <20220405070342.012132007@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: [PATCH 5.15 043/913] coresight: Fix TRCCONFIGR.QE sysfs interface
+Date:   Tue,  5 Apr 2022 09:18:25 +0200
+Message-Id: <20220405070341.109583188@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,83 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: James Clark <james.clark@arm.com>
 
-commit 50ebd19e3585b9792e994cfa8cbee8947fe06371 upstream.
+commit ea75a342aed5ed72c87f38fbe0df2f5df7eae374 upstream.
 
-The driver iterates over its devicetree children with
-for_each_child_of_node() and stores for later found node pointer.  This
-has to be put in error paths to avoid leak during re-probing.
+It's impossible to program a valid value for TRCCONFIGR.QE
+when TRCIDR0.QSUPP==0b10. In that case the following is true:
 
-Fixes: ab663789d697 ("pinctrl: samsung: Match pin banks with their device nodes")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
-Reviewed-by: Chanho Park <chanho61.park@samsung.com>
-Link: https://lore.kernel.org/r/20220111201426.326777-2-krzysztof.kozlowski@canonical.com
+  Q element support is implemented, and only supports Q elements without
+  instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
+
+Currently the low bit of QSUPP is checked to see if the low bit of QE can
+be written to, but as you can see when QSUPP==0b10 the low bit is cleared
+making it impossible to ever write the only valid value of 0b11 to QE.
+0b10 would be written instead, which is a reserved QE value even for all
+values of QSUPP.
+
+The fix is to allow writing the low bit of QE for any non zero value of
+QSUPP.
+
+This change also ensures that the low bit is always set, even when the
+user attempts to only set the high bit.
+
+Signed-off-by: James Clark <james.clark@arm.com>
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Fixes: d8c66962084f ("coresight-etm4x: Controls pertaining to the reset, mode, pe and events")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220120113047.2839622-2-james.clark@arm.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/samsung/pinctrl-samsung.c |   30 +++++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/pinctrl/samsung/pinctrl-samsung.c
-+++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
-@@ -1002,6 +1002,16 @@ samsung_pinctrl_get_soc_data_for_of_alia
- 	return &(of_data->ctrl[id]);
- }
- 
-+static void samsung_banks_of_node_put(struct samsung_pinctrl_drv_data *d)
-+{
-+	struct samsung_pin_bank *bank;
-+	unsigned int i;
-+
-+	bank = d->pin_banks;
-+	for (i = 0; i < d->nr_banks; ++i, ++bank)
-+		of_node_put(bank->of_node);
-+}
-+
- /* retrieve the soc specific data */
- static const struct samsung_pin_ctrl *
- samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
-@@ -1116,19 +1126,19 @@ static int samsung_pinctrl_probe(struct
- 	if (ctrl->retention_data) {
- 		drvdata->retention_ctrl = ctrl->retention_data->init(drvdata,
- 							  ctrl->retention_data);
--		if (IS_ERR(drvdata->retention_ctrl))
--			return PTR_ERR(drvdata->retention_ctrl);
-+		if (IS_ERR(drvdata->retention_ctrl)) {
-+			ret = PTR_ERR(drvdata->retention_ctrl);
-+			goto err_put_banks;
-+		}
- 	}
- 
- 	ret = samsung_pinctrl_register(pdev, drvdata);
- 	if (ret)
--		return ret;
-+		goto err_put_banks;
- 
- 	ret = samsung_gpiolib_register(pdev, drvdata);
--	if (ret) {
--		samsung_pinctrl_unregister(pdev, drvdata);
--		return ret;
--	}
-+	if (ret)
-+		goto err_unregister;
- 
- 	if (ctrl->eint_gpio_init)
- 		ctrl->eint_gpio_init(drvdata);
-@@ -1138,6 +1148,12 @@ static int samsung_pinctrl_probe(struct
- 	platform_set_drvdata(pdev, drvdata);
- 
- 	return 0;
-+
-+err_unregister:
-+	samsung_pinctrl_unregister(pdev, drvdata);
-+err_put_banks:
-+	samsung_banks_of_node_put(drvdata);
-+	return ret;
- }
- 
- /*
+--- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+@@ -367,8 +367,12 @@ static ssize_t mode_store(struct device
+ 	mode = ETM_MODE_QELEM(config->mode);
+ 	/* start by clearing QE bits */
+ 	config->cfg &= ~(BIT(13) | BIT(14));
+-	/* if supported, Q elements with instruction counts are enabled */
+-	if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
++	/*
++	 * if supported, Q elements with instruction counts are enabled.
++	 * Always set the low bit for any requested mode. Valid combos are
++	 * 0b00, 0b01 and 0b11.
++	 */
++	if (mode && drvdata->q_support)
+ 		config->cfg |= BIT(13);
+ 	/*
+ 	 * if supported, Q elements with and without instruction
 
 
