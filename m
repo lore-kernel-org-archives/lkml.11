@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 797E5C47084
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1EADC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348174AbiDELwu (ORCPT
+        id S1348328AbiDELxC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
+        Tue, 5 Apr 2022 07:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244835AbiDEIwm (ORCPT
+        with ESMTP id S244890AbiDEIwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9F822515;
-        Tue,  5 Apr 2022 01:44:32 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D3F240B2;
+        Tue,  5 Apr 2022 01:45:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05FC360FFC;
-        Tue,  5 Apr 2022 08:44:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18895C385A1;
-        Tue,  5 Apr 2022 08:44:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D784460FFC;
+        Tue,  5 Apr 2022 08:45:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D2CC385A0;
+        Tue,  5 Apr 2022 08:45:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148271;
-        bh=9sSnzbb/dMgrhrea6qtEXkp2a8QMuyd/2mldhGyCdqw=;
+        s=korg; t=1649148342;
+        bh=0j7nHnS0t2sSr815chupnPL/fJYlIq6v+zh/udpGJTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VzK1y+Jh229rqSmHj7JPAlg+qYm4x0BEb2+u6oxQQLX7GZR4vsRqt4BKX5rx60ZKk
-         97fqUcjgzYPDPGyKOCDAeufusMkTyNrWowtXlYHYW4P76lWy4zlqYKtAWA8Q8i8bdh
-         Y4BwaPCykaytbh+7d0jLTZXlvwpCnuDKOIH7VRHY=
+        b=G/4X/KZiTkPd5Fe5qW7RHBgTUgbjtbLmH7Guhtn2zT34W/+k1shw1BsRZ91OnSpAT
+         qv0KI1yXr4HQPLiGyvtVoNTQIz9plfYinupu5465uwVsM0ThXs3CvA0TzjwPMuw6EN
+         Mm4Ffrf76pV0SNYi9YiiXVwpNQZX42KXHlYCVC1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Kathiravan T <kathirav@codeaurora.org>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0295/1017] media: coda: Fix missing put_device() call in coda_get_vdoa_data
-Date:   Tue,  5 Apr 2022 09:20:08 +0200
-Message-Id: <20220405070403.030896549@linuxfoundation.org>
+Subject: [PATCH 5.16 0322/1017] arm64: dts: qcom: ipq6018: fix usb reference period
+Date:   Tue,  5 Apr 2022 09:20:35 +0200
+Message-Id: <20220405070403.837288357@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,35 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit ca85d271531a1e1c86f24b892f57b7d0a3ddb5a6 ]
+[ Upstream commit d1c10ab1494f09eb12fa6e58fc78bb28d44922ae ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+Reference clock period for rate of 24MHz is 41ns (0x29).
 
-Fixes: e7f3c5481035 ("[media] coda: use VDOA for un-tiling custom macroblock format")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Link: https://lore.kernel.org/r/1965fc315525b8ab26cf9f71f939c24d@codeaurora.org
+Link: https://lore.kernel.org/r/a1932eba-564c-fe32-f220-53aa75250105@seco.com
+Fixes: 20bb9e3dd2e4 ("arm64: dts: qcom: ipq6018: add usb3 DT description")
+Reported-by: Kathiravan T <kathirav@codeaurora.org>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/4f4df55cf44cd0fd7d773aca171d4f48662fb1a5.1642704221.git.baruch@tkos.co.il
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/coda/coda-common.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
-index 9a2640a9c75c..4a553f42ff0a 100644
---- a/drivers/media/platform/coda/coda-common.c
-+++ b/drivers/media/platform/coda/coda-common.c
-@@ -408,6 +408,7 @@ static struct vdoa_data *coda_get_vdoa_data(void)
- 	if (!vdoa_data)
- 		vdoa_data = ERR_PTR(-EPROBE_DEFER);
- 
-+	put_device(&vdoa_pdev->dev);
- out:
- 	of_node_put(vdoa_node);
- 
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 66ec5615651d..5dea37651adf 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -748,7 +748,7 @@
+ 				snps,hird-threshold = /bits/ 8 <0x0>;
+ 				snps,dis_u2_susphy_quirk;
+ 				snps,dis_u3_susphy_quirk;
+-				snps,ref-clock-period-ns = <0x32>;
++				snps,ref-clock-period-ns = <0x29>;
+ 				dr_mode = "host";
+ 			};
+ 		};
 -- 
 2.34.1
 
