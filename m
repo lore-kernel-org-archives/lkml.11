@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED327C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18516C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376683AbiDELWu (ORCPT
+        id S1376727AbiDELWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42524 "EHLO
+        Tue, 5 Apr 2022 07:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242259AbiDEIsl (ORCPT
+        with ESMTP id S242460AbiDEIsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:41 -0400
+        Tue, 5 Apr 2022 04:48:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC1838D91;
-        Tue,  5 Apr 2022 01:37:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E321C47AC9;
+        Tue,  5 Apr 2022 01:37:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C73B4614EF;
-        Tue,  5 Apr 2022 08:37:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCFECC385A1;
-        Tue,  5 Apr 2022 08:37:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 75FE7614E5;
+        Tue,  5 Apr 2022 08:37:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85DF1C385A0;
+        Tue,  5 Apr 2022 08:37:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147825;
-        bh=B2Gvg2dMSeDybRBkutfI6uE2QcVJM3mGlmrR9iRhpZw=;
+        s=korg; t=1649147830;
+        bh=r4l+owIcrNQ3efGn/1bGA3KGQMB6wEfh4CiEt6UHA3Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WEEvWxWRq6KO5rZUEHRs64OfRq3xQ3HFqG3WKfigTdvS21viYvZ7muwrsTDQxjk+2
-         vaIPeDSsPBcW5fyOtIjyGxTVPaopJ1YG9Vh1lBvv6nrHHJLEAkWbKfUjcc+qphFlih
-         VvYXjdMg+u/CZQyi9XKHKLyW2kBsUzK+RbfbAVhI=
+        b=cg3yWkgPg7np8Odtz6SLHCG0sktf+qMKgAHtGMwQZa77PTt4d0mGkDnaNoZUR+BRW
+         Pb+aQA9bDUAcCuqR08D6SHi6PW5z6Olr/TlvAQ/TFvLO7u2/mJkET5cUEorboSDrXb
+         1TQL8MMWfw/+ko8OnRudg4tDTMUt5FaoCocjY+F8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.16 0135/1017] mmc: core: use sysfs_emit() instead of sprintf()
-Date:   Tue,  5 Apr 2022 09:17:28 +0200
-Message-Id: <20220405070358.210521626@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.16 0137/1017] ACPI: properties: Consistently return -ENOENT if there are no more references
+Date:   Tue,  5 Apr 2022 09:17:30 +0200
+Message-Id: <20220405070358.269527930@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,221 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit f5d8a5fe77ce933f53eb8f2e22bb7a1a2019ea11 upstream.
+commit babc92da5928f81af951663fc436997352e02d3a upstream.
 
-sprintf() (still used in the MMC core for the sysfs output) is vulnerable
-to the buffer overflow.  Use the new-fangled sysfs_emit() instead.
+__acpi_node_get_property_reference() is documented to return -ENOENT if
+the caller requests a property reference at an index that does not exist,
+not -EINVAL which it actually does.
 
-Found by Linux Verification Center (linuxtesting.org) with the SVACE static
-analysis tool.
+Fix this by returning -ENOENT consistenly, independently of whether the
+property value is a plain reference or a package.
 
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/717729b2-d65b-c72e-9fac-471d28d00b5a@omp.ru
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: c343bc2ce2c6 ("ACPI: properties: Align return codes of __acpi_node_get_property_reference()")
+Cc: 4.14+ <stable@vger.kernel.org> # 4.14+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/bus.c      |    9 +++++----
- drivers/mmc/core/bus.h      |    3 ++-
- drivers/mmc/core/mmc.c      |   16 ++++++++--------
- drivers/mmc/core/sd.c       |   27 +++++++++++++--------------
- drivers/mmc/core/sdio.c     |    5 +++--
- drivers/mmc/core/sdio_bus.c |    7 ++++---
- 6 files changed, 35 insertions(+), 32 deletions(-)
+ drivers/acpi/property.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/mmc/core/bus.c
-+++ b/drivers/mmc/core/bus.c
-@@ -15,6 +15,7 @@
- #include <linux/stat.h>
- #include <linux/of.h>
- #include <linux/pm_runtime.h>
-+#include <linux/sysfs.h>
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -685,7 +685,7 @@ int __acpi_node_get_property_reference(c
+ 	 */
+ 	if (obj->type == ACPI_TYPE_LOCAL_REFERENCE) {
+ 		if (index)
+-			return -EINVAL;
++			return -ENOENT;
  
- #include <linux/mmc/card.h>
- #include <linux/mmc/host.h>
-@@ -34,13 +35,13 @@ static ssize_t type_show(struct device *
- 
- 	switch (card->type) {
- 	case MMC_TYPE_MMC:
--		return sprintf(buf, "MMC\n");
-+		return sysfs_emit(buf, "MMC\n");
- 	case MMC_TYPE_SD:
--		return sprintf(buf, "SD\n");
-+		return sysfs_emit(buf, "SD\n");
- 	case MMC_TYPE_SDIO:
--		return sprintf(buf, "SDIO\n");
-+		return sysfs_emit(buf, "SDIO\n");
- 	case MMC_TYPE_SD_COMBO:
--		return sprintf(buf, "SDcombo\n");
-+		return sysfs_emit(buf, "SDcombo\n");
- 	default:
- 		return -EFAULT;
- 	}
---- a/drivers/mmc/core/bus.h
-+++ b/drivers/mmc/core/bus.h
-@@ -9,6 +9,7 @@
- #define _MMC_CORE_BUS_H
- 
- #include <linux/device.h>
-+#include <linux/sysfs.h>
- 
- struct mmc_host;
- struct mmc_card;
-@@ -17,7 +18,7 @@ struct mmc_card;
- static ssize_t mmc_##name##_show (struct device *dev, struct device_attribute *attr, char *buf)	\
- {										\
- 	struct mmc_card *card = mmc_dev_to_card(dev);				\
--	return sprintf(buf, fmt, args);						\
-+	return sysfs_emit(buf, fmt, args);					\
- }										\
- static DEVICE_ATTR(name, S_IRUGO, mmc_##name##_show, NULL)
- 
---- a/drivers/mmc/core/mmc.c
-+++ b/drivers/mmc/core/mmc.c
-@@ -12,6 +12,7 @@
- #include <linux/slab.h>
- #include <linux/stat.h>
- #include <linux/pm_runtime.h>
-+#include <linux/sysfs.h>
- 
- #include <linux/mmc/host.h>
- #include <linux/mmc/card.h>
-@@ -812,12 +813,11 @@ static ssize_t mmc_fwrev_show(struct dev
- {
- 	struct mmc_card *card = mmc_dev_to_card(dev);
- 
--	if (card->ext_csd.rev < 7) {
--		return sprintf(buf, "0x%x\n", card->cid.fwrev);
--	} else {
--		return sprintf(buf, "0x%*phN\n", MMC_FIRMWARE_LEN,
--			       card->ext_csd.fwrev);
--	}
-+	if (card->ext_csd.rev < 7)
-+		return sysfs_emit(buf, "0x%x\n", card->cid.fwrev);
-+	else
-+		return sysfs_emit(buf, "0x%*phN\n", MMC_FIRMWARE_LEN,
-+				  card->ext_csd.fwrev);
- }
- 
- static DEVICE_ATTR(fwrev, S_IRUGO, mmc_fwrev_show, NULL);
-@@ -830,10 +830,10 @@ static ssize_t mmc_dsr_show(struct devic
- 	struct mmc_host *host = card->host;
- 
- 	if (card->csd.dsr_imp && host->dsr_req)
--		return sprintf(buf, "0x%x\n", host->dsr);
-+		return sysfs_emit(buf, "0x%x\n", host->dsr);
- 	else
- 		/* return default DSR value */
--		return sprintf(buf, "0x%x\n", 0x404);
-+		return sysfs_emit(buf, "0x%x\n", 0x404);
- }
- 
- static DEVICE_ATTR(dsr, S_IRUGO, mmc_dsr_show, NULL);
---- a/drivers/mmc/core/sd.c
-+++ b/drivers/mmc/core/sd.c
-@@ -13,6 +13,7 @@
- #include <linux/stat.h>
- #include <linux/pm_runtime.h>
- #include <linux/scatterlist.h>
-+#include <linux/sysfs.h>
- 
- #include <linux/mmc/host.h>
- #include <linux/mmc/card.h>
-@@ -708,18 +709,16 @@ MMC_DEV_ATTR(ocr, "0x%08x\n", card->ocr)
- MMC_DEV_ATTR(rca, "0x%04x\n", card->rca);
- 
- 
--static ssize_t mmc_dsr_show(struct device *dev,
--                           struct device_attribute *attr,
--                           char *buf)
--{
--       struct mmc_card *card = mmc_dev_to_card(dev);
--       struct mmc_host *host = card->host;
--
--       if (card->csd.dsr_imp && host->dsr_req)
--               return sprintf(buf, "0x%x\n", host->dsr);
--       else
--               /* return default DSR value */
--               return sprintf(buf, "0x%x\n", 0x404);
-+static ssize_t mmc_dsr_show(struct device *dev, struct device_attribute *attr,
-+			    char *buf)
-+{
-+	struct mmc_card *card = mmc_dev_to_card(dev);
-+	struct mmc_host *host = card->host;
-+
-+	if (card->csd.dsr_imp && host->dsr_req)
-+		return sysfs_emit(buf, "0x%x\n", host->dsr);
-+	/* return default DSR value */
-+	return sysfs_emit(buf, "0x%x\n", 0x404);
- }
- 
- static DEVICE_ATTR(dsr, S_IRUGO, mmc_dsr_show, NULL);
-@@ -735,9 +734,9 @@ static ssize_t info##num##_show(struct d
- 												\
- 	if (num > card->num_info)								\
- 		return -ENODATA;								\
--	if (!card->info[num-1][0])								\
-+	if (!card->info[num - 1][0])								\
- 		return 0;									\
--	return sprintf(buf, "%s\n", card->info[num-1]);						\
-+	return sysfs_emit(buf, "%s\n", card->info[num - 1]);					\
- }												\
- static DEVICE_ATTR_RO(info##num)
- 
---- a/drivers/mmc/core/sdio.c
-+++ b/drivers/mmc/core/sdio.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/err.h>
- #include <linux/pm_runtime.h>
-+#include <linux/sysfs.h>
- 
- #include <linux/mmc/host.h>
- #include <linux/mmc/card.h>
-@@ -40,9 +41,9 @@ static ssize_t info##num##_show(struct d
- 												\
- 	if (num > card->num_info)								\
- 		return -ENODATA;								\
--	if (!card->info[num-1][0])								\
-+	if (!card->info[num - 1][0])								\
- 		return 0;									\
--	return sprintf(buf, "%s\n", card->info[num-1]);						\
-+	return sysfs_emit(buf, "%s\n", card->info[num - 1]);					\
- }												\
- static DEVICE_ATTR_RO(info##num)
- 
---- a/drivers/mmc/core/sdio_bus.c
-+++ b/drivers/mmc/core/sdio_bus.c
-@@ -14,6 +14,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/pm_domain.h>
- #include <linux/acpi.h>
-+#include <linux/sysfs.h>
- 
- #include <linux/mmc/card.h>
- #include <linux/mmc/host.h>
-@@ -35,7 +36,7 @@ field##_show(struct device *dev, struct
- 	struct sdio_func *func;						\
- 									\
- 	func = dev_to_sdio_func (dev);					\
--	return sprintf(buf, format_string, args);			\
-+	return sysfs_emit(buf, format_string, args);			\
- }									\
- static DEVICE_ATTR_RO(field)
- 
-@@ -52,9 +53,9 @@ static ssize_t info##num##_show(struct d
- 												\
- 	if (num > func->num_info)								\
- 		return -ENODATA;								\
--	if (!func->info[num-1][0])								\
-+	if (!func->info[num - 1][0])								\
- 		return 0;									\
--	return sprintf(buf, "%s\n", func->info[num-1]);						\
-+	return sysfs_emit(buf, "%s\n", func->info[num - 1]);					\
- }												\
- static DEVICE_ATTR_RO(info##num)
- 
+ 		ret = acpi_bus_get_device(obj->reference.handle, &device);
+ 		if (ret)
 
 
