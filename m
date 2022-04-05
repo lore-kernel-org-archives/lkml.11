@@ -2,92 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C4FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E506EC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846285AbiDFCDl (ORCPT
+        id S1846299AbiDFCDr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44750 "EHLO
+        Tue, 5 Apr 2022 22:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457919AbiDEQ7s (ORCPT
+        with ESMTP id S1351659AbiDEKKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:59:48 -0400
+        Tue, 5 Apr 2022 06:10:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB61D5DA4B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:57:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF3BC4E29;
+        Tue,  5 Apr 2022 02:55:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78B30B81E91
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:57:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 008D4C385A7;
-        Tue,  5 Apr 2022 16:57:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649177866;
-        bh=ms+BtckZ9MEqSCkK6doSJsbJF0vV+8oKpXtP6XAZwOU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DID+z+a35JPU0wg3v8o+heAYAG3WEdKWMnjWMd5Ia/miFQsCgEW4juZf/3sDflrfk
-         dKB3nrAMPQvQSJcb06MYXeA9ftNwL+KfSFpPgQEYU14IAkiFdEBWoq1FQkKz9YIvXF
-         8YplWZ3k0ELG3Ggv1TfMAnX4qJRiWJ0gSGbkmpKJIdSoQKwZsljWvaO5fimjZK4Ksr
-         B319re//ltbAenKSFo4oF02i3i85Ca1OJsmMPpW2/RIYVkSvKodqG7xl+YqTPYpZoE
-         hrvQqSSOD5yL63ah7DH83U+Za/QvH3RAGFcBih3xcPrR79uAyFF5TjRdfxUNDSYS1V
-         WZV29PSlQwIhQ==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nbmUx-002uYM-BB; Tue, 05 Apr 2022 18:57:43 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     alsa-devel@alsa-project.org
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] Make headphone work on Huawei Matebook D15
-Date:   Tue,  5 Apr 2022 18:57:31 +0200
-Message-Id: <cover.1649177516.git.mchehab@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F565B817D3;
+        Tue,  5 Apr 2022 09:55:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DC17C385A2;
+        Tue,  5 Apr 2022 09:55:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152550;
+        bh=DY4XAKL26rlSLT9GnWVUUFFZgtewayqgtln5Q3okulk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wHKRjwe6/6XvUQy2rRHziS9jPJ1oNKOZITVZo2HAf4VJ11YccdPjpPcsKUaBiV2Cn
+         AxMffQN63nletk4yNGAKCbF5CYbex48iz4mXSy6Zh6Oa2vQDuITO+Mm5pNfoXD3qsv
+         rbjQNthV3Nx6jrHsamCnUu24yk2zFDg3vRYxnl4A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 816/913] ubifs: rename_whiteout: Fix double free for whiteout_ui->data
+Date:   Tue,  5 Apr 2022 09:31:18 +0200
+Message-Id: <20220405070404.291071243@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At Huawei Matebook D15 two different GPIOs are used to control the output:
-	- gpio0 controls the speaker output;
-	- gpio1 controls the headphone output.
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-Changing both at the same time cause spurious events that are mis-interpreted
-as input events, causing troubles on apps. So, a delay is needed before turning
-on such gpios.
+commit 40a8f0d5e7b3999f096570edab71c345da812e3e upstream.
 
-With this patch, plugging a headphone causes a jack event to trigger the speaker
-supply, powering down the speaker and powering up the headphone output.
-Removing the headphone also triggers the power supply, powering up the speaker
-and powering down the headphone.
+'whiteout_ui->data' will be freed twice if space budget fail for
+rename whiteout operation as following process:
 
+rename_whiteout
+  dev = kmalloc
+  whiteout_ui->data = dev
+  kfree(whiteout_ui->data)  // Free first time
+  iput(whiteout)
+    ubifs_free_inode
+      kfree(ui->data)	    // Double free!
+
+KASAN reports:
+==================================================================
+BUG: KASAN: double-free or invalid-free in ubifs_free_inode+0x4f/0x70
+Call Trace:
+  kfree+0x117/0x490
+  ubifs_free_inode+0x4f/0x70 [ubifs]
+  i_callback+0x30/0x60
+  rcu_do_batch+0x366/0xac0
+  __do_softirq+0x133/0x57f
+
+Allocated by task 1506:
+  kmem_cache_alloc_trace+0x3c2/0x7a0
+  do_rename+0x9b7/0x1150 [ubifs]
+  ubifs_rename+0x106/0x1f0 [ubifs]
+  do_syscall_64+0x35/0x80
+
+Freed by task 1506:
+  kfree+0x117/0x490
+  do_rename.cold+0x53/0x8a [ubifs]
+  ubifs_rename+0x106/0x1f0 [ubifs]
+  do_syscall_64+0x35/0x80
+
+The buggy address belongs to the object at ffff88810238bed8 which
+belongs to the cache kmalloc-8 of size 8
+==================================================================
+
+Let ubifs_free_inode() free 'whiteout_ui->data'. BTW, delete unused
+assignment 'whiteout_ui->data_len = 0', process 'ubifs_evict_inode()
+-> ubifs_jnl_delete_inode() -> ubifs_jnl_write_inode()' doesn't need it
+(because 'inc_nlink(whiteout)' won't be excuted by 'goto out_release',
+ and the nlink of whiteout inode is 0).
+
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
+ fs/ubifs/dir.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-v3:
-  - add a patch changing GPIO quirk speaker naming. Patch 2 got rebased on the top of it.
-
-Mauro Carvalho Chehab (2):
-  ASoC: Intel: sof_es8336: support a separate gpio to control headphone
-  ASoC: Intel: sof_es8336: Huawei Matebook D15 uses a headphone gpio
-
-Pierre-Louis Bossart (1):
-  ASoC: Intel: sof_es8336: simplify speaker gpio naming
-
- sound/soc/intel/boards/sof_es8336.c | 97 +++++++++++++++++++++--------
- 1 file changed, 72 insertions(+), 25 deletions(-)
-
--- 
-2.35.1
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1425,8 +1425,6 @@ static int do_rename(struct inode *old_d
+ 
+ 		err = ubifs_budget_space(c, &wht_req);
+ 		if (err) {
+-			kfree(whiteout_ui->data);
+-			whiteout_ui->data_len = 0;
+ 			iput(whiteout);
+ 			goto out_release;
+ 		}
 
 
