@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B2C4C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2B1C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242823AbiDEUc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
+        id S242050AbiDEUce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358005AbiDEK1m (ORCPT
+        with ESMTP id S1349485AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AC7D8F61;
-        Tue,  5 Apr 2022 03:12:44 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8A421BF;
+        Tue,  5 Apr 2022 02:47:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FA68B81C8A;
-        Tue,  5 Apr 2022 10:12:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08681C385A1;
-        Tue,  5 Apr 2022 10:12:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8EE24CE1BE5;
+        Tue,  5 Apr 2022 09:47:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A91DBC385A2;
+        Tue,  5 Apr 2022 09:47:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153562;
-        bh=5XhvLEgUeP8Y6kdjc6mEd3wkiV9dCKWc/U9ieZiKdTo=;
+        s=korg; t=1649152038;
+        bh=LtbL+NctI2lPnOdJskINY7IUF608Dvnr7ibw88k9yPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0B+DMbGsPCxloxfppp92pD17vsqfNIUQlusK03GZWgDdQjYJB6WjLtCrERPjorkO9
-         QcARHLYx6AuuYXqv/igN7f/aQF9yXk1tR5DMOD7gG2TOlRg7gasSwa2AkxTvbPj+Z+
-         FutCA6/bo9KpHYy9VWpB0HBaliYfjIBX85HDjjWw=
+        b=1v6LPeZdOQn0Dzoam0+G6Nk0t3slNnP3tRybiWyHwFEFOzs2t+q40Ug8wi8mR40xM
+         UgS+BCpMcT/x67hsbFnI7/5a9qldaLLlykxjLnpePorUnjLcF/l/BcO/fVcefxLHLh
+         luOHDXzas2YKYWnhi1E83ispN8NhDJBz/7wd/I6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Steven Price <steven.price@arm.com>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 266/599] drm/panfrost: Check for error num after setting mask
-Date:   Tue,  5 Apr 2022 09:29:20 +0200
-Message-Id: <20220405070306.753361724@linuxfoundation.org>
+Subject: [PATCH 5.15 633/913] pinctrl: mediatek: paris: Fix "argument" argument type for mtk_pinconf_get()
+Date:   Tue,  5 Apr 2022 09:28:15 +0200
+Message-Id: <20220405070358.814319010@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,43 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit 44ab30b056149bd59dd7989a593dd25ead6007fd ]
+[ Upstream commit 19bce7ce0a593c7024030a0cda9e23facea3c93d ]
 
-Because of the possible failure of the dma_supported(), the
-dma_set_mask_and_coherent() may return error num.
-Therefore, it should be better to check it and return the error if
-fails.
+For mtk_pinconf_get(), the "argument" argument is typically returned by
+pinconf_to_config_argument(), which holds the value for a given pinconf
+parameter. It certainly should not have the type of "enum pin_config_param",
+which describes the type of the pinconf parameter itself.
 
-Fixes: f3ba91228e8e ("drm/panfrost: Add initial panfrost driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-[Steve: fix Fixes: line]
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220106030326.2620942-1-jiasheng@iscas.ac.cn
+Change the type to u32, which matches the return type of
+pinconf_to_config_argument().
+
+Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-4-wenst@chromium.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_gpu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-index 2aae636f1cf5..107ad2d764ec 100644
---- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
-@@ -359,8 +359,11 @@ int panfrost_gpu_init(struct panfrost_device *pfdev)
+diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
+index 5bdf8b7acd23..bcf359256ed4 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -184,8 +184,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
+ }
  
- 	panfrost_gpu_init_features(pfdev);
- 
--	dma_set_mask_and_coherent(pfdev->dev,
-+	err = dma_set_mask_and_coherent(pfdev->dev,
- 		DMA_BIT_MASK(FIELD_GET(0xff00, pfdev->features.mmu_features)));
-+	if (err)
-+		return err;
-+
- 	dma_set_max_seg_size(pfdev->dev, UINT_MAX);
- 
- 	irq = platform_get_irq_byname(to_platform_device(pfdev->dev), "gpu");
+ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
+-			   enum pin_config_param param,
+-			   enum pin_config_param arg)
++			   enum pin_config_param param, u32 arg)
+ {
+ 	struct mtk_pinctrl *hw = pinctrl_dev_get_drvdata(pctldev);
+ 	const struct mtk_pin_desc *desc;
 -- 
 2.34.1
 
