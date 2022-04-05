@@ -2,50 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34831C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 798E0C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234441AbiDEH6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46908 "EHLO
+        id S234721AbiDEH6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233014AbiDEHrV (ORCPT
+        with ESMTP id S233541AbiDEHr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B53972CA;
-        Tue,  5 Apr 2022 00:43:29 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B5A9231A;
+        Tue,  5 Apr 2022 00:45:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1468CB81A22;
-        Tue,  5 Apr 2022 07:43:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E0DEC340EE;
-        Tue,  5 Apr 2022 07:43:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88702616C6;
+        Tue,  5 Apr 2022 07:45:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93D50C340EE;
+        Tue,  5 Apr 2022 07:45:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144606;
-        bh=67+iwn21hU+eAf9Hn/ExM4fEOGIQZGPFuRfiibRg3lM=;
+        s=korg; t=1649144711;
+        bh=/WCYyhiwKb7MyTHWUY4idC3q5eGds2twTG7P8apsP4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rDq+k9gy3jfg4azHKN+k9IWPjM0GvHH7Yckfpfdaw4KqxguM01w6NkPWfA5mK/uQU
-         QDJix0QbsSjLTIT+f/Kqo4w04KPtlxLw3iStvWRFvxlQPTtFfPmJPHJfSUogR9GHkx
-         vXAOypGNx6m5eSMqUCT0Wyw/njtonxLZ/lGdrs8s=
+        b=licuQt5hKLt/R4S1V0MWDyWQJVjdI6xCKbSqlorNWYfgzISl+muA4oDXd4QywtE2K
+         ikmYY0RdhfevNzYyOohAgix8n18mOYZbjdNmp+BFQcFtYXhKVgzsmypl4ExyTh03Nn
+         F2QKXXaGRrzCDvXVGSslpIiJ4fkD76rYWSzy50xg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Rientjes <rientjes@google.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Minchan Kim <minchan@kernel.org>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 0106/1126] mm: madvise: return correct bytes advised with process_madvise
-Date:   Tue,  5 Apr 2022 09:14:13 +0200
-Message-Id: <20220405070410.681670271@linuxfoundation.org>
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH 5.17 0104/1126] drm/simpledrm: Add "panel orientation" property on non-upright mounted LCD panels
+Date:   Tue,  5 Apr 2022 09:14:11 +0200
+Message-Id: <20220405070410.621692235@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -57,64 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 5bd009c7c9a9e888077c07535dc0c70aeab242c3 upstream.
+commit 94fa115f7b28a3f02611499175e134f0a823b686 upstream.
 
-Patch series "mm: madvise: return correct bytes processed with
-process_madvise", v2.  With the process_madvise(), always choose to return
-non zero processed bytes over an error.  This can help the user to know on
-which VMA, passed in the 'struct iovec' vector list, is failed to advise
-thus can take the decission of retrying/skipping on that VMA.
+Some devices use e.g. a portrait panel in a standard laptop casing made
+for landscape panels. efifb calls drm_get_panel_orientation_quirk() and
+sets fb_info.fbcon_rotate_hint to make fbcon rotate the console so that
+it shows up-right instead of on its side.
 
-This patch (of 2):
+When switching to simpledrm the fbcon renders on its side. Call the
+drm_connector_set_panel_orientation_with_quirk() helper to add
+a "panel orientation" property on devices listed in the quirk table,
+to make the fbcon (and aware userspace apps) rotate the image to
+display properly.
 
-The process_madvise() system call returns error even after processing some
-VMA's passed in the 'struct iovec' vector list which leaves the user
-confused to know where to restart the advise next.  It is also against
-this syscall man page[1] documentation where it mentions that "return
-value may be less than the total number of requested bytes, if an error
-occurred after some iovec elements were already processed.".
-
-Consider a user passed 10 VMA's in the 'struct iovec' vector list of which
-9 are processed but one.  Then it just returns the error caused on that
-failed VMA despite the first 9 VMA's processed, leaving the user confused
-about on which VMA it is failed.  Returning the number of bytes processed
-here can help the user to know which VMA it is failed on and thus can
-retry/skip the advise on that VMA.
-
-[1]https://man7.org/linux/man-pages/man2/process_madvise.2.html.
-
-Link: https://lkml.kernel.org/r/cover.1647008754.git.quic_charante@quicinc.com
-Link: https://lkml.kernel.org/r/125b61a0edcee5c2db8658aed9d06a43a19ccafc.1647008754.git.quic_charante@quicinc.com
-Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220221220045.11958-1-hdegoede@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/madvise.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/gpu/drm/tiny/simpledrm.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1440,8 +1440,7 @@ SYSCALL_DEFINE5(process_madvise, int, pi
- 		iov_iter_advance(&iter, iovec.iov_len);
- 	}
+--- a/drivers/gpu/drm/tiny/simpledrm.c
++++ b/drivers/gpu/drm/tiny/simpledrm.c
+@@ -798,6 +798,9 @@ static int simpledrm_device_init_modeset
+ 	if (ret)
+ 		return ret;
+ 	drm_connector_helper_add(connector, &simpledrm_connector_helper_funcs);
++	drm_connector_set_panel_orientation_with_quirk(connector,
++						       DRM_MODE_PANEL_ORIENTATION_UNKNOWN,
++						       mode->hdisplay, mode->vdisplay);
  
--	if (ret == 0)
--		ret = total_len - iov_iter_count(&iter);
-+	ret = (total_len - iov_iter_count(&iter)) ? : ret;
+ 	formats = simpledrm_device_formats(sdev, &nformats);
  
- release_mm:
- 	mmput(mm);
 
 
