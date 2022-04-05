@@ -2,130 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6033EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9322C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387038AbiDEPQ0 (ORCPT
+        id S1345755AbiDEPRP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        Tue, 5 Apr 2022 11:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346728AbiDEJpX (ORCPT
+        with ESMTP id S1346731AbiDEJpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237E1DB495;
-        Tue,  5 Apr 2022 02:31:33 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073A6DB496
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:31:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B443F616AE;
-        Tue,  5 Apr 2022 09:31:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD743C385A3;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 987E0B81B14
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:31:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C060FC385A0;
         Tue,  5 Apr 2022 09:31:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151092;
-        bh=yV2hPjB/jtmxLEg8vq2KEb0Zc5FmKz4KI8HVcPMVrYE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s08NUPWJCvfZnHH9dQgj0o+xETptsz9s3mM6+UE8wBJXimTavkDnFbya+hiADxPbC
-         ZZ1ExCMC5UQ2g53F8hXmh5NxvB13VM+zcHD4hmrFXZuV+wxsoF+NA4KEh1K2eT0otL
-         bBoli8PvJwJ9xBkeQJDRQMyDQ2tvW32a31PZwra8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mel Gorman <mgorman@techsingularity.net>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Gautham R. Shenoy" <gautham.shenoy@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 253/913] sched/fair: Improve consistency of allowed NUMA balance calculations
-Date:   Tue,  5 Apr 2022 09:21:55 +0200
-Message-Id: <20220405070347.439697995@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151094;
+        bh=uenQ5PTJTk45mI+LcbrDbJhSKL0UrjCnt82W9zY+s0I=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=CF7a3xLAF/P87ypUF0Qng9SPB+YI0nG0+F1zbYVUhGjH9ey+WsqUhUCZYp4M2/Seh
+         v0HRD4ZUjlDgqGbSJK1lZcCkfqLFX0xyQQuFfNNnRtHO1EsNvLhLoif/j5B+0qXZkn
+         nsAggl7EESWkqAmr0h1B54qZeBYXTVCxdrfyCgCmv+QsOboWkRiuuC6INLeHES710C
+         zc+Qms5U2WuykD2XD5M1m6FgthS8uIeAWSqme3JJS5w6jkuCwmTwhi+jmVmF1AT/8c
+         9LX6dRtB3BVD3Ds/Y7ArU5PMZRaX6kMvb2xxBMYtFh1eCbuwiCTUKpFP66Ha91o472
+         nKLHvWPYzlRNQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     krzk@kernel.org, rikard.falkeborn@gmail.com,
+        Liam Girdwood <lgirdwood@gmail.com>, s.nawrocki@samsung.com
+Cc:     Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>, linux-kernel@vger.kernel.org,
+        linux-actions@lists.infradead.org, afaerber@suse.de,
+        linux-arm-kernel@lists.infradead.org, alsa-devel@alsa-project.org,
+        mani@kernel.org
+In-Reply-To: <20220330204227.25081-1-rikard.falkeborn@gmail.com>
+References: <20220330204227.25081-1-rikard.falkeborn@gmail.com>
+Subject: Re: [PATCH] ASoC: samsung: Constify snd_soc_dapm_{route,widget} structs
+Message-Id: <164915109148.276574.7227991139286446163.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:31:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mel Gorman <mgorman@techsingularity.net>
+On Wed, 30 Mar 2022 22:42:27 +0200, Rikard Falkeborn wrote:
+> These structs only have their address assigned to the
+> dapm_{routes,widget} fields in the snd_soc_card struct,
+> both which are pointers to const data. Make them const to
+> allow the compiler to put them in read-only memory.
+> 
+> 
 
-[ Upstream commit 2cfb7a1b031b0e816af7a6ee0c6ab83b0acdf05a ]
+Applied to
 
-There are inconsistencies when determining if a NUMA imbalance is allowed
-that should be corrected.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-o allow_numa_imbalance changes types and is not always examining
-  the destination group so both the type should be corrected as
-  well as the naming.
-o find_idlest_group uses the sched_domain's weight instead of the
-  group weight which is different to find_busiest_group
-o find_busiest_group uses the source group instead of the destination
-  which is different to task_numa_find_cpu
-o Both find_idlest_group and find_busiest_group should account
-  for the number of running tasks if a move was allowed to be
-  consistent with task_numa_find_cpu
+Thanks!
 
-Fixes: 7d2b5dd0bcc4 ("sched/numa: Allow a floating imbalance between NUMA nodes")
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Gautham R. Shenoy <gautham.shenoy@amd.com>
-Link: https://lore.kernel.org/r/20220208094334.16379-2-mgorman@techsingularity.net
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/sched/fair.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+[1/1] ASoC: samsung: Constify snd_soc_dapm_{route,widget} structs
+      commit: 5449fd7bd01fc13266979a6ab48493d4d2e43725
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 6420580f2730..02766f3fe206 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -9005,9 +9005,10 @@ static bool update_pick_idlest(struct sched_group *idlest,
-  * This is an approximation as the number of running tasks may not be
-  * related to the number of busy CPUs due to sched_setaffinity.
-  */
--static inline bool allow_numa_imbalance(int dst_running, int dst_weight)
-+static inline bool
-+allow_numa_imbalance(unsigned int running, unsigned int weight)
- {
--	return (dst_running < (dst_weight >> 2));
-+	return (running < (weight >> 2));
- }
- 
- /*
-@@ -9141,12 +9142,13 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
- 				return idlest;
- #endif
- 			/*
--			 * Otherwise, keep the task on this node to stay close
--			 * its wakeup source and improve locality. If there is
--			 * a real need of migration, periodic load balance will
--			 * take care of it.
-+			 * Otherwise, keep the task close to the wakeup source
-+			 * and improve locality if the number of running tasks
-+			 * would remain below threshold where an imbalance is
-+			 * allowed. If there is a real need of migration,
-+			 * periodic load balance will take care of it.
- 			 */
--			if (allow_numa_imbalance(local_sgs.sum_nr_running, sd->span_weight))
-+			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, local_sgs.group_weight))
- 				return NULL;
- 		}
- 
-@@ -9352,7 +9354,7 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
- 		/* Consider allowing a small imbalance between NUMA groups */
- 		if (env->sd->flags & SD_NUMA) {
- 			env->imbalance = adjust_numa_imbalance(env->imbalance,
--				busiest->sum_nr_running, busiest->group_weight);
-+				local->sum_nr_running + 1, local->group_weight);
- 		}
- 
- 		return;
--- 
-2.34.1
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
