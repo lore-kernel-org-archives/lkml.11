@@ -2,148 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6707C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 972BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353857AbiDFAM5 (ORCPT
+        id S1575417AbiDFANc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        Tue, 5 Apr 2022 20:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457608AbiDEQQA (ORCPT
+        with ESMTP id S233525AbiDEKag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:16:00 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA8719018;
-        Tue,  5 Apr 2022 09:14:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649175241; x=1680711241;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ur19xDOlDI9/rWRs+TqnfwNVLI1D8qVYS/itVUtgTbs=;
-  b=jFvFqMmaNz/WWa5pevdVc4G5pOvCnX2Jah2FBst1sLrf6l3hiAOWyoao
-   ww6Ee/J+I5WNy43gmffTR9dIq4CFtI6fRU5wkZ5bOA+/LN23tJVMhMAAj
-   eAgOVhLDZtP7GWk8CYp8kTdtLxElFoRVzm4Ea1d3FMoNPASw3boETImk6
-   kthX6k06Bzl5Ye5sw8bDD+cxEyEVVhIgTsCA3/ZEorZIhH4ixBykOJXoe
-   YeduQ3TNPJPxrvpIJFJBQ1H+q67O7kUSTn87ZdnhkNLmVaWA2XgzPdN42
-   ot5udIAxb/pve3xN+aFbArqRF1S9dTdedP+e3eTFvbrDtJuDNZsegMKUd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258375370"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="258375370"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:11:37 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="524055940"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:11:34 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nbllo-00DSdK-94;
-        Tue, 05 Apr 2022 19:11:04 +0300
-Date:   Tue, 5 Apr 2022 19:11:04 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 2/2] tty: Implement lookahead to process XON/XOFF timely
-Message-ID: <YkxqGDsURPpkDM5W@smile.fi.intel.com>
-References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
- <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com>
+        Tue, 5 Apr 2022 06:30:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA5DDCE3C;
+        Tue,  5 Apr 2022 03:18:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DD3B2CE0B18;
+        Tue,  5 Apr 2022 10:18:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E55C5C385A0;
+        Tue,  5 Apr 2022 10:18:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153899;
+        bh=MMP6k/LNUR1jVifTaiPGoAePLM2M7XdwQlkDS3TOkuU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nsOyAo16jkCFwii30y7gy7k8NY297pyT8x3/YbTYnAqUV69Zj3m5Ho/OtDuG6dF/6
+         yfLB29QbbO0YvduveYMw+ziAFnQ1DuoNeA4yzUwPN22ZG/IoOMatX+yVzng92+5nzh
+         fa5NrfL8wpbnFrq/rTGSfedohyniQZtxD4tNf33M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 387/599] staging:iio:adc:ad7280a: Fix handing of device address bit reversing.
+Date:   Tue,  5 Apr 2022 09:31:21 +0200
+Message-Id: <20220405070310.347287044@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:24:37PM +0300, Ilpo Järvinen wrote:
-> When tty is not read from, XON/XOFF may get stuck into an
-> intermediate buffer. As those characters are there to do software
-> flow-control, it is not very useful. In the case where neither end
-> reads from ttys, the receiving ends might not be able receive the
-> XOFF characters and just keep sending more data to the opposite
-> direction. This problem is almost guaranteed to occur with DMA
-> which sends data in large chunks.
-> 
-> If TTY is slow to process characters, that is, eats less than given
-> amount in receive_buf, invoke lookahead for the rest of the chars
-> to process potential XON/XOFF characters.
-> 
-> The guards necessary for ensuring the XON/XOFF character are
-> processed only once were added by the previous patch. All this patch
-> needs to do on that front is to pass the lookahead count (that can
-> now be non-zero) into port->client_ops->receive_buf().
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-...
+[ Upstream commit f281e4ddbbc0b60f061bc18a2834e9363ba85f9f ]
 
-> +static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
-> +					 bool lookahead_done)
-> +{
-> +	if (!I_IXON(tty))
-> +		return false;
-> +
-> +	if (c == START_CHAR(tty)) {
-> +		if (!lookahead_done) {
-> +			start_tty(tty);
-> +			process_echoes(tty);
-> +		}
-> +		return true;
-> +	}
-> +	if (c == STOP_CHAR(tty)) {
-> +		if (!lookahead_done)
-> +			stop_tty(tty);
-> +		return true;
-> +	}
-> +	return false;
-> +}
+The bit reversal was wrong for bits 1 and 3 of the 5 bits.
+Result is driver failure to probe if you have more than 2 daisy-chained
+devices.  Discovered via QEMU based device emulation.
 
-Looking into this I would first make a preparatory patch that splits out
-current code into something like
+Fixes tag is for when this moved from a macro to a function, but it
+was broken before that.
 
-static bool __n_tty_receive_char_special_no_lookahead(struct tty_struct *tty, unsigned char c)
-{
-	...current code...
-}
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 065a7c0b1fec ("Staging: iio: adc: ad7280a.c: Fixed Macro argument reuse")
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Link: https://lore.kernel.org/r/20220206190328.333093-2-jic23@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/staging/iio/adc/ad7280a.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Then in the patch 1 you add
-
-static bool __n_tty_receive_char_special_lookahead(struct tty_struct *tty, unsigned char c)
-{
-	...
-}
-
-static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
-					 bool lookahead_done)
-{
-	if (!I_IXON(tty))
-		return false;
-
-	if (lookahead_done)
-		return _lookahead();
-
-	return _no_lookahead();
-}
-
-?
-
-...
-
-/*
- * Also start multi-line comments with
- * capital letter and finish with
- * grammar period.
- */
-
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index fef0055b8990..20183b2ea127 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -107,9 +107,9 @@
+ static unsigned int ad7280a_devaddr(unsigned int addr)
+ {
+ 	return ((addr & 0x1) << 4) |
+-	       ((addr & 0x2) << 3) |
++	       ((addr & 0x2) << 2) |
+ 	       (addr & 0x4) |
+-	       ((addr & 0x8) >> 3) |
++	       ((addr & 0x8) >> 2) |
+ 	       ((addr & 0x10) >> 4);
+ }
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.34.1
+
 
 
