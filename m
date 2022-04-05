@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 779F3C3E8A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C13DCC352A8
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239381AbiDEIUB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
+        id S239686AbiDEIU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235639AbiDEH76 (ORCPT
+        with ESMTP id S235662AbiDEH77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C466549;
-        Tue,  5 Apr 2022 00:56:42 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFA51CB01;
+        Tue,  5 Apr 2022 00:57:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01FF7B81B14;
-        Tue,  5 Apr 2022 07:56:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F20CC340EE;
-        Tue,  5 Apr 2022 07:56:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1C16615CD;
+        Tue,  5 Apr 2022 07:56:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAFDAC340EE;
+        Tue,  5 Apr 2022 07:56:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145399;
-        bh=sRY6U65i0znfe3KehcP3ZybCJpLi0ibCWb/vy8ikJbg=;
+        s=korg; t=1649145419;
+        bh=kTf509aGxUC2L+Qqne7LOHBXyNCvMcSwY5mKQwAKabs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pdS3jMNrzmO9o/FS/2ahwPK4FOAhsk//bGF2JhlmOW36OMRBsWj2NTVqWfWgd3Era
-         xn7y95Tlaq8q8R/2fV4s/5DT1le+luuuf+FxTDdEIR21j3/SCYdPaffGE/ZrHNjK+b
-         TQ81dYUaFnXGygt6P3bTL08Pwv8V4pi2xfXTjtcg=
+        b=ou4HJmEr6GzE3lXpzTc+7WAZ2DK0l62D0dnQLsrWYDTTpbx4kYHo5uwRRGOf4umcB
+         lVLmt3iXBkg0blcFJrf0y4eRwIW/aDWlwiuEhD6EZzvB/CdN5lkaASLiuoQVKuybog
+         Is0ARflPHB9PD4glcvaWtjJDEFgsRIzInZjANcM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0392/1126] media: vidtv: Check for null return of vzalloc
-Date:   Tue,  5 Apr 2022 09:18:59 +0200
-Message-Id: <20220405070419.133681894@linuxfoundation.org>
+Subject: [PATCH 5.17 0399/1126] media: saa7134: fix incorrect use to determine if list is empty
+Date:   Tue,  5 Apr 2022 09:19:06 +0200
+Message-Id: <20220405070419.338997022@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,68 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit e6a21a14106d9718aa4f8e115b1e474888eeba44 ]
+[ Upstream commit 9f1f4b642451d35667a4dc6a9c0a89d954b530a3 ]
 
-As the possible failure of the vzalloc(), e->encoder_buf might be NULL.
-Therefore, it should be better to check it in order
-to guarantee the success of the initialization.
-If fails, we need to free not only 'e' but also 'e->name'.
-Also, if the allocation for ctx fails, we need to free 'e->encoder_buf'
-else.
+'dev' will *always* be set by list_for_each_entry().
+It is incorrect to assume that the iterator value will be NULL if the
+list is empty.
 
-Fixes: f90cf6079bf6 ("media: vidtv: add a bridge driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Instead of checking the pointer it should be checked if
+the list is empty.
+
+Fixes: 79dd0c69f05f ("V4L: 925: saa7134 alsa is now a standalone module")
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/test-drivers/vidtv/vidtv_s302m.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/media/pci/saa7134/saa7134-alsa.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/test-drivers/vidtv/vidtv_s302m.c b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-index d79b65854627..4676083cee3b 100644
---- a/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-+++ b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-@@ -455,6 +455,9 @@ struct vidtv_encoder
- 		e->name = kstrdup(args.name, GFP_KERNEL);
+diff --git a/drivers/media/pci/saa7134/saa7134-alsa.c b/drivers/media/pci/saa7134/saa7134-alsa.c
+index fb24d2ed3621..d3cde05a6eba 100644
+--- a/drivers/media/pci/saa7134/saa7134-alsa.c
++++ b/drivers/media/pci/saa7134/saa7134-alsa.c
+@@ -1214,7 +1214,7 @@ static int alsa_device_exit(struct saa7134_dev *dev)
  
- 	e->encoder_buf = vzalloc(VIDTV_S302M_BUF_SZ);
-+	if (!e->encoder_buf)
-+		goto out_kfree_e;
-+
- 	e->encoder_buf_sz = VIDTV_S302M_BUF_SZ;
- 	e->encoder_buf_offset = 0;
+ static int saa7134_alsa_init(void)
+ {
+-	struct saa7134_dev *dev = NULL;
++	struct saa7134_dev *dev;
  
-@@ -467,10 +470,8 @@ struct vidtv_encoder
- 	e->is_video_encoder = false;
+ 	saa7134_dmasound_init = alsa_device_init;
+ 	saa7134_dmasound_exit = alsa_device_exit;
+@@ -1229,7 +1229,7 @@ static int saa7134_alsa_init(void)
+ 			alsa_device_init(dev);
+ 	}
  
- 	ctx = kzalloc(priv_sz, GFP_KERNEL);
--	if (!ctx) {
--		kfree(e);
--		return NULL;
--	}
-+	if (!ctx)
-+		goto out_kfree_buf;
+-	if (dev == NULL)
++	if (list_empty(&saa7134_devlist))
+ 		pr_info("saa7134 ALSA: no saa7134 cards found\n");
  
- 	e->ctx = ctx;
- 	ctx->last_duration = 0;
-@@ -498,6 +499,14 @@ struct vidtv_encoder
- 	e->next = NULL;
- 
- 	return e;
-+
-+out_kfree_buf:
-+	kfree(e->encoder_buf);
-+
-+out_kfree_e:
-+	kfree(e->name);
-+	kfree(e);
-+	return NULL;
- }
- 
- void vidtv_s302m_encoder_destroy(struct vidtv_encoder *e)
+ 	return 0;
 -- 
 2.34.1
 
