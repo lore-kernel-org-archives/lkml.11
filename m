@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7AE3C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AE9C4707A
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349790AbiDEXoC (ORCPT
+        id S1344196AbiDEXnv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
+        Tue, 5 Apr 2022 19:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354573AbiDEKOj (ORCPT
+        with ESMTP id S1349166AbiDEJtW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044E56BDC2;
-        Tue,  5 Apr 2022 03:01:13 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0006164D6;
+        Tue,  5 Apr 2022 02:41:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9460961676;
-        Tue,  5 Apr 2022 10:01:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F159C385A1;
-        Tue,  5 Apr 2022 10:01:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 909E86164D;
+        Tue,  5 Apr 2022 09:41:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E50EC385A1;
+        Tue,  5 Apr 2022 09:41:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152872;
-        bh=mofzU+Ioylql3jwYOzUHQ6X/mwJ6eaP22Z7z4ZDyVcA=;
+        s=korg; t=1649151717;
+        bh=jYK5sFnekXCxVL58RTzjeUc9TcSXOqyPwQlvV9P1BcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1AhEkmqC9y0wvksfX+j6RsmuiDrmAdBJ5+5+9+VW1VYnWWgR/DBYhIUGJaXvzw35Y
-         zehDdKAyE8rCeVJPTwfb/F6vHadtkJEZ/fgJZo7FaQfXDjXyllq+cFG7O+AfEQLono
-         w3FXpChg8XzPWTdvlr2neU/z1QhYm/mUOMRUyisM=
+        b=vHYZXIAK1tkF/d5N1ks0pF+yE15AtpZlLteVT4QuLR4oL7A16O6gNIlXpQ6OERy6A
+         ssLUVQ7ihEu5bokL1s1MeFiezSgheMuJsNfTp8ttO7MCZUZk3adCVvDHZ4eWEcsRyv
+         QrPwF+xBn6tNs6IHpjz0UvRh/pJkH+7va8GmgdgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>,
-        Joel Stanley <joel@jms.id.au>, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.10 002/599] USB: serial: pl2303: add IBM device IDs
-Date:   Tue,  5 Apr 2022 09:24:56 +0200
-Message-Id: <20220405070258.882801139@linuxfoundation.org>
+        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 516/913] RDMA/core: Fix ib_qp_usecnt_dec() called when error
+Date:   Tue,  5 Apr 2022 09:26:18 +0200
+Message-Id: <20220405070355.320834170@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,47 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eddie James <eajames@linux.ibm.com>
+From: Yajun Deng <yajun.deng@linux.dev>
 
-commit e1d15646565b284e9ef2433234d6cfdaf66695f1 upstream.
+[ Upstream commit 7c4a539ec38f4ce400a0f3fcb5ff6c940fcd67bb ]
 
-IBM manufactures a PL2303 device for UPS communications. Add the vendor
-and product IDs so that the PL2303 driver binds to the device.
+ib_destroy_qp() would called by ib_create_qp_user() if error, the former
+contains ib_qp_usecnt_dec(), but ib_qp_usecnt_inc() was not called before.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220301224446.21236-1-eajames@linux.ibm.com
-Cc: stable@vger.kernel.org
-[ johan: amend the SoB chain ]
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+So move ib_qp_usecnt_inc() into create_qp().
+
+Fixes: d2b10794fc13 ("RDMA/core: Create clean QP creations interface for uverbs")
+Link: https://lore.kernel.org/r/20220303024232.2847388-1-yajun.deng@linux.dev
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/pl2303.c |    1 +
- drivers/usb/serial/pl2303.h |    3 +++
- 2 files changed, 4 insertions(+)
+ drivers/infiniband/core/uverbs_cmd.c          | 1 -
+ drivers/infiniband/core/uverbs_std_types_qp.c | 1 -
+ drivers/infiniband/core/verbs.c               | 3 +--
+ 3 files changed, 1 insertion(+), 4 deletions(-)
 
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -116,6 +116,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(ADLINK_VENDOR_ID, ADLINK_ND6530GC_PRODUCT_ID) },
- 	{ USB_DEVICE(SMART_VENDOR_ID, SMART_PRODUCT_ID) },
- 	{ USB_DEVICE(AT_VENDOR_ID, AT_VTKIT3_PRODUCT_ID) },
-+	{ USB_DEVICE(IBM_VENDOR_ID, IBM_PRODUCT_ID) },
- 	{ }					/* Terminating entry */
- };
+diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
+index d1345d76d9b1..5a99e31df5f5 100644
+--- a/drivers/infiniband/core/uverbs_cmd.c
++++ b/drivers/infiniband/core/uverbs_cmd.c
+@@ -1438,7 +1438,6 @@ static int create_qp(struct uverbs_attr_bundle *attrs,
+ 		ret = PTR_ERR(qp);
+ 		goto err_put;
+ 	}
+-	ib_qp_usecnt_inc(qp);
  
---- a/drivers/usb/serial/pl2303.h
-+++ b/drivers/usb/serial/pl2303.h
-@@ -35,6 +35,9 @@
- #define ATEN_PRODUCT_UC232B	0x2022
- #define ATEN_PRODUCT_ID2	0x2118
+ 	obj->uevent.uobject.object = qp;
+ 	obj->uevent.event_file = READ_ONCE(attrs->ufile->default_async_file);
+diff --git a/drivers/infiniband/core/uverbs_std_types_qp.c b/drivers/infiniband/core/uverbs_std_types_qp.c
+index dd1075466f61..75353e09c6fe 100644
+--- a/drivers/infiniband/core/uverbs_std_types_qp.c
++++ b/drivers/infiniband/core/uverbs_std_types_qp.c
+@@ -254,7 +254,6 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QP_CREATE)(
+ 		ret = PTR_ERR(qp);
+ 		goto err_put;
+ 	}
+-	ib_qp_usecnt_inc(qp);
  
-+#define IBM_VENDOR_ID		0x04b3
-+#define IBM_PRODUCT_ID		0x4016
-+
- #define IODATA_VENDOR_ID	0x04bb
- #define IODATA_PRODUCT_ID	0x0a03
- #define IODATA_PRODUCT_ID_RSAQ5	0x0a0e
+ 	if (attr.qp_type == IB_QPT_XRC_TGT) {
+ 		obj->uxrcd = container_of(xrcd_uobj, struct ib_uxrcd_object,
+diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+index 59e20936b800..b78cd65d20a6 100644
+--- a/drivers/infiniband/core/verbs.c
++++ b/drivers/infiniband/core/verbs.c
+@@ -1253,6 +1253,7 @@ static struct ib_qp *create_qp(struct ib_device *dev, struct ib_pd *pd,
+ 	if (ret)
+ 		goto err_security;
+ 
++	ib_qp_usecnt_inc(qp);
+ 	rdma_restrack_add(&qp->res);
+ 	return qp;
+ 
+@@ -1353,8 +1354,6 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
+ 	if (IS_ERR(qp))
+ 		return qp;
+ 
+-	ib_qp_usecnt_inc(qp);
+-
+ 	if (qp_init_attr->cap.max_rdma_ctxs) {
+ 		ret = rdma_rw_init_mrs(qp, qp_init_attr);
+ 		if (ret)
+-- 
+2.34.1
+
 
 
