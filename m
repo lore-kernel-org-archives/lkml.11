@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A965C38161
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72595C47080
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344736AbiDEKkL (ORCPT
+        id S1344959AbiDEKkT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39696 "EHLO
+        Tue, 5 Apr 2022 06:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237773AbiDEISV (ORCPT
+        with ESMTP id S237556AbiDEISH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:21 -0400
+        Tue, 5 Apr 2022 04:18:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F076B51E;
-        Tue,  5 Apr 2022 01:07:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA7E6AA49;
+        Tue,  5 Apr 2022 01:06:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74CDAB81B18;
-        Tue,  5 Apr 2022 08:07:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD3D3C385A0;
-        Tue,  5 Apr 2022 08:07:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0078CB81B14;
+        Tue,  5 Apr 2022 08:06:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E79C385A2;
+        Tue,  5 Apr 2022 08:06:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146044;
-        bh=ucmCANjRxqz3ymRl9tSEhzejQITlUJCx3JCjZlQx8PA=;
+        s=korg; t=1649146008;
+        bh=j2lAbKArbsewxVfKvrfs2YygZwshOKUGRDy1GFvJgt8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CyYKOOKkG7tgASDz84lkBeQIs0jXjIssd+1muRQKPB016NGktedYBH0I4ZChGKdQ3
-         MQTgIN0t2SIWAjdpi37HkKWvt9NC3jl9wI1ExUCzCDFRXPDE6UDK/QAnW78L5tdCnh
-         Yw5PL1kZ2v2X9XNFoCOxWmGvJ6l0o9Xhl231znxI=
+        b=ZLHHKIZ3pQeSm1+i4USQVKSdk6lY2vCwytSGEg9XMAofJjcBPSNAirNUVhxo6BVzN
+         ETqim0Z+G6KDi2lyI5psGhuvjxHIy721dpdhZwbVdAuMEdE/YzRxe/3ivesr9SPS8G
+         yQs7nklX1ttl/Geuuiq7Y/yxjOsj9/vJO2fRd0lk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Nishanth Menon <nm@ti.com>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0621/1126] powerpc/Makefile: Dont pass -mcpu=powerpc64 when building 32-bit
-Date:   Tue,  5 Apr 2022 09:22:48 +0200
-Message-Id: <20220405070425.863287573@linuxfoundation.org>
+Subject: [PATCH 5.17 0609/1126] drm/bridge: cdns-dsi: Make sure to to create proper aliases for dt
+Date:   Tue,  5 Apr 2022 09:22:36 +0200
+Message-Id: <20220405070425.510178992@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,55 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Nishanth Menon <nm@ti.com>
 
-[ Upstream commit 2863dd2db23e0407f6c50b8ba5c0e55abef894f1 ]
+[ Upstream commit ffb5c099aaa13ab7f73c29ea6ae26bce8d7575ae ]
 
-When CONFIG_GENERIC_CPU=y (true for all our defconfigs) we pass
--mcpu=powerpc64 to the compiler, even when we're building a 32-bit
-kernel.
+Add MODULE_DEVICE_TABLE to the device tree table to create required
+aliases needed for module to be loaded with device tree based platform.
 
-This happens because we have an ifdef CONFIG_PPC_BOOK3S_64/else block in
-the Makefile that was written before 32-bit supported GENERIC_CPU. Prior
-to that the else block only applied to 64-bit Book3E.
-
-The GCC man page says -mcpu=powerpc64 "[specifies] a pure ... 64-bit big
-endian PowerPC ... architecture machine [type], with an appropriate,
-generic processor model assumed for scheduling purposes."
-
-It's unclear how that interacts with -m32, which we are also passing,
-although obviously -m32 is taking precedence in some sense, as the
-32-bit kernel only contains 32-bit instructions.
-
-This was noticed by inspection, not via any bug reports, but it does
-affect code generation. Comparing before/after code generation, there
-are some changes to instruction scheduling, and the after case (with
--mcpu=powerpc64 removed) the compiler seems more keen to use r8.
-
-Fix it by making the else case only apply to Book3E 64, which excludes
-32-bit.
-
-Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220215112858.304779-1-mpe@ellerman.id.au
+Fixes: e19233955d9e ("drm/bridge: Add Cadence DSI driver")
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210921174059.17946-1-nm@ti.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/cdns-dsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
-index 5f16ac1583c5..887efa31f60a 100644
---- a/arch/powerpc/Makefile
-+++ b/arch/powerpc/Makefile
-@@ -171,7 +171,7 @@ else
- CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=power7,$(call cc-option,-mtune=power5))
- CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mcpu=power5,-mcpu=power4)
- endif
--else
-+else ifdef CONFIG_PPC_BOOK3E_64
- CFLAGS-$(CONFIG_GENERIC_CPU) += -mcpu=powerpc64
- endif
+diff --git a/drivers/gpu/drm/bridge/cdns-dsi.c b/drivers/gpu/drm/bridge/cdns-dsi.c
+index d8a15c459b42..829e1a144656 100644
+--- a/drivers/gpu/drm/bridge/cdns-dsi.c
++++ b/drivers/gpu/drm/bridge/cdns-dsi.c
+@@ -1284,6 +1284,7 @@ static const struct of_device_id cdns_dsi_of_match[] = {
+ 	{ .compatible = "cdns,dsi" },
+ 	{ },
+ };
++MODULE_DEVICE_TABLE(of, cdns_dsi_of_match);
  
+ static struct platform_driver cdns_dsi_platform_driver = {
+ 	.probe  = cdns_dsi_drm_probe,
 -- 
 2.34.1
 
