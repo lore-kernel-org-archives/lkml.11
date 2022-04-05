@@ -2,108 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88814C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 003D9C47081
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1589134AbiDFASq (ORCPT
+        id S1356933AbiDFAUa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58788 "EHLO
+        Tue, 5 Apr 2022 20:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358180AbiDEK2E (ORCPT
+        with ESMTP id S1443055AbiDEPix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0618E9E9D4;
-        Tue,  5 Apr 2022 03:16:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B35661777;
-        Tue,  5 Apr 2022 10:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC96DC385A1;
-        Tue,  5 Apr 2022 10:16:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153782;
-        bh=pYXJDCKrZ4i5oXRjcBWdNmahhcmghk2h12a8zcMcgfo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yXTxOcbYjykhdtVJ8iMVLBFzvGkIpvQH5rbh4/87PrdJDQV7BaoXyZm5uFK2XmRW8
-         L4xc8ykGQL5JL7o8IznENcGVtYxs7Q3wadtOBjOJ7WSvHk2aeB0dtBsYhadvi05TyJ
-         1ii2w9Y6EKp566yGAmuRrl/BFupFDvd1EkY4UzJE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cheng Li <lic121@chinatelecom.cn>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 345/599] libbpf: Unmap rings when umem deleted
-Date:   Tue,  5 Apr 2022 09:30:39 +0200
-Message-Id: <20220405070309.096443392@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:38:53 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F8F143C7C;
+        Tue,  5 Apr 2022 06:54:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649166856;
+  x=1680702856;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WhCHZK9GJJLMq21n9Wjs02V4Hy6iol3pV60QmFhYnXI=;
+  b=jOu26AEgH52kLCEHGCDNClrCiuGQsqC0mMbV00LsCQ6D7yvqs5Dp0cZy
+   optIlXUGOYK/V04EhtXgmp6AGk/51aFLQeuyzPywOKdv2JKXA+l+F6zE7
+   jxHOIV1w+04HJPidE7bujX1V1JGCLkwHL1iXL+GF9c51ejPvh7kJHrDJF
+   sWsJXpEG7H3IcBsiHwqDNa1ca2VTQ5eAIIHcwcVTTvxCwHveoCzsrgoBD
+   Qg4rKYHk/O7G0KuyvCJLe6mEPgEtYSv+lMmSdwpvvs1oz0dylwi73F+Ak
+   1fDOQjfbIzc4yDvOAyiXUKMXCl58iv6V6IbDYllLso+PQ6F552TycWKbq
+   w==;
+Date:   Tue, 5 Apr 2022 15:54:12 +0200
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Johannes Berg <johannes@sipsolutions.net>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kernel <kernel@axis.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "brendanhiggins@google.com" <brendanhiggins@google.com>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "a.zummo@towertech.it" <a.zummo@towertech.it>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [RFC v1 01/10] roadtest: import libvhost-user from QEMU
+Message-ID: <20220405135412.GB28574@axis.com>
+References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
+ <20220311162445.346685-2-vincent.whitchurch@axis.com>
+ <7f405d8d09a83954aa3411eff8b71ee687c7ec33.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <7f405d8d09a83954aa3411eff8b71ee687c7ec33.camel@sipsolutions.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lic121 <lic121@chinatelecom.cn>
+On Thu, Mar 24, 2022 at 02:00:10PM +0100, Johannes Berg wrote:
+> On Fri, 2022-03-11 at 17:24 +0100, Vincent Whitchurch wrote:
+> > Import the libvhost-user from QEMU for use in the implementation of the
+> > virtio devices in the roadtest backend.
+> 
+> So hm, I wonder if this is the sensible thing to do?
+> 
+> Not that I mind importing qemu code, but:
+> 
+>  1) the implementation is rather complex in some places, and has support
+>     for a LOT of virtio/vhost-user features that are really not needed
+>     in these cases, for performance etc. It's also close to 4k LOC.
 
-[ Upstream commit 9c6e6a80ee741adf6cb3cfd8eef7d1554f91fceb ]
+Is this really a problem given that the code is imported as-is?  The
+intention is not to have to make a lot of local modifications to it in
+the kernel tree.  The code is stable and presumably well-tested
+upstream, and upstream maintains it as a separate library (in the QEMU
+source tree though) to encourage reuse.
 
-xsk_umem__create() does mmap for fill/comp rings, but xsk_umem__delete()
-doesn't do the unmap. This works fine for regular cases, because
-xsk_socket__delete() does unmap for the rings. But for the case that
-xsk_socket__create_shared() fails, umem rings are not unmapped.
+>  2) the implementation doesn't support time-travel mode which might come
+>     in handy
 
-fill_save/comp_save are checked to determine if rings have already be
-unmapped by xsk. If fill_save and comp_save are NULL, it means that the
-rings have already been used by xsk. Then they are supposed to be
-unmapped by xsk_socket__delete(). Otherwise, xsk_umem__delete() does the
-unmap.
-
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-Signed-off-by: Cheng Li <lic121@chinatelecom.cn>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220301132623.GA19995@vscode.7~
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/lib/bpf/xsk.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 3028f932e10c..c4390ef98b19 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -895,12 +895,23 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
- 
- int xsk_umem__delete(struct xsk_umem *umem)
- {
-+	struct xdp_mmap_offsets off;
-+	int err;
-+
- 	if (!umem)
- 		return 0;
- 
- 	if (umem->refcount)
- 		return -EBUSY;
- 
-+	err = xsk_get_mmap_offsets(umem->fd, &off);
-+	if (!err && umem->fill_save && umem->comp_save) {
-+		munmap(umem->fill_save->ring - off.fr.desc,
-+		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
-+		munmap(umem->comp_save->ring - off.cr.desc,
-+		       off.cr.desc + umem->config.comp_size * sizeof(__u64));
-+	}
-+
- 	close(umem->fd);
- 	free(umem);
- 
--- 
-2.34.1
-
-
-
+True, but I don't see the external time-travel controller stuff being
+too useful for the kinds of tests this framework is targeting.
