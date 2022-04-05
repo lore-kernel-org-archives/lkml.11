@@ -2,93 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA14DC3527D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9185C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381160AbiDEVhs (ORCPT
+        id S1382485AbiDEVix (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
+        Tue, 5 Apr 2022 17:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389357AbiDENdp (ORCPT
+        with ESMTP id S1386444AbiDEOjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:33:45 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFED2EAC84;
-        Tue,  5 Apr 2022 05:39:21 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 5CAFD1F390;
-        Tue,  5 Apr 2022 12:39:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649162360; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=44WdJDAM4MlPxpp8F4IUlomW8eAElCp3inRrCglwpEA=;
-        b=te4oG7MY72SKmF273U2pX2k2+jHnDSNTgOk+ONkm2R8nMhGILo+e9GXOlwan922cj8u3A6
-        HDBS34ElcfPt2jQeGz1Pxw430DT12bAMEUTqpLDXsvOR786TYOTK5C8R/Y9oYKnKbLY1x8
-        gZpIANGTaDb2BeYLSEETOntX9yVpBLE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649162360;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=44WdJDAM4MlPxpp8F4IUlomW8eAElCp3inRrCglwpEA=;
-        b=EqNQeYztjzGzSZ3CRA8Me4uKWtVwr+ytPqgCM1QxvVUmMXESpdPlw9i/GK0uTQ+OhoijHy
-        aSHlpK/Esr43FBCw==
-Received: from wotan.suse.de (wotan.suse.de [10.160.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 56E33A3B88;
-        Tue,  5 Apr 2022 12:39:20 +0000 (UTC)
-Received: by wotan.suse.de (Postfix, from userid 10510)
-        id 4DD9E64E6; Tue,  5 Apr 2022 12:39:20 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-        by wotan.suse.de (Postfix) with ESMTP id 4CA16628B;
-        Tue,  5 Apr 2022 12:39:20 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 12:39:20 +0000 (UTC)
-From:   Michael Matz <matz@suse.de>
-To:     Peter Zijlstra <peterz@infradead.org>
-cc:     Borislav Petkov <bp@alien8.de>, linux-toolchains@vger.kernel.org,
-        Richard Biener <rguenther@suse.de>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: older gccs and case labels producing integer constants
-In-Reply-To: <Ykw0wzdab0ICUFvy@hirez.programming.kicks-ass.net>
-Message-ID: <alpine.LSU.2.20.2204051232101.963@wotan.suse.de>
-References: <YkwQ6+tIH8GQpuct@zn.tnic> <Ykw0wzdab0ICUFvy@hirez.programming.kicks-ass.net>
-User-Agent: Alpine 2.20 (LSU 67 2015-01-07)
+        Tue, 5 Apr 2022 10:39:20 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719B05EBD5;
+        Tue,  5 Apr 2022 06:16:13 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235DFOsL038335;
+        Tue, 5 Apr 2022 08:15:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649164524;
+        bh=JYdCG3TAoNbKpALXnh21WRPhuqXFTS0WBJhqewUEdCQ=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=Vnl2EmkA6sfzsx2ccbIzJiMsHX1n/wKxf+zgFCW8p9J7ov2+B8OGi8nB9zWtPrjt6
+         vOkuz5TCROSq5qBzY4zn3PemosER2jll/k6f7A6By1RoyjVA+QJsDrmiSmkCQL27R8
+         zs/5BCk53ntaO0AGU/yZVjXtQquQ+7FtDiep2AIo=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235DFO0Y061587
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Apr 2022 08:15:24 -0500
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
+ Apr 2022 08:15:24 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 5 Apr 2022 08:15:24 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235DFGEe099167;
+        Tue, 5 Apr 2022 08:15:16 -0500
+Message-ID: <defe77d9-1a41-7112-0ef6-a12aa2b725ab@ti.com>
+Date:   Tue, 5 Apr 2022 16:15:05 +0300
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="-1609957120-1876949182-1649162360=:963"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Content-Language: en-US
+To:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Michael Walle <michael@walle.cc>
+CC:     Andrew Lunn <andrew@lunn.ch>, <richardcochran@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <mlichvar@redhat.com>, <netdev@vger.kernel.org>,
+        <qiangqing.zhang@nxp.com>, <vladimir.oltean@nxp.com>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
+ <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
+ <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
+ <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc> <87wng3pyjl.fsf@kurt>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+In-Reply-To: <87wng3pyjl.fsf@kurt>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
----1609957120-1876949182-1649162360=:963
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
 
-Hey,
-
-On Tue, 5 Apr 2022, Peter Zijlstra wrote:
-
-> > sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
-> > sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
-> >   case (((0xfc08) << 16) | (0x0101)):
-> >   ^~~~
+On 05/04/2022 14:19, Kurt Kanzenbach wrote:
+> On Tue Apr 05 2022, Michael Walle wrote:
+>> Am 2022-04-05 11:01, schrieb Kurt Kanzenbach:
+>>> On Mon Apr 04 2022, Michael Walle wrote:
+>>>> That would make sense. I guess what bothers me with the current
+>>>> mechanism is that a feature addition to the PHY in the *future* (the
+>>>> timestamping support) might break a board - or at least changes the
+>>>> behavior by suddenly using PHY timestamping.
+>>>
+>>> Currently PHY timestamping is hidden behind a configuration option
+>>> (NETWORK_PHY_TIMESTAMPING). By disabling this option the default
+>>> behavior should stay at MAC timestamping even if additional features
+>>> are added on top of the PHY drivers at later stages. Or not?
+>>
+>> That is correct. But a Kconfig option has several drawbacks:
+>> (1) Doesn't work with boards where I might want PHY timestamping
+>>       on *some* ports, thus I need to enable it and then stumple
+>>       across the same problem.
+>> (2) Doesn't work with generic distro support, which is what is
+>>       ARM pushing right now with their SystemReady stuff (among other
+>>       things also for embeddem system). Despite that, I have two boards
+>>       which are already ready for booting debian out of the box for
+>>       example. While I might convince Debian to enable that option
+>>       (as I see it, that option is there to disable the additional
+>>       overhead) it certainly won't be on a per board basis.
+>>       Actually for keeping the MAC timestamping as is, you'd need to
+>>       convince a distribution to never enable the PHY timestamping
+>>       kconfig option.
+>>
+>> So yes, I agree it will work when you have control over your
+>> kconfig options, after all (1) might be more academic. But I'm
+>> really concerned about (2).
 > 
-> IIRC GCC-8 fixed a bunch of -wrapv issues. Could be this is one of them 
-> I suppose.
+> Yes, the limitations described above are exactly one of the reasons to
+> make the timestamping layer configurable at run time as done by these
+> patches.
 
-Or better said, later GCCs returned back to the old behaviour of rejecting 
-this only with -pedantic even in the presence of -fsanitize.  But 
-pedantically speaking (ahem!) it really isn't conforming c99 (which the 
-compilation flags claim) , and in this case it seems easy enough to make 
-the construct actually be conforming in the kernel sources, so that should 
-perhaps be done?
+Seems like PHY TS support belongs to HW description category, so could it be device tree material,
+like generic property defining which layer should do timestamping?
 
-
-Ciao,
-Michael.
----1609957120-1876949182-1649162360=:963--
+-- 
+Best regards,
+Grygorii, Ukraine
