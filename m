@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1026C3527B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A405C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243017AbiDEJIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        id S243055AbiDEJIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239401AbiDEIUD (ORCPT
+        with ESMTP id S239416AbiDEIUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09A3C682D;
-        Tue,  5 Apr 2022 01:12:30 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28868E1AC;
+        Tue,  5 Apr 2022 01:12:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CE8860AFB;
-        Tue,  5 Apr 2022 08:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76B21C385A1;
-        Tue,  5 Apr 2022 08:12:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E187B81BAC;
+        Tue,  5 Apr 2022 08:12:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5501C385A1;
+        Tue,  5 Apr 2022 08:12:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146350;
-        bh=zPCGveBQgJIlDVIMeFHkX0aMMcRrkc0ZJmZXhkmwY1w=;
+        s=korg; t=1649146372;
+        bh=nFAlM8SC4bGfTFPK+QEVwKUwAblEGofTTZTQdXpBBfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NegGdGIOz7BeNS2tR/XCkzGw4URDZnSGhbUCfyrMt5Z7FlyQI2T+DDFI65cGp+5Jo
-         W/2YX7EwWiCP6+9VJLgP2U5E1GUFwleVFejVPL+AaAAtdPBAv3LoE+0fNB2GX2uRdu
-         DRHWHwBZmpXt/tBQ4BShdzbIkAfN2njGyPnZgz+I=
+        b=DJ3gEQxS3dOOcKQCo5kKpnK6l9B9U4YmbQr0X9hSN83GYKfaGDtI4IHX+OOJYfwUP
+         cge/0Agdefm6TwYM/CMQYKjzdTikLEjwj5Xtpyu4y1sWFKiXBnRpmqVdX/dmQwNeGp
+         vfmHnbKe8invq60a2grEoGFHFBfhe78WM0z1YdRE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
-        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0732/1126] phy: dphy: Correct lpx parameter and its derivatives(ta_{get,go,sure})
-Date:   Tue,  5 Apr 2022 09:24:39 +0200
-Message-Id: <20220405070429.076019988@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0740/1126] NFS: Return valid errors from nfs2/3_decode_dirent()
+Date:   Tue,  5 Apr 2022 09:24:47 +0200
+Message-Id: <20220405070429.307647249@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -55,64 +49,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Ying <victor.liu@nxp.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 3153fa38e38af566cf6454a03b1dbadaf6f323c0 ]
+[ Upstream commit 64cfca85bacde54caa64e0ab855c48734894fa37 ]
 
-According to the comment of the function phy_mipi_dphy_get_default_config(),
-it uses minimum D-PHY timings based on MIPI D-PHY specification.  They are
-derived from the valid ranges specified in Section 6.9, Table 14, Page 41
-of the D-PHY specification (v1.2).  The table 14 explicitly mentions that
-the minimum T-LPX parameter is 50 nanoseconds and the minimum TA-SURE
-parameter is T-LPX nanoseconds.  Likewise, the kernel doc of the 'lpx' and
-'ta_sure' members of struct phy_configure_opts_mipi_dphy mentions that
-the minimum values are 50000 picoseconds and @lpx picoseconds respectively.
-Also, the function phy_mipi_dphy_config_validate() checks if cfg->lpx is
-less than 50000 picoseconds and if cfg->ta_sure is less than cfg->lpx,
-which hints the same minimum values.
+Valid return values for decode_dirent() callback functions are:
+ 0: Success
+ -EBADCOOKIE: End of directory
+ -EAGAIN: End of xdr_stream
 
-Without this patch, the function phy_mipi_dphy_get_default_config()
-wrongly sets cfg->lpx to 60000 picoseconds and cfg->ta_sure to 2 * cfg->lpx.
-So, let's correct them to 50000 picoseconds and cfg->lpx respectively.
+All errors need to map into one of those three values.
 
-Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
-Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
-as I don't have the hardwares.
-
-Fixes: dddc97e82303 ("phy: dphy: Add configuration helpers")
-Cc: Andrzej Hajda <andrzej.hajda@intel.com>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Cc: Kishon Vijay Abraham I <kishon@ti.com>
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Guido Günther <agx@sigxcpu.org>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
-Link: https://lore.kernel.org/r/20220216071257.1647703-1-victor.liu@nxp.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 573c4e1ef53a ("NFS: Simplify ->decode_dirent() calling sequence")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/phy-core-mipi-dphy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/nfs/nfs2xdr.c |  2 +-
+ fs/nfs/nfs3xdr.c | 21 ++++++---------------
+ 2 files changed, 7 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
-index ccb4045685cd..929e86d6558e 100644
---- a/drivers/phy/phy-core-mipi-dphy.c
-+++ b/drivers/phy/phy-core-mipi-dphy.c
-@@ -64,10 +64,10 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
- 	cfg->hs_trail = max(4 * 8 * ui, 60000 + 4 * 4 * ui);
+diff --git a/fs/nfs/nfs2xdr.c b/fs/nfs/nfs2xdr.c
+index 7fba7711e6b3..3d5ba43f44bb 100644
+--- a/fs/nfs/nfs2xdr.c
++++ b/fs/nfs/nfs2xdr.c
+@@ -949,7 +949,7 @@ int nfs2_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
  
- 	cfg->init = 100;
--	cfg->lpx = 60000;
-+	cfg->lpx = 50000;
- 	cfg->ta_get = 5 * cfg->lpx;
- 	cfg->ta_go = 4 * cfg->lpx;
--	cfg->ta_sure = 2 * cfg->lpx;
-+	cfg->ta_sure = cfg->lpx;
- 	cfg->wakeup = 1000;
+ 	error = decode_filename_inline(xdr, &entry->name, &entry->len);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
  
- 	cfg->hs_clk_rate = hs_clk_rate;
+ 	/*
+ 	 * The type (size and byte order) of nfscookie isn't defined in
+diff --git a/fs/nfs/nfs3xdr.c b/fs/nfs/nfs3xdr.c
+index 54a1d21cbcc6..7ab60ad98776 100644
+--- a/fs/nfs/nfs3xdr.c
++++ b/fs/nfs/nfs3xdr.c
+@@ -1967,7 +1967,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 		       bool plus)
+ {
+ 	struct user_namespace *userns = rpc_userns(entry->server->client);
+-	struct nfs_entry old = *entry;
+ 	__be32 *p;
+ 	int error;
+ 	u64 new_cookie;
+@@ -1987,15 +1986,15 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 
+ 	error = decode_fileid3(xdr, &entry->ino);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	error = decode_inline_filename3(xdr, &entry->name, &entry->len);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	error = decode_cookie3(xdr, &new_cookie);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	entry->d_type = DT_UNKNOWN;
+ 
+@@ -2003,7 +2002,7 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 		entry->fattr->valid = 0;
+ 		error = decode_post_op_attr(xdr, entry->fattr, userns);
+ 		if (unlikely(error))
+-			return error;
++			return -EAGAIN;
+ 		if (entry->fattr->valid & NFS_ATTR_FATTR_V3)
+ 			entry->d_type = nfs_umode_to_dtype(entry->fattr->mode);
+ 
+@@ -2018,11 +2017,8 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 			return -EAGAIN;
+ 		if (*p != xdr_zero) {
+ 			error = decode_nfs_fh3(xdr, entry->fh);
+-			if (unlikely(error)) {
+-				if (error == -E2BIG)
+-					goto out_truncated;
+-				return error;
+-			}
++			if (unlikely(error))
++				return -EAGAIN;
+ 		} else
+ 			zero_nfs_fh3(entry->fh);
+ 	}
+@@ -2031,11 +2027,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 	entry->cookie = new_cookie;
+ 
+ 	return 0;
+-
+-out_truncated:
+-	dprintk("NFS: directory entry contains invalid file handle\n");
+-	*entry = old;
+-	return -EAGAIN;
+ }
+ 
+ /*
 -- 
 2.34.1
 
