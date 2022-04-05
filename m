@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 981B3C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2610BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239466AbiDEJeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
+        id S233874AbiDEJer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239460AbiDEIUG (ORCPT
+        with ESMTP id S239474AbiDEIUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2931F986EA;
-        Tue,  5 Apr 2022 01:13:45 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CB6B0A68;
+        Tue,  5 Apr 2022 01:14:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9C8F60B0A;
-        Tue,  5 Apr 2022 08:13:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA909C385A1;
-        Tue,  5 Apr 2022 08:13:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F14BFB81B90;
+        Tue,  5 Apr 2022 08:13:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5B3C385A1;
+        Tue,  5 Apr 2022 08:13:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146424;
-        bh=csgVznpz+CbDSMa65uT6mHegJRLSqN9GgMqe8LRJoHQ=;
+        s=korg; t=1649146438;
+        bh=wjPoZQY+vmub6bVsFMKqg4hLD1/RtMQB/ubel5/jwuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KS736sv6URAg8KSfmKGMLOV2RhN9NlVOcmYWZBVbXeUJvpyWqe0WMRwQ3W3p4d41h
-         wFvNwqXBozoUD0RvjiE1uYgA+K+NVuupU/0OtlsUM5T4E1rTHfn8rL0oH156eEAEup
-         hK4dh+wE0Xe4RR+BydxhARZ/k/xy2pboys6Qri4A=
+        b=uJY8tUkyDVNyTTrClP63Dbl4dckiPvOTu5RkQxU3hJTtiskD+nVpz3sOeaPMAfQ0a
+         fuVju72FWe769wtS/PI1rerNgTyWKJJAzixlV/xjb6P38Yjn+jm6lXUOvUZcxohHlD
+         mN3MADv+Ok2tKTcAGQoApUUaRZzVpUi5/WwMyRYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Libin Yang <libin.yang@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0721/1126] soundwire: intel: fix wrong register name in intel_shim_wake
-Date:   Tue,  5 Apr 2022 09:24:28 +0200
-Message-Id: <20220405070428.756144289@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0765/1126] staging: mt7621-dts: fix pinctrl properties for ethernet
+Date:   Tue,  5 Apr 2022 09:25:12 +0200
+Message-Id: <20220405070430.037299631@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,39 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Libin Yang <libin.yang@intel.com>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-[ Upstream commit 3957db3ae3dae6f8b8168791f154567fe49e1fd7 ]
+[ Upstream commit 0a93c0d75809582893e82039143591b9265b520e ]
 
-When clearing the sdw wakests status, we should use SDW_SHIM_WAKESTS.
+Add pinctrl properties with rgmii1 & mdio pins under ethernet node which
+was wrongfully put under an external phy node.
+GMAC1 will start working with this fix.
 
-Fixes: 4a17c441c7cb ("soundwire: intel: revisit SHIM programming sequences.")
-Signed-off-by: Libin Yang <libin.yang@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220126011451.27853-1-yung-chuan.liao@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Link: https://lore.kernel.org/netdev/02ecce91-7aad-4392-c9d7-f45ca1b31e0b@arinc9.com/T/
+
+Move GB-PC2 specific phy_external node to its own device tree.
+
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220125153903.1469-5-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/intel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/mt7621-dts/gbpc2.dts   | 16 +++++++++++-----
+ drivers/staging/mt7621-dts/mt7621.dtsi | 13 +++----------
+ 2 files changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-index 122f7a29d8ca..63101f1ba271 100644
---- a/drivers/soundwire/intel.c
-+++ b/drivers/soundwire/intel.c
-@@ -448,8 +448,8 @@ static void intel_shim_wake(struct sdw_intel *sdw, bool wake_enable)
+diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/drivers/staging/mt7621-dts/gbpc2.dts
+index 6fe603c7711d..03d6bb6735ac 100644
+--- a/drivers/staging/mt7621-dts/gbpc2.dts
++++ b/drivers/staging/mt7621-dts/gbpc2.dts
+@@ -13,10 +13,16 @@
+ 	function = "gpio";
+ };
  
- 		/* Clear wake status */
- 		wake_sts = intel_readw(shim, SDW_SHIM_WAKESTS);
--		wake_sts |= (SDW_SHIM_WAKEEN_ENABLE << link_id);
--		intel_writew(shim, SDW_SHIM_WAKESTS_STATUS, wake_sts);
-+		wake_sts |= (SDW_SHIM_WAKESTS_STATUS << link_id);
-+		intel_writew(shim, SDW_SHIM_WAKESTS, wake_sts);
- 	}
- 	mutex_unlock(sdw->link_res->shim_lock);
- }
+-&gmac1 {
+-	status = "ok";
+-};
++&ethernet {
++	gmac1: mac@1 {
++		status = "ok";
++		phy-handle = <&phy_external>;
++	};
+ 
+-&phy_external {
+-	status = "ok";
++	mdio-bus {
++		phy_external: ethernet-phy@5 {
++			reg = <5>;
++			phy-mode = "rgmii-rxid";
++		};
++	};
+ };
+diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
+index d120e5872165..de2b130569bb 100644
+--- a/drivers/staging/mt7621-dts/mt7621.dtsi
++++ b/drivers/staging/mt7621-dts/mt7621.dtsi
+@@ -325,6 +325,9 @@
+ 
+ 		mediatek,ethsys = <&sysc>;
+ 
++		pinctrl-names = "default";
++		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
++
+ 		gmac0: mac@0 {
+ 			compatible = "mediatek,eth-mac";
+ 			reg = <0>;
+@@ -342,22 +345,12 @@
+ 			reg = <1>;
+ 			status = "off";
+ 			phy-mode = "rgmii-rxid";
+-			phy-handle = <&phy_external>;
+ 		};
+ 
+ 		mdio-bus {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 
+-			phy_external: ethernet-phy@5 {
+-				status = "off";
+-				reg = <5>;
+-				phy-mode = "rgmii-rxid";
+-
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&rgmii2_pins>;
+-			};
+-
+ 			switch0: switch0@0 {
+ 				compatible = "mediatek,mt7621";
+ 				#address-cells = <1>;
 -- 
 2.34.1
 
