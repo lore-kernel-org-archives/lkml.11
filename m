@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F56C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC700C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382045AbiDEPOT (ORCPT
+        id S1381845AbiDEPOP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        Tue, 5 Apr 2022 11:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346600AbiDEJpM (ORCPT
+        with ESMTP id S1346606AbiDEJpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:12 -0400
+        Tue, 5 Apr 2022 05:45:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24220DAFDF;
-        Tue,  5 Apr 2022 02:31:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADA42FB;
+        Tue,  5 Apr 2022 02:31:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C87C9B81C9A;
-        Tue,  5 Apr 2022 09:31:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81866C385A0;
-        Tue,  5 Apr 2022 09:30:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 876C0B81CB5;
+        Tue,  5 Apr 2022 09:31:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81404C385A2;
+        Tue,  5 Apr 2022 09:31:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151061;
-        bh=L/0Q71877NZ2dI0wBiiMHZiv88UEejC3hMOyoQIhhOM=;
+        s=k20201202; t=1649151066;
+        bh=YypSHEp1rOHcihtmVFUWRUSVBqn1rhBtj2pQDDhyoOI=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=AgDJjONY1wQTxOWX0xahtmDF9bEXicjJL27tCntdMedb4VNO9KYvVoiAWMZPjA7Lj
-         5NnZrRhEeZ9zt6Pa0v0rHidk3XSkliXvAN+6REZapyLd168aFSyhQUMPoT5KUlGiX9
-         ePo3rAwYd/Yl29hQUC1h1tC6GjJf5RFlNwriiPrAo8/j8ff3cJBV/w39v07IR114oQ
-         AdcExNHquO/rGrr82eqJTDlim0QeYHEdOWUdYFS6eulDqg16E2wPB1WyIxiN3IHc3u
-         9Bk+i9XHTAC2gT9z5/hqWISvs0kDF3NYSuEWlES2a11NSIwETChz3aEgX1Ye5jeVGr
-         AoigEHcyZE+IQ==
+        b=OQgUIMa2+Jl5ZN/tEN/rPzkKmhEaurR5d+v0K2yZR31kmlkdJkgvJ1UiBhBzt5RSM
+         ydqLwdVnexufAh7HFSeU/S0f2WHs6PYKrJOB1GpykjS42ntFc3btzZzVpLYEU8V481
+         5xnHiBquaMN7puc//Amlvcf2iRbUseZUCom+xKF66Nm87x/vy11Phosp0dENqtVdkG
+         WkgGsQd1vJpfhYNB0H0g8IcYzxPeMSwSGV1XxmNF3AtxqaHR9nCMjA6iQ+TduCEobD
+         z/Dt03CLIwASXP+0esQU+i1N9gdzwE5cTKsr/P7p7sOhaxmLVUNB7FtbmJC7ECnRTw
+         yeHets5eAbOyw==
 From:   Mark Brown <broonie@kernel.org>
-To:     quic_plai@quicinc.com, srinivas.kandagatla@linaro.org,
-        agross@kernel.org, judyhsiao@chromium.org,
-        linux-kernel@vger.kernel.org, lgirdwood@gmail.com,
-        quic_srivasam@quicinc.com, robh+dt@kernel.org, swboyd@chromium.org,
-        tiwai@suse.com, bjorn.andersson@linaro.org,
-        alsa-devel@alsa-project.org, perex@perex.cz,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     quic_potturu@quicinc.com
-In-Reply-To: <1647965937-32203-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1647965937-32203-1-git-send-email-quic_srivasam@quicinc.com>
-Subject: Re: [PATCH] ASoC: codecs: Fix error handling in power domain init and exit handlers
-Message-Id: <164915105825.276574.11537900689104070957.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:30:58 +0100
+To:     tiwai@suse.com, trevor.wu@mediatek.com, robh+dt@kernel.org,
+        matthias.bgg@gmail.com
+Cc:     aaronyu@google.com, tzungbi@google.com,
+        linux-mediatek@lists.infradead.org, yc.hung@mediatek.com,
+        angelogioacchino.delregno@collabora.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        alsa-devel@alsa-project.org, miles.chen@mediatek.com,
+        devicetree@vger.kernel.org
+In-Reply-To: <20220324053851.27350-1-trevor.wu@mediatek.com>
+References: <20220324053851.27350-1-trevor.wu@mediatek.com>
+Subject: Re: [PATCH v4 0/6] ASoC: mediatek: Add support for MT8195 sound card with max98390 and rt5682
+Message-Id: <164915106325.276574.14625118005435337786.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:31:03 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -54,13 +54,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Mar 2022 21:48:57 +0530, Srinivasa Rao Mandadapu wrote:
-> Update error handling in power domain init and exit handlers, as existing handling
-> may cause issues in device remove function.
-> Use appropriate pm core api for power domain get and sync to avoid redundant code.
+On Thu, 24 Mar 2022 13:38:45 +0800, Trevor Wu wrote:
+> This series of patches adds support for mt8195 board with mt6359, max98390
+> and rt5682.
 > 
-> Fixes: 9e3d83c52844 ("ASoC: codecs: Add power domains support in digital macro codecs")
+> To prevent from copy-paste components, mt8195 machine drivers and
+> dt-bindings are merged in the patch.
 > 
+> Patches are based on broonie tree "for-next" branch.
 > 
 > [...]
 
@@ -70,8 +71,18 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: codecs: Fix error handling in power domain init and exit handlers
-      commit: 1a8ee4cf84187bce17c76886eb6dd9389c3b99a8
+[1/6] ASoC: mediatek: mt8195: revise mt8195-mt6359-rt1019-rt5682.c
+      commit: 4dbc714fe07641e7a07731f82152448ef09f3002
+[2/6] ASoC: mediatek: mt8195: merge machine driver
+      commit: 094e30efa444a118a535cb67ec000bbee9f8d150
+[3/6] ASoC: dt-bindings: mediatek: mt8195: merge mt8195 machine yaml
+      commit: dc16399078aea4c98f17aa99f0cdea9d5ac9c4a9
+[4/6] ASoC: mediatek: mt8195: rename card controls
+      commit: 3a0323c26c6720447fd5eff6495c1aea514b77d5
+[5/6] ASoC: mediatek: mt8195: add machine support for max98390 and rt5682
+      commit: 86a6b9c9dffff1bd653d582cfc5138da75e5f7b0
+[6/6] ASoC: dt-bindings: mediatek: mt8195: support mt8195-mt6359-max98390-rt5682
+      commit: cae34da5323b6ce4d0dc365d1b971f838dcff318
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
