@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 720A1C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B09A5C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390235AbiDENhp (ORCPT
+        id S1390444AbiDENip (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        Tue, 5 Apr 2022 09:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343970AbiDEJQn (ORCPT
+        with ESMTP id S1344297AbiDEJTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E36D64C3;
-        Tue,  5 Apr 2022 02:02:13 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD62A23BEB;
+        Tue,  5 Apr 2022 02:07:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9850B81C19;
-        Tue,  5 Apr 2022 09:02:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A94DC385A1;
-        Tue,  5 Apr 2022 09:02:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A13661573;
+        Tue,  5 Apr 2022 09:07:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B791C385A1;
+        Tue,  5 Apr 2022 09:07:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149330;
-        bh=VqwssBKFB7BIuRryYFttzTjepDcNzvs/enI6/vnlK6g=;
+        s=korg; t=1649149646;
+        bh=bGozNgv5tjLJ84Cay1tq/nxVZeU7A+W6BXdShzv6ds8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lx8+R5IEkj1fDM7FV7E9VeSO8zE1B0pm1hxzIE15oqblUjpTw5JGuzo1nt1aGOL+K
-         oDW6eHVroQYJJ1jBX5/j3U9YngPutOy2C/KIhU+FPZBtZipNEYafAnkGRiDu6OXRmB
-         rdfUnhYBgIxLj8u/JAw72lndP7j3OKI0TmzIz4ro=
+        b=qANHCvoKEYK9MreRgxDxgNE6OR7+5Jbq20jsYlrSUVACoWH0jRtHgFLiARDc3D5id
+         oae41v9ZYxmhskXL5bJwJHaaEes2ennNxA/Ia+3vBtpvpeI/UzDNmIMOxz2jntUmpV
+         KUu2muM/Z1DOxQ2HPk25YyaqUKSrNwgwkLBIbHuY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0629/1017] bpftool: Fix print error when show bpf map
-Date:   Tue,  5 Apr 2022 09:25:42 +0200
-Message-Id: <20220405070412.954688301@linuxfoundation.org>
+Subject: [PATCH 5.16 0789/1017] sched/tracing: Report TASK_RTLOCK_WAIT tasks as TASK_UNINTERRUPTIBLE
+Date:   Tue,  5 Apr 2022 09:28:22 +0200
+Message-Id: <20220405070417.674637916@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,58 +54,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yafang Shao <laoar.shao@gmail.com>
+From: Valentin Schneider <valentin.schneider@arm.com>
 
-[ Upstream commit 1824d8ea75f275a5e69e5f6bc0ffe122ea9b938c ]
+[ Upstream commit 25795ef6299f07ce3838f3253a9cb34f64efcfae ]
 
-If there is no btf_id or frozen, it will not show the pids, but the pids don't
-depend on any one of them.
+TASK_RTLOCK_WAIT currently isn't part of TASK_REPORT, thus a task blocking
+on an rtlock will appear as having a task state == 0, IOW TASK_RUNNING.
 
-Below is the result after this change:
+The actual state is saved in p->saved_state, but reading it after reading
+p->__state has a few issues:
+o that could still be TASK_RUNNING in the case of e.g. rt_spin_lock
+o ttwu_state_match() might have changed that to TASK_RUNNING
 
-  $ ./bpftool map show
-  2: lpm_trie  flags 0x1
-	key 8B  value 8B  max_entries 1  memlock 4096B
-	pids systemd(1)
-  3: lpm_trie  flags 0x1
-	key 20B  value 8B  max_entries 1  memlock 4096B
-	pids systemd(1)
+As pointed out by Eric, adding TASK_RTLOCK_WAIT to TASK_REPORT implies
+exposing a new state to userspace tools which way not know what to do with
+them. The only information that needs to be conveyed here is that a task is
+waiting on an rt_mutex, which matches TASK_UNINTERRUPTIBLE - there's no
+need for a new state.
 
-While before this change, the 'pids systemd(1)' can't be displayed.
-
-Fixes: 9330986c0300 ("bpf: Add bloom filter map implementation")
-Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220320060815.7716-1-laoar.shao@gmail.com
+Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lore.kernel.org/r/20220120162520.570782-3-valentin.schneider@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/map.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ include/linux/sched.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index 285fb2cbaef6..59d8e72851da 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -619,17 +619,14 @@ static int show_map_close_plain(int fd, struct bpf_map_info *info)
- 					    u32_as_hash_field(info->id))
- 			printf("\n\tpinned %s", (char *)entry->value);
- 	}
--	printf("\n");
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 084de9b70a77..46ef8c75802f 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1622,6 +1622,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
+ 	if (tsk_state == TASK_IDLE)
+ 		state = TASK_REPORT_IDLE;
  
- 	if (frozen_str) {
- 		frozen = atoi(frozen_str);
- 		free(frozen_str);
- 	}
++	/*
++	 * We're lying here, but rather than expose a completely new task state
++	 * to userspace, we can make this appear as if the task has gone through
++	 * a regular rt_mutex_lock() call.
++	 */
++	if (tsk_state == TASK_RTLOCK_WAIT)
++		state = TASK_UNINTERRUPTIBLE;
++
+ 	return fls(state);
+ }
  
--	if (!info->btf_id && !frozen)
--		return 0;
--
--	printf("\t");
-+	if (info->btf_id || frozen)
-+		printf("\n\t");
- 
- 	if (info->btf_id)
- 		printf("btf_id %d", info->btf_id);
 -- 
 2.34.1
 
