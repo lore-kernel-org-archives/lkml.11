@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D567C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC883C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348516AbiDENFt (ORCPT
+        id S1357691AbiDENIy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38222 "EHLO
+        Tue, 5 Apr 2022 09:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343982AbiDEJQo (ORCPT
+        with ESMTP id S1344125AbiDEJSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E4BDF82;
-        Tue,  5 Apr 2022 02:02:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13672381A6;
+        Tue,  5 Apr 2022 02:04:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EAC4B81B75;
-        Tue,  5 Apr 2022 09:02:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5059C385A0;
-        Tue,  5 Apr 2022 09:02:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1F1EB81B75;
+        Tue,  5 Apr 2022 09:04:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 285BCC385A3;
+        Tue,  5 Apr 2022 09:04:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149360;
-        bh=3A6/wr4Ruqir6XPiFN7OjrQqY55f8efY1tUO+dql6NQ=;
+        s=korg; t=1649149456;
+        bh=IyvszfkDkm6hI3tAPv+IVXNBSOMINnf8lFK83KPg6kA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ne4ATkx8HlCUQ/RgdxzQ/ZvniXOIV0zPYnC2gdAgrrA5wLbOZVa/GzIwnJOO3e8Kf
-         FNVKaHP3U6b4gWfFKV0vwt2Oh6U3AfawftuCxlH2l8daWboWIPooKgxL1H1IIOTtFd
-         HDrJWjA70Dq4ddJ/Mv7aukwolqvI7Eh+30SGkATU=
+        b=tE++zjriN/TTcOsPEHA5nA2XaH2jQ+pzTOlBbO/MwRXo/RA/7j/KVq68CRsytyHPE
+         jhz05znvDiZhQp61EyZIA9MFgugEum6PZjstBTvKCkLPl/nJXs2bGAFIY7eQRiv5kA
+         qQDHyBITcWjiotgYc8RqxpMmTfrpzr+uUOhiFyX4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Petr Vorel <petr.vorel@gmail.com>,
         Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0687/1017] clk: clps711x: Terminate clk_div_table with sentinel element
-Date:   Tue,  5 Apr 2022 09:26:40 +0200
-Message-Id: <20220405070414.669389708@linuxfoundation.org>
+Subject: [PATCH 5.16 0722/1017] clk: qcom: gcc-msm8994: Fix gpll4 width
+Date:   Tue,  5 Apr 2022 09:27:15 +0200
+Message-Id: <20220405070415.698257143@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,40 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 8bed4ed5aa3431085d9d27afc35d684856460eda ]
+[ Upstream commit 71021db1c532c2545ae53b9ee85b37b7154f51d4 ]
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div = 0).
+The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
+this.
 
-Fixes: 631c53478973d ("clk: Add CLPS711X clk driver")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Link: https://lore.kernel.org/r/20220218000922.134857-5-j.neuschaefer@gmx.net
+This fixes the following error messages:
+
+ mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
+ mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
+
+Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20220319174940.341137-1-konrad.dybcio@somainline.org
+Tested-by: Petr Vorel <petr.vorel@gmail.com>
+Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
 Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-clps711x.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/clk/qcom/gcc-msm8994.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/clk-clps711x.c b/drivers/clk/clk-clps711x.c
-index a2c6486ef170..f8417ee2961a 100644
---- a/drivers/clk/clk-clps711x.c
-+++ b/drivers/clk/clk-clps711x.c
-@@ -28,11 +28,13 @@ static const struct clk_div_table spi_div_table[] = {
- 	{ .val = 1, .div = 8, },
- 	{ .val = 2, .div = 2, },
- 	{ .val = 3, .div = 1, },
-+	{ /* sentinel */ }
- };
+diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
+index 5df9f1ead48e..4a9eb845b050 100644
+--- a/drivers/clk/qcom/gcc-msm8994.c
++++ b/drivers/clk/qcom/gcc-msm8994.c
+@@ -76,6 +76,7 @@ static struct clk_alpha_pll gpll4_early = {
  
- static const struct clk_div_table timer_div_table[] = {
- 	{ .val = 0, .div = 256, },
- 	{ .val = 1, .div = 1, },
-+	{ /* sentinel */ }
- };
- 
- struct clps711x_clk {
+ static struct clk_alpha_pll_postdiv gpll4 = {
+ 	.offset = 0x1dc0,
++	.width = 4,
+ 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
+ 	.clkr.hw.init = &(struct clk_init_data){
+ 		.name = "gpll4",
 -- 
 2.34.1
 
