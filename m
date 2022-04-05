@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC42C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 747A1C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239415AbiDEJfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
+        id S240720AbiDEJfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239457AbiDEIUG (ORCPT
+        with ESMTP id S239458AbiDEIUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98E76A43C;
-        Tue,  5 Apr 2022 01:13:38 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8572E972FF;
+        Tue,  5 Apr 2022 01:13:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77D7AB81A37;
-        Tue,  5 Apr 2022 08:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC66DC385A0;
-        Tue,  5 Apr 2022 08:13:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20C3A60B0B;
+        Tue,  5 Apr 2022 08:13:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA16C385A0;
+        Tue,  5 Apr 2022 08:13:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146416;
-        bh=MgDDT8VuQWca49TghJ4tLzY7YNfYN4Yv/TzRySXi/dQ=;
+        s=korg; t=1649146421;
+        bh=suba1xzXWvaIbJzsfonGz0DLngK0q0zBAS7BYPJhF/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=azuykinysNGxWi1fY1clezDdzjHz7ckJrLM38Z7dNGdo2Vn3bLK4n/HoREYpecomY
-         f2IIDBw5t2v8RzYE4d+6WUMfg4eltGeG9v8XMTwJs//MBDPjWkm5NVfXp8mNVZ+CUx
-         Fqg8hw+bgCWcE1sLhobXllJPEAHxK02gtNuo9JIw=
+        b=d53G3+hzxr1cfzZfVZ9y1YSq4tOnpe7gVIM3yWub3H3njFUqo7BXNUF36YD/qvu84
+         CQXDzmK4o/WupmqNMR7LvGDvDCagubHQxxffJOIHB0I6ptkkF0WnMz1yKNO5BYsUY6
+         Oz1DArzpqhOdF/SLlJAwm5vT+qcISWE8T/+a93Lw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        stable@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0718/1126] fsi: Aspeed: Fix a potential double free
-Date:   Tue,  5 Apr 2022 09:24:25 +0200
-Message-Id: <20220405070428.669582485@linuxfoundation.org>
+Subject: [PATCH 5.17 0720/1126] cpufreq: qcom-cpufreq-nvmem: fix reading of PVS Valid fuse
+Date:   Tue,  5 Apr 2022 09:24:27 +0200
+Message-Id: <20220405070428.726816359@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,93 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Luca Weiss <luca@z3ntu.xyz>
 
-[ Upstream commit 83ba7e895debc529803a7a258653f2fe9bf3bf40 ]
+[ Upstream commit 4a8a77abf0e2b6468ba0281e33384cbec5fb476a ]
 
-A struct device can never be devm_alloc()'ed.
-Here, it is embedded in "struct fsi_master", and "struct fsi_master" is
-embedded in "struct fsi_master_aspeed".
+The fuse consists of 64 bits, with this statement we're supposed to get
+the upper 32 bits but it actually read out of bounds and got 0 instead
+of the desired value which lead to the "PVS bin not set." codepath being
+run resetting our pvs value.
 
-Since "struct device" is embedded, the data structure embedding it must be
-released with the release function, as is already done here.
-
-So use kzalloc() instead of devm_kzalloc() when allocating "aspeed" and
-update all error handling branches accordingly.
-
-This prevent a potential double free().
-
-This also fix another issue if opb_readl() fails. Instead of a direct
-return, it now jumps in the error handling path.
-
-Fixes: 606397d67f41 ("fsi: Add ast2600 master driver")
-Suggested-by: Greg KH <gregkh@linuxfoundation.org>
-Suggested-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/2c123f8b0a40dc1a061fae982169fe030b4f47e6.1641765339.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a8811ec764f9 ("cpufreq: qcom: Add support for krait based socs")
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/fsi/fsi-master-aspeed.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/cpufreq/qcom-cpufreq-nvmem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/fsi/fsi-master-aspeed.c b/drivers/fsi/fsi-master-aspeed.c
-index 8606e55c1721..0bed2fab8055 100644
---- a/drivers/fsi/fsi-master-aspeed.c
-+++ b/drivers/fsi/fsi-master-aspeed.c
-@@ -542,25 +542,28 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 		return rc;
+diff --git a/drivers/cpufreq/qcom-cpufreq-nvmem.c b/drivers/cpufreq/qcom-cpufreq-nvmem.c
+index d1744b5d9619..6dfa86971a75 100644
+--- a/drivers/cpufreq/qcom-cpufreq-nvmem.c
++++ b/drivers/cpufreq/qcom-cpufreq-nvmem.c
+@@ -130,7 +130,7 @@ static void get_krait_bin_format_b(struct device *cpu_dev,
  	}
  
--	aspeed = devm_kzalloc(&pdev->dev, sizeof(*aspeed), GFP_KERNEL);
-+	aspeed = kzalloc(sizeof(*aspeed), GFP_KERNEL);
- 	if (!aspeed)
- 		return -ENOMEM;
- 
- 	aspeed->dev = &pdev->dev;
- 
- 	aspeed->base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(aspeed->base))
--		return PTR_ERR(aspeed->base);
-+	if (IS_ERR(aspeed->base)) {
-+		rc = PTR_ERR(aspeed->base);
-+		goto err_free_aspeed;
-+	}
- 
- 	aspeed->clk = devm_clk_get(aspeed->dev, NULL);
- 	if (IS_ERR(aspeed->clk)) {
- 		dev_err(aspeed->dev, "couldn't get clock\n");
--		return PTR_ERR(aspeed->clk);
-+		rc = PTR_ERR(aspeed->clk);
-+		goto err_free_aspeed;
- 	}
- 	rc = clk_prepare_enable(aspeed->clk);
- 	if (rc) {
- 		dev_err(aspeed->dev, "couldn't enable clock\n");
--		return rc;
-+		goto err_free_aspeed;
- 	}
- 
- 	rc = setup_cfam_reset(aspeed);
-@@ -595,7 +598,7 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 	rc = opb_readl(aspeed, ctrl_base + FSI_MVER, &raw);
- 	if (rc) {
- 		dev_err(&pdev->dev, "failed to read hub version\n");
--		return rc;
-+		goto err_release;
- 	}
- 
- 	reg = be32_to_cpu(raw);
-@@ -634,6 +637,8 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 
- err_release:
- 	clk_disable_unprepare(aspeed->clk);
-+err_free_aspeed:
-+	kfree(aspeed);
- 	return rc;
- }
- 
+ 	/* Check PVS_BLOW_STATUS */
+-	pte_efuse = *(((u32 *)buf) + 4);
++	pte_efuse = *(((u32 *)buf) + 1);
+ 	pte_efuse &= BIT(21);
+ 	if (pte_efuse) {
+ 		dev_dbg(cpu_dev, "PVS bin: %d\n", *pvs);
 -- 
 2.34.1
 
