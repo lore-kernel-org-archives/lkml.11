@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC745C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A89C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343809AbiDEPKg (ORCPT
+        id S1344254AbiDEPKx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
+        Tue, 5 Apr 2022 11:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345619AbiDEJnk (ORCPT
+        with ESMTP id S1345760AbiDEJoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:43:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD555C3365;
-        Tue,  5 Apr 2022 02:28:59 -0700 (PDT)
+        Tue, 5 Apr 2022 05:44:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2840C55A0;
+        Tue,  5 Apr 2022 02:29:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF140616B9;
-        Tue,  5 Apr 2022 09:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D660FC385A0;
-        Tue,  5 Apr 2022 09:28:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02C38616D6;
+        Tue,  5 Apr 2022 09:29:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12EDFC385A0;
+        Tue,  5 Apr 2022 09:29:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150938;
-        bh=YQar6ezHZkPY8X6SYpKiX/qtDQj2Nb/lf+/JJVypKo8=;
+        s=korg; t=1649150968;
+        bh=M67CU+T4xOG6XH0wlo3yuSohmbR82pONZTeDDfPjaTs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Obr6utQNimflQ/xQmTIfihHkZ9GODdaxQzh1JbGeawFs+dXftLVfNtsUoeCcwmEsw
-         PyPhbU5V2x/0dRubiUIqNVE+Np8kQZOLyEbFTpnlmu0/p0iNbbxD0aUuXEA+mnYmaa
-         Aol4qf+/0Znqxi2Qc5D1rHjmpCneluIBAsDLWokM=
+        b=PtbYBiv0paTZSK5d7BW/JrsxpZ5N3ulBDeNOTSW8g1XjR6rQgcHY0RsU6GCo8cmPJ
+         qbdrXHKboKrzmTpjBhmTcLKjQzSdt76ggSOf0XNIiKu8TU8W7y2+ty2OPb4jooGb99
+         YVbOmsqVsdqEzsQdp4WlVgnGBVDNLnIlUAy47E+E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 235/913] KEYS: trusted: Avoid calling null function trusted_key_exit
-Date:   Tue,  5 Apr 2022 09:21:37 +0200
-Message-Id: <20220405070346.899679243@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 245/913] watch_queue: Actually free the watch
+Date:   Tue,  5 Apr 2022 09:21:47 +0200
+Message-Id: <20220405070347.201194687@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -58,45 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Kleikamp <dave.kleikamp@oracle.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit c5d1ed846e15090bc90dfdaafc07eac066e070bb ]
+[ Upstream commit 3d8dcf278b1ee1eff1e90be848fa2237db4c07a7 ]
 
-If one loads and unloads the trusted module, trusted_key_exit can be
-NULL. Call it through static_call_cond() to avoid a kernel trap.
+free_watch() does everything barring actually freeing the watch object.  Fix
+this by adding the missing kfree.
 
-Fixes: 5d0682be3189 ("KEYS: trusted: Add generic trusted keys framework")
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
-Cc: Sumit Garg <sumit.garg@linaro.org>
-Cc: James Bottomley <jejb@linux.ibm.com>
-Cc: Jarkko Sakkinen <jarkko@kernel.org>
-Cc: Mimi Zohar <zohar@linux.ibm.com>
-Cc: David Howells <dhowells@redhat.com>
-Cc: James Morris <jmorris@namei.org>
-Cc: "Serge E. Hallyn" <serge@hallyn.com>
-Cc: linux-integrity@vger.kernel.org
-Cc: keyrings@vger.kernel.org
-Cc: linux-security-module@vger.kernel.org
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+kmemleak produces a report something like the following.  Note that as an
+address can be seen in the first word, the watch would appear to have gone
+through call_rcu().
+
+BUG: memory leak
+unreferenced object 0xffff88810ce4a200 (size 96):
+  comm "syz-executor352", pid 3605, jiffies 4294947473 (age 13.720s)
+  hex dump (first 32 bytes):
+    e0 82 48 0d 81 88 ff ff 00 00 00 00 00 00 00 00  ..H.............
+    80 a2 e4 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff8214e6cc>] kmalloc include/linux/slab.h:581 [inline]
+    [<ffffffff8214e6cc>] kzalloc include/linux/slab.h:714 [inline]
+    [<ffffffff8214e6cc>] keyctl_watch_key+0xec/0x2e0 security/keys/keyctl.c:1800
+    [<ffffffff8214ec84>] __do_sys_keyctl+0x3c4/0x490 security/keys/keyctl.c:2016
+    [<ffffffff84493a25>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff84493a25>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84600068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-and-tested-by: syzbot+6e2de48f06cdb2884bfc@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/keys/trusted-keys/trusted_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/watch_queue.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/security/keys/trusted-keys/trusted_core.c b/security/keys/trusted-keys/trusted_core.c
-index 5b35f1b87644..9b9d3ef79cbe 100644
---- a/security/keys/trusted-keys/trusted_core.c
-+++ b/security/keys/trusted-keys/trusted_core.c
-@@ -351,7 +351,7 @@ static int __init init_trusted(void)
- 
- static void __exit cleanup_trusted(void)
- {
--	static_call(trusted_key_exit)();
-+	static_call_cond(trusted_key_exit)();
+diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
+index 12348b41d7ad..38a135d68c05 100644
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -398,6 +398,7 @@ static void free_watch(struct rcu_head *rcu)
+ 	put_watch_queue(rcu_access_pointer(watch->queue));
+ 	atomic_dec(&watch->cred->user->nr_watches);
+ 	put_cred(watch->cred);
++	kfree(watch);
  }
  
- late_initcall(init_trusted);
+ static void __put_watch(struct kref *kref)
 -- 
 2.34.1
 
