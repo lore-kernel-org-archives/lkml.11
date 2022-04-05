@@ -2,124 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC685C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C04D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578762AbiDEXYy (ORCPT
+        id S1578786AbiDEXY5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
+        Tue, 5 Apr 2022 19:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457096AbiDEQCo (ORCPT
+        with ESMTP id S1358059AbiDEK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:02:44 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5A1F1AC9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:28:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649172497; x=1680708497;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TpDgxiyjCBQHjpm+3j7YA+Szlh4kAXMuzZRE+lz2Y/k=;
-  b=gSLsK0e8woyJWJ7Tnmeojzs1kA1y6S4VkKFPjzvQOXl4ahvh0VEL90eW
-   4ITq3UcfsDr3UVbuQjoIP5+N7x6KeCSrzSxUVxDwoCTifcckFIalXIHMC
-   CcrWStZ7swNsmTSW2gqaH7PO4KASCv1rZLqY/DFDqyO+6JfxqUCd1+tBG
-   xQM6xGX8949ctmRPHMrF8a+ofcoZ6QeaKfSZvnWOJJzJo/kUziMpfZPml
-   wkQ/alKqqBd21m0TNF53SbnhEVfFFwf0qhAqPE9JrZe0ZuG1OsKkrWPFT
-   NanEFBv1EJR0BiNv5qbqijGlh/39IP+EaEMPOSu44aMmtcfiXVTKPA8zZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258362208"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="258362208"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:28:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="549098652"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2022 08:28:15 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbl6M-0003Tr-CB;
-        Tue, 05 Apr 2022 15:28:14 +0000
-Date:   Tue, 5 Apr 2022 23:28:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 24/40]
- include/linux/fscache.h:540: undefined reference to
- `__fscache_begin_write_operation'
-Message-ID: <202204052321.Q7Js0HBV-lkp@intel.com>
+        Tue, 5 Apr 2022 06:27:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4342622BE8;
+        Tue,  5 Apr 2022 03:14:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F40DEB81C6C;
+        Tue,  5 Apr 2022 10:14:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 711C6C385A0;
+        Tue,  5 Apr 2022 10:14:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153648;
+        bh=g03DA6j497XDAp1gqWKMiJ+yaZMwL6lkbxkH2RXpgaA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RnysUpRlsqNIMJEvrZ2R7zo/rjYg3ixyfv4ewh5DNiYToHkJ0IWbzocEpEXXbRDDP
+         /L6O0g3T9zIwUwySDQRU4uOgOjB7Z+EAS0ncrt8UWUA1ac5fkuMwcS41/cx85MtO+k
+         CLFEvAMNpOg7mbr7ZYTZ8KrbyD38NbAvwPs3Qb4s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 298/599] iommu/ipmmu-vmsa: Check for error num after setting mask
+Date:   Tue,  5 Apr 2022 09:29:52 +0200
+Message-Id: <20220405070307.701627991@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   674eea41fc70a740ff83ec590f9833f805852464
-commit: d77af6a0e73b5e3c4bae01c64df536f2662e2dab [24/40] netfs: Dispatch write requests to process a writeback slice
-config: x86_64-rhel-8.3-func (https://download.01.org/0day-ci/archive/20220405/202204052321.Q7Js0HBV-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/d77af6a0e73b5e3c4bae01c64df536f2662e2dab
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout d77af6a0e73b5e3c4bae01c64df536f2662e2dab
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[ Upstream commit 1fdbbfd5099f797a4dac05e7ef0192ba4a9c39b4 ]
 
-All errors (new ones prefixed by >>):
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
 
-   ld: fs/netfs/output.o: in function `fscache_begin_write_operation':
->> include/linux/fscache.h:540: undefined reference to `__fscache_begin_write_operation'
+Fixes: 1c894225bf5b ("iommu/ipmmu-vmsa: IPMMU device is 40-bit bus master")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Link: https://lore.kernel.org/r/20220106024302.2574180-1-jiasheng@iscas.ac.cn
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/ipmmu-vmsa.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-
-vim +540 include/linux/fscache.h
-
-9af1c6c3089b29 David Howells 2021-10-20  516  
-16f2f4e679cfda David Howells 2021-08-27  517  /**
-16f2f4e679cfda David Howells 2021-08-27  518   * fscache_begin_write_operation - Begin a write operation for the netfs lib
-16f2f4e679cfda David Howells 2021-08-27  519   * @cres: The cache resources for the write being performed
-16f2f4e679cfda David Howells 2021-08-27  520   * @cookie: The cookie representing the cache object
-16f2f4e679cfda David Howells 2021-08-27  521   *
-16f2f4e679cfda David Howells 2021-08-27  522   * Begin a write operation on behalf of the netfs helper library.  @cres
-16f2f4e679cfda David Howells 2021-08-27  523   * indicates the cache resources to which the operation state should be
-16f2f4e679cfda David Howells 2021-08-27  524   * attached; @cookie indicates the cache object that will be accessed.
-16f2f4e679cfda David Howells 2021-08-27  525   *
-16f2f4e679cfda David Howells 2021-08-27  526   * @cres->inval_counter is set from @cookie->inval_counter for comparison at
-16f2f4e679cfda David Howells 2021-08-27  527   * the end of the operation.  This allows invalidation during the operation to
-16f2f4e679cfda David Howells 2021-08-27  528   * be detected by the caller.
-16f2f4e679cfda David Howells 2021-08-27  529   *
-16f2f4e679cfda David Howells 2021-08-27  530   * Returns:
-16f2f4e679cfda David Howells 2021-08-27  531   * * 0		- Success
-16f2f4e679cfda David Howells 2021-08-27  532   * * -ENOBUFS	- No caching available
-16f2f4e679cfda David Howells 2021-08-27  533   * * Other error code from the cache, such as -ENOMEM.
-16f2f4e679cfda David Howells 2021-08-27  534   */
-16f2f4e679cfda David Howells 2021-08-27  535  static inline
-16f2f4e679cfda David Howells 2021-08-27  536  int fscache_begin_write_operation(struct netfs_cache_resources *cres,
-16f2f4e679cfda David Howells 2021-08-27  537  				  struct fscache_cookie *cookie)
-16f2f4e679cfda David Howells 2021-08-27  538  {
-16f2f4e679cfda David Howells 2021-08-27  539  	if (fscache_cookie_enabled(cookie))
-16f2f4e679cfda David Howells 2021-08-27 @540  		return __fscache_begin_write_operation(cres, cookie);
-16f2f4e679cfda David Howells 2021-08-27  541  	return -ENOBUFS;
-16f2f4e679cfda David Howells 2021-08-27  542  }
-16f2f4e679cfda David Howells 2021-08-27  543  
-
-:::::: The code at line 540 was first introduced by commit
-:::::: 16f2f4e679cfdaa9552574484f104014908a76c6 nfs: Implement cache I/O by accessing the cache directly
-
-:::::: TO: David Howells <dhowells@redhat.com>
-:::::: CC: David Howells <dhowells@redhat.com>
-
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 0f18abda0e20..bae6c7078ec9 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1013,7 +1013,9 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+ 	mmu->features = of_device_get_match_data(&pdev->dev);
+ 	memset(mmu->utlb_ctx, IPMMU_CTX_INVALID, mmu->features->num_utlbs);
+-	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
++	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
++	if (ret)
++		return ret;
+ 
+ 	/* Map I/O memory and request IRQ. */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
+
+
