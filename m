@@ -2,164 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B04D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:58:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbiDECAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
+        id S229576AbiDECAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiDEB76 (ORCPT
+        with ESMTP id S229569AbiDECAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 21:59:58 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4420B23DEBA;
-        Mon,  4 Apr 2022 18:16:08 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649119625;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aV0m0c+aJi/BzLPiLyQXOexC2EcW7rGlsZ0QrykO0QQ=;
-        b=wXbN1yWcRjL6xdtvVkJQUtT7RCNzbFW+da7HgBVma1tDsSplKWtoSbt+e/Chg0JxIFceGh
-        QWe+d8QblE7GlXHwUSm3Zk1WJsvCHtxEx3zLcD4QFQAiPUBcNl6OcNrHciPGSvWjVWs4q9
-        slH7CJusSJj8nWSnRwpWe8pJpqQLW41z9+eD3BBfsYl9T3i/r/jo1btucqFGA71IzK5vtt
-        ypGXWHMN9oIYI+JlprBvAbLJ/1Aw/6Zb69io4RBVh7buKrWCqHf3QRGyWPNFoF3J9Q+3Kk
-        VCUnH09H8y1QrKKdMiJfg7prFuOQUIGQ7QRVdrNyez94Mcg05JTFW124rdiGSA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649119625;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aV0m0c+aJi/BzLPiLyQXOexC2EcW7rGlsZ0QrykO0QQ=;
-        b=PvN12likTNzhXL9Xm1SPkolIgSvAcAahJC+d5EPzfPXQm0d0tXbYPkFJZ9klQVyrWNnXfr
-        c2PxWRVqcmp/lSAQ==
-To:     Mike Travis <mike.travis@hpe.com>, Borislav Petkov <bp@alien8.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
-Cc:     Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Andy Shevchenko <andy@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] x86/platform/uv: Update TSC sync state for UV5
-In-Reply-To: <20220404174111.262414-3-mike.travis@hpe.com>
-References: <20220404174111.262414-1-mike.travis@hpe.com>
- <20220404174111.262414-3-mike.travis@hpe.com>
-Date:   Tue, 05 Apr 2022 02:47:04 +0200
-Message-ID: <87zgl02w6v.ffs@tglx>
+        Mon, 4 Apr 2022 22:00:14 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A67B44F4D2;
+        Mon,  4 Apr 2022 18:16:27 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KXTp36QHMz4xXg;
+        Tue,  5 Apr 2022 11:00:11 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649120412;
+        bh=pvAjgrubqUeybT12my8JKcBFZrLk6GFs9UdVcALm1Rw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=hYcFQ3qY5EyREHyfFG7FXCrx9OZ8bIuRRhoeY9aUcgfxzenLCQFnCM8VG+0qjUGoN
+         hb7DUGklkh5WCotHIUr2HbSxOArcUo1rN8wbPoKPAkGg5YuCkAGslCX2douUNvLDiI
+         g1C0BJhHnw7QQBAhjf8JODKNQOD6gN4x+xVM2sigR/2oy5lEuYJCE/2QIApYn8rPNG
+         uuPANRBVcR685QdrdUPcxPvH7AXpwtP1zSDiRBMfcSQMOWsTKvEVkuAVYanDBJpBDY
+         hsgH/4h/F9N+Tf4e3/Gc/zzzk4xoWgYEUD9NOtwIvrGNc4qnstZchKRzytpEKrAo+u
+         aXFC3kBsQUYtA==
+Date:   Tue, 5 Apr 2022 11:00:11 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>
+Cc:     CQ Tang <cq.tang@intel.com>,
+        Juha-Pekka =?UTF-8?B?SGVpa2tpbMOk?= 
+        <juha-pekka.heikkila@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Ramalingam C <ramalingam.c@intel.com>,
+        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
+Subject: linux-next: manual merge of the drm-intel tree with Linus' tree
+Message-ID: <20220405110011.42656314@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; boundary="Sig_/vJGFu34SKYSA_epYaranuCs";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mike,
+--Sig_/vJGFu34SKYSA_epYaranuCs
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 04 2022 at 12:41, Mike Travis wrote:
-> Update to not check TSC sync state for uv5+ as it is not available.
-> It is assumed that TSC will always be in sync for multiple chassis and
-> will pass the tests for the kernel to accept it as the clocksource.
-> To disable this check use the kernel start options tsc=reliable
-> clocksource=tsc.
-...
-> ---
-> v2: Update patch description to be more explanatory.
+Hi all,
 
-after reading the above word salad, I have no urge to go back to V1 to
-figure out how bad that changelog was. Let me walk through it:
+Today's linux-next merge of the drm-intel tree got a conflict in:
 
-> Update to not check TSC sync state for uv5+ as it is not available.
+  drivers/gpu/drm/i915/intel_device_info.h
 
-That's not a sentence and it does not provide any information about the
-background and the why. See:
+between commit:
 
-  https://www.kernel.org/doc/html/latest/process/maintainer-tip.html#changelog
+  5e3094cfd9fb ("drm/i915/xehpsdv: Add has_flat_ccs to device info")
 
-for further explanation.
+from Linus' tree and commit:
 
-> It is assumed that TSC will always be in sync for multiple chassis and
-> will pass the tests for the kernel to accept it as the clocksource.
+  072ce4164f97 ("drm/i915/dg2: Tile 4 plane format support")
 
-"It is assumed" is a real convincing technical argument - NOT!
+from the drm-intel tree.
 
-Either the hardware guarantees something or not. If the hardware cannot
-guarantee it but does not provide a mechanism to verify it then spell it
-out:
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
 
-  "UV5 gave up on providing an interface which allows to query the TSC
-   synchronization state. The hardware/firmware specification defines
-   that TSC is synchronized accross multiple chassis, but there is
-   neither a guarantee nor a validation mechanism. This leaves the
-   kernel with the only option to assume that TSC is synchronized and
-   TSC_ADJUST might be different between sockets due to UV5+ firmware
-   synchronization."
+--=20
+Cheers,
+Stephen Rothwell
 
-> To disable this check use the kernel start options tsc=reliable
-> clocksource=tsc.
+diff --cc drivers/gpu/drm/i915/intel_device_info.h
+index 291215d9da28,8026e805ff12..000000000000
+--- a/drivers/gpu/drm/i915/intel_device_info.h
++++ b/drivers/gpu/drm/i915/intel_device_info.h
+@@@ -134,10 -131,9 +134,11 @@@ enum intel_ppgtt_type=20
+  	/* Keep has_* in alphabetical order */ \
+  	func(has_64bit_reloc); \
+  	func(has_64k_pages); \
+ +	func(needs_compact_pt); \
+  	func(gpu_reset_clobbers_display); \
+  	func(has_reset_engine); \
+ +	func(has_flat_ccs); \
++ 	func(has_4tile); \
+  	func(has_global_mocs); \
+  	func(has_gt_uc); \
+  	func(has_guc_deprivilege); \
 
-So now it get's really confusing. Which check? The one in your 
-explanatory description above:
+--Sig_/vJGFu34SKYSA_epYaranuCs
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-  "Update to not check TSC sync state for uv5+ as it is not available."
+-----BEGIN PGP SIGNATURE-----
 
-or what?
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJLlJsACgkQAVBC80lX
+0Gy1Vwf/ai698wOFTp8iHwKVkeATYt9n7KQrbPXReJI00ygB+CGtawI0WLEx+U1e
+x3dNfaeuUNE3u6NFpWfmTNl/CuUEoWfyLOXe98zoJyczE8H2cLq0wBFVTZwSMahf
+7PMhEduqTFMRpjI5eVF7/zfLg2p6MnnWo8kwP0qS+9s4vP71uE1V3m8nds705pxg
+MaGFdowHREd54ChblVpa3OyQvpd6XdB9hX63c3diTDx6cXL9PPZ911ipPc7K47lq
+RnqMakWG7Mo4Nb9m2hdvTLmyrJurcccTMqijsWv629Y6pQ8ryX5qhAn/qc9xvfkc
+TAO7jEdUPw9Owol24EyVxmLJ0TUcLg==
+=eJUe
+-----END PGP SIGNATURE-----
 
-I can assume what are you trying to tell me here, but that's not a
-qualification for 'explanatory'
-
-> Signed-off-by: Mike Travis <mike.travis@hpe.com>
-> Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-> Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
-
-Impressive list of Reviewed-by tags. Just for clarification:
-
-  Reviewed-by tags include the changelog part.
-
-> ---
->  arch/x86/kernel/apic/x2apic_uv_x.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
-> index f5a48e66e4f5..387d6533549a 100644
-> --- a/arch/x86/kernel/apic/x2apic_uv_x.c
-> +++ b/arch/x86/kernel/apic/x2apic_uv_x.c
-> @@ -199,10 +199,16 @@ static void __init uv_tsc_check_sync(void)
->  	int mmr_shift;
->  	char *state;
->  
-> -	/* Different returns from different UV BIOS versions */
-> +	/* UV5+, sync state from bios not available, assumed valid */
-> +	if (!is_uv(UV2|UV3|UV4)) {
-> +		pr_debug("UV: TSC sync state for UV5+ assumed valid\n");
-
-UV advertises its version all over the place and the call here:
-
-> +		mark_tsc_async_resets("UV5+");
-
-emits the reason at info level. So you surely need the pr_debug() above
-to figure out that your code works as expected. You just failed to add
-the obviuos counterpart:
-
-          pr_debug("After calling hello_world()!\n");
-          
-Seriously. Neither the changelog nor the comment above the condition
-qualify for explanatory or useful. Please try again.
-
-> +
-> +	/* UV2,3,4, UV BIOS TSC sync state available */
->  	mmr = uv_early_read_mmr(UVH_TSC_SYNC_MMR);
-> -	mmr_shift =
-> -		is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
-> +	mmr_shift = is_uv2_hub() ? UVH_TSC_SYNC_SHIFT_UV2K : UVH_TSC_SYNC_SHIFT;
-
-How is this change related to the problem which this patch tries to
-solve? Documentation/process/* applies to UV too. You definitely should
-know that by now.
-
-Thanks,
-
-        tglx
+--Sig_/vJGFu34SKYSA_epYaranuCs--
