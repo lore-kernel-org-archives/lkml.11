@@ -2,76 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA4BC4707A
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57660C4707E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582984AbiDEXur (ORCPT
+        id S1583089AbiDEXvH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
+        Tue, 5 Apr 2022 19:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457754AbiDEQkC (ORCPT
+        with ESMTP id S1346173AbiDENF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:40:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F12D9E85;
-        Tue,  5 Apr 2022 09:38:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3137C617D2;
-        Tue,  5 Apr 2022 16:38:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55BCEC385A1;
-        Tue,  5 Apr 2022 16:38:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649176683;
-        bh=tWvuX7ND9rBqkP1uSP+2Tul0OWLfm6+Xw2RC0nvxfWs=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=SowZPN9R+c/QuQhJLP77gmZJo761jO44XrZTN6J+ExNY9CbTnx9VqSV4dfeLiaLXD
-         6vMlasopq2teF36g8URsyYfOLwGSF+27+2AbU60100mN2eojAC/yJWaiO39LKoCWgR
-         XAWuCjOE/KjEnk/+rdEYq7Iu7EhzgANGoPywjj89iJvjLZbQrlSHIi0T5HFqVp9nIn
-         svGWwy3sVITBYukFBzAhNJnDfLcRpU3p0MN1a0mlEab6UGrYXHlhRQs5dGFHHl7vbW
-         04O8whMAbyX8ts4ZZufErL4YQMV6z+2KDQqfGMZbc04hxOt+Y9GVL9UDMC6FezdtaD
-         vTV6mvmhD0U8w==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: Re: [PATCH 06/11] brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
-References: <20220405151517.29753-1-bp@alien8.de>
-        <20220405151517.29753-7-bp@alien8.de> <87y20jr1qt.fsf@kernel.org>
-        <YkxpIQHKLXmGBwV1@zn.tnic>
-Date:   Tue, 05 Apr 2022 19:37:59 +0300
-In-Reply-To: <YkxpIQHKLXmGBwV1@zn.tnic> (Borislav Petkov's message of "Tue, 5
-        Apr 2022 18:06:57 +0200")
-Message-ID: <87pmlvqye0.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Tue, 5 Apr 2022 09:05:28 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335A072E3A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:06:36 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso1501441wmz.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:06:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=9elements.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CentrNXKSQFtoskGJlxUqU8zX0zrZiDPIjJai3Ha6oE=;
+        b=JmMomELaLQFDRItpcNtWH4QI1Qx1ZxwUSJLdZaS7o5PZzEfGUekaCpJog3I6Pf7x68
+         u1ttd3GXCmjQvb58QxZs3mzVCW278ksuVf0JyetGiL34x6FWoBGPtJpWXVgADop9TImV
+         x4IWpSoFQU1Htkiswy51NyZz7U0ysrWeLVpl4sGhgIURBoUH0WAE6hy9L2ZydY5U4Wqw
+         WmDel6vDij5ahXrhPZ5PqCM96GvIqBQHUnxReC2Rjf7w3CwY/ceih+4Lj+VTYZ3GpISm
+         x4iPt88wo8To81qjCfKZ+Nc1KITCgI1JNig/8p6WE/M+21Mum4GEu2fMKtsm40cyvh5M
+         GE3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CentrNXKSQFtoskGJlxUqU8zX0zrZiDPIjJai3Ha6oE=;
+        b=Cv0LfNSGhVIYxjgmYRyM9202K9G/43JSlHU6ZQkBLFqwikJA3eDH9bDIyZ4Ypyjm4H
+         w+oyYOFVfpBKzk9DfVmB78zrEjj9SpWHtlBCJkFzXR4NidQu3KAy7pIFzqdYeQH49QGW
+         BphX5/CnVAyUqnBGgTSH8ZmcurD3ki6FpAMjLyznkj3sbi68AgwIFZDJLtb60f/kP22K
+         MbrIa8brwLI6nkWVhz7yCi6G+aLhq2JIr3m05MwM/HVe2ZpP4OEo7SNoJShk3jSjgfEB
+         gSgqQr426whxklOLhVp0IWaWWL4EiVk05oRZ4OImygPqHnqYa+QYlMEhs9JZ68yE7xbl
+         1DHA==
+X-Gm-Message-State: AOAM532VX+4ec75V2FRkUGAArWgWD1AhHGAu8whj2J4xoBC0VnBglaiL
+        6mD+cyuSlQERbFPXPW13LkeY30AMyPeKYw==
+X-Google-Smtp-Source: ABdhPJx2k1D7CsQNKEUVWDyrt4BFPfX//w90p69nAAXHPbmb5DKwSS7nBMnD3/+TZifT+S4HANNBEA==
+X-Received: by 2002:a05:600c:3ba5:b0:38c:b19e:253c with SMTP id n37-20020a05600c3ba500b0038cb19e253cmr2839990wms.35.1649160394659;
+        Tue, 05 Apr 2022 05:06:34 -0700 (PDT)
+Received: from fedora.lab.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
+        by smtp.gmail.com with ESMTPSA id r16-20020a7bc090000000b0038e73023334sm1994323wmh.2.2022.04.05.05.06.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 05:06:34 -0700 (PDT)
+From:   Patrick Rudolph <patrick.rudolph@9elements.com>
+To:     Peter Rosin <peda@axentia.se>
+Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [v7 3/3] i2c: muxes: pca954x: Add regulator support
+Date:   Tue,  5 Apr 2022 14:05:51 +0200
+Message-Id: <20220405120552.433415-4-patrick.rudolph@9elements.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405120552.433415-1-patrick.rudolph@9elements.com>
+References: <20220405120552.433415-1-patrick.rudolph@9elements.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Borislav Petkov <bp@alien8.de> writes:
+Add a vdd regulator and enable it for boards that have the
+mux powered off by default.
 
-> On Tue, Apr 05, 2022 at 06:25:30PM +0300, Kalle Valo wrote:
->> Via which tree is this going? I assume not the wireless tree, so:
->
-> Whoever picks it up.
+Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/muxes/i2c-mux-pca954x.c | 34 ++++++++++++++++++++++++-----
+ 1 file changed, 29 insertions(+), 5 deletions(-)
 
-It would be good to have a plan so the patch is not forgotten :)
-
-Normally brcmfmac patches go via the wireless tree, so I could take this
-patch. But you didn't CC linux-wireless so our patchwork doesn't see it.
-So if you want me to take this you need to resend.
-
+diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
+index 122b7a28fc60..6c43d420e349 100644
+--- a/drivers/i2c/muxes/i2c-mux-pca954x.c
++++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
+@@ -49,6 +49,7 @@
+ #include <linux/module.h>
+ #include <linux/pm.h>
+ #include <linux/property.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <dt-bindings/mux/mux.h>
+@@ -119,6 +120,7 @@ struct pca954x {
+ 	struct irq_domain *irq;
+ 	unsigned int irq_mask;
+ 	raw_spinlock_t lock;
++	struct regulator *supply;
+ };
+ 
+ /* Provide specs for the PCA954x and MAX735x types we know about */
+@@ -459,6 +461,9 @@ static void pca954x_cleanup(struct i2c_mux_core *muxc)
+ 	struct pca954x *data = i2c_mux_priv(muxc);
+ 	int c, irq;
+ 
++	if (!IS_ERR_OR_NULL(data->supply))
++		regulator_disable(data->supply);
++
+ 	if (data->irq) {
+ 		for (c = 0; c < data->chip->nchans; c++) {
+ 			irq = irq_find_mapping(data->irq, c);
+@@ -513,15 +518,32 @@ static int pca954x_probe(struct i2c_client *client,
+ 			     pca954x_select_chan, pca954x_deselect_mux);
+ 	if (!muxc)
+ 		return -ENOMEM;
++
+ 	data = i2c_mux_priv(muxc);
+ 
+ 	i2c_set_clientdata(client, muxc);
+ 	data->client = client;
+ 
++	data->supply = devm_regulator_get(dev, "vdd");
++	if (IS_ERR(data->supply)) {
++		ret = PTR_ERR(data->supply);
++		if (ret != -EPROBE_DEFER)
++			dev_err(dev, "Failed to request regulator: %d\n", ret);
++		return ret;
++	}
++
++	ret = regulator_enable(data->supply);
++	if (ret) {
++		dev_err(dev, "Failed to enable regulator: %d\n", ret);
++		return ret;
++	}
++
+ 	/* Reset the mux if a reset GPIO is specified. */
+ 	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+-	if (IS_ERR(gpio))
+-		return PTR_ERR(gpio);
++	if (IS_ERR(gpio)) {
++		ret = PTR_ERR(gpio);
++		goto fail_cleanup;
++	}
+ 	if (gpio) {
+ 		udelay(1);
+ 		gpiod_set_value_cansleep(gpio, 0);
+@@ -538,7 +560,7 @@ static int pca954x_probe(struct i2c_client *client,
+ 
+ 		ret = i2c_get_device_id(client, &id);
+ 		if (ret && ret != -EOPNOTSUPP)
+-			return ret;
++			goto fail_cleanup;
+ 
+ 		if (!ret &&
+ 		    (id.manufacturer_id != data->chip->id.manufacturer_id ||
+@@ -546,7 +568,8 @@ static int pca954x_probe(struct i2c_client *client,
+ 			dev_warn(dev, "unexpected device id %03x-%03x-%x\n",
+ 				 id.manufacturer_id, id.part_id,
+ 				 id.die_revision);
+-			return -ENODEV;
++			ret = -ENODEV;
++			goto fail_cleanup;
+ 		}
+ 	}
+ 
+@@ -565,7 +588,8 @@ static int pca954x_probe(struct i2c_client *client,
+ 	ret = pca954x_init(client, data);
+ 	if (ret < 0) {
+ 		dev_warn(dev, "probe failed\n");
+-		return -ENODEV;
++		ret = -ENODEV;
++		goto fail_cleanup;
+ 	}
+ 
+ 	ret = pca954x_irq_setup(muxc);
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.35.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
