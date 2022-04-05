@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C2AC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE42C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244521AbiDEOxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        id S244120AbiDEOxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244529AbiDEJl1 (ORCPT
+        with ESMTP id S244532AbiDEJl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45ACDBB93C;
-        Tue,  5 Apr 2022 02:26:49 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1CDBB932;
+        Tue,  5 Apr 2022 02:26:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D57AB6144D;
-        Tue,  5 Apr 2022 09:26:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCA44C385A0;
-        Tue,  5 Apr 2022 09:26:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E947B81C9D;
+        Tue,  5 Apr 2022 09:26:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2008C385A3;
+        Tue,  5 Apr 2022 09:26:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150808;
-        bh=RcmNMbGFK3/mzonQQ96fbN2BOo1kqIFuF7vkACSwxRg=;
+        s=korg; t=1649150794;
+        bh=5SKEbDrLT6+O1PlKgj+zrudt8PadU0+bYVvcmroswKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HVlPQ48G7c9RdQxK0xKKGzd3/jH1zIY9Cldgli+8jJivBlOTnq9qvy6+0UyA9/lxU
-         nebBbAZxvfxF4v2MQCp+FW9U/+r4vNn0XZBuFw47vSAob2+oOVbAsKjyX9490qCIEW
-         jst6gJpFbbGFmwo3T4O3/HK7EeSQkH5hT120aNgQ=
+        b=gXRpsE1vZXnNj0WtHqoa9rXQxFEQHJHZ1I7RuPoChXoyH56tNKQx6HrRGl7EqBREx
+         a4FeOtS3j3hzEMomPAj1a4XBaxbEaRInPJBjwXcf3HydRInrcnuNklSZ9W7DJpIR/a
+         cYNRb5HsIZKeiNXhxB4HFLwbnIyXv4vrC/h3Gah0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        kernel test robot <lkp@intel.com>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 189/913] regulator: qcom_smd: fix for_each_child.cocci warnings
-Date:   Tue,  5 Apr 2022 09:20:51 +0200
-Message-Id: <20220405070345.523470308@linuxfoundation.org>
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>
+Subject: [PATCH 5.15 184/913] drm/i915/opregion: check port number bounds for SWSCI display power state
+Date:   Tue,  5 Apr 2022 09:20:46 +0200
+Message-Id: <20220405070345.370483428@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,48 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit 6390d42c21efff0b4c10956a38e341f4e84ecd3d ]
+commit 24a644ebbfd3b13cda702f98907f9dd123e34bf9 upstream.
 
-drivers/regulator/qcom_smd-regulator.c:1318:1-33: WARNING: Function "for_each_available_child_of_node" should have of_node_put() before return around line 1321.
+The mapping from enum port to whatever port numbering scheme is used by
+the SWSCI Display Power State Notification is odd, and the memory of it
+has faded. In any case, the parameter only has space for ports numbered
+[0..4], and UBSAN reports bit shift beyond it when the platform has port
+F or more.
 
-Semantic patch information:
- False positives can be due to function calls within the for_each
- loop that may encapsulate an of_node_put.
+Since the SWSCI functionality is supposed to be obsolete for new
+platforms (i.e. ones that might have port F or more), just bail out
+early if the mapped and mangled port number is beyond what the Display
+Power State Notification can support.
 
-Generated by: scripts/coccinelle/iterators/for_each_child.cocci
-
-Fixes: 14e2976fbabd ("regulator: qcom_smd: Align probe function with rpmh-regulator")
-CC: Konrad Dybcio <konrad.dybcio@somainline.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
-Link: https://lore.kernel.org/r/alpine.DEB.2.22.394.2201151210170.3051@hadrien
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9c4b0a683193 ("drm/i915: add opregion function to notify bios of encoder enable/disable")
+Cc: <stable@vger.kernel.org> # v3.13+
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Lucas De Marchi <lucas.demarchi@intel.com>
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4800
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/cc363f42d6b5a5932b6d218fefcc8bdfb15dbbe5.1644489329.git.jani.nikula@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/regulator/qcom_smd-regulator.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/display/intel_opregion.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index 8e077792bddd..b6287f7e78f4 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -1268,8 +1268,10 @@ static int rpm_reg_probe(struct platform_device *pdev)
+--- a/drivers/gpu/drm/i915/display/intel_opregion.c
++++ b/drivers/gpu/drm/i915/display/intel_opregion.c
+@@ -376,6 +376,21 @@ int intel_opregion_notify_encoder(struct
+ 		return -EINVAL;
+ 	}
  
- 	for_each_available_child_of_node(dev->of_node, node) {
- 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
--		if (!vreg)
-+		if (!vreg) {
-+			of_node_put(node);
- 			return -ENOMEM;
-+		}
++	/*
++	 * The port numbering and mapping here is bizarre. The now-obsolete
++	 * swsci spec supports ports numbered [0..4]. Port E is handled as a
++	 * special case, but port F and beyond are not. The functionality is
++	 * supposed to be obsolete for new platforms. Just bail out if the port
++	 * number is out of bounds after mapping.
++	 */
++	if (port > 4) {
++		drm_dbg_kms(&dev_priv->drm,
++			    "[ENCODER:%d:%s] port %c (index %u) out of bounds for display power state notification\n",
++			    intel_encoder->base.base.id, intel_encoder->base.name,
++			    port_name(intel_encoder->port), port);
++		return -EINVAL;
++	}
++
+ 	if (!enable)
+ 		parm |= 4 << 8;
  
- 		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
- 
--- 
-2.34.1
-
 
 
