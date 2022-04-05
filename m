@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC60C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1990BC35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233943AbiDEH5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
+        id S233442AbiDEH5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231944AbiDEHpu (ORCPT
+        with ESMTP id S233629AbiDEHsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:45:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E749E9859B;
-        Tue,  5 Apr 2022 00:41:38 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C930CBB;
+        Tue,  5 Apr 2022 00:46:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 295B3B81B14;
-        Tue,  5 Apr 2022 07:41:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 954F3C3410F;
-        Tue,  5 Apr 2022 07:41:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64DDD615E7;
+        Tue,  5 Apr 2022 07:46:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71FF7C340EE;
+        Tue,  5 Apr 2022 07:46:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144495;
-        bh=La9b5PkZMRTBVUZfxGXy8R1qZAliNvOQdKryZHSfOug=;
+        s=korg; t=1649144776;
+        bh=kCiBLdnFzD0QRDANYJYIktkcCTP1oE4zBfsCsX8qP78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nrERMc+bJuSolWOc7aYYYdRSVXdiDLD9jC6nPS4fcCO3VWi2PApEhbvC6/FZ+HOtV
-         4a3Yi5DEY5S/FE9uxRm/KaO06ZMUBwEjPDh452nGXzG/DzJ9vwqLRfAgdkx4xtEqAd
-         d27k3xlhOPfWo3nFLqg+/tjWnYHqZDECOBadwNFY=
+        b=XreuLiQ4KkaYNUP0IKig6vs7M0c2IVnY6XxZAoJAXrL/fUSB6aQ6IPg+eZ17GEGUh
+         GJ/mrNgYUi2OYD3OEGV8sVv7QE9jnHCdFqlCy8aHMmDm1qK+erTSSUTcME+eocBkLe
+         efYfCSyzxdDMwZKmR0Zrbagq5QqQZSCRGgSwNYXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 0066/1126] net: bnxt_ptp: fix compilation error
-Date:   Tue,  5 Apr 2022 09:13:33 +0200
-Message-Id: <20220405070409.507088732@linuxfoundation.org>
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 0140/1126] btrfs: zoned: put block group after final usage
+Date:   Tue,  5 Apr 2022 09:14:47 +0200
+Message-Id: <20220405070411.688381132@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,84 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Nikolay Borisov <nborisov@suse.com>
 
-commit dcf500065fabe27676dfe7b4ba521a4f1e0fc8ac upstream.
+commit d3e29967079c522ce1c5cab0e9fab2c280b977eb upstream.
 
-The Broadcom bnxt_ptp driver does not compile with GCC 11.2.2 when
-CONFIG_WERROR is enabled. The following error is generated:
+It's counter-intuitive (and wrong) to put the block group _before_ the
+final usage in submit_eb_page. Fix it by re-ordering the call to
+btrfs_put_block_group after its final reference. Also fix a minor typo
+in 'implies'
 
-drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c: In function ‘bnxt_ptp_enable’:
-drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c:400:43: error: array
-subscript 255 is above array bounds of ‘struct pps_pin[4]’
-[-Werror=array-bounds]
-  400 |  ptp->pps_info.pins[pin_id].event = BNXT_PPS_EVENT_EXTERNAL;
-      |  ~~~~~~~~~~~~~~~~~~^~~~~~~~
-In file included from drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c:20:
-drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h:75:24: note: while
-referencing ‘pins’
-   75 |         struct pps_pin pins[BNXT_MAX_TSIO_PINS];
-      |                        ^~~~
-cc1: all warnings being treated as errors
-
-This is due to the function ptp_find_pin() returning a pin ID of -1 when
-a valid pin is not found and this error never being checked.
-Change the TSIO_PIN_VALID() function to also check that a pin ID is not
-negative and use this macro in bnxt_ptp_enable() to check the result of
-the calls to ptp_find_pin() to return an error early for invalid pins.
-This fixes the compilation error.
-
-Cc: <stable@vger.kernel.org>
-Fixes: 9e518f25802c ("bnxt_en: 1PPS functions to configure TSIO pins")
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Link: https://lore.kernel.org/r/20220328062708.207079-1-damien.lemoal@opensource.wdc.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: be1a1d7a5d24 ("btrfs: zoned: finish fully written block group")
+CC: stable@vger.kernel.org # 5.16+
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Nikolay Borisov <nborisov@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c |    6 +++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |    2 +-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ fs/btrfs/extent_io.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -329,7 +329,7 @@ static int bnxt_ptp_enable(struct ptp_cl
- 	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
- 						ptp_info);
- 	struct bnxt *bp = ptp->bp;
--	u8 pin_id;
-+	int pin_id;
- 	int rc;
- 
- 	switch (rq->type) {
-@@ -337,6 +337,8 @@ static int bnxt_ptp_enable(struct ptp_cl
- 		/* Configure an External PPS IN */
- 		pin_id = ptp_find_pin(ptp->ptp_clock, PTP_PF_EXTTS,
- 				      rq->extts.index);
-+		if (!TSIO_PIN_VALID(pin_id))
-+			return -EOPNOTSUPP;
- 		if (!on)
- 			break;
- 		rc = bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_PPS_IN);
-@@ -350,6 +352,8 @@ static int bnxt_ptp_enable(struct ptp_cl
- 		/* Configure a Periodic PPS OUT */
- 		pin_id = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT,
- 				      rq->perout.index);
-+		if (!TSIO_PIN_VALID(pin_id))
-+			return -EOPNOTSUPP;
- 		if (!on)
- 			break;
- 
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -31,7 +31,7 @@ struct pps_pin {
- 	u8 state;
- };
- 
--#define TSIO_PIN_VALID(pin) ((pin) < (BNXT_MAX_TSIO_PINS))
-+#define TSIO_PIN_VALID(pin) ((pin) >= 0 && (pin) < (BNXT_MAX_TSIO_PINS))
- 
- #define EVENT_DATA2_PPS_EVENT_TYPE(data2)				\
- 	((data2) & ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_EVENT_TYPE)
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -4780,11 +4780,12 @@ static int submit_eb_page(struct page *p
+ 		return ret;
+ 	}
+ 	if (cache) {
+-		/* Impiles write in zoned mode */
+-		btrfs_put_block_group(cache);
+-		/* Mark the last eb in a block group */
++		/*
++		 * Implies write in zoned mode. Mark the last eb in a block group.
++		 */
+ 		if (cache->seq_zone && eb->start + eb->len == cache->zone_capacity)
+ 			set_bit(EXTENT_BUFFER_ZONE_FINISH, &eb->bflags);
++		btrfs_put_block_group(cache);
+ 	}
+ 	ret = write_one_eb(eb, wbc, epd);
+ 	free_extent_buffer(eb);
 
 
