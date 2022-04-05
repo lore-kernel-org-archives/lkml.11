@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBC8C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 433C9C46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351989AbiDELFh (ORCPT
+        id S1352225AbiDELGA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45550 "EHLO
+        Tue, 5 Apr 2022 07:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237569AbiDEImt (ORCPT
+        with ESMTP id S237572AbiDEImt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:42:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DEC2140CB;
-        Tue,  5 Apr 2022 01:35:21 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC3816589;
+        Tue,  5 Apr 2022 01:35:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 009F8B81B92;
-        Tue,  5 Apr 2022 08:35:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60D93C385A1;
-        Tue,  5 Apr 2022 08:35:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0592614E4;
+        Tue,  5 Apr 2022 08:35:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C29BBC385A2;
+        Tue,  5 Apr 2022 08:35:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147718;
-        bh=8QYO2AMThjA538+hdzVx+um+o/IV7h3ewMsPaWlZaLg=;
+        s=korg; t=1649147727;
+        bh=U6NPccItde/lV+Aupb+80yWZKd2ruP1llhPD9xnH5U8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zx5a8AOdIqytBjCCxmeyhL8QRSVd9Htf5rwRQQThW4QMHUQLK9CUcGczdTO297EXA
-         F+tNEA+Rkpks5C4rgFBpDsxxAa3IuJXVnP8IYX+KVNr656W2gEwq7frcwIbGT6kf3o
-         t4NGMLibIdAXxtvKXxhXMFE7bWK2irpyq3W3d9LI=
+        b=Iis+WPexVF9uHGrR2yP/D5lzDJiyy6i8UogRFSqF6nAMqyElmknzQY7/SHoKMHFE3
+         QjzGcttQiveCoYaOPe4qZe0Ek+Bfp/y9uZqA1GF4eVgYH9NmNxFim9pERX0Cq2IGy7
+         TATV6H14Fjm2k6Vj8uPRmMOduB7ErFnaGyaZ0HJ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        stable@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
+        syzbot+0600986d88e2d4d7ebb8@syzkaller.appspotmail.com,
         Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.16 0097/1017] riscv: dts: canaan: Fix SPI3 bus width
-Date:   Tue,  5 Apr 2022 09:16:50 +0200
-Message-Id: <20220405070357.075910805@linuxfoundation.org>
+Subject: [PATCH 5.16 0099/1017] riscv: Increase stack size under KASAN
+Date:   Tue,  5 Apr 2022 09:16:52 +0200
+Message-Id: <20220405070357.135672401@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,85 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Cassel <niklas.cassel@wdc.com>
+From: Dmitry Vyukov <dvyukov@google.com>
 
-commit 6846d656106add3aeefcd6eda0dc885787deaa6e upstream.
+commit b81d591386c3a50b96dddcf663628ea0df0bf2b3 upstream.
 
-According to the K210 Standalone SDK Programming guide:
-https://canaan-creative.com/wp-content/uploads/2020/03/kendryte_standalone_programming_guide_20190311144158_en.pdf
+KASAN requires more stack space because of compiler instrumentation.
+Increase stack size as other arches do.
 
-Section 15.4.3.3:
-SPI0 and SPI1 supports: standard, dual, quad and octal transfers.
-SPI3 supports: standard, dual and quad transfers (octal is not supported).
-
-In order to support quad transfers (Quad SPI), SPI3 must have four IO wires
-connected to the SPI flash.
-
-Update the device tree to specify the correct bus width.
-
-Tested on maix bit, maix dock and maixduino, which all have the same
-SPI flash (gd25lq128d) connected to SPI3. maix go is untested, but it
-would not make sense for this k210 board to be designed differently.
-
-Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Fixes: 8f5b0e79f3e5 ("riscv: Add SiPeed MAIXDUINO board device tree")
-Fixes: 8194f08bda18 ("riscv: Add SiPeed MAIX GO board device tree")
-Fixes: a40f920964c4 ("riscv: Add SiPeed MAIX DOCK board device tree")
-Fixes: 97c279bcf813 ("riscv: Add SiPeed MAIX BiT board device tree")
+Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
+Reported-by: syzbot+0600986d88e2d4d7ebb8@syzkaller.appspotmail.com
+Fixes: 8ad8b72721d0 ("riscv: Add KASAN support")
 Cc: stable@vger.kernel.org
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts  |    2 ++
- arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts |    2 ++
- arch/riscv/boot/dts/canaan/sipeed_maix_go.dts   |    2 ++
- arch/riscv/boot/dts/canaan/sipeed_maixduino.dts |    2 ++
- 4 files changed, 8 insertions(+)
+ arch/riscv/include/asm/thread_info.h |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts
-+++ b/arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts
-@@ -203,6 +203,8 @@
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <50000000>;
-+		spi-tx-bus-width = <4>;
-+		spi-rx-bus-width = <4>;
- 		m25p,fast-read;
- 		broken-flash-reset;
- 	};
---- a/arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts
-+++ b/arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts
-@@ -205,6 +205,8 @@
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <50000000>;
-+		spi-tx-bus-width = <4>;
-+		spi-rx-bus-width = <4>;
- 		m25p,fast-read;
- 		broken-flash-reset;
- 	};
---- a/arch/riscv/boot/dts/canaan/sipeed_maix_go.dts
-+++ b/arch/riscv/boot/dts/canaan/sipeed_maix_go.dts
-@@ -213,6 +213,8 @@
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <50000000>;
-+		spi-tx-bus-width = <4>;
-+		spi-rx-bus-width = <4>;
- 		m25p,fast-read;
- 		broken-flash-reset;
- 	};
---- a/arch/riscv/boot/dts/canaan/sipeed_maixduino.dts
-+++ b/arch/riscv/boot/dts/canaan/sipeed_maixduino.dts
-@@ -178,6 +178,8 @@
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <50000000>;
-+		spi-tx-bus-width = <4>;
-+		spi-rx-bus-width = <4>;
- 		m25p,fast-read;
- 		broken-flash-reset;
- 	};
+--- a/arch/riscv/include/asm/thread_info.h
++++ b/arch/riscv/include/asm/thread_info.h
+@@ -11,11 +11,17 @@
+ #include <asm/page.h>
+ #include <linux/const.h>
+ 
++#ifdef CONFIG_KASAN
++#define KASAN_STACK_ORDER 1
++#else
++#define KASAN_STACK_ORDER 0
++#endif
++
+ /* thread information allocation */
+ #ifdef CONFIG_64BIT
+-#define THREAD_SIZE_ORDER	(2)
++#define THREAD_SIZE_ORDER	(2 + KASAN_STACK_ORDER)
+ #else
+-#define THREAD_SIZE_ORDER	(1)
++#define THREAD_SIZE_ORDER	(1 + KASAN_STACK_ORDER)
+ #endif
+ #define THREAD_SIZE		(PAGE_SIZE << THREAD_SIZE_ORDER)
+ 
 
 
