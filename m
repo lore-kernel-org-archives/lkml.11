@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60091C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C4EC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845529AbiDFBzA (ORCPT
+        id S1845576AbiDFBzD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        Tue, 5 Apr 2022 21:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352823AbiDEKFK (ORCPT
+        with ESMTP id S1349534AbiDEJuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:05:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8886205EB;
-        Tue,  5 Apr 2022 02:53:56 -0700 (PDT)
+        Tue, 5 Apr 2022 05:50:08 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EAF229;
+        Tue,  5 Apr 2022 02:48:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72B56B81B13;
-        Tue,  5 Apr 2022 09:53:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE215C385A2;
-        Tue,  5 Apr 2022 09:53:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AB678CE1C6C;
+        Tue,  5 Apr 2022 09:48:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F12C385A2;
+        Tue,  5 Apr 2022 09:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152434;
-        bh=OjenJG737FwnU9dz57Y47PpcOUtRbaj0pVKRFDqpTfU=;
+        s=korg; t=1649152087;
+        bh=rdP+btfujumuIu3/jnl32qr0EKP44WX3lE/wBICng7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IBnNLeRv8D4yOrcCrUaRPh79K26Gkf6X2OLkD1g5SIvai488RgGAlmLU3VCtDrvGy
-         dlvF0kr2Od+WhugOAbZ/9Yxze1duZT8gXxhEgYRxCLacxbvz6PX3ysGKMIcMwwy8qI
-         qlolX6DNVKhV7Cfnnfyv2IoiTudYKVZGH8RiU9Yw=
+        b=2hurj6fgx/2+w9NsZFd8fLwXKA8xWOhdcdrMqMpU8Yzv7FwUctABnCLuRlO2GUuXj
+         TZY1DWRApUUortzxCF4j9knIjVyoC8GqNPML6J4b/5RQAeF2NVvSQoRI9L8p5Wy78r
+         nmvlLYYCDJuQ92OhINy42+hNGujbSmKXegnmUn7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 774/913] KVM: x86: hyper-v: Drop redundant ex parameter from kvm_hv_send_ipi()
-Date:   Tue,  5 Apr 2022 09:30:36 +0200
-Message-Id: <20220405070403.032251066@linuxfoundation.org>
+        stable@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 649/913] netfilter: nf_conntrack_tcp: preserve liberal flag in tcp options
+Date:   Tue,  5 Apr 2022 09:28:31 +0200
+Message-Id: <20220405070359.292657705@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,60 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 50e523dd79f6a856d793ce5711719abe27cffbf2 upstream.
+[ Upstream commit f2dd495a8d589371289981d5ed33e6873df94ecc ]
 
-'struct kvm_hv_hcall' has all the required information already,
-there's no need to pass 'ex' additionally.
+Do not reset IP_CT_TCP_FLAG_BE_LIBERAL flag in out-of-sync scenarios
+coming before the TCP window tracking, otherwise such connections will
+fail in the window check.
 
-No functional change intended.
+Update tcp_options() to leave this flag in place and add a new helper
+function to reset the tcp window state.
 
-Cc: stable@vger.kernel.org # 5.14.x
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220222154642.684285-2-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Based on patch from Sven Auhagen.
+
+Fixes: c4832c7bbc3f ("netfilter: nf_ct_tcp: improve out-of-sync situation in TCP tracking")
+Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/hyperv.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/netfilter/nf_conntrack_proto_tcp.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1874,7 +1874,7 @@ static void kvm_send_ipi_to_many(struct
- 	}
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index af5115e127cf..3cee5d8ee702 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -341,8 +341,8 @@ static void tcp_options(const struct sk_buff *skb,
+ 	if (!ptr)
+ 		return;
+ 
+-	state->td_scale =
+-	state->flags = 0;
++	state->td_scale = 0;
++	state->flags &= IP_CT_TCP_FLAG_BE_LIBERAL;
+ 
+ 	while (length > 0) {
+ 		int opcode=*ptr++;
+@@ -839,6 +839,16 @@ static bool tcp_can_early_drop(const struct nf_conn *ct)
+ 	return false;
  }
  
--static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc, bool ex)
-+static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- {
- 	struct kvm *kvm = vcpu->kvm;
- 	struct hv_send_ipi_ex send_ipi_ex;
-@@ -1888,7 +1888,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vc
- 	u32 vector;
- 	bool all_cpus;
- 
--	if (!ex) {
-+	if (hc->code == HVCALL_SEND_IPI) {
- 		if (!hc->fast) {
- 			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi,
- 						    sizeof(send_ipi))))
-@@ -2278,14 +2278,14 @@ int kvm_hv_hypercall(struct kvm_vcpu *vc
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
++static void nf_ct_tcp_state_reset(struct ip_ct_tcp_state *state)
++{
++	state->td_end		= 0;
++	state->td_maxend	= 0;
++	state->td_maxwin	= 0;
++	state->td_maxack	= 0;
++	state->td_scale		= 0;
++	state->flags		&= IP_CT_TCP_FLAG_BE_LIBERAL;
++}
++
+ /* Returns verdict for packet, or -1 for invalid. */
+ int nf_conntrack_tcp_packet(struct nf_conn *ct,
+ 			    struct sk_buff *skb,
+@@ -945,8 +955,7 @@ int nf_conntrack_tcp_packet(struct nf_conn *ct,
+ 			ct->proto.tcp.last_flags &= ~IP_CT_EXP_CHALLENGE_ACK;
+ 			ct->proto.tcp.seen[ct->proto.tcp.last_dir].flags =
+ 				ct->proto.tcp.last_flags;
+-			memset(&ct->proto.tcp.seen[dir], 0,
+-			       sizeof(struct ip_ct_tcp_state));
++			nf_ct_tcp_state_reset(&ct->proto.tcp.seen[dir]);
  			break;
  		}
--		ret = kvm_hv_send_ipi(vcpu, &hc, false);
-+		ret = kvm_hv_send_ipi(vcpu, &hc);
- 		break;
- 	case HVCALL_SEND_IPI_EX:
- 		if (unlikely(hc.fast || hc.rep)) {
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
- 			break;
- 		}
--		ret = kvm_hv_send_ipi(vcpu, &hc, true);
-+		ret = kvm_hv_send_ipi(vcpu, &hc);
- 		break;
- 	case HVCALL_POST_DEBUG_DATA:
- 	case HVCALL_RETRIEVE_DEBUG_DATA:
+ 		ct->proto.tcp.last_index = index;
+-- 
+2.34.1
+
 
 
