@@ -2,110 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF379C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB36C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbiDECV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58908 "EHLO
+        id S229682AbiDECWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbiDECVy (ORCPT
+        with ESMTP id S229666AbiDECWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:21:54 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC8A41856B;
-        Mon,  4 Apr 2022 18:17:08 -0700 (PDT)
-Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 2351D5xo003801;
-        Tue, 5 Apr 2022 10:13:05 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 2351D5xo003801
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649121185;
-        bh=1XB8+03FMw6quXMbGDHBGH2OtifIRC6gyEDeKLl9zco=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fykuV1TsMj3k9Ws57DHlBBiTRfCJLa78wHm24isrFs0OYjWLYXMwTpBYPIq4cXIEn
-         HbOl44nWGcfnHr7bWwaB7WnXkTOOfHkk6+jdAmUjgu4Ndoevp2LwXY3h4udSNspNqP
-         vqdDv5VRBBqCoS/VT7h39RpohTeG1pg896jeODp9E4NQh+Sd78v12Z6++gJ6PnlzYP
-         L8It+ZYbHlhIJWQ1iMWnGF8CYqvynrJxAFL6w72QZb8r+++bKVfZ+kTyvQYYPvSiCM
-         SzCvzpqI0sJxlfL/s/jJtSPm/hmJCMC5Aqg82tgHAACtvpK/A51PmBOuRL2dfZPuBp
-         hO3NWsHy8f70Q==
-X-Nifty-SrcIP: [209.85.215.172]
-Received: by mail-pg1-f172.google.com with SMTP id 125so1420894pgc.11;
-        Mon, 04 Apr 2022 18:13:05 -0700 (PDT)
-X-Gm-Message-State: AOAM532dgC25C3ebR1RXPtQl+w0G1FdAUP3WmD0agZ99S01hrjQrrqMB
-        ByahInHY5xGkqtG0ZhB/KcTO780LNK6GweZnrUk=
-X-Google-Smtp-Source: ABdhPJzLBjj4278xvNykiD3w2yfsWF6xRsbcL3Ms+s4YFFRyIBmJxQbqTeWwwPYUkRsLo2sjYt6EdjjfGmwkd6VfZgE=
-X-Received: by 2002:a05:6a00:234f:b0:4fa:f52b:46a1 with SMTP id
- j15-20020a056a00234f00b004faf52b46a1mr1137771pfj.32.1649121184875; Mon, 04
- Apr 2022 18:13:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220404061948.2111820-1-masahiroy@kernel.org>
- <20220404061948.2111820-3-masahiroy@kernel.org> <YkqhQhJIQEL2qh8C@infradead.org>
- <YkssI2uDHRq41zjw@google.com>
-In-Reply-To: <YkssI2uDHRq41zjw@google.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 5 Apr 2022 10:12:17 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQDD4u5acyG7m4mziz-nz3D2u+ukdZZB+jZah_3JZFMTQ@mail.gmail.com>
-Message-ID: <CAK7LNAQDD4u5acyG7m4mziz-nz3D2u+ukdZZB+jZah_3JZFMTQ@mail.gmail.com>
-Subject: Re: [PATCH 2/8] kbuild: prevent exported headers from including
- <stdlib.h>, <stdbool.h>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 4 Apr 2022 22:22:37 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2231F71A2C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:17:36 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id b188so11875809oia.13
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:17:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IYK3K9Qzm8D7qoFu9FVNO7TkU85kFi6QdHt/GErFbBQ=;
+        b=IQD+x35fF25Pz8QsjrzaiGqr+OrPtU2AEXaT+5jVjPtiyLsJYfHE07knAkxhy0OkK5
+         SSBbSCqNCoRFSZ0ox+W10cBtf5dmrX4rwZdYnEEOw/N/4sNbJEa9qrgwGRwhxbIco8GY
+         IKK8KtkHlZR+0DjZ25Vvm+vF4wedAP1E0rs0EQKlBriCV7zuNT0wZJjszp5yq5AFv2co
+         nJpZc7HAovnqs4v1+UA791eiDoHZkKqYndP6gy88IwUUoPo9+8esFVmVrXrx4i1Vm6XY
+         OwJyg41wJJeYytAwrW1ajYcZvDUE3TR2PX+w+ihYayWZy3xNote9eGFH4GHAIfewCcYR
+         Mp1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=IYK3K9Qzm8D7qoFu9FVNO7TkU85kFi6QdHt/GErFbBQ=;
+        b=e1W5g/RbihybHh7lNb5mKqJ1JR0KH0xlbbU5yIUhOyqzK9VN2r3+T3rQLpH2SlTP04
+         caOD5DSKDqc1zDeHVW9Rdx4IxUJWIrKCVmY86q99XGaHcD5gQXRq8TRFGehwUouhzv0/
+         G8inxAJYmMTMngFDbpGO+zjJvwgx3ZccYcRxKbde1WIYwr/WsPzYh/5lfcZI99lxjiJj
+         X3Krrsla0ldPse3s0pDLweXX/ddadWth4bAkqDSOZlMjgvuAf3MdaR8zNhfeIJFAPRCW
+         i8C01tWTCFbCXi+qX3gl/Quk8CJQsifAY6UPTQLib6bgokXOMcaW16k5faUZffHYQ7cL
+         Ay3Q==
+X-Gm-Message-State: AOAM532Dodtg14/0HQSw3CuSHE+UBusvwrQvUl0RNxUklMu+LqjuIIi+
+        xBakRncSVmTIkMPYTQlrDXZEqA8ljyzPMg==
+X-Google-Smtp-Source: ABdhPJzml31dkYouSC4L26dpRKz7DxXfFMkmyars/Rma+Ccuzdev21G3/VPOlitgjCa7LjCLFR5vsg==
+X-Received: by 2002:a17:90a:7d10:b0:1c9:7939:c70 with SMTP id g16-20020a17090a7d1000b001c979390c70mr1051208pjl.203.1649119389101;
+        Mon, 04 Apr 2022 17:43:09 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id a17-20020a62e211000000b004faa5233213sm12619660pfi.101.2022.04.04.17.43.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 17:43:08 -0700 (PDT)
+Date:   Mon, 04 Apr 2022 17:43:08 -0700 (PDT)
+X-Google-Original-Date: Mon, 04 Apr 2022 17:43:07 PDT (-0700)
+Subject:     Re: [PATCH] habanalabs: Elide a warning on 32-bit targets
+In-Reply-To: <YksIkY0l8k7mmnzJ@kroah.com>
+CC:     ogabbay@kernel.org, linux-riscv@lists.infradead.org,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        osharabi@habana.ai
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Message-ID: <mhng-2927288f-0f89-4f03-b3a2-35b92fd9d51e@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 2:34 AM Nick Desaulniers <ndesaulniers@google.com> wrote:
+On Mon, 04 Apr 2022 08:02:41 PDT (-0700), Greg KH wrote:
+> On Fri, Apr 01, 2022 at 11:36:53AM -0700, Palmer Dabbelt wrote:
+>> On Fri, 01 Apr 2022 11:13:48 PDT (-0700), ogabbay@kernel.org wrote:
+>> > On Fri, Apr 1, 2022 at 7:41 PM Palmer Dabbelt <palmer@rivosinc.com> wrote:
+>> > >
+>> > > From: Palmer Dabbelt <palmer@rivosinc.com>
+>> > >
+>> > > This double-cast pattern looks a bit awkward, but it already exists
+>> > > elsewhere in the driver.  Without this patch I get
+>> > >
+>> > > drivers/misc/habanalabs/common/memory.c: In function ‘alloc_device_memory’:
+>> > > drivers/misc/habanalabs/common/memory.c:153:49: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+>> > >   153 |                                                 (u64) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+>> > >       |                                                 ^
+>> > >
+>> > > which ends up promoted to a build error in my test setup.
+>> > >
+>> > > Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>> > >
+>> > > ---
+>> > >
+>> > > I don't know anything about this driver, I'm just pattern-matching the
+>> > > warning away.
+>> > > ---
+>> > >  drivers/misc/habanalabs/common/memory.c | 10 +++++-----
+>> > >  1 file changed, 5 insertions(+), 5 deletions(-)
+>> > >
+>> > > diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
+>> > > index e008d82e4ba3..f1fc79c1fc10 100644
+>> > > --- a/drivers/misc/habanalabs/common/memory.c
+>> > > +++ b/drivers/misc/habanalabs/common/memory.c
+>> > > @@ -150,12 +150,12 @@ static int alloc_device_memory(struct hl_ctx *ctx, struct hl_mem_in *args,
+>> > >                 for (i = 0 ; i < num_pgs ; i++) {
+>> > >                         if (is_power_of_2(page_size))
+>> > >                                 phys_pg_pack->pages[i] =
+>> > > -                                               (u64) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+>> > > -                                                                               page_size, NULL,
+>> > > -                                                                               page_size);
+>> > > +                                               (u64) (uintptr_t) gen_pool_dma_alloc_align(vm->dram_pg_pool,
+>> > > +                                                                                          page_size, NULL,
+>> > > +                                                                                          page_size);
+>> > >                         else
+>> > > -                               phys_pg_pack->pages[i] = (u64) gen_pool_alloc(vm->dram_pg_pool,
+>> > > -                                                                               page_size);
+>> > > +                               phys_pg_pack->pages[i] = (u64) (uintptr_t) gen_pool_alloc(vm->dram_pg_pool,
+>> > > +                                                                                         page_size);
+>> > >                         if (!phys_pg_pack->pages[i]) {
+>> > >                                 dev_err(hdev->dev,
+>> > >                                         "Failed to allocate device memory (out of memory)\n");
+>> > > --
+>> > > 2.34.1
+>> > >
+>> >
+>> > This patch is:
+>> > Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+>> >
+>> > Greg,
+>> > Could you please apply this directly to your misc tree and send it to
+>> > Linus at your next pull request ?
+>> > I don't have any other fixes pending for 5.18.
+>> >
+>> > For 5.19 we will do a more elegant solution that Arnd has recommended.
+>>
+>> Thanks.
+>>
+>> Assuming this is too late for rc1, would it be possibe to have it in
+>> something I can take into my fixes/for-next without too much diff?  I put
+>> this on top of the offending commit with a
+>>
+>> Fixes: e8458e20e0a3 ("habanalabs: make sure device mem alloc is page aligned")
+>>
+>> at kernel.org/palmer/habana , if that helps any.  No big deal if it goes in
+>> another way, it's just nice to keep allyesconfig building on my branches
+>> directly.
 >
-> On Mon, Apr 04, 2022 at 12:41:54AM -0700, Christoph Hellwig wrote:
-> > On Mon, Apr 04, 2022 at 03:19:42PM +0900, Masahiro Yamada wrote:
-> > > If we can make kernel headers self-contained (that is, none of exported
-> > > kernel headers includes system headers), we will be able to add the
-> > > -nostdinc flag, but that is much far from where we stand now.
->
-> This is something I'd like to see done. IMO, the kernel headers should
-> be the independent variable of which the libc is the dependendent
-> variable.
->
-> Android's libc, Bionic, is making use of the UAPI headers. They are
-> doing some rewriting of UAPI headers, but I'd like to see what needs to
-> be upstreamed from there. I just noticed
-> include/uapi/linux/libc-compat.h, which seems like a good place for such
-> compat related issues.
->
-> In particular, having UAPI_HEADER_TESTS depend on CC_CAN_LINK is
-> something I think we can works towards removing. The header tests
-> themselves don't link; they force a dependency on a prebuilt libc
-> sysroot, and they only need the headers from the sysroot because of this
-> existing circular dependency between kernel headers and libc headers.
->
-> I'd be happy to be explicitly cc'ed on changes like this series, going
-> forward. Masahiro, if there's parts you'd like me to help with besides
-> just code review, please let me know how I can help.
+> Looks like Guenter sent in a "more complete" version of this.  I'll
+> queue it up to my tree and get it to Linus for -rc2.
 
+I'm fine with anything here, as long as it fixes my build errors ;).
 
-I wanted to make uapi headers as self-contained as possible,
-but I did not see much progress.
-
-I just fixed up some low-hanging fruits, but there are still
-many remaining issues.
-
-Thank you very much for your contribution:
-https://lore.kernel.org/all/20220404175448.46200-1-ndesaulniers@google.com/
-
-If you eliminate other issues, that would be appreciated.
-
-
-> >
-> > What is still missing for that?
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Do you mind giving me a pointer?  That way I can use exactly what's 
+going upstream, rather that keeping around this now-dead-end diff (I 
+poked around your kernel.org trees and couldn't find anything, but I've 
+not done that before).
