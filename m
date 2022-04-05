@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE12BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DCBC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358540AbiDEPMg (ORCPT
+        id S1376436AbiDEPMp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50228 "EHLO
+        Tue, 5 Apr 2022 11:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346147AbiDEJob (ORCPT
+        with ESMTP id S1345636AbiDEJnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:44:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF876C748E;
-        Tue,  5 Apr 2022 02:30:10 -0700 (PDT)
+        Tue, 5 Apr 2022 05:43:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A447C4E1B;
+        Tue,  5 Apr 2022 02:29:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4057861675;
-        Tue,  5 Apr 2022 09:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CE3BC385A2;
-        Tue,  5 Apr 2022 09:30:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58455616D2;
+        Tue,  5 Apr 2022 09:29:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68486C385A0;
+        Tue,  5 Apr 2022 09:29:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151009;
-        bh=6rWeWZOC3ktBYreoC88HJB7ZluW+5NlAEBSobv0dqyQ=;
+        s=korg; t=1649150962;
+        bh=C89ZJw/w30s5nJwuI+SqP0Mv4XWo5ly++QaLGXUhdg4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LH/KOVgNA9Zv1eLQ8pxR+esJImevx5PiRSvp4HIB5U4XrK2+Tzc3fyBFfJWSUwuS6
-         uLGHznhzfOw4WhT+8TtEIkPQwJA2gm8rK0Pf/JD14JwJs73WMCoBBQRrnupPmYwbW+
-         C+UTmy0p0rCKqffdw4/BByqnONiqZqYGU6QCpAfA=
+        b=BcgIdu5qUXNH+AsFdw/QlP31raoyyh/D9+bw6SGV9YiJdHBNPwu00jcbP1ySPHBzp
+         kGTDWiswpAYKZ343mdHXEx8Ahyc2gu/7VPZ5u0b9ahrf58B4xqSsPzJakf6mwQDhTn
+         QlxQhmATDEdL26v4d3IDCxcfie7T0PEWPDv1kPNQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Michal Hocko <mhocko@suse.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 262/913] drivers/base/memory: add memory block to memory group after registration succeeded
-Date:   Tue,  5 Apr 2022 09:22:04 +0200
-Message-Id: <20220405070347.710149757@linuxfoundation.org>
+        stable@vger.kernel.org, Joel Jaeschke <joel.jaeschke@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 243/913] io_uring: terminate manual loop iterator loop correctly for non-vecs
+Date:   Tue,  5 Apr 2022 09:21:45 +0200
+Message-Id: <20220405070347.141374452@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -54,55 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Hildenbrand <david@redhat.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit 7ea0d2d79da09d1f7d71c96a9c9bc1b5229360b5 ]
+[ Upstream commit 5e929367468c8f97cd1ffb0417316cecfebef94b ]
 
-If register_memory() fails, we freed the memory block but already added
-the memory block to the group list, not good.  Let's defer adding the
-block to the memory group to after registering the memory block device.
+The fix for not advancing the iterator if we're using fixed buffers is
+broken in that it can hit a condition where we don't terminate the loop.
+This results in io-wq looping forever, asking to read (or write) 0 bytes
+for every subsequent loop.
 
-We do handle it properly during unregister_memory(), but that's not
-called when the registration fails.
-
-Link: https://lkml.kernel.org/r/20220128144540.153902-1-david@redhat.com
-Fixes: 028fc57a1c36 ("drivers/base/memory: introduce "memory groups" to logically group memory blocks")
-Signed-off-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Joel Jaeschke <joel.jaeschke@gmail.com>
+Link: https://github.com/axboe/liburing/issues/549
+Fixes: 16c8d2df7ec0 ("io_uring: ensure symmetry in handling iter types in loop_rw_iter()")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/memory.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/io_uring.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index 365cd4a7f239..60c38f9cf1a7 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -663,14 +663,16 @@ static int init_memory_block(unsigned long block_id, unsigned long state,
- 	mem->nr_vmemmap_pages = nr_vmemmap_pages;
- 	INIT_LIST_HEAD(&mem->group_next);
- 
-+	ret = register_memory(mem);
-+	if (ret)
-+		return ret;
-+
- 	if (group) {
- 		mem->group = group;
- 		list_add(&mem->group_next, &group->memory_blocks);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 70e85f64dc38..ec0b50940405 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -3319,13 +3319,15 @@ static ssize_t loop_rw_iter(int rw, struct io_kiocb *req, struct iov_iter *iter)
+ 				ret = nr;
+ 			break;
+ 		}
++		ret += nr;
+ 		if (!iov_iter_is_bvec(iter)) {
+ 			iov_iter_advance(iter, nr);
+ 		} else {
+-			req->rw.len -= nr;
+ 			req->rw.addr += nr;
++			req->rw.len -= nr;
++			if (!req->rw.len)
++				break;
+ 		}
+-		ret += nr;
+ 		if (nr != iovec.iov_len)
+ 			break;
  	}
- 
--	ret = register_memory(mem);
--
--	return ret;
-+	return 0;
- }
- 
- static int add_memory_block(unsigned long base_section_nr)
 -- 
 2.34.1
 
