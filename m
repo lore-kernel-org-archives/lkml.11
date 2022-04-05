@@ -2,155 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E850C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B14C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580139AbiDEXeC (ORCPT
+        id S1580105AbiDEXd5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
+        Tue, 5 Apr 2022 19:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382393AbiDEMPE (ORCPT
+        with ESMTP id S1349054AbiDEJtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:15:04 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73843B8211;
-        Tue,  5 Apr 2022 04:25:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649157936; x=1680693936;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ioal/KUBbdxMkJnA+gxPguV8rV4ionWp+UmNMFGaWwU=;
-  b=cAVnzm4qQ/Y2JFyg7QnHk05U+tgxk/OEez9lTO3J04YJ2CtlmiGwxiDw
-   72CzzH9uwLlE6dPP1zggUhIcjSBA8082VQ5slM34eMlV8Dk1td6GGeOjB
-   fIz/xeqpr1mWp/Ct9ETtGIdZVmSglpnyW2ZhxpgjUoeNwLXaGQwQrC7Zm
-   pnT+d5hKBcQKfAa6DhxWJgYVPkUZO2BzmYLXmpcZE6AvPunyLWBaEgKyE
-   GbwMMTnuj88Muu012GvIHrrCP6tYalEy3L0XSIJOeg1EQ8ZGbx3BpEyGi
-   Ukmn7rj9bFkpzMNNgxwy9Rx2a7t3AsBIpPuQ55iEJTCtci+IIhu7PFFtT
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
-   d="scan'208";a="159346905"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Apr 2022 04:25:35 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 5 Apr 2022 04:25:35 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 5 Apr 2022 04:25:32 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
-        <sre@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 5/8] power: reset: at91-reset: add at91_reset_data
-Date:   Tue, 5 Apr 2022 14:27:21 +0300
-Message-ID: <20220405112724.2760905-6-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
-References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+        Tue, 5 Apr 2022 05:49:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A296DA94E4;
+        Tue,  5 Apr 2022 02:39:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5192BB81C14;
+        Tue,  5 Apr 2022 09:39:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C97CC385A2;
+        Tue,  5 Apr 2022 09:39:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151559;
+        bh=o7C32F3i+PJr0RVLaJ/A++tomV2VND/4bsNJ7OCF4as=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AwU4FkACMVkRBMc6gB9LI2v7p6xZnPCnfG7w4KRoWiq30S57/GfUO60gGvlk6/bNh
+         ZoF5P6+/36HuNaPIYTQvYoIaBfnnyDcwEKzWVTMWTUuX1z1GeQJvEhNvTy9gZNdZse
+         x1KzgkeZFRKzMYOIKhUySYczEnaUoW2MD7/l5TeA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 452/913] HID: i2c-hid: fix GET/SET_REPORT for unnumbered reports
+Date:   Tue,  5 Apr 2022 09:25:14 +0200
+Message-Id: <20220405070353.397482580@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add struct at91_reset_data to keep per platform related information.
-This is a prerequisite for adding reset_controller_dev support.
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+[ Upstream commit a5e5e03e94764148a01757b2fa4737d3445c13a6 ]
+
+Internally kernel prepends all report buffers, for both numbered and
+unnumbered reports, with report ID, therefore to properly handle unnumbered
+reports we should prepend it ourselves.
+
+For the same reason we should skip the first byte of the buffer when
+calling i2c_hid_set_or_send_report() which then will take care of properly
+formatting the transfer buffer based on its separate report ID argument
+along with report payload.
+
+[jkosina@suse.cz: finalize trimmed sentence in changelog as spotted by Benjamin]
+Fixes: 9b5a9ae88573 ("HID: i2c-hid: implement ll_driver transport-layer callbacks")
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/reset/at91-reset.c | 33 +++++++++++++++++++++++---------
- 1 file changed, 24 insertions(+), 9 deletions(-)
+ drivers/hid/i2c-hid/i2c-hid-core.c | 32 ++++++++++++++++++++++--------
+ 1 file changed, 24 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
-index 64def79d557a..0d721e27f545 100644
---- a/drivers/power/reset/at91-reset.c
-+++ b/drivers/power/reset/at91-reset.c
-@@ -59,6 +59,11 @@ struct at91_reset {
- 	u32 ramc_lpr;
- };
+diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
+index 4804d71e5293..65c1f20ec420 100644
+--- a/drivers/hid/i2c-hid/i2c-hid-core.c
++++ b/drivers/hid/i2c-hid/i2c-hid-core.c
+@@ -615,6 +615,17 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
+ 	if (report_type == HID_OUTPUT_REPORT)
+ 		return -EINVAL;
  
-+struct at91_reset_data {
-+	u32 reset_args;
-+	u32 n_device_reset;
-+};
++	/*
++	 * In case of unnumbered reports the response from the device will
++	 * not have the report ID that the upper layers expect, so we need
++	 * to stash it the buffer ourselves and adjust the data size.
++	 */
++	if (!report_number) {
++		buf[0] = 0;
++		buf++;
++		count--;
++	}
 +
- /*
- * unless the SDRAM is cleanly shutdown before we hit the
- * reset register it can be left driving the data bus and
-@@ -153,29 +158,34 @@ static const struct of_device_id at91_ramc_of_match[] = {
- 	{ /* sentinel */ }
- };
+ 	/* +2 bytes to include the size of the reply in the query buffer */
+ 	ask_count = min(count + 2, (size_t)ihid->bufsize);
  
-+static const struct at91_reset_data sam9260 = {
-+	.reset_args = AT91_RSTC_KEY | AT91_RSTC_PERRST | AT91_RSTC_PROCRST,
-+};
-+
-+static const struct at91_reset_data samx7 = {
-+	.reset_args = AT91_RSTC_KEY | AT91_RSTC_PROCRST,
-+};
-+
- static const struct of_device_id at91_reset_of_match[] = {
- 	{
- 		.compatible = "atmel,at91sam9260-rstc",
--		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
--				 AT91_RSTC_PROCRST),
-+		.data = &sam9260,
- 	},
- 	{
- 		.compatible = "atmel,at91sam9g45-rstc",
--		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
--				 AT91_RSTC_PROCRST)
-+		.data = &sam9260,
- 	},
- 	{
- 		.compatible = "atmel,sama5d3-rstc",
--		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PERRST |
--				 AT91_RSTC_PROCRST)
-+		.data = &sam9260,
- 	},
- 	{
- 		.compatible = "atmel,samx7-rstc",
--		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PROCRST)
-+		.data = &samx7,
- 	},
- 	{
- 		.compatible = "microchip,sam9x60-rstc",
--		.data = (void *)(AT91_RSTC_KEY | AT91_RSTC_PROCRST)
-+		.data = &samx7,
- 	},
- 	{ /* sentinel */ }
- };
-@@ -184,6 +194,7 @@ MODULE_DEVICE_TABLE(of, at91_reset_of_match);
- static int __init at91_reset_probe(struct platform_device *pdev)
- {
- 	const struct of_device_id *match;
-+	const struct at91_reset_data *data;
- 	struct at91_reset *reset;
- 	struct device_node *np;
- 	int ret, idx = 0;
-@@ -213,9 +224,13 @@ static int __init at91_reset_probe(struct platform_device *pdev)
- 	}
+@@ -636,6 +647,9 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
+ 	count = min(count, ret_count - 2);
+ 	memcpy(buf, ihid->rawbuf + 2, count);
  
- 	match = of_match_node(at91_reset_of_match, pdev->dev.of_node);
-+	if (!match || !match->data)
-+		return -ENODEV;
++	if (!report_number)
++		count++;
 +
-+	data = match->data;
- 	reset->nb.notifier_call = at91_reset;
- 	reset->nb.priority = 192;
--	reset->args = (u32)match->data;
-+	reset->args = data->reset_args;
+ 	return count;
+ }
  
- 	reset->sclk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(reset->sclk))
+@@ -652,17 +666,19 @@ static int i2c_hid_output_raw_report(struct hid_device *hid, __u8 *buf,
+ 
+ 	mutex_lock(&ihid->reset_lock);
+ 
+-	if (report_id) {
+-		buf++;
+-		count--;
+-	}
+-
++	/*
++	 * Note that both numbered and unnumbered reports passed here
++	 * are supposed to have report ID stored in the 1st byte of the
++	 * buffer, so we strip it off unconditionally before passing payload
++	 * to i2c_hid_set_or_send_report which takes care of encoding
++	 * everything properly.
++	 */
+ 	ret = i2c_hid_set_or_send_report(client,
+ 				report_type == HID_FEATURE_REPORT ? 0x03 : 0x02,
+-				report_id, buf, count, use_data);
++				report_id, buf + 1, count - 1, use_data);
+ 
+-	if (report_id && ret >= 0)
+-		ret++; /* add report_id to the number of transfered bytes */
++	if (ret >= 0)
++		ret++; /* add report_id to the number of transferred bytes */
+ 
+ 	mutex_unlock(&ihid->reset_lock);
+ 
 -- 
-2.32.0
+2.34.1
+
+
 
