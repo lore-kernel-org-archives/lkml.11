@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B4EC47084
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15384C38161
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379840AbiDEMx0 (ORCPT
+        id S1380144AbiDEMxl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        Tue, 5 Apr 2022 08:53:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245717AbiDEJMM (ORCPT
+        with ESMTP id S1343764AbiDEJMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:12:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CB72656A;
-        Tue,  5 Apr 2022 02:00:11 -0700 (PDT)
+        Tue, 5 Apr 2022 05:12:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911B8275EF;
+        Tue,  5 Apr 2022 02:00:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5196E61572;
-        Tue,  5 Apr 2022 09:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A71CC385A0;
-        Tue,  5 Apr 2022 09:00:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E3C2B818F3;
+        Tue,  5 Apr 2022 09:00:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93916C385A0;
+        Tue,  5 Apr 2022 09:00:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149210;
-        bh=Cipu5dWvA4Fcfg5SJvwbNaPMyLdpjhlldvr5qdKcBmo=;
+        s=korg; t=1649149225;
+        bh=E0sTsnsfYNAoV+LlZ2QFM+Pw4k3Bo2wovI1KqqBQ/KE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KstjAr5ybHDHJF4+xQ1TMOFH5nCxI5Tnydp7I7oVp2ldmegfZf5S2mMsGCOWac+QZ
-         w0/vMLTl6UIrjR+DptCHieYN5IvqyPvxemgRiwuiAhOhgk/cjW5Ehu93iB5EVP/CvN
-         xtR/VUrR0tkoczOZ0RGQQdWle9U9N86ahHIrP80M=
+        b=kJQ5oAw3H+Y9Ygm+wKVtWDC/nEbnMoVNj0X6+l8NN68KCPF+W3hOhw83/J/5eIuM5
+         r8Jfn+9HThNzLY5QC8c4nNsceu9qdaeJ2PQwgILjBTacAV9WyJg8vru+JTABFR2eF0
+         3hNPxvzVlxsYJHcsCFxqX0pSbqIVdc6naoixT10Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        David Hildenbrand <david@redhat.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0597/1017] Revert "RDMA/core: Fix ib_qp_usecnt_dec() called when error"
-Date:   Tue,  5 Apr 2022 09:25:10 +0200
-Message-Id: <20220405070411.998553080@linuxfoundation.org>
+Subject: [PATCH 5.16 0640/1017] kernel/resource: fix kfree() of bootmem memory again
+Date:   Tue,  5 Apr 2022 09:25:53 +0200
+Message-Id: <20220405070413.279967331@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,101 +54,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit 7922d3de4d270a9aedb71212fc0d5ae697ced516 ]
+[ Upstream commit 0cbcc92917c5de80f15c24d033566539ad696892 ]
 
-This reverts commit 7c4a539ec38f4ce400a0f3fcb5ff6c940fcd67bb. which causes
-to the following error in mlx4.
+Since commit ebff7d8f270d ("mem hotunplug: fix kfree() of bootmem
+memory"), we could get a resource allocated during boot via
+alloc_resource().  And it's required to release the resource using
+free_resource().  Howerver, many people use kfree directly which will
+result in kernel BUG.  In order to fix this without fixing every call
+site, just leak a couple of bytes in such corner case.
 
-  Destroy of kernel CQ shouldn't fail
-  WARNING: CPU: 4 PID: 18064 at include/rdma/ib_verbs.h:3936 mlx4_ib_dealloc_xrcd+0x12e/0x1b0 [mlx4_ib]
-  Modules linked in: bonding ib_ipoib ip_gre ipip tunnel4 geneve rdma_ucm nf_tables ib_umad mlx4_en mlx4_ib ib_uverbs mlx4_core ip6_gre gre ip6_tunnel tunnel6 iptable_raw openvswitch nsh rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay fuse [last unloaded: mlx4_core]
-  CPU: 4 PID: 18064 Comm: ibv_xsrq_pingpo Not tainted 5.17.0-rc7_master_62c6ecb #1
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-  RIP: 0010:mlx4_ib_dealloc_xrcd+0x12e/0x1b0 [mlx4_ib]
-  Code: 1e 93 08 00 40 80 fd 01 0f 87 fa f1 04 00 83 e5 01 0f 85 2b ff ff ff 48 c7 c7 20 4f b6 a0 c6 05 fd 92 08 00 01 e8 47 c9 82 e2 <0f> 0b e9 11 ff ff ff 0f b6 2d eb 92 08 00 40 80 fd 01 0f 87 b1 f1
-  RSP: 0018:ffff8881a4957750 EFLAGS: 00010286
-  RAX: 0000000000000000 RBX: ffff8881ac4b6800 RCX: 0000000000000000
-  RDX: 0000000000000027 RSI: 0000000000000004 RDI: ffffed103492aedc
-  RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8884d2e378eb
-  R10: ffffed109a5c6f1d R11: 0000000000000001 R12: ffff888132620000
-  R13: ffff8881a4957a90 R14: ffff8881aa2d4000 R15: ffff8881a4957ad0
-  FS:  00007f0401747740(0000) GS:ffff8884d2e00000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 000055f8ae036118 CR3: 000000012fe94005 CR4: 0000000000370ea0
-  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-  Call Trace:
-   <TASK>
-   ib_dealloc_xrcd_user+0xce/0x120 [ib_core]
-   ib_uverbs_dealloc_xrcd+0xad/0x210 [ib_uverbs]
-   uverbs_free_xrcd+0xe8/0x190 [ib_uverbs]
-   destroy_hw_idr_uobject+0x7a/0x130 [ib_uverbs]
-   uverbs_destroy_uobject+0x164/0x730 [ib_uverbs]
-   uobj_destroy+0x72/0xf0 [ib_uverbs]
-   ib_uverbs_cmd_verbs+0x19fb/0x3110 [ib_uverbs]
-   ib_uverbs_ioctl+0x169/0x260 [ib_uverbs]
-   __x64_sys_ioctl+0x856/0x1550
-   do_syscall_64+0x3d/0x90
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: 7c4a539ec38f ("RDMA/core: Fix ib_qp_usecnt_dec() called when error")
-Link: https://lore.kernel.org/r/74c11029adaf449b3b9228a77cc82f39e9e892c8.1646851220.git.leonro@nvidia.com
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lkml.kernel.org/r/20220217083619.19305-1-linmiaohe@huawei.com
+Fixes: ebff7d8f270d ("mem hotunplug: fix kfree() of bootmem memory")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Suggested-by: David Hildenbrand <david@redhat.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Alistair Popple <apopple@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/uverbs_cmd.c          | 1 +
- drivers/infiniband/core/uverbs_std_types_qp.c | 1 +
- drivers/infiniband/core/verbs.c               | 3 ++-
- 3 files changed, 4 insertions(+), 1 deletion(-)
+ kernel/resource.c | 41 ++++++++---------------------------------
+ 1 file changed, 8 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
-index 5a99e31df5f5..d1345d76d9b1 100644
---- a/drivers/infiniband/core/uverbs_cmd.c
-+++ b/drivers/infiniband/core/uverbs_cmd.c
-@@ -1438,6 +1438,7 @@ static int create_qp(struct uverbs_attr_bundle *attrs,
- 		ret = PTR_ERR(qp);
- 		goto err_put;
- 	}
-+	ib_qp_usecnt_inc(qp);
+diff --git a/kernel/resource.c b/kernel/resource.c
+index 5ad3eba619ba..092a6154371b 100644
+--- a/kernel/resource.c
++++ b/kernel/resource.c
+@@ -56,14 +56,6 @@ struct resource_constraint {
  
- 	obj->uevent.uobject.object = qp;
- 	obj->uevent.event_file = READ_ONCE(attrs->ufile->default_async_file);
-diff --git a/drivers/infiniband/core/uverbs_std_types_qp.c b/drivers/infiniband/core/uverbs_std_types_qp.c
-index 75353e09c6fe..dd1075466f61 100644
---- a/drivers/infiniband/core/uverbs_std_types_qp.c
-+++ b/drivers/infiniband/core/uverbs_std_types_qp.c
-@@ -254,6 +254,7 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QP_CREATE)(
- 		ret = PTR_ERR(qp);
- 		goto err_put;
- 	}
-+	ib_qp_usecnt_inc(qp);
+ static DEFINE_RWLOCK(resource_lock);
  
- 	if (attr.qp_type == IB_QPT_XRC_TGT) {
- 		obj->uxrcd = container_of(xrcd_uobj, struct ib_uxrcd_object,
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 961055eb330d..e821dc94a43e 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -1253,7 +1253,6 @@ static struct ib_qp *create_qp(struct ib_device *dev, struct ib_pd *pd,
- 	if (ret)
- 		goto err_security;
+-/*
+- * For memory hotplug, there is no way to free resource entries allocated
+- * by boot mem after the system is up. So for reusing the resource entry
+- * we need to remember the resource.
+- */
+-static struct resource *bootmem_resource_free;
+-static DEFINE_SPINLOCK(bootmem_resource_lock);
+-
+ static struct resource *next_resource(struct resource *p)
+ {
+ 	if (p->child)
+@@ -160,36 +152,19 @@ __initcall(ioresources_init);
  
--	ib_qp_usecnt_inc(qp);
- 	rdma_restrack_add(&qp->res);
- 	return qp;
+ static void free_resource(struct resource *res)
+ {
+-	if (!res)
+-		return;
+-
+-	if (!PageSlab(virt_to_head_page(res))) {
+-		spin_lock(&bootmem_resource_lock);
+-		res->sibling = bootmem_resource_free;
+-		bootmem_resource_free = res;
+-		spin_unlock(&bootmem_resource_lock);
+-	} else {
++	/**
++	 * If the resource was allocated using memblock early during boot
++	 * we'll leak it here: we can only return full pages back to the
++	 * buddy and trying to be smart and reusing them eventually in
++	 * alloc_resource() overcomplicates resource handling.
++	 */
++	if (res && PageSlab(virt_to_head_page(res)))
+ 		kfree(res);
+-	}
+ }
  
-@@ -1354,6 +1353,8 @@ struct ib_qp *ib_create_qp_kernel(struct ib_pd *pd,
- 	if (IS_ERR(qp))
- 		return qp;
+ static struct resource *alloc_resource(gfp_t flags)
+ {
+-	struct resource *res = NULL;
+-
+-	spin_lock(&bootmem_resource_lock);
+-	if (bootmem_resource_free) {
+-		res = bootmem_resource_free;
+-		bootmem_resource_free = res->sibling;
+-	}
+-	spin_unlock(&bootmem_resource_lock);
+-
+-	if (res)
+-		memset(res, 0, sizeof(struct resource));
+-	else
+-		res = kzalloc(sizeof(struct resource), flags);
+-
+-	return res;
++	return kzalloc(sizeof(struct resource), flags);
+ }
  
-+	ib_qp_usecnt_inc(qp);
-+
- 	if (qp_init_attr->cap.max_rdma_ctxs) {
- 		ret = rdma_rw_init_mrs(qp, qp_init_attr);
- 		if (ret)
+ /* Return the conflict entry if you can't request it */
 -- 
 2.34.1
 
