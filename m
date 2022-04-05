@@ -2,100 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D6DC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCFDC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574654AbiDEXAY (ORCPT
+        id S1574713AbiDEXAy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
+        Tue, 5 Apr 2022 19:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572976AbiDERjN (ORCPT
+        with ESMTP id S1357456AbiDEK0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:39:13 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDC2B8202;
-        Tue,  5 Apr 2022 10:37:14 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 002665C01D1;
-        Tue,  5 Apr 2022 13:37:14 -0400 (EDT)
-Received: from imap49 ([10.202.2.99])
-  by compute4.internal (MEProxy); Tue, 05 Apr 2022 13:37:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=KuSmYS9TX5fvKT
-        WU45hX70KGFcLIlFZpUizrcrs8diU=; b=I3f4NWgYLX4zJmaCk5k2jpJ2j5+RaP
-        J+RUGv1C92o2lwro4YHnMnyV/wQLdGZFdh/ukhflQ0B2Z15+zTkfA5uMIEJEcqhb
-        QqP1RT2yA+BWQZoDEtxnd3I83wrOiU2gfarbrA1DygPKgRTJrtsTdv4gKIspRdNA
-        LhWNMInI1p8MX+G+oJFOmaYJcxSvnGy5WR+3guftfMC2WjJiQWjnPZ8P/JtHJUKV
-        QwfHjBUNDbPmJ1wNcvEeT0yNTggE0BKrEVbwKHiLkU+LtcnyExkAWW8TdydNvl5B
-        jlRDbnmumxECTI6FUXKchgS//3pNUUjR/L6oAIgmfKJnU8asAbfc6C+Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=KuSmYS9TX5fvKTWU4
-        5hX70KGFcLIlFZpUizrcrs8diU=; b=RxEi0jxhjkB5RtK2k+EQ/DjZiKfCC5or9
-        7dtZdRDHUaLSIQNlMS+gB0mpDv1XHLhfBabEWdn9R0leELvn02xUL9GpvVxqV77O
-        PEHD6/uCDlWkMSHgLGFpZsMGXgfs+7WKWzwaI+GJ9VHEFkR2OxO4Nvhhju0y0S7r
-        0M2H1W9KFM7WcZSRbvdqOf+0rvYTMZE9fQDkoPH5f1ollo+KaGYksIxy7CYmyYaM
-        ZaKpg+I6YrRN76gjUkuScoeDS+53qIzhrYZIH0QL4sCA/h5aKjVoGYYxE8P0lQPv
-        9oVhB4b++ee7dc5Nx/R3E3aGCjK+OWa92zpx+9E6l5mw8JPR9l2lA==
-X-ME-Sender: <xms:SX5MYmQiXzXa-lD88I3Bs5FFKrshX5oWTYIQ6th1QZ8-BmSJJIG11g>
-    <xme:SX5MYryYjeYu2XN5BYhFXzr3QVjBTNDxThD-jfkMPqcmCcbzLS51Wsoj-IFLOK9uH
-    Jam9aYcn8KrF1RZ9Pg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedgudduudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhl
-    rgguvgcuhggrthhkihhnshdfuceoshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtoh
-    hmqeenucggtffrrghtthgvrhhnpeeuieffteejieetgfevteelheevudehteeihffhteeh
-    tdetleegtedtvdevvddugeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
-X-ME-Proxy: <xmx:SX5MYj1IMy5Wq4pbYtPcWR4m5U5YrByk0MV67uEq1tVLgH180rocyw>
-    <xmx:SX5MYiD824E3Qxt3uposiCcS-epmRrjTZ_KG5dx9vOOC14n3D2lODg>
-    <xmx:SX5MYvjd8ljYmyc5ZWaeI4GHvMiHijCDk0tE-V3w_tHEsQGHBJko7w>
-    <xmx:SX5MYkbeLKCSOV1kLeWulUHn5XgVqEc_wr1Kn-ptND__mK76YluK8g>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id C014915A005D; Tue,  5 Apr 2022 13:37:13 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-385-g3a17909f9e-fm-20220404.001-g3a17909f
-Mime-Version: 1.0
-Message-Id: <6ec27c63-0496-4b42-97ef-a5d43e2759b1@www.fastmail.com>
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-Date:   Tue, 05 Apr 2022 13:37:11 -0400
-From:   "Slade Watkins" <slade@sladewatkins.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org,
-        "Linus Torvalds" <torvalds@linux-foundation.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org,
-        "Pavel Machek" <pavel@denx.de>,
-        "Jon Hunter" <jonathanh@nvidia.com>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH 5.15 000/913] 5.15.33-rc1 review
-Content-Type: text/plain
+        Tue, 5 Apr 2022 06:26:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8201122BE9;
+        Tue,  5 Apr 2022 03:10:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C69B06172B;
+        Tue,  5 Apr 2022 10:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB49CC385A2;
+        Tue,  5 Apr 2022 10:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153411;
+        bh=dzWhcPIWdsa4A39sNEcEVgjZ6v05Z816/SN2s+i6y/Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tbeJalYHgVjSOreVlHkVJvRSlLvY2wp6gfQVJ6fGQaOQEBH+wYhi8rcCI+ciZKbM+
+         VevoshsUkZUCeEHEiqk1HKYPl7unCO7V9IhsiDhJQOIrqu8Xlnv2DfO9m+DKeBJ9XL
+         GQ1k9WUnMU5kTmFhGBIeGEOhNWUILk0GuGTvToxg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 214/599] ARM: dts: imx: Add missing LVDS decoder on M53Menlo
+Date:   Tue,  5 Apr 2022 09:28:28 +0200
+Message-Id: <20220405070305.211683074@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022, at 3:17 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.33 release.
-> There are 913 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
+From: Marek Vasut <marex@denx.de>
 
-5.15.33-rc1 compiled and booted with no errors or regressions on my x86_64 test system.
+[ Upstream commit 0c6f71176ea43d6f4003a4d57f7bb518c5ad6145 ]
 
-Tested-by: Slade Watkins <slade@sladewatkins.com>
+The M53Menlo display unit uses an LVDS-to-DPI bridge, TI DS90CF364A.
+Describe this bridge in DT, otherwise the DT incorrectly describes
+DPI panel attached directly to LVDS source.
 
-Cheers, 
-Slade
+Fixes: 716be61d1869 ("ARM: dts: imx53: Add Menlosystems M53 board")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm/boot/dts/imx53-m53menlo.dts | 29 ++++++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx53-m53menlo.dts b/arch/arm/boot/dts/imx53-m53menlo.dts
+index 4f88e96d81dd..d5c68d1ea707 100644
+--- a/arch/arm/boot/dts/imx53-m53menlo.dts
++++ b/arch/arm/boot/dts/imx53-m53menlo.dts
+@@ -53,6 +53,31 @@
+ 		};
+ 	};
+ 
++	lvds-decoder {
++		compatible = "ti,ds90cf364a", "lvds-decoder";
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				lvds_decoder_in: endpoint {
++					remote-endpoint = <&lvds0_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				lvds_decoder_out: endpoint {
++					remote-endpoint = <&panel_in>;
++				};
++			};
++		};
++	};
++
+ 	panel {
+ 		compatible = "edt,etm0700g0dh6";
+ 		pinctrl-0 = <&pinctrl_display_gpio>;
+@@ -61,7 +86,7 @@
+ 
+ 		port {
+ 			panel_in: endpoint {
+-				remote-endpoint = <&lvds0_out>;
++				remote-endpoint = <&lvds_decoder_out>;
+ 			};
+ 		};
+ 	};
+@@ -450,7 +475,7 @@
+ 			reg = <2>;
+ 
+ 			lvds0_out: endpoint {
+-				remote-endpoint = <&panel_in>;
++				remote-endpoint = <&lvds_decoder_in>;
+ 			};
+ 		};
+ 	};
+-- 
+2.34.1
+
+
+
