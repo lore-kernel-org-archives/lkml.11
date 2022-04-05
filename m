@@ -2,83 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6979C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4753C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389731AbiDEPVy (ORCPT
+        id S1389743AbiDEPV6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
+        Tue, 5 Apr 2022 11:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346993AbiDEJpt (ORCPT
+        with ESMTP id S1346880AbiDEJpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646C0DCAA9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:32:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:45:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2040C63CA;
+        Tue,  5 Apr 2022 02:32:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0EDB616C1
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:32:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AC2CC385A2;
-        Tue,  5 Apr 2022 09:32:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649151133;
-        bh=Z9FjRlyA0KX5ffVCEjuo3EpyFLIzmAgAwlpgdWulCmE=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=UWpkqp2myG2riMtTkEm/DY+Z/NNjDiiEcu2Dc9tmyQpzZlmX1qTB3B+cb3QmD+X2e
-         nruXUGzOQSp/ATsdEHTaL9DkHKuAjXhGjymMukwqrpH++v1ZEJN5fL2+SpMSDe3j2w
-         4EbHAcAJdoBYVQOay8iCBwmBZGHpoDLYOU27l99aeF/RfVGwZe5O+Ng85hyGTK3aru
-         zexDJhslyYLuxkI7RLqfb+X5T2DbbUYv6RAGyxuAJkZh2s6doLmLdocqbjiI8loGun
-         1QrlCpeI+x4mWjIvceAfOMRxtUyxtQQx9BdKyJo7Ns/lntXCcCpi9yd01fV2N7OI6A
-         suozhJm3iysWQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     axel.lin@ingics.com
-Cc:     cy_huang@richtek.com, linux-kernel@vger.kernel.org,
-        lgirdwood@gmail.com
-In-Reply-To: <20220404022514.449231-1-axel.lin@ingics.com>
-References: <20220404022514.449231-1-axel.lin@ingics.com>
-Subject: Re: [PATCH] regulator: rtq2134: Fix missing active_discharge_on setting
-Message-Id: <164915113203.276837.10187918979668391155.b4-ty@kernel.org>
-Date:   Tue, 05 Apr 2022 10:32:12 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0FC5B81CB5;
+        Tue,  5 Apr 2022 09:32:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E33D3C385A3;
+        Tue,  5 Apr 2022 09:32:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151123;
+        bh=Ea5ndGWXz9K8ljtr3OiwEJECD2uDT/KjukYvFs0JZnY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pMWI75GI8mL2GxchqzVIbZjRql9L4aZ44iueRPKZOFVKGk4spg97Rwt1B6g5zLkVa
+         rOpiacMm9ii+kl7Pl/ihCM3pPMX3No6HYeYkK52DAnV7sa9JGBk/6iYeuOUSEaLeLx
+         St3i4bXonLjvs2lew4kcywMrg6tZzjhpbEs+CeAo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, devicetree@vger.kernel.org,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 303/913] arm64: dts: qcom: sm8350: Correct TCS configuration for apps rsc
+Date:   Tue,  5 Apr 2022 09:22:45 +0200
+Message-Id: <20220405070348.939161671@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Apr 2022 10:25:14 +0800, Axel Lin wrote:
-> The active_discharge_on setting was missed, so output discharge resistor
-> is always disabled. Fix it.
-> 
-> 
+From: Maulik Shah <quic_mkshah@quicinc.com>
 
-Applied to
+[ Upstream commit a131255e4ad1ef8d4873ecba21561ba272b2547a ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+Correct the TCS config by updating the number of TCSes for each type.
 
-Thanks!
+Cc: devicetree@vger.kernel.org
+Fixes: b7e8f433a673 ("arm64: dts: qcom: Add basic devicetree support for SM8350 SoC")
+Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1641749107-31979-4-git-send-email-quic_mkshah@quicinc.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[1/1] regulator: rtq2134: Fix missing active_discharge_on setting
-      commit: 17049bf9de55a42ee96fd34520aff8a484677675
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index a8886adaaf37..3d32d5581816 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -979,7 +979,7 @@
+ 			qcom,tcs-offset = <0xd00>;
+ 			qcom,drv-id = <2>;
+ 			qcom,tcs-config = <ACTIVE_TCS  2>, <SLEEP_TCS   3>,
+-					  <WAKE_TCS    3>, <CONTROL_TCS 1>;
++					  <WAKE_TCS    3>, <CONTROL_TCS 0>;
+ 
+ 			rpmhcc: clock-controller {
+ 				compatible = "qcom,sm8350-rpmh-clk";
+-- 
+2.34.1
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
