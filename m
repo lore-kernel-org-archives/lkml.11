@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C18C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C65C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385530AbiDEMdV (ORCPT
+        id S1385469AbiDEMdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
+        Tue, 5 Apr 2022 08:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235430AbiDEJCB (ORCPT
+        with ESMTP id S235345AbiDEJBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:02:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D843CCE;
-        Tue,  5 Apr 2022 01:53:53 -0700 (PDT)
+        Tue, 5 Apr 2022 05:01:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1C22181;
+        Tue,  5 Apr 2022 01:53:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDC4D609D0;
-        Tue,  5 Apr 2022 08:53:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02667C385A1;
-        Tue,  5 Apr 2022 08:53:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CDBFCCE1C6F;
+        Tue,  5 Apr 2022 08:53:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D83F1C385A3;
+        Tue,  5 Apr 2022 08:53:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148832;
-        bh=sdZSVqqIUKYImkqKfFXcls0oMxfp3eb4lHqdIelvcyQ=;
+        s=korg; t=1649148824;
+        bh=TIY/MaJG64dJFYhgSREZ7Io2V0kw+HnjbuZ5wtzkwkI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nlKIHTwpaRWOv1ZtPIjIVJ+KPWihWUPePQxe8ajcFzR2H6CpoNmspHBmostWb+QvF
-         TP4lvM9YBLMJ3qGiDvr+1wpq1W5Mk6rqnKgSQXOKVDtuuoUc1FdEBEAJ6vpGtLQIXp
-         9zZNqFBhIMZWbdW4W3px+uVhS8s52h0tU+b90n7E=
+        b=H68CV2/eU3BXaXuNGZxhUdKMhG8Utn40AP9CBRUNnADy8ZJIc78033afQ43Z6pAto
+         ULklZkweYILrPL/nldraPEifGpd5y8GBHxhLN+MYSlqP85Fp3UcVhflmxm1T3EIaZU
+         M/BeQdgSPSR6f5fviCfBMoqRQiU/6off1aWQdlLg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+53619be9444215e785ed@syzkaller.appspotmail.com,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
+        stable@vger.kernel.org, Zhiqian Guan <zhguan@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0470/1017] bpf: Fix a btf decl_tag bug when tagging a function
-Date:   Tue,  5 Apr 2022 09:23:03 +0200
-Message-Id: <20220405070408.249913058@linuxfoundation.org>
+Subject: [PATCH 5.16 0494/1017] libbpf: Use dynamically allocated buffer when receiving netlink messages
+Date:   Tue,  5 Apr 2022 09:23:27 +0200
+Message-Id: <20220405070408.963184032@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,139 +52,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-[ Upstream commit d7e7b42f4f956f2c68ad8cda87d750093dbba737 ]
+[ Upstream commit 9c3de619e13ee6693ec5ac74f50b7aa89056a70e ]
 
-syzbot reported a btf decl_tag bug with stack trace below:
+When receiving netlink messages, libbpf was using a statically allocated
+stack buffer of 4k bytes. This happened to work fine on systems with a 4k
+page size, but on systems with larger page sizes it can lead to truncated
+messages. The user-visible impact of this was that libbpf would insist no
+XDP program was attached to some interfaces because that bit of the netlink
+message got chopped off.
 
-  general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-  KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-  CPU: 0 PID: 3592 Comm: syz-executor914 Not tainted 5.16.0-syzkaller-11424-gb7892f7d5cb2 #0
-  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-  RIP: 0010:btf_type_vlen include/linux/btf.h:231 [inline]
-  RIP: 0010:btf_decl_tag_resolve+0x83e/0xaa0 kernel/bpf/btf.c:3910
-  ...
-  Call Trace:
-   <TASK>
-   btf_resolve+0x251/0x1020 kernel/bpf/btf.c:4198
-   btf_check_all_types kernel/bpf/btf.c:4239 [inline]
-   btf_parse_type_sec kernel/bpf/btf.c:4280 [inline]
-   btf_parse kernel/bpf/btf.c:4513 [inline]
-   btf_new_fd+0x19fe/0x2370 kernel/bpf/btf.c:6047
-   bpf_btf_load kernel/bpf/syscall.c:4039 [inline]
-   __sys_bpf+0x1cbb/0x5970 kernel/bpf/syscall.c:4679
-   __do_sys_bpf kernel/bpf/syscall.c:4738 [inline]
-   __se_sys_bpf kernel/bpf/syscall.c:4736 [inline]
-   __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4736
-   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
+Fix this by switching to a dynamically allocated buffer; we borrow the
+approach from iproute2 of using recvmsg() with MSG_PEEK|MSG_TRUNC to get
+the actual size of the pending message before receiving it, adjusting the
+buffer as necessary. While we're at it, also add retries on interrupted
+system calls around the recvmsg() call.
 
-The kasan error is triggered with an illegal BTF like below:
-   type 0: void
-   type 1: int
-   type 2: decl_tag to func type 3
-   type 3: func to func_proto type 8
-The total number of types is 4 and the type 3 is illegal
-since its func_proto type is out of range.
+v2:
+  - Move peek logic to libbpf_netlink_recv(), don't double free on ENOMEM.
 
-Currently, the target type of decl_tag can be struct/union, var or func.
-Both struct/union and var implemented their own 'resolve' callback functions
-and hence handled properly in kernel.
-But func type doesn't have 'resolve' callback function. When
-btf_decl_tag_resolve() tries to check func type, it tries to get
-vlen of its func_proto type, which triggered the above kasan error.
-
-To fix the issue, btf_decl_tag_resolve() needs to do btf_func_check()
-before trying to accessing func_proto type.
-In the current implementation, func type is checked with
-btf_func_check() in the main checking function btf_check_all_types().
-To fix the above kasan issue, let us implement 'resolve' callback
-func type properly. The 'resolve' callback will be also called
-in btf_check_all_types() for func types.
-
-Fixes: b5ea834dde6b ("bpf: Support for new btf kind BTF_KIND_TAG")
-Reported-by: syzbot+53619be9444215e785ed@syzkaller.appspotmail.com
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/bpf/20220203191727.741862-1-yhs@fb.com
+Fixes: 8bbb77b7c7a2 ("libbpf: Add various netlink helpers")
+Reported-by: Zhiqian Guan <zhguan@redhat.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/bpf/20220211234819.612288-1-toke@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/btf.c | 29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ tools/lib/bpf/netlink.c | 55 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 51 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 1f7967ab9e46..ebbb2f4d3b9c 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -401,6 +401,9 @@ static struct btf_type btf_void;
- static int btf_resolve(struct btf_verifier_env *env,
- 		       const struct btf_type *t, u32 type_id);
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index 39f25e09b51e..69b353d55dbf 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -87,29 +87,75 @@ enum {
+ 	NL_DONE,
+ };
  
-+static int btf_func_check(struct btf_verifier_env *env,
-+			  const struct btf_type *t);
-+
- static bool btf_type_is_modifier(const struct btf_type *t)
- {
- 	/* Some of them is not strictly a C modifier
-@@ -576,6 +579,7 @@ static bool btf_type_needs_resolve(const struct btf_type *t)
- 	       btf_type_is_struct(t) ||
- 	       btf_type_is_array(t) ||
- 	       btf_type_is_var(t) ||
-+	       btf_type_is_func(t) ||
- 	       btf_type_is_decl_tag(t) ||
- 	       btf_type_is_datasec(t);
- }
-@@ -3521,9 +3525,24 @@ static s32 btf_func_check_meta(struct btf_verifier_env *env,
- 	return 0;
- }
- 
-+static int btf_func_resolve(struct btf_verifier_env *env,
-+			    const struct resolve_vertex *v)
++static int netlink_recvmsg(int sock, struct msghdr *mhdr, int flags)
 +{
-+	const struct btf_type *t = v->t;
-+	u32 next_type_id = t->type;
-+	int err;
++	int len;
 +
-+	err = btf_func_check(env, t);
-+	if (err)
-+		return err;
++	do {
++		len = recvmsg(sock, mhdr, flags);
++	} while (len < 0 && (errno == EINTR || errno == EAGAIN));
 +
-+	env_stack_pop_resolved(env, next_type_id, 0);
++	if (len < 0)
++		return -errno;
++	return len;
++}
++
++static int alloc_iov(struct iovec *iov, int len)
++{
++	void *nbuf;
++
++	nbuf = realloc(iov->iov_base, len);
++	if (!nbuf)
++		return -ENOMEM;
++
++	iov->iov_base = nbuf;
++	iov->iov_len = len;
 +	return 0;
 +}
 +
- static struct btf_kind_operations func_ops = {
- 	.check_meta = btf_func_check_meta,
--	.resolve = btf_df_resolve,
-+	.resolve = btf_func_resolve,
- 	.check_member = btf_df_check_member,
- 	.check_kflag_member = btf_df_check_kflag_member,
- 	.log_details = btf_ref_type_log,
-@@ -4143,7 +4162,7 @@ static bool btf_resolve_valid(struct btf_verifier_env *env,
- 		return !btf_resolved_type_id(btf, type_id) &&
- 		       !btf_resolved_type_size(btf, type_id);
+ static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+ 			       __dump_nlmsg_t _fn, libbpf_dump_nlmsg_t fn,
+ 			       void *cookie)
+ {
++	struct iovec iov = {};
++	struct msghdr mhdr = {
++		.msg_iov = &iov,
++		.msg_iovlen = 1,
++	};
+ 	bool multipart = true;
+ 	struct nlmsgerr *err;
+ 	struct nlmsghdr *nh;
+-	char buf[4096];
+ 	int len, ret;
  
--	if (btf_type_is_decl_tag(t))
-+	if (btf_type_is_decl_tag(t) || btf_type_is_func(t))
- 		return btf_resolved_type_id(btf, type_id) &&
- 		       !btf_resolved_type_size(btf, type_id);
- 
-@@ -4233,12 +4252,6 @@ static int btf_check_all_types(struct btf_verifier_env *env)
- 			if (err)
- 				return err;
++	ret = alloc_iov(&iov, 4096);
++	if (ret)
++		goto done;
++
+ 	while (multipart) {
+ start:
+ 		multipart = false;
+-		len = recv(sock, buf, sizeof(buf), 0);
++		len = netlink_recvmsg(sock, &mhdr, MSG_PEEK | MSG_TRUNC);
++		if (len < 0) {
++			ret = len;
++			goto done;
++		}
++
++		if (len > iov.iov_len) {
++			ret = alloc_iov(&iov, len);
++			if (ret)
++				goto done;
++		}
++
++		len = netlink_recvmsg(sock, &mhdr, 0);
+ 		if (len < 0) {
+-			ret = -errno;
++			ret = len;
+ 			goto done;
  		}
--
--		if (btf_type_is_func(t)) {
--			err = btf_func_check(env, t);
--			if (err)
--				return err;
--		}
- 	}
  
- 	return 0;
+ 		if (len == 0)
+ 			break;
+ 
+-		for (nh = (struct nlmsghdr *)buf; NLMSG_OK(nh, len);
++		for (nh = (struct nlmsghdr *)iov.iov_base; NLMSG_OK(nh, len);
+ 		     nh = NLMSG_NEXT(nh, len)) {
+ 			if (nh->nlmsg_pid != nl_pid) {
+ 				ret = -LIBBPF_ERRNO__WRNGPID;
+@@ -151,6 +197,7 @@ static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+ 	}
+ 	ret = 0;
+ done:
++	free(iov.iov_base);
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
