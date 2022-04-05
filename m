@@ -2,118 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF8DC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 011A9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391368AbiDEWFV (ORCPT
+        id S1391247AbiDEWFD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
+        Tue, 5 Apr 2022 18:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354966AbiDEKQt (ORCPT
+        with ESMTP id S1457950AbiDERBW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:49 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0CE140DD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:04:20 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E4F71210E5;
-        Tue,  5 Apr 2022 10:04:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649153058; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4gd5jq9JA78+ej6U2SXRWQGkkcWFy9lDISdWZvkme7M=;
-        b=QRnYDueTv6FkkyOXeKf43xTyrX0Yg9FflXn2fWwaWwdJFLNu0c6HbZDoY7Ma0C2gSflO6o
-        UmVMyuhlhQbviWmktRTT/xjHDVpE9ymF1UTcNlDEwUuXp04BRAT5vWg0SS8ssrIcxxZUZb
-        Rekl/2oHVTABt8v9B6SLwW/BE7lc1zo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649153058;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4gd5jq9JA78+ej6U2SXRWQGkkcWFy9lDISdWZvkme7M=;
-        b=pM+1pMkGX4wEBvlh5Vkd7pClTEFyjosT5PfCpAt/FqHQtyEktuTgm6u4Ji7qiyMEiDeQzg
-        M8gL++iLBDtrbDBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C049313A04;
-        Tue,  5 Apr 2022 10:04:18 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id xt8kLiIUTGK2RgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 05 Apr 2022 10:04:18 +0000
-Message-ID: <76c63237-c489-b942-bdd9-5720042f52a9@suse.cz>
-Date:   Tue, 5 Apr 2022 12:04:18 +0200
+        Tue, 5 Apr 2022 13:01:22 -0400
+Received: from 6.mo560.mail-out.ovh.net (6.mo560.mail-out.ovh.net [87.98.165.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6493A51E46
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:59:23 -0700 (PDT)
+Received: from player771.ha.ovh.net (unknown [10.109.156.133])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 58ADD23B90
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:59:21 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player771.ha.ovh.net (Postfix) with ESMTPSA id F24EE293E366C;
+        Tue,  5 Apr 2022 16:59:15 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-106R0069cd6cc63-6d12-4d77-a5d0-44e51e431b9e,
+                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 01/14] ASoC: ak4*: use simple i2c probe function
+Date:   Tue,  5 Apr 2022 18:58:23 +0200
+Message-Id: <20220405165836.2165310-2-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
+References: <20220405165836.2165310-1-steve@sk2.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] mm, slub: change percpu partial accounting from
- objects to pages
-Content-Language: en-US
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Jann Horn <jannh@google.com>, linux-kernel@vger.kernel.org,
-        Roman Gushchin <guro@fb.com>
-References: <20211012134651.11258-1-vbabka@suse.cz>
- <Yja4AlOHkpcKLu59@ip-172-31-19-208.ap-northeast-1.compute.internal>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <Yja4AlOHkpcKLu59@ip-172-31-19-208.ap-northeast-1.compute.internal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 8460293375399265926
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/20/22 06:13, Hyeonggon Yoo wrote:
->> While this is no longer a problem in kmemcg context thanks to the accounting
->> rewrite in 5.9, the memory waste is still not ideal and it's questionable
->> whether it makes sense to perform free object count based control when object
->> counts can easily become so much inaccurate. So this patch converts the
->> accounting to be based on number of pages only (which is precise) and removes
->> the page->pobjects field completely. This is also ultimately simpler.
->> 
->> To retain the existing set_cpu_partial() heuristic, first calculate the target
->> number of objects as previously, but then convert it to target number of pages
->> by assuming the pages will be half-filled on average. This assumption might
->> obviously also be inaccurate in practice, but cannot degrade to actual number of
->> pages being equal to the target number of objects.
-> 
-> I have to agree that this half-filled assumption works pretty well and
-> I believe the too-long-partial-list problem has gone. we're controlling
-> its length clearly after this patch.
-> 
-> But my one concern here is that actual number of objects in
-> percpu partial list can be decreased when we cannot allocate high order pages.
-> 
-> e.g.) oo_order(s->oo) is 3 and we can only allocate order-2 page,
-> it can be shortened 2 times in worst case because the accounting logic
-> assumes order of all slab in the percpu partial list is oo_order(s->oo).
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-That's true, but let's not forget the percpu partial lists are motivated by
-peak performance in e.g. networking. Once we start having issues allocating
-e.g. order-2 pages due to fragmentation, the system is probably far from
-peak performance already, so this pessimism in slub partial lists is not the
-main concern.
+This avoids scanning the identifier tables during probes.
 
-> I think using object based accounting, and assuming every slab is
-> half-filled would be more consistent when the system is highly
-> fragmented.
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ sound/soc/codecs/ak4118.c | 5 ++---
+ sound/soc/codecs/ak4535.c | 5 ++---
+ sound/soc/codecs/ak4641.c | 5 ++---
+ sound/soc/codecs/ak4671.c | 5 ++---
+ 4 files changed, 8 insertions(+), 12 deletions(-)
 
-Based on reasoning above, I doubt it's worth the trouble.
-
-Thanks.
-
-> Thoughts?
-> 
+diff --git a/sound/soc/codecs/ak4118.c b/sound/soc/codecs/ak4118.c
+index 2e6bafd2a821..5c4a78c16733 100644
+--- a/sound/soc/codecs/ak4118.c
++++ b/sound/soc/codecs/ak4118.c
+@@ -356,8 +356,7 @@ static const struct regmap_config ak4118_regmap = {
+ 	.max_register = AK4118_REG_MAX - 1,
+ };
+ 
+-static int ak4118_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int ak4118_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct ak4118_priv *ak4118;
+ 	int ret;
+@@ -416,7 +415,7 @@ static struct i2c_driver ak4118_i2c_driver = {
+ 		.of_match_table = of_match_ptr(ak4118_of_match),
+ 	},
+ 	.id_table = ak4118_id_table,
+-	.probe  = ak4118_i2c_probe,
++	.probe_new = ak4118_i2c_probe,
+ };
+ 
+ module_i2c_driver(ak4118_i2c_driver);
+diff --git a/sound/soc/codecs/ak4535.c b/sound/soc/codecs/ak4535.c
+index 91e7a57c43da..cc803e730c6e 100644
+--- a/sound/soc/codecs/ak4535.c
++++ b/sound/soc/codecs/ak4535.c
+@@ -405,8 +405,7 @@ static const struct snd_soc_component_driver soc_component_dev_ak4535 = {
+ 	.non_legacy_dai_naming	= 1,
+ };
+ 
+-static int ak4535_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int ak4535_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct ak4535_priv *ak4535;
+ 	int ret;
+@@ -441,7 +440,7 @@ static struct i2c_driver ak4535_i2c_driver = {
+ 	.driver = {
+ 		.name = "ak4535",
+ 	},
+-	.probe =    ak4535_i2c_probe,
++	.probe_new = ak4535_i2c_probe,
+ 	.id_table = ak4535_i2c_id,
+ };
+ 
+diff --git a/sound/soc/codecs/ak4641.c b/sound/soc/codecs/ak4641.c
+index 04aef0e72aa5..d8d9cc712d67 100644
+--- a/sound/soc/codecs/ak4641.c
++++ b/sound/soc/codecs/ak4641.c
+@@ -548,8 +548,7 @@ static const struct regmap_config ak4641_regmap = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int ak4641_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int ak4641_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct ak4641_platform_data *pdata = i2c->dev.platform_data;
+ 	struct ak4641_priv *ak4641;
+@@ -632,7 +631,7 @@ static struct i2c_driver ak4641_i2c_driver = {
+ 	.driver = {
+ 		.name = "ak4641",
+ 	},
+-	.probe =    ak4641_i2c_probe,
++	.probe_new = ak4641_i2c_probe,
+ 	.remove =   ak4641_i2c_remove,
+ 	.id_table = ak4641_i2c_id,
+ };
+diff --git a/sound/soc/codecs/ak4671.c b/sound/soc/codecs/ak4671.c
+index e9d1251c4265..60edcbe56014 100644
+--- a/sound/soc/codecs/ak4671.c
++++ b/sound/soc/codecs/ak4671.c
+@@ -629,8 +629,7 @@ static const struct regmap_config ak4671_regmap = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int ak4671_i2c_probe(struct i2c_client *client,
+-			    const struct i2c_device_id *id)
++static int ak4671_i2c_probe(struct i2c_client *client)
+ {
+ 	struct regmap *regmap;
+ 	int ret;
+@@ -657,7 +656,7 @@ static struct i2c_driver ak4671_i2c_driver = {
+ 	.driver = {
+ 		.name = "ak4671-codec",
+ 	},
+-	.probe = ak4671_i2c_probe,
++	.probe_new = ak4671_i2c_probe,
+ 	.id_table = ak4671_i2c_id,
+ };
+ 
+-- 
+2.27.0
 
