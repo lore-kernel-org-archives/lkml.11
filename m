@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C25C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A60C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345737AbiDEON4 (ORCPT
+        id S1349646AbiDEOOT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
+        Tue, 5 Apr 2022 10:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235975AbiDEJbC (ORCPT
+        with ESMTP id S237140AbiDEJbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:31:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982011CFF4;
-        Tue,  5 Apr 2022 02:18:13 -0700 (PDT)
+        Tue, 5 Apr 2022 05:31:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B98C5C;
+        Tue,  5 Apr 2022 02:19:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34951615E5;
-        Tue,  5 Apr 2022 09:18:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C86BC385A3;
-        Tue,  5 Apr 2022 09:18:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C840BCE1C38;
+        Tue,  5 Apr 2022 09:19:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1F5C385A3;
+        Tue,  5 Apr 2022 09:19:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150292;
-        bh=1Y2tJszXJ8mM7Vg/4Mf9uvXQFr8vz3unAZ/gygB5MPE=;
+        s=korg; t=1649150348;
+        bh=cLqyc66Mk2i4inv+xvYGwpFjPWfn6/CwT6XBYn9XyHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f0y0wWQBSoWJWmwSej2C87HjSfmMkBJtPajXrb9CvkDzNMeIsPzKZ/gHoVv38lhzU
-         G8fPnLVmEM8VJ0zEV+xeDbPopM95Y+Xpx7Q3SqzxXl7A1njhrUeB30uNFeGmj7k/vC
-         28uSBIHk/nT4ynYq7RZmCyrJ5jbUFIgQm6kKXEz8=
+        b=cx/lTOgbTrCPbq0AXtpKPZ4Z5dlJbSSlRDPgkkTdgIVcLVoRi5H3WICeo/ouq4gR6
+         jVyxFBp6iAon7x23klF97iPcVjWBxQ+942vNDlbaRmS6y+n1PYO6XFLXkJ0LIxkzYK
+         AoEquBiKxuSYW4McRtIyE9kqW6AQKSjkeSuIO7Vs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.16 1007/1017] openvswitch: Fixed nd target mask field in the flow dump.
-Date:   Tue,  5 Apr 2022 09:32:00 +0200
-Message-Id: <20220405070424.091516766@linuxfoundation.org>
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Waiman Long <longman@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
+Subject: [PATCH 5.15 025/913] locking/lockdep: Avoid potential access of invalid memory in lock_class
+Date:   Tue,  5 Apr 2022 09:18:07 +0200
+Message-Id: <20220405070340.569402855@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +53,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
+From: Waiman Long <longman@redhat.com>
 
-commit f19c44452b58a84d95e209b847f5495d91c9983a upstream.
+commit 61cc4534b6550997c97a03759ab46b29d44c0017 upstream.
 
-IPv6 nd target mask was not getting populated in flow dump.
+It was found that reading /proc/lockdep after a lockdep splat may
+potentially cause an access to freed memory if lockdep_unregister_key()
+is called after the splat but before access to /proc/lockdep [1]. This
+is due to the fact that graph_lock() call in lockdep_unregister_key()
+fails after the clearing of debug_locks by the splat process.
 
-In the function __ovs_nla_put_key the icmp code mask field was checked
-instead of icmp code key field to classify the flow as neighbour discovery.
+After lockdep_unregister_key() is called, the lock_name may be freed
+but the corresponding lock_class structure still have a reference to
+it. That invalid memory pointer will then be accessed when /proc/lockdep
+is read by a user and a use-after-free (UAF) error will be reported if
+KASAN is enabled.
 
-ufid:bdfbe3e5-60c2-43b0-a5ff-dfcac1c37328, recirc_id(0),dp_hash(0/0),
-skb_priority(0/0),in_port(ovs-nm1),skb_mark(0/0),ct_state(0/0),
-ct_zone(0/0),ct_mark(0/0),ct_label(0/0),
-eth(src=00:00:00:00:00:00/00:00:00:00:00:00,
-dst=00:00:00:00:00:00/00:00:00:00:00:00),
-eth_type(0x86dd),
-ipv6(src=::/::,dst=::/::,label=0/0,proto=58,tclass=0/0,hlimit=0/0,frag=no),
-icmpv6(type=135,code=0),
-nd(target=2001::2/::,
-sll=00:00:00:00:00:00/00:00:00:00:00:00,
-tll=00:00:00:00:00:00/00:00:00:00:00:00),
-packets:10, bytes:860, used:0.504s, dp:ovs, actions:ovs-nm2
+To fix this problem, lockdep_unregister_key() is now modified to always
+search for a matching key irrespective of the debug_locks state and
+zap the corresponding lock class if a matching one is found.
 
-Fixes: e64457191a25 (openvswitch: Restructure datapath.c and flow.c)
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-Link: https://lore.kernel.org/r/20220328054148.3057-1-martinvarghesenokia@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+[1] https://lore.kernel.org/lkml/77f05c15-81b6-bddd-9650-80d5f23fe330@i-love.sakura.ne.jp/
+
+Fixes: 8b39adbee805 ("locking/lockdep: Make lockdep_unregister_key() honor 'debug_locks' again")
+Reported-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Signed-off-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Cc: Cheng-Jui Wang <cheng-jui.wang@mediatek.com>
+Link: https://lkml.kernel.org/r/20220103023558.1377055-1-longman@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/openvswitch/flow_netlink.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/locking/lockdep.c |   24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -2201,8 +2201,8 @@ static int __ovs_nla_put_key(const struc
- 			icmpv6_key->icmpv6_type = ntohs(output->tp.src);
- 			icmpv6_key->icmpv6_code = ntohs(output->tp.dst);
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -6276,7 +6276,13 @@ void lockdep_reset_lock(struct lockdep_m
+ 		lockdep_reset_lock_reg(lock);
+ }
  
--			if (icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_SOLICITATION ||
--			    icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
-+			if (swkey->tp.src == htons(NDISC_NEIGHBOUR_SOLICITATION) ||
-+			    swkey->tp.src == htons(NDISC_NEIGHBOUR_ADVERTISEMENT)) {
- 				struct ovs_key_nd *nd_key;
+-/* Unregister a dynamically allocated key. */
++/*
++ * Unregister a dynamically allocated key.
++ *
++ * Unlike lockdep_register_key(), a search is always done to find a matching
++ * key irrespective of debug_locks to avoid potential invalid access to freed
++ * memory in lock_class entry.
++ */
+ void lockdep_unregister_key(struct lock_class_key *key)
+ {
+ 	struct hlist_head *hash_head = keyhashentry(key);
+@@ -6291,10 +6297,8 @@ void lockdep_unregister_key(struct lock_
+ 		return;
  
- 				nla = nla_reserve(skb, OVS_KEY_ATTR_ND, sizeof(*nd_key));
+ 	raw_local_irq_save(flags);
+-	if (!graph_lock())
+-		goto out_irq;
++	lockdep_lock();
+ 
+-	pf = get_pending_free();
+ 	hlist_for_each_entry_rcu(k, hash_head, hash_entry) {
+ 		if (k == key) {
+ 			hlist_del_rcu(&k->hash_entry);
+@@ -6302,11 +6306,13 @@ void lockdep_unregister_key(struct lock_
+ 			break;
+ 		}
+ 	}
+-	WARN_ON_ONCE(!found);
+-	__lockdep_free_key_range(pf, key, 1);
+-	call_rcu_zapped(pf);
+-	graph_unlock();
+-out_irq:
++	WARN_ON_ONCE(!found && debug_locks);
++	if (found) {
++		pf = get_pending_free();
++		__lockdep_free_key_range(pf, key, 1);
++		call_rcu_zapped(pf);
++	}
++	lockdep_unlock();
+ 	raw_local_irq_restore(flags);
+ 
+ 	/* Wait until is_dynamic_key() has finished accessing k->hash_entry. */
 
 
