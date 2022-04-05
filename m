@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A8CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A6BC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383486AbiDEMZx (ORCPT
+        id S1383558AbiDEM0B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
+        Tue, 5 Apr 2022 08:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232014AbiDEIxS (ORCPT
+        with ESMTP id S241059AbiDEIs0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:18 -0400
+        Tue, 5 Apr 2022 04:48:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF6E20E;
-        Tue,  5 Apr 2022 01:51:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4C328E36;
+        Tue,  5 Apr 2022 01:36:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68286614FD;
-        Tue,  5 Apr 2022 08:51:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77F98C385A1;
-        Tue,  5 Apr 2022 08:51:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 279D861535;
+        Tue,  5 Apr 2022 08:36:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3837BC385A4;
+        Tue,  5 Apr 2022 08:36:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148678;
-        bh=yhUfmQ7iuLGgVfcfW/WD7nfKw5/vrSQEykgxUa0+gLA=;
+        s=korg; t=1649147783;
+        bh=ZxgY+DG0V/m8ix9O/dK77iX00sKsYy35vR68jBeaAoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KgXfDnY+MDftnqQAS+ppKVmZowN4P17SNnMMY1Ex6IXzqRXJyFqglscv7BN2pNgyE
-         Glbe5/9sWrTpY5FuyAW5Dbz9d5TfSIeC9A0x2oQZoPT3RFd/vAqTKnDy1KrvKFMtIo
-         YFhnGiLgiq2eknigNVKsauWFbKYyOYCrEdPuyIpQ=
+        b=01aOA8DxGXnYeC3GqxeFfAJEtjiZkj+5T7rrp1cqXM5gxHGF0pM0in/1FX9FDjg1W
+         GCJwL/68KxwETN+q+rL8KOqiw1UWl2S7KRsAfwvKOk90mrECFLTWclj/hjdILNmknA
+         6Mrq+QULBGJ5allcfTi5uLDagdIp13bm4xm8n7as=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0443/1017] ixgbe: pass bi->xdp to ixgbe_construct_skb_zc() directly
-Date:   Tue,  5 Apr 2022 09:22:36 +0200
-Message-Id: <20220405070407.445948031@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Snitzer <snitzer@redhat.com>
+Subject: [PATCH 5.16 0121/1017] dm: fix double accounting of flush with data
+Date:   Tue,  5 Apr 2022 09:17:14 +0200
+Message-Id: <20220405070357.790035806@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,80 +48,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Mike Snitzer <snitzer@redhat.com>
 
-[ Upstream commit 1fbdaa13386804a31eefd3db3c5fe00e80ce9bc3 ]
+commit 8d394bc4adf588ca4a0650745167cb83f86c18c9 upstream.
 
-To not dereference bi->xdp each time in ixgbe_construct_skb_zc(),
-pass bi->xdp as an argument instead of bi. We can also call
-xsk_buff_free() outside of the function as well as assign bi->xdp
-to NULL, which seems to make it closer to its name.
+DM handles a flush with data by first issuing an empty flush and then
+once it completes the REQ_PREFLUSH flag is removed and the payload is
+issued.  The problem fixed by this commit is that both the empty flush
+bio and the data payload will account the full extent of the data
+payload.
 
-Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by factoring out dm_io_acct() and having it wrap all IO
+accounting to set the size of  bio with REQ_PREFLUSH to 0, account the
+IO, and then restore the original size.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/md/dm-stats.c |    6 ++++--
+ drivers/md/dm-stats.h |    2 +-
+ drivers/md/dm.c       |   47 +++++++++++++++++++++++++++++++++--------------
+ 3 files changed, 38 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 666ff2c07ab9..ab96d7ce1aa0 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -207,26 +207,24 @@ bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 count)
- }
+--- a/drivers/md/dm-stats.c
++++ b/drivers/md/dm-stats.c
+@@ -644,13 +644,14 @@ static void __dm_stat_bio(struct dm_stat
  
- static struct sk_buff *ixgbe_construct_skb_zc(struct ixgbe_ring *rx_ring,
--					      struct ixgbe_rx_buffer *bi)
-+					      const struct xdp_buff *xdp)
+ void dm_stats_account_io(struct dm_stats *stats, unsigned long bi_rw,
+ 			 sector_t bi_sector, unsigned bi_sectors, bool end,
+-			 unsigned long duration_jiffies,
++			 unsigned long start_time,
+ 			 struct dm_stats_aux *stats_aux)
  {
--	unsigned int metasize = bi->xdp->data - bi->xdp->data_meta;
--	unsigned int datasize = bi->xdp->data_end - bi->xdp->data;
-+	unsigned int metasize = xdp->data - xdp->data_meta;
-+	unsigned int datasize = xdp->data_end - xdp->data;
- 	struct sk_buff *skb;
+ 	struct dm_stat *s;
+ 	sector_t end_sector;
+ 	struct dm_stats_last_position *last;
+ 	bool got_precise_time;
++	unsigned long duration_jiffies = 0;
  
- 	/* allocate a skb to store the frags */
- 	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
--			       bi->xdp->data_end - bi->xdp->data_hard_start,
-+			       xdp->data_end - xdp->data_hard_start,
- 			       GFP_ATOMIC | __GFP_NOWARN);
- 	if (unlikely(!skb))
- 		return NULL;
+ 	if (unlikely(!bi_sectors))
+ 		return;
+@@ -670,7 +671,8 @@ void dm_stats_account_io(struct dm_stats
+ 				       ));
+ 		WRITE_ONCE(last->last_sector, end_sector);
+ 		WRITE_ONCE(last->last_rw, bi_rw);
+-	}
++	} else
++		duration_jiffies = jiffies - start_time;
  
--	skb_reserve(skb, bi->xdp->data - bi->xdp->data_hard_start);
--	memcpy(__skb_put(skb, datasize), bi->xdp->data, datasize);
-+	skb_reserve(skb, xdp->data - xdp->data_hard_start);
-+	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
- 	if (metasize)
- 		skb_metadata_set(skb, metasize);
+ 	rcu_read_lock();
  
--	xsk_buff_free(bi->xdp);
--	bi->xdp = NULL;
- 	return skb;
+--- a/drivers/md/dm-stats.h
++++ b/drivers/md/dm-stats.h
+@@ -31,7 +31,7 @@ int dm_stats_message(struct mapped_devic
+ 
+ void dm_stats_account_io(struct dm_stats *stats, unsigned long bi_rw,
+ 			 sector_t bi_sector, unsigned bi_sectors, bool end,
+-			 unsigned long duration_jiffies,
++			 unsigned long start_time,
+ 			 struct dm_stats_aux *aux);
+ 
+ static inline bool dm_stats_used(struct dm_stats *st)
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -484,29 +484,48 @@ u64 dm_start_time_ns_from_clone(struct b
+ }
+ EXPORT_SYMBOL_GPL(dm_start_time_ns_from_clone);
+ 
+-static void start_io_acct(struct dm_io *io)
++static bool bio_is_flush_with_data(struct bio *bio)
+ {
+-	struct mapped_device *md = io->md;
+-	struct bio *bio = io->orig_bio;
++	return ((bio->bi_opf & REQ_PREFLUSH) && bio->bi_iter.bi_size);
++}
++
++static void dm_io_acct(bool end, struct mapped_device *md, struct bio *bio,
++		       unsigned long start_time, struct dm_stats_aux *stats_aux)
++{
++	bool is_flush_with_data;
++	unsigned int bi_size;
++
++	/* If REQ_PREFLUSH set save any payload but do not account it */
++	is_flush_with_data = bio_is_flush_with_data(bio);
++	if (is_flush_with_data) {
++		bi_size = bio->bi_iter.bi_size;
++		bio->bi_iter.bi_size = 0;
++	}
++
++	if (!end)
++		bio_start_io_acct_time(bio, start_time);
++	else
++		bio_end_io_acct(bio, start_time);
+ 
+-	bio_start_io_acct_time(bio, io->start_time);
+ 	if (unlikely(dm_stats_used(&md->stats)))
+ 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
+ 				    bio->bi_iter.bi_sector, bio_sectors(bio),
+-				    false, 0, &io->stats_aux);
++				    end, start_time, stats_aux);
++
++	/* Restore bio's payload so it does get accounted upon requeue */
++	if (is_flush_with_data)
++		bio->bi_iter.bi_size = bi_size;
++}
++
++static void start_io_acct(struct dm_io *io)
++{
++	dm_io_acct(false, io->md, io->orig_bio, io->start_time, &io->stats_aux);
  }
  
-@@ -317,12 +315,15 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
- 		}
+ static void end_io_acct(struct mapped_device *md, struct bio *bio,
+ 			unsigned long start_time, struct dm_stats_aux *stats_aux)
+ {
+-	unsigned long duration = jiffies - start_time;
+-
+-	bio_end_io_acct(bio, start_time);
+-
+-	if (unlikely(dm_stats_used(&md->stats)))
+-		dm_stats_account_io(&md->stats, bio_data_dir(bio),
+-				    bio->bi_iter.bi_sector, bio_sectors(bio),
+-				    true, duration, stats_aux);
++	dm_io_acct(true, md, bio, start_time, stats_aux);
+ }
  
- 		/* XDP_PASS path */
--		skb = ixgbe_construct_skb_zc(rx_ring, bi);
-+		skb = ixgbe_construct_skb_zc(rx_ring, bi->xdp);
- 		if (!skb) {
- 			rx_ring->rx_stats.alloc_rx_buff_failed++;
- 			break;
- 		}
+ static struct dm_io *alloc_io(struct mapped_device *md, struct bio *bio)
+@@ -835,7 +854,7 @@ void dm_io_dec_pending(struct dm_io *io,
+ 		if (io_error == BLK_STS_DM_REQUEUE)
+ 			return;
  
-+		xsk_buff_free(bi->xdp);
-+		bi->xdp = NULL;
-+
- 		cleaned_count++;
- 		ixgbe_inc_ntc(rx_ring);
- 
--- 
-2.34.1
-
+-		if ((bio->bi_opf & REQ_PREFLUSH) && bio->bi_iter.bi_size) {
++		if (bio_is_flush_with_data(bio)) {
+ 			/*
+ 			 * Preflush done for flush with data, reissue
+ 			 * without REQ_PREFLUSH.
 
 
