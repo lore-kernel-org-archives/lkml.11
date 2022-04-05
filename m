@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252F5C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47029C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841809AbiDFBZz (ORCPT
+        id S1841865AbiDFB0J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
+        Tue, 5 Apr 2022 21:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356071AbiDEKWv (ORCPT
+        with ESMTP id S1353395AbiDEKGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144D6B0A4A;
-        Tue,  5 Apr 2022 03:05:54 -0700 (PDT)
+        Tue, 5 Apr 2022 06:06:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBBDBF94A;
+        Tue,  5 Apr 2022 02:54:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE035B81B7A;
-        Tue,  5 Apr 2022 10:05:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E323C385A2;
-        Tue,  5 Apr 2022 10:05:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1943161676;
+        Tue,  5 Apr 2022 09:54:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 281A5C385A1;
+        Tue,  5 Apr 2022 09:54:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153151;
-        bh=1srLbwnp+33mPNfQrlU4NgdphoWy2lW4na0w7ivP5IM=;
+        s=korg; t=1649152495;
+        bh=v9T8eW4CxRqcZcIN2O8Jva+X3Q6MDQY+h98m2KVgeYQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rsTmzPp4nG0VL3O7GrslZznBD+dfkzYIglRzgC2nbOzNymg7gSnqYdMLGGWS3iKGH
-         4eRkNibNmSwC+C08j6YpBXSEBeLJoV/zVvDztVO3zZ3umoYXyNgY/cYaq5+Q7iR6ob
-         Ch3y42CEcKoGusyo9/ifUKjgXaO8DzhuX3OPLK48=
+        b=QSrXwpfsJd9NsFdD6eSpx5DmtAtUImO2EiNZbW55ER05AyI9ukuyvLkDTk6BFRskM
+         l4kxrcApARUmM2FEnUpMjo8JzhSKOZvpiS+3ALd8y/o9qEHBFrg4mOiWb+Alap4tPk
+         4JMqQfEiGVbW74J7ozCxSJg57bchRPZcy0Hke47g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 081/599] can: isotp: sanitize CAN ID checks in isotp_bind()
-Date:   Tue,  5 Apr 2022 09:26:15 +0200
-Message-Id: <20220405070301.236975712@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Carnuccio <joe.carnuccio@cavium.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 798/913] scsi: qla2xxx: Add devids and conditionals for 28xx
+Date:   Tue,  5 Apr 2022 09:31:00 +0200
+Message-Id: <20220405070403.752421111@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,104 +50,177 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Joe Carnuccio <joe.carnuccio@cavium.com>
 
-commit 3ea566422cbde9610c2734980d1286ab681bb40e upstream.
+commit 0d6a536cb1fcabb6c3e9c94871c8d0b29bb5813b upstream.
 
-Syzbot created an environment that lead to a state machine status that
-can not be reached with a compliant CAN ID address configuration.
-The provided address information consisted of CAN ID 0x6000001 and 0xC28001
-which both boil down to 11 bit CAN IDs 0x001 in sending and receiving.
+This is an update to the original 28xx adapter enablement. Add a bunch of
+conditionals that are applicable for 28xx.
 
-Sanitize the SFF/EFF CAN ID values before performing the address checks.
-
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/20220316164258.54155-1-socketcan@hartkopp.net
-Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/r/20220110050218.3958-16-njavali@marvell.com
+Fixes: ecc89f25e225 ("scsi: qla2xxx: Add Device ID for ISP28XX")
+Cc: stable@vger.kernel.org
+Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c |   38 ++++++++++++++++++++------------------
- 1 file changed, 20 insertions(+), 18 deletions(-)
+ drivers/scsi/qla2xxx/qla_attr.c   |    7 ++-----
+ drivers/scsi/qla2xxx/qla_init.c   |    8 +++-----
+ drivers/scsi/qla2xxx/qla_mbx.c    |   14 +++++++++++---
+ drivers/scsi/qla2xxx/qla_os.c     |    3 +--
+ drivers/scsi/qla2xxx/qla_sup.c    |    4 ++--
+ drivers/scsi/qla2xxx/qla_target.c |    3 +--
+ 6 files changed, 20 insertions(+), 19 deletions(-)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1102,6 +1102,7 @@ static int isotp_bind(struct socket *soc
- 	struct net *net = sock_net(sk);
- 	int ifindex;
- 	struct net_device *dev;
-+	canid_t tx_id, rx_id;
- 	int err = 0;
- 	int notify_enetdown = 0;
- 	int do_rx_reg = 1;
-@@ -1109,8 +1110,18 @@ static int isotp_bind(struct socket *soc
- 	if (len < ISOTP_MIN_NAMELEN)
+--- a/drivers/scsi/qla2xxx/qla_attr.c
++++ b/drivers/scsi/qla2xxx/qla_attr.c
+@@ -555,7 +555,7 @@ qla2x00_sysfs_read_vpd(struct file *filp
+ 	if (!capable(CAP_SYS_ADMIN))
  		return -EINVAL;
  
--	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
--		return -EADDRNOTAVAIL;
-+	/* sanitize tx/rx CAN identifiers */
-+	tx_id = addr->can_addr.tp.tx_id;
-+	if (tx_id & CAN_EFF_FLAG)
-+		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
-+	else
-+		tx_id &= CAN_SFF_MASK;
+-	if (IS_NOCACHE_VPD_TYPE(ha))
++	if (!IS_NOCACHE_VPD_TYPE(ha))
+ 		goto skip;
+ 
+ 	faddr = ha->flt_region_vpd << 2;
+@@ -745,7 +745,7 @@ qla2x00_sysfs_write_reset(struct file *f
+ 		ql_log(ql_log_info, vha, 0x706f,
+ 		    "Issuing MPI reset.\n");
+ 
+-		if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
++		if (IS_QLA83XX(ha)) {
+ 			uint32_t idc_control;
+ 
+ 			qla83xx_idc_lock(vha, 0);
+@@ -1056,9 +1056,6 @@ qla2x00_free_sysfs_attr(scsi_qla_host_t
+ 			continue;
+ 		if (iter->type == 3 && !(IS_CNA_CAPABLE(ha)))
+ 			continue;
+-		if (iter->type == 0x27 &&
+-		    (!IS_QLA27XX(ha) || !IS_QLA28XX(ha)))
+-			continue;
+ 
+ 		sysfs_remove_bin_file(&host->shost_gendev.kobj,
+ 		    iter->attr);
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -3473,7 +3473,7 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
+ 		mem_size = (ha->fw_memory_size - 0x11000 + 1) *
+ 		    sizeof(uint16_t);
+ 	} else if (IS_FWI2_CAPABLE(ha)) {
+-		if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
++		if (IS_QLA83XX(ha))
+ 			fixed_size = offsetof(struct qla83xx_fw_dump, ext_mem);
+ 		else if (IS_QLA81XX(ha))
+ 			fixed_size = offsetof(struct qla81xx_fw_dump, ext_mem);
+@@ -3485,8 +3485,7 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
+ 		mem_size = (ha->fw_memory_size - 0x100000 + 1) *
+ 		    sizeof(uint32_t);
+ 		if (ha->mqenable) {
+-			if (!IS_QLA83XX(ha) && !IS_QLA27XX(ha) &&
+-			    !IS_QLA28XX(ha))
++			if (!IS_QLA83XX(ha))
+ 				mq_size = sizeof(struct qla2xxx_mq_chain);
+ 			/*
+ 			 * Allocate maximum buffer size for all queues - Q0.
+@@ -4047,8 +4046,7 @@ enable_82xx_npiv:
+ 			    ha->fw_major_version, ha->fw_minor_version,
+ 			    ha->fw_subminor_version);
+ 
+-			if (IS_QLA83XX(ha) || IS_QLA27XX(ha) ||
+-			    IS_QLA28XX(ha)) {
++			if (IS_QLA83XX(ha)) {
+ 				ha->flags.fac_supported = 0;
+ 				rval = QLA_SUCCESS;
+ 			}
+--- a/drivers/scsi/qla2xxx/qla_mbx.c
++++ b/drivers/scsi/qla2xxx/qla_mbx.c
+@@ -9,6 +9,12 @@
+ #include <linux/delay.h>
+ #include <linux/gfp.h>
+ 
++#ifdef CONFIG_PPC
++#define IS_PPCARCH      true
++#else
++#define IS_PPCARCH      false
++#endif
 +
-+	rx_id = addr->can_addr.tp.rx_id;
-+	if (rx_id & CAN_EFF_FLAG)
-+		rx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
-+	else
-+		rx_id &= CAN_SFF_MASK;
+ static struct mb_cmd_name {
+ 	uint16_t cmd;
+ 	const char *str;
+@@ -728,6 +734,9 @@ again:
+ 				vha->min_supported_speed =
+ 				    nv->min_supported_speed;
+ 			}
++
++			if (IS_PPCARCH)
++				mcp->mb[11] |= BIT_4;
+ 		}
  
- 	if (!addr->can_ifindex)
- 		return -ENODEV;
-@@ -1122,21 +1133,13 @@ static int isotp_bind(struct socket *soc
- 		do_rx_reg = 0;
- 
- 	/* do not validate rx address for functional addressing */
--	if (do_rx_reg) {
--		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
--			err = -EADDRNOTAVAIL;
--			goto out;
--		}
--
--		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
--			err = -EADDRNOTAVAIL;
--			goto out;
--		}
-+	if (do_rx_reg && rx_id == tx_id) {
-+		err = -EADDRNOTAVAIL;
-+		goto out;
+ 		if (ha->flags.exlogins_enabled)
+@@ -3029,8 +3038,7 @@ qla2x00_get_resource_cnts(scsi_qla_host_
+ 		ha->orig_fw_iocb_count = mcp->mb[10];
+ 		if (ha->flags.npiv_supported)
+ 			ha->max_npiv_vports = mcp->mb[11];
+-		if (IS_QLA81XX(ha) || IS_QLA83XX(ha) || IS_QLA27XX(ha) ||
+-		    IS_QLA28XX(ha))
++		if (IS_QLA81XX(ha) || IS_QLA83XX(ha))
+ 			ha->fw_max_fcf_count = mcp->mb[12];
  	}
  
- 	if (so->bound && addr->can_ifindex == so->ifindex &&
--	    addr->can_addr.tp.rx_id == so->rxid &&
--	    addr->can_addr.tp.tx_id == so->txid)
-+	    rx_id == so->rxid && tx_id == so->txid)
- 		goto out;
+@@ -5621,7 +5629,7 @@ qla2x00_get_data_rate(scsi_qla_host_t *v
+ 	mcp->out_mb = MBX_1|MBX_0;
+ 	mcp->in_mb = MBX_2|MBX_1|MBX_0;
+ 	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+-		mcp->in_mb |= MBX_3;
++		mcp->in_mb |= MBX_4|MBX_3;
+ 	mcp->tov = MBX_TOV_SECONDS;
+ 	mcp->flags = 0;
+ 	rval = qla2x00_mailbox_command(vha, mcp);
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -3739,8 +3739,7 @@ qla2x00_unmap_iobases(struct qla_hw_data
+ 		if (ha->mqiobase)
+ 			iounmap(ha->mqiobase);
  
- 	dev = dev_get_by_index(net, addr->can_ifindex);
-@@ -1160,8 +1163,7 @@ static int isotp_bind(struct socket *soc
- 	ifindex = dev->ifindex;
+-		if ((IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) &&
+-		    ha->msixbase)
++		if (ha->msixbase)
+ 			iounmap(ha->msixbase);
+ 	}
+ }
+--- a/drivers/scsi/qla2xxx/qla_sup.c
++++ b/drivers/scsi/qla2xxx/qla_sup.c
+@@ -844,7 +844,7 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vh
+ 				ha->flt_region_nvram = start;
+ 			break;
+ 		case FLT_REG_IMG_PRI_27XX:
+-			if (IS_QLA27XX(ha) && !IS_QLA28XX(ha))
++			if (IS_QLA27XX(ha) || IS_QLA28XX(ha))
+ 				ha->flt_region_img_status_pri = start;
+ 			break;
+ 		case FLT_REG_IMG_SEC_27XX:
+@@ -1356,7 +1356,7 @@ next:
+ 		    flash_data_addr(ha, faddr), le32_to_cpu(*dwptr));
+ 		if (ret) {
+ 			ql_dbg(ql_dbg_user, vha, 0x7006,
+-			    "Failed slopw write %x (%x)\n", faddr, *dwptr);
++			    "Failed slow write %x (%x)\n", faddr, *dwptr);
+ 			break;
+ 		}
+ 	}
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -7220,8 +7220,7 @@ qlt_probe_one_stage1(struct scsi_qla_hos
+ 	if (!QLA_TGT_MODE_ENABLED())
+ 		return;
  
- 	if (do_rx_reg)
--		can_rx_register(net, dev, addr->can_addr.tp.rx_id,
--				SINGLE_MASK(addr->can_addr.tp.rx_id),
-+		can_rx_register(net, dev, rx_id, SINGLE_MASK(rx_id),
- 				isotp_rcv, sk, "isotp", sk);
- 
- 	dev_put(dev);
-@@ -1181,8 +1183,8 @@ static int isotp_bind(struct socket *soc
- 
- 	/* switch to new settings */
- 	so->ifindex = ifindex;
--	so->rxid = addr->can_addr.tp.rx_id;
--	so->txid = addr->can_addr.tp.tx_id;
-+	so->rxid = rx_id;
-+	so->txid = tx_id;
- 	so->bound = 1;
- 
- out:
+-	if  ((ql2xenablemsix == 0) || IS_QLA83XX(ha) || IS_QLA27XX(ha) ||
+-	    IS_QLA28XX(ha)) {
++	if  (ha->mqenable || IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+ 		ISP_ATIO_Q_IN(base_vha) = &ha->mqiobase->isp25mq.atio_q_in;
+ 		ISP_ATIO_Q_OUT(base_vha) = &ha->mqiobase->isp25mq.atio_q_out;
+ 	} else {
 
 
