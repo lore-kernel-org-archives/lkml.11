@@ -2,152 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B01DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiDEFns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 01:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56446 "EHLO
+        id S229912AbiDEFpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 01:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiDEFnq (ORCPT
+        with ESMTP id S229657AbiDEFpH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 01:43:46 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904F263E8
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 22:41:48 -0700 (PDT)
+        Tue, 5 Apr 2022 01:45:07 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456AC7D036;
+        Mon,  4 Apr 2022 22:43:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649137308; x=1680673308;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=G2BO2/B3jnRoD2tEVHLw9dKyHuY6CFl1kJyzuzD+qdk=;
-  b=Lt2d8/wLVWflgOy0t4TeEERObNkRcEabTmEDDBDYTVB1ked4OF3Zmvw6
-   4lFPSh5eJKS74BMFYJsm7jglFByU/f0mv2ic6XrxIzUU543qVvq2U4pZ+
-   /u4vQnt4VDsxRslRSqXoXkRr+oX2lcI/2hYyUu31hOvsKdFNM5FcAplrW
-   x+Esnw2O3hfylZewvCqSRe9ItIYLdsB3uCLgSYEJGTtK+aMgR+p4wy8ts
-   HGhmSTtk3JOzn7Pp6QcT9iwI7DSkvVQiQrntwFJque4IUyXujPSf5Mur8
-   omYjpKtP1h46adbeI3sRd38xkXchw2/iYT8uTWo8c9l7XBGRe4h0gq6B6
+  t=1649137389; x=1680673389;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QkhwjM4NOVGIGV18viP88LLCyv8YTx7E+6w6ZCZlrFY=;
+  b=YY6vRpGMaD3wmxes0B2k3Ff1GdkZEuxfXjvj65kyhYKQIMPtG5h/ipGs
+   WMqEiuU9vuVRMSKEMJ1WBjK+xqtum4BnDwh0mkOROaBHwnoXW8DBEbskj
+   yxiZvn41A6datIvHfHOnMqSdXUoz5WptBEnCnqo2lqx6jzXFvihLJGmsW
+   lwgBgpNY3V5xGeA3mlN++VJ8IQp3fogTJdDDfwVNwrcwthp+PNBMpnrkV
+   03BMZLE1z1PKieKd4z6GPXjjGqTe7gGQ90vTPECEydDvr9KQNk4tk81SX
+   6AIpUBU/CfcBLD0hQjp2h+I4PBItn+4dOoclAb+u3H7f/4CmN+5amYqgW
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="347108966"
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260366446"
 X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="347108966"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 22:41:48 -0700
+   d="scan'208";a="260366446"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 22:43:08 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="587811921"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 04 Apr 2022 22:41:46 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbbwn-0002gX-Kv;
-        Tue, 05 Apr 2022 05:41:45 +0000
-Date:   Tue, 5 Apr 2022 13:40:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 35/40]
- fs/netfs/buffered_write.c:757:6: warning: variable 'spare_region' is used
- uninitialized whenever 'if' condition is true
-Message-ID: <202204051308.qn1GUtl6-lkp@intel.com>
+   d="scan'208";a="523857444"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga006.jf.intel.com with ESMTP; 04 Apr 2022 22:43:06 -0700
+Date:   Tue, 5 Apr 2022 13:35:47 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        git@xilinx.com
+Subject: Re: [PATCH v3 5/5] fpga: fpga-region: Add missing kernel-doc
+ description
+Message-ID: <20220405053547.GA249845@yilunxu-OptiPlex-7050>
+References: <20220403051641.3867610-1-nava.manne@xilinx.com>
+ <20220403051641.3867610-6-nava.manne@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220403051641.3867610-6-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   674eea41fc70a740ff83ec590f9833f805852464
-commit: fc20927bc9709523b2a53feee2a52423b9d66456 [35/40] netfs: Allow buffered shared-writeable mmap through netfs_page_mkwrite()
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220405/202204051308.qn1GUtl6-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/fc20927bc9709523b2a53feee2a52423b9d66456
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout fc20927bc9709523b2a53feee2a52423b9d66456
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/netfs/
+On Sun, Apr 03, 2022 at 10:46:41AM +0530, Nava kishore Manne wrote:
+> Fixed the warnings: No description found for return value of 'xxx'
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The commit message is not clear. There are descriptions for some
+functions, but not in right format.
 
-All warnings (new ones prefixed by >>):
+Thanks,
+Yilun
 
->> fs/netfs/buffered_write.c:757:6: warning: variable 'spare_region' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (mas_expected_entries(&mas, 2) < 0) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:793:30: note: uninitialized use occurs here
-           netfs_put_dirty_region(ctx, spare_region, netfs_region_trace_put_discard);
-                                       ^~~~~~~~~~~~
-   fs/netfs/buffered_write.c:757:2: note: remove the 'if' if its condition is always false
-           if (mas_expected_entries(&mas, 2) < 0) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:754:6: warning: variable 'spare_region' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (folio_lock_killable(folio) < 0)
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:793:30: note: uninitialized use occurs here
-           netfs_put_dirty_region(ctx, spare_region, netfs_region_trace_put_discard);
-                                       ^~~~~~~~~~~~
-   fs/netfs/buffered_write.c:754:2: note: remove the 'if' if its condition is always false
-           if (folio_lock_killable(folio) < 0)
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:751:6: warning: variable 'spare_region' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (folio_wait_writeback_killable(folio))
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:793:30: note: uninitialized use occurs here
-           netfs_put_dirty_region(ctx, spare_region, netfs_region_trace_put_discard);
-                                       ^~~~~~~~~~~~
-   fs/netfs/buffered_write.c:751:2: note: remove the 'if' if its condition is always false
-           if (folio_wait_writeback_killable(folio))
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:734:41: note: initialize the variable 'spare_region' to silence this warning
-           struct netfs_dirty_region *spare_region;
-                                                  ^
-                                                   = NULL
-   3 warnings generated.
-
-
-vim +757 fs/netfs/buffered_write.c
-
-   727	
-   728	/*
-   729	 * Notification that a previously read-only page is about to become writable.
-   730	 * Note that the caller indicates a single page of a multipage folio.
-   731	 */
-   732	vm_fault_t netfs_page_mkwrite(struct vm_fault *vmf)
-   733	{
-   734		struct netfs_dirty_region *spare_region;
-   735		struct folio *folio = page_folio(vmf->page);
-   736		struct file *file = vmf->vma->vm_file;
-   737		struct inode *inode = file_inode(file);
-   738		struct netfs_i_context *ctx = netfs_i_context(inode);
-   739		vm_fault_t ret = VM_FAULT_RETRY;
-   740		int err;
-   741	
-   742		MA_STATE(mas, &ctx->dirty_regions, vmf->page->index, PAGE_SIZE);
-   743	
-   744		_enter("%lx", folio->index);
-   745	
-   746		if (ctx->ops->validate_for_write(inode, file) < 0)
-   747			return VM_FAULT_SIGBUS;
-   748	
-   749		sb_start_pagefault(inode->i_sb);
-   750	
-   751		if (folio_wait_writeback_killable(folio))
-   752			goto out;
-   753	
-   754		if (folio_lock_killable(folio) < 0)
-   755			goto out;
-   756	
- > 757		if (mas_expected_entries(&mas, 2) < 0) {
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> ---
+> Changes for v2:
+>                 -Replaced s/@return:/Return:/
+> Changes for v3:
+>                -Updated commit description.
+> 
+>  drivers/fpga/of-fpga-region.c | 16 +++++++++-------
+>  1 file changed, 9 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/fpga/of-fpga-region.c b/drivers/fpga/of-fpga-region.c
+> index 50b83057c048..9e330a2c0a1b 100644
+> --- a/drivers/fpga/of-fpga-region.c
+> +++ b/drivers/fpga/of-fpga-region.c
+> @@ -28,7 +28,7 @@ MODULE_DEVICE_TABLE(of, fpga_region_of_match);
+>   *
+>   * Caller will need to put_device(&region->dev) when done.
+>   *
+> - * Returns FPGA Region struct or NULL
+> + * Return: FPGA Region struct or NULL
+>   */
+>  static struct fpga_region *of_fpga_region_find(struct device_node *np)
+>  {
+> @@ -80,7 +80,7 @@ static struct fpga_manager *of_fpga_region_get_mgr(struct device_node *np)
+>   * Caller should call fpga_bridges_put(&region->bridge_list) when
+>   * done with the bridges.
+>   *
+> - * Return 0 for success (even if there are no bridges specified)
+> + * Return: 0 for success (even if there are no bridges specified)
+>   * or -EBUSY if any of the bridges are in use.
+>   */
+>  static int of_fpga_region_get_bridges(struct fpga_region *region)
+> @@ -139,13 +139,13 @@ static int of_fpga_region_get_bridges(struct fpga_region *region)
+>  }
+>  
+>  /**
+> - * child_regions_with_firmware
+> + * child_regions_with_firmware - Used to check the child region info.
+>   * @overlay: device node of the overlay
+>   *
+>   * If the overlay adds child FPGA regions, they are not allowed to have
+>   * firmware-name property.
+>   *
+> - * Return 0 for OK or -EINVAL if child FPGA region adds firmware-name.
+> + * Return: 0 for OK or -EINVAL if child FPGA region adds firmware-name.
+>   */
+>  static int child_regions_with_firmware(struct device_node *overlay)
+>  {
+> @@ -184,7 +184,7 @@ static int child_regions_with_firmware(struct device_node *overlay)
+>   * Given an overlay applied to an FPGA region, parse the FPGA image specific
+>   * info in the overlay and do some checking.
+>   *
+> - * Returns:
+> + * Return:
+>   *   NULL if overlay doesn't direct us to program the FPGA.
+>   *   fpga_image_info struct if there is an image to program.
+>   *   error code for invalid overlay.
+> @@ -279,7 +279,7 @@ static struct fpga_image_info *of_fpga_region_parse_ov(
+>   * If the checks fail, overlay is rejected and does not get added to the
+>   * live tree.
+>   *
+> - * Returns 0 for success or negative error code for failure.
+> + * Return: 0 for success or negative error code for failure.
+>   */
+>  static int of_fpga_region_notify_pre_apply(struct fpga_region *region,
+>  					   struct of_overlay_notify_data *nd)
+> @@ -339,7 +339,7 @@ static void of_fpga_region_notify_post_remove(struct fpga_region *region,
+>   * This notifier handles programming an FPGA when a "firmware-name" property is
+>   * added to an fpga-region.
+>   *
+> - * Returns NOTIFY_OK or error if FPGA programming fails.
+> + * Return: NOTIFY_OK or error if FPGA programming fails.
+>   */
+>  static int of_fpga_region_notify(struct notifier_block *nb,
+>  				 unsigned long action, void *arg)
+> @@ -446,6 +446,8 @@ static struct platform_driver of_fpga_region_driver = {
+>  /**
+>   * of_fpga_region_init - init function for fpga_region class
+>   * Creates the fpga_region class and registers a reconfig notifier.
+> + *
+> + * Return: 0 on success, negative error code otherwise.
+>   */
+>  static int __init of_fpga_region_init(void)
+>  {
+> -- 
+> 2.25.1
