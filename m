@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 916C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D4CC46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579650AbiDEXc1 (ORCPT
+        id S1579633AbiDEXcP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
+        Tue, 5 Apr 2022 19:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349165AbiDEJtQ (ORCPT
+        with ESMTP id S1349156AbiDEJtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEFB64CC;
-        Tue,  5 Apr 2022 02:41:57 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D345F6B;
+        Tue,  5 Apr 2022 02:41:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CD357CE1C99;
-        Tue,  5 Apr 2022 09:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9E36C385A2;
-        Tue,  5 Apr 2022 09:41:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 303E061368;
+        Tue,  5 Apr 2022 09:41:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41C5AC385A2;
+        Tue,  5 Apr 2022 09:41:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151714;
-        bh=68lRu9Iwrr+Nxnuvq2RnpXFUx1MpHDRgecROVpoboCI=;
+        s=korg; t=1649151703;
+        bh=6EwFOGsPJ+YtAsXr+TGu5nCqNtOeBU5wO0bhRpAxWnE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SGKP+lB5w5n7cmz1ZKYelxqhXLre0bPjv3onlIanLfBeMZc/wkCulMZX4W5/KLN7s
-         9sXqRZM49osGctuSYIXvrDqLTQPsFVoOe5yk9orKOG6o6CB+1ppjFDydFFHPpyhv6/
-         DGQSNaChgEdVkCyMJMDelHx/ntfjckuaPGnsdCXM=
+        b=geMa6udp9ABrWr8UZNjjqpNy+ZEwqBJyEc8uDA5ow4REkIhNqlETRapxNFlDLzG/9
+         CYxlVNDqkTsDwUGDlYWro+58qhhmugivlebW7LI/eseVtr1t6bnPRFl/SOj+c1aqju
+         3dfAzMbWUiEUB82nsOpYrACm0FOf1pO97E49rRDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 515/913] IB/hfi1: Allow larger MTU without AIP
-Date:   Tue,  5 Apr 2022 09:26:17 +0200
-Message-Id: <20220405070355.290973807@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 494/913] ext2: correct max file size computing
+Date:   Tue,  5 Apr 2022 09:25:56 +0200
+Message-Id: <20220405070354.662664214@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,44 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-[ Upstream commit b135e324d7a2e7fa0a7ef925076136e799b79f44 ]
+[ Upstream commit 50b3a818991074177a56c87124c7a7bdf5fa4f67 ]
 
-The AIP code signals the phys_mtu in the following query_port()
-fragment:
+We need to calculate the max file size accurately if the total blocks
+that can address by block tree exceed the upper_limit. But this check is
+not correct now, it only compute the total data blocks but missing
+metadata blocks are needed. So in the case of "data blocks < upper_limit
+&& total blocks > upper_limit", we will get wrong result. Fortunately,
+this case could not happen in reality, but it's confused and better to
+correct the computing.
 
-	props->phys_mtu = HFI1_CAP_IS_KSET(AIP) ? hfi1_max_mtu :
-				ib_mtu_enum_to_int(props->max_mtu);
+  bits   data blocks   metadatablocks   upper_limit
+  10        16843020            66051    2147483647
+  11       134480396           263171    1073741823
+  12      1074791436          1050627     536870911 (*)
+  13      8594130956          4198403     268435455 (*)
+  14     68736258060         16785411     134217727 (*)
+  15    549822930956         67125251      67108863 (*)
+  16   4398314962956        268468227      33554431 (*)
 
-Using the largest MTU possible should not depend on AIP.
+  [*] Need to calculate in depth.
 
-Fix by unconditionally using the hfi1_max_mtu value.
-
-Fixes: 6d72344cf6c4 ("IB/ipoib: Increase ipoib Datagram mode MTU's upper limit")
-Link: https://lore.kernel.org/r/1644348309-174874-1-git-send-email-mike.marciniszyn@cornelisnetworks.com
-Reviewed-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 1c2d14212b15 ("ext2: Fix underflow in ext2_max_size()")
+Link: https://lore.kernel.org/r/20220212050532.179055-1-yi.zhang@huawei.com
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/verbs.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/ext2/super.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/verbs.c b/drivers/infiniband/hw/hfi1/verbs.c
-index 26bea51869bf..ef8e0bdacb51 100644
---- a/drivers/infiniband/hw/hfi1/verbs.c
-+++ b/drivers/infiniband/hw/hfi1/verbs.c
-@@ -1397,8 +1397,7 @@ static int query_port(struct rvt_dev_info *rdi, u32 port_num,
- 				      4096 : hfi1_max_mtu), IB_MTU_4096);
- 	props->active_mtu = !valid_ib_mtu(ppd->ibmtu) ? props->max_mtu :
- 		mtu_to_enum(ppd->ibmtu, IB_MTU_4096);
--	props->phys_mtu = HFI1_CAP_IS_KSET(AIP) ? hfi1_max_mtu :
--				ib_mtu_enum_to_int(props->max_mtu);
-+	props->phys_mtu = hfi1_max_mtu;
+diff --git a/fs/ext2/super.c b/fs/ext2/super.c
+index d8d580b609ba..3d21279fe2cb 100644
+--- a/fs/ext2/super.c
++++ b/fs/ext2/super.c
+@@ -753,8 +753,12 @@ static loff_t ext2_max_size(int bits)
+ 	res += 1LL << (bits-2);
+ 	res += 1LL << (2*(bits-2));
+ 	res += 1LL << (3*(bits-2));
++	/* Compute how many metadata blocks are needed */
++	meta_blocks = 1;
++	meta_blocks += 1 + ppb;
++	meta_blocks += 1 + ppb + ppb * ppb;
+ 	/* Does block tree limit file size? */
+-	if (res < upper_limit)
++	if (res + meta_blocks <= upper_limit)
+ 		goto check_lfs;
  
- 	return 0;
- }
+ 	res = upper_limit;
 -- 
 2.34.1
 
