@@ -2,82 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6B7C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36274C35273
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850133AbiDFCrt (ORCPT
+        id S1850164AbiDFCsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43612 "EHLO
+        Tue, 5 Apr 2022 22:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584007AbiDEX5s (ORCPT
+        with ESMTP id S1585288AbiDEX7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 19:57:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B067E15AAFF;
-        Tue,  5 Apr 2022 15:10:54 -0700 (PDT)
+        Tue, 5 Apr 2022 19:59:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E642128DE
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:16:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F891B81FF1;
-        Tue,  5 Apr 2022 22:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A36FC385A5;
-        Tue,  5 Apr 2022 22:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649196613;
-        bh=413WPoWJxK5FtCbvBY6deUOHmDqE/X/cMye095WXlJY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pzEjk5eE/E87tq1YG8HsafcBcz62Q1wvTmKmIUP+FNmKKuLYixYDn8qiS2XzHLbW/
-         vTltkqQxNSSeAFM7ZfXvjGbtMsAA67hIGf5DsgRRXQ4qL/msicIPLsgEl/57MUzkRT
-         AT/q0aqgiLXv89xPAbBUB6/r7OFpfXA8w8+2dOKX3RTNeYg78NmSPZw3r5xXIFtsuU
-         fxaT46sJ5L0aNYcGVh+NPdKkojXC7a8wCuILGAfK/NkBSuRwIkYl36Y2+c0uBttL3c
-         qOHZMj2H+Ontnsz6Gd5dt+vDMuqtQ+yYgaGuqqAodYdKJSTuBFYSS2GjGkA1C7l7lY
-         XOX4Hxf0/aS8g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0B9A5E85BCB;
-        Tue,  5 Apr 2022 22:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v2] bpf, arm64: Sign return address for jited code
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164919661303.14188.16221204846341071276.git-patchwork-notify@kernel.org>
-Date:   Tue, 05 Apr 2022 22:10:13 +0000
-References: <20220402073942.3782529-1-xukuohai@huawei.com>
-In-Reply-To: <20220402073942.3782529-1-xukuohai@huawei.com>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        daniel@iogearbox.net, ast@kernel.org, zlim.lnx@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2CD3B81FF0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:16:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C925FC385A0;
+        Tue,  5 Apr 2022 22:16:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1649196978;
+        bh=8LM8oYesOnkFwWaxBlNnPegAUYU1pEClxEtyin3U9X4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xhSnE3/EqIsFBG1SJ9QvyIlXgsBBF10o2ufCqKuVO6VnuoC/MBQk1LXh6QsK+K48u
+         ISBzQ3C3lETGXI8Tym4xIRgrj/eIbFLSafSiKWwN4Lr+ddk/Hzp3qy07MVn40I/HyF
+         B91NVya62FH+qrHH3H5ePWiv79lbB34m/t4HKDm4=
+Date:   Tue, 5 Apr 2022 15:16:16 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Peter Xu <peterx@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        David Hildenbrand <david@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>
+Subject: Re: [PATCH v8 00/23] userfaultfd-wp: Support shmem and hugetlbfs
+Message-Id: <20220405151616.bf25fa4aad55536cd031e1ab@linux-foundation.org>
+In-Reply-To: <20220405014646.13522-1-peterx@redhat.com>
+References: <20220405014646.13522-1-peterx@redhat.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Mon,  4 Apr 2022 21:46:23 -0400 Peter Xu <peterx@redhat.com> wrote:
 
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+> This is v8 of the series to add shmem+hugetlbfs support for userfaultfd
+> write protection. 
 
-On Sat, 2 Apr 2022 03:39:42 -0400 you wrote:
-> Sign return address for jited code when the kernel is built with pointer
-> authentication enabled.
-> 
-> 1. Sign LR with paciasp instruction before LR is pushed to stack. Since
->    paciasp acts like landing pads for function entry, no need to insert
->    bti instruction before paciasp.
-> 
-> [...]
-
-Here is the summary with links:
-  - [bpf-next,v2] bpf, arm64: Sign return address for jited code
-    https://git.kernel.org/bpf/bpf-next/c/042152c27c3b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Various compilation catastrophes with x86_64 allnoconfig.  I poked at
+the include ordering for a while but other things quickly became more
+attractive ;)
