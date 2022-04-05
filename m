@@ -2,97 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B57C47081
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F6AEC35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380045AbiDEUkq (ORCPT
+        id S1382757AbiDEUli (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
+        Tue, 5 Apr 2022 16:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348703AbiDEJs0 (ORCPT
+        with ESMTP id S1392421AbiDENuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C735A39141;
-        Tue,  5 Apr 2022 02:34:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D76DFB81C6F;
-        Tue,  5 Apr 2022 09:34:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 352F6C385A3;
-        Tue,  5 Apr 2022 09:34:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151265;
-        bh=kTf509aGxUC2L+Qqne7LOHBXyNCvMcSwY5mKQwAKabs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LuSR2FeT1dCKZohKSNiS98pagNhZA6vxaK0/mf61OduRGhR4jrH5800Lf0B8iGoHX
-         bzb3SKKQzZ46lXOPJtRuqf6FdPqn1l+jFZPf3dzSmDr7RvoXCtGSUcV8u60MnDXcig
-         NYwjDTILyiJ+/LArSsHQ6UY91MXfyreilol+waaU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 353/913] media: saa7134: fix incorrect use to determine if list is empty
-Date:   Tue,  5 Apr 2022 09:23:35 +0200
-Message-Id: <20220405070350.427357768@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:50:02 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989D313FB2;
+        Tue,  5 Apr 2022 05:53:11 -0700 (PDT)
+X-UUID: 4d77f1da642d4783b1990008a6252d57-20220405
+X-UUID: 4d77f1da642d4783b1990008a6252d57-20220405
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1714771403; Tue, 05 Apr 2022 20:53:06 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 5 Apr 2022 20:53:04 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 5 Apr 2022 20:53:04 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <pmladek@suse.com>
+CC:     <acme@kernel.org>, <akpm@linux-foundation.org>,
+        <alexander.shishkin@linux.intel.com>, <catalin.marinas@arm.com>,
+        <davem@davemloft.net>, <jolsa@redhat.com>, <jthierry@redhat.com>,
+        <keescook@chromium.org>, <kernelfans@gmail.com>,
+        <lecopzer.chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
+        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
+        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
+        <nixiaoming@huawei.com>, <peterz@infradead.org>,
+        <sparclinux@vger.kernel.org>, <sumit.garg@linaro.org>,
+        <wangqing@vivo.com>, <will@kernel.org>, <yj.chiang@mediatek.com>
+Subject: Re: [PATCH v3 5/5] arm64: Enable perf events based hard lockup detector
+Date:   Tue, 5 Apr 2022 20:53:04 +0800
+Message-ID: <20220405125304.3762-1-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220404141709.GA26840@pathway.suse.cz>
+References: <20220404141709.GA26840@pathway.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
-
-[ Upstream commit 9f1f4b642451d35667a4dc6a9c0a89d954b530a3 ]
-
-'dev' will *always* be set by list_for_each_entry().
-It is incorrect to assume that the iterator value will be NULL if the
-list is empty.
-
-Instead of checking the pointer it should be checked if
-the list is empty.
-
-Fixes: 79dd0c69f05f ("V4L: 925: saa7134 alsa is now a standalone module")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/pci/saa7134/saa7134-alsa.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/media/pci/saa7134/saa7134-alsa.c b/drivers/media/pci/saa7134/saa7134-alsa.c
-index fb24d2ed3621..d3cde05a6eba 100644
---- a/drivers/media/pci/saa7134/saa7134-alsa.c
-+++ b/drivers/media/pci/saa7134/saa7134-alsa.c
-@@ -1214,7 +1214,7 @@ static int alsa_device_exit(struct saa7134_dev *dev)
  
- static int saa7134_alsa_init(void)
- {
--	struct saa7134_dev *dev = NULL;
-+	struct saa7134_dev *dev;
- 
- 	saa7134_dmasound_init = alsa_device_init;
- 	saa7134_dmasound_exit = alsa_device_exit;
-@@ -1229,7 +1229,7 @@ static int saa7134_alsa_init(void)
- 			alsa_device_init(dev);
- 	}
- 
--	if (dev == NULL)
-+	if (list_empty(&saa7134_devlist))
- 		pr_info("saa7134 ALSA: no saa7134 cards found\n");
- 
- 	return 0;
--- 
-2.34.1
+> On Thu 2022-03-24 22:14:05, Lecopzer Chen wrote:
+> > With the recent feature added to enable perf events to use pseudo NMIs
+> > as interrupts on platforms which support GICv3 or later, its now been
+> > possible to enable hard lockup detector (or NMI watchdog) on arm64
+> > platforms. So enable corresponding support.
+> > 
+> > One thing to note here is that normally lockup detector is initialized
+> > just after the early initcalls but PMU on arm64 comes up much later as
+> > device_initcall(). To cope with that, overriding watchdog_nmi_probe() to
+> > let the watchdog framework know PMU not ready, and inform the framework
+> > to re-initialize lockup detection once PMU has been initialized.
+> > 
+> > [1]: http://lore.kernel.org/linux-arm-kernel/1610712101-14929-1-git-send-email-sumit.garg@linaro.org
+> > 
+> > --- /dev/null
+> > +++ b/arch/arm64/kernel/watchdog_hld.c
+> > @@ -0,0 +1,37 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <linux/nmi.h>
+> > +#include <linux/cpufreq.h>
+> > +#include <linux/perf/arm_pmu.h>
+> > +
+> > +/*
+> > + * Safe maximum CPU frequency in case a particular platform doesn't implement
+> > + * cpufreq driver. Although, architecture doesn't put any restrictions on
+> > + * maximum frequency but 5 GHz seems to be safe maximum given the available
+> > + * Arm CPUs in the market which are clocked much less than 5 GHz. On the other
+> > + * hand, we can't make it much higher as it would lead to a large hard-lockup
+> > + * detection timeout on parts which are running slower (eg. 1GHz on
+> > + * Developerbox) and doesn't possess a cpufreq driver.
+> > + */
+> > +#define SAFE_MAX_CPU_FREQ	5000000000UL // 5 GHz
+> > +u64 hw_nmi_get_sample_period(int watchdog_thresh)
+> > +{
+> > +	unsigned int cpu = smp_processor_id();
+> > +	unsigned long max_cpu_freq;
+> > +
+> > +	max_cpu_freq = cpufreq_get_hw_max_freq(cpu) * 1000UL;
+> > +	if (!max_cpu_freq)
+> > +		max_cpu_freq = SAFE_MAX_CPU_FREQ;
+> > +
+> > +	return (u64)max_cpu_freq * watchdog_thresh;
+> > +}
+> 
+> This change is not mentioned in the commit message.
+> Please, put it into a separate patch.
+
+
+Actully, This cames from
+[1]: http://lore.kernel.org/linux-arm-kernel/1610712101-14929-1-git-send-email-sumit.garg@linaro.org
+And I didn't touch the commit message from the origin patch.
+But of course, I could imporve it with proper description if
+anyone thinks it's not good enough.
+
+Would you mean put this function hw_nmi_get_sample_period() in patch 6th?
+In the view of "arm64 uses delayed init with all the functionality it need to set up",
+IMO, this make sense for me to put into a single patch.
+
+But if you still think this should put into a separate patch, I'll do it:)
+
+
+> 
+> > +int __init watchdog_nmi_probe(void)
+> > +{
+> > +	if (!allow_lockup_detector_init_retry)
+> > +		return -EBUSY;
+> 
+> How do you know that you should return -EBUSY
+> when retry in not enabled?
+> 
+> I guess that it is an optimization to make it fast
+> during the first call. But the logic is far from
+> obvious.
+> 
+
+Yes, you can see this as an optimization, because arm64 PMU is not ready
+during lockup_detector_init(), so the watchdog_nmi_probe() must fail.
+
+Thus we only want to do watchdog_nmi_probe() in delayed init,
+so if not in the state (allow_lockup_detector_init_retry=true), just tell
+
+if it's unclear, maybe a brief comment can be add like this:
+
++	/* arm64 is only able to initialize lockup detecor during delayed init */
++	if (!allow_lockup_detector_init_retry)
++		return -EBUSY;
+
+
+
+
+> > +
+> > +	if (!arm_pmu_irq_is_nmi())
+> > +		return -ENODEV;
+> > +
+> > +	return hardlockup_detector_perf_init();
+> > +}
+> 
+> Is this just an optimization or is it really needed?
+> Why this was not needed in v2 patchset?
+> 
+> If it is just an optimization then I would remove it.
+> IMHO, it just adds confusion and it is not worth it.
+> 
+
+It was a mistake when I rebased v2, This should be included in v2
+but I missed it.
+
+For arm_pmu_irq_is_nmi() checking, we do need it, becasue arm64 needs
+explictly turns on Pseudo-NMI to support base function for NMI.
+
+hardlockup_detector_perf_init() will success even if we haven't had
+Pseudo-NMI turns on, however, the pmu interrupts will act like a
+normal interrupt instead of NMI and the hardlockup detector would be broken.
+
+
+thanks for all the comment
+
+BRs,
+Lecopzer
+
+
+
 
 
 
