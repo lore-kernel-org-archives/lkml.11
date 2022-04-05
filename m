@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC0EC4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B362DC352A1
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242207AbiDEJPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
+        id S1343914AbiDEJPf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239613AbiDEIUQ (ORCPT
+        with ESMTP id S239630AbiDEIUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DCD113;
-        Tue,  5 Apr 2022 01:17:29 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA1921C;
+        Tue,  5 Apr 2022 01:17:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F71760AFB;
-        Tue,  5 Apr 2022 08:17:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37C4CC385A0;
-        Tue,  5 Apr 2022 08:17:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D62F260B0F;
+        Tue,  5 Apr 2022 08:17:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6478C385A1;
+        Tue,  5 Apr 2022 08:17:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146648;
-        bh=MSqhLQSb/9SfAZGvAv8ZuYkH9K9StA+EANxqTLmH0Xk=;
+        s=korg; t=1649146673;
+        bh=W/lcVOcoPY+v/WrwziGHG8JE2ki8hpSfLXopMnCP2oA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WBn7ZOjF9o1wPY1iJ/w2idxox56ZTKUT8dGfzg5pOfG/j+7wD2u7fw0UPTVyk1d0w
-         a4WrENv1dP1Xa/xco2e1HS8H0vgK594VWcyYBW3dsbN6fYkXdNSX5N8Q7gwVcr7Un4
-         1363WlgsO6E9cacRYrZXCTTATSJNvdVriSR6om64=
+        b=saFpp+/vi06oSh4Y69JVZqHnHokN12Ysa60gbINM6bOHJ0PioAsIkgokl+TcY2KsF
+         U0HRU+aP4dkVVSqboCfEFff/osp1WML+0Cr/uFjLl1gZxaQQ5B0s4MhMyJ8lOoLc1F
+         FJAtoCh7hAOY/TU1CYX3gAAoGK5D/jEkf2ThzMUs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Subject: [PATCH 5.17 0799/1126] net: stmmac: dwmac-qcom-ethqos: Enable RGMII functional clock on resume
-Date:   Tue,  5 Apr 2022 09:25:46 +0200
-Message-Id: <20220405070431.024317620@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0848/1126] powercap/dtpm_cpu: Reset per_cpu variable in the release function
+Date:   Tue,  5 Apr 2022 09:26:35 +0200
+Message-Id: <20220405070432.439978412@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,52 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
 
-[ Upstream commit ffba2123e1714a27e9362fda57c42155dda37efc ]
+[ Upstream commit 0aea2e4ec2a2bfa2d7e8820e37ba5b5ce04f20a5 ]
 
-When the Qualcomm ethqos driver is properly described in its associated
-GDSC power-domain, the hardware will be powered down and loose its state
-between qcom_ethqos_probe() and stmmac_init_dma_engine().
+The release function does not reset the per cpu variable when it is
+called. That will prevent creation again as the variable will be
+already from the previous creation.
 
-The result of this is that the functional clock from the RGMII IO macro
-is no longer provides and the DMA software reset in dwmac4_dma_reset()
-will time out, due to lacking clock signal.
+Fix it by resetting them.
 
-Re-enable the functional clock, as part of the Qualcomm specific clock
-enablement sequence to avoid this problem.
-
-The final clock configuration will be adjusted by ethqos_fix_mac_speed()
-once the link is being brought up.
-
-Fixes: a7c30e62d4b8 ("net: stmmac: Add driver for Qualcomm ethqos")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Tested-and-reviewed-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Link: https://lore.kernel.org/r/20220323033255.2282930-1-bjorn.andersson@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220130210210.549877-2-daniel.lezcano@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 7 +++++++
+ drivers/powercap/dtpm_cpu.c | 7 +++++++
  1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-index 2ffa0a11eea5..569683f33804 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-@@ -460,6 +460,13 @@ static int ethqos_clks_config(void *priv, bool enabled)
- 			dev_err(&ethqos->pdev->dev, "rgmii_clk enable failed\n");
- 			return ret;
- 		}
-+
-+		/* Enable functional clock to prevent DMA reset to timeout due
-+		 * to lacking PHY clock after the hardware block has been power
-+		 * cycled. The actual configuration will be adjusted once
-+		 * ethqos_fix_mac_speed() is invoked.
-+		 */
-+		ethqos_set_func_clk_en(ethqos);
- 	} else {
- 		clk_disable_unprepare(ethqos->rgmii_clk);
- 	}
+diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
+index b740866b228d..1e8cac699646 100644
+--- a/drivers/powercap/dtpm_cpu.c
++++ b/drivers/powercap/dtpm_cpu.c
+@@ -150,10 +150,17 @@ static int update_pd_power_uw(struct dtpm *dtpm)
+ static void pd_release(struct dtpm *dtpm)
+ {
+ 	struct dtpm_cpu *dtpm_cpu = to_dtpm_cpu(dtpm);
++	struct cpufreq_policy *policy;
+ 
+ 	if (freq_qos_request_active(&dtpm_cpu->qos_req))
+ 		freq_qos_remove_request(&dtpm_cpu->qos_req);
+ 
++	policy = cpufreq_cpu_get(dtpm_cpu->cpu);
++	if (policy) {
++		for_each_cpu(dtpm_cpu->cpu, policy->related_cpus)
++			per_cpu(dtpm_per_cpu, dtpm_cpu->cpu) = NULL;
++	}
++	
+ 	kfree(dtpm_cpu);
+ }
+ 
 -- 
 2.34.1
 
