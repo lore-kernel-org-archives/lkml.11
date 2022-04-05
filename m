@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 089DAC47085
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 367DFC352AA
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379636AbiDELlX (ORCPT
+        id S1379743AbiDELl2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
+        Tue, 5 Apr 2022 07:41:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244826AbiDEIwl (ORCPT
+        with ESMTP id S244807AbiDEIwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF4F22528;
-        Tue,  5 Apr 2022 01:44:24 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97AF33EB4;
+        Tue,  5 Apr 2022 01:44:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8739760FFC;
-        Tue,  5 Apr 2022 08:44:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9987CC385A1;
-        Tue,  5 Apr 2022 08:44:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0EABB81A32;
+        Tue,  5 Apr 2022 08:44:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3817DC385A1;
+        Tue,  5 Apr 2022 08:44:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148263;
-        bh=IsYGMWcOLC2kDDO8OFJfhbKJ+skf8w8cVCluqFXU9Jw=;
+        s=korg; t=1649148254;
+        bh=lsQCMO2UAmOUxU32IZI7RqfmRogOdDAJkU+iTVAqMEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N2gJBzn9z2qPR21dMBgniY17Egk0Ib4iIrNse67xfP1jYigjUNmANOm3Cyk4D874w
-         sarwzSu3a5v/zuOg4T+8Fx4v7Hfw9XGoOCZCBNqXikKUXZc9oXLFVf61P+/YrkOaNy
-         UyfJ2x2Eiz+PXmD+fvoidS2wSunfu7HBLBTQIROI=
+        b=TX0gTiYGVacpvg5hgPh+gQxVE7kSbqEYodRQPA88IC8AepOGQNGsStpS05G0L6JKq
+         +0Bun94O6ZzFhVdM1S/esq6Nq/L+cYMiEb38X+yZDIB4V/tWHbuSELBS+b4nfNqTU7
+         EoizfBRKLf2DSwY3wI4LHVveWD0zaoQIDmVBnS+4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0292/1017] ASoC: xilinx: xlnx_formatter_pcm: Handle sysclk setting
-Date:   Tue,  5 Apr 2022 09:20:05 +0200
-Message-Id: <20220405070402.941268358@linuxfoundation.org>
+Subject: [PATCH 5.16 0263/1017] rseq: Remove broken uapi field layout on 32-bit little endian
+Date:   Tue,  5 Apr 2022 09:19:36 +0200
+Message-Id: <20220405070402.070042621@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,90 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-[ Upstream commit 1c5091fbe7e0d0804158200b7feac5123f7b4fbd ]
+[ Upstream commit bfdf4e6208051ed7165b2e92035b4bf11f43eb63 ]
 
-This driver did not set the MM2S Fs Multiplier Register to the proper
-value for playback streams. This needs to be set to the sample rate to
-MCLK multiplier, or random stream underflows can occur on the downstream
-I2S transmitter.
+The rseq rseq_cs.ptr.{ptr32,padding} uapi endianness handling is
+entirely wrong on 32-bit little endian: a preprocessor logic mistake
+wrongly uses the big endian field layout on 32-bit little endian
+architectures.
 
-Store the sysclk value provided via the set_sysclk callback and use that
-in conjunction with the sample rate in the hw_params callback to calculate
-the proper value to set for this register.
+Fortunately, those ptr32 accessors were never used within the kernel,
+and only meant as a convenience for user-space.
 
-Fixes: 6f6c3c36f091 ("ASoC: xlnx: add pcm formatter platform driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220120195832.1742271-2-robert.hancock@calian.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Remove those and replace the whole rseq_cs union by a __u64 type, as
+this is the only thing really needed to express the ABI. Document how
+32-bit architectures are meant to interact with this field.
+
+Fixes: ec9c82e03a74 ("rseq: uapi: Declare rseq_cs field as union, update includes")
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220127152720.25898-1-mathieu.desnoyers@efficios.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/xilinx/xlnx_formatter_pcm.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ include/uapi/linux/rseq.h | 20 ++++----------------
+ kernel/rseq.c             |  8 ++++----
+ 2 files changed, 8 insertions(+), 20 deletions(-)
 
-diff --git a/sound/soc/xilinx/xlnx_formatter_pcm.c b/sound/soc/xilinx/xlnx_formatter_pcm.c
-index ce19a6058b27..5c4158069a5a 100644
---- a/sound/soc/xilinx/xlnx_formatter_pcm.c
-+++ b/sound/soc/xilinx/xlnx_formatter_pcm.c
-@@ -84,6 +84,7 @@ struct xlnx_pcm_drv_data {
- 	struct snd_pcm_substream *play_stream;
- 	struct snd_pcm_substream *capture_stream;
- 	struct clk *axi_clk;
-+	unsigned int sysclk;
- };
+diff --git a/include/uapi/linux/rseq.h b/include/uapi/linux/rseq.h
+index 9a402fdb60e9..77ee207623a9 100644
+--- a/include/uapi/linux/rseq.h
++++ b/include/uapi/linux/rseq.h
+@@ -105,23 +105,11 @@ struct rseq {
+ 	 * Read and set by the kernel. Set by user-space with single-copy
+ 	 * atomicity semantics. This field should only be updated by the
+ 	 * thread which registered this data structure. Aligned on 64-bit.
++	 *
++	 * 32-bit architectures should update the low order bits of the
++	 * rseq_cs field, leaving the high order bits initialized to 0.
+ 	 */
+-	union {
+-		__u64 ptr64;
+-#ifdef __LP64__
+-		__u64 ptr;
+-#else
+-		struct {
+-#if (defined(__BYTE_ORDER) && (__BYTE_ORDER == __BIG_ENDIAN)) || defined(__BIG_ENDIAN)
+-			__u32 padding;		/* Initialized to zero. */
+-			__u32 ptr32;
+-#else /* LITTLE */
+-			__u32 ptr32;
+-			__u32 padding;		/* Initialized to zero. */
+-#endif /* ENDIAN */
+-		} ptr;
+-#endif
+-	} rseq_cs;
++	__u64 rseq_cs;
  
- /*
-@@ -314,6 +315,15 @@ static irqreturn_t xlnx_s2mm_irq_handler(int irq, void *arg)
- 	return IRQ_NONE;
- }
+ 	/*
+ 	 * Restartable sequences flags field.
+diff --git a/kernel/rseq.c b/kernel/rseq.c
+index 6d45ac3dae7f..97ac20b4f738 100644
+--- a/kernel/rseq.c
++++ b/kernel/rseq.c
+@@ -128,10 +128,10 @@ static int rseq_get_rseq_cs(struct task_struct *t, struct rseq_cs *rseq_cs)
+ 	int ret;
  
-+static int xlnx_formatter_set_sysclk(struct snd_soc_component *component,
-+				     int clk_id, int source, unsigned int freq, int dir)
-+{
-+	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
-+
-+	adata->sysclk = freq;
-+	return 0;
-+}
-+
- static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
- 				   struct snd_pcm_substream *substream)
- {
-@@ -450,11 +460,25 @@ static int xlnx_formatter_pcm_hw_params(struct snd_soc_component *component,
- 	u64 size;
- 	struct snd_pcm_runtime *runtime = substream->runtime;
- 	struct xlnx_pcm_stream_param *stream_data = runtime->private_data;
-+	struct xlnx_pcm_drv_data *adata = dev_get_drvdata(component->dev);
- 
- 	active_ch = params_channels(params);
- 	if (active_ch > stream_data->ch_limit)
- 		return -EINVAL;
- 
-+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-+	    adata->sysclk) {
-+		unsigned int mclk_fs = adata->sysclk / params_rate(params);
-+
-+		if (adata->sysclk % params_rate(params) != 0) {
-+			dev_warn(component->dev, "sysclk %u not divisible by rate %u\n",
-+				 adata->sysclk, params_rate(params));
-+			return -EINVAL;
-+		}
-+
-+		writel(mclk_fs, stream_data->mmio + XLNX_AUD_FS_MULTIPLIER);
-+	}
-+
- 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
- 	    stream_data->xfer_mode == AES_TO_PCM) {
- 		val = readl(stream_data->mmio + XLNX_AUD_STS);
-@@ -552,6 +576,7 @@ static int xlnx_formatter_pcm_new(struct snd_soc_component *component,
- 
- static const struct snd_soc_component_driver xlnx_asoc_component = {
- 	.name		= DRV_NAME,
-+	.set_sysclk	= xlnx_formatter_set_sysclk,
- 	.open		= xlnx_formatter_pcm_open,
- 	.close		= xlnx_formatter_pcm_close,
- 	.hw_params	= xlnx_formatter_pcm_hw_params,
+ #ifdef CONFIG_64BIT
+-	if (get_user(ptr, &t->rseq->rseq_cs.ptr64))
++	if (get_user(ptr, &t->rseq->rseq_cs))
+ 		return -EFAULT;
+ #else
+-	if (copy_from_user(&ptr, &t->rseq->rseq_cs.ptr64, sizeof(ptr)))
++	if (copy_from_user(&ptr, &t->rseq->rseq_cs, sizeof(ptr)))
+ 		return -EFAULT;
+ #endif
+ 	if (!ptr) {
+@@ -217,9 +217,9 @@ static int clear_rseq_cs(struct task_struct *t)
+ 	 * Set rseq_cs to NULL.
+ 	 */
+ #ifdef CONFIG_64BIT
+-	return put_user(0UL, &t->rseq->rseq_cs.ptr64);
++	return put_user(0UL, &t->rseq->rseq_cs);
+ #else
+-	if (clear_user(&t->rseq->rseq_cs.ptr64, sizeof(t->rseq->rseq_cs.ptr64)))
++	if (clear_user(&t->rseq->rseq_cs, sizeof(t->rseq->rseq_cs)))
+ 		return -EFAULT;
+ 	return 0;
+ #endif
 -- 
 2.34.1
 
