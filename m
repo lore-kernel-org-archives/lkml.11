@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED0FC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DB1C4707E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346568AbiDEKne (ORCPT
+        id S1346858AbiDEKn4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
+        Tue, 5 Apr 2022 06:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241132AbiDEIcv (ORCPT
+        with ESMTP id S241091AbiDEIcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74B8B8E;
-        Tue,  5 Apr 2022 01:28:32 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA145140E3;
+        Tue,  5 Apr 2022 01:27:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7BFBAB81BCE;
-        Tue,  5 Apr 2022 08:28:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B0DC385A2;
-        Tue,  5 Apr 2022 08:28:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3A12FCE1C05;
+        Tue,  5 Apr 2022 08:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56DADC385A4;
+        Tue,  5 Apr 2022 08:27:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147310;
-        bh=vNZad3FPjoAjHReFNNmD0sSgxbCTGXb4aPBNRc7b06Y=;
+        s=korg; t=1649147231;
+        bh=dXFWPeFlgT6CyzZ310/ga2U0bPPCNAqe3eAdLbGPkzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HYJ7dZC31tYrlYGfJhmdyUKDqDQMMZYnIY2Y8tBYaoxivIs31UAISA0+ObRPjGsL9
-         yrWXNBNLw7/2BARoj/V17yapCJkgN18Uvm1gjt60N4tfyz58bDFLXUs4I0tP9HQQC0
-         ermsBAh85zcAjG2fOdKdQWVBUlTCoY4X0loKXKqg=
+        b=lYfoE0SOpl1CpVMC3kjqsCYdpwvQ+OvaO9kTrAThDV524Ho0+wEbt3UKfrHqx55UE
+         Yw+BCNmo3yHb3FEwDN4jTJ3PbE9NeaHv6aVpFz+W29JrMb/afC/wVol0zumEz0Wn/Y
+         Sl3MisGE3nb9WR2eezyZrr5ZIstP4oJSouOIuiB0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nemanja Rakovic <nemanja.rakovic@syrmia.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.17 1077/1126] mips: Enable KCSAN - take 2
-Date:   Tue,  5 Apr 2022 09:30:24 +0200
-Message-Id: <20220405070439.066740821@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 1010/1126] ubifs: setflags: Make dirtied_ino_d 8 bytes aligned
+Date:   Tue,  5 Apr 2022 09:29:17 +0200
+Message-Id: <20220405070437.134950528@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,31 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nemanja Rakovic <nemanja.rakovic@syrmia.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit d1ca45f93c3f95d1590d60b012cf8fcf6db633ee upstream.
+commit 1b83ec057db16b4d0697dc21ef7a9743b6041f72 upstream.
 
-Replaces KASAN_SANITIZE with KCSAN_SANITIZE in
-boot/compressed/Makefile.
+Make 'ui->data_len' aligned with 8 bytes before it is assigned to
+dirtied_ino_d. Since 8871d84c8f8b0c6b("ubifs: convert to fileattr")
+applied, 'setflags()' only affects regular files and directories, only
+xattr inode, symlink inode and special inode(pipe/char_dev/block_dev)
+have none- zero 'ui->data_len' field, so assertion
+'!(req->dirtied_ino_d & 7)' cannot fail in ubifs_budget_space().
+To avoid assertion fails in future evolution(eg. setflags can operate
+special inodes), it's better to make dirtied_ino_d 8 bytes aligned,
+after all aligned size is still zero for regular files.
 
-Fixes: e0a8b93efa23 mips: Enable KCSAN
-Signed-off-by: Nemanja Rakovic <nemanja.rakovic@syrmia.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: 1e51764a3c2ac05a ("UBIFS: add new flash file system")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/boot/compressed/Makefile |    2 +-
+ fs/ubifs/ioctl.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/mips/boot/compressed/Makefile
-+++ b/arch/mips/boot/compressed/Makefile
-@@ -38,7 +38,7 @@ KBUILD_AFLAGS := $(KBUILD_AFLAGS) -D__AS
- KCOV_INSTRUMENT		:= n
- GCOV_PROFILE := n
- UBSAN_SANITIZE := n
--KASAN_SANITIZE			:= n
-+KCSAN_SANITIZE			:= n
+--- a/fs/ubifs/ioctl.c
++++ b/fs/ubifs/ioctl.c
+@@ -108,7 +108,7 @@ static int setflags(struct inode *inode,
+ 	struct ubifs_inode *ui = ubifs_inode(inode);
+ 	struct ubifs_info *c = inode->i_sb->s_fs_info;
+ 	struct ubifs_budget_req req = { .dirtied_ino = 1,
+-					.dirtied_ino_d = ui->data_len };
++			.dirtied_ino_d = ALIGN(ui->data_len, 8) };
  
- # decompressor objects (linked with vmlinuz)
- vmlinuzobjs-y := $(obj)/head.o $(obj)/decompress.o $(obj)/string.o $(obj)/bswapsi.o
+ 	err = ubifs_budget_space(c, &req);
+ 	if (err)
 
 
