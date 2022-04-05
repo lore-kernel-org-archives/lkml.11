@@ -2,94 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FABEC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BC1C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbiDEU4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
+        id S1379299AbiDEUxx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352269AbiDEKEL (ORCPT
+        with ESMTP id S1573657AbiDETha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33478B820B;
-        Tue,  5 Apr 2022 02:53:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EFC76165C;
-        Tue,  5 Apr 2022 09:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C782C385A2;
-        Tue,  5 Apr 2022 09:53:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152381;
-        bh=B+LL6HqRHaXg/j5A4/f7HpsysJBncMEphF9/Mdw/N7Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uYMD8gc+THaZpaFBs03KrRZP+JTrGNhzY+NW58tKNkVFfnAfacks+xCpbidcKcQhV
-         7vIEh1/oK9RiUyW7ro2rv4Lvy4EoHAAxdOo+ay0nO9jH4HgtMYBM2zxm5gkck+mvnH
-         eT+foddQ9XRnVlZ+MwbeB9Gv3vx6bEjubulYLaPI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 757/913] lib/test_lockup: fix kernel pointer check for separate address spaces
-Date:   Tue,  5 Apr 2022 09:30:19 +0200
-Message-Id: <20220405070402.524030414@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 15:37:30 -0400
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DF6245BD;
+        Tue,  5 Apr 2022 12:35:29 -0700 (PDT)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1nboxN-00CFHs-0R; Tue, 05 Apr 2022 19:35:13 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tim Harvey <tharvey@gateworks.com>, stable@vger.kernel.org
+Subject: [PATCH v2] ARM: dts: imx8mm-venice-gw{71xx,72xx,73xx}: fix OTG controller OC mode
+Date:   Tue,  5 Apr 2022 12:35:09 -0700
+Message-Id: <20220405193509.8231-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+The GW71xx, GW72xx and GW73xx boards have USB1 routed to a USB OTG
+connectors and USB2 routed to a USB hub.
 
-[ Upstream commit 5a06fcb15b43d1f7bf740c672950122331cb5655 ]
+The OTG connector has a over-currently protection with an active-low
+pin and the USB1 to HUB connection has no over-current protection (as
+the HUB itself implements this for its downstream ports).
 
-test_kernel_ptr() uses access_ok() to figure out if a given address
-points to user space instead of kernel space. However on architectures
-that set CONFIG_ALTERNATE_USER_ADDRESS_SPACE, a pointer can be valid
-for both, and the check always fails because access_ok() returns true.
+Add proper dt nodes to specify the over-current pin polarity for USB1
+and disable over-current protection for USB2.
 
-Make the check for user space pointers conditional on the type of
-address space layout.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6f30b27c5ef5 ("arm64: dts: imx8mm: Add Gateworks i.MX 8M Mini Development Kits")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
 ---
- lib/test_lockup.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+v2: add gw71xx as well
+---
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi | 2 ++
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi | 2 ++
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi | 2 ++
+ 3 files changed, 6 insertions(+)
 
-diff --git a/lib/test_lockup.c b/lib/test_lockup.c
-index 6a0f329a794a..c3fd87d6c2dd 100644
---- a/lib/test_lockup.c
-+++ b/lib/test_lockup.c
-@@ -417,9 +417,14 @@ static bool test_kernel_ptr(unsigned long addr, int size)
- 		return false;
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
+index 73addc0b8e57..6671b99177e5 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx.dtsi
+@@ -146,12 +146,14 @@
  
- 	/* should be at least readable kernel address */
--	if (access_ok((void __user *)ptr, 1) ||
--	    access_ok((void __user *)ptr + size - 1, 1) ||
--	    get_kernel_nofault(buf, ptr) ||
-+	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
-+	    (access_ok((void __user *)ptr, 1) ||
-+	     access_ok((void __user *)ptr + size - 1, 1))) {
-+		pr_err("user space ptr invalid in kernel: %#lx\n", addr);
-+		return true;
-+	}
-+
-+	if (get_kernel_nofault(buf, ptr) ||
- 	    get_kernel_nofault(buf, ptr + size - 1)) {
- 		pr_err("invalid kernel ptr: %#lx\n", addr);
- 		return true;
+ &usbotg1 {
+ 	dr_mode = "otg";
++	over-current-active-low;
+ 	vbus-supply = <&reg_usb_otg1_vbus>;
+ 	status = "okay";
+ };
+ 
+ &usbotg2 {
+ 	dr_mode = "host";
++	disable-over-current;
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
+index 1e7badb2a82e..b6b3578a0f89 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx.dtsi
+@@ -211,12 +211,14 @@
+ 
+ &usbotg1 {
+ 	dr_mode = "otg";
++	over-current-active-low;
+ 	vbus-supply = <&reg_usb_otg1_vbus>;
+ 	status = "okay";
+ };
+ 
+ &usbotg2 {
+ 	dr_mode = "host";
++	disable-over-current;
+ 	vbus-supply = <&reg_usb_otg2_vbus>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
+index 7a5d45e80982..89fc2c595056 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx.dtsi
+@@ -239,12 +239,14 @@
+ 
+ &usbotg1 {
+ 	dr_mode = "otg";
++	over-current-active-low;
+ 	vbus-supply = <&reg_usb_otg1_vbus>;
+ 	status = "okay";
+ };
+ 
+ &usbotg2 {
+ 	dr_mode = "host";
++	disable-over-current;
+ 	vbus-supply = <&reg_usb_otg2_vbus>;
+ 	status = "okay";
+ };
 -- 
-2.34.1
-
-
+2.17.1
 
