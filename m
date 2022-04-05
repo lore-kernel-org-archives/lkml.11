@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B6E1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 447C0C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389390AbiDENdr (ORCPT
+        id S1389502AbiDENd4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
+        Tue, 5 Apr 2022 09:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346114AbiDEJXa (ORCPT
+        with ESMTP id S1346435AbiDEJXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DCAB715C;
-        Tue,  5 Apr 2022 02:12:58 -0700 (PDT)
+        Tue, 5 Apr 2022 05:23:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A51A26CB;
+        Tue,  5 Apr 2022 02:13:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 952CFB81C14;
-        Tue,  5 Apr 2022 09:12:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEA5FC385A3;
-        Tue,  5 Apr 2022 09:12:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54D266165C;
+        Tue,  5 Apr 2022 09:13:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 628A4C385A2;
+        Tue,  5 Apr 2022 09:13:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149976;
-        bh=nI7dbDDhx02UpWsfJfAL/zctEyT8a5ocPR6yVKs23Fo=;
+        s=korg; t=1649150008;
+        bh=ZLTP0CsQzKamaFohUBCVD0Y/Pr2t2IZyPkvu0eeCTco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1DxltGRpEcADfSHa9et1QdlgnHUVetWVFT5QB/xfhIzhEsttec+LvaVWthR/lSOPX
-         o5ct9mb47j6GU2jgsBn5vbyoIeVnD5luz8/gCPORcMz7jFh6izjKJ8tixDBRzBwdQw
-         ROnNYcljZoxrxBjbn61XPxVQ/FsPeSLVY54GXy+Y=
+        b=S6cXKlwfAdRQP2Vb2NSmvqmCpzZVe/uCcNg8dn/r/RCT6Fv3KQE29GpEbiZj0j/kI
+         BqidZbXboRdTztFM1wbmbyRQDN2O//Tx53IOJ7pfcfbeikUs+PUSsph7SSQPMT41lO
+         ANZpdITxQmEptXgMZBs/O+56obowqam79+wHLo7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.16 0908/1017] ubifs: Fix deadlock in concurrent rename whiteout and inode writeback
-Date:   Tue,  5 Apr 2022 09:30:21 +0200
-Message-Id: <20220405070421.176891366@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 0883/1017] scsi: qla2xxx: Fix device reconnect in loop topology
+Date:   Tue,  5 Apr 2022 09:29:56 +0200
+Message-Id: <20220405070420.442997105@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,115 +52,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Arun Easi <aeasi@marvell.com>
 
-commit afd427048047e8efdedab30e8888044e2be5aa9c upstream.
+commit 8ad4be3d15cf144b5834bdb00d5bbe4050938dc7 upstream.
 
-Following hung tasks:
-[   77.028764] task:kworker/u8:4    state:D stack:    0 pid:  132
-[   77.028820] Call Trace:
-[   77.029027]  schedule+0x8c/0x1b0
-[   77.029067]  mutex_lock+0x50/0x60
-[   77.029074]  ubifs_write_inode+0x68/0x1f0 [ubifs]
-[   77.029117]  __writeback_single_inode+0x43c/0x570
-[   77.029128]  writeback_sb_inodes+0x259/0x740
-[   77.029148]  wb_writeback+0x107/0x4d0
-[   77.029163]  wb_workfn+0x162/0x7b0
+A device logout in loop topology initiates a device connection teardown
+which loses the FW device handle. In loop topo, the device handle is not
+regrabbed leading to device login failures and eventually to loss of the
+device. Fix this by taking the main login path that does it.
 
-[   92.390442] task:aa              state:D stack:    0 pid: 1506
-[   92.390448] Call Trace:
-[   92.390458]  schedule+0x8c/0x1b0
-[   92.390461]  wb_wait_for_completion+0x82/0xd0
-[   92.390469]  __writeback_inodes_sb_nr+0xb2/0x110
-[   92.390472]  writeback_inodes_sb_nr+0x14/0x20
-[   92.390476]  ubifs_budget_space+0x705/0xdd0 [ubifs]
-[   92.390503]  do_rename.cold+0x7f/0x187 [ubifs]
-[   92.390549]  ubifs_rename+0x8b/0x180 [ubifs]
-[   92.390571]  vfs_rename+0xdb2/0x1170
-[   92.390580]  do_renameat2+0x554/0x770
-
-, are caused by concurrent rename whiteout and inode writeback processes:
-	rename_whiteout(Thread 1)	        wb_workfn(Thread2)
-ubifs_rename
-  do_rename
-    lock_4_inodes (Hold ui_mutex)
-    ubifs_budget_space
-      make_free_space
-        shrink_liability
-	  __writeback_inodes_sb_nr
-	    bdi_split_work_to_wbs (Queue new wb work)
-					      wb_do_writeback(wb work)
-						__writeback_single_inode
-					          ubifs_write_inode
-					            LOCK(ui_mutex)
-							   ↑
-	      wb_wait_for_completion (Wait wb work) <-- deadlock!
-
-Reproducer (Detail program in [Link]):
-  1. SYS_renameat2("/mp/dir/file", "/mp/dir/whiteout", RENAME_WHITEOUT)
-  2. Consume out of space before kernel(mdelay) doing budget for whiteout
-
-Fix it by doing whiteout space budget before locking ubifs inodes.
-BTW, it also fixes wrong goto tag 'out_release' in whiteout budget
-error handling path(It should at least recover dir i_size and unlock
-4 ubifs inodes).
-
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214733
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Link: https://lore.kernel.org/r/20220110050218.3958-11-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/dir.c |   25 +++++++++++++++----------
- 1 file changed, 15 insertions(+), 10 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |   15 +++++++++++++++
+ drivers/scsi/qla2xxx/qla_os.c   |    5 +++++
+ 2 files changed, 20 insertions(+)
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -1324,6 +1324,7 @@ static int do_rename(struct inode *old_d
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -974,6 +974,9 @@ static void qla24xx_handle_gnl_done_even
+ 				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+ 			}
+ 			break;
++		case ISP_CFG_NL:
++			qla24xx_fcport_handle_login(vha, fcport);
++			break;
+ 		default:
+ 			break;
+ 		}
+@@ -1563,6 +1566,11 @@ static void qla_chk_n2n_b4_login(struct
+ 	u8 login = 0;
+ 	int rc;
  
- 	if (flags & RENAME_WHITEOUT) {
- 		union ubifs_dev_desc *dev = NULL;
-+		struct ubifs_budget_req wht_req;
- 
- 		dev = kmalloc(sizeof(union ubifs_dev_desc), GFP_NOFS);
- 		if (!dev) {
-@@ -1345,6 +1346,20 @@ static int do_rename(struct inode *old_d
- 		whiteout_ui->data = dev;
- 		whiteout_ui->data_len = ubifs_encode_dev(dev, MKDEV(0, 0));
- 		ubifs_assert(c, !whiteout_ui->dirty);
++	ql_dbg(ql_dbg_disc, vha, 0x307b,
++	    "%s %8phC DS %d LS %d lid %d retries=%d\n",
++	    __func__, fcport->port_name, fcport->disc_state,
++	    fcport->fw_login_state, fcport->loop_id, fcport->login_retry);
 +
-+		memset(&wht_req, 0, sizeof(struct ubifs_budget_req));
-+		wht_req.dirtied_ino = 1;
-+		wht_req.dirtied_ino_d = ALIGN(whiteout_ui->data_len, 8);
-+		/*
-+		 * To avoid deadlock between space budget (holds ui_mutex and
-+		 * waits wb work) and writeback work(waits ui_mutex), do space
-+		 * budget before ubifs inodes locked.
-+		 */
-+		err = ubifs_budget_space(c, &wht_req);
-+		if (err) {
-+			iput(whiteout);
-+			goto out_release;
-+		}
- 	}
+ 	if (qla_tgt_mode_enabled(vha))
+ 		return;
  
- 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
-@@ -1419,16 +1434,6 @@ static int do_rename(struct inode *old_d
- 	}
- 
- 	if (whiteout) {
--		struct ubifs_budget_req wht_req = { .dirtied_ino = 1,
--				.dirtied_ino_d = \
--				ALIGN(ubifs_inode(whiteout)->data_len, 8) };
--
--		err = ubifs_budget_space(c, &wht_req);
--		if (err) {
--			iput(whiteout);
--			goto out_release;
--		}
--
- 		inc_nlink(whiteout);
- 		mark_inode_dirty(whiteout);
- 
+@@ -5604,6 +5612,13 @@ qla2x00_configure_local_loop(scsi_qla_ho
+ 			memcpy(fcport->node_name, new_fcport->node_name,
+ 			    WWN_SIZE);
+ 			fcport->scan_state = QLA_FCPORT_FOUND;
++			if (fcport->login_retry == 0) {
++				fcport->login_retry = vha->hw->login_retry_count;
++				ql_dbg(ql_dbg_disc, vha, 0x2135,
++				    "Port login retry %8phN, lid 0x%04x retry cnt=%d.\n",
++				    fcport->port_name, fcport->loop_id,
++				    fcport->login_retry);
++			}
+ 			found++;
+ 			break;
+ 		}
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -5533,6 +5533,11 @@ void qla2x00_relogin(struct scsi_qla_hos
+ 					ea.fcport = fcport;
+ 					qla24xx_handle_relogin_event(vha, &ea);
+ 				} else if (vha->hw->current_topology ==
++					 ISP_CFG_NL &&
++					IS_QLA2XXX_MIDTYPE(vha->hw)) {
++					(void)qla24xx_fcport_handle_login(vha,
++									fcport);
++				} else if (vha->hw->current_topology ==
+ 				    ISP_CFG_NL) {
+ 					fcport->login_retry--;
+ 					status =
 
 
