@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC39DC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D324AC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580906AbiDEXe6 (ORCPT
+        id S1580961AbiDEXfD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        Tue, 5 Apr 2022 19:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349259AbiDEJtb (ORCPT
+        with ESMTP id S1354939AbiDEKQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6969423173;
-        Tue,  5 Apr 2022 02:43:18 -0700 (PDT)
+        Tue, 5 Apr 2022 06:16:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966F322B0A;
+        Tue,  5 Apr 2022 03:04:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06737B817D3;
-        Tue,  5 Apr 2022 09:43:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F48FC385A2;
-        Tue,  5 Apr 2022 09:43:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3064F616E7;
+        Tue,  5 Apr 2022 10:04:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37597C385A1;
+        Tue,  5 Apr 2022 10:04:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151795;
-        bh=CSM//Rz3PDHvzk+BYq71+X+1Jm1t0/cBCElyGnnl1/g=;
+        s=korg; t=1649153051;
+        bh=CivaMEJcjGKzvh+1Jmorpx4K3eBk7/KE099dJ8YzTMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gJRrKZ2sGQ2ab8IX9LMYQtNjE8d642V+RK43pBndTEe4Yzd5w+ZNMVTHU2Ysk0eHU
-         PsKZbMlERSGMgsGbtsBCb+lFbSHqViD9M0wxYGtoBBSDkAhoBmQd7sLRpYGo0txnng
-         FM5EkSyuIq+Jkl9EfY4Nt/ij4qCSJZo81POwJTv8=
+        b=Z+i7eNfSAupJFZLZgL+vBAvTuZSbmYp+cwX7XXEE2d494grbYw5wRHwHUBJrSX8uy
+         /T8tW/W4TD7MBhXdKLeTyvZchNmX+0BX3z2ZYiE8i9fh1BPuWg4EISShRxHHbnaYCF
+         KBcGfdbM/mRo1S2T60BtMm3P9iOiXS3FZLt2GSLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 545/913] USB: storage: ums-realtek: fix error code in rts51x_read_mem()
-Date:   Tue,  5 Apr 2022 09:26:47 +0200
-Message-Id: <20220405070356.185550015@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Subject: [PATCH 5.10 085/599] arm64: dts: ti: k3-am65: Fix gic-v3 compatible regs
+Date:   Tue,  5 Apr 2022 09:26:19 +0200
+Message-Id: <20220405070301.356958388@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Nishanth Menon <nm@ti.com>
 
-[ Upstream commit b07cabb8361dc692522538205552b1b9dab134be ]
+commit 8cae268b70f387ff9e697ccd62fb2384079124e7 upstream.
 
-The rts51x_read_mem() function should return negative error codes.
-Currently if the kmalloc() fails it returns USB_STOR_TRANSPORT_ERROR (3)
-which is treated as success by the callers.
+Though GIC ARE option is disabled for no GIC-v2 compatibility,
+Cortex-A53 is free to implement the CPU interface as long as it
+communicates with the GIC using the stream protocol. This requires
+that the SoC integration mark out the PERIPHBASE[1] as reserved area
+within the SoC. See longer discussion in [2] for further information.
 
-Fixes: 065e60964e29 ("ums_realtek: do not use stack memory for DMA")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220304073504.GA26464@kili
+Update the GIC register map to indicate offsets from PERIPHBASE based
+on [3]. Without doing this, systems like kvm will not function with
+gic-v2 emulation.
+
+[1] https://developer.arm.com/documentation/ddi0500/e/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
+[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
+[3] https://developer.arm.com/documentation/ddi0500/e/generic-interrupt-controller-cpu-interface/gic-programmers-model/memory-map
+
+Cc: stable@vger.kernel.org # 5.10+
+Fixes: ea47eed33a3f ("arm64: dts: ti: Add Support for AM654 SoC")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220215201008.15235-2-nm@ti.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/storage/realtek_cr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/ti/k3-am65-main.dtsi |    5 ++++-
+ arch/arm64/boot/dts/ti/k3-am65.dtsi      |    1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/storage/realtek_cr.c b/drivers/usb/storage/realtek_cr.c
-index 3789698d9d3c..0c423916d7bf 100644
---- a/drivers/usb/storage/realtek_cr.c
-+++ b/drivers/usb/storage/realtek_cr.c
-@@ -365,7 +365,7 @@ static int rts51x_read_mem(struct us_data *us, u16 addr, u8 *data, u16 len)
- 
- 	buf = kmalloc(len, GFP_NOIO);
- 	if (buf == NULL)
--		return USB_STOR_TRANSPORT_ERROR;
-+		return -ENOMEM;
- 
- 	usb_stor_dbg(us, "addr = 0x%x, len = %d\n", addr, len);
- 
--- 
-2.34.1
-
+--- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+@@ -35,7 +35,10 @@
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01880000 0x00 0x90000>;	/* GICR */
++		      <0x00 0x01880000 0x00 0x90000>,	/* GICR */
++		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
++		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
++		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
+ 		/*
+ 		 * vcpumntirq:
+ 		 * virtual CPU interface maintenance interrupt
+--- a/arch/arm64/boot/dts/ti/k3-am65.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am65.dtsi
+@@ -84,6 +84,7 @@
+ 			 <0x00 0x46000000 0x00 0x46000000 0x00 0x00200000>,
+ 			 <0x00 0x47000000 0x00 0x47000000 0x00 0x00068400>,
+ 			 <0x00 0x50000000 0x00 0x50000000 0x00 0x8000000>,
++			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A53 PERIPHBASE */
+ 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x200000>,
+ 			 <0x05 0x00000000 0x05 0x00000000 0x01 0x0000000>,
+ 			 <0x07 0x00000000 0x07 0x00000000 0x01 0x0000000>;
 
 
