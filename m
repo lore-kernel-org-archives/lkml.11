@@ -2,115 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D527C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4969BC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357181AbiDEKZr (ORCPT
+        id S1357353AbiDEK0N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
+        Tue, 5 Apr 2022 06:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241178AbiDEIcw (ORCPT
+        with ESMTP id S241121AbiDEIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:52 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76098101D7;
-        Tue,  5 Apr 2022 01:29:06 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:29:04 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147345;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aBgVq2GrLXfsCm/GOGUJunmBfHbDq+68IoRgUjYZEIQ=;
-        b=4cL92wJYafsNAZeJBJhZPkaTIYqag5a4O8ElNW/UzhDgfRTsXfJm1S1zcgWeB9VVUrNw2D
-        7HZPJvxGO58jDWgdSTHrGOFGGj3CTXVgfOqF+g3FMj8KxhkZE1RmeUcOof48j5xdzfOwuq
-        +dRbPZNQqFroVL0OHK4ycRDhfOa8yUYILZa+UnadL06S+7SuW59Qbl/Z7nQ++Cjo0zp36c
-        +rhs0aPDdTNloyevezEHYqdqkvKB9tz3PH8hijF0M6DegOdKPZjQhGFpyuSxkQj3ZurHTq
-        ctypjcoNIhohZ0rFViPQixouLr8ggm3BK5rEYAhEaN9pubSA0Ic5V6h3wMQMvA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147345;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aBgVq2GrLXfsCm/GOGUJunmBfHbDq+68IoRgUjYZEIQ=;
-        b=vcsUS0s1BSXMdueYf65emNb4FRgNeXYr40AEWc/RjCRyqxZ/uNXSj0eL+UHQHtsHggqDDU
-        5Xa8hZ675Pkm1oCA==
-From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] perf/core: Use perf_cgroup_info->active to check
- if cgroup is active
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220329154523.86438-3-zhouchengming@bytedance.com>
-References: <20220329154523.86438-3-zhouchengming@bytedance.com>
+        Tue, 5 Apr 2022 04:32:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C750315A31;
+        Tue,  5 Apr 2022 01:27:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81B2CB81B13;
+        Tue,  5 Apr 2022 08:27:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4545C385A1;
+        Tue,  5 Apr 2022 08:27:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649147277;
+        bh=CsCfsrqveqsvvCg/VUPqJOnuL/ZARRvyzdCgukRxZig=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Chi9LlevsCp+K2EVpmYZvnEWiulU7wLFs4lsfpj9UmXpq30s2SBHHg1VzcQzUxsu+
+         0TGfqU2L6YCBdLrmNxXm1BiB7smI1lYSEdj2bQgisq9pHeNw5MRIlzfoNZTCiURKiP
+         vb7hpf5a2wtYj/z0FgjAU4r2kxS29ihyC3W4YofY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Joerg Roedel <jroedel@suse.de>,
+        Borislav Petkov <bp@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: [PATCH 5.17 1066/1126] x86/sev: Unroll string mmio with CC_ATTR_GUEST_UNROLL_STRING_IO
+Date:   Tue,  5 Apr 2022 09:30:13 +0200
+Message-Id: <20220405070438.747427541@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164914734415.389.1917067665654461073.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/urgent branch of tip:
+From: Joerg Roedel <jroedel@suse.de>
 
-Commit-ID:     6875186aea5ce09a644758d9193265da1cc187c7
-Gitweb:        https://git.kernel.org/tip/6875186aea5ce09a644758d9193265da1cc187c7
-Author:        Chengming Zhou <zhouchengming@bytedance.com>
-AuthorDate:    Tue, 29 Mar 2022 23:45:21 +08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 09:59:45 +02:00
+commit 4009a4ac82dd95b8cd2b62bd30019476983f0aff upstream.
 
-perf/core: Use perf_cgroup_info->active to check if cgroup is active
+The io-specific memcpy/memset functions use string mmio accesses to do
+their work. Under SEV, the hypervisor can't emulate these instructions
+because they read/write directly from/to encrypted memory.
 
-Since we use perf_cgroup_set_timestamp() to start cgroup time and
-set active to 1, then use update_cgrp_time_from_cpuctx() to stop
-cgroup time and set active to 0.
+KVM will inject a page fault exception into the guest when it is asked
+to emulate string mmio instructions for an SEV guest:
 
-We can use info->active directly to check if cgroup is active.
+  BUG: unable to handle page fault for address: ffffc90000065068
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD 8000100000067 P4D 8000100000067 PUD 80001000fb067 PMD 80001000fc067 PTE 80000000fed40173
+  Oops: 0000 [#1] PREEMPT SMP NOPTI
+  CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc7 #3
 
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220329154523.86438-3-zhouchengming@bytedance.com
+As string mmio for an SEV guest can not be supported by the
+hypervisor, unroll the instructions for CC_ATTR_GUEST_UNROLL_STRING_IO
+enabled kernels.
+
+This issue appears when kernels are launched in recent libvirt-managed
+SEV virtual machines, because virt-install started to add a tpm-crb
+device to the guest by default and proactively because, raisins:
+
+  https://github.com/virt-manager/virt-manager/commit/eb58c09f488b0633ed1eea012cd311e48864401e
+
+and as that commit says, the default adding of a TPM can be disabled
+with "virt-install ... --tpm none".
+
+The kernel driver for tpm-crb uses memcpy_to/from_io() functions to
+access MMIO memory, resulting in a page-fault injected by KVM and
+crashing the kernel at boot.
+
+  [ bp: Massage and extend commit message. ]
+
+Fixes: d8aa7eea78a1 ('x86/mm: Add Secure Encrypted Virtualization (SEV) support')
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220321093351.23976-1-joro@8bytes.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ arch/x86/lib/iomem.c |   65 ++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 57 insertions(+), 8 deletions(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 6545020..a08fb92 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -780,7 +780,6 @@ static inline void update_cgrp_time_from_cpuctx(struct perf_cpu_context *cpuctx,
- static inline void update_cgrp_time_from_event(struct perf_event *event)
- {
- 	struct perf_cgroup_info *info;
--	struct perf_cgroup *cgrp;
- 
- 	/*
- 	 * ensure we access cgroup data only when needed and
-@@ -789,14 +788,12 @@ static inline void update_cgrp_time_from_event(struct perf_event *event)
- 	if (!is_cgroup_event(event))
- 		return;
- 
--	cgrp = perf_cgroup_from_task(current, event->ctx);
-+	info = this_cpu_ptr(event->cgrp->info);
- 	/*
- 	 * Do not update time when cgroup is not active
- 	 */
--	if (cgroup_is_descendant(cgrp->css.cgroup, event->cgrp->css.cgroup)) {
--		info = this_cpu_ptr(event->cgrp->info);
-+	if (info->active)
- 		__update_cgrp_time(info, perf_clock(), true);
--	}
+--- a/arch/x86/lib/iomem.c
++++ b/arch/x86/lib/iomem.c
+@@ -22,7 +22,7 @@ static __always_inline void rep_movs(voi
+ 		     : "memory");
  }
  
- static inline void
+-void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
++static void string_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+ {
+ 	if (unlikely(!n))
+ 		return;
+@@ -38,9 +38,8 @@ void memcpy_fromio(void *to, const volat
+ 	}
+ 	rep_movs(to, (const void *)from, n);
+ }
+-EXPORT_SYMBOL(memcpy_fromio);
+ 
+-void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
++static void string_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+ {
+ 	if (unlikely(!n))
+ 		return;
+@@ -56,14 +55,64 @@ void memcpy_toio(volatile void __iomem *
+ 	}
+ 	rep_movs((void *)to, (const void *) from, n);
+ }
++
++static void unrolled_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
++{
++	const volatile char __iomem *in = from;
++	char *out = to;
++	int i;
++
++	for (i = 0; i < n; ++i)
++		out[i] = readb(&in[i]);
++}
++
++static void unrolled_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
++{
++	volatile char __iomem *out = to;
++	const char *in = from;
++	int i;
++
++	for (i = 0; i < n; ++i)
++		writeb(in[i], &out[i]);
++}
++
++static void unrolled_memset_io(volatile void __iomem *a, int b, size_t c)
++{
++	volatile char __iomem *mem = a;
++	int i;
++
++	for (i = 0; i < c; ++i)
++		writeb(b, &mem[i]);
++}
++
++void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
++{
++	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO))
++		unrolled_memcpy_fromio(to, from, n);
++	else
++		string_memcpy_fromio(to, from, n);
++}
++EXPORT_SYMBOL(memcpy_fromio);
++
++void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
++{
++	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO))
++		unrolled_memcpy_toio(to, from, n);
++	else
++		string_memcpy_toio(to, from, n);
++}
+ EXPORT_SYMBOL(memcpy_toio);
+ 
+ void memset_io(volatile void __iomem *a, int b, size_t c)
+ {
+-	/*
+-	 * TODO: memset can mangle the IO patterns quite a bit.
+-	 * perhaps it would be better to use a dumb one:
+-	 */
+-	memset((void *)a, b, c);
++	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {
++		unrolled_memset_io(a, b, c);
++	} else {
++		/*
++		 * TODO: memset can mangle the IO patterns quite a bit.
++		 * perhaps it would be better to use a dumb one:
++		 */
++		memset((void *)a, b, c);
++	}
+ }
+ EXPORT_SYMBOL(memset_io);
+
+
