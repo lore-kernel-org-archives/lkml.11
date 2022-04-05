@@ -2,143 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E692BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41654C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836873AbiDFAk2 (ORCPT
+        id S1836940AbiDFAk6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39324 "EHLO
+        Tue, 5 Apr 2022 20:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349470AbiDEJtz (ORCPT
+        with ESMTP id S1457661AbiDEQ2a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0D0FD35;
-        Tue,  5 Apr 2022 02:46:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AE92B817D3;
-        Tue,  5 Apr 2022 09:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87C44C385A1;
-        Tue,  5 Apr 2022 09:46:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152010;
-        bh=MgDDT8VuQWca49TghJ4tLzY7YNfYN4Yv/TzRySXi/dQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DUEuDu082wq8XyJQUUOtiHcfzvuvSJ0MPe7ULIL/Da1w+UzpL0iDLyBil6bFNT+EM
-         N51JMpQr9x5thJ8MBhdg1flv/okqvTyPczTcts6k7NkruAkd5YBkAm/K1m8PKciQtM
-         uzvWxGDE4WuokTUL0/LdBUJ+2t5tIGUVK1Zb4JGI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 584/913] fsi: Aspeed: Fix a potential double free
-Date:   Tue,  5 Apr 2022 09:27:26 +0200
-Message-Id: <20220405070357.350200146@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:28:30 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B507289CCB
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:26:30 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id h7so24207846lfl.2
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:26:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9lWYY7De4WBUMiRj3mzR0cknXK+RlvIrzmLorqOc2As=;
+        b=iTrCvQL9sM/MUivHYMPf4aKtiHgt6HV4/9ZxumavdEUbybx2Mmzfcw/oiSfdwl2Zrq
+         EhD/G1ftARD2N/Y73EQR3VdBBRBM1j1TGf6b/V0CNMbJFcDDejOS2TPOPdF6bUKoRdd/
+         7gNOYlS4qrA/eUNKW2E+uxCkxDs3ns4pTLN9k+vcChjjNvkW03CcLSzN/WmfM6/ohOtR
+         5SRkfl97vN+215wkqt0YJ6VcHnqvaCD9K+8JqrAdaKCi5Expud2Nw9PXQZqYecntlWWg
+         zv1exSe7AWGBQH3ORUB4oobs2mWIqmKVq21231/XSlykM7pqPzcetba6fb/VTDCumg0a
+         Zh8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9lWYY7De4WBUMiRj3mzR0cknXK+RlvIrzmLorqOc2As=;
+        b=icZHu4Cz20nIaCHsHsdiwRcMzl8oqn14d7zWB/Q5uTNDKgAQuXDR6KbnEVY/Kp9Or7
+         Qi12ismYH48A1wDWxCypE366qHMJ53ClBnJEiafcequQd6MaaAD3+q3+VAKyhNDqc9q/
+         wk0eUIOJv+49nMFBehrhHD8154LUU2WGxHHbHOCFCSdg/YKJkcbC2GoiK2Pxa+RU+Qin
+         rl1G9PX1g/Hi+T+MB22HuPRqnMQBUEXvOWBX+vBr1IDqkNrfsyCO17+35HbtWLEDXqob
+         6RqI1Q9XnyD4RXgZWs+U/pra2WtUGzb7VogPbG07Mx9ZP65dKgh44Da1A0t8lKeHmbBO
+         qCKg==
+X-Gm-Message-State: AOAM5306l84tHxUZmnokzP3cOBm2oI058WCgQLZAN3yJ5pGEZYo/Zm3P
+        H9QCZ2bhD2vwFQ8dygoxzOOFcXErsf4uHjKBq3xELw==
+X-Google-Smtp-Source: ABdhPJzm9QcSluyOhFjGMfELQHjTr0+RTq5+/AG1ZSda5FkvPasWSBysDU69ZMdlhv33y1Ls5e4uCGoXp6//pr3GG5Y=
+X-Received: by 2002:a19:651d:0:b0:44a:b88a:b0b1 with SMTP id
+ z29-20020a19651d000000b0044ab88ab0b1mr3328216lfb.380.1649175988738; Tue, 05
+ Apr 2022 09:26:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405113359.2880241-1-masahiroy@kernel.org> <20220405113359.2880241-7-masahiroy@kernel.org>
+In-Reply-To: <20220405113359.2880241-7-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 5 Apr 2022 09:26:17 -0700
+Message-ID: <CAKwvOdkC3RYjOPx-DS0fSCHsts1YGzotBOs4fTKTQk7WZWfBgg@mail.gmail.com>
+Subject: Re: [PATCH v2 06/10] modpost: remove annoying namespace_from_kstrtabns()
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+On Tue, Apr 5, 2022 at 4:34 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> There are two call sites for sym_update_namespace().
+>
+> When the symbol has no namespace, s->namespace is set to NULL,
+> but the conversion from "" to NULL is done in two different places.
+>
+> [1] read_symbols()
+>
+>   This gets the namespace from __kstrtabns_<symbol>. If the symbol has
+>   no namespace, sym_get_data(info, sym) returns the empty string "".
+>   namespace_from_kstrtabns() converts it to NULL before it is passed to
+>   sym_update_namespace().
+>
+> [2] read_dump()
+>
+>   This gets the namespace from the dump file, *.symvers. If the symbol
+>   has no namespace, the 'namespace' is the empty string "", which is
+>   directly passed into sym_update_namespace(). The conversion from
+>   "" to NULL is done in sym_update_namespace().
+>
+> namespace_from_kstrtabns() exists only for creating this inconsistency.
+>
+> By removing it, sym_update_namespace() is consistently passed with ""
+> when the symbol has no namespace.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 83ba7e895debc529803a7a258653f2fe9bf3bf40 ]
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-A struct device can never be devm_alloc()'ed.
-Here, it is embedded in "struct fsi_master", and "struct fsi_master" is
-embedded in "struct fsi_master_aspeed".
+> ---
+>
+> Changes in v2:
+>   - new
+>
+>  scripts/mod/modpost.c | 14 ++------------
+>  1 file changed, 2 insertions(+), 12 deletions(-)
+>
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index 2a202764ff48..522d5249d196 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -369,13 +369,6 @@ static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
+>                 return export_unknown;
+>  }
+>
+> -static const char *namespace_from_kstrtabns(const struct elf_info *info,
+> -                                           const Elf_Sym *sym)
+> -{
+> -       const char *value = sym_get_data(info, sym);
+> -       return value[0] ? value : NULL;
+> -}
+> -
+>  static void sym_update_namespace(const char *symname, const char *namespace)
+>  {
+>         struct symbol *s = find_symbol(symname);
+> @@ -391,8 +384,7 @@ static void sym_update_namespace(const char *symname, const char *namespace)
+>         }
+>
+>         free(s->namespace);
+> -       s->namespace =
+> -               namespace && namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
+> +       s->namespace = namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
+>  }
+>
+>  /**
+> @@ -2049,9 +2041,7 @@ static void read_symbols(const char *modname)
+>                 /* Apply symbol namespaces from __kstrtabns_<symbol> entries. */
+>                 if (strstarts(symname, "__kstrtabns_"))
+>                         sym_update_namespace(symname + strlen("__kstrtabns_"),
+> -                                            namespace_from_kstrtabns(&info,
+> -                                                                     sym));
+> -
+> +                                            sym_get_data(&info, sym));
+>                 if (strstarts(symname, "__crc_"))
+>                         handle_modversion(mod, &info, sym,
+>                                           symname + strlen("__crc_"));
+> --
+> 2.32.0
+>
 
-Since "struct device" is embedded, the data structure embedding it must be
-released with the release function, as is already done here.
 
-So use kzalloc() instead of devm_kzalloc() when allocating "aspeed" and
-update all error handling branches accordingly.
-
-This prevent a potential double free().
-
-This also fix another issue if opb_readl() fails. Instead of a direct
-return, it now jumps in the error handling path.
-
-Fixes: 606397d67f41 ("fsi: Add ast2600 master driver")
-Suggested-by: Greg KH <gregkh@linuxfoundation.org>
-Suggested-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/2c123f8b0a40dc1a061fae982169fe030b4f47e6.1641765339.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/fsi/fsi-master-aspeed.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/fsi/fsi-master-aspeed.c b/drivers/fsi/fsi-master-aspeed.c
-index 8606e55c1721..0bed2fab8055 100644
---- a/drivers/fsi/fsi-master-aspeed.c
-+++ b/drivers/fsi/fsi-master-aspeed.c
-@@ -542,25 +542,28 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 		return rc;
- 	}
- 
--	aspeed = devm_kzalloc(&pdev->dev, sizeof(*aspeed), GFP_KERNEL);
-+	aspeed = kzalloc(sizeof(*aspeed), GFP_KERNEL);
- 	if (!aspeed)
- 		return -ENOMEM;
- 
- 	aspeed->dev = &pdev->dev;
- 
- 	aspeed->base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(aspeed->base))
--		return PTR_ERR(aspeed->base);
-+	if (IS_ERR(aspeed->base)) {
-+		rc = PTR_ERR(aspeed->base);
-+		goto err_free_aspeed;
-+	}
- 
- 	aspeed->clk = devm_clk_get(aspeed->dev, NULL);
- 	if (IS_ERR(aspeed->clk)) {
- 		dev_err(aspeed->dev, "couldn't get clock\n");
--		return PTR_ERR(aspeed->clk);
-+		rc = PTR_ERR(aspeed->clk);
-+		goto err_free_aspeed;
- 	}
- 	rc = clk_prepare_enable(aspeed->clk);
- 	if (rc) {
- 		dev_err(aspeed->dev, "couldn't enable clock\n");
--		return rc;
-+		goto err_free_aspeed;
- 	}
- 
- 	rc = setup_cfam_reset(aspeed);
-@@ -595,7 +598,7 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 	rc = opb_readl(aspeed, ctrl_base + FSI_MVER, &raw);
- 	if (rc) {
- 		dev_err(&pdev->dev, "failed to read hub version\n");
--		return rc;
-+		goto err_release;
- 	}
- 
- 	reg = be32_to_cpu(raw);
-@@ -634,6 +637,8 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
- 
- err_release:
- 	clk_disable_unprepare(aspeed->clk);
-+err_free_aspeed:
-+	kfree(aspeed);
- 	return rc;
- }
- 
 -- 
-2.34.1
-
-
-
+Thanks,
+~Nick Desaulniers
