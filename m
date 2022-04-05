@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CD8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EADADC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387536AbiDEOcZ (ORCPT
+        id S1387570AbiDEOcd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55416 "EHLO
+        Tue, 5 Apr 2022 10:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238971AbiDEJdN (ORCPT
+        with ESMTP id S236181AbiDEJev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:13 -0400
+        Tue, 5 Apr 2022 05:34:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6578264FC;
-        Tue,  5 Apr 2022 02:21:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD92887B2;
+        Tue,  5 Apr 2022 02:24:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F696B81C6F;
-        Tue,  5 Apr 2022 09:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FE7DC385A0;
-        Tue,  5 Apr 2022 09:21:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3D96B81C69;
+        Tue,  5 Apr 2022 09:24:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5233CC385A0;
+        Tue,  5 Apr 2022 09:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150462;
-        bh=EuNKLs0j/ektBoCOSqte+2f5ggiogIwjGgtIIGQzbsI=;
+        s=korg; t=1649150648;
+        bh=sKywzZUH5FV82mHccsP45ibhee3xzG3cgiuNbnWvg4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZIislnPfCduxYPHAKzlO4pqFEz5O4TzhxCTFcQCPLtIUHQSpWrTl/hZuyO+72IUfm
-         ZQ1P6/iZvSoOUlvbHfYICXK1MBvLd7D0T5JLfozWBl9qH71Um5QikbznYz0rBRjSpk
-         WDDBUS3nB7WQL+JoDvYYlp/ubXTnjjAUOVZUCeWE=
+        b=m+7GjQh+aPzoKpJGZ83JVPKNUXEYFOiikx1iZJVkPpoEW732oZhnJL5ItyeKj84OJ
+         ltTY5vUBLtI3I4sm7SG+Q7RrrJLGe3gkSfCch2u7XuhaQ/3z8qXHCXTf/NkYyMjVoV
+         t0oEgDw5rnf6M9aqGNs0XW3GapAAqkUDDp0spizA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.15 064/913] NFS: NFSv2/v3 clients should never be setting NFS_CAP_XATTR
-Date:   Tue,  5 Apr 2022 09:18:46 +0200
-Message-Id: <20220405070341.742201694@linuxfoundation.org>
+        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 082/913] jffs2: fix memory leak in jffs2_scan_medium
+Date:   Tue,  5 Apr 2022 09:19:04 +0200
+Message-Id: <20220405070342.281702665@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,47 +49,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit b622ffe1d9ecbac71f0cddb52ff0831efdf8fb83 upstream.
+commit 9cdd3128874f5fe759e2c4e1360ab7fb96a8d1df upstream.
 
-Ensure that we always initialise the 'xattr_support' field in struct
-nfs_fsinfo, so that nfs_server_set_fsinfo() doesn't declare our NFSv2/v3
-client to be capable of supporting the NFSv4.2 xattr protocol by setting
-the NFS_CAP_XATTR capability.
+If an error is returned in jffs2_scan_eraseblock() and some memory
+has been added to the jffs2_summary *s, we can observe the following
+kmemleak report:
 
-This configuration can cause nfs_do_access() to set access mode bits
-that are unsupported by the NFSv3 ACCESS call, which may confuse
-spec-compliant servers.
+--------------------------------------------
+unreferenced object 0xffff88812b889c40 (size 64):
+  comm "mount", pid 692, jiffies 4294838325 (age 34.288s)
+  hex dump (first 32 bytes):
+    40 48 b5 14 81 88 ff ff 01 e0 31 00 00 00 50 00  @H........1...P.
+    00 00 01 00 00 00 01 00 00 00 02 00 00 00 09 08  ................
+  backtrace:
+    [<ffffffffae93a3a3>] __kmalloc+0x613/0x910
+    [<ffffffffaf423b9c>] jffs2_sum_add_dirent_mem+0x5c/0xa0
+    [<ffffffffb0f3afa8>] jffs2_scan_medium.cold+0x36e5/0x4794
+    [<ffffffffb0f3dbe1>] jffs2_do_mount_fs.cold+0xa7/0x2267
+    [<ffffffffaf40acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffaf40c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [<ffffffffb0315d64>] mtd_get_sb+0x254/0x400
+    [<ffffffffb0315f5f>] mtd_get_sb_by_nr+0x4f/0xd0
+    [<ffffffffb0316478>] get_tree_mtd+0x498/0x840
+    [<ffffffffaf40bd15>] jffs2_get_tree+0x25/0x30
+    [<ffffffffae9f358d>] vfs_get_tree+0x8d/0x2e0
+    [<ffffffffaea7a98f>] path_mount+0x50f/0x1e50
+    [<ffffffffaea7c3d7>] do_mount+0x107/0x130
+    [<ffffffffaea7c5c5>] __se_sys_mount+0x1c5/0x2f0
+    [<ffffffffaea7c917>] __x64_sys_mount+0xc7/0x160
+    [<ffffffffb10142f5>] do_syscall_64+0x45/0x70
+unreferenced object 0xffff888114b54840 (size 32):
+  comm "mount", pid 692, jiffies 4294838325 (age 34.288s)
+  hex dump (first 32 bytes):
+    c0 75 b5 14 81 88 ff ff 02 e0 02 00 00 00 02 00  .u..............
+    00 00 84 00 00 00 44 00 00 00 6b 6b 6b 6b 6b a5  ......D...kkkkk.
+  backtrace:
+    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
+    [<ffffffffaf423b04>] jffs2_sum_add_inode_mem+0x54/0x90
+    [<ffffffffb0f3bd44>] jffs2_scan_medium.cold+0x4481/0x4794
+    [...]
+unreferenced object 0xffff888114b57280 (size 32):
+  comm "mount", pid 692, jiffies 4294838393 (age 34.357s)
+  hex dump (first 32 bytes):
+    10 d5 6c 11 81 88 ff ff 08 e0 05 00 00 00 01 00  ..l.............
+    00 00 38 02 00 00 28 00 00 00 6b 6b 6b 6b 6b a5  ..8...(...kkkkk.
+  backtrace:
+    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
+    [<ffffffffaf423c34>] jffs2_sum_add_xattr_mem+0x54/0x90
+    [<ffffffffb0f3a24f>] jffs2_scan_medium.cold+0x298c/0x4794
+    [...]
+unreferenced object 0xffff8881116cd510 (size 16):
+  comm "mount", pid 692, jiffies 4294838395 (age 34.355s)
+  hex dump (first 16 bytes):
+    00 00 00 00 00 00 00 00 09 e0 60 02 00 00 6b a5  ..........`...k.
+  backtrace:
+    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
+    [<ffffffffaf423cc4>] jffs2_sum_add_xref_mem+0x54/0x90
+    [<ffffffffb0f3b2e3>] jffs2_scan_medium.cold+0x3a20/0x4794
+    [...]
+--------------------------------------------
 
-Reported-by: Olga Kornievskaia <kolga@netapp.com>
-Fixes: b78ef845c35d ("NFSv4.2: query the server for extended attribute support")
+Therefore, we should call jffs2_sum_reset_collected(s) on exit to
+release the memory added in s. In addition, a new tag "out_buf" is
+added to prevent the NULL pointer reference caused by s being NULL.
+(thanks to Zhang Yi for this analysis)
+
+Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
 Cc: stable@vger.kernel.org
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Co-developed-with: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs3xdr.c |    1 +
- fs/nfs/proc.c    |    1 +
- 2 files changed, 2 insertions(+)
+ fs/jffs2/scan.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/fs/nfs/nfs3xdr.c
-+++ b/fs/nfs/nfs3xdr.c
-@@ -2228,6 +2228,7 @@ static int decode_fsinfo3resok(struct xd
- 	/* ignore properties */
- 	result->lease_time = 0;
- 	result->change_attr_type = NFS4_CHANGE_TYPE_IS_UNDEFINED;
-+	result->xattr_support = 0;
- 	return 0;
- }
+--- a/fs/jffs2/scan.c
++++ b/fs/jffs2/scan.c
+@@ -136,7 +136,7 @@ int jffs2_scan_medium(struct jffs2_sb_in
+ 		if (!s) {
+ 			JFFS2_WARNING("Can't allocate memory for summary\n");
+ 			ret = -ENOMEM;
+-			goto out;
++			goto out_buf;
+ 		}
+ 	}
  
---- a/fs/nfs/proc.c
-+++ b/fs/nfs/proc.c
-@@ -92,6 +92,7 @@ nfs_proc_get_root(struct nfs_server *ser
- 	info->maxfilesize = 0x7FFFFFFF;
- 	info->lease_time = 0;
- 	info->change_attr_type = NFS4_CHANGE_TYPE_IS_UNDEFINED;
-+	info->xattr_support = 0;
- 	return 0;
+@@ -275,13 +275,15 @@ int jffs2_scan_medium(struct jffs2_sb_in
+ 	}
+ 	ret = 0;
+  out:
++	jffs2_sum_reset_collected(s);
++	kfree(s);
++ out_buf:
+ 	if (buf_size)
+ 		kfree(flashbuf);
+ #ifndef __ECOS
+ 	else
+ 		mtd_unpoint(c->mtd, 0, c->mtd->size);
+ #endif
+-	kfree(s);
+ 	return ret;
  }
  
 
