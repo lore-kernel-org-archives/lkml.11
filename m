@@ -2,117 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B11CC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4CEC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573111AbiDEWsK (ORCPT
+        id S1573151AbiDEWsR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
+        Tue, 5 Apr 2022 18:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352739AbiDEKFC (ORCPT
+        with ESMTP id S1382414AbiDEMPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:05:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF47A49FA4;
-        Tue,  5 Apr 2022 02:53:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D868616DC;
-        Tue,  5 Apr 2022 09:53:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B3CCC385A3;
-        Tue,  5 Apr 2022 09:53:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152425;
-        bh=LHcQxs7YDYUfU/67ZI4UyYI/EQF43ch4sKzahqrifew=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aAvkQP7UZuLM0fKuERgYwqUPtWFv1Bwa5uaq/uPxRbF+eO1p/xrLOrQR4SJA6wVXS
-         eb5W7DKcpSVmoQHVMDnydZUAtjyD3WpQGUMiGswauQMeDqR/FfY+ztuXfDL1GWBs/p
-         HJjixok4DfQtXfBY267/TcmL8XEswL1rlzst9JzU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 771/913] KVM: x86/mmu: Move "invalid" check out of kvm_tdp_mmu_get_root()
-Date:   Tue,  5 Apr 2022 09:30:33 +0200
-Message-Id: <20220405070402.943010262@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:15:04 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE35B82FE;
+        Tue,  5 Apr 2022 04:25:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649157938; x=1680693938;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=aDg8/E+Vo2i6Ejt2q59XPnG+fEJHVdM3pIjPwRq/hYY=;
+  b=kCANGilkCaJ8Mv1lASe/GGC7FqIO8E8U59nxaCDHU9LAuGMvIn0EhREX
+   mmXYnhflgweWvTuR30TV5uWMrHaGtzrAcTckADW4wMswnMyAfd0aRql7J
+   lyopBbeVU2JPRtmm5PCj3aDveDHGqmNHLqtI5+NxKPrfE+nRSjJRSNHKd
+   qh7J7MZjvK4frDnGQVV/7/VMmWJ/LS3v+1nf6YIzpcPiYQonRQWN7h/xw
+   NnDyuadpzbr2aGoeWUUXeYBzh7rjkKg5rkbvYiksV2vAVOnRvshIyRenC
+   RiO/8Bro/cIBBN/h3rSEB8vk+jXVmSoIKkaAnG7qK7FcgocGK3HiCq4zP
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
+   d="scan'208";a="159346911"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Apr 2022 04:25:37 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 5 Apr 2022 04:25:37 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 5 Apr 2022 04:25:35 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
+        <sre@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 6/8] power: reset: at91-reset: add reset_controller_dev support
+Date:   Tue, 5 Apr 2022 14:27:22 +0300
+Message-ID: <20220405112724.2760905-7-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+SAMA7G5 reset controller has 5 extra lines that goes to different devices
+(3 lines to USB PHYs, 1 line to DDR controller, one line DDR PHY
+controller). These reset lines could be requested by different controller
+drivers (e.g. USB PHY driver) and these controllers' drivers could
+assert/deassert these lines when necessary. Thus add support for
+reset_controller_dev which brings this functionality.
 
-commit 04dc4e6ce274fa729feda32aa957b27388a3870c upstream.
-
-Move the check for an invalid root out of kvm_tdp_mmu_get_root() and into
-the one place it actually matters, tdp_mmu_next_root(), as the other user
-already has an implicit validity check.  A future bug fix will need to
-get references to invalid roots to honor mmu_notifier requests; there's
-no point in forcing what will be a common path to open code getting a
-reference to a root.
-
-No functional change intended.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20211215011557.399940-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c |   12 ++++++++++--
- arch/x86/kvm/mmu/tdp_mmu.h |    3 ---
- 2 files changed, 10 insertions(+), 5 deletions(-)
+ drivers/power/reset/at91-reset.c | 92 ++++++++++++++++++++++++++++++--
+ 1 file changed, 88 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -121,9 +121,14 @@ static struct kvm_mmu_page *tdp_mmu_next
- 		next_root = list_first_or_null_rcu(&kvm->arch.tdp_mmu_roots,
- 						   typeof(*next_root), link);
+diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
+index 0d721e27f545..b04df54c15d2 100644
+--- a/drivers/power/reset/at91-reset.c
++++ b/drivers/power/reset/at91-reset.c
+@@ -17,6 +17,7 @@
+ #include <linux/of_address.h>
+ #include <linux/platform_device.h>
+ #include <linux/reboot.h>
++#include <linux/reset-controller.h>
  
--	while (next_root && !kvm_tdp_mmu_get_root(kvm, next_root))
-+	while (next_root) {
-+		if (!next_root->role.invalid &&
-+		    kvm_tdp_mmu_get_root(kvm, next_root))
-+			break;
+ #include <soc/at91/at91sam9_ddrsdr.h>
+ #include <soc/at91/at91sam9_sdramc.h>
+@@ -53,12 +54,16 @@ enum reset_type {
+ struct at91_reset {
+ 	void __iomem *rstc_base;
+ 	void __iomem *ramc_base[2];
++	void __iomem *dev_base;
++	struct reset_controller_dev rcdev;
+ 	struct clk *sclk;
+ 	struct notifier_block nb;
+ 	u32 args;
+ 	u32 ramc_lpr;
+ };
+ 
++#define to_at91_reset(r)	container_of(r, struct at91_reset, rcdev)
 +
- 		next_root = list_next_or_null_rcu(&kvm->arch.tdp_mmu_roots,
- 				&next_root->link, typeof(*next_root), link);
-+	}
+ struct at91_reset_data {
+ 	u32 reset_args;
+ 	u32 n_device_reset;
+@@ -191,6 +196,79 @@ static const struct of_device_id at91_reset_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, at91_reset_of_match);
  
- 	rcu_read_unlock();
- 
-@@ -199,7 +204,10 @@ hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(stru
- 
- 	role = page_role_for_level(vcpu, vcpu->arch.mmu->shadow_root_level);
- 
--	/* Check for an existing root before allocating a new one. */
-+	/*
-+	 * Check for an existing root before allocating a new one.  Note, the
-+	 * role check prevents consuming an invalid root.
-+	 */
- 	for_each_tdp_mmu_root(kvm, root, kvm_mmu_role_as_id(role)) {
- 		if (root->role.word == role.word &&
- 		    kvm_tdp_mmu_get_root(kvm, root))
---- a/arch/x86/kvm/mmu/tdp_mmu.h
-+++ b/arch/x86/kvm/mmu/tdp_mmu.h
-@@ -10,9 +10,6 @@ hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(stru
- __must_check static inline bool kvm_tdp_mmu_get_root(struct kvm *kvm,
- 						     struct kvm_mmu_page *root)
++static int at91_reset_update(struct reset_controller_dev *rcdev,
++			     unsigned long id, bool assert)
++{
++	struct at91_reset *reset = to_at91_reset(rcdev);
++	u32 val;
++
++	val = readl_relaxed(reset->dev_base);
++	if (assert)
++		val |= BIT(id);
++	else
++		val &= ~BIT(id);
++	writel_relaxed(val, reset->dev_base);
++
++	return 0;
++}
++
++static int at91_reset_assert(struct reset_controller_dev *rcdev,
++			     unsigned long id)
++{
++	return at91_reset_update(rcdev, id, true);
++}
++
++static int at91_reset_deassert(struct reset_controller_dev *rcdev,
++			       unsigned long id)
++{
++	return at91_reset_update(rcdev, id, false);
++}
++
++static int at91_reset_dev_status(struct reset_controller_dev *rcdev,
++				 unsigned long id)
++{
++	struct at91_reset *reset = to_at91_reset(rcdev);
++	u32 val;
++
++	val = readl_relaxed(reset->dev_base);
++
++	return !!(val & BIT(id));
++}
++
++static const struct reset_control_ops at91_reset_ops = {
++	.assert = at91_reset_assert,
++	.deassert = at91_reset_deassert,
++	.status = at91_reset_dev_status,
++};
++
++static int at91_reset_of_xlate(struct reset_controller_dev *rcdev,
++			       const struct of_phandle_args *reset_spec)
++{
++	return reset_spec->args[0];
++}
++
++static int at91_rcdev_init(struct at91_reset *reset,
++			   const struct at91_reset_data *data,
++			   struct platform_device *pdev)
++{
++	if (!data->n_device_reset)
++		return 0;
++
++	reset->dev_base = devm_of_iomap(&pdev->dev, pdev->dev.of_node, 1,
++					NULL);
++	if (IS_ERR(reset->rstc_base))
++		return -ENODEV;
++
++	reset->rcdev.ops = &at91_reset_ops;
++	reset->rcdev.owner = THIS_MODULE;
++	reset->rcdev.of_node = pdev->dev.of_node;
++	reset->rcdev.nr_resets = data->n_device_reset;
++	reset->rcdev.of_reset_n_cells = 1;
++	reset->rcdev.of_xlate = at91_reset_of_xlate;
++
++	return devm_reset_controller_register(&pdev->dev, &reset->rcdev);
++}
++
+ static int __init at91_reset_probe(struct platform_device *pdev)
  {
--	if (root->role.invalid)
--		return false;
--
- 	return refcount_inc_not_zero(&root->tdp_mmu_root_count);
+ 	const struct of_device_id *match;
+@@ -244,6 +322,10 @@ static int __init at91_reset_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, reset);
+ 
++	ret = at91_rcdev_init(reset, data, pdev);
++	if (ret)
++		goto disable_clk;
++
+ 	if (of_device_is_compatible(pdev->dev.of_node, "microchip,sam9x60-rstc")) {
+ 		u32 val = readl(reset->rstc_base + AT91_RSTC_MR);
+ 
+@@ -252,14 +334,16 @@ static int __init at91_reset_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ret = register_restart_handler(&reset->nb);
+-	if (ret) {
+-		clk_disable_unprepare(reset->sclk);
+-		return ret;
+-	}
++	if (ret)
++		goto disable_clk;
+ 
+ 	at91_reset_status(pdev, reset->rstc_base);
+ 
+ 	return 0;
++
++disable_clk:
++	clk_disable_unprepare(reset->sclk);
++	return ret;
  }
  
-
+ static int __exit at91_reset_remove(struct platform_device *pdev)
+-- 
+2.32.0
 
