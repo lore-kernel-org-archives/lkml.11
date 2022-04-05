@@ -2,106 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1013BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 715D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380895AbiDEUym (ORCPT
+        id S1381148AbiDEUyq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
+        Tue, 5 Apr 2022 16:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358004AbiDEK1m (ORCPT
+        with ESMTP id S1457938AbiDERAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBE9D95DA;
-        Tue,  5 Apr 2022 03:12:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD9686179E;
-        Tue,  5 Apr 2022 10:12:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD010C385A1;
-        Tue,  5 Apr 2022 10:12:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153565;
-        bh=FoGnhb9slsWkG7IHxkEf3fL8MCz4z4jZ7l1JoxcVH98=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PzCXB5EWIqWR+v9KClz9TzoCIiGRjsnnDJL2AMQVY1UxZxfv/tgEkOfUsA6TL8Ecu
-         DmgAYK/lElUKaXnovlmTbxj3RqaLleC5miXwThSRwM3IpDtmSYag4NeASfbaggO70I
-         3lV+mnpBrXdODhzBqA2wS6vwJYdgTTu/UsxgOBlo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 267/599] libbpf: Fix possible NULL pointer dereference when destroying skeleton
-Date:   Tue,  5 Apr 2022 09:29:21 +0200
-Message-Id: <20220405070306.783329093@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:00:39 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1DEBC0B;
+        Tue,  5 Apr 2022 09:58:40 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id x16so7269171pfa.10;
+        Tue, 05 Apr 2022 09:58:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZAVOxKCn1rSRBeHkGZiJCt2gkjQ/XAx8tCfYXVtiNfE=;
+        b=BCmXM1EPbsht9Le2RBBahOAvfdS8skESRKaGokKX4zH1mid2b3gkPH+7yeaMUotIkX
+         NbGdGgZUpeiJ3gcEyuIX9YmL6aKRHI0Ro2BaiZ6XjqRP2m7CKlHSuUHTMLX2NSIG2dm5
+         HsJwWqgby3b4336TPjsBa5UN9sDUtcgVUND+DX6y7CTnOXnjiuvnfz0xyouIucQQx+EI
+         nXE6toJv/NMiDw3WCfZ71mrl7R7Bvu+SZDhsJUQUr2Zwo+xGSeq99721WuG2hKNGZbNe
+         wmZS8BuxXvE1kG9ToDalW5HUMb0OuCMOkXO0tPwEiirJb0Sipb6N3gnGMjvO1qWAdbK8
+         GaQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZAVOxKCn1rSRBeHkGZiJCt2gkjQ/XAx8tCfYXVtiNfE=;
+        b=TX6DxWo/6bmRXGnKmJ/u8tK9QHEfnhjVJO5PNn5VogMbLjcTyDntaKwu8/caN7Qnw7
+         fUNkb9SWRwiACWr+99Ranss199s8VtRfTYwxJNCuEbb/M/wMd85KL15Tz/x408goKWKM
+         6FRiasGcT+UIVAGsFhFSghTH/i9TEmbcDsfDuBUP2tPRz+Nd1J7oIAs67pIwlvzVKfR/
+         8UaoRe8ahSoKnOFWRe4aXj/7BeSLhra53pnEP82jbJMCHjnOoFuc7uCkmYYU6nQOXBWN
+         QMItESM4oaAfKMsHwoHIyHvDAKJW94zQqTT+R8fzeNxqWF240BG7710y7NF8Y2F2F0YG
+         yUHQ==
+X-Gm-Message-State: AOAM530fJhgg7s6Zl5HjUu7cKXtMISkAMDqJ0FaZZ/AdZ9LaoUfbc79T
+        0p4zBQ+lcxFrk+SMJ77Lb1dopikzFK9HWB4TskK52FJ2
+X-Google-Smtp-Source: ABdhPJyU0FDyxgvY/9mKwmMNiabrAzWrvWBv7HU1olSNnJVsJwHglQaOPHoTBWnW8V0XuaupQcIHHAgWxERG2jXlLBk=
+X-Received: by 2002:a05:6a00:1c9e:b0:4fa:d946:378b with SMTP id
+ y30-20020a056a001c9e00b004fad946378bmr4548697pfw.46.1649177919721; Tue, 05
+ Apr 2022 09:58:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405075531.GB30877@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220405075531.GB30877@worktop.programming.kicks-ass.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 5 Apr 2022 09:58:28 -0700
+Message-ID: <CAADnVQJ1_9sBqRngG_J+84whx9j7d7qOSzMaJvhc0evDBQfE3w@mail.gmail.com>
+Subject: Re: [PATCH] x86,bpf: Avoid IBT objtool warning
+To:     Peter Zijlstra <peterz@infradead.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yafang Shao <laoar.shao@gmail.com>
+On Tue, Apr 5, 2022 at 12:55 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+>
+> Clang can inline emit_indirect_jump() and then folds constants, which
+> results in:
+>
+>   | vmlinux.o: warning: objtool: emit_bpf_dispatcher()+0x6a4: relocation to !ENDBR: .text.__x86.indirect_thunk+0x40
+>   | vmlinux.o: warning: objtool: emit_bpf_dispatcher()+0x67d: relocation to !ENDBR: .text.__x86.indirect_thunk+0x40
+>   | vmlinux.o: warning: objtool: emit_bpf_tail_call_indirect()+0x386: relocation to !ENDBR: .text.__x86.indirect_thunk+0x20
+>   | vmlinux.o: warning: objtool: emit_bpf_tail_call_indirect()+0x35d: relocation to !ENDBR: .text.__x86.indirect_thunk+0x20
+>
+> Suppress the optimization such that it must emit a code reference to
+> the __x86_indirect_thunk_array[] base.
+>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/x86/net/bpf_jit_comp.c |    1 +
+>  1 file changed, 1 insertion(+)
+>
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -412,6 +412,7 @@ static void emit_indirect_jump(u8 **ppro
+>                 EMIT_LFENCE();
+>                 EMIT2(0xFF, 0xE0 + reg);
+>         } else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
+> +               OPTIMIZER_HIDE_VAR(reg);
+>                 emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
+>         } else
+>  #endif
 
-[ Upstream commit a32ea51a3f17ce6524c9fc19d311e708331c8b5f ]
-
-When I checked the code in skeleton header file generated with my own
-bpf prog, I found there may be possible NULL pointer dereference when
-destroying skeleton. Then I checked the in-tree bpf progs, finding that is
-a common issue. Let's take the generated samples/bpf/xdp_redirect_cpu.skel.h
-for example. Below is the generated code in
-xdp_redirect_cpu__create_skeleton():
-
-	xdp_redirect_cpu__create_skeleton
-		struct bpf_object_skeleton *s;
-		s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));
-		if (!s)
-			goto error;
-		...
-	error:
-		bpf_object__destroy_skeleton(s);
-		return  -ENOMEM;
-
-After goto error, the NULL 's' will be deferenced in
-bpf_object__destroy_skeleton().
-
-We can simply fix this issue by just adding a NULL check in
-bpf_object__destroy_skeleton().
-
-Fixes: d66562fba1ce ("libbpf: Add BPF object skeleton support")
-Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220108134739.32541-1-laoar.shao@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/lib/bpf/libbpf.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index b337d6f29098..61df26f048d9 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10923,6 +10923,9 @@ void bpf_object__detach_skeleton(struct bpf_object_skeleton *s)
- 
- void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s)
- {
-+	if (!s)
-+		return;
-+
- 	if (s->progs)
- 		bpf_object__detach_skeleton(s);
- 	if (s->obj)
--- 
-2.34.1
-
-
-
+Looks good. Please cc bpf@vger and all bpf maintainers in the future.
+We can take it through the bpf tree if you prefer.
