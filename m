@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 616C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1572958AbiDFBog (ORCPT
+        id S1844069AbiDFBot (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
+        Tue, 5 Apr 2022 21:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239460AbiDEKyt (ORCPT
+        with ESMTP id S1348980AbiDEJsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:54:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DFD167C6;
-        Tue,  5 Apr 2022 03:28:28 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983646264;
+        Tue,  5 Apr 2022 02:38:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAF956142E;
-        Tue,  5 Apr 2022 10:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB769C385A1;
-        Tue,  5 Apr 2022 10:28:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5975EB81C6A;
+        Tue,  5 Apr 2022 09:38:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC78C385A3;
+        Tue,  5 Apr 2022 09:38:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154507;
-        bh=aKh0tHKvR74V6nM79eP3it47vBl/S2hzvwvQLmnZUAk=;
+        s=korg; t=1649151518;
+        bh=IfWMaRl05hOWBxfG40GcyKXtd4SGRrCitFCS7E/8zvI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TnTRrmtcWD/8neouT1PzSbmPmh9oBZOE2Kf4wa5PtteFlhCbQEIN0noXa5QqWf3SM
-         QNAQ9EXDd17TYiwBLYT9CD4Stcr+IE2i9aSoltth5HD76zhIZLLkU8O0YYSWbue9S+
-         rjefjyEprsJZLa43qBesnGVrN3k7Z/wh7bFVNneQ=
+        b=TRO3VdIRCWtp7+brP0QBP83lCJgqF++qgJoE9gOrjTpqFGqfwwc6ZfYipUNtRP6vo
+         w5Qzqt8VDy6zZ/I+uspq/9wAvQLAv6MZesBAbDEWPZshkPyii8cgPx2VtOmqmA/25X
+         4EZ4ZOgTwb6N4dVmh4nYbMP1wcrLwFftZDDbbuSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH 5.10 573/599] staging: mt7621-dts: fix pinctrl-0 items to be size-1 items on ethernet
-Date:   Tue,  5 Apr 2022 09:34:27 +0200
-Message-Id: <20220405070315.894886253@linuxfoundation.org>
+        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 443/913] RDMA/rxe: Check the last packet by RXE_END_MASK
+Date:   Tue,  5 Apr 2022 09:25:05 +0200
+Message-Id: <20220405070353.124994754@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+From: Xiao Yang <yangx.jy@fujitsu.com>
 
-commit 25e4f5220efead592c83200241e098e757d37e1f upstream.
+[ Upstream commit b1377cc37f6bebd57ce8747b7e16163a475af295 ]
 
-Fix pinctrl-0 items under the ethernet node to be size-1 items.
-Current notation would be used on specifications with non-zero cells.
+It's wrong to check the last packet by RXE_COMP_MASK because the flag is
+to indicate if responder needs to generate a completion.
 
-Fixes: 0a93c0d75809 ("staging: mt7621-dts: fix pinctrl properties for ethernet")
-Reported-by: Sander Vanheule <sander@svanheule.net>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220215081725.3463-1-arinc.unal@arinc9.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9fcd67d1772c ("IB/rxe: increment msn only when completing a request")
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20211229034438.1854908-1-yangx.jy@fujitsu.com
+Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/mt7621-dts/mt7621.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/infiniband/sw/rxe/rxe_resp.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/drivers/staging/mt7621-dts/mt7621.dtsi
-+++ b/drivers/staging/mt7621-dts/mt7621.dtsi
-@@ -413,7 +413,7 @@
- 		mediatek,ethsys = <&ethsys>;
+diff --git a/drivers/infiniband/sw/rxe/rxe_resp.c b/drivers/infiniband/sw/rxe/rxe_resp.c
+index 5501227ddc65..8ed172ab0beb 100644
+--- a/drivers/infiniband/sw/rxe/rxe_resp.c
++++ b/drivers/infiniband/sw/rxe/rxe_resp.c
+@@ -830,6 +830,10 @@ static enum resp_states execute(struct rxe_qp *qp, struct rxe_pkt_info *pkt)
+ 			return RESPST_ERR_INVALIDATE_RKEY;
+ 	}
  
- 		pinctrl-names = "default";
--		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
-+		pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>, <&rgmii2_pins>;
++	if (pkt->mask & RXE_END_MASK)
++		/* We successfully processed this new request. */
++		qp->resp.msn++;
++
+ 	/* next expected psn, read handles this separately */
+ 	qp->resp.psn = (pkt->psn + 1) & BTH_PSN_MASK;
+ 	qp->resp.ack_psn = qp->resp.psn;
+@@ -837,11 +841,9 @@ static enum resp_states execute(struct rxe_qp *qp, struct rxe_pkt_info *pkt)
+ 	qp->resp.opcode = pkt->opcode;
+ 	qp->resp.status = IB_WC_SUCCESS;
  
- 		gmac0: mac@0 {
- 			compatible = "mediatek,eth-mac";
+-	if (pkt->mask & RXE_COMP_MASK) {
+-		/* We successfully processed this new request. */
+-		qp->resp.msn++;
++	if (pkt->mask & RXE_COMP_MASK)
+ 		return RESPST_COMPLETE;
+-	} else if (qp_type(qp) == IB_QPT_RC)
++	else if (qp_type(qp) == IB_QPT_RC)
+ 		return RESPST_ACKNOWLEDGE;
+ 	else
+ 		return RESPST_CLEANUP;
+-- 
+2.34.1
+
 
 
