@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9BBC4707E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E724FC4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359005AbiDEMv5 (ORCPT
+        id S1358837AbiDEMvt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
+        Tue, 5 Apr 2022 08:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244652AbiDEJKH (ORCPT
+        with ESMTP id S243931AbiDEJJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:10:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6182AC5B;
-        Tue,  5 Apr 2022 01:59:51 -0700 (PDT)
+        Tue, 5 Apr 2022 05:09:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDDA1BE98;
+        Tue,  5 Apr 2022 01:58:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 609B7614FC;
-        Tue,  5 Apr 2022 08:59:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 750B4C385A1;
-        Tue,  5 Apr 2022 08:59:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 970CCCE1C0D;
+        Tue,  5 Apr 2022 08:58:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB20FC385A0;
+        Tue,  5 Apr 2022 08:58:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149190;
-        bh=mNrzE2y4jaCJIXuG3CMdKKY1QnNmRPTne+P4BnMs2vQ=;
+        s=korg; t=1649149128;
+        bh=rbe+zv7Nmz16ANnvEAT8XDOSId2te/xaaarNcwHqQZA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QfIHvIe4TGcbTSzojFNWo21Yhuwh7iW0TYpK6u0kctjoT2N5VDEo5i1b4ygquGwN0
-         UTTjgmaYsmlO4qgpqWG6bEUrQP6Hcn2LmCJzoLwdsF6Al4dresrs96WAsrhdvW+vRq
-         UaIRTmnPZm7iwqAXDqz72H3pPjklJXMnj72zyfKM=
+        b=tQPBa8xAI37p+1HIkWQuu2GCF/+tO136Kbcjs2IcuotyM/pfJ4LYTDKrIha6daUQJ
+         n1yafiXRCR8li+ikX0QsZrKkHTykYMMCem20k5c578n23QnGj2mOudFoZw6L9VCW2O
+         DiAJxc9We8T8EUIngzyR9EatXAeU9t3KfyAHzkcc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0626/1017] i2c: mux: demux-pinctrl: do not deactivate a master that is not active
-Date:   Tue,  5 Apr 2022 09:25:39 +0200
-Message-Id: <20220405070412.863478512@linuxfoundation.org>
+        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0605/1017] RDMA/rxe: Change variable and function argument to proper type
+Date:   Tue,  5 Apr 2022 09:25:18 +0200
+Message-Id: <20220405070412.236112619@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,50 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Rosin <peda@axentia.se>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit 1a22aabf20adf89cb216f566913196128766f25b ]
+[ Upstream commit 7e8e611d6a0ff228577b1167335ffefb0f44d5d8 ]
 
-Attempting to rollback the activation of the current master when
-the current master has not been activated is bad. priv->cur_chan
-and priv->cur_adap are both still zeroed out and the rollback
-may result in attempts to revert an of changeset that has not been
-applied and do result in calls to both del and put the zeroed out
-i2c_adapter. Maybe it crashes, or whatever, but it's bad in any
-case.
+The type of wqe length is u32 so in order to avoid overflow and shadow
+casting change variable and relevant function argument to proper type.
 
-Fixes: e9d1a0a41d44 ("i2c: mux: demux-pinctrl: Fix an error handling path in 'i2c_demux_pinctrl_probe()'")
-Signed-off-by: Peter Rosin <peda@axentia.se>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Link: https://lore.kernel.org/r/20220307145047.3235675-1-cgxu519@mykernel.net
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/muxes/i2c-demux-pinctrl.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/infiniband/sw/rxe/rxe_req.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-demux-pinctrl.c b/drivers/i2c/muxes/i2c-demux-pinctrl.c
-index 5365199a31f4..f7a7405d4350 100644
---- a/drivers/i2c/muxes/i2c-demux-pinctrl.c
-+++ b/drivers/i2c/muxes/i2c-demux-pinctrl.c
-@@ -261,7 +261,7 @@ static int i2c_demux_pinctrl_probe(struct platform_device *pdev)
+diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
+index 0c9d2af15f3d..79ed4ca2fe2c 100644
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -362,7 +362,7 @@ static inline int get_mtu(struct rxe_qp *qp)
  
- 	err = device_create_file(&pdev->dev, &dev_attr_available_masters);
- 	if (err)
--		goto err_rollback;
-+		goto err_rollback_activation;
+ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
+ 				       struct rxe_send_wqe *wqe,
+-				       int opcode, int payload,
++				       int opcode, u32 payload,
+ 				       struct rxe_pkt_info *pkt)
+ {
+ 	struct rxe_dev		*rxe = to_rdev(qp->ibqp.device);
+@@ -455,7 +455,7 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
  
- 	err = device_create_file(&pdev->dev, &dev_attr_current_master);
- 	if (err)
-@@ -271,8 +271,9 @@ static int i2c_demux_pinctrl_probe(struct platform_device *pdev)
+ static int finish_packet(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
+ 		       struct rxe_pkt_info *pkt, struct sk_buff *skb,
+-		       int paylen)
++		       u32 paylen)
+ {
+ 	int err;
  
- err_rollback_available:
- 	device_remove_file(&pdev->dev, &dev_attr_available_masters);
--err_rollback:
-+err_rollback_activation:
- 	i2c_demux_deactivate_master(priv);
-+err_rollback:
- 	for (j = 0; j < i; j++) {
- 		of_node_put(priv->chan[j].parent_np);
- 		of_changeset_destroy(&priv->chan[j].chgset);
+@@ -503,7 +503,7 @@ static void update_wqe_state(struct rxe_qp *qp,
+ static void update_wqe_psn(struct rxe_qp *qp,
+ 			   struct rxe_send_wqe *wqe,
+ 			   struct rxe_pkt_info *pkt,
+-			   int payload)
++			   u32 payload)
+ {
+ 	/* number of packets left to send including current one */
+ 	int num_pkt = (wqe->dma.resid + payload + qp->mtu - 1) / qp->mtu;
+@@ -546,7 +546,7 @@ static void rollback_state(struct rxe_send_wqe *wqe,
+ }
+ 
+ static void update_state(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
+-			 struct rxe_pkt_info *pkt, int payload)
++			 struct rxe_pkt_info *pkt, u32 payload)
+ {
+ 	qp->req.opcode = pkt->opcode;
+ 
+@@ -618,7 +618,7 @@ int rxe_requester(void *arg)
+ 	struct sk_buff *skb;
+ 	struct rxe_send_wqe *wqe;
+ 	enum rxe_hdr_mask mask;
+-	int payload;
++	u32 payload;
+ 	int mtu;
+ 	int opcode;
+ 	int ret;
 -- 
 2.34.1
 
