@@ -2,86 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C101C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB61BC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbiDEVzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43024 "EHLO
+        id S1357501AbiDEV42 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354719AbiDENH2 (ORCPT
+        with ESMTP id S1356458AbiDEKXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:07:28 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B53523168;
-        Tue,  5 Apr 2022 05:09:59 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 5 Apr 2022 06:23:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF84BC85F;
+        Tue,  5 Apr 2022 03:08:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 6862122249;
-        Tue,  5 Apr 2022 14:09:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649160597;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=p7la0KOeEOAysVBijkaFTCkW3yqx5mQnMD3fZ7uHfuI=;
-        b=Xm1ftZagfg7DLK0rvHGkDSHaDN+b4oWWx/v6NA93MNQVtCI99qnP+321I8bYQVe9h5qJG2
-        Lv8i+AxwwSew01k/OSou8MVw41i+jDofX1P/ZjGF7EaWNTBVB8uyl9KswtPYS1E6w4SAJY
-        66EvyEMJX/5aVVGmyqYX9jj13NDquV8=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH net-next v3 2/3] dt-bindings: net: mscc-miim: add clock and clock-frequency
-Date:   Tue,  5 Apr 2022 14:09:50 +0200
-Message-Id: <20220405120951.4044875-3-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405120951.4044875-1-michael@walle.cc>
-References: <20220405120951.4044875-1-michael@walle.cc>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E566B81C88;
+        Tue,  5 Apr 2022 10:08:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B880C385A1;
+        Tue,  5 Apr 2022 10:08:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153298;
+        bh=5+j3fHuHA0QdDHXF5DiOjJr3Ypuo/vjZboS4vptQG24=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SVoSqoWyv9jQwMddRR422mS89ayc5Pi2xAjgNa1ZkqLK4oHCJaNO08i24HB0xMed2
+         3vFz6jAUTN6FdcT//M3G3SiS3XOPwgQaXrbj2Yj00sJtdMrSV65sPGriZKA2+KlJPx
+         CRQpGM7aCbrRe2DoRadyO7xs+U8p44nIxsDmUzxM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 174/599] sched/core: Export pelt_thermal_tp
+Date:   Tue,  5 Apr 2022 09:27:48 +0200
+Message-Id: <20220405070304.020965093@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the (optional) clock input of the MDIO controller and indicate that
-the common clock-frequency property is supported. The driver can use it
-to set the desired MDIO bus frequency.
+From: Qais Yousef <qais.yousef@arm.com>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[ Upstream commit 77cf151b7bbdfa3577b3c3f3a5e267a6c60a263b ]
+
+We can't use this tracepoint in modules without having the symbol
+exported first, fix that.
+
+Fixes: 765047932f15 ("sched/pelt: Add support to track thermal pressure")
+Signed-off-by: Qais Yousef <qais.yousef@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20211028115005.873539-1-qais.yousef@arm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/net/mscc,miim.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+ kernel/sched/core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
-index cdc39aa20683..2c451cfa4e0b 100644
---- a/Documentation/devicetree/bindings/net/mscc,miim.yaml
-+++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
-@@ -33,6 +33,11 @@ properties:
-   interrupts:
-     maxItems: 1
- 
-+  clocks:
-+    maxItems: 1
-+
-+  clock-frequency: true
-+
- required:
-   - compatible
-   - reg
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 0a5f9fad45e4..e437d946b27b 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -36,6 +36,7 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_rt_tp);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_dl_tp);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_irq_tp);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_se_tp);
++EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_thermal_tp);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(sched_cpu_capacity_tp);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(sched_overutilized_tp);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(sched_util_est_cfs_tp);
 -- 
-2.30.2
+2.34.1
+
+
 
