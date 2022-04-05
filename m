@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE305C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ED6C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578826AbiDEXZD (ORCPT
+        id S1578904AbiDEXZ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
+        Tue, 5 Apr 2022 19:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345111AbiDEKkn (ORCPT
+        with ESMTP id S1349055AbiDEJtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:40:43 -0400
+        Tue, 5 Apr 2022 05:49:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037202DAAE;
-        Tue,  5 Apr 2022 03:25:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1D5EA94E6;
+        Tue,  5 Apr 2022 02:39:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9694761425;
-        Tue,  5 Apr 2022 10:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7CEDC385A0;
-        Tue,  5 Apr 2022 10:25:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41C51615E5;
+        Tue,  5 Apr 2022 09:39:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53CC4C385A2;
+        Tue,  5 Apr 2022 09:39:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154350;
-        bh=a6oPxCJzwFg+auaLybS3Cz5xCfoOmB6qPAWpGmmbt78=;
+        s=korg; t=1649151561;
+        bh=b9CmBkPoTzeTLTQ03P0MF8/xi7jAsA2piHfG702kMsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XVDadoXOdGQeFf7zhCfwoxHCL8sJ9uIMRORw6byvTDbpjPod8gnYSnumalRd/xwMc
-         mpYLqnKp/iXDHd3OZumqvvShAmrcqvOY5syCdUzA20se2K+Xgs/7STyorh2SR96n4P
-         A/BElTnYuUQWlJe/khU2jDtuGhA9no5FyzhjQM34=
+        b=1scPs9izTJkIW6jFdO22FVoV2DrdK/dNVeL4ISpH4cxK2ziQ6V6BeH6dNHBYysx70
+         ujZ5Ws4SAPGQlOO+vTa7sxeT/VAqXp+uCVE4kNio2SF6l2lw4rulFTt0uPZQpQl19C
+         i+EfYn6XLpfl0ZSvCv+0ilfWqczhmY3Pa51ZU5xI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 5.10 548/599] XArray: Fix xas_create_range() when multi-order entry present
-Date:   Tue,  5 Apr 2022 09:34:02 +0200
-Message-Id: <20220405070315.148705763@linuxfoundation.org>
+        stable@vger.kernel.org, Geliang Tang <geliang.tang@suse.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 461/913] selftests: mptcp: add csum mib check for mptcp_connect
+Date:   Tue,  5 Apr 2022 09:25:23 +0200
+Message-Id: <20220405070353.667445310@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,85 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Geliang Tang <geliang.tang@suse.com>
 
-commit 3e3c658055c002900982513e289398a1aad4a488 upstream.
+[ Upstream commit 24720d7452df2dff2e539d9dff28904e25bb1c6d ]
 
-If there is already an entry present that is of order >= XA_CHUNK_SHIFT
-when we call xas_create_range(), xas_create_range() will misinterpret
-that entry as a node and dereference xa_node->parent, generally leading
-to a crash that looks something like this:
+This patch added the data checksum error mib counters check for the
+script mptcp_connect.sh when the data checksum is enabled.
 
-general protection fault, probably for non-canonical address 0xdffffc0000000001:
-0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 32 Comm: khugepaged Not tainted 5.17.0-rc8-syzkaller-00003-g56e337f2cf13 #0
-RIP: 0010:xa_parent_locked include/linux/xarray.h:1207 [inline]
-RIP: 0010:xas_create_range+0x2d9/0x6e0 lib/xarray.c:725
+In do_transfer(), got the mib counters twice, before and after running
+the mptcp_connect commands. The latter minus the former is the actual
+number of the data checksum mib counter.
 
-It's deterministically reproducable once you know what the problem is,
-but producing it in a live kernel requires khugepaged to hit a race.
-While the problem has been present since xas_create_range() was
-introduced, I'm not aware of a way to hit it before the page cache was
-converted to use multi-index entries.
+The output looks like this:
 
-Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
-Reported-by: syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ns1 MPTCP -> ns2 (dead:beef:1::2:10007) MPTCP   (duration    86ms) [ OK ]
+ns1 MPTCP -> ns2 (10.0.2.1:10008      ) MPTCP   (duration    66ms) [ FAIL ]
+server got 1 data checksum error[s]
+
+Fixes: 94d66ba1d8e48 ("selftests: mptcp: enable checksum in mptcp_connect.sh")
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/255
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/test_xarray.c |   22 ++++++++++++++++++++++
- lib/xarray.c      |    2 ++
- 2 files changed, 24 insertions(+)
+ .../selftests/net/mptcp/mptcp_connect.sh      | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
---- a/lib/test_xarray.c
-+++ b/lib/test_xarray.c
-@@ -1463,6 +1463,25 @@ unlock:
- 	XA_BUG_ON(xa, !xa_empty(xa));
- }
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+index 559173a8e387..d75fa97609c1 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+@@ -445,6 +445,8 @@ do_transfer()
+ 	local stat_ackrx_last_l=$(get_mib_counter "${listener_ns}" "MPTcpExtMPCapableACKRX")
+ 	local stat_cookietx_last=$(get_mib_counter "${listener_ns}" "TcpExtSyncookiesSent")
+ 	local stat_cookierx_last=$(get_mib_counter "${listener_ns}" "TcpExtSyncookiesRecv")
++	local stat_csum_err_s=$(get_mib_counter "${listener_ns}" "MPTcpExtDataCsumErr")
++	local stat_csum_err_c=$(get_mib_counter "${connector_ns}" "MPTcpExtDataCsumErr")
  
-+static noinline void check_create_range_5(struct xarray *xa,
-+		unsigned long index, unsigned int order)
-+{
-+	XA_STATE_ORDER(xas, xa, index, order);
-+	unsigned int i;
-+
-+	xa_store_order(xa, index, order, xa_mk_index(index), GFP_KERNEL);
-+
-+	for (i = 0; i < order + 10; i++) {
-+		do {
-+			xas_lock(&xas);
-+			xas_create_range(&xas);
-+			xas_unlock(&xas);
-+		} while (xas_nomem(&xas, GFP_KERNEL));
-+	}
-+
-+	xa_destroy(xa);
-+}
-+
- static noinline void check_create_range(struct xarray *xa)
- {
- 	unsigned int order;
-@@ -1490,6 +1509,9 @@ static noinline void check_create_range(
- 		check_create_range_4(xa, (3U << order) + 1, order);
- 		check_create_range_4(xa, (3U << order) - 1, order);
- 		check_create_range_4(xa, (1U << 24) + 1, order);
-+
-+		check_create_range_5(xa, 0, order);
-+		check_create_range_5(xa, (1U << order), order);
- 	}
+ 	timeout ${timeout_test} \
+ 		ip netns exec ${listener_ns} \
+@@ -537,6 +539,23 @@ do_transfer()
+ 		fi
+ 	fi
  
- 	check_create_range_3();
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -722,6 +722,8 @@ void xas_create_range(struct xa_state *x
- 
- 		for (;;) {
- 			struct xa_node *node = xas->xa_node;
-+			if (node->shift >= shift)
-+				break;
- 			xas->xa_node = xa_parent_locked(xas->xa, node);
- 			xas->xa_offset = node->offset - 1;
- 			if (node->offset != 0)
++	if $checksum; then
++		local csum_err_s=$(get_mib_counter "${listener_ns}" "MPTcpExtDataCsumErr")
++		local csum_err_c=$(get_mib_counter "${connector_ns}" "MPTcpExtDataCsumErr")
++
++		local csum_err_s_nr=$((csum_err_s - stat_csum_err_s))
++		if [ $csum_err_s_nr -gt 0 ]; then
++			printf "[ FAIL ]\nserver got $csum_err_s_nr data checksum error[s]"
++			rets=1
++		fi
++
++		local csum_err_c_nr=$((csum_err_c - stat_csum_err_c))
++		if [ $csum_err_c_nr -gt 0 ]; then
++			printf "[ FAIL ]\nclient got $csum_err_c_nr data checksum error[s]"
++			retc=1
++		fi
++	fi
++
+ 	if [ $retc -eq 0 ] && [ $rets -eq 0 ]; then
+ 		printf "[ OK ]"
+ 	fi
+-- 
+2.34.1
+
 
 
