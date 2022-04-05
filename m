@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AFFC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F23BC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380755AbiDEL6f (ORCPT
+        id S1380642AbiDEL6c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46546 "EHLO
+        Tue, 5 Apr 2022 07:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245038AbiDEIxC (ORCPT
+        with ESMTP id S245006AbiDEIxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6E9E10;
-        Tue,  5 Apr 2022 01:50:20 -0700 (PDT)
+        Tue, 5 Apr 2022 04:53:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FF222A;
+        Tue,  5 Apr 2022 01:49:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E4E8B81B92;
-        Tue,  5 Apr 2022 08:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E8FC385A0;
-        Tue,  5 Apr 2022 08:50:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7874C60FFB;
+        Tue,  5 Apr 2022 08:49:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84FCCC385A1;
+        Tue,  5 Apr 2022 08:49:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148617;
-        bh=8byxPXwxejjXlkL2TpUmT+yCJ0uneYeRDygEpoPrvLA=;
+        s=korg; t=1649148553;
+        bh=b3BkvZVFyR26lTuw4D/JdxL66ef+wVKfp5X6RgCspSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j4fxY5Y8v7FhkNzBnIFFxyBzynQEJFetrc/vVb1eOLh5oUYewrmLC5C6KpQUl9BNS
-         wjbvGc/32UMF/ZEV3VLBQo1RYmZfwYDBrc6dQQj1cgjkNNpqEYUv62eYlHlhoSGYdw
-         TR+FRaecyC/TPcpj7LSImj6bVx6DnI0RS323J6UM=
+        b=tGubeEHiXtBa+XYoGcghRd3d9LA5PpATdWa6sznFzeouLzY6ubqUM9ppM5B7lqOzf
+         RTbKlxk9eGHedFb2J9zzgO+T7MD0kYFjQ3QY0fARJt1t3PzKyky0KQqeosztSy3wLQ
+         ftDEGSZteKruYFL1jxAbfFi/3vZFnK1W4vRwMYco=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0419/1017] mtd: rawnand: gpmi: fix controller timings setting
-Date:   Tue,  5 Apr 2022 09:22:12 +0200
-Message-Id: <20220405070406.726487734@linuxfoundation.org>
+Subject: [PATCH 5.16 0398/1017] drm/meson: osd_afbcd: Add an exit callback to struct meson_afbcd_ops
+Date:   Tue,  5 Apr 2022 09:21:51 +0200
+Message-Id: <20220405070406.099230088@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,57 +51,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 2970bf5a32f079e1e9197411db4fe9faccb1503a ]
+[ Upstream commit 04b8a5d9cfd171f65df75f444b5617a372649edd ]
 
-Set the controller registers according to the real clock rate. The
-controller registers configuration (setup, hold, timeout, ... cycles)
-depends on the clock rate of the GPMI. Using the real rate instead of
-the ideal one, avoids that this inaccuracy (required_rate - real_rate)
-affects the registers setting.
+Use this to simplify the driver shutdown. It will also come handy when
+fixing the error handling in meson_drv_bind_master().
 
-This patch has been tested on two custom boards with i.MX28 and i.MX6
-SOCs:
-- i.MX28:
-  required rate 100MHz, real rate 99.3MHz
-- i.MX6
-  required rate 100MHz, real rate 99MHz
-
-Fixes: b1206122069a ("mtd: rawnand: gpmi: use core timings instead of an empirical derivation")
-Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220118095434.35081-3-dario.binacchi@amarulasolutions.com
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Fixes: d1b5e41e13a7e9 ("drm/meson: Add AFBCD module driver")
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211230235515.1627522-2-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/meson/meson_drv.c       |  6 ++--
+ drivers/gpu/drm/meson/meson_osd_afbcd.c | 41 ++++++++++++++++---------
+ drivers/gpu/drm/meson/meson_osd_afbcd.h |  1 +
+ 3 files changed, 30 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-index 5eb20dfe4186..42e0aab1a00c 100644
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -648,6 +648,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
- 				     const struct nand_sdr_timings *sdr)
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index 7f41a33592c8..923377f856de 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -380,10 +380,8 @@ static void meson_drv_unbind(struct device *dev)
+ 	free_irq(priv->vsync_irq, drm);
+ 	drm_dev_put(drm);
+ 
+-	if (priv->afbcd.ops) {
+-		priv->afbcd.ops->reset(priv);
+-		meson_rdma_free(priv);
+-	}
++	if (priv->afbcd.ops)
++		priv->afbcd.ops->exit(priv);
+ }
+ 
+ static const struct component_master_ops meson_drv_master_ops = {
+diff --git a/drivers/gpu/drm/meson/meson_osd_afbcd.c b/drivers/gpu/drm/meson/meson_osd_afbcd.c
+index ffc6b584dbf8..0cdbe899402f 100644
+--- a/drivers/gpu/drm/meson/meson_osd_afbcd.c
++++ b/drivers/gpu/drm/meson/meson_osd_afbcd.c
+@@ -79,11 +79,6 @@ static bool meson_gxm_afbcd_supported_fmt(u64 modifier, uint32_t format)
+ 	return meson_gxm_afbcd_pixel_fmt(modifier, format) >= 0;
+ }
+ 
+-static int meson_gxm_afbcd_init(struct meson_drm *priv)
+-{
+-	return 0;
+-}
+-
+ static int meson_gxm_afbcd_reset(struct meson_drm *priv)
  {
- 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
-+	struct resources *r = &this->resources;
- 	unsigned int dll_threshold_ps = this->devdata->max_chain_delay;
- 	unsigned int period_ps, reference_period_ps;
- 	unsigned int data_setup_cycles, data_hold_cycles, addr_setup_cycles;
-@@ -671,6 +672,8 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
- 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
- 	}
+ 	writel_relaxed(VIU_SW_RESET_OSD1_AFBCD,
+@@ -93,6 +88,16 @@ static int meson_gxm_afbcd_reset(struct meson_drm *priv)
+ 	return 0;
+ }
  
-+	hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
++static int meson_gxm_afbcd_init(struct meson_drm *priv)
++{
++	return 0;
++}
 +
- 	/* SDR core timings are given in picoseconds */
- 	period_ps = div_u64((u64)NSEC_PER_SEC * 1000, hw->clk_rate);
++static void meson_gxm_afbcd_exit(struct meson_drm *priv)
++{
++	meson_gxm_afbcd_reset(priv);
++}
++
+ static int meson_gxm_afbcd_enable(struct meson_drm *priv)
+ {
+ 	writel_relaxed(FIELD_PREP(OSD1_AFBCD_ID_FIFO_THRD, 0x40) |
+@@ -172,6 +177,7 @@ static int meson_gxm_afbcd_setup(struct meson_drm *priv)
  
+ struct meson_afbcd_ops meson_afbcd_gxm_ops = {
+ 	.init = meson_gxm_afbcd_init,
++	.exit = meson_gxm_afbcd_exit,
+ 	.reset = meson_gxm_afbcd_reset,
+ 	.enable = meson_gxm_afbcd_enable,
+ 	.disable = meson_gxm_afbcd_disable,
+@@ -269,6 +275,18 @@ static bool meson_g12a_afbcd_supported_fmt(u64 modifier, uint32_t format)
+ 	return meson_g12a_afbcd_pixel_fmt(modifier, format) >= 0;
+ }
+ 
++static int meson_g12a_afbcd_reset(struct meson_drm *priv)
++{
++	meson_rdma_reset(priv);
++
++	meson_rdma_writel_sync(priv, VIU_SW_RESET_G12A_AFBC_ARB |
++			       VIU_SW_RESET_G12A_OSD1_AFBCD,
++			       VIU_SW_RESET);
++	meson_rdma_writel_sync(priv, 0, VIU_SW_RESET);
++
++	return 0;
++}
++
+ static int meson_g12a_afbcd_init(struct meson_drm *priv)
+ {
+ 	int ret;
+@@ -286,16 +304,10 @@ static int meson_g12a_afbcd_init(struct meson_drm *priv)
+ 	return 0;
+ }
+ 
+-static int meson_g12a_afbcd_reset(struct meson_drm *priv)
++static void meson_g12a_afbcd_exit(struct meson_drm *priv)
+ {
+-	meson_rdma_reset(priv);
+-
+-	meson_rdma_writel_sync(priv, VIU_SW_RESET_G12A_AFBC_ARB |
+-			       VIU_SW_RESET_G12A_OSD1_AFBCD,
+-			       VIU_SW_RESET);
+-	meson_rdma_writel_sync(priv, 0, VIU_SW_RESET);
+-
+-	return 0;
++	meson_g12a_afbcd_reset(priv);
++	meson_rdma_free(priv);
+ }
+ 
+ static int meson_g12a_afbcd_enable(struct meson_drm *priv)
+@@ -380,6 +392,7 @@ static int meson_g12a_afbcd_setup(struct meson_drm *priv)
+ 
+ struct meson_afbcd_ops meson_afbcd_g12a_ops = {
+ 	.init = meson_g12a_afbcd_init,
++	.exit = meson_g12a_afbcd_exit,
+ 	.reset = meson_g12a_afbcd_reset,
+ 	.enable = meson_g12a_afbcd_enable,
+ 	.disable = meson_g12a_afbcd_disable,
+diff --git a/drivers/gpu/drm/meson/meson_osd_afbcd.h b/drivers/gpu/drm/meson/meson_osd_afbcd.h
+index 5e5523304f42..e77ddeb6416f 100644
+--- a/drivers/gpu/drm/meson/meson_osd_afbcd.h
++++ b/drivers/gpu/drm/meson/meson_osd_afbcd.h
+@@ -14,6 +14,7 @@
+ 
+ struct meson_afbcd_ops {
+ 	int (*init)(struct meson_drm *priv);
++	void (*exit)(struct meson_drm *priv);
+ 	int (*reset)(struct meson_drm *priv);
+ 	int (*enable)(struct meson_drm *priv);
+ 	int (*disable)(struct meson_drm *priv);
 -- 
 2.34.1
 
