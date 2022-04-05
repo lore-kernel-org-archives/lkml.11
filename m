@@ -2,108 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34647C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 566DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389929AbiDEWCt (ORCPT
+        id S1390007AbiDEWC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
+        Tue, 5 Apr 2022 18:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457411AbiDEQDM (ORCPT
+        with ESMTP id S1573490AbiDETL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:03:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8C896D38B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:41:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649173315;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kz7Qu7KgcrxcF0aFFsFJtexkfcFJthGGVhC/3S+UJFw=;
-        b=hpt9o4WcWsGiVNKw7djajsuOSpEt/210juiqPnM+XyK3lQscQfVDSdaVkedt1nI8Mguc/X
-        kEmpHOPNSS2xQQy/pp9MfP1MXD4NBobVxFTSGvLK8GnGzq09n/XgZoDI2U4TnQRm9IMqBU
-        qniaxgteKrOip44Em4NW1WJSmjtLkC4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-194-iUowPdAHNUOrcegKMzju6g-1; Tue, 05 Apr 2022 11:41:54 -0400
-X-MC-Unique: iUowPdAHNUOrcegKMzju6g-1
-Received: by mail-wm1-f69.google.com with SMTP id v191-20020a1cacc8000000b0038ce818d2efso4175638wme.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 08:41:54 -0700 (PDT)
+        Tue, 5 Apr 2022 15:11:58 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4005E885A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:09:59 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-e2442907a1so40467fac.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:09:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=sPMX429tI6hHm9JGLP4wtiS6WntCuwJ+oSIEAlhqQq4=;
+        b=HCOU4BHcfRd3p8bxiwuoftAjfLn3RfhjTUIBIg9b7YM/jJMdwkTSrJ84CkHkpB0v1s
+         uE0tKJ2IxoARUznnTrCPNS6G4Iie2aoFAv6s45x+yIC3tD6iE2p1vtqlk2PPQiZVzAJi
+         ANFvSL+vd5g/wFrh40eK3FIuUvVdZ5e0iNHLM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kz7Qu7KgcrxcF0aFFsFJtexkfcFJthGGVhC/3S+UJFw=;
-        b=R7yVvwbILvLBFgoztlJE2c/D//SK5laBw05QSyCAdCirP3wnWAYEZ/siT83Qanev1r
-         ZUzw6J7fxEVoR+DSOBqzH5An0YnXHqWDhHw5UQmrcyh7iOx+ybt32lbauf2WNsGCwTV4
-         hD49f2aMFfq8mKCyspA0ZMAp4x7zzvU3T3rrhWzqXfmLemdcNDNHXlj4n6mA5MpPgNPT
-         lRWaMERvr9cxcCe6BjkfpAWlL/LbpgLqwwiVgCSZZR3Q4WtTq0MpGPKsI+L4HwAvL/Kn
-         SEKUc3SJ5lpaQtHEeuKUDP3PT81gYSsY/+oOKiXDHou0ctzEz9MUUL4psRBPs14ACOFw
-         lCYA==
-X-Gm-Message-State: AOAM531t7kG+vYY0GrvQjY2ruVG7WCy6wpPbVpqFl8q2iuksbCO8+7DO
-        qDsdbxMcFwT6wI/nQpeKDx+3uLXQRJ2XzdFanwOt0oPlNuTQ0NPJkoIjca+sZJU9PcURocJd4ap
-        cJArQgHx1pbVWynjwr2QZch+d
-X-Received: by 2002:a7b:cb84:0:b0:382:a9b9:2339 with SMTP id m4-20020a7bcb84000000b00382a9b92339mr3769143wmi.91.1649173313475;
-        Tue, 05 Apr 2022 08:41:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzs/9UhNhcIf6N5vqV+SfAazRP5BqH0fcSVTFmUk2/ChvkzCq45kq8mMwxfAKLFDEC6dGX9yw==
-X-Received: by 2002:a7b:cb84:0:b0:382:a9b9:2339 with SMTP id m4-20020a7bcb84000000b00382a9b92339mr3769132wmi.91.1649173313252;
-        Tue, 05 Apr 2022 08:41:53 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id k6-20020a05600c1c8600b0038e7e07f476sm3338019wms.35.2022.04.05.08.41.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 08:41:52 -0700 (PDT)
-Message-ID: <26ec85d5-dd44-2364-1f8c-064de262cf8f@redhat.com>
-Date:   Tue, 5 Apr 2022 17:41:51 +0200
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=sPMX429tI6hHm9JGLP4wtiS6WntCuwJ+oSIEAlhqQq4=;
+        b=4NdTDUvDNlBGkynrOe5Qq+PYXG9MFSMEc8oaiBXb8Xm0o/0iguYIfOm8GdZhnKfeB6
+         T0Vc+S9rVUtEfafZ9iFTxZziVVErS927sA8UoH6vV63FI77T07V5iyPYjftXeya1fcOm
+         tJ55iRQggJvuvkwzfLGgAcKWo6BJCnviq0GbwUYCVSCpEgK04wY8JRcB1DpNc+LwjX93
+         hamju0y+F3PNyUFSyM59VEBa+adR4+GORCqIwivE49i+fJ+ngv1PXkZcEuMT0AqvCJQG
+         uACnkKGhmwoWwZORq1iw61qMxp4yHkqRX/yCoJLW1HyWpbWjZ6sEowxTW//hdT4htAOt
+         Ve8Q==
+X-Gm-Message-State: AOAM5315psYQtjfb75CUaZOhScOCHoxQYEFGLI+SyyFqh7VxLftciVX/
+        BxSuLChJgFGrdPG89jnSwlVlRdQhOILYBhC0LLPHng==
+X-Google-Smtp-Source: ABdhPJxWEM7cBY41biQ2dGgAM1IQu7FyI39398w6FDLRT0cr5Eg7iPiQ04BRqK9rPG53e/kqf3JThjvF++uVHzzoPcI=
+X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
+ n14-20020a056870558e00b000e1db7c26aamr2272235oao.63.1649185799403; Tue, 05
+ Apr 2022 12:09:59 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 5 Apr 2022 14:09:59 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 100/104] KVM: TDX: Silently discard SMI request
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <b3976a6ed7b7e38f05a9e95eac5b0d735e52bb4d.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <b3976a6ed7b7e38f05a9e95eac5b0d735e52bb4d.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com> <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 5 Apr 2022 14:09:59 -0500
+Message-ID: <CAE-0n53tXnOw_hRD-O9juAbJ1FDcEOx1rHqGijZs8fuanqMNfg@mail.gmail.com>
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008 PMIC
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
+        quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
-> 
-> TDX doesn't support system-management mode (SMM) and system-management
-> interrupt (SMI) in guest TDs.  Because guest state (vcpu state, memory
-> state) is protected, it must go through the TDX module APIs to change guest
-> state, injecting SMI and changing vcpu mode into SMM.  The TDX module
-> doesn't provide a way for VMM to inject SMI into guest TD and a way for VMM
-> to switch guest vcpu mode into SMM.
-> 
-> We have two options in KVM when handling SMM or SMI in the guest TD or the
-> device model (e.g. QEMU): 1) silently ignore the request or 2) return a
-> meaningful error.
-> 
-> For simplicity, we implemented the option 1).
+Quoting Satya Priya (2022-04-05 06:50:31)
+> +
+> +static struct platform_driver pm8008_regulator_driver = {
+> +       .driver = {
+> +               .name           = "qcom,pm8008-regulators",
 
-Please also:
-
-1) return zero from vmx_has_emulated_msr(MSR_IA32_SMBASE) for TDX 
-virtual machines.
-
-2) do a check for static_call(kvm_x86_has_emulated_msr)(kvm, 
-MSR_IA32_SMBASE) in kvm_vcpu_ioctl_smi and __apic_accept_irq.
-
-3) WARN_ON_ONCE in tdx_smi_allowed and tdx_enable_smi_window.
-
-Paolo
-
+Also, the name should be something like pm8008_regulators
