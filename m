@@ -2,85 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C558C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EAAC46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383797AbiDEVqE (ORCPT
+        id S1383947AbiDEVqe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
+        Tue, 5 Apr 2022 17:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357964AbiDEK1f (ORCPT
+        with ESMTP id S1457744AbiDEQiy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE0BC5580;
-        Tue,  5 Apr 2022 03:11:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9A536179E;
-        Tue,  5 Apr 2022 10:11:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E80E3C385A1;
-        Tue,  5 Apr 2022 10:11:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153504;
-        bh=+tmigAPgxOUXyG8vpQNW9jGjOLFsVPcicykoJQBLNEE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HDySaSklepmCmz+IAQq3fbIIhcA6PTVjViPgszJ84Ygz1ryrdIZqU5dkC2ljIL4AC
-         tErCwK9K9VYmv7NShSQMz+50aWI2i85O1YNKsdT96uTdvCmqmk1OH4B77AiG5jTTFN
-         pEjNKxK2tUNDLzJ2xUJzhmElpowuabnusR/BhD+I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 206/599] soc: qcom: ocmem: Fix missing put_device() call in of_get_ocmem
-Date:   Tue,  5 Apr 2022 09:28:20 +0200
-Message-Id: <20220405070304.971991708@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:38:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C295D4C84
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:36:56 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649176614;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IPEm072E8FKkKXf7xYeG5Rr06A0qV3ZtKJkAJTFl2us=;
+        b=3XBImYBOM467XP0kbv6mEhGJH9yCiVcCoJfXXYMexLgp+09PEf3G5eRgfXEjGizbfY32li
+        q6Aloaa5xst6kaWm5GtIRE09YN/xUipA1gYkJX2Tcv7SfSMwp7jeb/DD3QG5ufx4uJXVW4
+        dNI31rW0IipHqyvR9vNIWyCVYK7zn8BdYHwZ9cfH11WncF4vBt471/ztTReir7T14SMBkz
+        Wa2d8uX2PERiZFubN+rP7NuDNQOnaeUboGpzC59ZmLWnzUPsFmNayQC1run6FRSg0xInN+
+        ++XFDB4T3SZ7bpCgBG8bt7NQixPE6hv1PWoDEgNe/BIBXICNhjN2uKQx/pwIpg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649176614;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IPEm072E8FKkKXf7xYeG5Rr06A0qV3ZtKJkAJTFl2us=;
+        b=VA4Z9W9LDNsjaTBzCefRUHmN/VkusECn5JukLM4m3q1lGIhpV/RudqrrPe9DEdIb54jgPm
+        Zm1RDhYOsNdYt2Aw==
+To:     Alexey Dobriyan <adobriyan@gmail.com>, x86@kernel.org
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, linux-kernel@vger.kernel.org, adobriyan@gmail.com
+Subject: Re: [PATCH 1/5] x86/alternative: simplify DUMP_BYTES macro
+In-Reply-To: <20220311144312.88466-1-adobriyan@gmail.com>
+References: <20220311144312.88466-1-adobriyan@gmail.com>
+Date:   Tue, 05 Apr 2022 18:36:53 +0200
+Message-ID: <87v8vn1o7u.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+On Fri, Mar 11 2022 at 17:43, Alexey Dobriyan wrote:
+> Avoid zero length check with clever whitespace placement in the format
+> string.
+>
+> Signed-off-by: Alexey Dobriyan (CloudLinux) <adobriyan@gmail.com>
+> ---
+>  arch/x86/kernel/alternative.c | 21 +++++++++------------
+>  1 file changed, 9 insertions(+), 12 deletions(-)
+>
+> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+> index 5007c3ffe96f..6c9758ee6810 100644
+> --- a/arch/x86/kernel/alternative.c
+> +++ b/arch/x86/kernel/alternative.c
+> @@ -66,13 +66,10 @@ do {									\
+>  	if (unlikely(debug_alternative)) {				\
+>  		int j;							\
+>  									\
+> -		if (!(len))						\
+> -			break;						\
+> -									\
 
-[ Upstream commit 0ff027027e05a866491bbb53494f0e2a61354c85 ]
+How does that clever whitespace placement prevent this being printed in
+the len == 0 case, which is a legit case?
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+>  		printk(KERN_DEBUG pr_fmt(fmt), ##args);			\
 
-Fixes: 01f937ffc468 ("soc: qcom: ocmem: don't return NULL in of_get_ocmem")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220107073126.2335-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/soc/qcom/ocmem.c | 1 +
- 1 file changed, 1 insertion(+)
+This is debug muck. So why does it have to be "optimized"?
 
-diff --git a/drivers/soc/qcom/ocmem.c b/drivers/soc/qcom/ocmem.c
-index f1875dc31ae2..85f82e195ef8 100644
---- a/drivers/soc/qcom/ocmem.c
-+++ b/drivers/soc/qcom/ocmem.c
-@@ -206,6 +206,7 @@ struct ocmem *of_get_ocmem(struct device *dev)
- 	ocmem = platform_get_drvdata(pdev);
- 	if (!ocmem) {
- 		dev_err(dev, "Cannot get ocmem\n");
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-ENODEV);
- 	}
- 	return ocmem;
--- 
-2.34.1
+Thanks,
 
-
-
+        tglx
