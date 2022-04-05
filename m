@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E762BC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04884C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389829AbiDEP1b (ORCPT
+        id S1389890AbiDEP1z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        Tue, 5 Apr 2022 11:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347322AbiDEJqX (ORCPT
+        with ESMTP id S1347363AbiDEJq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:46:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C81DE938;
-        Tue,  5 Apr 2022 02:32:45 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE637DEB8E;
+        Tue,  5 Apr 2022 02:32:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 804FA6165C;
-        Tue,  5 Apr 2022 09:32:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8490BC385A0;
-        Tue,  5 Apr 2022 09:32:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BD10616AE;
+        Tue,  5 Apr 2022 09:32:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48275C385A0;
+        Tue,  5 Apr 2022 09:32:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151164;
-        bh=lfMoL5Nyc8RJg1qdgYmPYov80y4msIbqIDeHePByH+4=;
+        s=korg; t=1649151170;
+        bh=w6FuNmjk0ktzg+89KqvBnzyKkTm7FYtqo88XXdFIqus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c6Ez65xHtIkl37RiB/jEfIOVwS7hZvoobcIjwogcSt0imNe2UOI3Wvu1DNrIQ6yd0
-         mOnbCfYHC7OQ7SLoG98DsVnyw9r4Mp4CrAZ9ZD+Gsbnx228MRFj2BELDAWg1JNyTzD
-         A8rovJcuESZXqSYddzqcpv6Y5hYeibiAVEehkVK4=
+        b=ZgM+R6V/nDd+pA4yxm1jbRpjrgT9qCYwGmnh7ny6wbOCv0elWTyEL/kAhNOZ3dIKe
+         LB6ot+KzC44VgIHeHq7Hj7jvoHwUsIsWqK1DaOw2sz0gF0g/wDvvQOI2oSJAbJMLfR
+         d4HCM7fNA17y/acA4PYt+pw5Rhw4+wHvc3vsI7+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 290/913] video: fbdev: smscufx: Fix null-ptr-deref in ufx_usb_probe()
-Date:   Tue,  5 Apr 2022 09:22:32 +0200
-Message-Id: <20220405070348.550368416@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 318/913] ASoC: codecs: rx-macro: fix accessing array out of bounds for enum type
+Date:   Tue,  5 Apr 2022 09:23:00 +0200
+Message-Id: <20220405070349.384127387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,60 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 1791f487f877a9e83d81c8677bd3e7b259e7cb27 ]
+[ Upstream commit bcfe5f76cc4051ea3f9eb5d2c8ea621641f290a5 ]
 
-I got a null-ptr-deref report:
+Accessing enums using integer would result in array out of bounds access
+on platforms like aarch64 where sizeof(long) is 8 compared to enum size
+which is 4 bytes.
 
-BUG: kernel NULL pointer dereference, address: 0000000000000000
-...
-RIP: 0010:fb_destroy_modelist+0x38/0x100
-...
-Call Trace:
- ufx_usb_probe.cold+0x2b5/0xac1 [smscufx]
- usb_probe_interface+0x1aa/0x3c0 [usbcore]
- really_probe+0x167/0x460
-...
- ret_from_fork+0x1f/0x30
-
-If fb_alloc_cmap() fails in ufx_usb_probe(), fb_destroy_modelist() will
-be called to destroy modelist in the error handling path. But modelist
-has not been initialized yet, so it will result in null-ptr-deref.
-
-Initialize modelist before calling fb_alloc_cmap() to fix this bug.
-
-Fixes: 3c8a63e22a08 ("Add support for SMSC UFX6000/7000 USB display adapters")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 4f692926f562 ("ASoC: codecs: lpass-rx-macro: add dapm widgets and route")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220222183212.11580-3-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/smscufx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/soc/codecs/lpass-rx-macro.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/video/fbdev/smscufx.c b/drivers/video/fbdev/smscufx.c
-index bfac3ee4a642..28768c272b73 100644
---- a/drivers/video/fbdev/smscufx.c
-+++ b/drivers/video/fbdev/smscufx.c
-@@ -1656,6 +1656,7 @@ static int ufx_usb_probe(struct usb_interface *interface,
- 	info->par = dev;
- 	info->pseudo_palette = dev->pseudo_palette;
- 	info->fbops = &ufx_ops;
-+	INIT_LIST_HEAD(&info->modelist);
+diff --git a/sound/soc/codecs/lpass-rx-macro.c b/sound/soc/codecs/lpass-rx-macro.c
+index fafb8265dbb3..23452900b9ae 100644
+--- a/sound/soc/codecs/lpass-rx-macro.c
++++ b/sound/soc/codecs/lpass-rx-macro.c
+@@ -2272,7 +2272,7 @@ static int rx_macro_mux_get(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
+ 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
  
- 	retval = fb_alloc_cmap(&info->cmap, 256, 0);
- 	if (retval < 0) {
-@@ -1666,8 +1667,6 @@ static int ufx_usb_probe(struct usb_interface *interface,
- 	INIT_DELAYED_WORK(&dev->free_framebuffer_work,
- 			  ufx_free_framebuffer_work);
+-	ucontrol->value.integer.value[0] =
++	ucontrol->value.enumerated.item[0] =
+ 			rx->rx_port_value[widget->shift];
+ 	return 0;
+ }
+@@ -2284,7 +2284,7 @@ static int rx_macro_mux_put(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	struct snd_soc_dapm_update *update = NULL;
+-	u32 rx_port_value = ucontrol->value.integer.value[0];
++	u32 rx_port_value = ucontrol->value.enumerated.item[0];
+ 	u32 aif_rst;
+ 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
  
--	INIT_LIST_HEAD(&info->modelist);
--
- 	retval = ufx_reg_read(dev, 0x3000, &id_rev);
- 	check_warn_goto_error(retval, "error %d reading 0x3000 register from device", retval);
- 	dev_dbg(dev->gdev, "ID_REV register value 0x%08x", id_rev);
+@@ -2396,7 +2396,7 @@ static int rx_macro_get_hph_pwr_mode(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
+ 
+-	ucontrol->value.integer.value[0] = rx->hph_pwr_mode;
++	ucontrol->value.enumerated.item[0] = rx->hph_pwr_mode;
+ 	return 0;
+ }
+ 
+@@ -2406,7 +2406,7 @@ static int rx_macro_put_hph_pwr_mode(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
+ 
+-	rx->hph_pwr_mode = ucontrol->value.integer.value[0];
++	rx->hph_pwr_mode = ucontrol->value.enumerated.item[0];
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
