@@ -2,86 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8DA1C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5C6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843645AbiDFBli (ORCPT
+        id S1843662AbiDFBls (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
+        Tue, 5 Apr 2022 21:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358051AbiDEK15 (ORCPT
+        with ESMTP id S1573509AbiDETNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
+        Tue, 5 Apr 2022 15:13:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0007140A34;
-        Tue,  5 Apr 2022 03:13:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3E9E885A;
+        Tue,  5 Apr 2022 12:11:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5B64B81C8A;
-        Tue,  5 Apr 2022 10:13:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E91A3C385A1;
-        Tue,  5 Apr 2022 10:13:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153632;
-        bh=v41tzQEYNLJXuxNjDPBUuCncp+Z5urm4bH13/AV4ow0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kG0Srnp4ZYENgSvnjKfDxHoKqx6/ZaFpvxwZGLFM6fY6wDYR9FwIUrx636XZqRYyv
-         lSZTZAD1SZ8CyWXGHB7IEo1oG7r0j43jFJa12/rqGKznzcWT/Ff8MLvUAp1iuPpnIc
-         Bd/4fZbIbPGUJOkUB549WaRLsC2tBTMrYFuMhBiI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thomas Bracht Laumann Jespersen <t@laumann.xyz>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 292/599] scripts/dtc: Call pkg-config POSIXly correct
-Date:   Tue,  5 Apr 2022 09:29:46 +0200
-Message-Id: <20220405070307.523171481@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8530EB81FA2;
+        Tue,  5 Apr 2022 19:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D2AC385A3;
+        Tue,  5 Apr 2022 19:11:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649185911;
+        bh=iqDVStRGWXOC77cY1v8kziYHdtofJiyJcwhxPZyHrbc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aLEMuI3pesvK6tTddYPd7tLH6xqK53mL9EL/1QzdSFFDsK5N4EdY1LIVnfurkf8d7
+         BkJukhkF+kv3CQ9PLpfN0qAU8pzWM70ZdrXidS0aNhBClngiuWHJ6I85GU1hdi0WWt
+         hBywYF1O/c5L3zhHAviInVrbXd4/whLDJq1cHeys+Qjci7C4+joCjfJVDMLCoZVb6U
+         m3S0dz+1WlxZPW2eV/Tquo7WTkLeF9z0icfXGEGHZZplTblFgpq0JH2mU1DGI8ODlv
+         DgUgy8TTUHhhkuiXA4mhefyvy1PTrAVpVUtCBg8USciqeKb99t7MjokKbT6OPx0+V+
+         VYUwwgit8OhpQ==
+Date:   Tue, 5 Apr 2022 19:11:48 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/5] ima: define a new template field named 'd-ngv2'
+ and templates
+Message-ID: <YkyUdM5hmKf4noS7@gmail.com>
+References: <20220325223824.310119-1-zohar@linux.ibm.com>
+ <20220325223824.310119-3-zohar@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325223824.310119-3-zohar@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Bracht Laumann Jespersen <t@laumann.xyz>
+On Fri, Mar 25, 2022 at 06:38:21PM -0400, Mimi Zohar wrote:
+>  static int ima_eventdigest_init_common(const u8 *digest, u32 digestsize,
+> -				       u8 hash_algo,
+> +				       u8 digest_type, u8 hash_algo,
+>  				       struct ima_field_data *field_data)
+>  {
+>  	/*
+>  	 * digest formats:
+>  	 *  - DATA_FMT_DIGEST: digest
+>  	 *  - DATA_FMT_DIGEST_WITH_ALGO: [<hash algo>] + ':' + '\0' + digest,
+> +	 *  - DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO:
+> +	 *	[<digest type> + ':' + <hash algo>] + ':' + '\0' + digest,
+> +	 *    where <hash type> is either "ima" or "verity",
+>  	 *    where <hash algo> is provided if the hash algorithm is not
+>  	 *    SHA1 or MD5
 
-[ Upstream commit a8b309ce9760943486e0585285e0125588a31650 ]
+This says both "hash type" and "digest type".  It should be one or the other.
 
-Running with POSIXLY_CORRECT=1 in the environment the scripts/dtc build
-fails, because pkg-config doesn't output anything when the flags come
-after the arguments.
+The square brackets are meant to indicate that the part within it is optional,
+right?  Are they in the right place?  I don't see how this matches the code.
+There is also no explanation for why or when <digest type> is optional with
+DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO.
 
-Fixes: 067c650c456e ("dtc: Use pkg-config to locate libyaml")
-Signed-off-by: Thomas Bracht Laumann Jespersen <t@laumann.xyz>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220131112028.7907-1-t@laumann.xyz
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- scripts/dtc/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> +	if (digest_type < DIGEST_TYPE__LAST && hash_algo < HASH_ALGO__LAST) {
+> +		fmt = DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO;
+> +		offset += snprintf(buffer, DIGEST_TYPE_NAME_LEN_MAX +
+> +				   CRYPTO_MAX_ALG_NAME + 1, "%*s:%s",
+> +				   (int)strlen(digest_type_name[digest_type]),
+> +				   digest_type_name[digest_type],
+>  				   hash_algo_name[hash_algo]);
+>  		buffer[offset] = ':';
+>  		offset += 2;
 
-diff --git a/scripts/dtc/Makefile b/scripts/dtc/Makefile
-index 4852bf44e913..f1d201782346 100644
---- a/scripts/dtc/Makefile
-+++ b/scripts/dtc/Makefile
-@@ -22,7 +22,7 @@ dtc-objs	+= yamltree.o
- # To include <yaml.h> installed in a non-default path
- HOSTCFLAGS_yamltree.o := $(shell pkg-config --cflags yaml-0.1)
- # To link libyaml installed in a non-default path
--HOSTLDLIBS_dtc	:= $(shell pkg-config yaml-0.1 --libs)
-+HOSTLDLIBS_dtc	:= $(shell pkg-config --libs yaml-0.1)
- endif
- 
- # Generated files need one more search path to include headers in source tree
--- 
-2.34.1
+There's no need to use %*s if the length argument is just going to be strlen().
+It should just use %s.
 
+Also, this is not correct use of snprintf(), given that the string is
+unconditionally appended to at the offset which snprintf() returns.  So it is
+not providing buffer overflow protection.  It might as well just be:
 
+                offset += 1 + sprintf(buffer, "%s:%s:",
+                                      digest_type_name[digest_type],
+                                      hash_algo_name[hash_algo]);
 
+and likewise for the other case:
+
+                offset += 1 + sprintf(buffer, "%s:", hash_algo_name[hash_algo]);
+
+> +/*
+> + * This function writes the digest of an event (without size limit),
+> + * prefixed with both the hash type and algorithm.
+> + */
+> +int ima_eventdigest_ngv2_init(struct ima_event_data *event_data,
+> +			      struct ima_field_data *field_data)
+> +{
+> +	u8 *cur_digest = NULL, hash_algo = HASH_ALGO_SHA1;
+
+Why is this defaulting to SHA-1?
+
+- Eric
