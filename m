@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D78C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345341AbiDEJnY (ORCPT
+        id S1345550AbiDEJnh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        Tue, 5 Apr 2022 05:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239566AbiDEIUO (ORCPT
+        with ESMTP id S239620AbiDEIUQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8E36376;
-        Tue,  5 Apr 2022 01:16:32 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628471F3;
+        Tue,  5 Apr 2022 01:17:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A00A60AFB;
-        Tue,  5 Apr 2022 08:16:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B323C385A0;
-        Tue,  5 Apr 2022 08:16:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F25A260B0E;
+        Tue,  5 Apr 2022 08:17:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD49C385A0;
+        Tue,  5 Apr 2022 08:17:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146591;
-        bh=R8BSE0mKHCk/KFQuqrQfNXP7Z6hcnqedSgjDwk4Zock=;
+        s=korg; t=1649146662;
+        bh=NW1d4C9qpbE6MqnA8GXJxt8SpNm96yWz+d1wFQLlwSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kj/fFUFyhXzQO2OhFbVpu6RmMNi9kNUPnOTUFXXkYEYWAcoWZy3O55O83Q7atjL5Z
-         887Deh7sY+2/51MVzc+pZz5Xlh9XWPD3fbj4EzCo7Vjg7dg9b5vR7dqoMc9yC1sZYx
-         FCFfOnAaq5d5j48hBr7OEQLA4FYbcM1Zaa9SYGs0=
+        b=mKge0sndJMd182wzKzvGhCSsFDMS+UThgyaldChV6J06JXMPyXeA6L8fm1DAdhqKR
+         hhjPDpywY1/ajWcYFV5O78ur3QxgKnbZ4iTwd2bUAVU/lS2HjaPETTtwuVT370sF+v
+         +PtU3ZcK7TCTwMF/j8frscNnYmyMkW1ZuST28Cgs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Chen <chenhao288@hisilicon.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0819/1126] net: hns3: add NULL pointer check for hns3_set/get_ringparam()
-Date:   Tue,  5 Apr 2022 09:26:06 +0200
-Message-Id: <20220405070431.602796664@linuxfoundation.org>
+Subject: [PATCH 5.17 0794/1126] netfilter: nf_conntrack_tcp: preserve liberal flag in tcp options
+Date:   Tue,  5 Apr 2022 09:25:41 +0200
+Message-Id: <20220405070430.877973815@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,57 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 4d07c5936c2508ddd1cfd49b0a91d94cb4d1f0e8 ]
+[ Upstream commit f2dd495a8d589371289981d5ed33e6873df94ecc ]
 
-When pci devices init failed and haven't reinit, priv->ring is
-NULL and hns3_set/get_ringparam() will access priv->ring. it
-causes call trace.
+Do not reset IP_CT_TCP_FLAG_BE_LIBERAL flag in out-of-sync scenarios
+coming before the TCP window tracking, otherwise such connections will
+fail in the window check.
 
-So, add NULL pointer check for hns3_set/get_ringparam() to
-avoid this situation.
+Update tcp_options() to leave this flag in place and add a new helper
+function to reset the tcp window state.
 
-Fixes: 5668abda0931 ("net: hns3: add support for set_ringparam")
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Based on patch from Sven Auhagen.
+
+Fixes: c4832c7bbc3f ("netfilter: nf_ct_tcp: improve out-of-sync situation in TCP tracking")
+Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ net/netfilter/nf_conntrack_proto_tcp.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 1f6d6faeec24..cbf36cc86803 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -651,8 +651,8 @@ static void hns3_get_ringparam(struct net_device *netdev,
- 	struct hnae3_handle *h = priv->ae_handle;
- 	int rx_queue_index = h->kinfo.num_tqps;
- 
--	if (hns3_nic_resetting(netdev)) {
--		netdev_err(netdev, "dev resetting!");
-+	if (hns3_nic_resetting(netdev) || !priv->ring) {
-+		netdev_err(netdev, "failed to get ringparam value, due to dev resetting or uninited\n");
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index d1582b888c0d..8ec55cd72572 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -341,8 +341,8 @@ static void tcp_options(const struct sk_buff *skb,
+ 	if (!ptr)
  		return;
- 	}
  
-@@ -1072,8 +1072,14 @@ static int hns3_check_ringparam(struct net_device *ndev,
- {
- #define RX_BUF_LEN_2K 2048
- #define RX_BUF_LEN_4K 4096
--	if (hns3_nic_resetting(ndev))
-+
-+	struct hns3_nic_priv *priv = netdev_priv(ndev);
-+
-+	if (hns3_nic_resetting(ndev) || !priv->ring) {
-+		netdev_err(ndev, "failed to set ringparam value, due to dev resetting or uninited\n");
- 		return -EBUSY;
-+	}
-+
+-	state->td_scale =
+-	state->flags = 0;
++	state->td_scale = 0;
++	state->flags &= IP_CT_TCP_FLAG_BE_LIBERAL;
  
- 	if (param->rx_mini_pending || param->rx_jumbo_pending)
- 		return -EINVAL;
+ 	while (length > 0) {
+ 		int opcode=*ptr++;
+@@ -862,6 +862,16 @@ static bool tcp_can_early_drop(const struct nf_conn *ct)
+ 	return false;
+ }
+ 
++static void nf_ct_tcp_state_reset(struct ip_ct_tcp_state *state)
++{
++	state->td_end		= 0;
++	state->td_maxend	= 0;
++	state->td_maxwin	= 0;
++	state->td_maxack	= 0;
++	state->td_scale		= 0;
++	state->flags		&= IP_CT_TCP_FLAG_BE_LIBERAL;
++}
++
+ /* Returns verdict for packet, or -1 for invalid. */
+ int nf_conntrack_tcp_packet(struct nf_conn *ct,
+ 			    struct sk_buff *skb,
+@@ -968,8 +978,7 @@ int nf_conntrack_tcp_packet(struct nf_conn *ct,
+ 			ct->proto.tcp.last_flags &= ~IP_CT_EXP_CHALLENGE_ACK;
+ 			ct->proto.tcp.seen[ct->proto.tcp.last_dir].flags =
+ 				ct->proto.tcp.last_flags;
+-			memset(&ct->proto.tcp.seen[dir], 0,
+-			       sizeof(struct ip_ct_tcp_state));
++			nf_ct_tcp_state_reset(&ct->proto.tcp.seen[dir]);
+ 			break;
+ 		}
+ 		ct->proto.tcp.last_index = index;
 -- 
 2.34.1
 
