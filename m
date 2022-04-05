@@ -2,90 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 640C5C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88EB6C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453822AbiDFAyk (ORCPT
+        id S1838570AbiDFAzX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57908 "EHLO
+        Tue, 5 Apr 2022 20:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573268AbiDESlD (ORCPT
+        with ESMTP id S1358194AbiDEK2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:41:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7F620BE2
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:39:05 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739F7140DD;
+        Tue,  5 Apr 2022 03:16:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABDE8618C1
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:39:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BF6BC385A0;
-        Tue,  5 Apr 2022 18:39:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649183944;
-        bh=GxkC3BM8itKuAYCG/H+2rgsrkkvvKBJ+L8trZN5gEs4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FiSlqTWJ3wivFbufxEnkH6e9T1Qi6WBzkvWLBME6e35Bzo3e5WYf14X/JGesI3tJS
-         LISJ+4cBmzKsRUWdo04LCry22HjfsK4T0B4sK7a96BAzEnRj5LNn2Rrwo5WJPVrbjK
-         TkqQCwlTxcjRxTj94Rx63tdYup5ntjRRI12JQiHJ4vVF+Lwczg6/o5krkuBg5E6uxQ
-         PxXMVuxlHL2JGfVMMXXjFlMzsxhfKDbIkjMKQyc7olusQKfOrsF2lqVtmrUlzQkgjK
-         U+Pp+YhT4W1XeQm7SQAUqCpHeF64Nv7dzPNYqjHEgekv9RvXi0YLBncWajAXgmUXg1
-         dVAMPQ/efJi+w==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbo50-001tkq-2E; Tue, 05 Apr 2022 19:39:02 +0100
-From:   Marc Zyngier <maz@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FE6661562;
+        Tue,  5 Apr 2022 10:16:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CD65C385A1;
+        Tue,  5 Apr 2022 10:16:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153807;
+        bh=8JSgkcY2Q8LqRXihDMYt28L+69omj67mJtw6txZf4x0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Q4PIVyP7H8qWuhZVm95tivoLb18lbbQRpFtwUmTGK/a4pk/OGOHuXtqff+hhKjh6X
+         3BPfu1owfecFYPqFk8Lqfo3LJXU33s0TJCeiXtrzig67t9fYw/1Snujl46Atis4LA3
+         glQrg2mVpJ4VTr6/tHDej6IsLNUhOplV+2TwkryE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v2 0/3] irqchip/gic-v3: Assorted improvements
-Date:   Tue,  5 Apr 2022 19:38:54 +0100
-Message-Id: <20220405183857.205960-1-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yaliang Wang <Yaliang.Wang@windriver.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 353/599] MIPS: pgalloc: fix memory leak caused by pgd_free()
+Date:   Tue,  5 Apr 2022 09:30:47 +0200
+Message-Id: <20220405070309.330432374@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, andre.przywara@arm.com, tglx@linutronix.de, eric.auger@redhat.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a small series that happens on the back of [0] (implementing
-additional features in KVM's vgic) and allows for a couple of
-performance optimisations.
+From: Yaliang Wang <Yaliang.Wang@windriver.com>
 
-Thanks,
+[ Upstream commit 2bc5bab9a763d520937e4f3fe8df51c6a1eceb97 ]
 
-        M.
+pgd page is freed by generic implementation pgd_free() since commit
+f9cb654cb550 ("asm-generic: pgalloc: provide generic pgd_free()"),
+however, there are scenarios that the system uses more than one page as
+the pgd table, in such cases the generic implementation pgd_free() won't
+be applicable anymore. For example, when PAGE_SIZE_4KB is enabled and
+MIPS_VA_BITS_48 is not enabled in a 64bit system, the macro "PGD_ORDER"
+will be set as "1", which will cause allocating two pages as the pgd
+table. Well, at the same time, the generic implementation pgd_free()
+just free one pgd page, which will result in the memory leak.
 
-* From v1 [1]:
-  - Moved the RWP polling fix to -fixes, to be merged independently
-  - Fixed bit numbers for CES and IR
-  - Added some comments about the respective relations between
-    DirectLPIs, RVPEID and IR.
-  - Some cosmetic changes
-  - Rebased on 5.18-rc1
+The memory leak can be easily detected by executing shell command:
+"while true; do ls > /dev/null; grep MemFree /proc/meminfo; done"
 
-[0] https://lore.kernel.org/r/20220405182327.205520-1-maz@kernel.org
-[1] https://lore.kernel.org/r/20220315165034.794482-1-maz@kernel.org
+Fixes: f9cb654cb550 ("asm-generic: pgalloc: provide generic pgd_free()")
+Signed-off-by: Yaliang Wang <Yaliang.Wang@windriver.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/mips/include/asm/pgalloc.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Marc Zyngier (3):
-  irqchip/gic-v3: Exposes bit values for GICR_CTLR.{IR,CES}
-  irqchip/gic-v3: Detect LPI invalidation MMIO registers
-  irqchip/gic-v3: Relax polling of GIC{R,D}_CTLR.RWP
-
- drivers/irqchip/irq-gic-v3.c       | 58 +++++++++++++++++-------------
- include/linux/irqchip/arm-gic-v3.h |  2 ++
- 2 files changed, 36 insertions(+), 24 deletions(-)
-
+diff --git a/arch/mips/include/asm/pgalloc.h b/arch/mips/include/asm/pgalloc.h
+index 139b4050259f..71153c369f29 100644
+--- a/arch/mips/include/asm/pgalloc.h
++++ b/arch/mips/include/asm/pgalloc.h
+@@ -15,6 +15,7 @@
+ 
+ #define __HAVE_ARCH_PMD_ALLOC_ONE
+ #define __HAVE_ARCH_PUD_ALLOC_ONE
++#define __HAVE_ARCH_PGD_FREE
+ #include <asm-generic/pgalloc.h>
+ 
+ static inline void pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd,
+@@ -49,6 +50,11 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
+ extern void pgd_init(unsigned long page);
+ extern pgd_t *pgd_alloc(struct mm_struct *mm);
+ 
++static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
++{
++	free_pages((unsigned long)pgd, PGD_ORDER);
++}
++
+ #define __pte_free_tlb(tlb,pte,address)			\
+ do {							\
+ 	pgtable_pte_page_dtor(pte);			\
 -- 
 2.34.1
+
+
 
