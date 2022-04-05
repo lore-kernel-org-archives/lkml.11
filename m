@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3964AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3F4C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389652AbiDEOpP (ORCPT
+        id S1389311AbiDEOoZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        Tue, 5 Apr 2022 10:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244354AbiDEJlP (ORCPT
+        with ESMTP id S232709AbiDEJlM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:41:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E4EBB0BF;
-        Tue,  5 Apr 2022 02:26:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:41:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457C0BB096;
+        Tue,  5 Apr 2022 02:25:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77B79B81C9F;
-        Tue,  5 Apr 2022 09:26:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB6FDC385A2;
-        Tue,  5 Apr 2022 09:26:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D44766165C;
+        Tue,  5 Apr 2022 09:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE9CC385A0;
+        Tue,  5 Apr 2022 09:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150772;
-        bh=33/NsFJ6S6oP06sE6HiusXdLZSv2jN/hv3xFSD2FsBM=;
+        s=korg; t=1649150755;
+        bh=xKN4tdAmdWfMVW0Q4IbJ3qKBQwoepPNQp7UqwNDTv4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FkAB7Ny75dyVbH+ky0LmC08wrm6WdN7NIcoAoSm20LhSOkJkrNjqEGm9UDkz/K+1N
-         f0pQrpm+l8pTWCCjT0Hw1jElHBFSHgSpgSOY3Wv/cQPo4CRDfewDH1RC4kapRmQclz
-         w8zhsd1QnjnAcR2j3eo+kEqk1tF+PMBYcdElgdMQ=
+        b=J0bkmRrZ5XTEdSIhqH7SPSIHNCETKx66t8OxJcoaq1IFtlYvwgBoygI3pYzzn9NPs
+         8Yu0gMk8WwMrq8TzIH4UegsLlgp6XldwHkGxkqMUvbHoeXgddloQkK6o+BZAIJi6Z3
+         y7xVUbEeMDWbunbh8Ry/L2Vx1WsOSADCp4MwPWuI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-        Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.15 168/913] media: davinci: vpif: fix unbalanced runtime PM enable
-Date:   Tue,  5 Apr 2022 09:20:30 +0200
-Message-Id: <20220405070344.884558327@linuxfoundation.org>
+        stable@vger.kernel.org, Bill Messmer <wmessmer@microsoft.com>,
+        Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.15 131/913] coredump: Also dump first pages of non-executable ELF libraries
+Date:   Tue,  5 Apr 2022 09:19:53 +0200
+Message-Id: <20220405070343.758405377@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,56 +49,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Jann Horn <jannh@google.com>
 
-commit d42b3ad105b5d3481f6a56bc789aa2b27aa09325 upstream.
+commit 84158b7f6a0624b81800b4e7c90f7fb7fdecf66c upstream.
 
-Make sure to disable runtime PM before returning on probe errors.
+When I rewrote the VMA dumping logic for coredumps, I changed it to
+recognize ELF library mappings based on the file being executable instead
+of the mapping having an ELF header. But turns out, distros ship many ELF
+libraries as non-executable, so the heuristic goes wrong...
 
-Fixes: 479f7a118105 ("[media] davinci: vpif: adaptions for DT support")
+Restore the old behavior where FILTER(ELF_HEADERS) dumps the first page of
+any offset-0 readable mapping that starts with the ELF magic.
+
+This fix is technically layer-breaking a bit, because it checks for
+something ELF-specific in fs/coredump.c; but since we probably want to
+share this between standard ELF and FDPIC ELF anyway, I guess it's fine?
+And this also keeps the change small for backporting.
+
 Cc: stable@vger.kernel.org
-Cc: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 429a22e776a2 ("coredump: rework elf/elf_fdpic vma_dump_size() into common helper")
+Reported-by: Bill Messmer <wmessmer@microsoft.com>
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220126025739.2014888-1-jannh@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/davinci/vpif.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ fs/coredump.c |   39 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 34 insertions(+), 5 deletions(-)
 
---- a/drivers/media/platform/davinci/vpif.c
-+++ b/drivers/media/platform/davinci/vpif.c
-@@ -428,6 +428,7 @@ static int vpif_probe(struct platform_de
- 	static struct resource	*res, *res_irq;
- 	struct platform_device *pdev_capture, *pdev_display;
- 	struct device_node *endpoint = NULL;
-+	int ret;
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -41,6 +41,7 @@
+ #include <linux/fs.h>
+ #include <linux/path.h>
+ #include <linux/timekeeping.h>
++#include <linux/elf.h>
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	vpif_base = devm_ioremap_resource(&pdev->dev, res);
-@@ -457,8 +458,8 @@ static int vpif_probe(struct platform_de
- 	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	if (!res_irq) {
- 		dev_warn(&pdev->dev, "Missing IRQ resource.\n");
--		pm_runtime_put(&pdev->dev);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_put_rpm;
- 	}
- 
- 	pdev_capture = devm_kzalloc(&pdev->dev, sizeof(*pdev_capture),
-@@ -492,6 +493,12 @@ static int vpif_probe(struct platform_de
- 	}
- 
- 	return 0;
-+
-+err_put_rpm:
-+	pm_runtime_put(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+
-+	return ret;
+ #include <linux/uaccess.h>
+ #include <asm/mmu_context.h>
+@@ -992,6 +993,8 @@ static bool always_dump_vma(struct vm_ar
+ 	return false;
  }
  
- static int vpif_remove(struct platform_device *pdev)
++#define DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER 1
++
+ /*
+  * Decide how much of @vma's contents should be included in a core dump.
+  */
+@@ -1051,9 +1054,20 @@ static unsigned long vma_dump_size(struc
+ 	 * dump the first page to aid in determining what was mapped here.
+ 	 */
+ 	if (FILTER(ELF_HEADERS) &&
+-	    vma->vm_pgoff == 0 && (vma->vm_flags & VM_READ) &&
+-	    (READ_ONCE(file_inode(vma->vm_file)->i_mode) & 0111) != 0)
+-		return PAGE_SIZE;
++	    vma->vm_pgoff == 0 && (vma->vm_flags & VM_READ)) {
++		if ((READ_ONCE(file_inode(vma->vm_file)->i_mode) & 0111) != 0)
++			return PAGE_SIZE;
++
++		/*
++		 * ELF libraries aren't always executable.
++		 * We'll want to check whether the mapping starts with the ELF
++		 * magic, but not now - we're holding the mmap lock,
++		 * so copy_from_user() doesn't work here.
++		 * Use a placeholder instead, and fix it up later in
++		 * dump_vma_snapshot().
++		 */
++		return DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER;
++	}
+ 
+ #undef	FILTER
+ 
+@@ -1128,8 +1142,6 @@ int dump_vma_snapshot(struct coredump_pa
+ 		m->end = vma->vm_end;
+ 		m->flags = vma->vm_flags;
+ 		m->dump_size = vma_dump_size(vma, cprm->mm_flags);
+-
+-		vma_data_size += m->dump_size;
+ 	}
+ 
+ 	mmap_write_unlock(mm);
+@@ -1139,6 +1151,23 @@ int dump_vma_snapshot(struct coredump_pa
+ 		return -EFAULT;
+ 	}
+ 
++	for (i = 0; i < *vma_count; i++) {
++		struct core_vma_metadata *m = (*vma_meta) + i;
++
++		if (m->dump_size == DUMP_SIZE_MAYBE_ELFHDR_PLACEHOLDER) {
++			char elfmag[SELFMAG];
++
++			if (copy_from_user(elfmag, (void __user *)m->start, SELFMAG) ||
++					memcmp(elfmag, ELFMAG, SELFMAG) != 0) {
++				m->dump_size = 0;
++			} else {
++				m->dump_size = PAGE_SIZE;
++			}
++		}
++
++		vma_data_size += m->dump_size;
++	}
++
+ 	*vma_data_size_ptr = vma_data_size;
+ 	return 0;
+ }
 
 
