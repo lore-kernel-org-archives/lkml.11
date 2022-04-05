@@ -2,62 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23032C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A5CC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241871AbiDEIfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
+        id S241902AbiDEIf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233643AbiDEH5V (ORCPT
+        with ESMTP id S233723AbiDEH51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:57:21 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B43B84EF43;
-        Tue,  5 Apr 2022 00:51:19 -0700 (PDT)
-Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
-  by mx.socionext.com with ESMTP; 05 Apr 2022 16:51:14 +0900
-Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
-        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 99A982058B50;
-        Tue,  5 Apr 2022 16:51:14 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:51:14 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 25468B6395;
-        Tue,  5 Apr 2022 16:51:14 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH 0/3] dt-bindings: PCI: uniphier: Fix endpoint descriptions
-Date:   Tue,  5 Apr 2022 16:50:59 +0900
-Message-Id: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 5 Apr 2022 03:57:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763F0506CC;
+        Tue,  5 Apr 2022 00:51:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A71861728;
+        Tue,  5 Apr 2022 07:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FE2AC34111;
+        Tue,  5 Apr 2022 07:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649145083;
+        bh=k107eXAopS3cg/qO3bNvEgkCP2VIeERH0+D1JEhJDRU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xnsH4tVNNbdzSIB4YsVs8X/RVUQ+FxqknEF4RwiKAb+F8td5uB0Q61DjBGhVEj6k7
+         x3nSgGGMxW0FyMVXBOGc8Vy6BKs7b6qjjK+PHvVmY7lqbRRbsO+DAeiYOu7G7WY7bH
+         XddtL30wOLRsOqFr/G55FooUqnm/8JDN5669Yf/E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
+        Ye Bin <yebin10@huawei.com>, Eric Sandeen <sandeen@redhat.com>,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0278/1126] ext4: fix remount with abort option
+Date:   Tue,  5 Apr 2022 09:17:05 +0200
+Message-Id: <20220405070415.770327618@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series fixes dt-schema descriptions for PCI endpoint controller
-implemented in UniPhier SoCs.
+From: Lukas Czerner <lczerner@redhat.com>
 
-Kunihiko Hayashi (3):
-  dt-bindings: PCI: designware-ep: Increase maxItems of reg and
-    reg-names
-  dt-bindings: PCI: uniphier-ep: Clean up reg, clocks, resets, and their
-    names using compatible string
-  ARM: dts: uniphier: Remove compatible "snps,dw-pcie-ep" from Pro5
-    pcie-ep node
+[ Upstream commit e3952fcce1aad934f1322843b564ff86256444b2 ]
 
- .../bindings/pci/snps,dw-pcie-ep.yaml         |  4 +-
- .../pci/socionext,uniphier-pcie-ep.yaml       | 84 ++++++++++++-------
- arch/arm/boot/dts/uniphier-pro5.dtsi          |  3 +-
- 3 files changed, 59 insertions(+), 32 deletions(-)
+After commit 6e47a3cc68fc ("ext4: get rid of super block and sbi from
+handle_mount_ops()") the 'abort' options stopped working. This is
+because we're using ctx_set_mount_flags() helper that's expecting an
+argument with the appropriate bit set, but instead got
+EXT4_MF_FS_ABORTED which is a bit position. ext4_set_mount_flag() is
+using set_bit() while ctx_set_mount_flags() was using bitwise OR.
 
+Create a separate helper ctx_set_mount_flag() to handle setting the
+mount_flags correctly.
+
+While we're at it clean up the EXT4_SET_CTX macros so that we're only
+creating helpers that we actually use to avoid warnings.
+
+Fixes: 6e47a3cc68fc ("ext4: get rid of super block and sbi from handle_mount_ops()")
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
+Cc: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Eric Sandeen <sandeen@redhat.com>
+Tested-by: Gabriel Krisman Bertazi <krisman@collabora.com>
+Link: https://lore.kernel.org/r/20220201131345.77591-1-lczerner@redhat.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/ext4/super.c | 29 +++++++++++++++++++++--------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
+
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index cd0547fabd79..bed29f96ccc7 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -2045,8 +2045,8 @@ struct ext4_fs_context {
+ 	unsigned int	mask_s_mount_opt;
+ 	unsigned int	vals_s_mount_opt2;
+ 	unsigned int	mask_s_mount_opt2;
+-	unsigned int	vals_s_mount_flags;
+-	unsigned int	mask_s_mount_flags;
++	unsigned long	vals_s_mount_flags;
++	unsigned long	mask_s_mount_flags;
+ 	unsigned int	opt_flags;	/* MOPT flags */
+ 	unsigned int	spec;
+ 	u32		s_max_batch_time;
+@@ -2149,23 +2149,36 @@ static inline void ctx_set_##name(struct ext4_fs_context *ctx,		\
+ {									\
+ 	ctx->mask_s_##name |= flag;					\
+ 	ctx->vals_s_##name |= flag;					\
+-}									\
++}
++
++#define EXT4_CLEAR_CTX(name)						\
+ static inline void ctx_clear_##name(struct ext4_fs_context *ctx,	\
+ 				    unsigned long flag)			\
+ {									\
+ 	ctx->mask_s_##name |= flag;					\
+ 	ctx->vals_s_##name &= ~flag;					\
+-}									\
++}
++
++#define EXT4_TEST_CTX(name)						\
+ static inline unsigned long						\
+ ctx_test_##name(struct ext4_fs_context *ctx, unsigned long flag)	\
+ {									\
+ 	return (ctx->vals_s_##name & flag);				\
+-}									\
++}
+ 
+-EXT4_SET_CTX(flags);
++EXT4_SET_CTX(flags); /* set only */
+ EXT4_SET_CTX(mount_opt);
++EXT4_CLEAR_CTX(mount_opt);
++EXT4_TEST_CTX(mount_opt);
+ EXT4_SET_CTX(mount_opt2);
+-EXT4_SET_CTX(mount_flags);
++EXT4_CLEAR_CTX(mount_opt2);
++EXT4_TEST_CTX(mount_opt2);
++
++static inline void ctx_set_mount_flag(struct ext4_fs_context *ctx, int bit)
++{
++	set_bit(bit, &ctx->mask_s_mount_flags);
++	set_bit(bit, &ctx->vals_s_mount_flags);
++}
+ 
+ static int ext4_parse_param(struct fs_context *fc, struct fs_parameter *param)
+ {
+@@ -2235,7 +2248,7 @@ static int ext4_parse_param(struct fs_context *fc, struct fs_parameter *param)
+ 			 param->key);
+ 		return 0;
+ 	case Opt_abort:
+-		ctx_set_mount_flags(ctx, EXT4_MF_FS_ABORTED);
++		ctx_set_mount_flag(ctx, EXT4_MF_FS_ABORTED);
+ 		return 0;
+ 	case Opt_i_version:
+ 		ext4_msg(NULL, KERN_WARNING, deprecated_msg, param->key, "5.20");
 -- 
-2.25.1
+2.34.1
+
+
 
