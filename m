@@ -2,92 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77723C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9024C47080
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381778AbiDEUyu (ORCPT
+        id S1384126AbiDEUzh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        Tue, 5 Apr 2022 16:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351992AbiDEKDq (ORCPT
+        with ESMTP id S1573099AbiDER7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC4BA94C8;
-        Tue,  5 Apr 2022 02:52:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 710866172B;
-        Tue,  5 Apr 2022 09:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E80C385A1;
-        Tue,  5 Apr 2022 09:52:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152361;
-        bh=giM/BAivgxJrob6NYPSr1zOqqdEG4sFSemV5nmzN4OM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ugos0qr2iTnzj/qd9h9zPASUaxk3JRlOo3KsndAT8vChmj2+yXcMYXbJ1a9PHPCKS
-         HUeBTHvcm9BDihPaLyC4o4KF/UMUNQ9HKufI7P+R3aW6q7rdHzs061NKLvJE2Xg2XX
-         WaUB93zqE5EjrsP79TsfLIcg7+hs0ABKqYyY7jME=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 750/913] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
-Date:   Tue,  5 Apr 2022 09:30:12 +0200
-Message-Id: <20220405070402.314465011@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 13:59:20 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18852E7F4A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:57:21 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id d5so24595111lfj.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:57:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hBgkgZVxUFaHHWVT8MJPRfMm0CbtM8C9QcwHO150roA=;
+        b=cikBVFVsqfHRfiS3Za+lqvw+SF2Z6x/1MAsZHBWiKm3TYeQxJz3Y0V9vvb2Vr+8BwK
+         Jn1ZJp1uro8v3++kb/aq9ZfjZVI6oa3qIicCw98cuFEYl/dIeN/oj/xmGC4g2dqmIZqm
+         GU6YFirBWWt7ZxKJZRVr7StDOW++mx3rKhSt9xa1tOiTMyk7a+nTs04xo1uxfG6hIxBI
+         GOHsndkoLejoUUhZfN2WHf48bDJKSJQKfeGOyi6KSg4cZaKaVNFoY9HZ/jDgCuSjRyqh
+         Ls/cOFBuFDhnoL/DtPqxcNbIKqg9dVW60GggP6esN5jq3IZPfcDGEh5dDc4zL/J2B6rJ
+         ptow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hBgkgZVxUFaHHWVT8MJPRfMm0CbtM8C9QcwHO150roA=;
+        b=Y67w+k73jl3VuQIHlas7fwDq78wWnQMPcvPSR6d2i+psm5TCQ6HgPwob/ejiWMIuxF
+         YkFmxH4ZJsrJ/AsHuxIzbbQgpEKbltwYd9x++eIZxLRkqGXouRqg+0f9ygsXjQSsyiKh
+         9y6TxfbmLwOQDd5DJsGn4k8OOTTsxOvbHDFVFxrv/1YaVRKARcqcOyYcgn7ckktYfbTM
+         x/rAnVpUQsDRUSzcjeNveVrDU3RCzhnK3b3B6/91YmVv0DuRdLvU4aISLkOPGOyKi9Zw
+         +ghTDgf2jPwzPVKklIQCg90FfvW6OhzZp3AGbLWTGYkO9bgv25E4pmM4H4S3g2/YdaV5
+         +3xQ==
+X-Gm-Message-State: AOAM532s2IYReHF9s89JwLm555S7dl7ZnGd+WcTrHorTkmUbor2vn+2N
+        xLc1vc5QSlG61FmXEYj1s5JiJsfAIPplVrwACLpddQ==
+X-Google-Smtp-Source: ABdhPJz2VaFmMYt5PGtt9rPGIZ+g8Of7B0s0umeXy0XDUFW7BCfGgvKZYRvQKJox0fPHoaedJxkrhq2IosfOwyw+srk=
+X-Received: by 2002:a05:6512:33d4:b0:44a:9971:de48 with SMTP id
+ d20-20020a05651233d400b0044a9971de48mr3392619lfg.392.1649181439072; Tue, 05
+ Apr 2022 10:57:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220401230640.3196196-1-trix@redhat.com>
+In-Reply-To: <20220401230640.3196196-1-trix@redhat.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 5 Apr 2022 10:57:07 -0700
+Message-ID: <CAKwvOdng7CbqGrDH+WYwY0aAkjpW8mT428m4p=K8VTTD8ddV0Q@mail.gmail.com>
+Subject: Re: [PATCH] iwlwifi: mvm: initialize seq variable
+To:     Tom Rix <trix@redhat.com>
+Cc:     luciano.coelho@intel.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
+        johannes.berg@intel.com, emmanuel.grumbach@intel.com,
+        dan.carpenter@oracle.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+On Fri, Apr 1, 2022 at 4:06 PM Tom Rix <trix@redhat.com> wrote:
+>
+> Clang static analysis reports this issue
+> d3.c:567:22: warning: The left operand of '>' is
+>   a garbage value
+>   if (seq.tkip.iv32 > cur_rx_iv32)
+>       ~~~~~~~~~~~~~ ^
+>
+> seq is never initialized. Call ieee80211_get_key_rx_seq() to
+> initialize seq.
+>
+> Fixes: 0419e5e672d6 ("iwlwifi: mvm: d3: separate TKIP data from key iteration")
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+> ---
+>  drivers/net/wireless/intel/iwlwifi/mvm/d3.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+> index a995bba0ba81..9b190b3ce6c1 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+> @@ -563,6 +563,7 @@ static void iwl_mvm_wowlan_get_tkip_data(struct ieee80211_hw *hw,
+>                 }
+>
+>                 for (i = 0; i < IWL_NUM_RSC; i++) {
+> +                       ieee80211_get_key_rx_seq(key, i, &seq);
+>                         /* wrapping isn't allowed, AP must rekey */
+>                         if (seq.tkip.iv32 > cur_rx_iv32)
+>                                 cur_rx_iv32 = seq.tkip.iv32;
+> --
+> 2.27.0
+>
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-index afac1d9445aa..57b7d1f49096 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-@@ -169,7 +169,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
-+	return sysfs_emit(buf, "%d\n", ddata->vmirror);
- }
- 
- static ssize_t tpo_td043_vmirror_store(struct device *dev,
-@@ -199,7 +199,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
-+	return sysfs_emit(buf, "%d\n", ddata->mode);
- }
- 
- static ssize_t tpo_td043_mode_store(struct device *dev,
 -- 
-2.34.1
-
-
-
+Thanks,
+~Nick Desaulniers
