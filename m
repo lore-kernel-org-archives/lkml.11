@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CBEC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB7B6C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232419AbiDEHxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        id S232462AbiDEHxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233321AbiDEHrm (ORCPT
+        with ESMTP id S233385AbiDEHrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B3C13F97;
-        Tue,  5 Apr 2022 00:43:54 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4620692D03;
+        Tue,  5 Apr 2022 00:44:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 54CEACE1BF0;
-        Tue,  5 Apr 2022 07:43:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69BC9C340EE;
-        Tue,  5 Apr 2022 07:43:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1506616BF;
+        Tue,  5 Apr 2022 07:44:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABD60C340EE;
+        Tue,  5 Apr 2022 07:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144631;
-        bh=n+BFEzwOApYau1OiRTnqO3M1ncuHVMLsMx7/cfFVaHU=;
+        s=korg; t=1649144643;
+        bh=SFZhGojlTJsFtEcOoR6TsDZqCuHRKYKgaXsoBWxvPMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y5k68wUKq/np2ZH1R+XOOYT9FoESx6/ebvzBEwlxZqsDG+PvjHQVt/CnV9q4NzZor
-         THzTefW2kVJv4zgjDZw4Na1y3z72CabqIUOF5c7nWMN/d52wRKmFOhO5+2u7HcLZ6z
-         IIoF0AnTSzUjbKQg69Bs7CGSbafoMb79ULcuKYTc=
+        b=vhrdB62zTARGu1HtMObJHJTKA2hs1/jS5yMjP2o1oYqTawGPL9sWSv/u6wgQAewNz
+         9oA41j3vFoAfVqbGej+gXNeVUBdbEZ4XIwLR/Q5htdjI3DClpAl5KRcCxGDBfTtWo0
+         n8B7poUQmGrj9T1VyeHW6aPeJlr7NMsYUAhwW7uI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mohan Kumar <mkumard@nvidia.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 0097/1126] ALSA: hda: Avoid unsol event during RPM suspending
-Date:   Tue,  5 Apr 2022 09:14:04 +0200
-Message-Id: <20220405070410.416023633@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.17 0118/1126] can: isotp: sanitize CAN ID checks in isotp_bind()
+Date:   Tue,  5 Apr 2022 09:14:25 +0200
+Message-Id: <20220405070411.037293289@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,70 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mohan Kumar <mkumard@nvidia.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-commit 6ddc2f749621d5d45ca03edc9f0616bcda136d29 upstream.
+commit 3ea566422cbde9610c2734980d1286ab681bb40e upstream.
 
-There is a corner case with unsol event handling during codec runtime
-suspending state. When the codec runtime suspend call initiated, the
-codec->in_pm atomic variable would be 0, currently the codec runtime
-suspend function calls snd_hdac_enter_pm() which will just increments
-the codec->in_pm atomic variable. Consider unsol event happened just
-after this step and before snd_hdac_leave_pm() in the codec runtime
-suspend function. The snd_hdac_power_up_pm() in the unsol event
-flow in hdmi_present_sense_via_verbs() function would just increment
-the codec->in_pm atomic variable without calling pm_runtime_get_sync
-function.
+Syzbot created an environment that lead to a state machine status that
+can not be reached with a compliant CAN ID address configuration.
+The provided address information consisted of CAN ID 0x6000001 and 0xC28001
+which both boil down to 11 bit CAN IDs 0x001 in sending and receiving.
 
-As codec runtime suspend flow is already in progress and in parallel
-unsol event is also accessing the codec verbs, as soon as codec
-suspend flow completes and clocks are  switched off before completing
-the unsol event handling as both functions doesn't wait for each other.
-This will result in below errors
+Sanitize the SFF/EFF CAN ID values before performing the address checks.
 
-[  589.428020] tegra-hda 3510000.hda: azx_get_response timeout, switching
-to polling mode: last cmd=0x505f2f57
-[  589.428344] tegra-hda 3510000.hda: spurious response 0x80000074:0x5,
-last cmd=0x505f2f57
-[  589.428547] tegra-hda 3510000.hda: spurious response 0x80000065:0x5,
-last cmd=0x505f2f57
-
-To avoid this, the unsol event flow should not perform any codec verb
-related operations during RPM_SUSPENDING state.
-
-Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220329155940.26331-1-mkumard@nvidia.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://lore.kernel.org/all/20220316164258.54155-1-socketcan@hartkopp.net
+Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_hdmi.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ net/can/isotp.c |   38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
---- a/sound/pci/hda/patch_hdmi.c
-+++ b/sound/pci/hda/patch_hdmi.c
-@@ -1617,6 +1617,7 @@ static void hdmi_present_sense_via_verbs
- 	struct hda_codec *codec = per_pin->codec;
- 	struct hdmi_spec *spec = codec->spec;
- 	struct hdmi_eld *eld = &spec->temp_eld;
-+	struct device *dev = hda_codec_dev(codec);
- 	hda_nid_t pin_nid = per_pin->pin_nid;
- 	int dev_id = per_pin->dev_id;
- 	/*
-@@ -1630,8 +1631,13 @@ static void hdmi_present_sense_via_verbs
- 	int present;
- 	int ret;
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1104,6 +1104,7 @@ static int isotp_bind(struct socket *soc
+ 	struct net *net = sock_net(sk);
+ 	int ifindex;
+ 	struct net_device *dev;
++	canid_t tx_id, rx_id;
+ 	int err = 0;
+ 	int notify_enetdown = 0;
+ 	int do_rx_reg = 1;
+@@ -1111,8 +1112,18 @@ static int isotp_bind(struct socket *soc
+ 	if (len < ISOTP_MIN_NAMELEN)
+ 		return -EINVAL;
  
-+#ifdef	CONFIG_PM
-+	if (dev->power.runtime_status == RPM_SUSPENDING)
-+		return;
-+#endif
+-	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
+-		return -EADDRNOTAVAIL;
++	/* sanitize tx/rx CAN identifiers */
++	tx_id = addr->can_addr.tp.tx_id;
++	if (tx_id & CAN_EFF_FLAG)
++		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
++	else
++		tx_id &= CAN_SFF_MASK;
 +
- 	ret = snd_hda_power_up_pm(codec);
--	if (ret < 0 && pm_runtime_suspended(hda_codec_dev(codec)))
-+	if (ret < 0 && pm_runtime_suspended(dev))
++	rx_id = addr->can_addr.tp.rx_id;
++	if (rx_id & CAN_EFF_FLAG)
++		rx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
++	else
++		rx_id &= CAN_SFF_MASK;
+ 
+ 	if (!addr->can_ifindex)
+ 		return -ENODEV;
+@@ -1124,21 +1135,13 @@ static int isotp_bind(struct socket *soc
+ 		do_rx_reg = 0;
+ 
+ 	/* do not validate rx address for functional addressing */
+-	if (do_rx_reg) {
+-		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
+-			err = -EADDRNOTAVAIL;
+-			goto out;
+-		}
+-
+-		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
+-			err = -EADDRNOTAVAIL;
+-			goto out;
+-		}
++	if (do_rx_reg && rx_id == tx_id) {
++		err = -EADDRNOTAVAIL;
++		goto out;
+ 	}
+ 
+ 	if (so->bound && addr->can_ifindex == so->ifindex &&
+-	    addr->can_addr.tp.rx_id == so->rxid &&
+-	    addr->can_addr.tp.tx_id == so->txid)
++	    rx_id == so->rxid && tx_id == so->txid)
  		goto out;
  
- 	present = snd_hda_jack_pin_sense(codec, pin_nid, dev_id);
+ 	dev = dev_get_by_index(net, addr->can_ifindex);
+@@ -1162,8 +1165,7 @@ static int isotp_bind(struct socket *soc
+ 	ifindex = dev->ifindex;
+ 
+ 	if (do_rx_reg)
+-		can_rx_register(net, dev, addr->can_addr.tp.rx_id,
+-				SINGLE_MASK(addr->can_addr.tp.rx_id),
++		can_rx_register(net, dev, rx_id, SINGLE_MASK(rx_id),
+ 				isotp_rcv, sk, "isotp", sk);
+ 
+ 	dev_put(dev);
+@@ -1183,8 +1185,8 @@ static int isotp_bind(struct socket *soc
+ 
+ 	/* switch to new settings */
+ 	so->ifindex = ifindex;
+-	so->rxid = addr->can_addr.tp.rx_id;
+-	so->txid = addr->can_addr.tp.tx_id;
++	so->rxid = rx_id;
++	so->txid = tx_id;
+ 	so->bound = 1;
+ 
+ out:
 
 
