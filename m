@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 937EDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A92C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbiDEHzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:55:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48216 "EHLO
+        id S232655AbiDEHzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233534AbiDEHr4 (ORCPT
+        with ESMTP id S233519AbiDEHrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:56 -0400
+        Tue, 5 Apr 2022 03:47:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F1192310;
-        Tue,  5 Apr 2022 00:44:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7359137F;
+        Tue,  5 Apr 2022 00:44:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E63EC61607;
-        Tue,  5 Apr 2022 07:44:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05AF9C340EE;
-        Tue,  5 Apr 2022 07:44:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA526616C6;
+        Tue,  5 Apr 2022 07:44:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E67A8C3410F;
+        Tue,  5 Apr 2022 07:44:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144697;
-        bh=lzO+z6AoVIcvFgn8IXdAdIOaIsz6Yqp+xI/H9kDkdZA=;
+        s=korg; t=1649144681;
+        bh=rZPmPB3ZdqS/cJV/EIQ6WDIET+faFfh7hNW1xBHPSc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=grgdj/SMV46zjrmYUDuYVVKcZpeI/+jKj7g+FuV1oKVef+KY4wicyEDazd2IPehH8
-         NBsEySDhxpOPHPJLBxukqaZpvVOu+EHjRXRyV619wZyE1p7j9kVAjph3dk58iHreSX
-         IbEp0OjHhnF4EBFXF3Lj1GZ2e9aTqcThnY1SqZj0=
+        b=HyCa6O8WjU9U/vu27ot+6M4qX312ArW3Oe+SstDyALKSZt2n4m9F10yA98ocKhsaY
+         SMe5ydK5ShU12sjU4wLr8mtrFP89xMKarH2REd8fA20pZSNDciQKPQ/kO+fJ3LG+3U
+         3S+gR6bkNfteBcMTEtEb5dqGnfTc1lQxFkvB8qBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Geetika Moolchandani <Geetika.Moolchandani1@ibm.com>,
-        Nageswara R Sastry <rnsastry@linux.ibm.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Ojaswin Mujoo <ojaswin@linux.ibm.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.17 0136/1126] ext4: make mb_optimize_scan performance mount option work with extents
-Date:   Tue,  5 Apr 2022 09:14:43 +0200
-Message-Id: <20220405070411.570352261@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.17 0131/1126] ACPI: properties: Consistently return -ENOENT if there are no more references
+Date:   Tue,  5 Apr 2022 09:14:38 +0200
+Message-Id: <20220405070411.422867282@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,121 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ojaswin Mujoo <ojaswin@linux.ibm.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit 077d0c2c78df6f7260cdd015a991327efa44d8ad upstream.
+commit babc92da5928f81af951663fc436997352e02d3a upstream.
 
-Currently mb_optimize_scan scan feature which improves filesystem
-performance heavily (when FS is fragmented), seems to be not working
-with files with extents (ext4 by default has files with extents).
+__acpi_node_get_property_reference() is documented to return -ENOENT if
+the caller requests a property reference at an index that does not exist,
+not -EINVAL which it actually does.
 
-This patch fixes that and makes mb_optimize_scan feature work
-for files with extents.
+Fix this by returning -ENOENT consistenly, independently of whether the
+property value is a plain reference or a package.
 
-Below are some performance numbers obtained when allocating a 10M and 100M
-file with and w/o this patch on a filesytem with no 1M contiguous block.
-
-<perf numbers>
-===============
-Workload: dd if=/dev/urandom of=test conv=fsync bs=1M count=10/100
-
-Time taken
-=====================================================
-no.     Size   without-patch     with-patch    Diff(%)
-1       10M      0m8.401s         0m5.623s     33.06%
-2       100M     1m40.465s        1m14.737s    25.6%
-
-<debug stats>
-=============
-w/o patch:
-  mballoc:
-    reqs: 17056
-    success: 11407
-    groups_scanned: 13643
-    cr0_stats:
-            hits: 37
-            groups_considered: 9472
-            useless_loops: 36
-            bad_suggestions: 0
-    cr1_stats:
-            hits: 11418
-            groups_considered: 908560
-            useless_loops: 1894
-            bad_suggestions: 0
-    cr2_stats:
-            hits: 1873
-            groups_considered: 6913
-            useless_loops: 21
-    cr3_stats:
-            hits: 21
-            groups_considered: 5040
-            useless_loops: 21
-    extents_scanned: 417364
-            goal_hits: 3707
-            2^n_hits: 37
-            breaks: 1873
-            lost: 0
-    buddies_generated: 239/240
-    buddies_time_used: 651080
-    preallocated: 705
-    discarded: 478
-
-with patch:
-  mballoc:
-    reqs: 12768
-    success: 11305
-    groups_scanned: 12768
-    cr0_stats:
-            hits: 1
-            groups_considered: 18
-            useless_loops: 0
-            bad_suggestions: 0
-    cr1_stats:
-            hits: 5829
-            groups_considered: 50626
-            useless_loops: 0
-            bad_suggestions: 0
-    cr2_stats:
-            hits: 6938
-            groups_considered: 580363
-            useless_loops: 0
-    cr3_stats:
-            hits: 0
-            groups_considered: 0
-            useless_loops: 0
-    extents_scanned: 309059
-            goal_hits: 0
-            2^n_hits: 1
-            breaks: 1463
-            lost: 0
-    buddies_generated: 239/240
-    buddies_time_used: 791392
-    preallocated: 673
-    discarded: 446
-
-Fixes: 196e402 (ext4: improve cr 0 / cr 1 group scanning)
-Cc: stable@kernel.org
-Reported-by: Geetika Moolchandani <Geetika.Moolchandani1@ibm.com>
-Reported-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
-Suggested-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
-Link: https://lore.kernel.org/r/fc9a48f7f8dcfc83891a8b21f6dd8cdf056ed810.1646732698.git.ojaswin@linux.ibm.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: c343bc2ce2c6 ("ACPI: properties: Align return codes of __acpi_node_get_property_reference()")
+Cc: 4.14+ <stable@vger.kernel.org> # 4.14+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/mballoc.c |    2 +-
+ drivers/acpi/property.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -1000,7 +1000,7 @@ static inline int should_optimize_scan(s
- 		return 0;
- 	if (ac->ac_criteria >= 2)
- 		return 0;
--	if (ext4_test_inode_flag(ac->ac_inode, EXT4_INODE_EXTENTS))
-+	if (!ext4_test_inode_flag(ac->ac_inode, EXT4_INODE_EXTENTS))
- 		return 0;
- 	return 1;
- }
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -685,7 +685,7 @@ int __acpi_node_get_property_reference(c
+ 	 */
+ 	if (obj->type == ACPI_TYPE_LOCAL_REFERENCE) {
+ 		if (index)
+-			return -EINVAL;
++			return -ENOENT;
+ 
+ 		device = acpi_fetch_acpi_dev(obj->reference.handle);
+ 		if (!device)
 
 
