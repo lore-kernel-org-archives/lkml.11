@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB317C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4891C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346251AbiDELBO (ORCPT
+        id S1346439AbiDELBS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58462 "EHLO
+        Tue, 5 Apr 2022 07:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235492AbiDEIjy (ORCPT
+        with ESMTP id S234751AbiDEIjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:39:54 -0400
+        Tue, 5 Apr 2022 04:39:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A72DE0BC;
-        Tue,  5 Apr 2022 01:33:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5802C6306;
+        Tue,  5 Apr 2022 01:33:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2820961470;
-        Tue,  5 Apr 2022 08:33:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AFFFC385A0;
-        Tue,  5 Apr 2022 08:33:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBC1160B0E;
+        Tue,  5 Apr 2022 08:33:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03AA1C385A1;
+        Tue,  5 Apr 2022 08:33:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147608;
-        bh=Utz1YvWbSMLmkIEVCdwmAdUPQ3ARE9UXbQLDcRmNtww=;
+        s=korg; t=1649147597;
+        bh=nYF/5LlqJxR+dXjtyHU6EiTxJe3DQ65PTODezaKI2RE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S5OMWqFRmxc8aHMy0ke3NKB9/R2C/1iafke27AAkWM2qVy08dyFDGkmwSkERmJCuX
-         ekG2A433K3w1NZTo1z9h8tdpY2HB8QLwlj72gjl8voA6ficXwBrtIv+tf0fJz1PYLH
-         eMJBvJu+mKGkQWuVbOu+XwJacnEvIP3em8f0N6cU=
+        b=BEiN3f2unSOBTX8I7ML+pZ3rK8wrwjH1WKCKEWJ5ifAU6nuwE7W4L6XwDGTzI13MV
+         LjG25vJsaYSCggLOHbEvelHrHrn3XuM6oiIDbu2lBT/mWOij/ceZU/gkffct6TLDtN
+         PXCBZNe9CTAtUNUoPiXqaCVyY7cquTqZ3z7ZrS+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.16 0057/1017] KEYS: fix length validation in keyctl_pkey_params_get_2()
-Date:   Tue,  5 Apr 2022 09:16:10 +0200
-Message-Id: <20220405070355.877315289@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 5.16 0053/1017] clk: uniphier: Fix fixed-rate initialization
+Date:   Tue,  5 Apr 2022 09:16:06 +0200
+Message-Id: <20220405070355.759180833@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,66 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-commit c51abd96837f600d8fd940b6ab8e2da578575504 upstream.
+commit ca85a66710a8a1f6b0719397225c3e9ee0abb692 upstream.
 
-In many cases, keyctl_pkey_params_get_2() is validating the user buffer
-lengths against the wrong algorithm properties.  Fix it to check against
-the correct properties.
+Fixed-rate clocks in UniPhier don't have any parent clocks, however,
+initial data "init.flags" isn't initialized, so it might be determined
+that there is a parent clock for fixed-rate clock.
 
-Probably this wasn't noticed before because for all asymmetric keys of
-the "public_key" subtype, max_data_size == max_sig_size == max_enc_size
-== max_dec_size.  However, this isn't necessarily true for the
-"asym_tpm" subtype (it should be, but it's not strictly validated).  Of
-course, future key types could have different values as well.
+This sets init.flags to zero as initialization.
 
-Fixes: 00d60fd3b932 ("KEYS: Provide keyctls to drive the new key type ops for asymmetric keys [ver #2]")
-Cc: <stable@vger.kernel.org> # v4.20+
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: <stable@vger.kernel.org>
+Fixes: 734d82f4a678 ("clk: uniphier: add core support code for UniPhier clock driver")
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1646808918-30899-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/keys/keyctl_pkey.c |   14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/clk/uniphier/clk-uniphier-fixed-rate.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/security/keys/keyctl_pkey.c
-+++ b/security/keys/keyctl_pkey.c
-@@ -135,15 +135,23 @@ static int keyctl_pkey_params_get_2(cons
+--- a/drivers/clk/uniphier/clk-uniphier-fixed-rate.c
++++ b/drivers/clk/uniphier/clk-uniphier-fixed-rate.c
+@@ -24,6 +24,7 @@ struct clk_hw *uniphier_clk_register_fix
  
- 	switch (op) {
- 	case KEYCTL_PKEY_ENCRYPT:
-+		if (uparams.in_len  > info.max_dec_size ||
-+		    uparams.out_len > info.max_enc_size)
-+			return -EINVAL;
-+		break;
- 	case KEYCTL_PKEY_DECRYPT:
- 		if (uparams.in_len  > info.max_enc_size ||
- 		    uparams.out_len > info.max_dec_size)
- 			return -EINVAL;
- 		break;
- 	case KEYCTL_PKEY_SIGN:
-+		if (uparams.in_len  > info.max_data_size ||
-+		    uparams.out_len > info.max_sig_size)
-+			return -EINVAL;
-+		break;
- 	case KEYCTL_PKEY_VERIFY:
--		if (uparams.in_len  > info.max_sig_size ||
--		    uparams.out_len > info.max_data_size)
-+		if (uparams.in_len  > info.max_data_size ||
-+		    uparams.in2_len > info.max_sig_size)
- 			return -EINVAL;
- 		break;
- 	default:
-@@ -151,7 +159,7 @@ static int keyctl_pkey_params_get_2(cons
- 	}
- 
- 	params->in_len  = uparams.in_len;
--	params->out_len = uparams.out_len;
-+	params->out_len = uparams.out_len; /* Note: same as in2_len */
- 	return 0;
- }
+ 	init.name = name;
+ 	init.ops = &clk_fixed_rate_ops;
++	init.flags = 0;
+ 	init.parent_names = NULL;
+ 	init.num_parents = 0;
  
 
 
