@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 337A0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 524A1C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380276AbiDEOQV (ORCPT
+        id S1380384AbiDEOQ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:16:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
+        Tue, 5 Apr 2022 10:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238790AbiDEJcs (ORCPT
+        with ESMTP id S238784AbiDEJcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:32:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3255F66;
-        Tue,  5 Apr 2022 02:20:08 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFEB3881;
+        Tue,  5 Apr 2022 02:20:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9ABAA6144D;
-        Tue,  5 Apr 2022 09:20:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4193C385A0;
-        Tue,  5 Apr 2022 09:20:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B12256144D;
+        Tue,  5 Apr 2022 09:20:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0FBBC385A2;
+        Tue,  5 Apr 2022 09:20:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150407;
-        bh=xGJ+ArF/bMzVzpHzzWR2mQad4zARlA/iBKKkcu48jJc=;
+        s=korg; t=1649150404;
+        bh=tZMx/xXAx/nmp18B70PxfRHF+Dhh2WZWm0Nvy3fvLD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iN6d3vvZln0p3sb7nCg4zIerqhgmHG+g7IB1JUc1IE1qVJRfVC1738iSeV0Keency
-         dEk0FmsE8iC5FjIZiJndw23bIvOhZGqdH5mr9YMV3ooO+RGssLeFNxdGH0zDdiHfNH
-         EwAOIa13SKolOd+hA+CbTTMmpnRP4+aoz3CetPgY=
+        b=uf0C2RfpaPhTKUZVsRvT/UXk/Cj4S8WM4fj46tZC3ckqAYRIapXmQGH2zx7qjJoYC
+         N8VJNJOEf8NbRW3wWb+VlnTcqjqJEhasLXkeImogUDZrcApbzsvCvjQ9nqyPMCSf2c
+         1cINJM02Njrpqx/M5c95U2Eew/kmzrd3Ho7kXeOI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michael=20H=C3=BCbner?= <michaelh.95@t-online.de>,
+        stable@vger.kernel.org, Lucas Zampieri <lzampier@redhat.com>,
+        Nestor Lopez Casado <nlopezcasad@logitech.com>,
         Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 009/913] HID: Add support for open wheel and no attachment to T300
-Date:   Tue,  5 Apr 2022 09:17:51 +0200
-Message-Id: <20220405070340.092325466@linuxfoundation.org>
+Subject: [PATCH 5.15 008/913] HID: logitech-dj: add new lightspeed receiver id
+Date:   Tue,  5 Apr 2022 09:17:50 +0200
+Message-Id: <20220405070340.062426263@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,35 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Hübner <michaelh.95@t-online.de>
+From: Lucas Zampieri <lzampier@redhat.com>
 
-[ Upstream commit 0a5a587501b54e8c6d86960b047d4491fd40dcf2 ]
+[ Upstream commit 25666e8ccd952627899b09b68f7c9b68cfeaf028 ]
 
-Different add ons to the wheel base report different models. Having
-no wheel mounted to the base and using the open wheel attachment is
-added here.
+As of logitech lightspeed receiver fw version 04.02.B0009,
+HIDPP_PARAM_DEVICE_INFO is being reported as 0x11.
 
-Signed-off-by: Michael Hübner <michaelh.95@t-online.de>
+With patch "HID: logitech-dj: add support for the new lightspeed receiver
+iteration", the mouse starts to error out with:
+  logitech-djreceiver: unusable device of type UNKNOWN (0x011) connected on
+  slot 1
+and becomes unusable.
+
+This has been noticed on a Logitech G Pro X Superlight fw MPM 25.01.B0018.
+
+Signed-off-by: Lucas Zampieri <lzampier@redhat.com>
+Acked-by: Nestor Lopez Casado <nlopezcasad@logitech.com>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-thrustmaster.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hid/hid-logitech-dj.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hid/hid-thrustmaster.c b/drivers/hid/hid-thrustmaster.c
-index afdd778a10f0..a28c3e575650 100644
---- a/drivers/hid/hid-thrustmaster.c
-+++ b/drivers/hid/hid-thrustmaster.c
-@@ -64,7 +64,9 @@ struct tm_wheel_info {
-  */
- static const struct tm_wheel_info tm_wheels_infos[] = {
- 	{0x0306, 0x0006, "Thrustmaster T150RS"},
-+	{0x0200, 0x0005, "Thrustmaster T300RS (Missing Attachment)"},
- 	{0x0206, 0x0005, "Thrustmaster T300RS"},
-+	{0x0209, 0x0005, "Thrustmaster T300RS (Open Wheel Attachment)"},
- 	{0x0204, 0x0005, "Thrustmaster T300 Ferrari Alcantara Edition"},
- 	{0x0002, 0x0002, "Thrustmaster T500RS"}
- 	//{0x0407, 0x0001, "Thrustmaster TMX"}
+diff --git a/drivers/hid/hid-logitech-dj.c b/drivers/hid/hid-logitech-dj.c
+index 7106b921b53c..c358778e070b 100644
+--- a/drivers/hid/hid-logitech-dj.c
++++ b/drivers/hid/hid-logitech-dj.c
+@@ -1068,6 +1068,7 @@ static void logi_hidpp_recv_queue_notif(struct hid_device *hdev,
+ 		workitem.reports_supported |= STD_KEYBOARD;
+ 		break;
+ 	case 0x0f:
++	case 0x11:
+ 		device_type = "eQUAD Lightspeed 1.2";
+ 		logi_hidpp_dev_conn_notif_equad(hdev, hidpp_report, &workitem);
+ 		workitem.reports_supported |= STD_KEYBOARD;
 -- 
 2.34.1
 
