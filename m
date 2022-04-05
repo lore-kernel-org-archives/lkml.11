@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9BF7C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7A8C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233051AbiDEH4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
+        id S233070AbiDEH4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233576AbiDEHsA (ORCPT
+        with ESMTP id S233583AbiDEHsD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:48:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1A026C;
-        Tue,  5 Apr 2022 00:46:00 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A8222F;
+        Tue,  5 Apr 2022 00:46:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B83F8B81B9C;
-        Tue,  5 Apr 2022 07:45:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F29EC340EE;
-        Tue,  5 Apr 2022 07:45:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 191BEB81BA7;
+        Tue,  5 Apr 2022 07:46:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 694F7C340EE;
+        Tue,  5 Apr 2022 07:46:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144757;
-        bh=C/750eIEw2xnKQ7Z3W6sdUklRUAe3atwbovg2TFjKWM=;
+        s=korg; t=1649144762;
+        bh=wxo5Qgm4ML6MQghSIyIPjrQXgvNxgJgLaqb67pNgPhk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LNQpXYzuVRDemEUOQqomLbTiGsTbX6dia6nCxjbD9euckWwcredTRce5d8L8Gq1ww
-         yC+vqByKxqg13K9n3/smWQ2OhTLZW1mPhfqh+o5Huf+eEAqesBQVYoqOeu8gmE83+I
-         dBAwc3EDljW9dASPd6zOhZhNo5O88owMsvT/UZ5A=
+        b=PbALRs1XrjO1hQi68GyXRvQP4Q7stZ6/RhNQJcKgWAEBxMhjtsxs4KTXsOsnMS/pf
+         a9e5TZn/9IvA2b+vsJMPw8H/+A8+aMN6X2CaYRCk1hfqTYwGxG1vcew5F5yxPzJQV8
+         nPgbY5/5Q+H/CI3NhQRmeCvu/sYiZOzUJmPEyHaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Vitaly Chikunov <vt@altlinux.org>,
+        Eric Biggers <ebiggers@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.17 0160/1126] crypto: rsa-pkcs1pad - only allow with rsa
-Date:   Tue,  5 Apr 2022 09:15:07 +0200
-Message-Id: <20220405070412.287396986@linuxfoundation.org>
+Subject: [PATCH 5.17 0162/1126] crypto: rsa-pkcs1pad - restore signature length check
+Date:   Tue,  5 Apr 2022 09:15:09 +0200
+Message-Id: <20220405070412.348174075@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,34 +52,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Eric Biggers <ebiggers@google.com>
 
-commit 9b30430ea356f237945e52f8a3a42158877bd5a9 upstream.
+commit d3481accd974541e6a5d6a1fb588924a3519c36e upstream.
 
-The pkcs1pad template can be instantiated with an arbitrary akcipher
-algorithm, which doesn't make sense; it is specifically an RSA padding
-scheme.  Make it check that the underlying algorithm really is RSA.
+RSA PKCS#1 v1.5 signatures are required to be the same length as the RSA
+key size.  RFC8017 specifically requires the verifier to check this
+(https://datatracker.ietf.org/doc/html/rfc8017#section-8.2.2).
 
-Fixes: 3d5b1ecdea6f ("crypto: rsa - RSA padding algorithm")
-Cc: <stable@vger.kernel.org> # v4.5+
+Commit a49de377e051 ("crypto: Add hash param to pkcs1pad") changed the
+kernel to allow longer signatures, but didn't explain this part of the
+change; it seems to be unrelated to the rest of the commit.
+
+Revert this change, since it doesn't appear to be correct.
+
+We can be pretty sure that no one is relying on overly-long signatures
+(which would have to be front-padded with zeroes) being supported, given
+that they would have been broken since commit c7381b012872
+("crypto: akcipher - new verify API for public key algorithms").
+
+Fixes: a49de377e051 ("crypto: Add hash param to pkcs1pad")
+Cc: <stable@vger.kernel.org> # v4.6+
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
+Suggested-by: Vitaly Chikunov <vt@altlinux.org>
 Signed-off-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/rsa-pkcs1pad.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ crypto/rsa-pkcs1pad.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/crypto/rsa-pkcs1pad.c
 +++ b/crypto/rsa-pkcs1pad.c
-@@ -621,6 +621,11 @@ static int pkcs1pad_create(struct crypto
+@@ -538,7 +538,7 @@ static int pkcs1pad_verify(struct akciph
  
- 	rsa_alg = crypto_spawn_akcipher_alg(&ctx->spawn);
+ 	if (WARN_ON(req->dst) ||
+ 	    WARN_ON(!req->dst_len) ||
+-	    !ctx->key_size || req->src_len < ctx->key_size)
++	    !ctx->key_size || req->src_len != ctx->key_size)
+ 		return -EINVAL;
  
-+	if (strcmp(rsa_alg->base.cra_name, "rsa") != 0) {
-+		err = -EINVAL;
-+		goto err_free_inst;
-+	}
-+
- 	err = -ENAMETOOLONG;
- 	hash_name = crypto_attr_alg_name(tb[2]);
- 	if (IS_ERR(hash_name)) {
+ 	req_ctx->out_buf = kmalloc(ctx->key_size + req->dst_len, GFP_KERNEL);
 
 
