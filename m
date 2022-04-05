@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D9FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AEB3C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243914AbiDEJkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
+        id S229615AbiDEJlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239299AbiDEIT5 (ORCPT
+        with ESMTP id S239280AbiDEIT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:19:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A3C81644;
-        Tue,  5 Apr 2022 01:10:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2C18020A;
+        Tue,  5 Apr 2022 01:10:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F127B81B18;
-        Tue,  5 Apr 2022 08:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18C3EC385A0;
-        Tue,  5 Apr 2022 08:10:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B3F60B0E;
+        Tue,  5 Apr 2022 08:10:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB9C6C385A0;
+        Tue,  5 Apr 2022 08:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146255;
-        bh=rYFP1BJ4Qw1ivdKhFqqmw2gOqzma9KK70jJAP0HaOdo=;
+        s=korg; t=1649146250;
+        bh=FLjnvxz8s9HCbZ88y2UuuXe1fMhCc9/YAMzyiL3dHXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fbqLZaG4/FLady0jFeP4RvvokjNuaI1V8xKY78PX/J7RVApm8Cc0ortWn/GtDC52y
-         muCAVkxOL1qzEli3vB9nRKwIR/nIv86O0NFK+FoYSeQe+Zzf1yeWutFHWVfsB+2Jej
-         yED+MtFCdZFRR9peizCNtHGoJ/WtBYJpH/x0lDp0=
+        b=SWpcHLX2tA/nFvJ705goaEVtqpq2ZfZtQHVDhVLJX0JenGAz+hErSYMpRqgY/1Rr/
+         jYkVBxUELYDq9Zw3Kndu965M16ocit3B96wDHKTBdJ0ZYRc+9VoM/pEjS6pQL4jCCt
+         JLddk6ghnMkEyviWZbzoOpy3Alt3uHrFeTNX3JSw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0698/1126] bpftool: Fix print error when show bpf map
-Date:   Tue,  5 Apr 2022 09:24:05 +0200
-Message-Id: <20220405070428.096755911@linuxfoundation.org>
+Subject: [PATCH 5.17 0696/1126] drm/i915: Fix renamed struct field
+Date:   Tue,  5 Apr 2022 09:24:03 +0200
+Message-Id: <20220405070428.039590417@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,58 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yafang Shao <laoar.shao@gmail.com>
+From: Lucas De Marchi <lucas.demarchi@intel.com>
 
-[ Upstream commit 1824d8ea75f275a5e69e5f6bc0ffe122ea9b938c ]
+[ Upstream commit 00f4150d27d2c01eaeffe1091fc311a7c0872c69 ]
 
-If there is no btf_id or frozen, it will not show the pids, but the pids don't
-depend on any one of them.
+Earlier versions of commit a5b7ef27da60 ("drm/i915: Add struct to hold
+IP version") named "ver" as "arch" and then when it was renamed it
+missed the rename on MEDIA_VER_FULL() since it it's currently not used.
 
-Below is the result after this change:
-
-  $ ./bpftool map show
-  2: lpm_trie  flags 0x1
-	key 8B  value 8B  max_entries 1  memlock 4096B
-	pids systemd(1)
-  3: lpm_trie  flags 0x1
-	key 20B  value 8B  max_entries 1  memlock 4096B
-	pids systemd(1)
-
-While before this change, the 'pids systemd(1)' can't be displayed.
-
-Fixes: 9330986c0300 ("bpf: Add bloom filter map implementation")
-Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220320060815.7716-1-laoar.shao@gmail.com
+Fixes: a5b7ef27da60 ("drm/i915: Add struct to hold IP version")
+Cc: José Roberto de Souza <jose.souza@intel.com>
+Cc: Matt Roper <matthew.d.roper@intel.com>
+Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220316234538.434357-1-lucas.demarchi@intel.com
+(cherry picked from commit b4ac33b973233dc08a56c8ef9d3c2edeab7a4370)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/map.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/i915/i915_drv.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index e746642de292..0bba33729c7f 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -620,17 +620,14 @@ static int show_map_close_plain(int fd, struct bpf_map_info *info)
- 					    u32_as_hash_field(info->id))
- 			printf("\n\tpinned %s", (char *)entry->value);
- 	}
--	printf("\n");
+diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
+index 0c70ab08fc0c..73efed2f30ca 100644
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -1146,7 +1146,7 @@ static inline struct intel_gt *to_gt(struct drm_i915_private *i915)
+ 	(GRAPHICS_VER(i915) >= (from) && GRAPHICS_VER(i915) <= (until))
  
- 	if (frozen_str) {
- 		frozen = atoi(frozen_str);
- 		free(frozen_str);
- 	}
- 
--	if (!info->btf_id && !frozen)
--		return 0;
--
--	printf("\t");
-+	if (info->btf_id || frozen)
-+		printf("\n\t");
- 
- 	if (info->btf_id)
- 		printf("btf_id %d", info->btf_id);
+ #define MEDIA_VER(i915)			(INTEL_INFO(i915)->media.ver)
+-#define MEDIA_VER_FULL(i915)		IP_VER(INTEL_INFO(i915)->media.arch, \
++#define MEDIA_VER_FULL(i915)		IP_VER(INTEL_INFO(i915)->media.ver, \
+ 					       INTEL_INFO(i915)->media.rel)
+ #define IS_MEDIA_VER(i915, from, until) \
+ 	(MEDIA_VER(i915) >= (from) && MEDIA_VER(i915) <= (until))
 -- 
 2.34.1
 
