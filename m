@@ -2,84 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B847C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 05:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiDEFKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 01:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
+        id S229640AbiDEFLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 01:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiDEFJh (ORCPT
+        with ESMTP id S230253AbiDEFLq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 01:09:37 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77B8FD1B;
-        Mon,  4 Apr 2022 22:07:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649135249; x=1680671249;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=SynVIeeqJ4gMyigKuFuVZOWVZKN22mkbmgQvCqXZPts=;
-  b=sFYju/gQM0837cLo/xZYa2dh0yppGhu2l7+Tvv71tHGBO0z6ikNPJbxn
-   u9UcfbLmJnmxg3A1jxNXcFdZvOpDZNEEeOjqYZGD7773l+9nwEdaVanJO
-   XVpkO/x8Q7kz5myTZUd10I/McMPckT1axmf08P1P9SDOOeVe2Cr16SqIV
-   k=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 04 Apr 2022 22:07:29 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 22:07:13 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 4 Apr 2022 22:07:12 -0700
-Received: from [10.216.10.223] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 4 Apr 2022
- 22:07:08 -0700
-Message-ID: <da80fb48-0bf7-ddce-b2a5-a51a6673f180@quicinc.com>
-Date:   Tue, 5 Apr 2022 10:37:05 +0530
+        Tue, 5 Apr 2022 01:11:46 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F28C4BFFA
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 22:09:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649135389; x=1680671389;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=uml1BPu3EYtTMbgd2WGuq3w4iq6M/GD0ogJulQUKtjY=;
+  b=ZP0qHd79JRN91YvDv3Wfjyexi9psZUHHZoy+BVJw790DhkuFEL/4tN78
+   PMljlbyOhYX8j11rlRLSdglB4KwoWmz7AYr0iLUG8x4H+dg9ICM5iOwUM
+   x8QDe4GPAdEfSeC8fJwdwgH/Aa8LSTO9la8ZzLcZRPwhuR/lyZzjnWxRR
+   idWvL+kdCTJVwRB7jeWyrkyz4fImEAyGbI4nwccP9sXmqQa1UeKasqYqR
+   677rv+lzVZ3I5xXP7wcjthWawBmzO63WwJ9jY1fcj1uHvdE4DnUfBMGHT
+   T2Ct/tJmSFuyk3AM09tRW7ZVrXfOoAeKjFKLIPztgAX8O+w7bQoNlVmeH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="240602591"
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="240602591"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 22:09:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="721909358"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 04 Apr 2022 22:09:45 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbbRo-0002eh-L6;
+        Tue, 05 Apr 2022 05:09:44 +0000
+Date:   Tue, 5 Apr 2022 13:09:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 8/40]
+ fs/netfs/misc.c:18:46: warning: format specifies type 'unsigned long' but
+ the argument has type 'size_t' (aka 'unsigned int')
+Message-ID: <202204051354.4g0Q01jJ-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v5 1/3] arm64: dts: qcom: sc7280: Add pinctrl for wcd938x
- codec reset and CTIA/OMTP headset selection
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <devicetree@vger.kernel.org>,
-        <dianders@chromium.org>, <judyhsiao@chromium.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <robh+dt@kernel.org>, <rohitkr@codeaurora.org>,
-        <srinivas.kandagatla@linaro.org>
-CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1647863959-3289-1-git-send-email-quic_srivasam@quicinc.com>
- <1647863959-3289-2-git-send-email-quic_srivasam@quicinc.com>
- <CAE-0n50yxLZ6j32Cmx9gdACnKT3uJxc5wsOp3SAd4VHB7aNUvw@mail.gmail.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <CAE-0n50yxLZ6j32Cmx9gdACnKT3uJxc5wsOp3SAd4VHB7aNUvw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   674eea41fc70a740ff83ec590f9833f805852464
+commit: cae8dd85733f703374474ed433b8263263d4fa7f [8/40] netfs: Provide invalidatepage and releasepage calls
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220405/202204051354.4g0Q01jJ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/cae8dd85733f703374474ed433b8263263d4fa7f
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout cae8dd85733f703374474ed433b8263263d4fa7f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/netfs/
 
-On 3/22/2022 1:57 AM, Stephen Boyd wrote:
-Thanks for your time Stephen!!!
-> Quoting Srinivasa Rao Mandadapu (2022-03-21 04:59:17)
->> Add pinctrl nodes for wcd codec reset and CTIA/OMTP headset type selection.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
->>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 22 ++++++++++++++++++++++
->>   1 file changed, 22 insertions(+)
-> Please combine this patch with the consumer that uses the pinctrl nodes.
-> Otherwise it is too hard to review the contents of this patch.
-Okay. Will do accordingly.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> fs/netfs/misc.c:18:46: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
+           _enter("{%lx},%lx,%lx", folio_index(folio), offset, length);
+                         ~~~                           ^~~~~~
+                         %zx
+   fs/netfs/internal.h:164:65: note: expanded from macro '_enter'
+   #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
+                                               ~~~                 ^~~~~~~~~~~
+   include/linux/printk.h:132:17: note: expanded from macro 'no_printk'
+                   printk(fmt, ##__VA_ARGS__);             \
+                          ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   fs/netfs/misc.c:18:54: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
+           _enter("{%lx},%lx,%lx", folio_index(folio), offset, length);
+                             ~~~                               ^~~~~~
+                             %zx
+   fs/netfs/internal.h:164:65: note: expanded from macro '_enter'
+   #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
+                                               ~~~                 ^~~~~~~~~~~
+   include/linux/printk.h:132:17: note: expanded from macro 'no_printk'
+                   printk(fmt, ##__VA_ARGS__);             \
+                          ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   2 warnings generated.
+
+
+vim +18 fs/netfs/misc.c
+
+    10	
+    11	/*
+    12	 * Invalidate part or all of a folio
+    13	 * - release a folio and clean up its private data if offset is 0 (indicating
+    14	 *   the entire folio)
+    15	 */
+    16	void netfs_invalidate_folio(struct folio *folio, size_t offset, size_t length)
+    17	{
+  > 18		_enter("{%lx},%lx,%lx", folio_index(folio), offset, length);
+    19	
+    20		folio_wait_fscache(folio);
+    21	}
+    22	EXPORT_SYMBOL(netfs_invalidate_folio);
+    23	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
