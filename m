@@ -2,118 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7402FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:56:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457732AbiDEWrk (ORCPT
+        id S1349211AbiDEWuM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
+        Tue, 5 Apr 2022 18:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242775AbiDEKfS (ORCPT
+        with ESMTP id S1392189AbiDEPft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EFA4A920;
-        Tue,  5 Apr 2022 03:20:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 568BBB81BC5;
-        Tue,  5 Apr 2022 10:20:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4A0C385A1;
-        Tue,  5 Apr 2022 10:20:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154057;
-        bh=WTTgE0jq1ET24nxFgkUnERXPbOwuOz6l4qpBGMY5MV0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DJf1RUzKmTIBoSPMbVGl97qAEdIxzwa1SO318SypLmwvz5j3741W8LWExNBF3A+zC
-         I5WDTdpPAQtC7uouk2CWZjI6iWzcAeBidoMZYgiIRKm2XFKQ/J6Cy0S/eF8wk9+epy
-         F11irdxnb+Kd65jWoooxSTctAnISCB7ZsnfjVaig=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 441/599] selftests: test_vxlan_under_vrf: Fix broken test case
-Date:   Tue,  5 Apr 2022 09:32:15 +0200
-Message-Id: <20220405070311.955504838@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:35:49 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518DA12D;
+        Tue,  5 Apr 2022 06:48:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649166488;
+  x=1680702488;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=79rrKpJvSV/IyMMLjk1fyhAdjuzODykc4KbTAF2mUFs=;
+  b=FiOVSqtEplqlpGbV24QKDAr+i8WFGbW038mF84zzzjMGLHloCAF5NPgY
+   spNiGw/JW64vBk2PDKMYeRrzNnvvX9UHBY/B/HepKgx6Ad8lZokZPYdBy
+   7OpaZ9BsvHs1aZCwW+kuNlJhW2Z2+5tJgZDQoPpNYBx3HZTZqRoW8yTb2
+   L/kbhgJPZ67FRSZN5VimMCXaFg5e7MBpW2w5kOfvVuD4jRmwgAUY0TEzv
+   O9FAaZn51Fi/MSdDTB4FNunqqBA9Ty8O7mk1/2xsvz1tde3N99GsfhgrV
+   4GYLxtosbMlYV/YxgZvfwIh/MPM7kvdpyaf1CLkQR25ioPVRlRFcC7BrW
+   w==;
+Date:   Tue, 5 Apr 2022 15:48:05 +0200
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kernel <kernel@axis.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "brendanhiggins@google.com" <brendanhiggins@google.com>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "a.zummo@towertech.it" <a.zummo@towertech.it>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: Re: [RFC v1 08/10] iio: light: vcnl4000: add roadtest
+Message-ID: <20220405134805.GA28574@axis.com>
+References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
+ <20220311162445.346685-9-vincent.whitchurch@axis.com>
+ <20220320170253.5b946c84@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220320170253.5b946c84@jic23-huawei>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Sun, Mar 20, 2022 at 06:02:53PM +0100, Jonathan Cameron wrote:
+> Very interesting bit of work. My current approach for similar testing
+> is to write a qemu model for the hardware, but that currently
+> requires carefully crafted tests. Most of the time I'm only doing
+> that to verify refactoring of existing drivers. 
 
-[ Upstream commit b50d3b46f84282d795ae3076111acb75ae1031f3 ]
+Thank you for taking a look!
 
-The purpose of the last test case is to test VXLAN encapsulation and
-decapsulation when the underlay lookup takes place in a non-default VRF.
-This is achieved by enslaving the physical device of the tunnel to a
-VRF.
+> One thing that makes me nervous here is the python element though
+> as I've not written significant python in about 20 years.
+> That is going to be a burden for kernel developers and maintainers...
+> Nothing quite like badly written tests to make for a mess in the long run
+> and I suspect my python for example would be very very badly written :)
 
-The binding of the VXLAN UDP socket to the VRF happens when the VXLAN
-device itself is opened, not when its physical device is opened. This
-was also mentioned in the cited commit ("tests that moving the underlay
-from a VRF to another works when down/up the VXLAN interface"), but the
-test did something else.
+There's a bunch of static checkers to ensure that the code follows some
+basic guidelines, and CI can check that the tests work consistently, and
+also calculate metrics such as test execution time and code coverage, so
+even non-idiomatic Python in the tests wouldn't be entirely broken.
 
-Fix it by reopening the VXLAN device instead of its physical device.
+And unlike driver code, if the tests for a particular driver later do
+turn out to be bad (in what way?), we could just throw those particular
+tests out without breaking anybody's system.
 
-Before:
+> Cut and paste will of course get us a long way...
 
- # ./test_vxlan_under_vrf.sh
- Checking HV connectivity                                           [ OK ]
- Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
- Check VM connectivity through VXLAN (underlay in a VRF)            [FAIL]
+Isn't some amount of copy/paste followed by modification to be expected
+even if the framework is written in say C (just as there's already
+copy/paste + modification involved when writing drivers)?
 
-After:
+As for the core logic of individual driver tests excluding the framework
+bits, I have a hard time imagining what Python syntax looks like to
+someone with no knowledge of Python, so yes, I guess it's going to be
+harder to review.
 
- # ./test_vxlan_under_vrf.sh
- Checking HV connectivity                                           [ OK ]
- Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
- Check VM connectivity through VXLAN (underlay in a VRF)            [ OK ]
+> I dream of a world where every driver is testable by people with out hardware
+> but I fear it may be a while yet.  Hopefully this will get us a little
+> closer!
+> 
+> I more or less follow what is going on here (good docs btw in the earlier
+> patch definitely helped).
+> 
+> So far I'm thoroughly in favour of road test subject to actually being
+> able to review the tests or getting sufficient support to do so.
+> It's a 'how to scale it' question really...
 
-Fixes: 03f1c26b1c56 ("test/net: Add script for VXLAN underlay in a VRF")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220324200514.1638326-1-idosch@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/net/test_vxlan_under_vrf.sh | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/tools/testing/selftests/net/test_vxlan_under_vrf.sh b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-index 09f9ed92cbe4..a44b9aca7427 100755
---- a/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-+++ b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-@@ -118,11 +118,11 @@ echo "[ OK ]"
- 
- # Move the underlay to a non-default VRF
- ip -netns hv-1 link set veth0 vrf vrf-underlay
--ip -netns hv-1 link set veth0 down
--ip -netns hv-1 link set veth0 up
-+ip -netns hv-1 link set vxlan0 down
-+ip -netns hv-1 link set vxlan0 up
- ip -netns hv-2 link set veth0 vrf vrf-underlay
--ip -netns hv-2 link set veth0 down
--ip -netns hv-2 link set veth0 up
-+ip -netns hv-2 link set vxlan0 down
-+ip -netns hv-2 link set vxlan0 up
- 
- echo -n "Check VM connectivity through VXLAN (underlay in a VRF)            "
- ip netns exec vm-1 ping -c 1 -W 1 10.0.0.2 &> /dev/null || (echo "[FAIL]"; false)
--- 
-2.34.1
-
-
-
+Would rewriting the framework in C and forcing tests to be written in
+that language mean that maintainers would be able to review tests
+without external support?
