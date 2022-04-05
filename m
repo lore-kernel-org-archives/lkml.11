@@ -2,85 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B670BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 497D2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581498AbiDEXja (ORCPT
+        id S1581520AbiDEXjq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
+        Tue, 5 Apr 2022 19:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457534AbiDEQGb (ORCPT
+        with ESMTP id S1457916AbiDEQ7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:06:31 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E76DDA;
-        Tue,  5 Apr 2022 09:04:32 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
+        Tue, 5 Apr 2022 12:59:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BDA5D1A3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:57:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id BDB9B30D;
-        Tue,  5 Apr 2022 16:04:31 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net BDB9B30D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1649174671; bh=TxBmXjw0W5sHQw6Es3eDilnc949OOAkzg4pcLoQ5pHQ=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=H4wh1pAW3CX+E4t5+ZvJ1Yzlz+YIDiiBS73DsABifoeqlVDs6pNd0teUfo+bFDHt3
-         wxs4VOMCk4RFH/z7SJCbwXlgXIc8uLCHsklfTIjFr+uvWDb7xONGlSP+PE5HPi2gMd
-         wNJaBTBsvvGnPnAeNTH7JGmXk2UuGIxGs1o8jnUhu+cQH9G5nTg37ZNbr92A5ByNED
-         4WLtnJYOOrXKUnDr8Y8NBH1o2yHtcBTjuZ4IrHCq4DNuzust44nzQJlw1kmFPkEyeA
-         XAdFVNf4xdgfL4HuWs8mk0tumHeL1kdZfTv8WfV4ANcLNb22Da+4hpS9ptiy9OrTk7
-         UYPVArPCpiZNQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] Documentation: doc-guide: Add missing page titles
-In-Reply-To: <20220329045235.11879-1-bagasdotme@gmail.com>
-References: <20220329045235.11879-1-bagasdotme@gmail.com>
-Date:   Tue, 05 Apr 2022 10:04:30 -0600
-Message-ID: <87sfqrectt.fsf@meer.lwn.net>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 929BD615AF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:57:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4B99C385A1;
+        Tue,  5 Apr 2022 16:57:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649177866;
+        bh=TKj/Gdf3upOujc9HOwY9/yVgEBOdEJpY7NOsYt4MUt0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sLjhPxKBSrpwXS5A8EWIIkEak001fUnpZol7Yuk6pHxjC+lRXq/aT1HSu+2Di5ICa
+         OQ+7e+yMEXVdVtBMaHZfWOxrefF1fJ/Q+4DWRfT10DZdwQeb0lGxfvH8U9BuHT0b0K
+         R92RQ//OsY4L5MM1nv4aeIxBerZ0OKBGmbk69yHjbfZAVFDxWR+BKIIPWFPnmUPCG6
+         kDqNmZhTdlsAbqwQ9y2CQVTBbCfYA/JGuI+/083okepz6UcZCkySf36XBlxlOedyzy
+         tatiOSITnJV4Q/h1mBT8oJmONJgctog+CC1z4a9m5uuK6YTBG6yc4owenwoh91Mu0P
+         8GrQzujSWGXsg==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1nbmUx-002uYS-EY; Tue, 05 Apr 2022 18:57:43 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     alsa-devel@alsa-project.org
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        "Hans de Goede" <hdegoede@redhat.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jie Yang <yang.jie@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 2/3] ASoC: Intel: sof_es8336: support a separate gpio to control headphone
+Date:   Tue,  5 Apr 2022 18:57:33 +0200
+Message-Id: <535454c0c598a8454487fe29b164527370e2db81.1649177516.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649177516.git.mchehab@kernel.org>
+References: <cover.1649177516.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bagas Sanjaya <bagasdotme@gmail.com> writes:
+Some devices may use both gpio0 and gpio1 to independently switch
+the speaker and the headphone.
 
-> The kernel documentation guidelines [1] lists that there should have page
-> title.
->
-> Add missing page title for kernel-doc.rst and sphinx.rst, in accordance
-> to the guideline.
->
-> Changes since v3 [2]:
->   - Clarify that there is no output differences except formatting
->     semantics in [1/2]
->   - Drop Suggested-by trailer from Akira Yokosawa in [1/2] 
->
-> [1]: https://docs.kernel.org/doc-guide/sphinx.html#specific-guidelines-for-the-kernel-documentation
-> [2]:
-> https://lore.kernel.org/linux-doc/20220328065030.24936-1-bagasdotme@gmail.com/
->
-> Bagas Sanjaya (2):
->   Documentation: kernel-doc: Promote two chapter headings to page title
->   Documentation: sphinx: replace "Introduction" chapter heading with
->     page title
->
->  Documentation/doc-guide/kernel-doc.rst | 2 ++
->  Documentation/doc-guide/sphinx.rst     | 5 +++--
->  2 files changed, 5 insertions(+), 2 deletions(-)
+Add support for that.
 
-OK, I think this improves the situation overall, so I've applied these,
-thanks.
+Acked-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-jon
+See [PATCH v3 0/3] at: https://lore.kernel.org/all/cover.1649177516.git.mchehab@kernel.org/
+
+ sound/soc/intel/boards/sof_es8336.c | 59 ++++++++++++++++++++++++-----
+ 1 file changed, 49 insertions(+), 10 deletions(-)
+
+diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+index e4829a376b79..d15a58666cc6 100644
+--- a/sound/soc/intel/boards/sof_es8336.c
++++ b/sound/soc/intel/boards/sof_es8336.c
+@@ -30,6 +30,7 @@
+ #define SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK	BIT(4)
+ #define SOF_ES8336_ENABLE_DMIC			BIT(5)
+ #define SOF_ES8336_JD_INVERTED			BIT(6)
++#define SOF_ES8336_HEADPHONE_GPIO		BIT(7)
+ 
+ static unsigned long quirk;
+ 
+@@ -39,7 +40,7 @@ MODULE_PARM_DESC(quirk, "Board-specific quirk override");
+ 
+ struct sof_es8336_private {
+ 	struct device *codec_dev;
+-	struct gpio_desc *gpio_speakers;
++	struct gpio_desc *gpio_speakers, *gpio_headphone;
+ 	struct snd_soc_jack jack;
+ 	struct list_head hdmi_pcm_list;
+ 	bool speaker_en;
+@@ -51,15 +52,27 @@ struct sof_hdmi_pcm {
+ 	int device;
+ };
+ 
+-static const struct acpi_gpio_params speakers_enable_gpio0 = { 0, 0, true };
++static const struct acpi_gpio_params enable_gpio0 = { 0, 0, true };
++static const struct acpi_gpio_params enable_gpio1 = { 1, 0, true };
++
+ static const struct acpi_gpio_mapping acpi_speakers_enable_gpio0[] = {
+-	{ "speakers-enable-gpios", &speakers_enable_gpio0, 1 },
++	{ "speakers-enable-gpios", &enable_gpio0, 1 },
+ 	{ }
+ };
+ 
+-static const struct acpi_gpio_params speakers_enable_gpio1 = { 1, 0, true };
+ static const struct acpi_gpio_mapping acpi_speakers_enable_gpio1[] = {
+-	{ "speakers-enable-gpios", &speakers_enable_gpio1, 1 },
++	{ "speakers-enable-gpios", &enable_gpio1, 1 },
++};
++
++static const struct acpi_gpio_mapping acpi_enable_both_gpios[] = {
++	{ "speakers-enable-gpios", &enable_gpio0, 1 },
++	{ "headphone-enable-gpios", &enable_gpio1, 1 },
++	{ }
++};
++
++static const struct acpi_gpio_mapping acpi_enable_both_gpios_rev_order[] = {
++	{ "speakers-enable-gpios", &enable_gpio1, 1 },
++	{ "headphone-enable-gpios", &enable_gpio0, 1 },
+ 	{ }
+ };
+ 
+@@ -73,6 +86,8 @@ static void log_quirks(struct device *dev)
+ 		dev_info(dev, "quirk DMIC enabled\n");
+ 	if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
+ 		dev_info(dev, "Speakers GPIO1 quirk enabled\n");
++	if (quirk & SOF_ES8336_HEADPHONE_GPIO)
++		dev_info(dev, "quirk headphone GPIO enabled\n");
+ 	if (quirk & SOF_ES8336_JD_INVERTED)
+ 		dev_info(dev, "quirk JD inverted enabled\n");
+ }
+@@ -83,13 +98,24 @@ static int sof_es8316_speaker_power_event(struct snd_soc_dapm_widget *w,
+ 	struct snd_soc_card *card = w->dapm->card;
+ 	struct sof_es8336_private *priv = snd_soc_card_get_drvdata(card);
+ 
++	if (priv->speaker_en == !SND_SOC_DAPM_EVENT_ON(event))
++		return 0;
++
++	priv->speaker_en = !SND_SOC_DAPM_EVENT_ON(event);
++
+ 	if (SND_SOC_DAPM_EVENT_ON(event))
+-		priv->speaker_en = false;
+-	else
+-		priv->speaker_en = true;
++		msleep(70);
+ 
+ 	gpiod_set_value_cansleep(priv->gpio_speakers, priv->speaker_en);
+ 
++	if (!(quirk & SOF_ES8336_HEADPHONE_GPIO))
++		return 0;
++
++	if (SND_SOC_DAPM_EVENT_ON(event))
++		msleep(70);
++
++	gpiod_set_value_cansleep(priv->gpio_headphone, priv->speaker_en);
++
+ 	return 0;
+ }
+ 
+@@ -114,7 +140,7 @@ static const struct snd_soc_dapm_route sof_es8316_audio_map[] = {
+ 
+ 	/*
+ 	 * There is no separate speaker output instead the speakers are muxed to
+-	 * the HP outputs. The mux is controlled by the "Speaker Power" supply.
++	 * the HP outputs. The mux is controlled Speaker and/or headphone switch.
+ 	 */
+ 	{"Speaker", NULL, "HPOL"},
+ 	{"Speaker", NULL, "HPOR"},
+@@ -233,8 +259,14 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
+ {
+ 	quirk = (unsigned long)id->driver_data;
+ 
+-	if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
++	if (quirk & SOF_ES8336_HEADPHONE_GPIO) {
++		if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
++			gpio_mapping = acpi_enable_both_gpios;
++		else
++			gpio_mapping = acpi_enable_both_gpios_rev_order;
++	} else if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK) {
+ 		gpio_mapping = acpi_speakers_enable_gpio1;
++	}
+ 
+ 	return 1;
+ }
+@@ -592,6 +624,13 @@ static int sof_es8336_probe(struct platform_device *pdev)
+ 		goto err_put_codec;
+ 	}
+ 
++	priv->gpio_headphone = gpiod_get_optional(codec_dev, "headphone-enable", GPIOD_OUT_LOW);
++	if (IS_ERR(priv->gpio_headphone)) {
++		ret = dev_err_probe(dev, PTR_ERR(priv->gpio_headphone),
++				    "could not get headphone-enable GPIO\n");
++		goto err_put_codec;
++	}
++
+ 	INIT_LIST_HEAD(&priv->hdmi_pcm_list);
+ 
+ 	snd_soc_card_set_drvdata(card, priv);
+-- 
+2.35.1
+
