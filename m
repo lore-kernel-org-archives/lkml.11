@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D7FC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF09C35294
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388324AbiDENV5 (ORCPT
+        id S1356053AbiDENHv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:21:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
+        Tue, 5 Apr 2022 09:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344592AbiDEJUo (ORCPT
+        with ESMTP id S1344012AbiDEJQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:20:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3C11A3B8;
-        Tue,  5 Apr 2022 02:08:27 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850491088;
+        Tue,  5 Apr 2022 02:03:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02DD7B81A12;
-        Tue,  5 Apr 2022 09:08:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 504B2C385A1;
-        Tue,  5 Apr 2022 09:08:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F30FB81BAE;
+        Tue,  5 Apr 2022 09:03:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0AF1C385A0;
+        Tue,  5 Apr 2022 09:03:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149704;
-        bh=hM7XmzpCz1LY2zUE0Z1Ob1vRypXKE20pNn9jFFw1gE0=;
+        s=korg; t=1649149404;
+        bh=H/Bje5hmDtCNNdNb6F1c/bsu09pr84sD2glYE/vcp/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KjaZKviZmVmabpDMFFjoC7lUhg2SVY1yaHKOrsfZVhOAtm3pCZGhtGgGtrEVZOWo0
-         /5PjwGsi8czrwZH7ns8dXdFtTDoo9uYnrsXKaseB+ya0nW2roBwdwgX57SMw5vGL7v
-         CrD2vxXhZo0QcBDd5ovCD+mYTKd+xfN5m3oNgGns=
+        b=lGqSZZ+SrwRlUeCRMJlEEP1q3cEeBYRJIVsMrJB5xbl13lXFXMamDolvVuLMckO8k
+         u6NEcE4cCkXKRRmY48fDz2xqxiqc+QEIP1WSTaCiUUFhZh8VFscDdB7AvvwzJNc6yW
+         lw2NDsAVxxrDiKKI945C/LINjeLtSYfD/G22vLMI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0812/1017] ASoC: SOF: Intel: hda: Remove link assignment limitation
-Date:   Tue,  5 Apr 2022 09:28:45 +0200
-Message-Id: <20220405070418.350864176@linuxfoundation.org>
+Subject: [PATCH 5.16 0701/1017] pinctrl: microchip-sgpio: lock RMW access
+Date:   Tue,  5 Apr 2022 09:26:54 +0200
+Message-Id: <20220405070415.079501816@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -55,63 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 2ce0d008dcc59f9c01f43277b9f9743af7b01dad ]
+[ Upstream commit 7996c5f5ec7a20b3f6b8fae93fcf3cb8f1c01743 ]
 
-The limitation to assign a link DMA channel for a BE iff the
-corresponding host DMA channel is assigned to a connected FE is only
-applicable if the PROCEN_FMT_QUIRK is set. So, remove it for platforms
-that do not enable the quirk.
+Protect any RMW access to the registers by a spinlock.
 
-Complements: a792bfc1c2bc ("ASoC: SOF: Intel: hda-stream: limit PROCEN workaround")
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220128130017.28508-1-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 7e5ea974e61c ("pinctrl: pinctrl-microchip-sgpio: Add pinctrl driver for Microsemi Serial GPIO")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Link: https://lore.kernel.org/r/20220226204507.2511633-2-michael@walle.cc
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda-dai.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/pinctrl/pinctrl-microchip-sgpio.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/sound/soc/sof/intel/hda-dai.c b/sound/soc/sof/intel/hda-dai.c
-index 76579383d290..1b7ba7f3e99b 100644
---- a/sound/soc/sof/intel/hda-dai.c
-+++ b/sound/soc/sof/intel/hda-dai.c
-@@ -62,6 +62,8 @@ static struct hdac_ext_stream *
+diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
+index 78765faa245a..dfa374195694 100644
+--- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
++++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
+@@ -18,6 +18,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+ #include <linux/reset.h>
++#include <linux/spinlock.h>
+ 
+ #include "core.h"
+ #include "pinconf.h"
+@@ -115,6 +116,7 @@ struct sgpio_priv {
+ 	u32 clock;
+ 	u32 __iomem *regs;
+ 	const struct sgpio_properties *properties;
++	spinlock_t lock;
+ };
+ 
+ struct sgpio_port_addr {
+@@ -216,6 +218,7 @@ static void sgpio_output_set(struct sgpio_priv *priv,
+ 			     int value)
  {
- 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
- 	struct sof_intel_hda_stream *hda_stream;
-+	const struct sof_intel_dsp_desc *chip;
-+	struct snd_sof_dev *sdev;
- 	struct hdac_ext_stream *res = NULL;
- 	struct hdac_stream *stream = NULL;
+ 	unsigned int bit = SGPIO_SRC_BITS * addr->bit;
++	unsigned long flags;
+ 	u32 clr, set;
  
-@@ -80,9 +82,20 @@ static struct hdac_ext_stream *
- 			continue;
- 
- 		hda_stream = hstream_to_sof_hda_stream(hstream);
-+		sdev = hda_stream->sdev;
-+		chip = get_chip_info(sdev->pdata);
- 
- 		/* check if link is available */
- 		if (!hstream->link_locked) {
-+			/*
-+			 * choose the first available link for platforms that do not have the
-+			 * PROCEN_FMT_QUIRK set.
-+			 */
-+			if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
-+				res = hstream;
-+				break;
-+			}
+ 	switch (priv->properties->arch) {
+@@ -234,7 +237,10 @@ static void sgpio_output_set(struct sgpio_priv *priv,
+ 	default:
+ 		return;
+ 	}
 +
- 			if (stream->opened) {
- 				/*
- 				 * check if the stream tag matches the stream
++	spin_lock_irqsave(&priv->lock, flags);
+ 	sgpio_clrsetbits(priv, REG_PORT_CONFIG, addr->port, clr, set);
++	spin_unlock_irqrestore(&priv->lock, flags);
+ }
+ 
+ static int sgpio_output_get(struct sgpio_priv *priv,
+@@ -562,10 +568,13 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
+ 	struct sgpio_bank *bank = gpiochip_get_data(chip);
+ 	unsigned int gpio = irqd_to_hwirq(data);
+ 	struct sgpio_port_addr addr;
++	unsigned long flags;
+ 	u32 ena;
+ 
+ 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
+ 
++	spin_lock_irqsave(&bank->priv->lock, flags);
++
+ 	/* Disable interrupt while changing type */
+ 	ena = sgpio_readl(bank->priv, REG_INT_ENABLE, addr.bit);
+ 	sgpio_writel(bank->priv, ena & ~BIT(addr.port), REG_INT_ENABLE, addr.bit);
+@@ -582,6 +591,8 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
+ 
+ 	/* Possibly re-enable interrupts */
+ 	sgpio_writel(bank->priv, ena, REG_INT_ENABLE, addr.bit);
++
++	spin_unlock_irqrestore(&bank->priv->lock, flags);
+ }
+ 
+ static void microchip_sgpio_irq_setreg(struct irq_data *data,
+@@ -592,13 +603,16 @@ static void microchip_sgpio_irq_setreg(struct irq_data *data,
+ 	struct sgpio_bank *bank = gpiochip_get_data(chip);
+ 	unsigned int gpio = irqd_to_hwirq(data);
+ 	struct sgpio_port_addr addr;
++	unsigned long flags;
+ 
+ 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
+ 
++	spin_lock_irqsave(&bank->priv->lock, flags);
+ 	if (clear)
+ 		sgpio_clrsetbits(bank->priv, reg, addr.bit, BIT(addr.port), 0);
+ 	else
+ 		sgpio_clrsetbits(bank->priv, reg, addr.bit, 0, BIT(addr.port));
++	spin_unlock_irqrestore(&bank->priv->lock, flags);
+ }
+ 
+ static void microchip_sgpio_irq_mask(struct irq_data *data)
+@@ -814,6 +828,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	priv->dev = dev;
++	spin_lock_init(&priv->lock);
+ 
+ 	reset = devm_reset_control_get_optional_shared(&pdev->dev, "switch");
+ 	if (IS_ERR(reset))
 -- 
 2.34.1
 
