@@ -2,91 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E544AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25054C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235771AbiDFCen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
+        id S1389243AbiDFCe4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 22:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447769AbiDEWXf (ORCPT
+        with ESMTP id S1444214AbiDEWVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:23:35 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFD9BABB9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:18:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=7d4jHN3hEVC7czPTgRhPRNegosioytKGOnpN+jNlS3I=; b=A62E7PMTsau07ViNlj8KL+QG3d
-        raIeADbj0mqUWjK39CpcCv3kTB3mlGZxV4RMhqen7LQ9O5+SmC9BLqJ3lzT7iJxXZN0LJhJyis/V+
-        cSiIAAKBylGreUeWo50FEhGx/xQUXwU0TYercKUbCUI/9uZrH5/Jkf/UgdXQy/0z0Ec/l81NBI7eG
-        eABiiRFdDmkrq3aoYO2c8lfiubAVqzVnnhM/FZ4r8tLE83MrO/6Ih5OEVcsUHmJbXhn31xaKeeK8i
-        ceJUFE3StPeb3Vc+Nsz9RxW6UEOaY2LTzAs5Eu+u1BagGMbd+2dvAzSievhz69Ysb68dRzF+1M2/J
-        cantghkg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbqYr-0073yK-Kv; Tue, 05 Apr 2022 21:18:01 +0000
-Date:   Tue, 5 Apr 2022 22:18:01 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Stephen Brennan <stephen.s.brennan@oracle.com>
-Cc:     Dave Chinner <david@fromorbit.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Yu Zhao <yuzhao@google.com>,
-        David Hildenbrand <david@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC] mm/vmscan: add periodic slab shrinker
-Message-ID: <YkyyCcdJq69tO6ba@casper.infradead.org>
-References: <20220402072103.5140-1-hdanton@sina.com>
- <20220403005618.5263-1-hdanton@sina.com>
- <20220404010948.GV1609613@dread.disaster.area>
- <87ilrn5ttl.fsf@stepbren-lnx.us.oracle.com>
+        Tue, 5 Apr 2022 18:21:01 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58689BAD4;
+        Tue,  5 Apr 2022 13:45:07 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id C469B1F44840
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649191506;
+        bh=sDJRbDHtwMEd4Z1AC3fnth9aVik8zbzUMGexAc+afw0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DPvz1ZbvaFugvYyOfrcTyPIuHXXuFXkDY7tNFLOh6LnAEsLHeMoMJkDDqTI3gi17U
+         EHrVNOHmlXL+3kshMEXe/cWztY9kf6lIUtLvjFdi8afLlam5jFnF3hBss3bE4iGXqB
+         Cpn5V0Sf8udrgkU6uvEfixu5gljp5r7VZ7Cn1TddHlQx3YqPyXwOFbm/YmEJsbpjzy
+         wr7pFKSl1KVPuxX8xu4HHk6D73iThiRqBBXwsolwF31hrYJEWzDdkad2yAPkCOhEW2
+         Ea67FGWiWHf5BKs4tOlVeU9xcl1xEhb+vjkJVs3GhcZK7uZjpYjVwJFRZ5btbgXQXR
+         UEZ+WS8AgXYyw==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev
+Subject: [PATCH v3 15/24] media: rkvdec: Move H264 SPS validation in rkvdec-h264
+Date:   Tue,  5 Apr 2022 16:44:16 -0400
+Message-Id: <20220405204426.259074-16-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ilrn5ttl.fsf@stepbren-lnx.us.oracle.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:22:14AM -0700, Stephen Brennan wrote:
-> I can't speak for every slab cache, but I've been coming to the same
-> conclusion myself regarding the dentry cache. I think that the rate of
-> stepping through the LRU should be tied to the rate of allocations.
-> Truly in-use objects shouldn't be harmed by this, as they should get
-> referenced and rotated to the beginning of the LRU. But the one-offs
-> which are bloating the cache will be found and removed.
+No function change, this moves H264 specific validation into the H264
+specific code. This is in preparation of improving this validation and
+reusing at streamone.
 
-I agree with all this.
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+---
+ drivers/staging/media/rkvdec/rkvdec-h264.c | 23 ++++++++++++++++++++++
+ drivers/staging/media/rkvdec/rkvdec.c      | 23 ++++++----------------
+ drivers/staging/media/rkvdec/rkvdec.h      |  1 +
+ 3 files changed, 30 insertions(+), 17 deletions(-)
 
-> I've implemented a version of this patch which just takes one step
-> through the LRU on each d_alloc. It's quite interesting to watch it
-> work. You can create 5 million negative dentries in directory /A via
-> stat(), and then create 5 million negative dentries in directory /B. The
-> total dentry slab size reaches 5 million but never goes past it, since
-> the old negative dentries from /A aren't really in use, and they get
-> pruned at the same rate as negative dentries from /B get created. On the
-> other hand, if you *continue* to stat() on the dentries of /A while you
-> create negative dentries in /B, then the cache grows to 10 million,
-> since the /A dentries are actually in use.
-> 
-> Maybe a solution could involve some generic list_lru machinery that can
-> let you do these sorts of incremental scans? Maybe batching them up so
-> instead of doing one every allocation, you do them every 100 or 1000?
-> It would still be up to the individual user to put this to good use in
-> the object allocation path.
+diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+index 8d44a884a52e..0dcbcb1bac80 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-h264.c
++++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+@@ -1137,9 +1137,32 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
+ 	return 0;
+ }
+ 
++static int rkvdec_h264_try_ctrl(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl)
++{
++	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
++		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
++		/*
++		 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
++		 * but it's currently broken in the driver.
++		 * Reject them for now, until it's fixed.
++		 */
++		if (sps->chroma_format_idc > 1)
++			/* Only 4:0:0 and 4:2:0 are supported */
++			return -EINVAL;
++		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
++			/* Luma and chroma bit depth mismatch */
++			return -EINVAL;
++		if (sps->bit_depth_luma_minus8 != 0)
++			/* Only 8-bit is supported */
++			return -EINVAL;
++	}
++	return 0;
++}
++
+ const struct rkvdec_coded_fmt_ops rkvdec_h264_fmt_ops = {
+ 	.adjust_fmt = rkvdec_h264_adjust_fmt,
+ 	.start = rkvdec_h264_start,
+ 	.stop = rkvdec_h264_stop,
+ 	.run = rkvdec_h264_run,
++	.try_ctrl = rkvdec_h264_try_ctrl,
+ };
+diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
+index 2df8cf4883e2..e3d44d5b35f3 100644
+--- a/drivers/staging/media/rkvdec/rkvdec.c
++++ b/drivers/staging/media/rkvdec/rkvdec.c
+@@ -29,23 +29,12 @@
+ 
+ static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
+ {
+-	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
+-		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
+-		/*
+-		 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
+-		 * but it's currently broken in the driver.
+-		 * Reject them for now, until it's fixed.
+-		 */
+-		if (sps->chroma_format_idc > 1)
+-			/* Only 4:0:0 and 4:2:0 are supported */
+-			return -EINVAL;
+-		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+-			/* Luma and chroma bit depth mismatch */
+-			return -EINVAL;
+-		if (sps->bit_depth_luma_minus8 != 0)
+-			/* Only 8-bit is supported */
+-			return -EINVAL;
+-	}
++	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
++	const struct rkvdec_coded_fmt_desc *desc = ctx->coded_fmt_desc;
++
++	if (desc->ops->try_ctrl)
++		return desc->ops->try_ctrl(ctx, ctrl);
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
+index 2f4ea1786b93..9df0fba799a4 100644
+--- a/drivers/staging/media/rkvdec/rkvdec.h
++++ b/drivers/staging/media/rkvdec/rkvdec.h
+@@ -72,6 +72,7 @@ struct rkvdec_coded_fmt_ops {
+ 	void (*done)(struct rkvdec_ctx *ctx, struct vb2_v4l2_buffer *src_buf,
+ 		     struct vb2_v4l2_buffer *dst_buf,
+ 		     enum vb2_buffer_state result);
++	int (*try_ctrl)(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl);
+ };
+ 
+ struct rkvdec_coded_fmt_desc {
+-- 
+2.34.1
 
-I feel like we need to allow the list to both shrink and grow, depending
-on how useful the entries in it are.  So one counter per LRU, incremented
-on every add.  When that counter gets to 100, reset it to 0 and scan
-110 entries.  Maybe 0 of them can be reclaimed; maybe 110 of them can be.
-But the list can shrink over time instead of being a "one in, one out"
-scenario.
-
-Clearly 110 is a magic number, but intuitively, attempting to shrink
-by 10% feels reasonable.  Need to strike a balance between shrinking
-quickly enough and giving the cache time to figure out which entries
-are actually useful.
