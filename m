@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC517C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FABEC4707E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234890AbiDEU4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        id S232261AbiDEU4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348730AbiDEJs3 (ORCPT
+        with ESMTP id S1352269AbiDEKEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:29 -0400
+        Tue, 5 Apr 2022 06:04:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E40C3DDCC;
-        Tue,  5 Apr 2022 02:34:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33478B820B;
+        Tue,  5 Apr 2022 02:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD320616AE;
-        Tue,  5 Apr 2022 09:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD09AC385A3;
-        Tue,  5 Apr 2022 09:34:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EFC76165C;
+        Tue,  5 Apr 2022 09:53:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C782C385A2;
+        Tue,  5 Apr 2022 09:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151271;
-        bh=pgnFe3HATdt1Pd0paifG5y7NhhasCQkzoDJ8+rs+IFk=;
+        s=korg; t=1649152381;
+        bh=B+LL6HqRHaXg/j5A4/f7HpsysJBncMEphF9/Mdw/N7Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k9z+qTzn2I+Oi5XOJ8HYlZ7t7WKHu3aZw4XX981f1XUAzlsREMLPOEtTg1oKTHjmB
-         3BCMlxsYc9cQaYfX5WFm2G1okBQy8M76jlpj7HM0toN9JYMgXCjFRaqkKji8siQ0b8
-         RFsOniSl/58dMomP/wNYo8GFov/IhjWQt/g03jJE=
+        b=uYMD8gc+THaZpaFBs03KrRZP+JTrGNhzY+NW58tKNkVFfnAfacks+xCpbidcKcQhV
+         7vIEh1/oK9RiUyW7ro2rv4Lvy4EoHAAxdOo+ay0nO9jH4HgtMYBM2zxm5gkck+mvnH
+         eT+foddQ9XRnVlZ+MwbeB9Gv3vx6bEjubulYLaPI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 355/913] ASoC: atmel: Fix error handling in snd_proto_probe
-Date:   Tue,  5 Apr 2022 09:23:37 +0200
-Message-Id: <20220405070350.486585069@linuxfoundation.org>
+Subject: [PATCH 5.15 757/913] lib/test_lockup: fix kernel pointer check for separate address spaces
+Date:   Tue,  5 Apr 2022 09:30:19 +0200
+Message-Id: <20220405070402.524030414@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,78 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit b0bfaf0544d08d093d6211d7ef8816fb0b5b6c75 ]
+[ Upstream commit 5a06fcb15b43d1f7bf740c672950122331cb5655 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+test_kernel_ptr() uses access_ok() to figure out if a given address
+points to user space instead of kernel space. However on architectures
+that set CONFIG_ALTERNATE_USER_ADDRESS_SPACE, a pointer can be valid
+for both, and the check always fails because access_ok() returns true.
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error paths.
-Fix this by calling of_node_put() in error handling too.
+Make the check for user space pointers conditional on the type of
+address space layout.
 
-Fixes: a45f8853a5f9 ("ASoC: Add driver for PROTO Audio CODEC (with a WM8731)")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220308013949.20323-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/mikroe-proto.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ lib/test_lockup.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/atmel/mikroe-proto.c b/sound/soc/atmel/mikroe-proto.c
-index 0be7b4221c14..93d114f5b9e6 100644
---- a/sound/soc/atmel/mikroe-proto.c
-+++ b/sound/soc/atmel/mikroe-proto.c
-@@ -115,7 +115,8 @@ static int snd_proto_probe(struct platform_device *pdev)
- 	cpu_np = of_parse_phandle(np, "i2s-controller", 0);
- 	if (!cpu_np) {
- 		dev_err(&pdev->dev, "i2s-controller missing\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_codec_node;
- 	}
- 	dai->cpus->of_node = cpu_np;
- 	dai->platforms->of_node = cpu_np;
-@@ -125,7 +126,8 @@ static int snd_proto_probe(struct platform_device *pdev)
- 						       &bitclkmaster, &framemaster);
- 	if (bitclkmaster != framemaster) {
- 		dev_err(&pdev->dev, "Must be the same bitclock and frame master\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_cpu_node;
- 	}
- 	if (bitclkmaster) {
- 		if (codec_np == bitclkmaster)
-@@ -136,18 +138,20 @@ static int snd_proto_probe(struct platform_device *pdev)
- 		dai_fmt |= snd_soc_daifmt_parse_clock_provider_as_flag(np, NULL);
- 	}
+diff --git a/lib/test_lockup.c b/lib/test_lockup.c
+index 6a0f329a794a..c3fd87d6c2dd 100644
+--- a/lib/test_lockup.c
++++ b/lib/test_lockup.c
+@@ -417,9 +417,14 @@ static bool test_kernel_ptr(unsigned long addr, int size)
+ 		return false;
  
--	of_node_put(bitclkmaster);
--	of_node_put(framemaster);
--	dai->dai_fmt = dai_fmt;
--
--	of_node_put(codec_np);
--	of_node_put(cpu_np);
- 
-+	dai->dai_fmt = dai_fmt;
- 	ret = snd_soc_register_card(&snd_proto);
- 	if (ret && ret != -EPROBE_DEFER)
- 		dev_err(&pdev->dev,
- 			"snd_soc_register_card() failed: %d\n", ret);
- 
+ 	/* should be at least readable kernel address */
+-	if (access_ok((void __user *)ptr, 1) ||
+-	    access_ok((void __user *)ptr + size - 1, 1) ||
+-	    get_kernel_nofault(buf, ptr) ||
++	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
++	    (access_ok((void __user *)ptr, 1) ||
++	     access_ok((void __user *)ptr + size - 1, 1))) {
++		pr_err("user space ptr invalid in kernel: %#lx\n", addr);
++		return true;
++	}
 +
-+put_cpu_node:
-+	of_node_put(bitclkmaster);
-+	of_node_put(framemaster);
-+	of_node_put(cpu_np);
-+put_codec_node:
-+	of_node_put(codec_np);
- 	return ret;
- }
- 
++	if (get_kernel_nofault(buf, ptr) ||
+ 	    get_kernel_nofault(buf, ptr + size - 1)) {
+ 		pr_err("invalid kernel ptr: %#lx\n", addr);
+ 		return true;
 -- 
 2.34.1
 
