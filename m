@@ -2,80 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E7D9C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B670BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581471AbiDEXjN (ORCPT
+        id S1581498AbiDEXja (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37518 "EHLO
+        Tue, 5 Apr 2022 19:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573585AbiDETXH (ORCPT
+        with ESMTP id S1457534AbiDEQGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C143D4B1EB;
-        Tue,  5 Apr 2022 12:21:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:06:31 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E76DDA;
+        Tue,  5 Apr 2022 09:04:32 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B4A8B81F6B;
-        Tue,  5 Apr 2022 19:21:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B24EC385A1;
-        Tue,  5 Apr 2022 19:21:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186466;
-        bh=btEIS1j3Ond3ZP9qah9C8gQBs8ZC16Vm5hgbF/uIHr4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eFlKOuSw0cSgBPQB0RlcnyLlamcccO007IB5K9wTb5VNPisX/4Cf3Pn9gEdDRsw4H
-         IY6r5l6CAnWZaSsl3esf9kK0VkAeG8GRhNm2OS4K9hMBKVTH+vm3COFoGjOVmaK2gH
-         v2nWQIT8n5qcckt58lWop10s/ccjos9RPzvMYEz1fViJMrxArI0Lw2oqLwOlvXY7pC
-         bok/BFjrPvYmL53exoHlzMaeKWRmoW08zwFYle2DISIeqRGojpE6Sz5u4TcTtzc5zR
-         qj0ZW0HO9T/vz/ztELK/WSc8YwMHUwhjQjqfa85/WOuvoFKIqRlLEryzCyjW5STrfG
-         s0Ji8x71s/r4A==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 37/59] ceph: don't allow changing layout on encrypted files/directories
-Date:   Tue,  5 Apr 2022 15:20:08 -0400
-Message-Id: <20220405192030.178326-38-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        by ms.lwn.net (Postfix) with ESMTPSA id BDB9B30D;
+        Tue,  5 Apr 2022 16:04:31 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net BDB9B30D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1649174671; bh=TxBmXjw0W5sHQw6Es3eDilnc949OOAkzg4pcLoQ5pHQ=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=H4wh1pAW3CX+E4t5+ZvJ1Yzlz+YIDiiBS73DsABifoeqlVDs6pNd0teUfo+bFDHt3
+         wxs4VOMCk4RFH/z7SJCbwXlgXIc8uLCHsklfTIjFr+uvWDb7xONGlSP+PE5HPi2gMd
+         wNJaBTBsvvGnPnAeNTH7JGmXk2UuGIxGs1o8jnUhu+cQH9G5nTg37ZNbr92A5ByNED
+         4WLtnJYOOrXKUnDr8Y8NBH1o2yHtcBTjuZ4IrHCq4DNuzust44nzQJlw1kmFPkEyeA
+         XAdFVNf4xdgfL4HuWs8mk0tumHeL1kdZfTv8WfV4ANcLNb22Da+4hpS9ptiy9OrTk7
+         UYPVArPCpiZNQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 0/2] Documentation: doc-guide: Add missing page titles
+In-Reply-To: <20220329045235.11879-1-bagasdotme@gmail.com>
+References: <20220329045235.11879-1-bagasdotme@gmail.com>
+Date:   Tue, 05 Apr 2022 10:04:30 -0600
+Message-ID: <87sfqrectt.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luis Henriques <lhenriques@suse.de>
+Bagas Sanjaya <bagasdotme@gmail.com> writes:
 
-Encryption is currently only supported on files/directories with layouts
-where stripe_count=1.  Forbid changing layouts when encryption is involved.
+> The kernel documentation guidelines [1] lists that there should have page
+> title.
+>
+> Add missing page title for kernel-doc.rst and sphinx.rst, in accordance
+> to the guideline.
+>
+> Changes since v3 [2]:
+>   - Clarify that there is no output differences except formatting
+>     semantics in [1/2]
+>   - Drop Suggested-by trailer from Akira Yokosawa in [1/2] 
+>
+> [1]: https://docs.kernel.org/doc-guide/sphinx.html#specific-guidelines-for-the-kernel-documentation
+> [2]:
+> https://lore.kernel.org/linux-doc/20220328065030.24936-1-bagasdotme@gmail.com/
+>
+> Bagas Sanjaya (2):
+>   Documentation: kernel-doc: Promote two chapter headings to page title
+>   Documentation: sphinx: replace "Introduction" chapter heading with
+>     page title
+>
+>  Documentation/doc-guide/kernel-doc.rst | 2 ++
+>  Documentation/doc-guide/sphinx.rst     | 5 +++--
+>  2 files changed, 5 insertions(+), 2 deletions(-)
 
-Signed-off-by: Luis Henriques <lhenriques@suse.de>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- fs/ceph/ioctl.c | 4 ++++
- 1 file changed, 4 insertions(+)
+OK, I think this improves the situation overall, so I've applied these,
+thanks.
 
-diff --git a/fs/ceph/ioctl.c b/fs/ceph/ioctl.c
-index b9f0f4e460ab..9675ef3a6c47 100644
---- a/fs/ceph/ioctl.c
-+++ b/fs/ceph/ioctl.c
-@@ -294,6 +294,10 @@ static long ceph_set_encryption_policy(struct file *file, unsigned long arg)
- 	struct inode *inode = file_inode(file);
- 	struct ceph_inode_info *ci = ceph_inode(inode);
- 
-+	/* encrypted directories can't have striped layout */
-+	if (ci->i_layout.stripe_count > 1)
-+		return -EINVAL;
-+
- 	ret = vet_mds_for_fscrypt(file);
- 	if (ret)
- 		return ret;
--- 
-2.35.1
-
+jon
