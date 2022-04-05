@@ -2,48 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A827C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 655DBC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233045AbiDEHwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
+        id S233086AbiDEHwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233039AbiDEHrX (ORCPT
+        with ESMTP id S232976AbiDEHrS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380C4972DE;
-        Tue,  5 Apr 2022 00:43:32 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406409D4C5;
+        Tue,  5 Apr 2022 00:43:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D214AB81B18;
-        Tue,  5 Apr 2022 07:43:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D73C340EE;
-        Tue,  5 Apr 2022 07:43:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9B230CE1AC3;
+        Tue,  5 Apr 2022 07:43:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2ECBC340EE;
+        Tue,  5 Apr 2022 07:43:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144609;
-        bh=wrhu+Pa4xRRjIwk3rJFBWHur0faEmRIv7fVBB++ZX+o=;
+        s=korg; t=1649144601;
+        bh=wlmFr2b3C5Fy7AKv86kvgZ3YLzVJKOPbSeAkty2RuEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HlWDeMIMNZHMjVtuKpyEDBaicWdf3GWkhl+VxAhph/KxDbvL/nq9GYPTZ6YgHGVjL
-         MnJVRSwhJfJWrQR2r4/B3VWD7MOf56POLXB7OQUZsNINIF+xKlAIqVPM8hiVvx6AE3
-         pMJkm2/AQnM+JdH3xrcWcud0LSka2ETyLVhP1QIg=
+        b=a3VM/Cw93KYuSA9LflsCqVL27LwojqAUbwZ3uYtF/dKj3teV7dnnu9R+/fwA9a21I
+         cwACis+4yByNJqEZ2itmsGvW3hoYk0wiNWZ77h32BZkBps5XAUa23i1a8E67IExgRg
+         udiOgnVqATnK5Q2MoqbvgWQl/JYc9WDf4HSJAHO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Rientjes <rientjes@google.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 0107/1126] Revert "mm: madvise: skip unmapped vma holes passed to process_madvise"
-Date:   Tue,  5 Apr 2022 09:14:14 +0200
-Message-Id: <20220405070410.710963361@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 0096/1126] ALSA: cs4236: fix an incorrect NULL check on list iterator
+Date:   Tue,  5 Apr 2022 09:14:03 +0200
+Message-Id: <20220405070410.386910262@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -55,57 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit e6b0a7b357659c332231621e4315658d062c23ee upstream.
+commit 0112f822f8a6d8039c94e0bc9b264d7ffc5d4704 upstream.
 
-This reverts commit 08095d6310a7 ("mm: madvise: skip unmapped vma holes
-passed to process_madvise") as process_madvise() fails to return the
-exact processed bytes in other cases too.
+The bug is here:
+	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
 
-As an example: if process_madvise() hits mlocked pages after processing
-some initial bytes passed in [start, end), it just returns EINVAL
-although some bytes are processed.  Thus making an exception only for
-ENOMEM is partially fixing the problem of returning the proper advised
-bytes.
+The list iterator value 'cdev' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
 
-Thus revert this patch and return proper bytes advised.
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'cdev' as a dedicated pointer
+to point to the found element. And snd_card_cs423x_pnp() itself
+has NULL check for cdev.
 
-Link: https://lkml.kernel.org/r/e73da1304a88b6a8a11907045117cccf4c2b8374.1648046642.git.quic_charante@quicinc.com
-Fixes: 08095d6310a7ce ("mm: madvise: skip unmapped vma holes passed to process_madvise")
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: c2b73d1458014 ("ALSA: cs4236: cs4232 and cs4236 driver merge to solve PnP BIOS detection")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327060822.4735-1-xiam0nd.tong@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/madvise.c |    9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ sound/isa/cs423x/cs4236.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1426,16 +1426,9 @@ SYSCALL_DEFINE5(process_madvise, int, pi
+--- a/sound/isa/cs423x/cs4236.c
++++ b/sound/isa/cs423x/cs4236.c
+@@ -494,7 +494,7 @@ static int snd_cs423x_pnpbios_detect(str
+ 	static int dev;
+ 	int err;
+ 	struct snd_card *card;
+-	struct pnp_dev *cdev;
++	struct pnp_dev *cdev, *iter;
+ 	char cid[PNP_ID_LEN];
  
- 	while (iov_iter_count(&iter)) {
- 		iovec = iov_iter_iovec(&iter);
--		/*
--		 * do_madvise returns ENOMEM if unmapped holes are present
--		 * in the passed VMA. process_madvise() is expected to skip
--		 * unmapped holes passed to it in the 'struct iovec' list
--		 * and not fail because of them. Thus treat -ENOMEM return
--		 * from do_madvise as valid and continue processing.
--		 */
- 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
- 					iovec.iov_len, behavior);
--		if (ret < 0 && ret != -ENOMEM)
-+		if (ret < 0)
+ 	if (pnp_device_is_isapnp(pdev))
+@@ -510,9 +510,11 @@ static int snd_cs423x_pnpbios_detect(str
+ 	strcpy(cid, pdev->id[0].id);
+ 	cid[5] = '1';
+ 	cdev = NULL;
+-	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
+-		if (!strcmp(cdev->id[0].id, cid))
++	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
++		if (!strcmp(iter->id[0].id, cid)) {
++			cdev = iter;
  			break;
- 		iov_iter_advance(&iter, iovec.iov_len);
++		}
  	}
+ 	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
+ 	if (err < 0)
 
 
