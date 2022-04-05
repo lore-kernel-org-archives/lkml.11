@@ -2,153 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D562C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387692AbiDEOco (ORCPT
+        id S1387710AbiDEOcs convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
+        Tue, 5 Apr 2022 10:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238856AbiDEJdC (ORCPT
+        with ESMTP id S238907AbiDEJdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:33:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C48B48;
-        Tue,  5 Apr 2022 02:20:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE3E6144D;
-        Tue,  5 Apr 2022 09:20:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D505C385A0;
-        Tue,  5 Apr 2022 09:20:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150426;
-        bh=Os+qxn1DhxDjshDTdAdlcK8Fy8Mz/bgvQq9b255khpM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E1TzdodME7QPIUeOwJwneS9vpA7DBrLZ1K4Dg//Nvm4PDYXCLMk89GluQ9ML8Ayvj
-         lQdaimOGirySgQ0C2nd6oJJcFoD+0knkdqr1zntLCARHd+ZAA5ud6Nak8sbS9QzjU0
-         e+FVCslZM80hTAEIoebSTMB1eEkf1pMtElDKOBGA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Jann Horn <jannh@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 052/913] ptrace: Check PTRACE_O_SUSPEND_SECCOMP permission on PTRACE_SEIZE
-Date:   Tue,  5 Apr 2022 09:18:34 +0200
-Message-Id: <20220405070341.379725350@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail3.swissbit.com (mail3.swissbit.com [176.95.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DD1DC5;
+        Tue,  5 Apr 2022 02:20:29 -0700 (PDT)
+Received: from mail3.swissbit.com (localhost [127.0.0.1])
+        by DDEI (Postfix) with ESMTP id 6536D462BE9;
+        Tue,  5 Apr 2022 11:20:27 +0200 (CEST)
+Received: from mail3.swissbit.com (localhost [127.0.0.1])
+        by DDEI (Postfix) with ESMTP id 539C1461980;
+        Tue,  5 Apr 2022 11:20:27 +0200 (CEST)
+X-TM-AS-ERS: 10.149.2.84-127.5.254.253
+X-TM-AS-SMTP: 1.0 ZXguc3dpc3NiaXQuY29t Y2xvZWhsZUBoeXBlcnN0b25lLmNvbQ==
+X-DDEI-TLS-USAGE: Used
+Received: from ex.swissbit.com (SBDEEX02.sbitdom.lan [10.149.2.84])
+        by mail3.swissbit.com (Postfix) with ESMTPS;
+        Tue,  5 Apr 2022 11:20:27 +0200 (CEST)
+Received: from sbdeex02.sbitdom.lan (10.149.2.84) by sbdeex02.sbitdom.lan
+ (10.149.2.84) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 5 Apr 2022
+ 11:20:26 +0200
+Received: from sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74]) by
+ sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74%8]) with mapi id
+ 15.02.0986.022; Tue, 5 Apr 2022 11:20:26 +0200
+From:   =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
+To:     "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+CC:     Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>
+Subject: Re: [PATCH 2/2] mmc: mmc_spi: enable Highspeed for above 25MHz
+Thread-Topic: [PATCH 2/2] mmc: mmc_spi: enable Highspeed for above 25MHz
+Thread-Index: AQHYRNET6fGEHIFWCkie/s3TyF86+azZZi8AgAesmZo=
+Date:   Tue, 5 Apr 2022 09:20:26 +0000
+Message-ID: <c1726b6966e74c9fa9fb4a6ac56dedf9@hyperstone.com>
+References: <20c6efa9a4c7423bbfb9352705c4a53a@hyperstone.com>
+ <5eaae8e215d84dd3a4f7e09782478a29@hyperstone.com>,<YkW1qGY3uJPhrmf1@smile.fi.intel.com>
+In-Reply-To: <YkW1qGY3uJPhrmf1@smile.fi.intel.com>
+Accept-Language: en-US, de-DE
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.153.3.17]
+Content-Type: text/plain;
+        charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-TMASE-Version: DDEI-5.1-9.0.1000-26814.006
+X-TMASE-Result: 10--9.372200-10.000000
+X-TMASE-MatchedRID: BFQSNthdAqLUL3YCMmnG4tKDcT1f9CjEQAKUX1R86jTMVqPzYKoX2fy+
+        IfkvA3MsPzfUQuvyrgz0B9yN5j90xCbixKZRJvnJF+qQpCWTUjmCZaeJCjp8UkcTQWdpiE3Vo8W
+        MkQWv6iUsOwD+dG3DyZ/Unpyav4ctavP8b9lJtWr6C0ePs7A07RQEL0GGu6SD0zjjSJ2xuUGIc3
+        tHPZjuopV9NtlmaYdITb0eacHsFvw=
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
+X-TMASE-INERTIA: 0-0;;;;
+X-TMASE-XGENCLOUD: 8ee7dfcf-8a27-4f92-b964-d58b1aaf410b-0-0-200-0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+Understood and sure, then I'll take 2/2 back.
+@Ulf, would you like a v2 just containing 1/2 or is it fine like this?
 
-commit ee1fee900537b5d9560e9f937402de5ddc8412f3 upstream.
 
-Setting PTRACE_O_SUSPEND_SECCOMP is supposed to be a highly privileged
-operation because it allows the tracee to completely bypass all seccomp
-filters on kernels with CONFIG_CHECKPOINT_RESTORE=y. It is only supposed to
-be settable by a process with global CAP_SYS_ADMIN, and only if that
-process is not subject to any seccomp filters at all.
 
-However, while these permission checks were done on the PTRACE_SETOPTIONS
-path, they were missing on the PTRACE_SEIZE path, which also sets
-user-specified ptrace flags.
 
-Move the permissions checks out into a helper function and let both
-ptrace_attach() and ptrace_setoptions() call it.
+From: andriy.shevchenko@linux.intel.com <andriy.shevchenko@linux.intel.com>
+Sent: Thursday, March 31, 2022 4:07 PM
+To: Christian Löhle
+Cc: Ulf Hansson; linux-kernel@vger.kernel.org; linux-mmc@vger.kernel.org; adrian.hunter@intel.com; digetx@gmail.com; avri.altman@wdc.com
+Subject: Re: [PATCH 2/2] mmc: mmc_spi: enable Highspeed for above 25MHz
+    
+On Thu, Mar 31, 2022 at 07:29:37AM +0000, Christian Löhle wrote:
+> Any setup supporting more than 25MHz is able to utilize
+> highspeed, so enable it even when not explicitly specified.
 
-Cc: stable@kernel.org
-Fixes: 13c4a90119d2 ("seccomp: add ptrace options for suspend/resume")
-Signed-off-by: Jann Horn <jannh@google.com>
-Link: https://lkml.kernel.org/r/20220319010838.1386861-1-jannh@google.com
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/ptrace.c |   47 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 32 insertions(+), 15 deletions(-)
+I'm not sure about this. I prefer to be on the safer side, i.e.
+follow only what is supplied by firmware (ACPI / DT).
 
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -371,6 +371,26 @@ bool ptrace_may_access(struct task_struc
- 	return !err;
- }
- 
-+static int check_ptrace_options(unsigned long data)
-+{
-+	if (data & ~(unsigned long)PTRACE_O_MASK)
-+		return -EINVAL;
-+
-+	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
-+		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
-+		    !IS_ENABLED(CONFIG_SECCOMP))
-+			return -EINVAL;
-+
-+		if (!capable(CAP_SYS_ADMIN))
-+			return -EPERM;
-+
-+		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
-+		    current->ptrace & PT_SUSPEND_SECCOMP)
-+			return -EPERM;
-+	}
-+	return 0;
-+}
-+
- static int ptrace_attach(struct task_struct *task, long request,
- 			 unsigned long addr,
- 			 unsigned long flags)
-@@ -382,8 +402,16 @@ static int ptrace_attach(struct task_str
- 	if (seize) {
- 		if (addr != 0)
- 			goto out;
-+		/*
-+		 * This duplicates the check in check_ptrace_options() because
-+		 * ptrace_attach() and ptrace_setoptions() have historically
-+		 * used different error codes for unknown ptrace options.
-+		 */
- 		if (flags & ~(unsigned long)PTRACE_O_MASK)
- 			goto out;
-+		retval = check_ptrace_options(flags);
-+		if (retval)
-+			return retval;
- 		flags = PT_PTRACED | PT_SEIZED | (flags << PT_OPT_FLAG_SHIFT);
- 	} else {
- 		flags = PT_PTRACED;
-@@ -656,22 +684,11 @@ int ptrace_writedata(struct task_struct
- static int ptrace_setoptions(struct task_struct *child, unsigned long data)
- {
- 	unsigned flags;
-+	int ret;
- 
--	if (data & ~(unsigned long)PTRACE_O_MASK)
--		return -EINVAL;
--
--	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
--		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
--		    !IS_ENABLED(CONFIG_SECCOMP))
--			return -EINVAL;
--
--		if (!capable(CAP_SYS_ADMIN))
--			return -EPERM;
--
--		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
--		    current->ptrace & PT_SUSPEND_SECCOMP)
--			return -EPERM;
--	}
-+	ret = check_ptrace_options(data);
-+	if (ret)
-+		return ret;
- 
- 	/* Avoid intermediate state when all opts are cleared */
- 	flags = child->ptrace;
+-- 
+With Best Regards,
+Andy Shevchenko
 
+
+    =
+Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
+Managing Director: Dr. Jan Peter Berns.
+Commercial register of local courts: Freiburg HRB381782
 
