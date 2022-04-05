@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A682C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B726C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380578AbiDEVhL (ORCPT
+        id S1380440AbiDEVhA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        Tue, 5 Apr 2022 17:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349270AbiDEJtc (ORCPT
+        with ESMTP id S242760AbiDEKfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE80C3C;
-        Tue,  5 Apr 2022 02:43:33 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C19DF482;
+        Tue,  5 Apr 2022 03:19:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E22F36164D;
-        Tue,  5 Apr 2022 09:43:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B26C385A2;
-        Tue,  5 Apr 2022 09:43:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39AC5B81C9A;
+        Tue,  5 Apr 2022 10:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E114C385A0;
+        Tue,  5 Apr 2022 10:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151812;
-        bh=NaS2k9YLoTJbH9gXtayf1MhnWDIzbvLwPaMgSYcGQvU=;
+        s=korg; t=1649153954;
+        bh=33NZsSJJ8AnEe2K5FZo3oYEbB5J35KI4bIowTRDBqLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RtsH3TSXR8Mb5XDoQtUU3H8W4exlUZ+ui1wrxgcpBM0mDN8F3yf/aZzycmginbNYs
-         G/L+tVrYx10YOwGA+iJTvspt0gxUldnoMWP1OvAEBjyp/RxDu72aL5eMm+ky2y9hEU
-         I4bdGQ3vubsSxjGOmiHRWhqwLoP96TYaYy1tAZaU=
+        b=FhkLbjA2cpZMQz6dOsWXkN87LngXmx6B6iD14rozxioUsCUjY7F63abuuI9BEAbJc
+         ZGHg3KjGXtxu8228Z2cZDWgdIXSqMJY8w9v0TWFO6eRiFYyp3MbYI9ZgmRhIyGiGNh
+         VgzC3rDqAWnchLqp/6AVxbXiVOHOn/ivykpCwyFA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 551/913] can: isotp: support MSG_TRUNC flag when reading from socket
-Date:   Tue,  5 Apr 2022 09:26:53 +0200
-Message-Id: <20220405070356.364146782@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Tanure <tanure@linux.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 369/599] i2c: meson: Fix wrong speed use from probe
+Date:   Tue,  5 Apr 2022 09:31:03 +0200
+Message-Id: <20220405070309.811230187@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,81 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Lucas Tanure <tanure@linux.com>
 
-[ Upstream commit 42bf50a1795a1854d48717b7361dbdbce496b16b ]
+[ Upstream commit cb13aa16f34f794a9cee2626862af8a95f0f0ee9 ]
 
-When providing the MSG_TRUNC flag via recvmsg() syscall the return value
-provides the real length of the packet or datagram, even when it was longer
-than the passed buffer.
+Having meson_i2c_set_clk_div after i2c_add_adapter
+causes issues for client drivers that try to use
+the bus before the requested speed is applied.
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1065932671
-Link: https://lore.kernel.org/all/20220316164258.54155-3-socketcan@hartkopp.net
-Suggested-by: Derek Will <derekrobertwill@gmail.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+The bus can be used just after i2c_add_adapter, so
+move i2c_add_adapter to the final step as
+meson_i2c_set_clk_div needs to be called before
+the bus is used.
+
+Fixes: 09af1c2fa490 ("i2c: meson: set clock divider in probe instead of setting it for each transfer")
+Signed-off-by: Lucas Tanure <tanure@linux.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/isotp.c |   27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+ drivers/i2c/busses/i2c-meson.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1006,29 +1006,28 @@ static int isotp_recvmsg(struct socket *
- 	struct sock *sk = sock->sk;
- 	struct sk_buff *skb;
- 	struct isotp_sock *so = isotp_sk(sk);
--	int err = 0;
--	int noblock;
-+	int noblock = flags & MSG_DONTWAIT;
-+	int ret = 0;
+diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
+index ef73a42577cc..07eb819072c4 100644
+--- a/drivers/i2c/busses/i2c-meson.c
++++ b/drivers/i2c/busses/i2c-meson.c
+@@ -465,18 +465,18 @@ static int meson_i2c_probe(struct platform_device *pdev)
+ 	 */
+ 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_START, 0);
  
--	noblock = flags & MSG_DONTWAIT;
--	flags &= ~MSG_DONTWAIT;
-+	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC))
-+		return -EINVAL;
- 
- 	if (!so->bound)
- 		return -EADDRNOTAVAIL;
- 
--	skb = skb_recv_datagram(sk, flags, noblock, &err);
-+	flags &= ~MSG_DONTWAIT;
-+	skb = skb_recv_datagram(sk, flags, noblock, &ret);
- 	if (!skb)
--		return err;
-+		return ret;
- 
- 	if (size < skb->len)
- 		msg->msg_flags |= MSG_TRUNC;
- 	else
- 		size = skb->len;
- 
--	err = memcpy_to_msg(msg, skb->data, size);
--	if (err < 0) {
--		skb_free_datagram(sk, skb);
--		return err;
+-	ret = i2c_add_adapter(&i2c->adap);
+-	if (ret < 0) {
+-		clk_disable_unprepare(i2c->clk);
+-		return ret;
 -	}
-+	ret = memcpy_to_msg(msg, skb->data, size);
-+	if (ret < 0)
-+		goto out_err;
+-
+ 	/* Disable filtering */
+ 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR,
+ 			   REG_SLV_SDA_FILTER | REG_SLV_SCL_FILTER, 0);
  
- 	sock_recv_timestamp(msg, sk, skb);
+ 	meson_i2c_set_clk_div(i2c, timings.bus_freq_hz);
  
-@@ -1038,9 +1037,13 @@ static int isotp_recvmsg(struct socket *
- 		memcpy(msg->msg_name, skb->cb, msg->msg_namelen);
- 	}
- 
-+	/* set length of return value */
-+	ret = (flags & MSG_TRUNC) ? skb->len : size;
++	ret = i2c_add_adapter(&i2c->adap);
++	if (ret < 0) {
++		clk_disable_unprepare(i2c->clk);
++		return ret;
++	}
 +
-+out_err:
- 	skb_free_datagram(sk, skb);
- 
--	return size;
-+	return ret;
+ 	return 0;
  }
  
- static int isotp_release(struct socket *sock)
+-- 
+2.34.1
+
 
 
