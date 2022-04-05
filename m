@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9E5C352A1
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8071AC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390565AbiDENmb (ORCPT
+        id S1385136AbiDENlk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
+        Tue, 5 Apr 2022 09:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345305AbiDEJWZ (ORCPT
+        with ESMTP id S1345278AbiDEJWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBF442A21;
-        Tue,  5 Apr 2022 02:10:20 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC892AC76;
+        Tue,  5 Apr 2022 02:10:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C461B81A22;
-        Tue,  5 Apr 2022 09:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E17ABC385A2;
-        Tue,  5 Apr 2022 09:10:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A45B4615E4;
+        Tue,  5 Apr 2022 09:10:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5BFAC385A0;
+        Tue,  5 Apr 2022 09:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149818;
-        bh=eoZ0HFT+tUf0KCHQlr264DY6FOlKPVdFmmnUbukaqx8=;
+        s=korg; t=1649149807;
+        bh=kKgbNHwddUiwkQ0fNo9UvyNztXfEeCzHFDRq0uA6vRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZWX0orBFmsO3rtej4Uw/+s7GDolAf9tmsDYkwNWofSG206ahrCD0nH0vHJBaiFsYj
-         sviIqBmZ+8mgTAcIwpqjVsBYutpJL55kPEIf5zPVJHV830oCVmj3UPeUdfUoAKbbIQ
-         EM81wrVo3IAduQeep1npfirZNju0HWAWhaDEAQQo=
+        b=QtUMPd6GOI9aaYtZqx4V1H+YOusUHvCskNC8W+9mZNC4QQFiPenyf7xpn9y/7d9gy
+         wudekap3QsSh2BiHjzook/ncUUJKluKrI4j8YyJxVYQqI6m5rvgh3SSka+1x4Rv/Le
+         VlkkAK6o2lGiUPICKtmGnp/c1daKJUHe1asVLZNU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ritesh Harjani <riteshh@linux.ibm.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, anthony tonitch <d.tonitch@gmail.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0853/1017] tracing: Have TRACE_DEFINE_ENUM affect trace event types as well
-Date:   Tue,  5 Apr 2022 09:29:26 +0200
-Message-Id: <20220405070419.556935675@linuxfoundation.org>
+Subject: [PATCH 5.16 0849/1017] ASoC: Intel: soc-acpi: add more ACPI HIDs for ES83x6 devices
+Date:   Tue,  5 Apr 2022 09:29:22 +0200
+Message-Id: <20220405070419.440021122@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,81 +53,157 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit b3bc8547d3be60898818885f5bf22d0a62e2eb48 ]
+[ Upstream commit 1cedb6eabf0f2dd8285d3bb0ce1abd2369529084 ]
 
-The macro TRACE_DEFINE_ENUM is used to convert enums in the kernel to
-their actual value when they are exported to user space via the trace
-event format file.
+We only saw ESSX8336 so far, but now with reports of 'ESSX8326' we
+need to expand to a full list. Let's reuse the 'snd_soc_acpi_codecs'
+structure to store the information.
 
-Currently only the enums in the "print fmt" (TP_printk in the TRACE_EVENT
-macro) have the enums converted. But the enums can be used to denote array
-size:
+Note that ES8326 will need a dedicated codec driver, but the plan is
+to use the same machine driver for all Everest Audio devices.
 
-        field:unsigned int fc_ineligible_rc[EXT4_FC_REASON_MAX]; offset:12;      size:36;        signed:0;
-
-The EXT4_FC_REASON_MAX has no meaning to userspace but it needs to know
-that information to know how to parse the array.
-
-Have the array indexes also be parsed as well.
-
-Link: https://lore.kernel.org/all/cover.1646922487.git.riteshh@linux.ibm.com/
-
-Reported-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Tested-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Reported-by: anthony tonitch <d.tonitch@gmail.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220308192610.392950-9-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_events.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ sound/soc/intel/common/soc-acpi-intel-bxt-match.c | 7 ++++++-
+ sound/soc/intel/common/soc-acpi-intel-cml-match.c | 7 ++++++-
+ sound/soc/intel/common/soc-acpi-intel-glk-match.c | 7 ++++++-
+ sound/soc/intel/common/soc-acpi-intel-jsl-match.c | 7 ++++++-
+ sound/soc/intel/common/soc-acpi-intel-tgl-match.c | 7 ++++++-
+ 5 files changed, 30 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index c097d89ca946..f809d795a9a8 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -2637,6 +2637,33 @@ static void update_event_printk(struct trace_event_call *call,
- 	}
+diff --git a/sound/soc/intel/common/soc-acpi-intel-bxt-match.c b/sound/soc/intel/common/soc-acpi-intel-bxt-match.c
+index 342d34052204..04a92e74d99b 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-bxt-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-bxt-match.c
+@@ -41,6 +41,11 @@ static struct snd_soc_acpi_mach *apl_quirk(void *arg)
+ 	return mach;
  }
  
-+static void update_event_fields(struct trace_event_call *call,
-+				struct trace_eval_map *map)
-+{
-+	struct ftrace_event_field *field;
-+	struct list_head *head;
-+	char *ptr;
-+	int len = strlen(map->eval_string);
++static const struct snd_soc_acpi_codecs essx_83x6 = {
++	.num_codecs = 3,
++	.codecs = { "ESSX8316", "ESSX8326", "ESSX8336"},
++};
 +
-+	head = trace_get_fields(call);
-+	list_for_each_entry(field, head, link) {
-+		ptr = strchr(field->type, '[');
-+		if (!ptr)
-+			continue;
-+		ptr++;
+ static const struct snd_soc_acpi_codecs bxt_codecs = {
+ 	.num_codecs = 1,
+ 	.codecs = {"MX98357A"}
+@@ -83,7 +88,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_bxt_machines[] = {
+ 		.sof_tplg_filename = "sof-apl-tdf8532.tplg",
+ 	},
+ 	{
+-		.id = "ESSX8336",
++		.comp_ids = &essx_83x6,
+ 		.drv_name = "sof-essx8336",
+ 		.sof_fw_filename = "sof-apl.ri",
+ 		.sof_tplg_filename = "sof-apl-es8336.tplg",
+diff --git a/sound/soc/intel/common/soc-acpi-intel-cml-match.c b/sound/soc/intel/common/soc-acpi-intel-cml-match.c
+index 4eebc79d4b48..14395833d89e 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-cml-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-cml-match.c
+@@ -9,6 +9,11 @@
+ #include <sound/soc-acpi.h>
+ #include <sound/soc-acpi-intel-match.h>
+ 
++static const struct snd_soc_acpi_codecs essx_83x6 = {
++	.num_codecs = 3,
++	.codecs = { "ESSX8316", "ESSX8326", "ESSX8336"},
++};
 +
-+		if (!isalpha(*ptr) && *ptr != '_')
-+			continue;
+ static const struct snd_soc_acpi_codecs rt1011_spk_codecs = {
+ 	.num_codecs = 1,
+ 	.codecs = {"10EC1011"}
+@@ -82,7 +87,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_cml_machines[] = {
+ 		.sof_tplg_filename = "sof-cml-da7219-max98390.tplg",
+ 	},
+ 	{
+-		.id = "ESSX8336",
++		.comp_ids = &essx_83x6,
+ 		.drv_name = "sof-essx8336",
+ 		.sof_fw_filename = "sof-cml.ri",
+ 		.sof_tplg_filename = "sof-cml-es8336.tplg",
+diff --git a/sound/soc/intel/common/soc-acpi-intel-glk-match.c b/sound/soc/intel/common/soc-acpi-intel-glk-match.c
+index 8492b7e2a945..7aa6a870d5a5 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-glk-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-glk-match.c
+@@ -9,6 +9,11 @@
+ #include <sound/soc-acpi.h>
+ #include <sound/soc-acpi-intel-match.h>
+ 
++static const struct snd_soc_acpi_codecs essx_83x6 = {
++	.num_codecs = 3,
++	.codecs = { "ESSX8316", "ESSX8326", "ESSX8336"},
++};
 +
-+		if (strncmp(map->eval_string, ptr, len) != 0)
-+			continue;
+ static const struct snd_soc_acpi_codecs glk_codecs = {
+ 	.num_codecs = 1,
+ 	.codecs = {"MX98357A"}
+@@ -58,7 +63,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_glk_machines[] = {
+ 		.sof_tplg_filename = "sof-glk-cs42l42.tplg",
+ 	},
+ 	{
+-		.id = "ESSX8336",
++		.comp_ids = &essx_83x6,
+ 		.drv_name = "sof-essx8336",
+ 		.sof_fw_filename = "sof-glk.ri",
+ 		.sof_tplg_filename = "sof-glk-es8336.tplg",
+diff --git a/sound/soc/intel/common/soc-acpi-intel-jsl-match.c b/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
+index 278ec196da7b..9d0d0e1437a4 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-jsl-match.c
+@@ -9,6 +9,11 @@
+ #include <sound/soc-acpi.h>
+ #include <sound/soc-acpi-intel-match.h>
+ 
++static const struct snd_soc_acpi_codecs essx_83x6 = {
++	.num_codecs = 3,
++	.codecs = { "ESSX8316", "ESSX8326", "ESSX8336"},
++};
 +
-+		ptr = eval_replace(ptr, map, len);
-+		/* enum/sizeof string smaller than value */
-+		WARN_ON_ONCE(!ptr);
-+	}
-+}
+ static const struct snd_soc_acpi_codecs jsl_7219_98373_codecs = {
+ 	.num_codecs = 1,
+ 	.codecs = {"MX98373"}
+@@ -87,7 +92,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_jsl_machines[] = {
+ 		.sof_tplg_filename = "sof-jsl-cs42l42-mx98360a.tplg",
+ 	},
+ 	{
+-		.id = "ESSX8336",
++		.comp_ids = &essx_83x6,
+ 		.drv_name = "sof-essx8336",
+ 		.sof_fw_filename = "sof-jsl.ri",
+ 		.sof_tplg_filename = "sof-jsl-es8336.tplg",
+diff --git a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
+index da31bb3cca17..e2658bca6931 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
+@@ -10,6 +10,11 @@
+ #include <sound/soc-acpi-intel-match.h>
+ #include "soc-acpi-intel-sdw-mockup-match.h"
+ 
++static const struct snd_soc_acpi_codecs essx_83x6 = {
++	.num_codecs = 3,
++	.codecs = { "ESSX8316", "ESSX8326", "ESSX8336"},
++};
 +
- void trace_event_eval_update(struct trace_eval_map **map, int len)
- {
- 	struct trace_event_call *call, *p;
-@@ -2672,6 +2699,7 @@ void trace_event_eval_update(struct trace_eval_map **map, int len)
- 					first = false;
- 				}
- 				update_event_printk(call, map[i]);
-+				update_event_fields(call, map[i]);
- 			}
- 		}
- 	}
+ static const struct snd_soc_acpi_codecs tgl_codecs = {
+ 	.num_codecs = 1,
+ 	.codecs = {"MX98357A"}
+@@ -389,7 +394,7 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_tgl_machines[] = {
+ 		.sof_tplg_filename = "sof-tgl-rt1011-rt5682.tplg",
+ 	},
+ 	{
+-		.id = "ESSX8336",
++		.comp_ids = &essx_83x6,
+ 		.drv_name = "sof-essx8336",
+ 		.sof_fw_filename = "sof-tgl.ri",
+ 		.sof_tplg_filename = "sof-tgl-es8336.tplg",
 -- 
 2.34.1
 
