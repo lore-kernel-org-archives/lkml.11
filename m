@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 052ABC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4DAC3527B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235240AbiDEH7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
+        id S235714AbiDEIAH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233554AbiDEHr6 (ORCPT
+        with ESMTP id S233676AbiDEHs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7D892867;
-        Tue,  5 Apr 2022 00:45:25 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00918BB;
+        Tue,  5 Apr 2022 00:46:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BD5F616C4;
-        Tue,  5 Apr 2022 07:45:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C15C340EE;
-        Tue,  5 Apr 2022 07:45:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FF3BB81B7F;
+        Tue,  5 Apr 2022 07:46:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDA78C340EE;
+        Tue,  5 Apr 2022 07:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144724;
-        bh=8EEY95TxpF936PDJ+mCL90Eb807SR//DOOEt2RlxtWE=;
+        s=korg; t=1649144788;
+        bh=e1bQVDK7ZCYqbZ5aVCcAEwCJB5LlrMPnBXSml3bLJm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=buiXvy2BFx1/jGFQWzLv0DgdbTKAPAHo5oA/h+v6tHuQ9DGZgxLa1JlbZ4E5ogfeC
-         hwM1TCtSlhSRzQBWFeMatZYJRIhMDN7P8rDuXJC+RAinG0l/4WJk5fIjN9uKoV+DyP
-         kNMfAaIblFr9CHePEfeD58+PbQSC+MrUVigfkd4w=
+        b=yu0u6drsubbq39U5KqRkjspwBPNEtztRukRWyGY1zvJBiznjIzKqZ5SMzmPQcvb2/
+         6XyuiX0ER1QuSbv/0P8rpXz/glDh7bHf/h/n5wirYjoTY2Tr8yws5TV43mO6U1FOOa
+         8lvb95pVOB8CwST+vClhRZOhoKi0sl6dgpMfbyEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH 5.17 0149/1126] ARM: dts: at91: sama7g5: Remove unused properties in i2c nodes
-Date:   Tue,  5 Apr 2022 09:14:56 +0200
-Message-Id: <20220405070411.957745687@linuxfoundation.org>
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.17 0170/1126] media: venus: hfi_cmds: List HDR10 property as unsupported for v1 and v3
+Date:   Tue,  5 Apr 2022 09:15:17 +0200
+Message-Id: <20220405070412.589631608@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,53 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 
-commit cbb92a7717d2e1c512b7e81c6b22c7298b58a881 upstream.
+commit 22beb839f48d841ec75974872863dc253d37c21c upstream.
 
-The "atmel,use-dma-rx", "atmel,use-dma-rx" dt properties are not used by
-the i2c-at91 driver, nor they are defined in the bindings file, thus remove
-them.
+The HFI_PROPERTY_PARAM_VENC_HDR10_PQ_SEI HFI property is not supported
+on Venus v1 and v3.
 
-Cc: stable@vger.kernel.org
-Fixes: 7540629e2fc7 ("ARM: dts: at91: add sama7g5 SoC DT and sama7g5-ek")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Reviewed-by: Eugen Hristev <eugen.hristev@microchip.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220302161854.32177-1-tudor.ambarus@microchip.com
+cc: stable@vger.kernel.org # 5.13+
+Fixes: 9172652d72f8 ("media: venus: venc: Add support for CLL and Mastering display controls")
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/sama7g5.dtsi |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/media/platform/qcom/venus/hfi_cmds.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/arm/boot/dts/sama7g5.dtsi
-+++ b/arch/arm/boot/dts/sama7g5.dtsi
-@@ -382,8 +382,6 @@
- 				dmas = <&dma0 AT91_XDMAC_DT_PERID(7)>,
- 					<&dma0 AT91_XDMAC_DT_PERID(8)>;
- 				dma-names = "rx", "tx";
--				atmel,use-dma-rx;
--				atmel,use-dma-tx;
- 				status = "disabled";
- 			};
- 		};
-@@ -558,8 +556,6 @@
- 				dmas = <&dma0 AT91_XDMAC_DT_PERID(21)>,
- 					<&dma0 AT91_XDMAC_DT_PERID(22)>;
- 				dma-names = "rx", "tx";
--				atmel,use-dma-rx;
--				atmel,use-dma-tx;
- 				status = "disabled";
- 			};
- 		};
-@@ -584,8 +580,6 @@
- 				dmas = <&dma0 AT91_XDMAC_DT_PERID(23)>,
- 					<&dma0 AT91_XDMAC_DT_PERID(24)>;
- 				dma-names = "rx", "tx";
--				atmel,use-dma-rx;
--				atmel,use-dma-tx;
- 				status = "disabled";
- 			};
- 		};
+--- a/drivers/media/platform/qcom/venus/hfi_cmds.c
++++ b/drivers/media/platform/qcom/venus/hfi_cmds.c
+@@ -1054,6 +1054,8 @@ static int pkt_session_set_property_1x(s
+ 		pkt->shdr.hdr.size += sizeof(u32) + sizeof(*info);
+ 		break;
+ 	}
++	case HFI_PROPERTY_PARAM_VENC_HDR10_PQ_SEI:
++		return -ENOTSUPP;
+ 
+ 	/* FOLLOWING PROPERTIES ARE NOT IMPLEMENTED IN CORE YET */
+ 	case HFI_PROPERTY_CONFIG_BUFFER_REQUIREMENTS:
 
 
