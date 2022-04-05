@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE74C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A80C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241527AbiDEVAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
+        id S244060AbiDEVA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354176AbiDEKMP (ORCPT
+        with ESMTP id S1356630AbiDEKYm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FDA527D6;
-        Tue,  5 Apr 2022 02:58:03 -0700 (PDT)
+        Tue, 5 Apr 2022 06:24:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BACBE9DB;
+        Tue,  5 Apr 2022 03:08:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B488DCE1BE5;
-        Tue,  5 Apr 2022 09:58:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B874CC385A2;
-        Tue,  5 Apr 2022 09:57:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D924C616E7;
+        Tue,  5 Apr 2022 10:08:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61B6C385A1;
+        Tue,  5 Apr 2022 10:08:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152680;
-        bh=W2iDmijh5Mz5L+NfOi0odH3UV0cPQ8+YrV8yXMfky18=;
+        s=korg; t=1649153318;
+        bh=d1tlUuSpZuo2hesHm0/XcOMp7eNHk5Xpfa4sm0aMJX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NZ6CDkfOOe6GAljHyusI+B9lqs9LwrCeK67bouU5cI7MhbgZHi+CaUbbQlKm93C6M
-         NyiavzW4VEnIQqyuiNYOA01CJhO0ZaTzInajWPJgFC0N7uUxRdqIEnoJugWZrKNsLo
-         XGveydt/o9B/Em8ePxtF0G4WxBJD3DrGysZNT2oY=
+        b=Bi/FzN6tvjgp4e1zJ22GZBKDi0rCmK4YYPJPMp1FAYLSP+FfV8RmQT36IsXI1m89s
+         aFvY4aqomAw4EGgsLnlugtuHsKmAWWt1hv8C1dj3hqGyiOD9RJDcG7KLf6Kzrj/iJS
+         5J6TlTvBy/fBLSoprz98g5VJa7+9GEbzVplbJ6k0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pankaj Raghav <p.raghav@samsung.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5.15 827/913] nvme: fix the read-only state for zoned namespaces with unsupposed features
-Date:   Tue,  5 Apr 2022 09:31:29 +0200
-Message-Id: <20220405070404.619743307@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        Amir Goldstein <amir73il@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 180/599] nfsd: more robust allocation failure handling in nfsd_file_cache_init
+Date:   Tue,  5 Apr 2022 09:27:54 +0200
+Message-Id: <20220405070304.197556969@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,66 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pankaj Raghav <p.raghav@samsung.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-commit 726be2c72efc0a64c206e854b8996ad3ab9c7507 upstream.
+[ Upstream commit 4d2eeafecd6c83b4444db3dc0ada201c89b1aa44 ]
 
-commit 2f4c9ba23b88 ("nvme: export zoned namespaces without Zone Append
-support read-only") marks zoned namespaces without append support
-read-only.  It does iso by setting NVME_NS_FORCE_RO in ns->flags in
-nvme_update_zone_info and checking for that flag later in
-nvme_update_disk_info to mark the disk as read-only.
+The nfsd file cache table can be pretty large and its allocation
+may require as many as 80 contigious pages.
 
-But commit 73d90386b559 ("nvme: cleanup zone information initialization")
-rearranged nvme_update_disk_info to be called before
-nvme_update_zone_info and thus not marking the disk as read-only.
-The call order cannot be just reverted because nvme_update_zone_info sets
-certain queue parameters such as zone_write_granularity that depend on the
-prior call to nvme_update_disk_info.
+Employ the same fix that was employed for similar issue that was
+reported for the reply cache hash table allocation several years ago
+by commit 8f97514b423a ("nfsd: more robust allocation failure handling
+in nfsd_reply_cache_init").
 
-Remove the call to set_disk_ro in nvme_update_disk_info. and call
-set_disk_ro after nvme_update_zone_info and nvme_update_disk_info to set
-the permission for ZNS drives correctly. The same applies to the
-multipath disk path.
-
-Fixes: 73d90386b559 ("nvme: cleanup zone information initialization")
-Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 65294c1f2c5e ("nfsd: add a new struct file caching facility to nfsd")
+Link: https://lore.kernel.org/linux-nfs/e3cdaeec85a6cfec980e87fc294327c0381c1778.camel@kernel.org/
+Suggested-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Tested-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/nfsd/filecache.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1838,9 +1838,6 @@ static void nvme_update_disk_info(struct
- 	nvme_config_discard(disk, ns);
- 	blk_queue_max_write_zeroes_sectors(disk->queue,
- 					   ns->ctrl->max_zeroes_sectors);
--
--	set_disk_ro(disk, (id->nsattr & NVME_NS_ATTR_RO) ||
--		test_bit(NVME_NS_FORCE_RO, &ns->flags));
- }
+diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
+index e5aad1c10ea3..acd0898e3866 100644
+--- a/fs/nfsd/filecache.c
++++ b/fs/nfsd/filecache.c
+@@ -641,7 +641,7 @@ nfsd_file_cache_init(void)
+ 	if (!nfsd_filecache_wq)
+ 		goto out;
  
- static inline bool nvme_first_scan(struct gendisk *disk)
-@@ -1901,6 +1898,8 @@ static int nvme_update_ns_info(struct nv
- 			goto out_unfreeze;
- 	}
- 
-+	set_disk_ro(ns->disk, (id->nsattr & NVME_NS_ATTR_RO) ||
-+		test_bit(NVME_NS_FORCE_RO, &ns->flags));
- 	set_bit(NVME_NS_READY, &ns->flags);
- 	blk_mq_unfreeze_queue(ns->disk->queue);
- 
-@@ -1913,6 +1912,9 @@ static int nvme_update_ns_info(struct nv
- 	if (nvme_ns_head_multipath(ns->head)) {
- 		blk_mq_freeze_queue(ns->head->disk->queue);
- 		nvme_update_disk_info(ns->head->disk, ns, id);
-+		set_disk_ro(ns->head->disk,
-+			    (id->nsattr & NVME_NS_ATTR_RO) ||
-+				    test_bit(NVME_NS_FORCE_RO, &ns->flags));
- 		nvme_mpath_revalidate_paths(ns);
- 		blk_stack_limits(&ns->head->disk->queue->limits,
- 				 &ns->queue->limits, 0);
+-	nfsd_file_hashtbl = kcalloc(NFSD_FILE_HASH_SIZE,
++	nfsd_file_hashtbl = kvcalloc(NFSD_FILE_HASH_SIZE,
+ 				sizeof(*nfsd_file_hashtbl), GFP_KERNEL);
+ 	if (!nfsd_file_hashtbl) {
+ 		pr_err("nfsd: unable to allocate nfsd_file_hashtbl\n");
+@@ -708,7 +708,7 @@ nfsd_file_cache_init(void)
+ 	nfsd_file_slab = NULL;
+ 	kmem_cache_destroy(nfsd_file_mark_slab);
+ 	nfsd_file_mark_slab = NULL;
+-	kfree(nfsd_file_hashtbl);
++	kvfree(nfsd_file_hashtbl);
+ 	nfsd_file_hashtbl = NULL;
+ 	destroy_workqueue(nfsd_filecache_wq);
+ 	nfsd_filecache_wq = NULL;
+@@ -854,7 +854,7 @@ nfsd_file_cache_shutdown(void)
+ 	fsnotify_wait_marks_destroyed();
+ 	kmem_cache_destroy(nfsd_file_mark_slab);
+ 	nfsd_file_mark_slab = NULL;
+-	kfree(nfsd_file_hashtbl);
++	kvfree(nfsd_file_hashtbl);
+ 	nfsd_file_hashtbl = NULL;
+ 	destroy_workqueue(nfsd_filecache_wq);
+ 	nfsd_filecache_wq = NULL;
+-- 
+2.34.1
+
 
 
