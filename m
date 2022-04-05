@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FD3C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F28BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358717AbiDENJf (ORCPT
+        id S1387919AbiDENUD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
+        Tue, 5 Apr 2022 09:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344158AbiDEJS1 (ORCPT
+        with ESMTP id S1344284AbiDEJTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2058A4B85A;
-        Tue,  5 Apr 2022 02:04:41 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5D122BE9;
+        Tue,  5 Apr 2022 02:07:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8925B81B75;
-        Tue,  5 Apr 2022 09:04:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39410C385A1;
-        Tue,  5 Apr 2022 09:04:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08B3A614E4;
+        Tue,  5 Apr 2022 09:07:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F187C385A0;
+        Tue,  5 Apr 2022 09:07:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149478;
-        bh=i0GFlAF6BLZBwHQEVg+orKCftCfyRQS7wdFCeL4aRko=;
+        s=korg; t=1649149627;
+        bh=cCkzTuHVbIYO3xWJxG7pG5NEV84ox2pqEC8ctSG62fk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MHU6lA4ULBroQP/bnhiVEylycNC8EkbuJ9nXJAzDWXCzojQCE2yAPemrrtmG2YB2u
-         umyVO6XdbprSt0JJhawaARQdYU86cBGVdR8Wr6Gys6PPuO7jeVdFCCr316ifWWk9Hw
-         CDoYw3YBtW8Kw+3WjeTD20DJOjqa5QV/DBgMvpFQ=
+        b=akzIaV/2OH9eRtRzcUgcQj82PzacPGO7KNR2wvqyHOchAkWKvEujI5Kpk1oJ/bRoA
+         p2XReKw/43Nb4lLZoGRRXQaBsG8NO4Dp50OjUEGrFxrEI51amgnR/V7S5u2zCiZv4G
+         Mhj2y4JUURu/91fp8PkUBjF7sAW51PnbqsLQynd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0730/1017] net: hns3: fix port base vlan add fail when concurrent with reset
-Date:   Tue,  5 Apr 2022 09:27:23 +0200
-Message-Id: <20220405070415.935435586@linuxfoundation.org>
+Subject: [PATCH 5.16 0782/1017] spi: tegra20: Use of_device_get_match_data()
+Date:   Tue,  5 Apr 2022 09:28:15 +0200
+Message-Id: <20220405070417.468449376@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,167 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit c0f46de30c965d4ba208b5bf1a6d3437a7556ee2 ]
+[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
 
-Currently, Port base vlan is initiated by PF and configured to its VFs,
-by using command "ip link set <pf name> vf <vf id> vlan <vlan id>".
-When a global reset was triggered, the hardware vlan table and the soft
-recorded vlan information will be cleared by PF, and restored them until
-VFs were ready. There is a short time window between the table had been
-cleared and before table restored. If configured a new port base vlan tag
-at this moment, driver will check the soft recorded vlan information,
-and find there hasn't the old tag in it, which causing a warning print.
+Use of_device_get_match_data() to simplify the code.
 
-Due to the port base vlan is managed by PF, so the VFs's port base vlan
-restoring should be handled by PF when PF was ready.
-
-This patch fixes it.
-
-Fixes: 039ba863e8d7 ("net: hns3: optimize the filter table entries handling when resetting")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 62 +++++++++++++------
- .../hisilicon/hns3/hns3pf/hclge_main.h        |  3 +
- 2 files changed, 46 insertions(+), 19 deletions(-)
+ drivers/spi/spi-tegra20-slink.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 0fc8810671dc..0338b4ffa003 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1956,6 +1956,7 @@ static int hclge_alloc_vport(struct hclge_dev *hdev)
- 		vport->vf_info.link_state = IFLA_VF_LINK_STATE_AUTO;
- 		vport->mps = HCLGE_MAC_DEFAULT_FRAME;
- 		vport->port_base_vlan_cfg.state = HNAE3_PORT_BASE_VLAN_DISABLE;
-+		vport->port_base_vlan_cfg.tbl_sta = true;
- 		vport->rxvlan_cfg.rx_vlan_offload_en = true;
- 		vport->req_vlan_fltr_en = true;
- 		INIT_LIST_HEAD(&vport->vlan_list);
-@@ -10334,34 +10335,52 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
- 	}
- }
+diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
+index e8204e155484..746bbafa1378 100644
+--- a/drivers/spi/spi-tegra20-slink.c
++++ b/drivers/spi/spi-tegra20-slink.c
+@@ -1003,14 +1003,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
+ 	struct resource		*r;
+ 	int ret, spi_irq;
+ 	const struct tegra_slink_chip_data *cdata = NULL;
+-	const struct of_device_id *match;
  
--void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
-+void hclge_restore_vport_port_base_vlan_config(struct hclge_dev *hdev)
- {
--	struct hclge_vport_vlan_cfg *vlan, *tmp;
--	struct hclge_dev *hdev = vport->back;
-+	struct hclge_vlan_info *vlan_info;
-+	struct hclge_vport *vport;
- 	u16 vlan_proto;
- 	u16 vlan_id;
- 	u16 state;
-+	int vf_id;
- 	int ret;
+-	match = of_match_device(tegra_slink_of_match, &pdev->dev);
+-	if (!match) {
+-		dev_err(&pdev->dev, "Error: No device match found\n");
+-		return -ENODEV;
+-	}
+-	cdata = match->data;
++	cdata = of_device_get_match_data(&pdev->dev);
  
--	vlan_proto = vport->port_base_vlan_cfg.vlan_info.vlan_proto;
--	vlan_id = vport->port_base_vlan_cfg.vlan_info.vlan_tag;
--	state = vport->port_base_vlan_cfg.state;
-+	/* PF should restore all vfs port base vlan */
-+	for (vf_id = 0; vf_id < hdev->num_alloc_vfs; vf_id++) {
-+		vport = &hdev->vport[vf_id + HCLGE_VF_VPORT_START_NUM];
-+		vlan_info = vport->port_base_vlan_cfg.tbl_sta ?
-+			    &vport->port_base_vlan_cfg.vlan_info :
-+			    &vport->port_base_vlan_cfg.old_vlan_info;
- 
--	if (state != HNAE3_PORT_BASE_VLAN_DISABLE) {
--		clear_bit(vport->vport_id, hdev->vlan_table[vlan_id]);
--		hclge_set_vlan_filter_hw(hdev, htons(vlan_proto),
--					 vport->vport_id, vlan_id,
--					 false);
--		return;
-+		vlan_id = vlan_info->vlan_tag;
-+		vlan_proto = vlan_info->vlan_proto;
-+		state = vport->port_base_vlan_cfg.state;
-+
-+		if (state != HNAE3_PORT_BASE_VLAN_DISABLE) {
-+			clear_bit(vport->vport_id, hdev->vlan_table[vlan_id]);
-+			ret = hclge_set_vlan_filter_hw(hdev, htons(vlan_proto),
-+						       vport->vport_id,
-+						       vlan_id, false);
-+			vport->port_base_vlan_cfg.tbl_sta = ret == 0;
-+		}
- 	}
-+}
- 
--	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
--		ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
--					       vport->vport_id,
--					       vlan->vlan_id, false);
--		if (ret)
--			break;
--		vlan->hd_tbl_status = true;
-+void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
-+{
-+	struct hclge_vport_vlan_cfg *vlan, *tmp;
-+	struct hclge_dev *hdev = vport->back;
-+	int ret;
-+
-+	if (vport->port_base_vlan_cfg.state == HNAE3_PORT_BASE_VLAN_DISABLE) {
-+		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
-+			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
-+						       vport->vport_id,
-+						       vlan->vlan_id, false);
-+			if (ret)
-+				break;
-+			vlan->hd_tbl_status = true;
-+		}
- 	}
- }
- 
-@@ -10402,6 +10421,7 @@ static void hclge_restore_hw_table(struct hclge_dev *hdev)
- 	struct hnae3_handle *handle = &vport->nic;
- 
- 	hclge_restore_mac_table_common(vport);
-+	hclge_restore_vport_port_base_vlan_config(hdev);
- 	hclge_restore_vport_vlan_table(vport);
- 	set_bit(HCLGE_STATE_FD_USER_DEF_CHANGED, &hdev->state);
- 	hclge_restore_fd_entries(handle);
-@@ -10458,6 +10478,8 @@ static int hclge_update_vlan_filter_entries(struct hclge_vport *vport,
- 						 false);
- 	}
- 
-+	vport->port_base_vlan_cfg.tbl_sta = false;
-+
- 	/* force add VLAN 0 */
- 	ret = hclge_set_vf_vlan_common(hdev, vport->vport_id, false, 0);
- 	if (ret)
-@@ -10544,7 +10566,9 @@ int hclge_update_port_base_vlan_cfg(struct hclge_vport *vport, u16 state,
- 	else
- 		nic->port_base_vlan_state = HNAE3_PORT_BASE_VLAN_ENABLE;
- 
-+	vport->port_base_vlan_cfg.old_vlan_info = *old_vlan_info;
- 	vport->port_base_vlan_cfg.vlan_info = *vlan_info;
-+	vport->port_base_vlan_cfg.tbl_sta = true;
- 	hclge_set_vport_vlan_fltr_change(vport);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index ebba603483a0..801268b61e96 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -1030,7 +1030,9 @@ struct hclge_vlan_info {
- 
- struct hclge_port_base_vlan_config {
- 	u16 state;
-+	bool tbl_sta;
- 	struct hclge_vlan_info vlan_info;
-+	struct hclge_vlan_info old_vlan_info;
- };
- 
- struct hclge_vf_info {
-@@ -1154,6 +1156,7 @@ void hclge_rm_vport_all_mac_table(struct hclge_vport *vport, bool is_del_list,
- void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list);
- void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev);
- void hclge_restore_mac_table_common(struct hclge_vport *vport);
-+void hclge_restore_vport_port_base_vlan_config(struct hclge_dev *hdev);
- void hclge_restore_vport_vlan_table(struct hclge_vport *vport);
- int hclge_update_port_base_vlan_cfg(struct hclge_vport *vport, u16 state,
- 				    struct hclge_vlan_info *vlan_info);
+ 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
+ 	if (!master) {
 -- 
 2.34.1
 
