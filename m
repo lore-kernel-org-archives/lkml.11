@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F95C47088
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14263C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236225AbiDEIBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        id S232573AbiDEIDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233204AbiDEHwN (ORCPT
+        with ESMTP id S233272AbiDEHwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:52:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0221EACB;
-        Tue,  5 Apr 2022 00:48:39 -0700 (PDT)
+        Tue, 5 Apr 2022 03:52:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E421B796;
+        Tue,  5 Apr 2022 00:48:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21816616C6;
-        Tue,  5 Apr 2022 07:48:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C99C340EE;
-        Tue,  5 Apr 2022 07:48:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78F1861727;
+        Tue,  5 Apr 2022 07:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 826D4C34110;
+        Tue,  5 Apr 2022 07:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144918;
-        bh=XQzzdibhL0otRHSkdbIMNyKyXU70t8rbk4JAHgEy2QE=;
+        s=korg; t=1649144926;
+        bh=o65J34RLJto+GKz4V0046wtNQI+MbpXjeDjAO3L02e8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cbE0lX7c0P5AOZb8J24GG1bhch7qUNXoI7rYBSt6dT52WJDXOOnF6hOOXP/dYGXHx
-         5sbFP2cMYkLEjT/iBHjpSDcdLATWfm//p/UBW55J2bny7iYEZfQN4CFF7/yiUW2jAh
-         1FuemzHjfq/e4ZPv129YSNFWQmMEbAzmzorE3v0s=
+        b=FI8bthtaZLsRBTaCqC/2rCcn4NRHkRtWWt2wOwT9/HFdAXC4kyPIZSSSL32GQPND/
+         V//Kk1REEJqbqVbodVw+mrmc1EKIN39FM1JC7jR/RJrZMp7Azm7cpV5b6nKjyoc761
+         QN0hMm8AY287FIJELZQ+LN8JXPSj596/9jqT/8Yo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>
-Subject: [PATCH 5.17 0184/1126] drm/nouveau/backlight: Fix LVDS backlight detection on some laptops
-Date:   Tue,  5 Apr 2022 09:15:31 +0200
-Message-Id: <20220405070413.006940589@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Hector Martin <marcan@marcan.st>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.17 0187/1126] brcmfmac: firmware: Allocate space for default boardrev in nvram
+Date:   Tue,  5 Apr 2022 09:15:34 +0200
+Message-Id: <20220405070413.096558112@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,41 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Hector Martin <marcan@marcan.st>
 
-commit 6b0076540faffd47f5a899bf12f3528c4f0e726b upstream.
+commit d19d8e3ba256f81ea4a27209dbbd1f0a00ef1903 upstream.
 
-It seems that some laptops will report having both an eDP and LVDS
-connector, even though only the LVDS connector is actually hooked up. This
-can lead to issues with backlight registration if the eDP connector ends up
-getting registered before the LVDS connector, as the backlight device will
-then be registered to the eDP connector instead of the LVDS connector.
+If boardrev is missing from the NVRAM we add a default one, but this
+might need more space in the output buffer than was allocated. Ensure
+we have enough padding for this in the buffer.
 
-So, fix this by only registering the backlight on connectors that are
-reported as being connected.
-
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Fixes: 6eca310e8924 ("drm/nouveau/kms/nv50-: Add basic DPCD backlight support for nouveau")
-Bugzilla: https://gitlab.freedesktop.org/drm/nouveau/-/issues/137
-Cc: <stable@vger.kernel.org> # v5.15+
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220204180504.328999-1-lyude@redhat.com
+Fixes: 46f2b38a91b0 ("brcmfmac: insert default boardrev in nvram data if missing")
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-3-marcan@marcan.st
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_backlight.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-@@ -294,7 +294,8 @@ nv50_backlight_init(struct nouveau_backl
- 	struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
- 	struct nvif_object *device = &drm->client.device.object;
- 
--	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)))
-+	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
-+	    nv_conn->base.status != connector_status_connected)
- 		return -ENODEV;
- 
- 	if (nv_conn->type == DCB_CONNECTOR_eDP) {
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+@@ -207,6 +207,8 @@ static int brcmf_init_nvram_parser(struc
+ 		size = BRCMF_FW_MAX_NVRAM_SIZE;
+ 	else
+ 		size = data_len;
++	/* Add space for properties we may add */
++	size += strlen(BRCMF_FW_DEFAULT_BOARDREV) + 1;
+ 	/* Alloc for extra 0 byte + roundup by 4 + length field */
+ 	size += 1 + 3 + sizeof(u32);
+ 	nvp->nvram = kzalloc(size, GFP_KERNEL);
 
 
