@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F10C9C43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FAAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234370AbiDEIZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47650 "EHLO
+        id S234486AbiDEIZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235770AbiDEIAU (ORCPT
+        with ESMTP id S235357AbiDEH7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A343637A2C;
-        Tue,  5 Apr 2022 00:58:22 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D5F57B3B;
+        Tue,  5 Apr 2022 00:54:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4206B61725;
-        Tue,  5 Apr 2022 07:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24771C340EE;
-        Tue,  5 Apr 2022 07:58:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0876FB81B9C;
+        Tue,  5 Apr 2022 07:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A7CAC340EE;
+        Tue,  5 Apr 2022 07:54:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145501;
-        bh=g/yUqTevTV8GciHyd7YeKtTHAieQUSEzbtaW7BPaBVs=;
+        s=korg; t=1649145252;
+        bh=YS6YXJtkkJlRPJMsD2DAR/8ig+TUFhHwPdrDujFulyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X8bTP8DnXRe0N8Vd27sC9R+baH/FVuo8KH2j/kEeMFYD4hGz4pGdl77/z7pps89A0
-         0CJnRmQM8fdT1MN8KTofx1AHnjWhzW0zcPDr2AbwJ9le/nzJpyqc6gOrQ9Ry6fOzXB
-         pVqw0SuRJD/mzXKBoRSQ9UFwgjz5gSQ5seiRbuM4=
+        b=ALrm2gLlo5JtXr9PjasXgO2FIpBCgndVgiHXqC/RkmcrKxY2Vu6b5Ly/xpMx+zjXM
+         26qdmhD73mKchmabwRHm0bDQrQG48svEv88umNoAr3P+WdD6IGfUJUQEckQXghjpEy
+         SVPI9u9y7/k8HF2iXBSZFzuZ3jWSFtT/bgNBVC1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Angelo Dureghello <angelo@sysam.it>,
-        Greg Ungerer <gerg@kernel.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org,
+        stable@vger.kernel.org, Petr Vorel <petr.vorel@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0390/1126] m68k: coldfire/device.c: only build for MCF_EDMA when h/w macros are defined
-Date:   Tue,  5 Apr 2022 09:18:57 +0200
-Message-Id: <20220405070419.074480989@linuxfoundation.org>
+Subject: [PATCH 5.17 0338/1126] arm64: dts: qcom: msm8994: Provide missing "xo_board" and "sleep_clk" to GCC
+Date:   Tue,  5 Apr 2022 09:18:05 +0200
+Message-Id: <20220405070417.536640808@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,81 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Petr Vorel <petr.vorel@gmail.com>
 
-[ Upstream commit e6e1e7b19fa132d23d09c465942aab4c110d3da9 ]
+[ Upstream commit 4dd1ad6192748523878463a285346db408b34a02 ]
 
-When CONFIG_MCF_EDMA is set (due to COMPILE_TEST, not due to
-CONFIG_M5441x), coldfire/device.c has compile errors due to
-missing MCFEDMA_* symbols. In the .config file that was provided,
-CONFIG_M5206=y, not CONFIG_M5441x, so <asm/m5441xsim.h> is not
-included in coldfire/device.c.
+This is needed due changes in commit 0519d1d0bf33 ("clk: qcom:
+gcc-msm8994: Modernize the driver"), which removed struct
+clk_fixed_factor. Preparation for next commit for enabling SD/eMMC.
+Inspired by 2c2f64ae36d9.
 
-Only build the MCF_EDMA code in coldfire/device.c if the MCFEDMA_*
-hardware macros are defined.
+This is required for both msm8994-huawei-angler (sdhc1 will be enabled
+in next commit) and msm8992-lg-bullhead (where actually fixes sdhc1
+- tested on bullhead rev 1.01).
 
-Fixes these build errors:
+Fixes: 0519d1d0bf33 ("clk: qcom: gcc-msm8994: Modernize the driver")
 
-../arch/m68k/coldfire/device.c:512:35: error: 'MCFEDMA_BASE' undeclared here (not in a function); did you mean 'MCFDMA_BASE1'?
-  512 |                 .start          = MCFEDMA_BASE,
-../arch/m68k/coldfire/device.c:513:50: error: 'MCFEDMA_SIZE' undeclared here (not in a function)
-  513 |                 .end            = MCFEDMA_BASE + MCFEDMA_SIZE - 1,
-../arch/m68k/coldfire/device.c:517:35: error: 'MCFEDMA_IRQ_INTR0' undeclared here (not in a function)
-  517 |                 .start          = MCFEDMA_IRQ_INTR0,
-../arch/m68k/coldfire/device.c:523:35: error: 'MCFEDMA_IRQ_INTR16' undeclared here (not in a function)
-  523 |                 .start          = MCFEDMA_IRQ_INTR16,
-../arch/m68k/coldfire/device.c:529:35: error: 'MCFEDMA_IRQ_INTR56' undeclared here (not in a function)
-  529 |                 .start          = MCFEDMA_IRQ_INTR56,
-../arch/m68k/coldfire/device.c:535:35: error: 'MCFEDMA_IRQ_ERR' undeclared here (not in a function)
-  535 |                 .start          = MCFEDMA_IRQ_ERR,
-
-Fixes: d7e9d01ac292 ("m68k: add ColdFire mcf5441x eDMA platform support")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: lore.kernel.org/r/202203030252.P752DK46-lkp@intel.com
-Cc: Angelo Dureghello <angelo@sysam.it>
-Cc: Greg Ungerer <gerg@kernel.org>
-Cc: Greg Ungerer <gerg@linux-m68k.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-m68k@lists.linux-m68k.org
-Cc: uclinux-dev@uclinux.org
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Signed-off-by: Petr Vorel <petr.vorel@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220113233358.17972-4-petr.vorel@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/coldfire/device.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/m68k/coldfire/device.c b/arch/m68k/coldfire/device.c
-index 0386252e9d04..4218750414bb 100644
---- a/arch/m68k/coldfire/device.c
-+++ b/arch/m68k/coldfire/device.c
-@@ -480,7 +480,7 @@ static struct platform_device mcf_i2c5 = {
- #endif /* MCFI2C_BASE5 */
- #endif /* IS_ENABLED(CONFIG_I2C_IMX) */
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 5a9a5ed0565f..215f56daa26c 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -713,6 +713,9 @@
+ 			#reset-cells = <1>;
+ 			#power-domain-cells = <1>;
+ 			reg = <0xfc400000 0x2000>;
++
++			clock-names = "xo", "sleep_clk";
++			clocks = <&xo_board>, <&sleep_clk>;
+ 		};
  
--#if IS_ENABLED(CONFIG_MCF_EDMA)
-+#ifdef MCFEDMA_BASE
- 
- static const struct dma_slave_map mcf_edma_map[] = {
- 	{ "dreq0", "rx-tx", MCF_EDMA_FILTER_PARAM(0) },
-@@ -552,7 +552,7 @@ static struct platform_device mcf_edma = {
- 		.platform_data = &mcf_edma_data,
- 	}
- };
--#endif /* IS_ENABLED(CONFIG_MCF_EDMA) */
-+#endif /* MCFEDMA_BASE */
- 
- #ifdef MCFSDHC_BASE
- static struct mcf_esdhc_platform_data mcf_esdhc_data = {
-@@ -651,7 +651,7 @@ static struct platform_device *mcf_devices[] __initdata = {
- 	&mcf_i2c5,
- #endif
- #endif
--#if IS_ENABLED(CONFIG_MCF_EDMA)
-+#ifdef MCFEDMA_BASE
- 	&mcf_edma,
- #endif
- #ifdef MCFSDHC_BASE
+ 		rpm_msg_ram: sram@fc428000 {
 -- 
 2.34.1
 
