@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A997BC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A87CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452433AbiDEULD (ORCPT
+        id S1452839AbiDEULJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
+        Tue, 5 Apr 2022 16:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357998AbiDEK1k (ORCPT
+        with ESMTP id S1356078AbiDEKWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38787D5E82;
-        Tue,  5 Apr 2022 03:12:32 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B76FB0A7B;
+        Tue,  5 Apr 2022 03:05:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9BF361562;
-        Tue,  5 Apr 2022 10:12:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7C98C385A1;
-        Tue,  5 Apr 2022 10:12:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB19EB81B7A;
+        Tue,  5 Apr 2022 10:05:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27599C385A1;
+        Tue,  5 Apr 2022 10:05:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153551;
-        bh=sTL48zmqbZr44JUABz6vF+vf8dWkNx7tKk0S4/J51fY=;
+        s=korg; t=1649153154;
+        bh=/vSptA5YddKrMRYEVwozcLIsPiINX27TrXq69pfeqmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EjZHmCgr2riogcAuKpPvAc7Ug8owit4kr1hyc+u7KHgnouNVSzvEUFFkYNayEKBxT
-         na0xl471xCttiGAMlz6L/64fKZsHrDKOYhkTAzjqjK2beTSaF2OeNXL/ZSGbVF4ncy
-         2Z0n8R9DLzzPPdDt9dwOWpd20kdAxziWl7Z9j5FI=
+        b=ED59cCxGMywuTenfBfVaK0a0JxHxw+SW51ixwpakoMiGP7q19D9wrgdZp+edGvJJR
+         A4GcBCZvERuKACs6Mj4/cnjZuK3fucq/ncT7TfZztji8aBZa9jY8I+TrOcUd3zhunJ
+         pnGqmKsH5/y0Yy+KrUGDgXRI595yr59ApO/KQFOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 262/599] drm/bridge: Add missing pm_runtime_disable() in __dw_mipi_dsi_probe
-Date:   Tue,  5 Apr 2022 09:29:16 +0200
-Message-Id: <20220405070306.634942843@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Anand Jain <anand.jain@oracle.com>
+Subject: [PATCH 5.10 082/599] powerpc/kvm: Fix kvm_use_magic_page
+Date:   Tue,  5 Apr 2022 09:26:16 +0200
+Message-Id: <20220405070301.266586275@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,38 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit 96211b7c56b109a52768e6cc5e23a1f79316eca0 ]
+commit 0c8eb2884a42d992c7726539328b7d3568f22143 upstream.
 
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
-Add missing pm_runtime_disable() for __dw_mipi_dsi_probe.
+When switching from __get_user to fault_in_pages_readable, commit
+9f9eae5ce717 broke kvm_use_magic_page: like __get_user,
+fault_in_pages_readable returns 0 on success.
 
-Fixes: 46fc51546d44 ("drm/bridge/synopsys: Add MIPI DSI host controller bridge")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220105104113.31415-1-linmq006@gmail.com
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9f9eae5ce717 ("powerpc/kvm: Prefer fault_in_pages_readable function")
+Cc: stable@vger.kernel.org # v4.18+
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/powerpc/kernel/kvm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
-index 6b268f9445b3..376fa6eb46f6 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
-@@ -1172,6 +1172,7 @@ __dw_mipi_dsi_probe(struct platform_device *pdev,
- 	ret = mipi_dsi_host_register(&dsi->dsi_host);
- 	if (ret) {
- 		dev_err(dev, "Failed to register MIPI host: %d\n", ret);
-+		pm_runtime_disable(dev);
- 		dw_mipi_dsi_debugfs_remove(dsi);
- 		return ERR_PTR(ret);
+--- a/arch/powerpc/kernel/kvm.c
++++ b/arch/powerpc/kernel/kvm.c
+@@ -669,7 +669,7 @@ static void __init kvm_use_magic_page(vo
+ 	on_each_cpu(kvm_map_magic_page, &features, 1);
+ 
+ 	/* Quick self-test to see if the mapping works */
+-	if (!fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
++	if (fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
+ 		kvm_patching_worked = false;
+ 		return;
  	}
--- 
-2.34.1
-
 
 
