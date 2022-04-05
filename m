@@ -2,197 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A18C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE4FC35273
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581774AbiDEXky (ORCPT
+        id S1581797AbiDEXk7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        Tue, 5 Apr 2022 19:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355872AbiDELz0 (ORCPT
+        with ESMTP id S1573273AbiDESlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:55:26 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F86613F70;
-        Tue,  5 Apr 2022 04:14:06 -0700 (PDT)
+        Tue, 5 Apr 2022 14:41:55 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA8D20BEF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:39:57 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2eb5980c4f8so607227b3.23
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:39:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649157246; x=1680693246;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=OiUEoyK4O7y/SQgS8CjomHvWN4NBjsxew+GU385Jotw=;
-  b=XS6/fAx69CklgazfebQ1ARKyRpfJHuTJ18FF/35X3QzxtcVqcsdIp3uI
-   q319sCIn5KzVOcYWvUB1bjNAFrdUHDuJbVBqJOq0Ri3mr1/TIv2jFy9eS
-   voNUwhQLp8/T1OcFuIDf3blAjXu85r9IjXEl2AEsw/wqu0p7wMpIhllrO
-   A=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 05 Apr 2022 04:14:05 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:14:05 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:14:04 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:14:00 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohitkr@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v6 2/3] arm64: dts: qcom: sc7280: Add lpass cpu node
-Date:   Tue, 5 Apr 2022 16:43:39 +0530
-Message-ID: <1649157220-29304-3-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=kpZJZ6BC0teJcS/Va/HLoxzrjVYiRhmbSvuUm1Ha8sQ=;
+        b=ZdvRyRnPU8Kh82lplK03SdRZOePvmaw21DelWV1zTSqS/wjCkoUIYoY61x69HDa0BB
+         BkENG+5p3VPqwecV9yEgRiRisNcnE3VeVVW7AOScnZd4XupmdoHFS5S2gKJLzE7GHY6A
+         zGXVjMCER8dEsCVSRHsmmtEvVKuVyK3GMttUBmYSjf/DRoGPcWgyJ5rDCC+Ru+9zo5Sw
+         1rj0cV0XTVzlX93A55tOHgnaoeRzXzMAf01FQGmrjBjD9UtlB3cKC05sNClQc/ugUTWR
+         4mJGO2ekgPApmCPfGhow69H81wYKXuudrt6rJEg4wFn2YrxJLtcu2iCzeQjtlpzeUEdN
+         /yNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=kpZJZ6BC0teJcS/Va/HLoxzrjVYiRhmbSvuUm1Ha8sQ=;
+        b=IiwCt5cgNEL0Uvh7IQEK7m9TqvVQ2rzvTYE2S5ephqzMUqpgY68QZ8f9STdp1aiqcl
+         w51Qt+UeDuQ56j0/FrquGsUMus/creff+YvAZVCmH6FaC1PHAe3iBJSP4TDBoKxZGPwk
+         N9+cjCYliXxZ/zs1QJRpG0SPNIsOu8AulrHQguvyWciHiheL7Wmb5keuZhEtc6cd0AXq
+         b4Jin2EeNchTaaeMYkrXx5MXsTjHg8J6+VWheLrS9AlJoDsYm4msfxuCi5/Ud3P+R49F
+         vZhA7k6SJsyVgMZ51GFhHEJrwl7CC0pUs4RvsTUmfByiVk7gUQBIHRelRJoTI9M8W++L
+         TvyA==
+X-Gm-Message-State: AOAM530tc2Qz8ApGr16fpwyuEJ+T0kQEUwl37iOtZlPxpPHbcNAuib+7
+        HyopgpAQQ3ZTCiCgKtK1hNEsNI218WOYQ+M=
+X-Google-Smtp-Source: ABdhPJzp+IkXPL1X2MLlP92SbOMwqwQY57HoLXPf85DlePcIcZmNDwM+GbgvJ2bvPWH0yqVKexXNR2xK3S7Rwsc=
+X-Received: from pceballos.nyc.corp.google.com ([2620:0:1003:510:9936:68aa:f9b7:b13b])
+ (user=pceballos job=sendgmr) by 2002:a05:690c:821:b0:2eb:5d96:2709 with SMTP
+ id by1-20020a05690c082100b002eb5d962709mr3929236ywb.147.1649183996466; Tue,
+ 05 Apr 2022 11:39:56 -0700 (PDT)
+Date:   Tue,  5 Apr 2022 14:39:53 -0400
+Message-Id: <20220405183953.2094007-1-pceballos@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH] HID: Driver for Google Hangouts Meet Speakermic
+From:   Pablo Ceballos <pceballos@google.com>
+To:     jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Cc:     Pablo Ceballos <pceballos@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add lpass cpu node for audio on sc7280 based platforms.
+This driver works around a problem with the HID usage sent by this
+device for the mute button. It prevents key events from being generated
+for that HID usage since they would be incorrect.
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Pablo Ceballos <pceballos@google.com>
 ---
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 28 ++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi     | 63 ++++++++++++++++++++++++++++++++
- 2 files changed, 91 insertions(+)
+ drivers/hid/Kconfig            | 12 ++++++++
+ drivers/hid/Makefile           |  1 +
+ drivers/hid/hid-google-atrus.c | 55 ++++++++++++++++++++++++++++++++++
+ drivers/hid/hid-ids.h          |  1 +
+ 4 files changed, 69 insertions(+)
+ create mode 100644 drivers/hid/hid-google-atrus.c
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 83c76b2..e3d8cbf 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -273,6 +273,34 @@
- 	modem-init;
- };
+diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
+index f5544157576c..d4b6be827d15 100644
+--- a/drivers/hid/Kconfig
++++ b/drivers/hid/Kconfig
+@@ -403,6 +403,18 @@ config HOLTEK_FF
+ 	  Say Y here if you have a Holtek On Line Grip based game controller
+ 	  and want to have force feedback support for it.
  
-+&lpass_cpu {
-+	status = "okay";
++config HID_GOOGLE_ATRUS
++	tristate "Google Hangouts Meet Speakermic"
++	depends on USB_HID
++	help
++	This selects a driver for the Google Hangouts Meet Speakermic.
 +
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&sec_mi2s_data0>, <&sec_mi2s_sclk>, <&sec_mi2s_ws>;
++	This driver works around a problem with the HID usage sent by this
++	device for the mute button. It prevents key events from being generated
++	for that HID usage since they would be incorrect.
 +
-+	mi2s-secondary@1 {
-+		reg = <MI2S_SECONDARY>;
-+		qcom,playback-sd-lines = <0>;
-+	};
++	Say Y here if you have a Google Hangouts Meet Speakermic.
 +
-+	hdmi-primary@5 {
-+		reg = <LPASS_DP_RX>;
-+	};
+ config HID_GOOGLE_HAMMER
+ 	tristate "Google Hammer Keyboard"
+ 	depends on USB_HID && LEDS_CLASS && CROS_EC
+diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
+index 6d3e630e81af..2ee446b5b953 100644
+--- a/drivers/hid/Makefile
++++ b/drivers/hid/Makefile
+@@ -50,6 +50,7 @@ obj-$(CONFIG_HID_FT260)		+= hid-ft260.o
+ obj-$(CONFIG_HID_GEMBIRD)	+= hid-gembird.o
+ obj-$(CONFIG_HID_GFRM)		+= hid-gfrm.o
+ obj-$(CONFIG_HID_GLORIOUS)  += hid-glorious.o
++obj-$(CONFIG_HID_GOOGLE_ATRUS)  += hid-google-atrus.o
+ obj-$(CONFIG_HID_GOOGLE_HAMMER)	+= hid-google-hammer.o
+ obj-$(CONFIG_HID_VIVALDI)	+= hid-vivaldi.o
+ obj-$(CONFIG_HID_GT683R)	+= hid-gt683r.o
+diff --git a/drivers/hid/hid-google-atrus.c b/drivers/hid/hid-google-atrus.c
+new file mode 100644
+index 000000000000..e136c70e9425
+--- /dev/null
++++ b/drivers/hid/hid-google-atrus.c
+@@ -0,0 +1,55 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ *  HID driver for Google Hangouts Meet Speakermic
++ *
++ *  Copyright 2022 Google LLC.
++ */
 +
-+	wcd-rx@6 {
-+		reg = <LPASS_CDC_DMA_RX0>;
-+	};
++#include <linux/hid.h>
++#include <linux/module.h>
 +
-+	wcd-tx@19 {
-+		reg = <LPASS_CDC_DMA_TX3>;
-+	};
++#include "hid-ids.h"
 +
-+	va-tx@25 {
-+		reg = <LPASS_CDC_DMA_VA_TX0>;
-+	};
++/*
++ * This driver handles the telephony phone mute HID usage by ignoring it. This
++ * avoids the default handling by the hid-input driver which is to map this to
++ * a KEY_MICMUTE event. The issue is that this device implements the phone mute
++ * HID usage as a toggle switch, where 1 indicates muted, and 0 indicates
++ * unmuted. However, for an EV_KEY event 1 indicates the key has been pressed
++ * and 0 indicates it has been released.
++ */
++
++static int atrus_event(struct hid_device *hid, struct hid_field *field,
++		       struct hid_usage *usage, __s32 value)
++{
++	/*
++	 * Return 1 to indicate no further processing should be done for this
++	 * usage.
++	 */
++	return 1;
++}
++
++static const struct hid_device_id atrus_devices[] = {
++	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
++		     USB_VENDOR_ID_GOOGLE, USB_DEVICE_ID_GOOGLE_ATRUS) },
++	{ }
++};
++MODULE_DEVICE_TABLE(hid, atrus_devices);
++
++static const struct hid_usage_id atrus_usages[] = {
++	/* Handle only the Telephony Phone Mute usage. */
++	{ HID_UP_TELEPHONY | 0x2f, EV_KEY, HID_ANY_ID },
++	{ HID_TERMINATOR, HID_TERMINATOR, HID_TERMINATOR }
 +};
 +
- &lpass_tlmm {
- 	dmic01_active: dmic01-active {
- 		clk {
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 78ec84c..e808d53 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -19,6 +19,7 @@
- #include <dt-bindings/reset/qcom,sdm845-aoss.h>
- #include <dt-bindings/reset/qcom,sdm845-pdc.h>
- #include <dt-bindings/soc/qcom,rpmh-rsc.h>
-+#include <dt-bindings/sound/qcom,lpass.h>
- #include <dt-bindings/thermal/thermal.h>
++static struct hid_driver atrus_driver = {
++	.name = "atrus",
++	.id_table = atrus_devices,
++	.usage_table = atrus_usages,
++	.event = atrus_event,
++};
++module_hid_driver(atrus_driver);
++
++MODULE_AUTHOR("Pablo Ceballos <pcebalos@google.com>");
++MODULE_DESCRIPTION("Google Hangouts Meet Speakermic USB HID Driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index 85975031389b..9f6fc5cfbeb9 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -506,6 +506,7 @@
+ #define USB_DEVICE_ID_GOOGLE_MOONBALL	0x5044
+ #define USB_DEVICE_ID_GOOGLE_DON	0x5050
+ #define USB_DEVICE_ID_GOOGLE_EEL	0x5057
++#define USB_DEVICE_ID_GOOGLE_ATRUS	0x8001
  
- / {
-@@ -2101,6 +2102,68 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		lpass_cpu: audio@3987000 {
-+			compatible = "qcom,sc7280-lpass-cpu";
-+
-+			reg = <0 0x03987000 0 0x68000>,
-+			      <0 0x03b00000 0 0x29000>,
-+			      <0 0x03260000 0 0xc000>,
-+			      <0 0x03280000 0 0x29000>,
-+			      <0 0x03340000 0 0x29000>,
-+			      <0 0x0336c000 0 0x3000>;
-+
-+			reg-names = "lpass-hdmiif",
-+				    "lpass-lpaif",
-+				    "lpass-rxtx-cdc-dma-lpm",
-+				    "lpass-rxtx-lpaif",
-+				    "lpass-va-lpaif",
-+				    "lpass-va-cdc-dma-lpm";
-+
-+			iommus = <&apps_smmu 0x1820 0>,
-+				 <&apps_smmu 0x1821 0>,
-+				 <&apps_smmu 0x1832 0>;
-+			status = "disabled";
-+
-+			power-domains =	<&rpmhpd SC7280_LCX>;
-+			power-domain-names = "lcx";
-+			required-opps = <&rpmhpd_opp_nom>;
-+
-+			clocks = <&lpass_aon LPASS_AON_CC_AUDIO_HM_H_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_EXT_MCLK0_CLK>,
-+				 <&lpasscore LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK>,
-+				 <&lpasscore LPASS_CORE_CC_EXT_IF0_IBIT_CLK>,
-+				 <&lpasscore LPASS_CORE_CC_EXT_IF1_IBIT_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM0_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM1_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM2_CLK>,
-+				 <&lpass_aon LPASS_AON_CC_VA_MEM0_CLK>;
-+			clock-names = "aon_cc_audio_hm_h",
-+				      "audio_cc_ext_mclk0",
-+				      "core_cc_sysnoc_mport_core",
-+				      "core_cc_ext_if0_ibit",
-+				      "core_cc_ext_if1_ibit",
-+				      "audio_cc_codec_mem",
-+				      "audio_cc_codec_mem0",
-+				      "audio_cc_codec_mem1",
-+				      "audio_cc_codec_mem2",
-+				      "aon_cc_va_mem0";
-+
-+			#sound-dai-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>;
-+
-+			interrupt-names = "lpass-irq-lpaif",
-+					  "lpass-irq-hdmi",
-+					  "lpass-irq-vaif",
-+					  "lpass-irq-rxtxif";
-+		};
-+
- 		lpass_ag_noc: interconnect@3c40000 {
- 			reg = <0 0x03c40000 0 0xf080>;
- 			compatible = "qcom,sc7280-lpass-ag-noc";
+ #define USB_VENDOR_ID_GOTOP		0x08f2
+ #define USB_DEVICE_ID_SUPER_Q2		0x007f
 -- 
-2.7.4
+2.35.1.1094.g7c7d902a7c-goog
 
