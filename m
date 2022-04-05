@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF1B3C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19982C35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348128AbiDEKpx (ORCPT
+        id S1348161AbiDEKp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        Tue, 5 Apr 2022 06:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240609AbiDEIcM (ORCPT
+        with ESMTP id S241480AbiDEIeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DC775E48;
-        Tue,  5 Apr 2022 01:24:40 -0700 (PDT)
+        Tue, 5 Apr 2022 04:34:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1445C6255;
+        Tue,  5 Apr 2022 01:32:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A8E4B81B92;
-        Tue,  5 Apr 2022 08:24:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCF2FC385A0;
-        Tue,  5 Apr 2022 08:24:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94A49B81BB1;
+        Tue,  5 Apr 2022 08:31:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7060C385A0;
+        Tue,  5 Apr 2022 08:31:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147074;
-        bh=cMqtRYjZEQdWC8J/EteWdfFdurSZ5k0jH4EvAFujZW0=;
+        s=korg; t=1649147517;
+        bh=dyOSNsBIOAtZ7vGm89+pK75rTiVRFKBYVcdnYc/Tqyo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HpaJI5ScOCcPDv2fpUznB3va1/MMDMUq9v5CaOuGFKrd2+oe21vw3huCCx3p+O2rp
-         QlQauPnwznaEO/XLKuoDCLuAq68BDa4tbvRjlmkuy8lTxb4ent81fXEn43s8gI52i1
-         ich5QAMaXM+jdnH64s/ey+oH+a4RE5xV6b5OIaWo=
+        b=LYRvPWPaWWecAZnXwABQ6iD+QTVf6SVkUCXigkXs5JushOHtMAEI5bYzy44yw/YPU
+         kpAPazjS/nlFvindlNo3kqHxiphXES8gjER0mft250XN8iO/oAAiNb16zfZ7e3M7d/
+         0gv/OXbyyEWHapxBEJ+3Ggh0bFbRnG9rExJBON+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 0991/1126] scsi: qla2xxx: Fix stuck session of PRLI reject
-Date:   Tue,  5 Apr 2022 09:28:58 +0200
-Message-Id: <20220405070436.582506710@linuxfoundation.org>
+        stable@vger.kernel.org, Yosry Ahmed <yosryahmed@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0024/1017] selftests: vm: fix clang build error multiple output files
+Date:   Tue,  5 Apr 2022 09:15:37 +0200
+Message-Id: <20220405070354.893739914@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,39 +54,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Yosry Ahmed <yosryahmed@google.com>
 
-commit f3502e2e98a92981601edc3dadf4b0f43c79836b upstream.
+[ Upstream commit 1c4debc443ef7037dcb7c4f08c33b9caebd21d2e ]
 
-Remove stale recovery code that prevents normal path recovery.
+When building the vm selftests using clang, some errors are seen due to
+having headers in the compilation command:
 
-Link: https://lore.kernel.org/r/20220310092604.22950-11-njavali@marvell.com
-Fixes: 1cbc0efcd9be ("scsi: qla2xxx: Fix retry for PRLI RJT with reason of BUSY")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  clang -Wall -I ../../../../usr/include  -no-pie    gup_test.c ../../../../mm/gup_test.h -lrt -lpthread -o .../tools/testing/selftests/vm/gup_test
+  clang: error: cannot specify -o when generating multiple output files
+  make[1]: *** [../lib.mk:146: .../tools/testing/selftests/vm/gup_test] Error 1
+
+Rework to add the header files to LOCAL_HDRS before including ../lib.mk,
+since the dependency is evaluated in '$(OUTPUT)/%:%.c $(LOCAL_HDRS)' in
+file lib.mk.
+
+Link: https://lkml.kernel.org/r/20220304000645.1888133-1-yosryahmed@google.com
+Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    7 -------
- 1 file changed, 7 deletions(-)
+ tools/testing/selftests/vm/Makefile | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -2104,13 +2104,6 @@ qla24xx_handle_prli_done_event(struct sc
- 		qla24xx_post_gpdb_work(vha, ea->fcport, 0);
- 		break;
- 	default:
--		if ((ea->iop[0] == LSC_SCODE_ELS_REJECT) &&
--		    (ea->iop[1] == 0x50000)) {   /* reson 5=busy expl:0x0 */
--			set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
--			ea->fcport->fw_login_state = DSC_LS_PLOGI_COMP;
--			break;
--		}
+diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
+index 1607322a112c..a14b5b800897 100644
+--- a/tools/testing/selftests/vm/Makefile
++++ b/tools/testing/selftests/vm/Makefile
+@@ -1,6 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Makefile for vm selftests
+ 
++LOCAL_HDRS += $(selfdir)/vm/local_config.h $(top_srcdir)/mm/gup_test.h
++
+ include local_config.mk
+ 
+ uname_M := $(shell uname -m 2>/dev/null || echo not)
+@@ -140,10 +142,6 @@ endif
+ 
+ $(OUTPUT)/mlock-random-test $(OUTPUT)/memfd_secret: LDLIBS += -lcap
+ 
+-$(OUTPUT)/gup_test: ../../../../mm/gup_test.h
 -
- 		sp = ea->sp;
- 		ql_dbg(ql_dbg_disc, vha, 0x2118,
- 		       "%s %d %8phC priority %s, fc4type %x prev try %s\n",
+-$(OUTPUT)/hmm-tests: local_config.h
+-
+ # HMM_EXTRA_LIBS may get set in local_config.mk, or it may be left empty.
+ $(OUTPUT)/hmm-tests: LDLIBS += $(HMM_EXTRA_LIBS)
+ 
+-- 
+2.34.1
+
 
 
