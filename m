@@ -2,107 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFE9C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FA4C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359830AbiDEWAc (ORCPT
+        id S1389568AbiDEWBs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
+        Tue, 5 Apr 2022 18:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358857AbiDELRj (ORCPT
+        with ESMTP id S1572973AbiDERiK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:17:39 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E380589305
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 03:49:27 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id n6so11778267ejc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 03:49:27 -0700 (PDT)
+        Tue, 5 Apr 2022 13:38:10 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60027B8202
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:36:11 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id m3so24486489lfj.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:36:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zD1kXeS1kclzzdV89Yh6GTfc9Fb/ROE7/kA41SKYvPA=;
-        b=JvijGFR0Mo9047KejSeh5imWsynBG2ab7mdKpGSk7iREVkHWUP3qVkSoBI0i3ZVSuy
-         mOy3gQC42UCpZuE4FUymaZWOexVhTNqRrF5NbQq73XC6wR4SVrJk5cy20KHR3+7Fhxcm
-         OP0uasULbcaUt+1O+/sRRcSJEGx8bS3LLDmwfvKf0HXlVdctfTDKdd4pMJtxIFgpnHhI
-         DxKL1+9KcO57fxRSSP+Bu+hV34vEgYuBJRz53q/Rz5bpg/xT7vPLOIK0b8txP4NVBPMh
-         aBGoRyyGSPkBMa0cOCAnpTUryFbV0A4fcouQpVkU3z6sxZ9XN14IIQEAG63rAnpelzxO
-         U+DA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yax7P8EHkvsWnyvnaOpe3ZP8r2G7HKN+i3pXtBsfClM=;
+        b=eX6mY5a8lSH1hyqUbeznreGC7UTb6M0TABj5aCC7d1j7X8S5tKD7PEwqCQaBddz1/U
+         WYtwfZYDDw/dYD4JRG69cicx99gRc3R8NnjE0szGGh5jJkHDDH5nlg7OI0bG7Kg8MvUt
+         N+02SEESeCp662srZbhhQwqKi0sqlYTzC14XKEFwtf+XzOMQkJL0/ayQRgyL6zt44GOi
+         2WpLLgAmNUr9+ojdOcvdbvkIjm2clTL7i6syEiYxeCCrWBRdEoiNP34kFDSfWc2U4KKK
+         FpMo3KNFr4Fb3z/FJBcbBLfeTTQjOep3Ufsp+c/ZStiy+0xbxfOQ5uPnPUdxYBkipNHr
+         btyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zD1kXeS1kclzzdV89Yh6GTfc9Fb/ROE7/kA41SKYvPA=;
-        b=W67/uXHBFAqB1Q6ZhKJZqu1vK8QE9HtpxgcGAYE/y5dM+3xwmCdZ7j8tsYMeVCs8te
-         mc5X7Dyj7N+3GbUDMwBKBfvbxSeyp/TIjnbxaoDXBiw9jZ5bMft2mI67WoDZtNqN1gAd
-         EJZW42OMsPG5caePljrLGJB9Uz3ZQJ+8QOVedhqmVb0a6SStAWAXAID+JJqJTnsk8Tax
-         Mj/GYkCgXk4Vj1UH5zjibaFhBNfb3sZcLsm4jj25ls5SksDJOGfrXoCbp4nULnpGjBqS
-         1ZQQVwJSjdPoMVCfMZpWVCjbwYWJnIb6bCDe9h8fcQPxlv1vYUw6JWBsUlzeiprvtj1A
-         PLpw==
-X-Gm-Message-State: AOAM530uoJfyN4k9sJeAdVieFidwrmJ7kBR9T6JYe9c1yzP5T4APHcx+
-        kzCictbL3cGibHLwVJ+TwFg=
-X-Google-Smtp-Source: ABdhPJwmvbxYcATdJGs6tIu5uarpASeWFbRGq3gJjHqxw8Y9mHDS0WnAWMzFzkswBpgf0+/IjidnQQ==
-X-Received: by 2002:a17:906:d146:b0:6da:f381:4dfe with SMTP id br6-20020a170906d14600b006daf3814dfemr2856426ejb.670.1649155766340;
-        Tue, 05 Apr 2022 03:49:26 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm2436702edl.28.2022.04.05.03.49.25
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yax7P8EHkvsWnyvnaOpe3ZP8r2G7HKN+i3pXtBsfClM=;
+        b=p2b2g0Fh9hNjnxXgogdifcYQgBj5y+fUQ/moLTPXluu8HaYUMiuysL8NAeWBFy2CEa
+         Zzt0s+XTwd2YQ+yeh7v5lcobf0Vqy+16bamR16bOjK+KhQvyZB5ChLawDvRxHTluQzB7
+         SqjyEFHLeTcWg/RyjtogV82ldRTKhvK6iuciMVZHIGpdZ3BtQ7QdeqXh/Y49ZepOj2+N
+         /CpmLglg7fpzhPQRCOzTQFqemZWY66XHxrNxVBR6cECGNNt8wS0jMkZNyQLl8zj2NHvH
+         chJQjWuc5ykASEyLyfsj7XUlmhp5LoEGHn4hSgISY3YiYtfy5epgR8v13Me4gcf5lfjR
+         Pp+g==
+X-Gm-Message-State: AOAM530UlWuVDaw5Cu9egaXwI9SiknVBdwahIbh2BtBSaW9PJlppRFDT
+        GjCIdJ7Tk8pHiEmS0SK/jC8=
+X-Google-Smtp-Source: ABdhPJzAigPVYUbSH1vQDPC4sxC9WAI5tvVCVverTI7h3DMZJH8eYPENeqhDI61Vlsdt1H9euBwtiQ==
+X-Received: by 2002:a05:6512:15a6:b0:44a:a117:f1d3 with SMTP id bp38-20020a05651215a600b0044aa117f1d3mr3461530lfb.216.1649180169117;
+        Tue, 05 Apr 2022 10:36:09 -0700 (PDT)
+Received: from noname.. ([2a02:2698:8c2a:226e:6d9:f5ff:fecb:a8ab])
+        by smtp.googlemail.com with ESMTPSA id i33-20020a0565123e2100b00452f78ea43dsm481430lfv.297.2022.04.05.10.36.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 03:49:25 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH v2 1/4] staging: r8188eu: cur_ant is set but never used
-Date:   Tue,  5 Apr 2022 12:49:07 +0200
-Message-Id: <20220405104910.9769-2-straube.linux@gmail.com>
+        Tue, 05 Apr 2022 10:36:08 -0700 (PDT)
+From:   Grigory Vasilyev <h0tc0d3@gmail.com>
+To:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Melissa Wen <mwen@igalia.com>
+Cc:     Grigory Vasilyev <h0tc0d3@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Jiawei Gu <Jiawei.Gu@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] drm/amdgpu: Accessing to a null pointer
+Date:   Tue,  5 Apr 2022 20:36:12 +0300
+Message-Id: <20220405173613.2611-1-h0tc0d3@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405104910.9769-1-straube.linux@gmail.com>
-References: <20220405104910.9769-1-straube.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In rtw_select_and_join_from_scanned_queue() the local variable cur_ant
-is set but never used. Remove the variable and related dead code.
+A typo in the code. It was assumed that it was
+possible to shift the pointer to sizeof(BIOS_ATOM_PREFIX) - 1.
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
+Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
 ---
-v2:
-- made it the first patch in the series
-- changed subject line
+ drivers/gpu/drm/amd/amdgpu/atom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/staging/r8188eu/core/rtw_mlme.c | 7 -------
- 1 file changed, 7 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index f94b1536a177..24ceb8028f89 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -1458,7 +1458,6 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
- 	struct __queue *queue	= &pmlmepriv->scanned_queue;
- 	struct	wlan_network	*pnetwork = NULL;
- 	struct	wlan_network	*candidate = NULL;
--	u8	supp_ant_div = false;
+diff --git a/drivers/gpu/drm/amd/amdgpu/atom.c b/drivers/gpu/drm/amd/amdgpu/atom.c
+index e729973af3c9..be9d61bcb8ae 100644
+--- a/drivers/gpu/drm/amd/amdgpu/atom.c
++++ b/drivers/gpu/drm/amd/amdgpu/atom.c
+@@ -1426,7 +1426,7 @@ static void atom_get_vbios_pn(struct atom_context *ctx)
  
- 	spin_lock_bh(&pmlmepriv->scanned_queue.lock);
- 	phead = get_list_head(queue);
-@@ -1485,12 +1484,6 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
- 		rtw_free_assoc_resources(adapter, 0);
+ 	if (*vbios_str == 0) {
+ 		vbios_str = atom_find_str_in_rom(ctx, BIOS_ATOM_PREFIX, 3, 1024, 64);
+-		if (vbios_str == NULL)
++		if (vbios_str != NULL)
+ 			vbios_str += sizeof(BIOS_ATOM_PREFIX) - 1;
  	}
- 
--	GetHalDefVar8188EUsb(adapter, HAL_DEF_IS_SUPPORT_ANT_DIV, &supp_ant_div);
--	if (supp_ant_div) {
--		u8 cur_ant;
--		GetHalDefVar8188EUsb(adapter, HAL_DEF_CURRENT_ANTENNA, &cur_ant);
--	}
--
- 	ret = rtw_joinbss_cmd(adapter, candidate);
- 
- exit:
+ 	if (vbios_str != NULL && *vbios_str == 0)
 -- 
 2.35.1
 
