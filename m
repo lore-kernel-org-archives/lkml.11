@@ -2,92 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 491ADC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5D6C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838155AbiDFAu0 (ORCPT
+        id S1838190AbiDFAue (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
+        Tue, 5 Apr 2022 20:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386843AbiDEM6L (ORCPT
+        with ESMTP id S1355739AbiDELz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:58:11 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140FFF2130;
-        Tue,  5 Apr 2022 05:02:40 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id B5FED22247;
-        Tue,  5 Apr 2022 14:02:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649160158;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=bWBsiGXBmlYd0EaKgmARKG3hBGZ0ztGZamwzdx+gZPM=;
-        b=NDVWi57p2IZM5faCfmp824+xfm2fBsDDSGxvymWf+PyOZNmJpJNxDaueQATCtYvePkzMYf
-        aj47vAVRH+lVfABPtjnynOVTSo9b8cELcFha9QDSahiQ3gwrHkLxam9wQqbgo47tsq8Zat
-        IgYlsSzJMPkXHKMOk2vuox/BzlLM3Cg=
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net] net: phy: mscc-miim: reject clause 45 register accesses
-Date:   Tue,  5 Apr 2022 14:02:33 +0200
-Message-Id: <20220405120233.4041760-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 07:55:26 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388BDB879;
+        Tue,  5 Apr 2022 04:13:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649157199; x=1680693199;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=32517Peu1iHVDouFzkQPCx+iZWRftDCxZE0lexD+4Kg=;
+  b=e1sl0XgvQrGgf/5wwHcW4wxu4KCf4fKar37EyzYccc3x+KOqERdrsT2J
+   buLBow4+RwJeOfhXMOPD0Bl6JNtrEyUuQn2D+dCQ89PxbMtnxkh5q0f4f
+   jO5/N/U/5SyFalo2hVZr0EBvBdy8nmMccmRjqkhG/vbp8j0SRwT+VVtGy
+   Ka6byebBayaTRpLH4XwoSvEzE8ZpsLB4Kf43zcyrfEAh6TWuK8nQqWCr+
+   40uLj0Qmn5wqKEu3w2szIEcpkEvXfoWDwkOQJLaWsdTmf56+HHGDwgUjb
+   lQc71z28QR+Ua1pCXcTmkb8HX9p69UBTIu0O1cyLYwxKCmn1sgVKm7i1l
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="321417246"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="321417246"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:13:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="523952439"
+Received: from chang-linux-3.sc.intel.com ([172.25.112.114])
+  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 04:13:18 -0700
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+To:     stable@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     yang.zhong@intel.com, bonzini@gnu.org, tglx@linutronix.de,
+        linux-kernel@vger.kernel.org, chang.seok.bae@intel.com
+Subject: [PATCH][Rebased for 5.16] x86/fpu/xstate: Fix the ARCH_REQ_XCOMP_PERM implementation
+Date:   Tue,  5 Apr 2022 04:04:56 -0700
+Message-Id: <20220405110456.24877-1-chang.seok.bae@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <164905801910825@kroah.com>
+References: <164905801910825@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver doesn't support clause 45 register access yet, but doesn't
-check if the access is a c45 one either. This leads to spurious register
-reads and writes. Add the check.
+From: Yang Zhong <yang.zhong@intel.com>
 
-Fixes: 542671fe4d86 ("net: phy: mscc-miim: Add MDIO driver")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+This is backport for 5.16
+
+Upstream commit 063452fd94d153d4eb38ad58f210f3d37a09cca4
+
+ARCH_REQ_XCOMP_PERM is supposed to add the requested feature to the
+permission bitmap of thread_group_leader()->fpu. But the code overwrites
+the bitmap with the requested feature bit only rather than adding it.
+
+Fix the code to add the requested feature bit to the master bitmask.
+
+Fixes: db8268df0983 ("x86/arch_prctl: Add controls for dynamic XSTATE components")
+Signed-off-by: Yang Zhong <yang.zhong@intel.com>
+Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Paolo Bonzini <bonzini@gnu.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220129173647.27981-2-chang.seok.bae@intel.com
+[chang: Backport for 5.16]
+Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
 ---
- drivers/net/mdio/mdio-mscc-miim.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/kernel/fpu/xstate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index c483ba67c21f..582969751b4c 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -102,6 +102,9 @@ static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
- 	u32 val;
- 	int ret;
+diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+index d28829403ed0..fc1ab0116f4e 100644
+--- a/arch/x86/kernel/fpu/xstate.c
++++ b/arch/x86/kernel/fpu/xstate.c
+@@ -1626,7 +1626,7 @@ static int __xstate_request_perm(u64 permitted, u64 requested)
+ 		return ret;
  
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret)
- 		goto out;
-@@ -145,6 +148,9 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
- 	struct mscc_miim_dev *miim = bus->priv;
- 	int ret;
- 
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret < 0)
- 		goto out;
+ 	/* Pairs with the READ_ONCE() in xstate_get_group_perm() */
+-	WRITE_ONCE(fpu->perm.__state_perm, requested);
++	WRITE_ONCE(fpu->perm.__state_perm, mask);
+ 	/* Protected by sighand lock */
+ 	fpu->perm.__state_size = ksize;
+ 	fpu->perm.__user_state_size = usize;
 -- 
-2.30.2
+2.17.1
 
