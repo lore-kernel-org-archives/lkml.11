@@ -2,98 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FECC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECABFC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588201AbiDFAOq (ORCPT
+        id S1588233AbiDFAPC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
+        Tue, 5 Apr 2022 20:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455492AbiDEQAG (ORCPT
+        with ESMTP id S1572956AbiDER1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:06 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C591C583AE;
-        Tue,  5 Apr 2022 08:15:57 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DCB761EC04AD;
-        Tue,  5 Apr 2022 17:15:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649171751;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ow4OlxjAImgDNnNTH/q+sIch3Ua5XV+4xbXR3FoPyjQ=;
-        b=G8n2Txu5vg5V0JepJkZLLh3scF+Nm/ZtiIiDYuqreG+vbKcQX43Nu6LXsw1XOwuf2eVt/4
-        pRsVkC9e8S7FhoFAHn4VvuniHQHcMMOmOeXfdnJhfL3d3KfQwuCKx0HvJu1RNYhzIck+Fe
-        GofSdcA887YBx+3hjFyDi3UbxFkwwuY=
-From:   Borislav Petkov <bp@alien8.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org
-Subject: [PATCH 06/11] brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue,  5 Apr 2022 17:15:12 +0200
-Message-Id: <20220405151517.29753-7-bp@alien8.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405151517.29753-1-bp@alien8.de>
-References: <20220405151517.29753-1-bp@alien8.de>
+        Tue, 5 Apr 2022 13:27:13 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377A318378;
+        Tue,  5 Apr 2022 10:25:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649179515; x=1680715515;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=tby6oKK3JVUxlZzYdf5ed1y/wZs9gYYk5yFKCDN1HZg=;
+  b=Gt5QqY71asenE8KEihaKWCkItV1rvRRg1/1D95jskDMRPSd693UBpuA2
+   6EeVKnqBeJruLKYP3T0+fn4F7HZOdfL0XNI1n2xN0Y/9z9peNXK4vYF+A
+   ccIkAG0aaxyuk2JapMDhbBZ4oh+iuVsasutj3B96F9MSegOj+VvQ7k17K
+   8JDY2ktQx2WQ1+AakrBZuEi+2epWqfsBK8pAZcy5TjyDV65Oln+yXYg++
+   elUpY00wjPsmDQMAOgw8p/y68Jr4AgJAmp/2ZDjLpar2Kpq0UsFdKiCpz
+   O/51nVpcOynjECVITQILcrLRC6/R2c+dhz74LE+rlGfcxlVZGp/S0hkKZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260805737"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="260805737"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:25:14 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="549147373"
+Received: from nldesimo-desk1.amr.corp.intel.com (HELO [10.212.148.3]) ([10.212.148.3])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:25:13 -0700
+Message-ID: <f8d92685-27dd-e7ef-ce0d-100a285aec4b@intel.com>
+Date:   Tue, 5 Apr 2022 10:25:15 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Reinette Chatre <reinette.chatre@intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+ <b3a17e1ce7bcd14db3c28903e8a97f094998ae74.1648847675.git.reinette.chatre@intel.com>
+ <Ykvrk4hYvBEnNOOl@kernel.org>
+ <e118f4c6-7216-15f3-2bda-3a5851b0bcb1@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH V3 19/30] x86/sgx: Free up EPC pages directly to support
+ large page ranges
+In-Reply-To: <e118f4c6-7216-15f3-2bda-3a5851b0bcb1@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+On 4/5/22 10:13, Reinette Chatre wrote:
+>>> +void sgx_direct_reclaim(void)
+>>> +{
+>>> +	if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
+>>> +		sgx_reclaim_pages();
+>>> +}
+>> Please, instead open code this to both locations - not enough redundancy
+>> to be worth of new function. Causes only unnecessary cross-referencing
+>> when maintaining. Otherwise, I agree with the idea.
+>>
+> hmmm, that means the heart of the reclaimer (sgx_reclaim_pages()) would be
+> made available for direct use from everywhere in the driver. I will look into this.
 
-Fix:
+I like the change.  It's not about reducing code redundancy, it's about
+*describing* what the code does.  Each location could have:
 
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c: In function ‘brcmf_sdio_drivestrengthinit’:
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3798:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43143_CHIP_ID, 17):
-    ^~~~
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3809:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43362_CHIP_ID, 13):
-    ^~~~
+	/* Enter direct SGX reclaim: */
+	if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
+		sgx_reclaim_pages();
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
+Or, it could just be:
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Arend van Spriel <aspriel@gmail.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: netdev@vger.kernel.org
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+	sgx_direct_reclaim();
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index ba3c159111d3..d78ccc223709 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -557,7 +557,7 @@ enum brcmf_sdio_frmtype {
- 	BRCMF_SDIO_FT_SUB,
- };
- 
--#define SDIOD_DRVSTR_KEY(chip, pmu)     (((chip) << 16) | (pmu))
-+#define SDIOD_DRVSTR_KEY(chip, pmu)     (((unsigned int)(chip) << 16) | (pmu))
- 
- /* SDIO Pad drive strength to select value mappings */
- struct sdiod_drive_str {
--- 
-2.35.1
+Which also provides a logical choke point to add comments, like:
 
+/*
+ * sgx_direct_reclaim() should be called in locations where SGX
+ * memory resources might be low and might be needed in order
+ * to make forward progress.
+ */
+void sgx_direct_reclaim(void)
+{
+	...
