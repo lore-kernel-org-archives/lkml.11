@@ -2,79 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E3CC43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbiDEHkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49294 "EHLO
+        id S231678AbiDEHk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231193AbiDEHkE (ORCPT
+        with ESMTP id S231193AbiDEHk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:40:04 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA0936E0D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 00:38:07 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id z16-20020a05660217d000b006461c7cbee3so7823844iox.21
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 00:38:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=wcyi7XrZQP853dByi9+1YxDyQa3+xhgfC53tgafqARg=;
-        b=wI8j+BGl8yAJSXN90JuuAGnBkjHFGOM6smroJL5h523QzZWATKur4rEKd0+Iy07ZQl
-         qIwTmN5q7Axikp5Q0j5uvLsbmCb69L+bo9RWtcja7nQ+iWbSgsGlN75wPKeMg2CpjxUo
-         u948+fZCfq1xZ0fIhoAory/Qo1W9mijwFvF6E1n454kyvuXVOjlR9+UCgQfnj3hFal2b
-         4o16okNpok3g696QAs8duP6QvpSRANcuqPoE2JcsDwsO6yHria+Jhz9iJs4DWdgGVFwb
-         iH2V810vm2XWnZyq+hw1+IR75iIDW7RO3vrMAVu/P6RWUcdCEFBkUhEg2wTw2DvoIewP
-         85zA==
-X-Gm-Message-State: AOAM533byzSqNxdmU1DUz57LNDLUOAdo3ZiErrp5qxODmoODI+N0hmJx
-        4CV0UMhwjeLAukkbpGMOqp+MxpLlL/ky1Wd2/X6j0AQ7DrRH
-X-Google-Smtp-Source: ABdhPJylwAgh1hTPED7kBLSTNMTi5KhXxeEahh2ttq/LYtuLKAfNNHO6HKO8c5krILmrEuJME3L2D43vjv+w9+R5yfXJVTS9+bYv
+        Tue, 5 Apr 2022 03:40:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582371110;
+        Tue,  5 Apr 2022 00:38:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFAD3B818F7;
+        Tue,  5 Apr 2022 07:38:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFACCC340EE;
+        Tue,  5 Apr 2022 07:38:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649144335;
+        bh=9FmaYiyRG3tlkrRq4AwGzM9C1YArsouWnP4GeK+bx60=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hs//tjXzIVfBxDYk4wSpGfue4trsqBqhbW0du4b85KkGg9QnSrQ4VtGAuOp2jOW+c
+         kTilxL+uTM7zbypWqlZk9qdbFrXPLRhITsuAiklA7KrJwRuG+w7s5yw9APRdjd3Lrx
+         H9OsTtaZntuMDum1+Ns6NPOC6ZpuwlZF7cE2gAg0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Olha Cherevyk <olha.cherevyk@gmail.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>, Kalle Valo <kvalo@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Maxime Bizon <mbizon@freebox.fr>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>
+Subject: [PATCH 5.17 0001/1126] Revert "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
+Date:   Tue,  5 Apr 2022 09:12:28 +0200
+Message-Id: <20220405070407.566272760@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1d8e:b0:2ca:41bf:554a with SMTP id
- h14-20020a056e021d8e00b002ca41bf554amr1051738ila.128.1649144286768; Tue, 05
- Apr 2022 00:38:06 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 00:38:06 -0700
-In-Reply-To: <0000000000001779fd05a46b001f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006574b705dbe3533f@google.com>
-Subject: Re: [syzbot] INFO: task hung in linkwatch_event (2)
-From:   syzbot <syzbot+96ff6cfc4551fcc29342@syzkaller.appspotmail.com>
-To:     allison@lohutok.net, andrew@lunn.ch, aviad.krawczyk@huawei.com,
-        axboe@kernel.dk, davem@davemloft.net, gregkh@linuxfoundation.org,
-        hdanton@sina.com, io-uring@vger.kernel.org,
-        johannes.berg@intel.com, johannes@sipsolutions.net,
-        kuba@kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linyunsheng@huawei.com, luobin9@huawei.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, phind.uet@gmail.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        viro@zeniv.linux.org.uk, xiaoguang.wang@linux.alibaba.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 563fbefed46ae4c1f70cffb8eb54c02df480b2c2
-Author: Nguyen Dinh Phi <phind.uet@gmail.com>
-Date:   Wed Oct 27 17:37:22 2021 +0000
+commit bddac7c1e02ba47f0570e494c9289acea3062cc1 upstream.
 
-    cfg80211: call cfg80211_stop_ap when switch from P2P_GO type
+This reverts commit aa6f8dcbab473f3a3c7454b74caa46d36cdc5d13.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1048725f700000
-start commit:   dd86e7fa07a3 Merge tag 'pci-v5.11-fixes-2' of git://git.ke..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e83e68d0a6aba5f6
-dashboard link: https://syzkaller.appspot.com/bug?extid=96ff6cfc4551fcc29342
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11847bc4d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1267e5a0d00000
+It turns out this breaks at least the ath9k wireless driver, and
+possibly others.
 
-If the result looks correct, please mark the issue as fixed by replying with:
+What the ath9k driver does on packet receive is to set up the DMA
+transfer with:
 
-#syz fix: cfg80211: call cfg80211_stop_ap when switch from P2P_GO type
+  int ath_rx_init(..)
+  ..
+                bf->bf_buf_addr = dma_map_single(sc->dev, skb->data,
+                                                 common->rx_bufsize,
+                                                 DMA_FROM_DEVICE);
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+and then the receive logic (through ath_rx_tasklet()) will fetch
+incoming packets
+
+  static bool ath_edma_get_buffers(..)
+  ..
+        dma_sync_single_for_cpu(sc->dev, bf->bf_buf_addr,
+                                common->rx_bufsize, DMA_FROM_DEVICE);
+
+        ret = ath9k_hw_process_rxdesc_edma(ah, rs, skb->data);
+        if (ret == -EINPROGRESS) {
+                /*let device gain the buffer again*/
+                dma_sync_single_for_device(sc->dev, bf->bf_buf_addr,
+                                common->rx_bufsize, DMA_FROM_DEVICE);
+                return false;
+        }
+
+and it's worth noting how that first DMA sync:
+
+    dma_sync_single_for_cpu(..DMA_FROM_DEVICE);
+
+is there to make sure the CPU can read the DMA buffer (possibly by
+copying it from the bounce buffer area, or by doing some cache flush).
+The iommu correctly turns that into a "copy from bounce bufer" so that
+the driver can look at the state of the packets.
+
+In the meantime, the device may continue to write to the DMA buffer, but
+we at least have a snapshot of the state due to that first DMA sync.
+
+But that _second_ DMA sync:
+
+    dma_sync_single_for_device(..DMA_FROM_DEVICE);
+
+is telling the DMA mapping that the CPU wasn't interested in the area
+because the packet wasn't there.  In the case of a DMA bounce buffer,
+that is a no-op.
+
+Note how it's not a sync for the CPU (the "for_device()" part), and it's
+not a sync for data written by the CPU (the "DMA_FROM_DEVICE" part).
+
+Or rather, it _should_ be a no-op.  That's what commit aa6f8dcbab47
+broke: it made the code bounce the buffer unconditionally, and changed
+the DMA_FROM_DEVICE to just unconditionally and illogically be
+DMA_TO_DEVICE.
+
+[ Side note: purely within the confines of the swiotlb driver it wasn't
+  entirely illogical: The reason it did that odd DMA_FROM_DEVICE ->
+  DMA_TO_DEVICE conversion thing is because inside the swiotlb driver,
+  it uses just a swiotlb_bounce() helper that doesn't care about the
+  whole distinction of who the sync is for - only which direction to
+  bounce.
+
+  So it took the "sync for device" to mean that the CPU must have been
+  the one writing, and thought it meant DMA_TO_DEVICE. ]
+
+Also note how the commentary in that commit was wrong, probably due to
+that whole confusion, claiming that the commit makes the swiotlb code
+
+                                  "bounce unconditionally (that is, also
+    when dir == DMA_TO_DEVICE) in order do avoid synchronising back stale
+    data from the swiotlb buffer"
+
+which is nonsensical for two reasons:
+
+ - that "also when dir == DMA_TO_DEVICE" is nonsensical, as that was
+   exactly when it always did - and should do - the bounce.
+
+ - since this is a sync for the device (not for the CPU), we're clearly
+   fundamentally not coping back stale data from the bounce buffers at
+   all, because we'd be copying *to* the bounce buffers.
+
+So that commit was just very confused.  It confused the direction of the
+synchronization (to the device, not the cpu) with the direction of the
+DMA (from the device).
+
+Reported-and-bisected-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Reported-by: Olha Cherevyk <olha.cherevyk@gmail.com>
+Cc: Halil Pasic <pasic@linux.ibm.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Toke Høiland-Jørgensen <toke@toke.dk>
+Cc: Maxime Bizon <mbizon@freebox.fr>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/core-api/dma-attributes.rst |    8 ++++++++
+ include/linux/dma-mapping.h               |    8 ++++++++
+ kernel/dma/swiotlb.c                      |   23 ++++++++---------------
+ 3 files changed, 24 insertions(+), 15 deletions(-)
+
+--- a/Documentation/core-api/dma-attributes.rst
++++ b/Documentation/core-api/dma-attributes.rst
+@@ -130,3 +130,11 @@ accesses to DMA buffers in both privileg
+ subsystem that the buffer is fully accessible at the elevated privilege
+ level (and ideally inaccessible or at least read-only at the
+ lesser-privileged levels).
++
++DMA_ATTR_OVERWRITE
++------------------
++
++This is a hint to the DMA-mapping subsystem that the device is expected to
++overwrite the entire mapped size, thus the caller does not require any of the
++previous buffer contents to be preserved. This allows bounce-buffering
++implementations to optimise DMA_FROM_DEVICE transfers.
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -62,6 +62,14 @@
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+ 
+ /*
++ * This is a hint to the DMA-mapping subsystem that the device is expected
++ * to overwrite the entire mapped size, thus the caller does not require any
++ * of the previous buffer contents to be preserved. This allows
++ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
++ */
++#define DMA_ATTR_OVERWRITE		(1UL << 10)
++
++/*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+  * be given to a device to use as a DMA source or target.  It is specific to a
+  * given device and there may be a translation between the CPU physical address
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -627,14 +627,10 @@ phys_addr_t swiotlb_tbl_map_single(struc
+ 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
+ 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
+ 	tlb_addr = slot_addr(mem->start, index) + offset;
+-	/*
+-	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
+-	 * to the tlb buffer, if we knew for sure the device will
+-	 * overwirte the entire current content. But we don't. Thus
+-	 * unconditional bounce may prevent leaking swiotlb content (i.e.
+-	 * kernel memory) to user-space.
+-	 */
+-	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
++	    dir == DMA_BIDIRECTIONAL))
++		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
+ 	return tlb_addr;
+ }
+ 
+@@ -701,13 +697,10 @@ void swiotlb_tbl_unmap_single(struct dev
+ void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_addr,
+ 		size_t size, enum dma_data_direction dir)
+ {
+-	/*
+-	 * Unconditional bounce is necessary to avoid corruption on
+-	 * sync_*_for_cpu or dma_ummap_* when the device didn't overwrite
+-	 * the whole lengt of the bounce buffer.
+-	 */
+-	swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
+-	BUG_ON(!valid_dma_direction(dir));
++	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
++		swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
++	else
++		BUG_ON(dir != DMA_FROM_DEVICE);
+ }
+ 
+ void swiotlb_sync_single_for_cpu(struct device *dev, phys_addr_t tlb_addr,
+
+
