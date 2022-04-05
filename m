@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8991FC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB2CC47082
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237920AbiDEInj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
+        id S238073AbiDEInp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232041AbiDEICk (ORCPT
+        with ESMTP id S233099AbiDEIC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:02:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445CF55772;
-        Tue,  5 Apr 2022 01:00:41 -0700 (PDT)
+        Tue, 5 Apr 2022 04:02:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E6B5883E;
+        Tue,  5 Apr 2022 01:00:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DA286177F;
-        Tue,  5 Apr 2022 08:00:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 971A9C340EE;
-        Tue,  5 Apr 2022 08:00:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC841B81B16;
+        Tue,  5 Apr 2022 08:00:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FEC0C340EE;
+        Tue,  5 Apr 2022 08:00:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145640;
-        bh=ruRyJucv70xZ0kihqI7ZSSwyvEYZ2kk+P4V1D6DsGY0=;
+        s=korg; t=1649145645;
+        bh=+dPd7sS8kn7j7XwarFP9aU329hPQXUS2IX/AlQaN3Sg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pEnUcyO+wfXKnNjp2O0Hie2az61yemGSbj8kbkompdZ8SCx8WXBKt5XYckBhVdV1x
-         gyx9mRIuQYpOtKgxvYNdrdrFzN0R/+3iZPiUGbAWFhBxyDH0KAR30DrYG/23VyhvIN
-         tj8WRSF6tdwQV86kqHHzDAQ4zYF/PewggU0d3kyk=
+        b=UNXcR2ALVKFi6idnKGICDCiA5zXjadqev5ou19yJznki3pJXkVWqSu+mjpOc2N3Uh
+         RtnV94YCM2/hMTg+eWF+MYSXjxHrAmgyG9DXRNRQkf1knqqIV0M1M29mDmDtWDOhGh
+         5q3ORnsHfqH1upD9QIh3Q6CD1YpjDQVLuFKO8KHE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Po-Hao Huang <phhuang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0477/1126] rtw88: fix memory overrun and memory leak during hw_scan
-Date:   Tue,  5 Apr 2022 09:20:24 +0200
-Message-Id: <20220405070421.628095471@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Kiran Bhandare <kiranx.bhandare@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0479/1126] i40e: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Tue,  5 Apr 2022 09:20:26 +0200
+Message-Id: <20220405070421.686938100@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,118 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Po-Hao Huang <phhuang@realtek.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit d95984b5580dcb8b1c0036577c52b609990a1dab ]
+[ Upstream commit bc97f9c6f988b31b728eb47a94ca825401dbeffe ]
 
-Previously we allocated less memory than actual required, overwrite
-to the buffer causes the mm module to complaint and raise access
-violation faults. Along with potential memory leaks when returned
-early. Fix these by passing the correct size and proper deinit flow.
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, i40e_construct_skb_zc() currently allocates and reserves
+additional `xdp->data - xdp->data_hard_start`, which is
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only to __napi_alloc_skb() and
+don't reserve anything. This will give enough headroom for stack
+processing.
 
-Fixes: 10d162b2ed39 ("rtw88: 8822c: add ieee80211_ops::hw_scan")
-Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220121070813.9656-4-pkshih@realtek.com
+Fixes: 0a714186d3c0 ("i40e: add AF_XDP zero-copy Rx support")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/fw.c | 34 +++++++++++++++++--------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
-index a631042753ea..ce9535cce723 100644
---- a/drivers/net/wireless/realtek/rtw88/fw.c
-+++ b/drivers/net/wireless/realtek/rtw88/fw.c
-@@ -1784,9 +1784,9 @@ void rtw_fw_scan_notify(struct rtw_dev *rtwdev, bool start)
- 	rtw_fw_send_h2c_command(rtwdev, h2c_pkt);
- }
- 
--static void rtw_append_probe_req_ie(struct rtw_dev *rtwdev, struct sk_buff *skb,
--				    struct sk_buff_head *list,
--				    struct rtw_vif *rtwvif)
-+static int rtw_append_probe_req_ie(struct rtw_dev *rtwdev, struct sk_buff *skb,
-+				   struct sk_buff_head *list, u8 *bands,
-+				   struct rtw_vif *rtwvif)
- {
- 	struct ieee80211_scan_ies *ies = rtwvif->scan_ies;
- 	struct rtw_chip_info *chip = rtwdev->chip;
-@@ -1797,19 +1797,24 @@ static void rtw_append_probe_req_ie(struct rtw_dev *rtwdev, struct sk_buff *skb,
- 		if (!(BIT(idx) & chip->band))
- 			continue;
- 		new = skb_copy(skb, GFP_KERNEL);
-+		if (!new)
-+			return -ENOMEM;
- 		skb_put_data(new, ies->ies[idx], ies->len[idx]);
- 		skb_put_data(new, ies->common_ies, ies->common_ie_len);
- 		skb_queue_tail(list, new);
-+		(*bands)++;
- 	}
-+
-+	return 0;
- }
- 
--static int _rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev, u8 num_ssids,
-+static int _rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev, u8 num_probes,
- 					 struct sk_buff_head *probe_req_list)
- {
- 	struct rtw_chip_info *chip = rtwdev->chip;
- 	struct sk_buff *skb, *tmp;
- 	u8 page_offset = 1, *buf, page_size = chip->page_size;
--	u8 pages = page_offset + num_ssids * RTW_PROBE_PG_CNT;
-+	u8 pages = page_offset + num_probes * RTW_PROBE_PG_CNT;
- 	u16 pg_addr = rtwdev->fifo.rsvd_h2c_info_addr, loc;
- 	u16 buf_offset = page_size * page_offset;
- 	u8 tx_desc_sz = chip->tx_pkt_desc_sz;
-@@ -1848,6 +1853,8 @@ static int _rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev, u8 num_ssids,
- 	rtwdev->scan_info.probe_pg_size = page_offset;
- out:
- 	kfree(buf);
-+	skb_queue_walk(probe_req_list, skb)
-+		kfree_skb(skb);
- 
- 	return ret;
- }
-@@ -1858,7 +1865,8 @@ static int rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev,
- 	struct cfg80211_scan_request *req = rtwvif->scan_req;
- 	struct sk_buff_head list;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 945b1bb9c6f4..a449c84fe357 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -246,13 +246,11 @@ static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
  	struct sk_buff *skb;
--	u8 num = req->n_ssids, i;
-+	u8 num = req->n_ssids, i, bands = 0;
-+	int ret;
  
- 	skb_queue_head_init(&list);
- 	for (i = 0; i < num; i++) {
-@@ -1866,19 +1874,25 @@ static int rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev,
- 					     req->ssids[i].ssid,
- 					     req->ssids[i].ssid_len,
- 					     req->ie_len);
--		if (!skb)
-+		if (!skb) {
-+			ret = -ENOMEM;
- 			goto out;
--		rtw_append_probe_req_ie(rtwdev, skb, &list, rtwvif);
-+		}
-+		ret = rtw_append_probe_req_ie(rtwdev, skb, &list, &bands,
-+					      rtwvif);
-+		if (ret)
-+			goto out;
-+
- 		kfree_skb(skb);
- 	}
+ 	/* allocate a skb to store the frags */
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
+-			       xdp->data_end - xdp->data_hard_start,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		goto out;
  
--	return _rtw_hw_scan_update_probe_req(rtwdev, num, &list);
-+	return _rtw_hw_scan_update_probe_req(rtwdev, num * bands, &list);
- 
- out:
- 	skb_queue_walk(&list, skb)
- 		kfree_skb(skb);
- 
--	return -ENOMEM;
-+	return ret;
- }
- 
- static int rtw_add_chan_info(struct rtw_dev *rtwdev, struct rtw_chan_info *info,
+-	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
+ 	if (metasize)
+ 		skb_metadata_set(skb, metasize);
 -- 
 2.34.1
 
