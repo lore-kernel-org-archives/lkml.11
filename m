@@ -2,115 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA5EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E6E6C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378792AbiDEVcY (ORCPT
+        id S1379166AbiDEVct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
+        Tue, 5 Apr 2022 17:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573408AbiDETIz (ORCPT
+        with ESMTP id S1356269AbiDEKXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:08:55 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF18DFFAA
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:06:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=t/jIi5NMSsGNuqWW3SuqC3XVvuEfpO7XbqF5AkaA5/U=; b=LPMKtFqBIJkiHt5K/vxQqvOLCu
-        mTtahlGt/q4Xpf4OXU3LL8wuiNduEjzWzNq55unSnMzDk7CYvfowt/vKjj6bjlwQgADze5JQ9Psjo
-        zoI+TVMYGfEfL4P70Pe2PFL/JxdwFD2I4WP+DyRear6bSQKw2eCB5CfybzmgtTuN/LMtSQTqF2OfR
-        ZPzyowE2VLduY70zxf3YLEz4HZ23/teHo3NsyN9eJJ7+txeZLiIBHgyiORbDW7nI1nMeYFRmNjw9f
-        Q6GuLgBNJCpOjbQZRtb3BmZB9wR7iHknQ9vB8LaKHfyWS17w82ksHoUVL6oTdaV3zrqFlq0Ltqr83
-        sN+Qa8aQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nboVq-006ykA-C2; Tue, 05 Apr 2022 19:06:46 +0000
-Message-ID: <7d16caee-e605-d80b-6638-3ada4dbc4f67@infradead.org>
-Date:   Tue, 5 Apr 2022 12:06:40 -0700
+        Tue, 5 Apr 2022 06:23:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AEC9BAB9E;
+        Tue,  5 Apr 2022 03:08:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3DDC617AA;
+        Tue,  5 Apr 2022 10:08:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE080C385A8;
+        Tue,  5 Apr 2022 10:08:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153285;
+        bh=WAcl/CMtJJoJE24n0Tw8tG1yq386lGcEloJ1rQ265JU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AUqjI8gl5e3O0KQDs4eb5itPpb0V1JDtvrhtEJ4jm5RQ6B83X7LxfCeOtrqVS/vjT
+         O4lRmMEEWvUsc49YQeY8q9hvXoAVBkJehL1YUuSvXLrs3Jf+ADg0guw6aVzVvR1Zz1
+         tq/tHF52VHCnWLdom+AydWhd4afjJhAbDMpwffkc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Joel Jaeschke <joel.jaeschke@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 169/599] io_uring: terminate manual loop iterator loop correctly for non-vecs
+Date:   Tue,  5 Apr 2022 09:27:43 +0200
+Message-Id: <20220405070303.871680061@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/format_helper: fix a kernel-doc typo
-Content-Language: en-US
-To:     Simon Ser <contact@emersion.fr>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org
-References: <20220403232902.1753-1-rdunlap@infradead.org>
- <ttcrpLw9HkdhAH5SkXylXDBi9SBf7LWgOeW09ZvTF4U4_zKJAOXBQZlFxfw6NKY0Hip6dXBFape6zkX09cstuOno72c-c00wmZ_VbNDg6xs=@emersion.fr>
- <b20bbd22-895c-9e74-e579-d2f3561a2fe1@infradead.org>
- <BzpH4s8ZYn84kTlJQ3BHVMQzZlESb2Fk6v-uO5KBaaeBNMvRvC98lpuBLUNLE3a5bdoYTb5JRvo6EU__5AGJ79LUirSppO39I1t1xlwx-fI=@emersion.fr>
- <fda186f7-2cf4-a69a-d68e-58073d35cbea@redhat.com>
- <c544d79e-90ec-7bbe-77ad-de96a700d711@infradead.org>
- <qjTlHAInyuxpFWsTWPGXoVeByVdVe-NF-kg-FUeLWQbKy9SovMzCcK-eDsijpDt1roaSubDr-8kBGKQSt_7CXFa4-BxQ6SrGSNeoZrdiq-s=@emersion.fr>
- <c336dd9d-dae2-f654-4849-669c9b9b568f@infradead.org>
- <zO0fTUWc0nKMy-cwUaONpM1AHlfPoNe77IooCuHLEYiowkM165XiiuM2JGASUQrOFcvNMVSGUwETeF7JAIf40r84dwNvh_Gl1MF_ZXYOHWE=@emersion.fr>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <zO0fTUWc0nKMy-cwUaONpM1AHlfPoNe77IooCuHLEYiowkM165XiiuM2JGASUQrOFcvNMVSGUwETeF7JAIf40r84dwNvh_Gl1MF_ZXYOHWE=@emersion.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jens Axboe <axboe@kernel.dk>
 
+[ Upstream commit 5e929367468c8f97cd1ffb0417316cecfebef94b ]
 
-On 4/5/22 11:47, Simon Ser wrote:
-> On Tuesday, April 5th, 2022 at 19:58, Randy Dunlap <rdunlap@infradead.org> wrote:
-> 
->> On 4/5/22 08:05, Simon Ser wrote:
->>
->>> On Tuesday, April 5th, 2022 at 16:39, Randy Dunlap rdunlap@infradead.org wrote:
->>>
->>>> On 4/4/22 23:26, Javier Martinez Canillas wrote:
->>>>
->>>>> On 4/5/22 08:12, Simon Ser wrote:
->>>>>
->>>>>> On Monday, April 4th, 2022 at 23:35, Randy Dunlap rdunlap@infradead.org wrote:
->>>>>>
->>>>>>> On 4/4/22 09:04, Simon Ser wrote:
->>>>>>>
->>>>>>>> Both doc patches pushed, thanks. I had to manually edit them because they
->>>>>>>> wouldn't apply cleanly. Next time, please use git-send-email (see
->>>>>>>> https://git-send-email.io/ for setup instructions).
->>>>>>>
->>>>>>> That's odd. I did use 'git send-email' and I don't usually have any
->>>>>>> problems (AFAIK). I'll check those setup instructions.
->>>>>>
->>>>>> Hm, maybe the issue isn't git-send-email, but the way the patch was
->>>>>> generated? I had to manually edit these lines for the first patch to work:
->>>>>>
->>>>>> --- linux-next-20211217.orig/include/drm/drm_file.h
->>>>>> +++ linux-next-20211217/include/drm/drm_file.h
->>>>>>
->>>>>> I changed these to:
->>>>>>
->>>>>> --- a/include/drm/drm_file.h
->>>>>> +++ b/include/drm/drm_file.h
->>
->>
->> quilt (which I am using) can generate a/ b/ patches instead of linux.orig/ and
->> linux/ patches.
->>
->>>>>> This wasn't enough for the second patch, I had to re-do the changes by hand
->>>>>> from scratch.
->>
->>
->> I would like more information about this one if it's not too much trouble
->> for you.
-> 
-> IIRC it was the usual git-am error "fatal: sha1 information is lacking
-> or useless". Maybe you wrote the patch for an old tree and drm-misc-next
-> contained changes near the lines you changed? Maybe providing base-commit
-> information in the patch would've helped? I'm not sure.
+The fix for not advancing the iterator if we're using fixed buffers is
+broken in that it can hit a condition where we don't terminate the loop.
+This results in io-wq looping forever, asking to read (or write) 0 bytes
+for every subsequent loop.
 
-OK, thanks Simon.
+Reported-by: Joel Jaeschke <joel.jaeschke@gmail.com>
+Link: https://github.com/axboe/liburing/issues/549
+Fixes: 16c8d2df7ec0 ("io_uring: ensure symmetry in handling iter types in loop_rw_iter()")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/io_uring.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index fd188b972151..82f1311dab8e 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -3220,13 +3220,15 @@ static ssize_t loop_rw_iter(int rw, struct io_kiocb *req, struct iov_iter *iter)
+ 				ret = nr;
+ 			break;
+ 		}
++		ret += nr;
+ 		if (!iov_iter_is_bvec(iter)) {
+ 			iov_iter_advance(iter, nr);
+ 		} else {
+-			req->rw.len -= nr;
+ 			req->rw.addr += nr;
++			req->rw.len -= nr;
++			if (!req->rw.len)
++				break;
+ 		}
+-		ret += nr;
+ 		if (nr != iovec.iov_len)
+ 			break;
+ 	}
 -- 
-~Randy
+2.34.1
+
+
+
