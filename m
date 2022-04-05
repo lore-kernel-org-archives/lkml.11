@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C4FC47080
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B0AC47084
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240082AbiDEIpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
+        id S240220AbiDEIpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233225AbiDEIFZ (ORCPT
+        with ESMTP id S233035AbiDEIFo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:05:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A017469282;
-        Tue,  5 Apr 2022 01:01:27 -0700 (PDT)
+        Tue, 5 Apr 2022 04:05:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11CCC69705;
+        Tue,  5 Apr 2022 01:01:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB5A1617D7;
-        Tue,  5 Apr 2022 08:01:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B849C34112;
-        Tue,  5 Apr 2022 08:01:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FE59B81B7F;
+        Tue,  5 Apr 2022 08:01:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C9DC385A0;
+        Tue,  5 Apr 2022 08:01:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145686;
-        bh=EPZiKiBy+kuacmEzwYHvQMUapudOZHYHm3CdwShSsZ0=;
+        s=korg; t=1649145695;
+        bh=xznptKM2jmZaCVdjriKMvF+hPjIFBCfD7SVGlU4H9RY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cEEyCCP4Lcz4a87Fy/TW6KfRUjXBDz2vmN4lT5Amb5w6oehsYlC8HrNkFnu68IXuw
-         6sn6aVa3IUnYBRzaj4m2ZMyMeTfZFnbHy3L+erXw0l/0hxQ8RM62ushAx3HQ5JaXwa
-         DP+6NqBDP01Scg3JVSmMHUlfYjs46N7nUuuC1bpA=
+        b=wZtxUu73IGVDjDXQLFWbausdsjNIzv8h1kwvDsatV9Ajuit+5eK0RRsfSYEb8Px+v
+         4uns540Bs2bp+MjrCO1kA5wrdK1ucQbWHUjrg1AbZ9xzmVHn5Sw0moiqegdAiDjeP9
+         TeKYeceSxzgrwYP2MXAD8VUVramIxEqP31PXB1ok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0493/1126] mt76: mt7915: use proper aid value in mt7915_mcu_wtbl_generic_tlv in sta mode
-Date:   Tue,  5 Apr 2022 09:20:40 +0200
-Message-Id: <20220405070422.097937806@linuxfoundation.org>
+Subject: [PATCH 5.17 0495/1126] mt76: mt76_connac: fix MCU_CE_CMD_SET_ROC definition error
+Date:   Tue,  5 Apr 2022 09:20:42 +0200
+Message-Id: <20220405070422.156357008@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,39 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit a56b1b0f145ef2d6bb9312dedf3ab8558ef50a5b ]
+[ Upstream commit bf9727a27442a50c75b7d99a5088330c578b2a42 ]
 
-mac80211 provides aid in vif->bss_conf.aid for sta mode and not in
-sta->aid. Fix mt7915_mcu_wtbl_generic_tlv routine using proper value for
-aid in sta mode.
+Fixed an MCU_CE_CMD_SET_ROC definition error that occurred from a previous
+refactor work.
 
-Fixes: e57b7901469fc ("mt76: add mac80211 driver for MT7915 PCIe-based chipsets")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Fixes: d0e274af2f2e4 ("mt76: mt76_connac: create mcu library")
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index 0911b6f973b5..38cc50603d20 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -1264,8 +1264,11 @@ mt7915_mcu_wtbl_generic_tlv(struct sk_buff *skb, struct ieee80211_vif *vif,
- 	generic = (struct wtbl_generic *)tlv;
- 
- 	if (sta) {
-+		if (vif->type == NL80211_IFTYPE_STATION)
-+			generic->partial_aid = cpu_to_le16(vif->bss_conf.aid);
-+		else
-+			generic->partial_aid = cpu_to_le16(sta->aid);
- 		memcpy(generic->peer_addr, sta->addr, ETH_ALEN);
--		generic->partial_aid = cpu_to_le16(sta->aid);
- 		generic->muar_idx = mvif->mt76.omac_idx;
- 		generic->qos = sta->wme;
- 	} else {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+index 5baf8370b7bd..265d64e3ca8c 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+@@ -996,7 +996,7 @@ enum {
+ 	MCU_CE_CMD_SET_BSS_CONNECTED = 0x16,
+ 	MCU_CE_CMD_SET_BSS_ABORT = 0x17,
+ 	MCU_CE_CMD_CANCEL_HW_SCAN = 0x1b,
+-	MCU_CE_CMD_SET_ROC = 0x1d,
++	MCU_CE_CMD_SET_ROC = 0x1c,
+ 	MCU_CE_CMD_SET_P2P_OPPPS = 0x33,
+ 	MCU_CE_CMD_SET_RATE_TX_POWER = 0x5d,
+ 	MCU_CE_CMD_SCHED_SCAN_ENABLE = 0x61,
 -- 
 2.34.1
 
