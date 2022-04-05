@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF2DEC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA9AC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355869AbiDELO4 (ORCPT
+        id S1355602AbiDELOu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
+        Tue, 5 Apr 2022 07:14:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237308AbiDEIRx (ORCPT
+        with ESMTP id S237675AbiDEI3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:17:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9912A6948F;
-        Tue,  5 Apr 2022 01:06:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:29:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98DE1AF2B;
+        Tue,  5 Apr 2022 01:21:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB42AB81B18;
-        Tue,  5 Apr 2022 08:05:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A45C385A0;
-        Tue,  5 Apr 2022 08:05:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 641BD60FF7;
+        Tue,  5 Apr 2022 08:21:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 797CCC385A0;
+        Tue,  5 Apr 2022 08:21:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145958;
-        bh=iv1kBfVa6k9z7IeqmAd0Oj3LUlWaENspS4p26LDfOl4=;
+        s=korg; t=1649146879;
+        bh=npZND2F45RRYAssBboFeZcJHYiaFp/sJkE0rO0UbqL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UGyQjFTHA+ccAF2LKbCM7pnfgOARICGDx4nksW4nnh6pwLR49+xjKRG6Cl7Wk9nP0
-         BgMfmVeX+7xOP4W483gp7kDOsfbjzFaha6T4X3Fghw29rwU1VCLPMpywBZL3fIr2pW
-         /x/Biho0p/omHnLxTdglQA7JDhRToSgdCeBKANtA=
+        b=aGyvQZ6EUCSvpWMrMAvE+Faln7LbehOiIGzL1HEqO5v1Vco2xaKzIq4P+JrTZPnCj
+         7FUV50Kul2g27uMMaXxqQU5NLyaAUiJJKBdwDobBGc9ty5RLL2wzlgxsL8QgvUa+PI
+         lYxe4kTZ4O249hU7xfW6TZSE3GV2aBnbmHVU7jzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0553/1126] cxl/core/port: Rename bus.c to port.c
-Date:   Tue,  5 Apr 2022 09:21:40 +0200
-Message-Id: <20220405070423.865113800@linuxfoundation.org>
+Subject: [PATCH 5.17 0883/1126] btrfs: do not double complete bio on errors during compressed reads
+Date:   Tue,  5 Apr 2022 09:27:10 +0200
+Message-Id: <20220405070433.449856145@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,72 +50,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 0ff0af18216436d0151af4e410400c7a19ca9437 ]
+[ Upstream commit f9f15de85d74e7eef021af059ca53a15f041cdd8 ]
 
-Given it is dominated by port infrastructure, and will only acquire
-more, rename bus.c to port.c.
+I hit some weird panics while fixing up the error handling from
+btrfs_lookup_bio_sums().  Turns out the compression path will complete
+the bio we use if we set up any of the compression bios and then return
+an error, and then btrfs_submit_data_bio() will also call bio_endio() on
+the bio.
 
-Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
-Link: https://lore.kernel.org/r/164298416136.3018233.15442880970000855425.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fix this by making btrfs_submit_compressed_read() responsible for
+calling bio_endio() on the bio if there are any errors.  Currently it
+was only doing it if we created the compression bios, otherwise it was
+depending on btrfs_submit_data_bio() to do the right thing.  This
+creates the above problem, so fix up btrfs_submit_compressed_read() to
+always call bio_endio() in case of an error, and then simply return from
+btrfs_submit_data_bio() if we had to call
+btrfs_submit_compressed_read().
+
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/driver-api/cxl/memory-devices.rst | 4 ++--
- drivers/cxl/core/Makefile                       | 2 +-
- drivers/cxl/core/{bus.c => port.c}              | 0
- tools/testing/cxl/Kbuild                        | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
- rename drivers/cxl/core/{bus.c => port.c} (100%)
+ fs/btrfs/compression.c | 20 ++++++++++++++------
+ fs/btrfs/inode.c       |  8 +++++++-
+ 2 files changed, 21 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/driver-api/cxl/memory-devices.rst b/Documentation/driver-api/cxl/memory-devices.rst
-index 3b8f41395f6b..c8f7a16cd0e3 100644
---- a/Documentation/driver-api/cxl/memory-devices.rst
-+++ b/Documentation/driver-api/cxl/memory-devices.rst
-@@ -36,10 +36,10 @@ CXL Core
- .. kernel-doc:: drivers/cxl/cxl.h
-    :internal:
+diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
+index 71e5b2e9a1ba..6158b870a269 100644
+--- a/fs/btrfs/compression.c
++++ b/fs/btrfs/compression.c
+@@ -808,7 +808,7 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
+ 	u64 em_len;
+ 	u64 em_start;
+ 	struct extent_map *em;
+-	blk_status_t ret = BLK_STS_RESOURCE;
++	blk_status_t ret;
+ 	int faili = 0;
+ 	u8 *sums;
  
--.. kernel-doc:: drivers/cxl/core/bus.c
-+.. kernel-doc:: drivers/cxl/core/port.c
-    :doc: cxl core
+@@ -821,14 +821,18 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
+ 	read_lock(&em_tree->lock);
+ 	em = lookup_extent_mapping(em_tree, file_offset, fs_info->sectorsize);
+ 	read_unlock(&em_tree->lock);
+-	if (!em)
+-		return BLK_STS_IOERR;
++	if (!em) {
++		ret = BLK_STS_IOERR;
++		goto out;
++	}
  
--.. kernel-doc:: drivers/cxl/core/bus.c
-+.. kernel-doc:: drivers/cxl/core/port.c
-    :identifiers:
+ 	ASSERT(em->compress_type != BTRFS_COMPRESS_NONE);
+ 	compressed_len = em->block_len;
+ 	cb = kmalloc(compressed_bio_size(fs_info, compressed_len), GFP_NOFS);
+-	if (!cb)
++	if (!cb) {
++		ret = BLK_STS_RESOURCE;
+ 		goto out;
++	}
  
- .. kernel-doc:: drivers/cxl/core/pmem.c
-diff --git a/drivers/cxl/core/Makefile b/drivers/cxl/core/Makefile
-index 40ab50318daf..a90202ac88d2 100644
---- a/drivers/cxl/core/Makefile
-+++ b/drivers/cxl/core/Makefile
-@@ -2,7 +2,7 @@
- obj-$(CONFIG_CXL_BUS) += cxl_core.o
+ 	refcount_set(&cb->pending_sectors, compressed_len >> fs_info->sectorsize_bits);
+ 	cb->errors = 0;
+@@ -851,8 +855,10 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
+ 	nr_pages = DIV_ROUND_UP(compressed_len, PAGE_SIZE);
+ 	cb->compressed_pages = kcalloc(nr_pages, sizeof(struct page *),
+ 				       GFP_NOFS);
+-	if (!cb->compressed_pages)
++	if (!cb->compressed_pages) {
++		ret = BLK_STS_RESOURCE;
+ 		goto fail1;
++	}
  
- ccflags-y += -I$(srctree)/drivers/cxl
--cxl_core-y := bus.o
-+cxl_core-y := port.o
- cxl_core-y += pmem.o
- cxl_core-y += regs.o
- cxl_core-y += memdev.o
-diff --git a/drivers/cxl/core/bus.c b/drivers/cxl/core/port.c
-similarity index 100%
-rename from drivers/cxl/core/bus.c
-rename to drivers/cxl/core/port.c
-diff --git a/tools/testing/cxl/Kbuild b/tools/testing/cxl/Kbuild
-index 1acdf2fc31c5..3299fb0977b2 100644
---- a/tools/testing/cxl/Kbuild
-+++ b/tools/testing/cxl/Kbuild
-@@ -25,7 +25,7 @@ cxl_pmem-y += config_check.o
+ 	for (pg_index = 0; pg_index < nr_pages; pg_index++) {
+ 		cb->compressed_pages[pg_index] = alloc_page(GFP_NOFS);
+@@ -938,7 +944,7 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
+ 			comp_bio = NULL;
+ 		}
+ 	}
+-	return 0;
++	return BLK_STS_OK;
  
- obj-m += cxl_core.o
+ fail2:
+ 	while (faili >= 0) {
+@@ -951,6 +957,8 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
+ 	kfree(cb);
+ out:
+ 	free_extent_map(em);
++	bio->bi_status = ret;
++	bio_endio(bio);
+ 	return ret;
+ finish_cb:
+ 	if (comp_bio) {
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 5bbea5ec31fc..0f4408f9dadd 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -2538,10 +2538,15 @@ blk_status_t btrfs_submit_data_bio(struct inode *inode, struct bio *bio,
+ 			goto out;
  
--cxl_core-y := $(CXL_CORE_SRC)/bus.o
-+cxl_core-y := $(CXL_CORE_SRC)/port.o
- cxl_core-y += $(CXL_CORE_SRC)/pmem.o
- cxl_core-y += $(CXL_CORE_SRC)/regs.o
- cxl_core-y += $(CXL_CORE_SRC)/memdev.o
+ 		if (bio_flags & EXTENT_BIO_COMPRESSED) {
++			/*
++			 * btrfs_submit_compressed_read will handle completing
++			 * the bio if there were any errors, so just return
++			 * here.
++			 */
+ 			ret = btrfs_submit_compressed_read(inode, bio,
+ 							   mirror_num,
+ 							   bio_flags);
+-			goto out;
++			goto out_no_endio;
+ 		} else {
+ 			/*
+ 			 * Lookup bio sums does extra checks around whether we
+@@ -2575,6 +2580,7 @@ blk_status_t btrfs_submit_data_bio(struct inode *inode, struct bio *bio,
+ 		bio->bi_status = ret;
+ 		bio_endio(bio);
+ 	}
++out_no_endio:
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
