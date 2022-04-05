@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD65C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC02C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389194AbiDEV65 (ORCPT
+        id S1389242AbiDEV7F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        Tue, 5 Apr 2022 17:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354387AbiDEKOA (ORCPT
+        with ESMTP id S1354933AbiDEKQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:00 -0400
+        Tue, 5 Apr 2022 06:16:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443856C91A;
-        Tue,  5 Apr 2022 02:59:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEF321818;
+        Tue,  5 Apr 2022 03:04:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3CF7B81C86;
-        Tue,  5 Apr 2022 09:59:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5907CC385A1;
-        Tue,  5 Apr 2022 09:59:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46684B81C8B;
+        Tue,  5 Apr 2022 10:04:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B70F0C385A2;
+        Tue,  5 Apr 2022 10:04:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152780;
-        bh=1Y2tJszXJ8mM7Vg/4Mf9uvXQFr8vz3unAZ/gygB5MPE=;
+        s=korg; t=1649153046;
+        bh=kSdGlvD8ZiXBvi/chcD7vZ/P+j4sw/QMAyDaUs8nof0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FQ0X5md+nJs0B8cqsnJW0l13TpKPlZOl2RtKGejqDHvF3Eqjtru/j/PBgW1/nCLtK
-         t2/H5Lpk7CR00iO6i8NxM2pitUh2hvxJlUyuVuumgSPuRtCfKh8WMTPyv6r3zFby5c
-         7B08kapqxH+mCEUSMW0A+QV8JSQ7KoGNs9+qOXPg=
+        b=aGY7p+eBgZ7lMZjQjMgxyG1HC7bj/y7amrRs8X6VsChmazMBegYiyShzWqaFOmu2g
+         43azgj8Vs8qdHhEz+k74CXEOypfldziT7puyzVexVJ83LKYnaUT604/qai+GqOTw7T
+         qTEiqlXmG86dvcrb4pHJEomAYuW22lq/q8vDCtC4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.15 899/913] openvswitch: Fixed nd target mask field in the flow dump.
-Date:   Tue,  5 Apr 2022 09:32:41 +0200
-Message-Id: <20220405070406.767887542@linuxfoundation.org>
+        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
+        Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.10 034/599] iio: inkern: apply consumer scale on IIO_VAL_INT cases
+Date:   Tue,  5 Apr 2022 09:25:28 +0200
+Message-Id: <20220405070259.838133693@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
+From: Liam Beguin <liambeguin@gmail.com>
 
-commit f19c44452b58a84d95e209b847f5495d91c9983a upstream.
+commit 1bca97ff95c732a516ebb68da72814194980e0a5 upstream.
 
-IPv6 nd target mask was not getting populated in flow dump.
+When a consumer calls iio_read_channel_processed() and the channel has
+an integer scale, the scale channel scale is applied and the processed
+value is returned as expected.
 
-In the function __ovs_nla_put_key the icmp code mask field was checked
-instead of icmp code key field to classify the flow as neighbour discovery.
+On the other hand, if the consumer calls iio_convert_raw_to_processed()
+the scaling factor requested by the consumer is not applied.
 
-ufid:bdfbe3e5-60c2-43b0-a5ff-dfcac1c37328, recirc_id(0),dp_hash(0/0),
-skb_priority(0/0),in_port(ovs-nm1),skb_mark(0/0),ct_state(0/0),
-ct_zone(0/0),ct_mark(0/0),ct_label(0/0),
-eth(src=00:00:00:00:00:00/00:00:00:00:00:00,
-dst=00:00:00:00:00:00/00:00:00:00:00:00),
-eth_type(0x86dd),
-ipv6(src=::/::,dst=::/::,label=0/0,proto=58,tclass=0/0,hlimit=0/0,frag=no),
-icmpv6(type=135,code=0),
-nd(target=2001::2/::,
-sll=00:00:00:00:00:00/00:00:00:00:00:00,
-tll=00:00:00:00:00:00/00:00:00:00:00:00),
-packets:10, bytes:860, used:0.504s, dp:ovs, actions:ovs-nm2
+This for example causes the consumer to process mV when expecting uV.
+Make sure to always apply the scaling factor requested by the consumer.
 
-Fixes: e64457191a25 (openvswitch: Restructure datapath.c and flow.c)
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-Link: https://lore.kernel.org/r/20220328054148.3057-1-martinvarghesenokia@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
+Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220108205319.2046348-2-liambeguin@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/openvswitch/flow_netlink.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/inkern.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -2201,8 +2201,8 @@ static int __ovs_nla_put_key(const struc
- 			icmpv6_key->icmpv6_type = ntohs(output->tp.src);
- 			icmpv6_key->icmpv6_code = ntohs(output->tp.dst);
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -582,7 +582,7 @@ static int iio_convert_raw_to_processed_
  
--			if (icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_SOLICITATION ||
--			    icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
-+			if (swkey->tp.src == htons(NDISC_NEIGHBOUR_SOLICITATION) ||
-+			    swkey->tp.src == htons(NDISC_NEIGHBOUR_ADVERTISEMENT)) {
- 				struct ovs_key_nd *nd_key;
- 
- 				nla = nla_reserve(skb, OVS_KEY_ATTR_ND, sizeof(*nd_key));
+ 	switch (scale_type) {
+ 	case IIO_VAL_INT:
+-		*processed = raw64 * scale_val;
++		*processed = raw64 * scale_val * scale;
+ 		break;
+ 	case IIO_VAL_INT_PLUS_MICRO:
+ 		if (scale_val2 < 0)
 
 
