@@ -2,114 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04884C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B1B9C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389890AbiDEP1z (ORCPT
+        id S1389922AbiDEP2V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
+        Tue, 5 Apr 2022 11:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347363AbiDEJq0 (ORCPT
+        with ESMTP id S1347720AbiDEJqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:46:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE637DEB8E;
-        Tue,  5 Apr 2022 02:32:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BD10616AE;
-        Tue,  5 Apr 2022 09:32:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48275C385A0;
-        Tue,  5 Apr 2022 09:32:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151170;
-        bh=w6FuNmjk0ktzg+89KqvBnzyKkTm7FYtqo88XXdFIqus=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZgM+R6V/nDd+pA4yxm1jbRpjrgT9qCYwGmnh7ny6wbOCv0elWTyEL/kAhNOZ3dIKe
-         LB6ot+KzC44VgIHeHq7Hj7jvoHwUsIsWqK1DaOw2sz0gF0g/wDvvQOI2oSJAbJMLfR
-         d4HCM7fNA17y/acA4PYt+pw5Rhw4+wHvc3vsI7+o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 318/913] ASoC: codecs: rx-macro: fix accessing array out of bounds for enum type
-Date:   Tue,  5 Apr 2022 09:23:00 +0200
-Message-Id: <20220405070349.384127387@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 05:46:42 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29622DFD4A;
+        Tue,  5 Apr 2022 02:32:58 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0V9GYmUY_1649151171;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V9GYmUY_1649151171)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 05 Apr 2022 17:32:53 +0800
+Date:   Tue, 5 Apr 2022 17:32:50 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>, linux-doc@vger.kernel.org,
+        'Linux Kernel' <linux-kernel@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, Dell.Client.Kernel@dell.com,
+        linux-iio@vger.kernel.org, Huang Jianan <huangjianan@oppo.com>,
+        Chao Yu <chao@kernel.org>,
+        Divya Bharathi <divya.bharathi@dell.com>,
+        Mark Pearson <markpearson@lenovo.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "David E. Box" <david.e.box@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>
+Subject: Re: unexpected indentation warning in
+ Documentation/ABI/testing/sysfs-*
+Message-ID: <YkwMwqWDPokAxfY0@B-P7TQMD6M-0146.local>
+References: <564f87a9-dd57-d3a1-d476-d81350baf75d@gmail.com>
+ <4df1fc93-2a2a-3482-085f-3a88970440ff@redhat.com>
+ <1b01580f-f888-5725-e571-816073148303@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1b01580f-f888-5725-e571-816073148303@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Hi,
 
-[ Upstream commit bcfe5f76cc4051ea3f9eb5d2c8ea621641f290a5 ]
+On Tue, Apr 05, 2022 at 02:52:18PM +0700, Bagas Sanjaya wrote:
+> On 04/04/22 19.54, Hans de Goede wrote:
+> > 
+> > These 2 are fixed by this (pending) patch:
+> > https://lore.kernel.org/linux-kernel/20220324165918.22005-4-hdegoede@redhat.com/
+> > 
+> > And I also have this pending patch for a pre-existing warning:
+> > https://lore.kernel.org/linux-kernel/20220324165918.22005-3-hdegoede@redhat.com/
+> > 
+> > I'm not sure who should pick these 2 up ?
+> > 
+> 
+> I think linux-doc can pick them, if no subsystems do it.
+> 
 
-Accessing enums using integer would result in array out of bounds access
-on platforms like aarch64 where sizeof(long) is 8 compared to enum size
-which is 4 bytes.
+btw, I can pick the erofs one up though, but since it's a doc-specific
+series, I think it can go with linux-doc too.
 
-Fixes: 4f692926f562 ("ASoC: codecs: lpass-rx-macro: add dapm widgets and route")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220222183212.11580-3-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/lpass-rx-macro.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Thanks,
+Gao Xiang
 
-diff --git a/sound/soc/codecs/lpass-rx-macro.c b/sound/soc/codecs/lpass-rx-macro.c
-index fafb8265dbb3..23452900b9ae 100644
---- a/sound/soc/codecs/lpass-rx-macro.c
-+++ b/sound/soc/codecs/lpass-rx-macro.c
-@@ -2272,7 +2272,7 @@ static int rx_macro_mux_get(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
- 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
- 
--	ucontrol->value.integer.value[0] =
-+	ucontrol->value.enumerated.item[0] =
- 			rx->rx_port_value[widget->shift];
- 	return 0;
- }
-@@ -2284,7 +2284,7 @@ static int rx_macro_mux_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_dapm_to_component(widget->dapm);
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	struct snd_soc_dapm_update *update = NULL;
--	u32 rx_port_value = ucontrol->value.integer.value[0];
-+	u32 rx_port_value = ucontrol->value.enumerated.item[0];
- 	u32 aif_rst;
- 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
- 
-@@ -2396,7 +2396,7 @@ static int rx_macro_get_hph_pwr_mode(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
- 
--	ucontrol->value.integer.value[0] = rx->hph_pwr_mode;
-+	ucontrol->value.enumerated.item[0] = rx->hph_pwr_mode;
- 	return 0;
- }
- 
-@@ -2406,7 +2406,7 @@ static int rx_macro_put_hph_pwr_mode(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct rx_macro *rx = snd_soc_component_get_drvdata(component);
- 
--	rx->hph_pwr_mode = ucontrol->value.integer.value[0];
-+	rx->hph_pwr_mode = ucontrol->value.enumerated.item[0];
- 	return 0;
- }
- 
--- 
-2.34.1
-
-
-
+> -- 
+> An old man doll... just what I always wanted! - Clara
