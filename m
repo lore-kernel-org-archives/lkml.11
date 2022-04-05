@@ -2,101 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCDACC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDD7C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230234AbiDECwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:52:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
+        id S230222AbiDECw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:52:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiDECvA (ORCPT
+        with ESMTP id S231482AbiDECvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:51:00 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8480E298CAA;
-        Mon,  4 Apr 2022 19:25:45 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id d15so4366934pll.10;
-        Mon, 04 Apr 2022 19:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=s770C6klEms02pbWlMqZ7qzWEPI+Uww/MfxHY8uG4vE=;
-        b=Pi6mX9On/6yXOYMtjiBhc3JF8ZWFIRVuB7b32wQWsydrrhfhluarLLBI4GwRpY3nrc
-         k9h02aLbUfoEgJSHyDJupyCYlT/lWVPfnn6MXNOHdcr6MtZwIrCvMRNTRpvgauX74wIt
-         ZfUHLkiEc/EO3heydgGisZp/s4ZCKV0bGC6YNrIiTUtykoBVBYjUfLRuH5TS46eIpWgm
-         d2G++eLTzs7sXcAfpSCzKY3EUTgWExD+E1EN7d2yupU3ynJISX/JQ4QEznEXjmWP0IM+
-         ol4kaCMAAQlenisLyJLh2z7BKXpeU1d1BAnEjV04xU7+fkjhfz1sihAuM9m3cvtGo6s6
-         zYJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=s770C6klEms02pbWlMqZ7qzWEPI+Uww/MfxHY8uG4vE=;
-        b=HveN34a8/lO/LdEv8zjZwjqK+wzaSgucO7KwVwDJT33Lxlkn2yeLQlWrAmqs46DGUW
-         8THYFbKTVlrttPyl/zGyNMz/qbw99GVQiV1UkhJyZ9rWH7cvQiSFs8G+mcE/bV2k7Pja
-         n4o59I1X5WH8uKQVioEJQ08UHSa2hRqh8Df/LnyfnpOjhHz04m/geHWyoNh671mAwy0U
-         VydftvZ3XvpjpnQ2uGX7meQhEzEsvEgbGo4SKmlsJ2cgpecchgRGnxkj9fmnQMsqAmxM
-         3wUHvuXI8SmKC7B9PvboLlvxsiPzYem55zPXoydaem3+Ug2QgPHLR/nl8d+diz7NwlTp
-         ra/Q==
-X-Gm-Message-State: AOAM53134PREd9pzgBBF8tm16TDG48w5pEpHhLuRWUtgornSiHm8NMei
-        RD2hyDrSKf8zme5bIcJ0YGnuS8mT5OJejA==
-X-Google-Smtp-Source: ABdhPJwmBgrLbIlKAQPHNKz0xTu5okVlttnvouUNoCPFbvhEiveNTyPJzyt3jvsp1cecI/Xmo75sSg==
-X-Received: by 2002:a17:902:c745:b0:151:e8fa:629b with SMTP id q5-20020a170902c74500b00151e8fa629bmr671335plq.90.1649117161263;
-        Mon, 04 Apr 2022 17:06:01 -0700 (PDT)
-Received: from localhost.localdomain ([183.156.181.188])
-        by smtp.googlemail.com with ESMTPSA id y4-20020a056a00190400b004fac0896e35sm13600693pfi.42.2022.04.04.17.05.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 17:06:00 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: [RESEND][PATCH v2] myri10ge: remove an unneeded NULL check
-Date:   Tue,  5 Apr 2022 08:05:53 +0800
-Message-Id: <20220405000553.21856-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 4 Apr 2022 22:51:43 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE223A4F9F
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649123969; x=1680659969;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rFzUkn5Y5xQQ2HAB0qQSLI8m5kgEaFLoljYOb1PCiZg=;
+  b=U91uwvCRl680fupQY4wxT96uCHtJO0j9uK4Gi3dRyTSB2H2sLpbi4OcT
+   b7gGaia2zmlRGEoHU4yQOq5qSlKNZfjqwW8sjf4e9k9mZB1SrK8XlgJbH
+   wfbqFwbqUP2z7PQRKJ36i83K7Oy1T2ek/bZadpeWX1nmyFYiX7VURRtyw
+   X9mRMIkFEspgXUJufyu9xMmJmFfBGA+lVhDCRwVgq5U0oQCX5j+LdrskW
+   vas0gmf1BeKaqcANIJ1ZA1eSdEBzVwfVmfKOCs0bGbnHNLArTCn+omX7O
+   B509Rwg/67FuVHOSs9z3AjWh78Ii49DEzQiFAgh6m+0vRyz+hoJYrAbVt
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323811701"
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="323811701"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 17:34:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="548858094"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 04 Apr 2022 17:34:39 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbX9b-0002Uh-8C;
+        Tue, 05 Apr 2022 00:34:39 +0000
+Date:   Tue, 5 Apr 2022 08:34:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [intel-tdx:host-upstream 4/22] arch/x86/virt/vmx/tdx/seamcall.o:
+ warning: objtool: __seamcall()+0x46: missing int3 after ret
+Message-ID: <202204050802.3XX06naF-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The define of skb_list_walk_safe(first, skb, next_skb) is:
-  for ((skb) = (first), (next_skb) = (skb) ? (skb)->next : NULL; (skb);  \
-     (skb) = (next_skb), (next_skb) = (skb) ? (skb)->next : NULL)
+Hi Kai,
 
-Thus, if the 'segs' passed as 'first' into the skb_list_walk_safe is NULL,
-the loop will exit immediately. In other words, it can be sure the 'segs'
-is non-NULL when we run inside the loop. So just remove the unnecessary
-NULL check. Also remove the unneeded assignmnets.
+First bad commit (maybe != root cause):
 
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
----
-changes since v1:
- - remove the unneeded assignmnets.
+tree:   https://github.com/intel/tdx.git host-upstream
+head:   5361812499e28ae0203df555669b6c1d79754fd1
+commit: 40b2c61b1b21e86f5b32ec6222cfc11270fe0ce1 [4/22] x86/virt/tdx: Implement the SEAMCALL base function
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220405/202204050802.3XX06naF-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel/tdx/commit/40b2c61b1b21e86f5b32ec6222cfc11270fe0ce1
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx host-upstream
+        git checkout 40b2c61b1b21e86f5b32ec6222cfc11270fe0ce1
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-v1: https://lore.kernel.org/lkml/20220319052350.26535-1-xiam0nd.tong@gmail.com/
----
- drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-index 50ac3ee2577a..071657e3dba8 100644
---- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-+++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-@@ -2903,12 +2903,8 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
- 		status = myri10ge_xmit(curr, dev);
- 		if (status != 0) {
- 			dev_kfree_skb_any(curr);
--			if (segs != NULL) {
--				curr = segs;
--				segs = next;
--				curr->next = NULL;
--				dev_kfree_skb_any(segs);
--			}
-+			segs->next = NULL;
-+			dev_kfree_skb_any(next);
- 			goto drop;
- 		}
- 	}
+All warnings (new ones prefixed by >>):
+
+>> arch/x86/virt/vmx/tdx/seamcall.o: warning: objtool: __seamcall()+0x46: missing int3 after ret
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
