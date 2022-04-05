@@ -2,98 +2,540 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6571FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230180AbiDECqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40356 "EHLO
+        id S230195AbiDECq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbiDECqL (ORCPT
+        with ESMTP id S230507AbiDECq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:46:11 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800FD37BA2E;
-        Mon,  4 Apr 2022 18:51:53 -0700 (PDT)
-Date:   Mon, 04 Apr 2022 23:57:40 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649116661;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5xJqt6HFPzkzv5UcTuTc/+VNPIr1xBZCX9CZQWo2oqs=;
-        b=C3eTuKfK8nQ6bIy62qT8fMTq+c/WF2XqFJi7HALMoqVgysAVI+oitv53xXdEyT3jFICxtE
-        4n5/H8KPcjyAsh3S5n23ldsMB0Dj1FggTfo+GjivNzPumVbqGLrjSknvZTdIGHkfv93lEH
-        kvDzJIzMJnN8EFqhbOQ9hgCcq3CKiaWsDViEzr/AwFe33HwgtKapIqHyS/RiJNFzQObd+E
-        J0la+G8mQFBRkxPu1Xr42bTAHNFtY8vsfGMnKg+oxMVrNkBCmbH8fS6eDZ3ORuNey5izyK
-        3bP7aPMO+Yv0jncgxfCFID9HOQbzKacIrwjQsNo/Gq6LQN9MbLf/D/DFFiDSJg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649116661;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5xJqt6HFPzkzv5UcTuTc/+VNPIr1xBZCX9CZQWo2oqs=;
-        b=Z2pE5QAnGXnT2YEUQacnOmwxE/CxDTzTebK1CgF+Hwbcse7ol/tlYYCqNlWaGGjwT1AGVr
-        T7TEVLEMQ43vQbCA==
-From:   "tip-bot2 for Ira Weiny" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/cleanups] x86/pkeys: Clean up arch_set_user_pkey_access()
- declaration
-Cc:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220331180554.2945884-1-ira.weiny@intel.com>
-References: <20220331180554.2945884-1-ira.weiny@intel.com>
+        Mon, 4 Apr 2022 22:46:26 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364431229A8;
+        Mon,  4 Apr 2022 19:32:50 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id y6so9741222plg.2;
+        Mon, 04 Apr 2022 19:32:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vI1wpZOrZu49cdz2T/VmUys+7JrgZzqJM6m+nCLErpc=;
+        b=TZ2d0oG3XBk/UUfNXBjOZ7y1qMsM4Fa2EH1bIxiEXTqQgLd9YkmkSB6UJ7hwzhbATE
+         8uCzM9pum+4+GVwB+8f/iPmKApa6ke3q2bxSJJftCszHik5fx5rKL4qFKwoEeD4kFXEz
+         BFkHqzp7ajaLaO3DIcm15zXYAh+LKAzvfQZ/hql/VQA05/XkHflr6qUn+/W3mtJHXdcy
+         4mvrdEDpmqVzA+5pvbL+9kHBryZR3pzgAHfiMZhRcNYMpCIjWGV1N0A0GKZctcyHqnGi
+         kPr0fVmb0sQnd2UxxdBkonKiIZ0penexkFDiYwwEn9WqlykNGout6x3aq885umUd5nCN
+         wyAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vI1wpZOrZu49cdz2T/VmUys+7JrgZzqJM6m+nCLErpc=;
+        b=z+jZdEz+hjkYC4Q+JQzjIv5SSvyQGiDSdtEQLMeiSvxLQ4DC54o6G53eutQHNSwGrx
+         7MIYs43YsjHq9RdHZyvD9l9NYEKscMTqeCWMz2LkZWsEufUdOc+DEI5JM/6g3B19URLu
+         WbK8TqNMgDB4ZYKZZEmodOGTh+9KPV5o3tAOeOmhu6zwAcpgGh0JiqX51egp24LDL3Di
+         SbcmBRbSJOHgOsJ/T0DtzMZdI6KUAcYObu1mNoSMmOc8+3APHWelG7zRFrJjZnAiSRfl
+         WwxzrDSVHhRMPFEC7N7eQzbG4H9ZbLv8l/LeCptoAvuCC5yfupH1k+4HFwxyEFbFmEzD
+         EWSg==
+X-Gm-Message-State: AOAM53087PGr8bnW7agjEOl+TYEh+XxAXqI7BtsdfdFanW7o/G04oX6D
+        NxmGv9DMMoHdLgQ1A7OpWyNlKW8MNarsOA==
+X-Google-Smtp-Source: ABdhPJyCrPyiv/vX6oOk3TRa9n9KuP7AV7pOcmSRR1GDw53d+NiKNrrmL84SfE4wAKs9+kqQY+yV+g==
+X-Received: by 2002:a17:90a:1941:b0:1ca:a28b:6744 with SMTP id 1-20020a17090a194100b001caa28b6744mr1544320pjh.50.1649125969004;
+        Mon, 04 Apr 2022 19:32:49 -0700 (PDT)
+Received: from anyang ([106.250.177.234])
+        by smtp.gmail.com with ESMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm13782641pfc.78.2022.04.04.19.32.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 19:32:48 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 11:32:44 +0900
+From:   Dongjin Kim <tobetter@gmail.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] arm64: dts: rockchip: Add Hardkernel ODROID-M1 board
+Message-ID: <YkuqTBAi8d48NAOR@anyang>
+References: <20220329094446.415219-1-tobetter@gmail.com>
+ <20220329094446.415219-2-tobetter@gmail.com>
+ <2a5f002f-8a61-e5b0-a574-ee99591c4c12@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164911666067.389.6810895631188554028.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2a5f002f-8a61-e5b0-a574-ee99591c4c12@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/cleanups branch of tip:
-
-Commit-ID:     70431c63d7ed31baf18b0083ba5473274363a174
-Gitweb:        https://git.kernel.org/tip/70431c63d7ed31baf18b0083ba5473274363a174
-Author:        Ira Weiny <ira.weiny@intel.com>
-AuthorDate:    Thu, 31 Mar 2022 11:05:54 -07:00
-Committer:     Dave Hansen <dave.hansen@linux.intel.com>
-CommitterDate: Mon, 04 Apr 2022 15:58:24 -07:00
-
-x86/pkeys: Clean up arch_set_user_pkey_access() declaration
-
-arch_set_user_pkey_access() was declared two times in the header.
-
-Remove the 2nd declaration.
-
-Suggested-by: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220331180554.2945884-1-ira.weiny@intel.com
----
- arch/x86/include/asm/pkeys.h | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/arch/x86/include/asm/pkeys.h b/arch/x86/include/asm/pkeys.h
-index 1d5f14a..9c53053 100644
---- a/arch/x86/include/asm/pkeys.h
-+++ b/arch/x86/include/asm/pkeys.h
-@@ -118,8 +118,6 @@ int mm_pkey_free(struct mm_struct *mm, int pkey)
- 	return 0;
- }
- 
--extern int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
--		unsigned long init_val);
- extern int __arch_set_user_pkey_access(struct task_struct *tsk, int pkey,
- 		unsigned long init_val);
- 
+On Tue, Mar 29, 2022 at 07:12:16PM +0200, Krzysztof Kozlowski wrote:
+> On 29/03/2022 11:44, Dongjin Kim wrote:
+> > This patch is to add a device tree for new board Hardkernel ODROID-M1
+> > based on Rockchip RK3568, includes basic peripherals -
+> > uart/eMMC/uSD/i2c and on-board ethernet.
+> 
+> I think the email got corrupted (incorrect To addresses).
+> 
+Thank you for reviewing and sorry for late reply.
+> > 
+> > Signed-off-by: Dongjin Kim <tobetter@gmail.com>
+> > ---
+> >  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+> >  .../boot/dts/rockchip/rk3568-odroid-m1.dts    | 406 ++++++++++++++++++
+> >  2 files changed, 407 insertions(+)
+> >  create mode 100644 arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
+> > 
+> > diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+> > index 4ae9f35434b8..81d160221227 100644
+> > --- a/arch/arm64/boot/dts/rockchip/Makefile
+> > +++ b/arch/arm64/boot/dts/rockchip/Makefile
+> > @@ -61,3 +61,4 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-pinenote-v1.2.dtb
+> >  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-quartz64-a.dtb
+> >  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
+> >  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bpi-r2-pro.dtb
+> > +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-odroid-m1.dtb
+> > diff --git a/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts b/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
+> > new file mode 100644
+> > index 000000000000..d1a5d43127e9
+> > --- /dev/null
+> > +++ b/arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts
+> > @@ -0,0 +1,406 @@
+> > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> > +/*
+> > + * Copyright (c) 2022 Hardkernel Co., Ltd.
+> > + *
+> > + */
+> > +
+> > +/dts-v1/;
+> > +#include <dt-bindings/gpio/gpio.h>
+> > +#include <dt-bindings/leds/common.h>
+> > +#include <dt-bindings/pinctrl/rockchip.h>
+> > +#include "rk3568.dtsi"
+> > +
+> > +/ {
+> > +	model = "Hardkernel ODROID-M1";
+> > +	compatible = "rockchip,rk3568-odroid-m1", "rockchip,rk3568";
+> > +
+> > +	aliases {
+> > +		ethernet0 = &gmac0;
+> > +		i2c0 = &i2c3;
+> > +		i2c3 = &i2c0;
+> > +		mmc0 = &sdhci;
+> > +		mmc1 = &sdmmc0;
+> > +		serial0 = &uart1;
+> > +		serial1 = &uart0;
+> > +	};
+> > +
+> > +	chosen: chosen {
+> 
+> No need for label.
+> 
+Ok. Will fix it.
+> > +		stdout-path = "serial2:1500000n8";
+> > +	};
+> > +
+> > +	dc_12v: dc-12v {
+> 
+> Generic node name, so "regulator" or "regulator-0"
+> 
+I've followed the node names as already merged device tree files
+for other boards and thought this would be acceptable. Same for other
+node names 'vcc3v3-sys' and node names with underscore below.
+> > +		compatible = "regulator-fixed";
+> > +		regulator-name = "dc_12v";
+> > +		regulator-always-on;
+> > +		regulator-boot-on;
+> > +		regulator-min-microvolt = <12000000>;
+> > +		regulator-max-microvolt = <12000000>;
+> > +	};
+> > +
+> > +	leds: leds {
+> 
+> Label seems unused.
+> 
+Ok, will fix it.
+> > +		compatible = "gpio-leds";
+> > +
+> > +		led_power: led-0 {
+> > +			gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_LOW>;
+> > +			function = LED_FUNCTION_POWER;
+> > +			color = <LED_COLOR_ID_RED>;
+> > +			linux,default-trigger = "default-on";
+> > +			pinctrl-names = "default";
+> > +			pinctrl-0 = <&led_power_en>;
+> > +		};
+> > +		led_work: led-1 {
+> > +			gpios = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
+> > +			function = LED_FUNCTION_HEARTBEAT;
+> > +			color = <LED_COLOR_ID_BLUE>;
+> > +			linux,default-trigger = "heartbeat";
+> > +			pinctrl-names = "default";
+> > +			pinctrl-0 = <&led_work_en>;
+> > +		};
+> > +	};
+> > +
+> > +	vcc3v3_sys: vcc3v3-sys {
+> 
+> Generic node name.
+> 
+> > +		compatible = "regulator-fixed";
+> > +		regulator-name = "vcc3v3_sys";
+> > +		regulator-always-on;
+> > +		regulator-boot-on;
+> > +		regulator-min-microvolt = <3300000>;
+> > +		regulator-max-microvolt = <3300000>;
+> > +		vin-supply = <&dc_12v>;
+> > +	};
+> > +};
+> > +
+> > +&cpu0 {
+> > +	cpu-supply = <&vdd_cpu>;
+> > +};
+> > +
+> > +&cpu1 {
+> > +	cpu-supply = <&vdd_cpu>;
+> > +};
+> > +
+> > +&cpu2 {
+> > +	cpu-supply = <&vdd_cpu>;
+> > +};
+> > +
+> > +&cpu3 {
+> > +	cpu-supply = <&vdd_cpu>;
+> > +};
+> > +
+> > +&gmac0 {
+> > +	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
+> > +	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
+> > +	assigned-clock-rates = <0>, <125000000>;
+> > +	clock_in_out = "output";
+> > +	phy-handle = <&rgmii_phy0>;
+> > +	phy-mode = "rgmii";
+> > +	pinctrl-names = "default";
+> > +	pinctrl-0 = <&gmac0_miim
+> > +		     &gmac0_tx_bus2
+> > +		     &gmac0_rx_bus2
+> > +		     &gmac0_rgmii_clk
+> > +		     &gmac0_rgmii_bus>;
+> > +	status = "okay";
+> > +
+> > +	tx_delay = <0x4f>;
+> > +	rx_delay = <0x2d>;
+> > +};
+> > +
+> > +&i2c0 {
+> > +	status = "okay";
+> > +
+> > +	vdd_cpu: regulator@1c {
+> > +		compatible = "tcs,z`";
+> > +		reg = <0x1c>;
+> > +		 fcs,suspend-voltage-selector = <1>;
+> 
+> Mixed up indentation.
+> 
+Sorry, my bad. Will fix it.
+> > +		 regulator-name = "vdd_cpu";
+> > +		 regulator-always-on;
+> > +		 regulator-boot-on;
+> > +		 regulator-min-microvolt = <800000>;
+> > +		 regulator-max-microvolt = <1150000>;
+> > +		 regulator-ramp-delay = <2300>;
+> > +		 vin-supply = <&vcc3v3_sys>;
+> > +
+> > +		 regulator-state-mem {
+> > +			 regulator-off-in-suspend;
+> > +		};
+> > +	};
+> > +
+> > +	rk809: pmic@20 {
+> > +		compatible = "rockchip,rk809";
+> > +		reg = <0x20>;
+> > +		interrupt-parent = <&gpio0>;
+> > +		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
+> > +		#clock-cells = <1>;
+> > +		pinctrl-names = "default";
+> > +		pinctrl-0 = <&pmic_int>;
+> > +		rockchip,system-power-controller;
+> > +		vcc1-supply = <&vcc3v3_sys>;
+> > +		vcc2-supply = <&vcc3v3_sys>;
+> > +		vcc3-supply = <&vcc3v3_sys>;
+> > +		vcc4-supply = <&vcc3v3_sys>;
+> > +		vcc5-supply = <&vcc3v3_sys>;
+> > +		vcc6-supply = <&vcc3v3_sys>;
+> > +		vcc7-supply = <&vcc3v3_sys>;
+> > +		vcc8-supply = <&vcc3v3_sys>;
+> > +		vcc9-supply = <&vcc3v3_sys>;
+> > +		wakeup-source;
+> > +
+> > +		regulators {
+> > +			vdd_logic: DCDC_REG1 {
+> 
+> No underscores in node names, unless anything requires it.
+> 
+> > +				regulator-name = "vdd_logic";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +				regulator-init-microvolt = <900000>;
+> > +				regulator-initial-mode = <0x2>;
+> > +				regulator-min-microvolt = <500000>;
+> > +				regulator-max-microvolt = <1350000>;
+> > +				regulator-ramp-delay = <6001>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vdd_gpu: DCDC_REG2 {
+> > +				regulator-name = "vdd_gpu";
+> > +				regulator-init-microvolt = <900000>;
+> > +				regulator-initial-mode = <0x2>;
+> > +				regulator-min-microvolt = <500000>;
+> > +				regulator-max-microvolt = <1350000>;
+> > +				regulator-ramp-delay = <6001>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vcc_ddr: DCDC_REG3 {
+> > +				regulator-name = "vcc_ddr";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +				regulator-initial-mode = <0x2>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-on-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vdd_npu: DCDC_REG4 {
+> > +				regulator-name = "vdd_npu";
+> > +				regulator-init-microvolt = <900000>;
+> > +				regulator-initial-mode = <0x2>;
+> > +				regulator-min-microvolt = <500000>;
+> > +				regulator-max-microvolt = <1350000>;
+> > +				regulator-ramp-delay = <6001>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vcc_1v8: DCDC_REG5 {
+> > +				regulator-name = "vcc_1v8";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +				regulator-min-microvolt = <1800000>;
+> > +				regulator-max-microvolt = <1800000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vdda0v9_image: LDO_REG1 {
+> > +				regulator-name = "vdda0v9_image";
+> > +				regulator-min-microvolt = <900000>;
+> > +				regulator-max-microvolt = <900000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vdda_0v9: LDO_REG2 {
+> > +				regulator-name = "vdda_0v9";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +				regulator-min-microvolt = <900000>;
+> > +				regulator-max-microvolt = <900000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vdda0v9_pmu: LDO_REG3 {
+> > +				regulator-name = "vdda0v9_pmu";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +				regulator-min-microvolt = <900000>;
+> > +				regulator-max-microvolt = <900000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-on-in-suspend;
+> > +					regulator-suspend-microvolt = <900000>;
+> > +				};
+> > +			};
+> > +
+> > +			vccio_acodec: LDO_REG4 {
+> > +				regulator-name = "vccio_acodec";
+> > +				regulator-min-microvolt = <3300000>;
+> > +				regulator-max-microvolt = <3300000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vccio_sd: LDO_REG5 {
+> > +				regulator-name = "vccio_sd";
+> > +				regulator-min-microvolt = <1800000>;
+> > +				regulator-max-microvolt = <3300000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vcc3v3_pmu: LDO_REG6 {
+> > +				regulator-name = "vcc3v3_pmu";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +				regulator-min-microvolt = <3300000>;
+> > +				regulator-max-microvolt = <3300000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-on-in-suspend;
+> > +					regulator-suspend-microvolt = <3300000>;
+> > +				};
+> > +			};
+> > +
+> > +			vcca_1v8: LDO_REG7 {
+> > +				regulator-name = "vcca_1v8";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +				regulator-min-microvolt = <1800000>;
+> > +				regulator-max-microvolt = <1800000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vcca1v8_pmu: LDO_REG8 {
+> > +				regulator-name = "vcca1v8_pmu";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +				regulator-min-microvolt = <1800000>;
+> > +				regulator-max-microvolt = <1800000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-on-in-suspend;
+> > +					regulator-suspend-microvolt = <1800000>;
+> > +				};
+> > +			};
+> > +
+> > +			vcca1v8_image: LDO_REG9 {
+> > +				regulator-name = "vcca1v8_image";
+> > +				regulator-min-microvolt = <1800000>;
+> > +				regulator-max-microvolt = <1800000>;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vcc_3v3: SWITCH_REG1 {
+> > +				regulator-name = "vcc_3v3";
+> > +				regulator-always-on;
+> > +				regulator-boot-on;
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +
+> > +			vcc3v3_sd: SWITCH_REG2 {
+> > +				regulator-name = "vcc3v3_sd";
+> > +
+> > +				regulator-state-mem {
+> > +					regulator-off-in-suspend;
+> > +				};
+> > +			};
+> > +		};
+> > +	};
+> > +};
+> > +
+> > +&mdio0 {
+> > +	rgmii_phy0: ethernet-phy@0 {
+> > +		compatible = "ethernet-phy-ieee802.3-c22";
+> > +		reg = <0x0>;
+> > +		reset-assert-us = <20000>;
+> > +		reset-deassert-us = <100000>;
+> > +		reset-gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+> > +	};
+> > +};
+> > +
+> > +&pinctrl {
+> > +	leds {
+> > +		led_power_en: led_power_en {
+> 
+> No underscores in node names. Do bindings require specific naming? I
+> would expect "-grp" or "-pins" suffixes, if possible.
+> 
+> > +			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+> > +		};
+> > +		led_work_en: led_work_en {
+> > +			rockchip,pins = <0 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
+> > +		};
+> > +	};
+> > +
+> > +	pmic {
+> > +		pmic_int: pmic_int {
+> > +			rockchip,pins =
+> > +				<0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
+> > +		};
+> > +	};
+> > +};
+> > +
+> > +&pmu_io_domains {
+> > +	pmuio1-supply = <&vcc3v3_pmu>;
+> > +	pmuio2-supply = <&vcc3v3_pmu>;
+> > +	vccio1-supply = <&vccio_acodec>;
+> > +	vccio2-supply = <&vcc_1v8>;
+> > +	vccio3-supply = <&vccio_sd>;
+> > +	vccio4-supply = <&vcc_1v8>;
+> > +	vccio5-supply = <&vcc_3v3>;
+> > +	vccio6-supply = <&vcc_3v3>;
+> > +	vccio7-supply = <&vcc_3v3>;
+> > +	status = "okay";
+> > +};
+> > +
+> > +&saradc {
+> > +	vref-supply = <&vcca_1v8>;
+> > +	status = "okay";
+> > +};
+> > +
+> > +&sdhci {
+> > +	bus-width = <8>;
+> > +	max-frequency = <200000000>;
+> > +	non-removable;
+> > +	pinctrl-names = "default";
+> > +	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe &emmc_rstnout>;
+> > +	status = "okay";
+> > +};
+> > +
+> > +&sdmmc0 {
+> > +	bus-width = <4>;
+> > +	cap-sd-highspeed;
+> > +	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
+> > +	disable-wp;
+> > +	pinctrl-names = "default";
+> > +	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
+> > +	sd-uhs-sdr104;
+> > +	vmmc-supply = <&vcc3v3_sd>;
+> > +	vqmmc-supply = <&vccio_sd>;
+> > +	status = "okay";
+> > +};
+> > +
+> > +&uart2 {
+> > +	status = "okay";
+> > +};
+> 
+> 
+> Best regards,
+> Krzysztof
+Thank you,
+Dongjin.
