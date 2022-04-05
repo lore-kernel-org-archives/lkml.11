@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B0CCC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 578C3C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386397AbiDEMnR (ORCPT
+        id S1355971AbiDEMmo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
+        Tue, 5 Apr 2022 08:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242250AbiDEJHv (ORCPT
+        with ESMTP id S241805AbiDEJHV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:07:51 -0400
+        Tue, 5 Apr 2022 05:07:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510AF6517A;
-        Tue,  5 Apr 2022 01:56:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083E64B1F7;
+        Tue,  5 Apr 2022 01:56:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D70C8B81C6D;
-        Tue,  5 Apr 2022 08:56:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29DC6C385A1;
-        Tue,  5 Apr 2022 08:56:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59E57B81C6C;
+        Tue,  5 Apr 2022 08:56:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8FC8C385A0;
+        Tue,  5 Apr 2022 08:56:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149001;
-        bh=uRP3lPFh83fo86mszzm6oL6vhfxl+Y9k7IkMaSWOLwQ=;
+        s=korg; t=1649148996;
+        bh=Z9o8gaYS56UaYl5hI66rYbD2VLJumMbKcvklW95+7cY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f/Wrs7jpKjCCU60dcQI+LiMW5wyGzO/fTa8tE9s6/r+cr3xSy9K6HfncRTBnHzfC9
-         /d81ATB/lQvedJegaErUyMsZQ1gg9xUrX0qn1I0NxUbT6QUG5qSmLnP35lwZZf+WWp
-         RHIqgSSORQKaICHZgIOmcyEEeo27BkuBbjheHd+A=
+        b=t8FKc5wiGdDC9nbgLeFUJnhRKEEQbqD//dzybOv9W7/XGMgf+gWBi3HHlY4djtc5c
+         Yd/6TZh0NCNX7zrBqfHwaTa8kaCBrcSEDab82qZUkbuVwzBO9c7wQdmWRhBI9kbX1o
+         j0E1+wBrHbJjm0MjEjC71S+N2X20FkNBdaQCX1ag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0559/1017] gpu: host1x: Fix a memory leak in host1x_remove()
-Date:   Tue,  5 Apr 2022 09:24:32 +0200
-Message-Id: <20220405070410.873649820@linuxfoundation.org>
+Subject: [PATCH 5.16 0549/1017] drm/tegra: Fix reference leak in tegra_dsi_ganged_probe
+Date:   Tue,  5 Apr 2022 09:24:22 +0200
+Message-Id: <20220405070410.581332758@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,33 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 025c6643a81564f066d8381b9e2f4603e0f8438f ]
+[ Upstream commit 221e3638feb8bc42143833c9a704fa89b6c366bb ]
 
-Add a missing 'host1x_channel_list_free()' call in the remove function,
-as already done in the error handling path of the probe function.
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore. Add put_device() call to fix this.
 
-Fixes: 8474b02531c4 ("gpu: host1x: Refactor channel allocation code")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Fixes: e94236cde4d5 ("drm/tegra: dsi: Add ganged mode support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/host1x/dev.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/tegra/dsi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
-index 3872e4cd2698..fc9f54282f7d 100644
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -526,6 +526,7 @@ static int host1x_remove(struct platform_device *pdev)
- 	host1x_syncpt_deinit(host);
- 	reset_control_assert(host->rst);
- 	clk_disable_unprepare(host->clk);
-+	host1x_channel_list_free(&host->channel_list);
- 	host1x_iommu_exit(host);
+diff --git a/drivers/gpu/drm/tegra/dsi.c b/drivers/gpu/drm/tegra/dsi.c
+index f46d377f0c30..de1333dc0d86 100644
+--- a/drivers/gpu/drm/tegra/dsi.c
++++ b/drivers/gpu/drm/tegra/dsi.c
+@@ -1538,8 +1538,10 @@ static int tegra_dsi_ganged_probe(struct tegra_dsi *dsi)
+ 		dsi->slave = platform_get_drvdata(gangster);
+ 		of_node_put(np);
  
- 	return 0;
+-		if (!dsi->slave)
++		if (!dsi->slave) {
++			put_device(&gangster->dev);
+ 			return -EPROBE_DEFER;
++		}
+ 
+ 		dsi->slave->master = dsi;
+ 	}
 -- 
 2.34.1
 
