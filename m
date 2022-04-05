@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 595FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6019C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232474AbiDFAXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54044 "EHLO
+        id S237448AbiDFAXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 20:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351417AbiDEKCY (ORCPT
+        with ESMTP id S1348182AbiDEKqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:02:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158E36D94C;
-        Tue,  5 Apr 2022 02:51:44 -0700 (PDT)
+        Tue, 5 Apr 2022 06:46:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40EB35264;
+        Tue,  5 Apr 2022 03:26:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD6A2B818F3;
-        Tue,  5 Apr 2022 09:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C9E0C385A2;
-        Tue,  5 Apr 2022 09:51:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3526861425;
+        Tue,  5 Apr 2022 10:26:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47C46C385A1;
+        Tue,  5 Apr 2022 10:26:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152301;
-        bh=uUJYm2DMJgRHxMsCLngTuCvWIqzlzl8WGEzEuzZdEK0=;
+        s=korg; t=1649154415;
+        bh=baRRfmdaoZGbu2PPrt5s5Gx/3K/7lVG2bGsxzYUwojA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ecW1ghAIBYr1AjVdu4vKNFiZmMQF/CvhIU7QjymTgrfo6Q0YjGWeRFb3V25QRJ8Vb
-         hj2KIXjcWza8Mz1x06pC+HjxLKzkJkzvz2TQpHm2hdX8j0Uew459dXi0V7tMYixh3X
-         vV5fDn0iewbHOv07T0K1Rb+Ysv8IPiKuAYVm9GBA=
+        b=XoWfxcMZhaYFLOIEjSHC77PEZlT38saozgr6m3WXvRO+vFiYTM8qqNYeTFsSdh4IH
+         X2NODFAupThE0DOf9zDrUGjbmcyyzdae4mXjHM8DYnIvOXSLqDYoGVoErO5wT9y3kB
+         aA3jCyBJj5tWaxkvj50l4dVCYt3tbpGNdDGTbltY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 727/913] media: staging: media: zoran: fix various V4L2 compliance errors
-Date:   Tue,  5 Apr 2022 09:29:49 +0200
-Message-Id: <20220405070401.623203752@linuxfoundation.org>
+        stable@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>,
+        Benson Leung <bleung@chromium.org>
+Subject: [PATCH 5.10 532/599] platform: chrome: Split trace include file
+Date:   Tue,  5 Apr 2022 09:33:46 +0200
+Message-Id: <20220405070314.672106544@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,102 +48,303 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+From: Gwendal Grignou <gwendal@chromium.org>
 
-[ Upstream commit 914941827aad5ecddf9bf3a6dee67fbec1af1fff ]
+commit eabd9a3807e17e211690e6c40f1405b427b64c48 upstream.
 
-This fixes several issues found with 'v4l2-compliance -s':
+cros_ec_trace.h defined 5 tracing events, 2 for cros_ec_proto and
+3 for cros_ec_sensorhub_ring.
+These 2 files are in different kernel modules, the traces are defined
+twice in the kernel which leads to problem enabling only some traces.
 
-1) read()/write() is supported, but not reported in the capabilities
-2) S_STD(G_STD()) failed: setting the same standard should just return 0.
-3) G_PARM failed to set readbuffers.
-4) different field values in the format vs. what v4l2_buffer reported.
-5) zero the sequence number when starting streaming.
-6) drop VB_USERPTR: makes no sense with dma_contig streaming.
+Move sensorhub traces from cros_ec_trace.h to cros_ec_sensorhub_trace.h
+and enable them only in cros_ec_sensorhub kernel module.
 
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Check we can now enable any single traces: without this patch,
+we can only enable all sensorhub traces or none.
+
+Fixes: d453ceb6549a ("platform/chrome: sensorhub: Add trace events for sample")
+
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220122001301.640337-1-gwendal@chromium.org
+Signed-off-by: Benson Leung <bleung@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/media/zoran/zoran_card.c   |  2 +-
- drivers/staging/media/zoran/zoran_driver.c | 13 ++++++++++---
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ drivers/platform/chrome/Makefile                  |    3 
+ drivers/platform/chrome/cros_ec_sensorhub_ring.c  |    3 
+ drivers/platform/chrome/cros_ec_sensorhub_trace.h |  123 ++++++++++++++++++++++
+ drivers/platform/chrome/cros_ec_trace.h           |   95 ----------------
+ 4 files changed, 127 insertions(+), 97 deletions(-)
+ create mode 100644 drivers/platform/chrome/cros_ec_sensorhub_trace.h
 
-diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
-index a83314b16548..11d415c0c05d 100644
---- a/drivers/staging/media/zoran/zoran_card.c
-+++ b/drivers/staging/media/zoran/zoran_card.c
-@@ -811,7 +811,7 @@ static int zoran_init_video_device(struct zoran *zr, struct video_device *video_
- 	*video_dev = zoran_template;
- 	video_dev->v4l2_dev = &zr->v4l2_dev;
- 	video_dev->lock = &zr->lock;
--	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
-+	video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_READWRITE | dir;
+--- a/drivers/platform/chrome/Makefile
++++ b/drivers/platform/chrome/Makefile
+@@ -2,6 +2,7 @@
  
- 	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
- 	/*
-diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
-index 551db338c7f7..84665637ebb7 100644
---- a/drivers/staging/media/zoran/zoran_driver.c
-+++ b/drivers/staging/media/zoran/zoran_driver.c
-@@ -255,8 +255,6 @@ static int zoran_querycap(struct file *file, void *__fh, struct v4l2_capability
- 	strscpy(cap->card, ZR_DEVNAME(zr), sizeof(cap->card));
- 	strscpy(cap->driver, "zoran", sizeof(cap->driver));
- 	snprintf(cap->bus_info, sizeof(cap->bus_info), "PCI:%s", pci_name(zr->pci_dev));
--	cap->device_caps = zr->video_dev->device_caps;
--	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
- 	return 0;
- }
+ # tell define_trace.h where to find the cros ec trace header
+ CFLAGS_cros_ec_trace.o:=		-I$(src)
++CFLAGS_cros_ec_sensorhub_ring.o:=	-I$(src)
  
-@@ -582,6 +580,9 @@ static int zoran_s_std(struct file *file, void *__fh, v4l2_std_id std)
- 	struct zoran *zr = video_drvdata(file);
- 	int res = 0;
+ obj-$(CONFIG_CHROMEOS_LAPTOP)		+= chromeos_laptop.o
+ obj-$(CONFIG_CHROMEOS_PSTORE)		+= chromeos_pstore.o
+@@ -20,7 +21,7 @@ obj-$(CONFIG_CROS_EC_CHARDEV)		+= cros_e
+ obj-$(CONFIG_CROS_EC_LIGHTBAR)		+= cros_ec_lightbar.o
+ obj-$(CONFIG_CROS_EC_VBC)		+= cros_ec_vbc.o
+ obj-$(CONFIG_CROS_EC_DEBUGFS)		+= cros_ec_debugfs.o
+-cros-ec-sensorhub-objs			:= cros_ec_sensorhub.o cros_ec_sensorhub_ring.o cros_ec_trace.o
++cros-ec-sensorhub-objs			:= cros_ec_sensorhub.o cros_ec_sensorhub_ring.o
+ obj-$(CONFIG_CROS_EC_SENSORHUB)		+= cros-ec-sensorhub.o
+ obj-$(CONFIG_CROS_EC_SYSFS)		+= cros_ec_sysfs.o
+ obj-$(CONFIG_CROS_USBPD_LOGGER)		+= cros_usbpd_logger.o
+--- a/drivers/platform/chrome/cros_ec_sensorhub_ring.c
++++ b/drivers/platform/chrome/cros_ec_sensorhub_ring.c
+@@ -17,7 +17,8 @@
+ #include <linux/sort.h>
+ #include <linux/slab.h>
  
-+	if (zr->norm == std)
-+		return 0;
+-#include "cros_ec_trace.h"
++#define CREATE_TRACE_POINTS
++#include "cros_ec_sensorhub_trace.h"
+ 
+ /* Precision of fixed point for the m values from the filter */
+ #define M_PRECISION BIT(23)
+--- /dev/null
++++ b/drivers/platform/chrome/cros_ec_sensorhub_trace.h
+@@ -0,0 +1,123 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Trace events for the ChromeOS Sensorhub kernel module
++ *
++ * Copyright 2021 Google LLC.
++ */
 +
- 	if (zr->running != ZORAN_MAP_MODE_NONE)
- 		return -EBUSY;
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM cros_ec
++
++#if !defined(_CROS_EC_SENSORHUB_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
++#define _CROS_EC_SENSORHUB_TRACE_H_
++
++#include <linux/types.h>
++#include <linux/platform_data/cros_ec_sensorhub.h>
++
++#include <linux/tracepoint.h>
++
++TRACE_EVENT(cros_ec_sensorhub_timestamp,
++	    TP_PROTO(u32 ec_sample_timestamp, u32 ec_fifo_timestamp, s64 fifo_timestamp,
++		     s64 current_timestamp, s64 current_time),
++	TP_ARGS(ec_sample_timestamp, ec_fifo_timestamp, fifo_timestamp, current_timestamp,
++		current_time),
++	TP_STRUCT__entry(
++		__field(u32, ec_sample_timestamp)
++		__field(u32, ec_fifo_timestamp)
++		__field(s64, fifo_timestamp)
++		__field(s64, current_timestamp)
++		__field(s64, current_time)
++		__field(s64, delta)
++	),
++	TP_fast_assign(
++		__entry->ec_sample_timestamp = ec_sample_timestamp;
++		__entry->ec_fifo_timestamp = ec_fifo_timestamp;
++		__entry->fifo_timestamp = fifo_timestamp;
++		__entry->current_timestamp = current_timestamp;
++		__entry->current_time = current_time;
++		__entry->delta = current_timestamp - current_time;
++	),
++	TP_printk("ec_ts: %9u, ec_fifo_ts: %9u, fifo_ts: %12lld, curr_ts: %12lld, curr_time: %12lld, delta %12lld",
++		  __entry->ec_sample_timestamp,
++		__entry->ec_fifo_timestamp,
++		__entry->fifo_timestamp,
++		__entry->current_timestamp,
++		__entry->current_time,
++		__entry->delta
++	)
++);
++
++TRACE_EVENT(cros_ec_sensorhub_data,
++	    TP_PROTO(u32 ec_sensor_num, u32 ec_fifo_timestamp, s64 fifo_timestamp,
++		     s64 current_timestamp, s64 current_time),
++	TP_ARGS(ec_sensor_num, ec_fifo_timestamp, fifo_timestamp, current_timestamp, current_time),
++	TP_STRUCT__entry(
++		__field(u32, ec_sensor_num)
++		__field(u32, ec_fifo_timestamp)
++		__field(s64, fifo_timestamp)
++		__field(s64, current_timestamp)
++		__field(s64, current_time)
++		__field(s64, delta)
++	),
++	TP_fast_assign(
++		__entry->ec_sensor_num = ec_sensor_num;
++		__entry->ec_fifo_timestamp = ec_fifo_timestamp;
++		__entry->fifo_timestamp = fifo_timestamp;
++		__entry->current_timestamp = current_timestamp;
++		__entry->current_time = current_time;
++		__entry->delta = current_timestamp - current_time;
++	),
++	TP_printk("ec_num: %4u, ec_fifo_ts: %9u, fifo_ts: %12lld, curr_ts: %12lld, curr_time: %12lld, delta %12lld",
++		  __entry->ec_sensor_num,
++		__entry->ec_fifo_timestamp,
++		__entry->fifo_timestamp,
++		__entry->current_timestamp,
++		__entry->current_time,
++		__entry->delta
++	)
++);
++
++TRACE_EVENT(cros_ec_sensorhub_filter,
++	    TP_PROTO(struct cros_ec_sensors_ts_filter_state *state, s64 dx, s64 dy),
++	TP_ARGS(state, dx, dy),
++	TP_STRUCT__entry(
++		__field(s64, dx)
++		__field(s64, dy)
++		__field(s64, median_m)
++		__field(s64, median_error)
++		__field(s64, history_len)
++		__field(s64, x)
++		__field(s64, y)
++	),
++	TP_fast_assign(
++		__entry->dx = dx;
++		__entry->dy = dy;
++		__entry->median_m = state->median_m;
++		__entry->median_error = state->median_error;
++		__entry->history_len = state->history_len;
++		__entry->x = state->x_offset;
++		__entry->y = state->y_offset;
++	),
++	TP_printk("dx: %12lld. dy: %12lld median_m: %12lld median_error: %12lld len: %lld x: %12lld y: %12lld",
++		  __entry->dx,
++		__entry->dy,
++		__entry->median_m,
++		__entry->median_error,
++		__entry->history_len,
++		__entry->x,
++		__entry->y
++	)
++);
++
++
++#endif /* _CROS_EC_SENSORHUB_TRACE_H_ */
++
++/* this part must be outside header guard */
++
++#undef TRACE_INCLUDE_PATH
++#define TRACE_INCLUDE_PATH .
++
++#undef TRACE_INCLUDE_FILE
++#define TRACE_INCLUDE_FILE cros_ec_sensorhub_trace
++
++#include <trace/define_trace.h>
+--- a/drivers/platform/chrome/cros_ec_trace.h
++++ b/drivers/platform/chrome/cros_ec_trace.h
+@@ -15,7 +15,6 @@
+ #include <linux/types.h>
+ #include <linux/platform_data/cros_ec_commands.h>
+ #include <linux/platform_data/cros_ec_proto.h>
+-#include <linux/platform_data/cros_ec_sensorhub.h>
  
-@@ -739,6 +740,7 @@ static int zoran_g_parm(struct file *file, void *priv, struct v4l2_streamparm *p
- 	if (parm->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
- 		return -EINVAL;
+ #include <linux/tracepoint.h>
  
-+	parm->parm.capture.readbuffers = 9;
- 	return 0;
- }
+@@ -71,100 +70,6 @@ TRACE_EVENT(cros_ec_request_done,
+ 		  __entry->retval)
+ );
  
-@@ -869,6 +871,10 @@ int zr_set_buf(struct zoran *zr)
- 		vbuf = &buf->vbuf;
+-TRACE_EVENT(cros_ec_sensorhub_timestamp,
+-	    TP_PROTO(u32 ec_sample_timestamp, u32 ec_fifo_timestamp, s64 fifo_timestamp,
+-		     s64 current_timestamp, s64 current_time),
+-	TP_ARGS(ec_sample_timestamp, ec_fifo_timestamp, fifo_timestamp, current_timestamp,
+-		current_time),
+-	TP_STRUCT__entry(
+-		__field(u32, ec_sample_timestamp)
+-		__field(u32, ec_fifo_timestamp)
+-		__field(s64, fifo_timestamp)
+-		__field(s64, current_timestamp)
+-		__field(s64, current_time)
+-		__field(s64, delta)
+-	),
+-	TP_fast_assign(
+-		__entry->ec_sample_timestamp = ec_sample_timestamp;
+-		__entry->ec_fifo_timestamp = ec_fifo_timestamp;
+-		__entry->fifo_timestamp = fifo_timestamp;
+-		__entry->current_timestamp = current_timestamp;
+-		__entry->current_time = current_time;
+-		__entry->delta = current_timestamp - current_time;
+-	),
+-	TP_printk("ec_ts: %9u, ec_fifo_ts: %9u, fifo_ts: %12lld, curr_ts: %12lld, curr_time: %12lld, delta %12lld",
+-		  __entry->ec_sample_timestamp,
+-		__entry->ec_fifo_timestamp,
+-		__entry->fifo_timestamp,
+-		__entry->current_timestamp,
+-		__entry->current_time,
+-		__entry->delta
+-	)
+-);
+-
+-TRACE_EVENT(cros_ec_sensorhub_data,
+-	    TP_PROTO(u32 ec_sensor_num, u32 ec_fifo_timestamp, s64 fifo_timestamp,
+-		     s64 current_timestamp, s64 current_time),
+-	TP_ARGS(ec_sensor_num, ec_fifo_timestamp, fifo_timestamp, current_timestamp, current_time),
+-	TP_STRUCT__entry(
+-		__field(u32, ec_sensor_num)
+-		__field(u32, ec_fifo_timestamp)
+-		__field(s64, fifo_timestamp)
+-		__field(s64, current_timestamp)
+-		__field(s64, current_time)
+-		__field(s64, delta)
+-	),
+-	TP_fast_assign(
+-		__entry->ec_sensor_num = ec_sensor_num;
+-		__entry->ec_fifo_timestamp = ec_fifo_timestamp;
+-		__entry->fifo_timestamp = fifo_timestamp;
+-		__entry->current_timestamp = current_timestamp;
+-		__entry->current_time = current_time;
+-		__entry->delta = current_timestamp - current_time;
+-	),
+-	TP_printk("ec_num: %4u, ec_fifo_ts: %9u, fifo_ts: %12lld, curr_ts: %12lld, curr_time: %12lld, delta %12lld",
+-		  __entry->ec_sensor_num,
+-		__entry->ec_fifo_timestamp,
+-		__entry->fifo_timestamp,
+-		__entry->current_timestamp,
+-		__entry->current_time,
+-		__entry->delta
+-	)
+-);
+-
+-TRACE_EVENT(cros_ec_sensorhub_filter,
+-	    TP_PROTO(struct cros_ec_sensors_ts_filter_state *state, s64 dx, s64 dy),
+-	TP_ARGS(state, dx, dy),
+-	TP_STRUCT__entry(
+-		__field(s64, dx)
+-		__field(s64, dy)
+-		__field(s64, median_m)
+-		__field(s64, median_error)
+-		__field(s64, history_len)
+-		__field(s64, x)
+-		__field(s64, y)
+-	),
+-	TP_fast_assign(
+-		__entry->dx = dx;
+-		__entry->dy = dy;
+-		__entry->median_m = state->median_m;
+-		__entry->median_error = state->median_error;
+-		__entry->history_len = state->history_len;
+-		__entry->x = state->x_offset;
+-		__entry->y = state->y_offset;
+-	),
+-	TP_printk("dx: %12lld. dy: %12lld median_m: %12lld median_error: %12lld len: %lld x: %12lld y: %12lld",
+-		  __entry->dx,
+-		__entry->dy,
+-		__entry->median_m,
+-		__entry->median_error,
+-		__entry->history_len,
+-		__entry->x,
+-		__entry->y
+-	)
+-);
+-
+-
+ #endif /* _CROS_EC_TRACE_H_ */
  
- 		buf->vbuf.field = V4L2_FIELD_INTERLACED;
-+		if (BUZ_MAX_HEIGHT < (zr->v4l_settings.height * 2))
-+			buf->vbuf.field = V4L2_FIELD_INTERLACED;
-+		else
-+			buf->vbuf.field = V4L2_FIELD_TOP;
- 		vb2_set_plane_payload(&buf->vbuf.vb2_buf, 0, zr->buffer_size);
- 		vb2_buffer_done(&buf->vbuf.vb2_buf, VB2_BUF_STATE_DONE);
- 		zr->inuse[0] = NULL;
-@@ -928,6 +934,7 @@ static int zr_vb2_start_streaming(struct vb2_queue *vq, unsigned int count)
- 		zr->stat_com[j] = cpu_to_le32(1);
- 		zr->inuse[j] = NULL;
- 	}
-+	zr->vbseq = 0;
- 
- 	if (zr->map_mode != ZORAN_MAP_MODE_RAW) {
- 		pci_info(zr->pci_dev, "START JPG\n");
-@@ -1018,7 +1025,7 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
- 	vq->dev = &zr->pci_dev->dev;
- 	vq->type = dir;
- 
--	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
-+	vq->io_modes = VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
- 	vq->drv_priv = zr;
- 	vq->buf_struct_size = sizeof(struct zr_buffer);
- 	vq->ops = &zr_video_qops;
--- 
-2.34.1
-
+ /* this part must be outside header guard */
 
 
