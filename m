@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1706C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846468AbiDFCER (ORCPT
+        id S1846484AbiDFCEU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33786 "EHLO
+        Tue, 5 Apr 2022 22:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354572AbiDEKOj (ORCPT
+        with ESMTP id S1348807AbiDEJsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:14:39 -0400
+        Tue, 5 Apr 2022 05:48:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ECC48E65;
-        Tue,  5 Apr 2022 03:01:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C729024F;
+        Tue,  5 Apr 2022 02:35:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD408B81C83;
-        Tue,  5 Apr 2022 10:01:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B4B1C385A1;
-        Tue,  5 Apr 2022 10:01:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9360B81C8B;
+        Tue,  5 Apr 2022 09:35:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29E2BC385A2;
+        Tue,  5 Apr 2022 09:35:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152880;
-        bh=VwFEHE+CO5lRFmJFYl4MnPfpyZ8Welh346AwcCF/UoQ=;
+        s=korg; t=1649151349;
+        bh=+vB/c5TYSJXJNmD9pjNpxLmLtUsmHAcZ/hjWBUHuL58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=flmTRyDC0QWzr7pRoMQ67lyKpYC3ZqOqKVDjk6+1UG3lZYiOld+myEh8GPRSyPYee
-         NkcrNyHN3bbKjWZFfg1KvfYXx3diFaFmYkhgdAh5ReyyFcy8vgP6OUYevN/JxiWM5V
-         7Frd7kMqvtL0Cj5su9v+4DSXW0370WMl/kbGNUOg=
+        b=NyBmURC0NBKIYO678poXmdxgFmYCysBq9pzY/sS19WxfI9gbrcxNuVjdmn0oMEfMw
+         BKZ/AZNuac4CB8i0ZjtsLHhg+S5eSSq0Ke/EZ3duyzEa1syK3MtOy57bwFwq07AMaV
+         FExo+LVGG9FAoEOp9rdQADwyQJCcJ4zZGKdjGHWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.10 022/599] iommu/iova: Improve 32-bit free space estimate
-Date:   Tue,  5 Apr 2022 09:25:16 +0200
-Message-Id: <20220405070259.477224916@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Steven Price <steven.price@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 384/913] drm/panfrost: Check for error num after setting mask
+Date:   Tue,  5 Apr 2022 09:24:06 +0200
+Message-Id: <20220405070351.357429769@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,52 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 5b61343b50590fb04a3f6be2cdc4868091757262 upstream.
+[ Upstream commit 44ab30b056149bd59dd7989a593dd25ead6007fd ]
 
-For various reasons based on the allocator behaviour and typical
-use-cases at the time, when the max32_alloc_size optimisation was
-introduced it seemed reasonable to couple the reset of the tracked
-size to the update of cached32_node upon freeing a relevant IOVA.
-However, since subsequent optimisations focused on helping genuine
-32-bit devices make best use of even more limited address spaces, it
-is now a lot more likely for cached32_node to be anywhere in a "full"
-32-bit address space, and as such more likely for space to become
-available from IOVAs below that node being freed.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
 
-At this point, the short-cut in __cached_rbnode_delete_update() really
-doesn't hold up any more, and we need to fix the logic to reliably
-provide the expected behaviour. We still want cached32_node to only move
-upwards, but we should reset the allocation size if *any* 32-bit space
-has become available.
-
-Reported-by: Yunfei Wang <yf.wang@mediatek.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Link: https://lore.kernel.org/r/033815732d83ca73b13c11485ac39336f15c3b40.1646318408.git.robin.murphy@arm.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Cc: Miles Chen <miles.chen@mediatek.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f3ba91228e8e ("drm/panfrost: Add initial panfrost driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+[Steve: fix Fixes: line]
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220106030326.2620942-1-jiasheng@iscas.ac.cn
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iova.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/panfrost/panfrost_gpu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -138,10 +138,11 @@ __cached_rbnode_delete_update(struct iov
- 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
- 	if (free == cached_iova ||
- 	    (free->pfn_hi < iovad->dma_32bit_pfn &&
--	     free->pfn_lo >= cached_iova->pfn_lo)) {
-+	     free->pfn_lo >= cached_iova->pfn_lo))
- 		iovad->cached32_node = rb_next(&free->node);
-+
-+	if (free->pfn_lo < iovad->dma_32bit_pfn)
- 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
--	}
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+index bbe628b306ee..f8355de6e335 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+@@ -360,8 +360,11 @@ int panfrost_gpu_init(struct panfrost_device *pfdev)
  
- 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
- 	if (free->pfn_lo >= cached_iova->pfn_lo)
+ 	panfrost_gpu_init_features(pfdev);
+ 
+-	dma_set_mask_and_coherent(pfdev->dev,
++	err = dma_set_mask_and_coherent(pfdev->dev,
+ 		DMA_BIT_MASK(FIELD_GET(0xff00, pfdev->features.mmu_features)));
++	if (err)
++		return err;
++
+ 	dma_set_max_seg_size(pfdev->dev, UINT_MAX);
+ 
+ 	irq = platform_get_irq_byname(to_platform_device(pfdev->dev), "gpu");
+-- 
+2.34.1
+
 
 
