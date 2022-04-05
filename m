@@ -2,106 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C45AC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2204DC4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360503AbiDFDb5 (ORCPT
+        id S2360434AbiDFDbb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        Tue, 5 Apr 2022 23:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850378AbiDFCwO (ORCPT
+        with ESMTP id S1850366AbiDFCwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 22:52:14 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66054181149;
-        Tue,  5 Apr 2022 16:52:16 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id e22so1074856ioe.11;
-        Tue, 05 Apr 2022 16:52:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pHXomKH7znoD3NKtjCedrAePGvj1PU34oOzV9waUrWE=;
-        b=qP2Je91cC5X9wuYLjZp8TH9PNetiSDkDUC4K9LVY0XsP70Z0P360X7QBCcp544wpWn
-         uj80MoZx+E/whCCVsJBl7bHFLs4zX9YT1v0DtGIo2TXQVILm6wSdrAYbxEVLaPSpMPRG
-         SIKIBtv9TFPsCcXbNOHKCqINnfCryFkkOuEUG17CZIPI7EC5N++bXiQLtbGUwI3G1ktC
-         B4WGJJrB9L4fEuvWaEKUmpTr1MxaOMVrexGTVXwlaRX188e8xQqjFFpGQ/W7Qw+DtTJ8
-         44qAfRFH+M9VBi0NFgLYpeT8wWfgUW7inCLoeNUEeDAjzmUxiUZdp/P9BBnkLKTi4zUx
-         rLGw==
+Received: from mail-wm1-x361.google.com (mail-wm1-x361.google.com [IPv6:2a00:1450:4864:20::361])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13278179B24
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:52:09 -0700 (PDT)
+Received: by mail-wm1-x361.google.com with SMTP id q20so429212wmq.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:52:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pHXomKH7znoD3NKtjCedrAePGvj1PU34oOzV9waUrWE=;
-        b=jdmo3pXGSLArTYozWH56R61Sa9Vm8CKn635zT3jwKfS6G9VwiGq4bMj1JGW9CWrIOC
-         zgZE0A9nu4gni9LSjQ04SWMPAmBsI/0DMPKKQASMPPCisp5MjyHQ3OVKnXvS+lqqBhS+
-         IrIYLQVlyQjkeQ4lU7+8XZ69SKvya7elwuXCydLM6ftV8DChQHldjiNBt0U9hOzzTghu
-         zgzsrQ11B6JFK79XWsA7ObyiiZ9KImBdGY/V8b5H7bePn8uc3LvbObG+OH182xmkd5GF
-         x+uP2goSxS/RGteWy1y61OHLobZTJLr6OzQySzcsXDJkaS7ybD0Hb2RqDeoxLXNZRB9T
-         nwPA==
-X-Gm-Message-State: AOAM533CEvHxR5iN4a6VcaGJ1GLQ7vWPtbG4Rz4rjPUfl+VRlZB4EMAP
-        bG9KOKVZeuBjyzxtK3lQd+zE4KQgH8bLN7SuFRw=
-X-Google-Smtp-Source: ABdhPJw6QDEx6357RD8/tWoPiOfZM+DJ9CdKHEhzqAWEeOUPTScS2FluYFnoR+Xgdc6Cy4lLB2keEra95hY1Z8CnTU4=
-X-Received: by 2002:a05:6638:772:b0:319:e4eb:adb with SMTP id
- y18-20020a056638077200b00319e4eb0adbmr3287706jad.237.1649202733374; Tue, 05
- Apr 2022 16:52:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220405163728.56471-1-ytcoode@gmail.com>
-In-Reply-To: <20220405163728.56471-1-ytcoode@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 Apr 2022 16:52:02 -0700
-Message-ID: <CAEf4BzZLw-QeXgb1HRR-b3D5NqQRs_iqOFcZmokvmf6rXTy-iw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Remove redundant checks in get_stack_print_output()
-To:     Yuntao Wang <ytcoode@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:dkim-signature:from:to:cc:subject:date
+         :message-id:content-transfer-encoding;
+        bh=tjab0l+xfYR0aZEj5soCABbrSjfcWfiSiNw5bb6ADcc=;
+        b=oHMkoc/XeuTktLvmTb8IuaP6YjKaiKEx6dD9wStDjI4atEzVVbGRAYxO+uYtD1HSib
+         AHymz9LhwnZ46BwvGB1BwmvBCRAiZ+FU9oZ0sdQ7YVSIfDiGlJfB4BpJ4/jsOPParAVt
+         tpiNSJi2ctk6Kyjb+JidG5nDrZZSIzOAJ3nvYUmBWhhecH67i9Cb/X3HEp0esE/Q3bOO
+         1jfrYr4le19YCrHgEz4ihfbrGOfahUzzPUSOWVKrQ1RpmbWXV3IubBpa4yENxymVFiHo
+         Lx1cMgC0ivWsy6rE2hmrTDuuX7K3X+HKHici3xzEXVtTMwnqZY5ATFVfunZYbFK6G0JV
+         7w1w==
+X-Gm-Message-State: AOAM531Z0tq4loOzvoS8P8gPRbsN1I2a1uiYsQaXpmT/2PF5U/SJMiGy
+        iBk0Qxysht4EeXzKjrtK8mwnNOfu+7GspL5yHDUkG/X8NSNz
+X-Google-Smtp-Source: ABdhPJzjXl9lYXef6+e9Ggc2Y85pcIUJDGm5uhvKfava0TB3KoHRk4M3HKy4QO+yz963G18cVxs/3dEmP3Ap
+X-Received: by 2002:a7b:c381:0:b0:37b:e01f:c1c0 with SMTP id s1-20020a7bc381000000b0037be01fc1c0mr5174267wmj.98.1649202721448;
+        Tue, 05 Apr 2022 16:52:01 -0700 (PDT)
+Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [52.0.43.43])
+        by smtp-relay.gmail.com with ESMTPS id f13-20020a05600c4e8d00b0038c994092fbsm439961wmq.0.2022.04.05.16.52.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Apr 2022 16:52:01 -0700 (PDT)
+X-Relaying-Domain: arista.com
+Received: from chmeee (unknown [10.95.70.41])
+        by smtp.aristanetworks.com (Postfix) with ESMTPS id 28C603002D04;
+        Tue,  5 Apr 2022 16:52:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-A; t=1649202720;
+        bh=tjab0l+xfYR0aZEj5soCABbrSjfcWfiSiNw5bb6ADcc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=woP9fF3qZzunKXrRcPgDSyac21eIvuWWbeTXc12/yEUdySijANk8sRKdptJl6l5cV
+         iLcWQenoSPX2Ua0bGFCFKIClIsbbT65yMydGSEo0ET6l5uKpuHqFK61RohyHNSI0Kq
+         N+MjUi8fnrUaLZTjxB92POD5qaaEiDgFmSq4TIzgFSShKcjV2p+U/2HajpkGw7oVwX
+         Xbnd+gf0pkHohKyV6TZIsm4APNq+F+u8GWZm4iBIUbO2G1UxNT0QdN6rOWgHAL3CD+
+         qbi6ht0AIfArtaytZm0+cEir6F5+2bHfzNrmyt+2AcBxSrm/nEmbNJqmeleAy7LBGo
+         xAWf0YU6uw5RQ==
+Received: from kevmitch by chmeee with local (Exim 4.95)
+        (envelope-from <kevmitch@chmeee>)
+        id 1nbsxp-00188V-Sp;
+        Tue, 05 Apr 2022 16:51:57 -0700
+From:   Kevin Mitchell <kevmitch@arista.com>
+Cc:     kevmitch@arista.com, gal@nvidia.com,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: [PATCH v2 0/1] UDP traceroute packets with no checksum
+Date:   Tue,  5 Apr 2022 16:51:15 -0700
+Message-Id: <20220405235117.269511-1-kevmitch@arista.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 9:39 AM Yuntao Wang <ytcoode@gmail.com> wrote:
->
-> The checks preceding CHECK macro are redundant, remove them.
->
-> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-> ---
->  tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
-> index 16048978a1ef..5f2ab720dabd 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
-> @@ -76,10 +76,8 @@ static void get_stack_print_output(void *ctx, int cpu, void *data, __u32 size)
->                         good_user_stack = true;
->         }
->
-> -       if (!good_kern_stack)
-> -           CHECK(!good_kern_stack, "kern_stack", "corrupted kernel stack\n");
-> -       if (!good_user_stack)
-> -           CHECK(!good_user_stack, "user_stack", "corrupted user stack\n");
-> +       CHECK(!good_kern_stack, "kern_stack", "corrupted kernel stack\n");
-> +       CHECK(!good_user_stack, "user_stack", "corrupted user stack\n");
+This is v2 of https://lkml.org/lkml/2022/1/14/1060
 
-I suspect it was to avoid super long verbose logs, as each CHECK()
-emits one line into output and here we might be getting a lot of
-samples. So let's keep it as is. But for the future let's try getting
-rid of CHECK()s as much as possible in favor of ASSERT_xxx(). Thanks.
+That patch was discovered to cause problems with UDP tunnels as
+described here:
 
->  }
->
->  void test_get_stack_raw_tp(void)
-> --
-> 2.35.1
->
+https://lore.kernel.org/netdev/7eed8111-42d7-63e1-d289-346a596fc933@nvidia.com/
+
+This version addresses the issue by instead explicitly handling zero UDP
+checksum in the nf_reject_verify_csum() helper function.
+
+Unlike the previous patch, this one only allows zero UDP checksum in
+IPv4. I discovered that the non-netfilter IPv6 path would indeed drop
+zero UDP checksum packets, so it's probably best to remain consistent.
+
+-- 
+2.35.1
+
