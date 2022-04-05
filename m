@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 037FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1458158AbiDEWr6 (ORCPT
+        id S1573001AbiDEWsD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
+        Tue, 5 Apr 2022 18:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351925AbiDEKDb (ORCPT
+        with ESMTP id S1354466AbiDEKOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:03:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF90A0BD3;
-        Tue,  5 Apr 2022 02:52:35 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E5E6A41E;
+        Tue,  5 Apr 2022 03:00:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AB4D616D0;
-        Tue,  5 Apr 2022 09:52:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54DBDC385A3;
-        Tue,  5 Apr 2022 09:52:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E43161673;
+        Tue,  5 Apr 2022 10:00:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B03AC385A1;
+        Tue,  5 Apr 2022 10:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152353;
-        bh=mNU03RKrGsnhzrcliWEfwHVOO2UBDTTyYWKYpovJnz8=;
+        s=korg; t=1649152820;
+        bh=mgtRBFgMqU+b1ionpcQaRy21ElERCcfUPd6hniBMnz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bKX8R5E2ep9BFWCBFi59DEh4gs6OvlPqRD6DDLDc1WpI/YTrpQfm0mmcb9bHzQl69
-         W0W7UgcAXLnlR3gVIti0umqf/+qd2VtWcrMNZT4Kjp8N/kgw55sjYrxhzo98ZQB+8n
-         Id0h0s7FSDzJ48LftyAjGwIIkXcGHrX1Cvv6tUUk=
+        b=MkJGrmsTHa9vmfcBOhEpCdBCajt740dD2yJ2bnQHArwQBjL/1+gMKbJsH8PNh4aJs
+         Oz/tGMKOJIneTuzsUkf5mdQDfVzF2qGyYzig92wBMa0QNKHvKLCBIFT+HAEE5ULPWw
+         QMOtgw0mo6Td8tW5k/JHS3TfHFYKOg0n4f/xSziI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 708/913] spi: tegra20: Use of_device_get_match_data()
-Date:   Tue,  5 Apr 2022 09:29:30 +0200
-Message-Id: <20220405070401.057175696@linuxfoundation.org>
+        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 907/913] iommu/dma: Check CONFIG_SWIOTLB more broadly
+Date:   Tue,  5 Apr 2022 09:32:49 +0200
+Message-Id: <20220405070407.005991513@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,43 +51,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: David Stevens <stevensd@chromium.org>
 
-[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
+commit 2e727bffbe93750a13d2414f3ce43de2f21600d2 upstream.
 
-Use of_device_get_match_data() to simplify the code.
+Introduce a new dev_use_swiotlb function to guard swiotlb code, instead
+of overloading dev_is_untrusted. This allows CONFIG_SWIOTLB to be
+checked more broadly, so the swiotlb related code can be removed more
+aggressively.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: David Stevens <stevensd@chromium.org>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20210929023300.335969-6-stevensd@google.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-tegra20-slink.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/iommu/dma-iommu.c |   20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
-index 3226c4e1c7c0..3b44ca455049 100644
---- a/drivers/spi/spi-tegra20-slink.c
-+++ b/drivers/spi/spi-tegra20-slink.c
-@@ -1003,14 +1003,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
- 	struct resource		*r;
- 	int ret, spi_irq;
- 	const struct tegra_slink_chip_data *cdata = NULL;
--	const struct of_device_id *match;
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -317,6 +317,11 @@ static bool dev_is_untrusted(struct devi
+ 	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
+ }
  
--	match = of_match_device(tegra_slink_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "Error: No device match found\n");
--		return -ENODEV;
--	}
--	cdata = match->data;
-+	cdata = of_device_get_match_data(&pdev->dev);
++static bool dev_use_swiotlb(struct device *dev)
++{
++	return IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev);
++}
++
+ /* sysfs updates are serialised by the mutex of the group owning @domain */
+ int iommu_dma_init_fq(struct iommu_domain *domain)
+ {
+@@ -731,7 +736,7 @@ static void iommu_dma_sync_single_for_cp
+ {
+ 	phys_addr_t phys;
  
- 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
- 	if (!master) {
--- 
-2.34.1
-
+-	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
++	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
+ 		return;
+ 
+ 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
+@@ -747,7 +752,7 @@ static void iommu_dma_sync_single_for_de
+ {
+ 	phys_addr_t phys;
+ 
+-	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
++	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
+ 		return;
+ 
+ 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
+@@ -765,7 +770,7 @@ static void iommu_dma_sync_sg_for_cpu(st
+ 	struct scatterlist *sg;
+ 	int i;
+ 
+-	if (dev_is_untrusted(dev))
++	if (dev_use_swiotlb(dev))
+ 		for_each_sg(sgl, sg, nelems, i)
+ 			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
+ 						      sg->length, dir);
+@@ -781,7 +786,7 @@ static void iommu_dma_sync_sg_for_device
+ 	struct scatterlist *sg;
+ 	int i;
+ 
+-	if (dev_is_untrusted(dev))
++	if (dev_use_swiotlb(dev))
+ 		for_each_sg(sgl, sg, nelems, i)
+ 			iommu_dma_sync_single_for_device(dev,
+ 							 sg_dma_address(sg),
+@@ -808,8 +813,7 @@ static dma_addr_t iommu_dma_map_page(str
+ 	 * If both the physical buffer start address and size are
+ 	 * page aligned, we don't need to use a bounce page.
+ 	 */
+-	if (IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev) &&
+-	    iova_offset(iovad, phys | size)) {
++	if (dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) {
+ 		void *padding_start;
+ 		size_t padding_size;
+ 
+@@ -995,7 +999,7 @@ static int iommu_dma_map_sg(struct devic
+ 			goto out;
+ 	}
+ 
+-	if (dev_is_untrusted(dev))
++	if (dev_use_swiotlb(dev))
+ 		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
+ 
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+@@ -1073,7 +1077,7 @@ static void iommu_dma_unmap_sg(struct de
+ 	struct scatterlist *tmp;
+ 	int i;
+ 
+-	if (dev_is_untrusted(dev)) {
++	if (dev_use_swiotlb(dev)) {
+ 		iommu_dma_unmap_sg_swiotlb(dev, sg, nents, dir, attrs);
+ 		return;
+ 	}
 
 
