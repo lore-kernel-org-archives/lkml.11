@@ -2,114 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E89C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4B0C46467
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354335AbiDEKNw (ORCPT
+        id S1354409AbiDEKOD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
+        Tue, 5 Apr 2022 06:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241167AbiDEIcw (ORCPT
+        with ESMTP id S241169AbiDEIcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE37E167C3;
-        Tue,  5 Apr 2022 01:28:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49CE1609D0;
-        Tue,  5 Apr 2022 08:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B53BC385A1;
-        Tue,  5 Apr 2022 08:28:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147337;
-        bh=pKN6mTEyEarvcHrqx7JWF0SAABVKkggu6a7q9LHV3hA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vKzAIduaMNyqRbWbKps6rxlT3OL6/XdKp//AOiutFxYH9yhw8+9oVVAESn21OKVPQ
-         KKFx+BGdNy+MfCjBwDezctBdp7gy9unThttrDlOhDjMkzZ6EWiPRTlOkpY5Bz0Z98G
-         5DKZE3f1ViVWSUz44cqf0qjGNLEga5mRQe7hXRgs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Jan Kara <jack@suse.cz>, Jens Axboe <axboe@kernel.dk>,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 5.17 1050/1126] block: restore the old set_task_ioprio() behaviour wrt PF_EXITING
-Date:   Tue,  5 Apr 2022 09:29:57 +0200
-Message-Id: <20220405070438.290129747@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D89E0B0;
+        Tue,  5 Apr 2022 01:29:04 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:02 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147343;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t5QdTcexKGrFnIIKbz3EEw5sTtf8rB6xiflkyqxuIHk=;
+        b=Wy9liIW7wnl+I6GcQobqp2b2oSSXTUr1/XF4+y7sY9NjCS2Ytl7MtP7/O7iBawmSsX3CZ2
+        wBSXmImKvSWgWBzSN0qfyxr1GLNKxQTYpJwxuBMrPZSHN6GOlJOZAcBu4y1jjqg2/+VHqI
+        nlZ5r8m+b/09hIecvAa8DMYqR4P2yyKk0gzYMoW5Kvr9wHn5MUM6PrD5St5RF08XILyyio
+        Aecsqgg4kjxRJKUOsrujmERUaYN3NncQkmHdKwmOWLbrNyxGMP6Xao+dQa7nKUGM+eHJjL
+        t1eXmPIiPHbgf2YEZGhedOhzMt8P+Ym6/FP5SkArhYQfKfHIwB25ObrI4ivViw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147343;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t5QdTcexKGrFnIIKbz3EEw5sTtf8rB6xiflkyqxuIHk=;
+        b=L6rKuAa+JZSI45qKzsCxiKc5e1aIOdl0oQ2NXa9O9MfzlbyS2ek1M4YrZp+kHNY+Kx0QOc
+        yJrJ0637ehAKoxBg==
+From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/urgent] perf/core: Always set cpuctx cgrp when enable cgroup event
+Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220329154523.86438-5-zhouchengming@bytedance.com>
+References: <20220329154523.86438-5-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914734200.389.12009651583412320175.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+The following commit has been merged into the perf/urgent branch of tip:
 
-commit 15583a563cd5a7358e975599b7de7caacd9e9ce9 upstream.
+Commit-ID:     e19cd0b6fa5938c51d7b928010d584f0de93913a
+Gitweb:        https://git.kernel.org/tip/e19cd0b6fa5938c51d7b928010d584f0de93913a
+Author:        Chengming Zhou <zhouchengming@bytedance.com>
+AuthorDate:    Tue, 29 Mar 2022 23:45:23 +08:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 09:59:45 +02:00
 
-PF_EXITING tasks were silently ignored before the below commits.
-Continue doing so. Otherwise python-psutil tests fail:
-  ERROR: psutil.tests.test_process.TestProcess.test_zombie_process
-  ----------------------------------------------------------------------
-  Traceback (most recent call last):
-    File "/home/abuild/rpmbuild/BUILD/psutil-5.9.0/build/lib.linux-x86_64-3.9/psutil/_pslinux.py", line 1661, in wrapper
-      return fun(self, *args, **kwargs)
-    File "/home/abuild/rpmbuild/BUILD/psutil-5.9.0/build/lib.linux-x86_64-3.9/psutil/_pslinux.py", line 2133, in ionice_set
-      return cext.proc_ioprio_set(self.pid, ioclass, value)
-  ProcessLookupError: [Errno 3] No such process
+perf/core: Always set cpuctx cgrp when enable cgroup event
 
-  During handling of the above exception, another exception occurred:
+When enable a cgroup event, cpuctx->cgrp setting is conditional
+on the current task cgrp matching the event's cgroup, so have to
+do it for every new event. It brings complexity but no advantage.
 
-  Traceback (most recent call last):
-    File "/home/abuild/rpmbuild/BUILD/psutil-5.9.0/psutil/tests/test_process.py", line 1313, in test_zombie_process
-      succeed_or_zombie_p_exc(fun)
-    File "/home/abuild/rpmbuild/BUILD/psutil-5.9.0/psutil/tests/test_process.py", line 1288, in succeed_or_zombie_p_exc
-      return fun()
-    File "/home/abuild/rpmbuild/BUILD/psutil-5.9.0/build/lib.linux-x86_64-3.9/psutil/__init__.py", line 792, in ionice
-      return self._proc.ionice_set(ioclass, value)
-    File "/home/abuild/rpmbuild/BUILD/psutil-5.9.0/build/lib.linux-x86_64-3.9/psutil/_pslinux.py", line 1665, in wrapper
-      raise NoSuchProcess(self.pid, self._name)
-  psutil.NoSuchProcess: process no longer exists (pid=2057)
+To keep it simple, this patch would always set cpuctx->cgrp
+when enable the first cgroup event, and reset to NULL when disable
+the last cgroup event.
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Jan Kara <jack@suse.cz>
-Cc: Jens Axboe <axboe@kernel.dk>
-Fixes: 5fc11eebb4 (block: open code create_task_io_context in set_task_ioprio)
-Fixes: a957b61254 (block: fix error in handling dead task for ioprio setting)
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220328085928.7899-1-jslaby@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220329154523.86438-5-zhouchengming@bytedance.com
 ---
- block/blk-ioc.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ kernel/events/core.c | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
 
---- a/block/blk-ioc.c
-+++ b/block/blk-ioc.c
-@@ -280,7 +280,6 @@ int set_task_ioprio(struct task_struct *
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index bdeb41f..23bb197 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -967,22 +967,10 @@ perf_cgroup_event_enable(struct perf_event *event, struct perf_event_context *ct
+ 	 */
+ 	cpuctx = container_of(ctx, struct perf_cpu_context, ctx);
  
- 		task_lock(task);
- 		if (task->flags & PF_EXITING) {
--			err = -ESRCH;
- 			kmem_cache_free(iocontext_cachep, ioc);
- 			goto out;
- 		}
-@@ -292,7 +291,7 @@ int set_task_ioprio(struct task_struct *
- 	task->io_context->ioprio = ioprio;
- out:
- 	task_unlock(task);
--	return err;
-+	return 0;
+-	/*
+-	 * Since setting cpuctx->cgrp is conditional on the current @cgrp
+-	 * matching the event's cgroup, we must do this for every new event,
+-	 * because if the first would mismatch, the second would not try again
+-	 * and we would leave cpuctx->cgrp unset.
+-	 */
+-	if (ctx->is_active && !cpuctx->cgrp) {
+-		struct perf_cgroup *cgrp = perf_cgroup_from_task(current, ctx);
+-
+-		if (cgroup_is_descendant(cgrp->css.cgroup, event->cgrp->css.cgroup))
+-			cpuctx->cgrp = cgrp;
+-	}
+-
+ 	if (ctx->nr_cgroups++)
+ 		return;
+ 
++	cpuctx->cgrp = perf_cgroup_from_task(current, ctx);
+ 	list_add(&cpuctx->cgrp_cpuctx_entry,
+ 			per_cpu_ptr(&cgrp_cpuctx_list, event->cpu));
  }
- EXPORT_SYMBOL_GPL(set_task_ioprio);
+@@ -1004,9 +992,7 @@ perf_cgroup_event_disable(struct perf_event *event, struct perf_event_context *c
+ 	if (--ctx->nr_cgroups)
+ 		return;
  
-
-
+-	if (ctx->is_active && cpuctx->cgrp)
+-		cpuctx->cgrp = NULL;
+-
++	cpuctx->cgrp = NULL;
+ 	list_del(&cpuctx->cgrp_cpuctx_entry);
+ }
+ 
