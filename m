@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C73C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB77C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387640AbiDENPX (ORCPT
+        id S1358910AbiDENJv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60614 "EHLO
+        Tue, 5 Apr 2022 09:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344269AbiDEJTD (ORCPT
+        with ESMTP id S1344174AbiDEJSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF842229F;
-        Tue,  5 Apr 2022 02:06:39 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDF1633AD;
+        Tue,  5 Apr 2022 02:04:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00C16B80DA1;
-        Tue,  5 Apr 2022 09:06:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6123DC385A0;
-        Tue,  5 Apr 2022 09:06:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C33E61572;
+        Tue,  5 Apr 2022 09:04:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B5C6C385A1;
+        Tue,  5 Apr 2022 09:04:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149596;
-        bh=Y0U/1oukvFPpkPm6qQ6VpXiB5QKiZkyncQiMEoo+SMs=;
+        s=korg; t=1649149497;
+        bh=Uuc8TI2J6LCVOUkBalK+gztZd5pAzXYyYOxYGnUtsdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SY5+jGcNscn3rG3eLieJJo5wE048Vju71j5fWipWO1oZqtrH2caDjBtgug1+oPa7s
-         ECvVO97uap6ygiE6avmMzFJ/DenE3k0RaM8jjmKikfFrXTj2Wbzt67HTLzsJNArET2
-         V+VF3/RkIlU1wrqHajylTWHJuECb6lkGH1IfPTX4=
+        b=17Lr7DEm6vwxF9+1gglEwiUKOeBidIDJxmBRMluF+yHC6Mqdg5Cn3WggrnjIxl2Ul
+         3wqiANlHDR/58jucVwmXuggd38xL3h3tWZ4sPuTYbVdTHhHkvXs05wmDZECqMdKU0a
+         lsO7WbY2k1ULFTP9J4xmEFB75lwQIphw4Oaz4L1g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Kawata <akirakawata1@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0772/1017] fs/binfmt_elf: Fix AT_PHDR for unusual ELF files
-Date:   Tue,  5 Apr 2022 09:28:05 +0200
-Message-Id: <20220405070417.175617375@linuxfoundation.org>
+Subject: [PATCH 5.16 0736/1017] NFS: Dont loop forever in nfs_do_recoalesce()
+Date:   Tue,  5 Apr 2022 09:27:29 +0200
+Message-Id: <20220405070416.112617513@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,117 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Kawata <akirakawata1@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 0da1d5002745cdc721bc018b582a8a9704d56c42 ]
+[ Upstream commit d02d81efc7564b4d5446a02e0214a164cf00b1f3 ]
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=197921
+If __nfs_pageio_add_request() fails to add the request, it will return
+with either desc->pg_error < 0, or mirror->pg_recoalesce will be set, so
+we are guaranteed either to exit the function altogether, or to loop.
 
-As pointed out in the discussion of buglink, we cannot calculate AT_PHDR
-as the sum of load_addr and exec->e_phoff.
+However if there is nothing left in mirror->pg_list to coalesce, we must
+exit, so make sure that we clear mirror->pg_recoalesce every time we
+loop.
 
-: The AT_PHDR of ELF auxiliary vectors should point to the memory address
-: of program header. But binfmt_elf.c calculates this address as follows:
-:
-: NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
-:
-: which is wrong since e_phoff is the file offset of program header and
-: load_addr is the memory base address from PT_LOAD entry.
-:
-: The ld.so uses AT_PHDR as the memory address of program header. In normal
-: case, since the e_phoff is usually 64 and in the first PT_LOAD region, it
-: is the correct program header address.
-:
-: But if the address of program header isn't equal to the first PT_LOAD
-: address + e_phoff (e.g.  Put the program header in other non-consecutive
-: PT_LOAD region), ld.so will try to read program header from wrong address
-: then crash or use incorrect program header.
-
-This is because exec->e_phoff
-is the offset of PHDRs in the file and the address of PHDRs in the
-memory may differ from it. This patch fixes the bug by calculating the
-address of program headers from PT_LOADs directly.
-
-Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Acked-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220127124014.338760-2-akirakawata1@gmail.com
+Reported-by: Olga Kornievskaia <aglo@umich.edu>
+Fixes: 70536bf4eb07 ("NFS: Clean up reset of the mirror accounting variables")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/binfmt_elf.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+ fs/nfs/pagelist.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-index d19762dc90fe..c4de845f86c8 100644
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -170,8 +170,8 @@ static int padzero(unsigned long elf_bss)
+diff --git a/fs/nfs/pagelist.c b/fs/nfs/pagelist.c
+index ad7f83dc9a2d..815d63080245 100644
+--- a/fs/nfs/pagelist.c
++++ b/fs/nfs/pagelist.c
+@@ -1218,6 +1218,7 @@ static int nfs_do_recoalesce(struct nfs_pageio_descriptor *desc)
  
- static int
- create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
--		unsigned long load_addr, unsigned long interp_load_addr,
--		unsigned long e_entry)
-+		unsigned long interp_load_addr,
-+		unsigned long e_entry, unsigned long phdr_addr)
- {
- 	struct mm_struct *mm = current->mm;
- 	unsigned long p = bprm->p;
-@@ -257,7 +257,7 @@ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
- 	NEW_AUX_ENT(AT_HWCAP, ELF_HWCAP);
- 	NEW_AUX_ENT(AT_PAGESZ, ELF_EXEC_PAGESIZE);
- 	NEW_AUX_ENT(AT_CLKTCK, CLOCKS_PER_SEC);
--	NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
-+	NEW_AUX_ENT(AT_PHDR, phdr_addr);
- 	NEW_AUX_ENT(AT_PHENT, sizeof(struct elf_phdr));
- 	NEW_AUX_ENT(AT_PHNUM, exec->e_phnum);
- 	NEW_AUX_ENT(AT_BASE, interp_load_addr);
-@@ -823,7 +823,7 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
- static int load_elf_binary(struct linux_binprm *bprm)
- {
- 	struct file *interpreter = NULL; /* to shut gcc up */
-- 	unsigned long load_addr = 0, load_bias = 0;
-+	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
- 	int load_addr_set = 0;
- 	unsigned long error;
- 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
-@@ -1180,6 +1180,17 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 				reloc_func_desc = load_bias;
- 			}
- 		}
-+
-+		/*
-+		 * Figure out which segment in the file contains the Program
-+		 * Header table, and map to the associated memory address.
-+		 */
-+		if (elf_ppnt->p_offset <= elf_ex->e_phoff &&
-+		    elf_ex->e_phoff < elf_ppnt->p_offset + elf_ppnt->p_filesz) {
-+			phdr_addr = elf_ex->e_phoff - elf_ppnt->p_offset +
-+				    elf_ppnt->p_vaddr;
-+		}
-+
- 		k = elf_ppnt->p_vaddr;
- 		if ((elf_ppnt->p_flags & PF_X) && k < start_code)
- 			start_code = k;
-@@ -1215,6 +1226,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 	}
+ 	do {
+ 		list_splice_init(&mirror->pg_list, &head);
++		mirror->pg_recoalesce = 0;
  
- 	e_entry = elf_ex->e_entry + load_bias;
-+	phdr_addr += load_bias;
- 	elf_bss += load_bias;
- 	elf_brk += load_bias;
- 	start_code += load_bias;
-@@ -1278,8 +1290,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 		goto out;
- #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
- 
--	retval = create_elf_tables(bprm, elf_ex,
--			  load_addr, interp_load_addr, e_entry);
-+	retval = create_elf_tables(bprm, elf_ex, interp_load_addr,
-+				   e_entry, phdr_addr);
- 	if (retval < 0)
- 		goto out;
- 
+ 		while (!list_empty(&head)) {
+ 			struct nfs_page *req;
 -- 
 2.34.1
 
