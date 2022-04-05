@@ -2,133 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED45C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3996C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444838AbiDEUIX (ORCPT
+        id S1444958AbiDEUIZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
+        Tue, 5 Apr 2022 16:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349067AbiDEJtD (ORCPT
+        with ESMTP id S1388972AbiDEOln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DA4A94F6;
-        Tue,  5 Apr 2022 02:39:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 005D5615E5;
-        Tue,  5 Apr 2022 09:39:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C92EC385A2;
-        Tue,  5 Apr 2022 09:39:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151584;
-        bh=W/rAFKXNz3HhQGCq+VKNswrAmZ8mi7KiJaR5vyar9Sk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rwsv1IR6zAlywwU1tXta4CYD2CYuCvo193Ahr6Z9YQz/huaShzl+Hh1bkJqkCf88N
-         w6agki8vbwE+P2WElltTQVDTy+tr94XgAquax4eAqU4iziE5JNIhNPQ6iHWrAJPe6t
-         hTZlVQvkmr638F1M783MOn02KimPGf3WQQf2ljMw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>
-Subject: [PATCH 5.15 469/913] drm/msm/dp: populate connector of struct dp_panel
-Date:   Tue,  5 Apr 2022 09:25:31 +0200
-Message-Id: <20220405070353.907182430@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 10:41:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FCE612B767
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:17:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649164633;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NPr7NyzPsM6lb9uL4EUAQIbJ/AzbEssi4MJbl6X0Xkw=;
+        b=gyfiaZjJmat9v0PEkyW5JNFs1MS19Ur+cA0Stj2apWveSJNIWM03RxuR/lH16CZp8ya/4S
+        EIdfdRLo3HB9oBLTfpelAJX1Igmhl3R5qnFFCckaimVE8zIsir93jx33GqlFNe4ekpedt/
+        d+sZk+P7e5zIv4zmoF6daZyuq2hEzjA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-197-C5MEeRjqMN6bI0GoTEJNyA-1; Tue, 05 Apr 2022 09:17:12 -0400
+X-MC-Unique: C5MEeRjqMN6bI0GoTEJNyA-1
+Received: by mail-wm1-f72.google.com with SMTP id x8-20020a7bc768000000b0038e73173886so1238104wmk.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:17:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NPr7NyzPsM6lb9uL4EUAQIbJ/AzbEssi4MJbl6X0Xkw=;
+        b=ooTvWU+5+uwieKLsbvTCCN4Cfuw2YuEgGnwpnb922sPNhY9I3ezEwgxXPTzDRrllzy
+         IdiH62WgPxD8CU0NIDtZReV1Ma9OOOqvPgw+zdtcxYco23AdGA3uvt57ycvsKcU6rKsQ
+         gVu5RfoifpXushA1czc4bvEbLPE3TVNOh7WotgFbu64w2Yr7SWskBBLH3UccFNZxI5n/
+         zVUZF6JdbiM1OUitO3gaBckdYRyNxzfCAVQ1nV9vrKr1812SwfPlNrMBohrTU/g6mZ/J
+         f2+shn8AgbdJHGgyumJ5d96dMpMuat4JXV4Tx9BIopL/N5mna7o8cwzuj/BIM8AgYzDv
+         PLZg==
+X-Gm-Message-State: AOAM533Bkxwg/6wvG5welr5vIuXodWIcgsnNEfEbxleri+tFb6Xu/E8k
+        sqD/d1a8aHj0IT/LCFMY7j5f3ZEYBd2he1JMK+gbFQi5gsjnpvm0H1dVAMxZYN3spR00fZaGD5U
+        PbOesCe8SvQ7E7dfuDKFFWtuh
+X-Received: by 2002:a7b:c0c9:0:b0:38e:7d65:6e7f with SMTP id s9-20020a7bc0c9000000b0038e7d656e7fmr3069459wmh.168.1649164631099;
+        Tue, 05 Apr 2022 06:17:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwO1qwBZcVBSXGotEJB514xkNDND8cMVp2SwXHyhGdkT8SjDU5/40/xNvyAtW7gDpIWAk6dQQ==
+X-Received: by 2002:a7b:c0c9:0:b0:38e:7d65:6e7f with SMTP id s9-20020a7bc0c9000000b0038e7d656e7fmr3069438wmh.168.1649164630849;
+        Tue, 05 Apr 2022 06:17:10 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id n65-20020a1c2744000000b003862bfb509bsm2115805wmn.46.2022.04.05.06.17.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 06:17:10 -0700 (PDT)
+Message-ID: <68e1fd5f-d58b-695b-0fc7-bdc3e5491de7@redhat.com>
+Date:   Tue, 5 Apr 2022 15:17:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 036/104] KVM: x86/mmu: Explicitly check for MMIO
+ spte in fast page fault
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <b0e81b4a4abfbe8bd6d43e4b1c0349a79517dfb0.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <b0e81b4a4abfbe8bd6d43e4b1c0349a79517dfb0.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> From: Sean Christopherson <sean.j.christopherson@intel.com>
+> 
+> Explicitly check for an MMIO spte in the fast page fault flow.  TDX will
+> use a not-present entry for MMIO sptes, which can be mistaken for an
+> access-tracked spte since both have SPTE_SPECIAL_MASK set.
+> 
+> The fast page fault handles the case of changing access bits without
+> obtaining mmu_lock.  For example, clear write protect bit for dirty page
+> tracking.  MMIO emulation is handled in a slow path.  So it doesn't affect
 
-[ Upstream commit 5e602f5156910c7b19661699896cb6e3fb94fab9 ]
+"MMIO sptes are handled in handle_mmio_page_fault for non-TDX VMs, so 
+this patch does not affect them.  TDX will handle MMIO emulation through 
+a hypercall instead".
 
-DP CTS test case 4.2.2.6 has valid edid with bad checksum on purpose
-and expect DP source return correct checksum. During drm edid read,
-correct edid checksum is calculated and stored at
-connector::real_edid_checksum.
+For this comment, it is not necessary to talk about the slow path, since 
+that is just where MMIO sptes are installed.  If the slow path is 
+reached, fast_page_fault must not have seen is_mmio_spte(spte).
 
-The problem is struct dp_panel::connector never be assigned, instead the
-connector is stored in struct msm_dp::connector. When we run compliance
-testing test case 4.2.2.6 dp_panel_handle_sink_request() won't have a valid
-edid set in struct dp_panel::edid so we'll try to use the connectors
-real_edid_checksum and hit a NULL pointer dereference error because the
-connector pointer is never assigned.
+> @@ -3167,7 +3167,7 @@ static int fast_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+>   			break;
+>   
+>   		sp = sptep_to_sp(sptep);
+> -		if (!is_last_spte(spte, sp->role.level))
+> +		if (!is_last_spte(spte, sp->role.level) || is_mmio_spte(spte))
+>   			break;
+>   
+>   		/*
 
-Changes in V2:
--- populate panel connector at msm_dp_modeset_init() instead of at dp_panel_read_sink_caps()
+I would include the check a couple lines before:
 
-Changes in V3:
--- remove unhelpful kernel crash trace commit text
--- remove renaming dp_display parameter to dp
+	if (!is_shadow_present_pte(spte) || is_mmio_spte(spte))
 
-Changes in V4:
--- add more details to commit text
+This matches what is in the commit message: the problem is that MMIO 
+SPTEs are present in the TDX case, so you need to check them even if 
+is_shadow_present_pte(spte) returns true.
 
-Changes in v10:
---  group into one series
-
-Changes in v11:
--- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
-
-Fixes: 7948fe12d47 ("drm/msm/dp: return correct edid checksum after corrupted edid checksum read")
-Signee-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/1642531648-8448-3-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/msm/dp/dp_display.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index a0392e4d8134..d5198b435638 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1442,6 +1442,7 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 			struct drm_encoder *encoder)
- {
- 	struct msm_drm_private *priv;
-+	struct dp_display_private *dp_priv;
- 	int ret;
- 
- 	if (WARN_ON(!encoder) || WARN_ON(!dp_display) || WARN_ON(!dev))
-@@ -1450,6 +1451,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 	priv = dev->dev_private;
- 	dp_display->drm_dev = dev;
- 
-+	dp_priv = container_of(dp_display, struct dp_display_private, dp_display);
-+
- 	ret = dp_display_request_irq(dp_display);
- 	if (ret) {
- 		DRM_ERROR("request_irq failed, ret=%d\n", ret);
-@@ -1467,6 +1470,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 		return ret;
- 	}
- 
-+	dp_priv->panel->connector = dp_display->connector;
-+
- 	priv->connectors[priv->num_connectors++] = dp_display->connector;
- 	return 0;
- }
--- 
-2.34.1
-
-
+Paolo
 
