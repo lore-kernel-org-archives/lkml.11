@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A57BC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9746AC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390685AbiDEWET (ORCPT
+        id S1390769AbiDEWE0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
+        Tue, 5 Apr 2022 18:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244692AbiDEKjF (ORCPT
+        with ESMTP id S1354890AbiDEKQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3AD6A27C5;
-        Tue,  5 Apr 2022 03:24:16 -0700 (PDT)
+        Tue, 5 Apr 2022 06:16:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F154D13D09;
+        Tue,  5 Apr 2022 03:03:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73A3F61676;
-        Tue,  5 Apr 2022 10:24:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1BEC385A0;
-        Tue,  5 Apr 2022 10:24:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7423B81BC0;
+        Tue,  5 Apr 2022 10:03:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2042BC385A2;
+        Tue,  5 Apr 2022 10:03:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154255;
-        bh=7CDUD80sMxN61iY7oXs7CaIgA5Pu4VqjZ0AQy754SNQ=;
+        s=korg; t=1649153007;
+        bh=JYK4yYmxxNHgDv07Zrecz68AmrIqH+sR9RKYuvJdm1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y0vvuQVJEYhEC5Jd9xDTy8hVJhCIxRHm0v640mvR1hPVnr/NzBOilwOV9SyxMpHwJ
-         Jy1diZzOBNOzk7PDV1N6oBOocKBlM2LrIHpJYYQVpEOJJRq9AMZ7XHEq7EGFZb3Sr6
-         VvolHfn72HlwPxBpqaOX34Q9xAyrebGKtF8O6XkA=
+        b=Eu9ZBh5Tk811ICPl0N4/lw/rmd+xN1O4cSzIKTGgZMaQobDUBNny1d6JmW5//rDLV
+         0yCOTQKwZZEbNin+O76nv0F8YufinG5hOqSLltB2mISV67kVylSm18y+UXcQKYKBZ8
+         8vedA1T/WzisD4RQprtXybl8T9q3iS66AFG4uJtQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 514/599] powerpc/lib/sstep: Fix sthcx instruction
-Date:   Tue,  5 Apr 2022 09:33:28 +0200
-Message-Id: <20220405070314.134442557@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Peter Hutterer <peter.hutterer@who-t.net>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.10 067/599] Revert "Input: clear BTN_RIGHT/MIDDLE on buttonpads"
+Date:   Tue,  5 Apr 2022 09:26:01 +0200
+Message-Id: <20220405070300.820802423@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,35 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: José Expósito <jose.exposito89@gmail.com>
 
-commit a633cb1edddaa643fadc70abc88f89a408fa834a upstream.
+commit 8b188fba75195745026e11d408e4a7e94e01d701 upstream.
 
-Looks like there been a copy paste mistake when added the instruction
-'stbcx' twice and one was probably meant to be 'sthcx'. Changing to
-'sthcx' from 'stbcx'.
+This reverts commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40.
 
-Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
-Cc: stable@vger.kernel.org # v4.14+
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-1-anders.roxell@linaro.org
+The touchpad present in the Dell Precision 7550 and 7750 laptops
+reports a HID_DG_BUTTONTYPE of type MT_BUTTONTYPE_CLICKPAD. However,
+the device is not a clickpad, it is a touchpad with physical buttons.
+
+In order to fix this issue, a quirk for the device was introduced in
+libinput [1] [2] to disable the INPUT_PROP_BUTTONPAD property:
+
+	[Precision 7x50 Touchpad]
+	MatchBus=i2c
+	MatchUdevType=touchpad
+	MatchDMIModalias=dmi:*svnDellInc.:pnPrecision7?50*
+	AttrInputPropDisable=INPUT_PROP_BUTTONPAD
+
+However, because of the change introduced in 37ef4c19b4 ("Input: clear
+BTN_RIGHT/MIDDLE on buttonpads") the BTN_RIGHT key bit is not mapped
+anymore breaking the device right click button and making impossible to
+workaround it in user space.
+
+In order to avoid breakage on other present or future devices, revert
+the patch causing the issue.
+
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220321184404.20025-1-jose.exposito89@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/lib/sstep.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/input/input.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -3187,7 +3187,7 @@ int emulate_loadstore(struct pt_regs *re
- 			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
- 			break;
- 		case 2:
--			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
-+			__put_user_asmx(op->val, ea, err, "sthcx.", cr);
- 			break;
- #endif
- 		case 4:
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -2179,12 +2179,6 @@ int input_register_device(struct input_d
+ 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
+ 	__clear_bit(KEY_RESERVED, dev->keybit);
+ 
+-	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
+-	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
+-		__clear_bit(BTN_RIGHT, dev->keybit);
+-		__clear_bit(BTN_MIDDLE, dev->keybit);
+-	}
+-
+ 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
+ 	input_cleanse_bitmasks(dev);
+ 
 
 
