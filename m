@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF0AC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385302AbiDEVt3 (ORCPT
+        id S1385633AbiDEVt4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
+        Tue, 5 Apr 2022 17:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355358AbiDEKTZ (ORCPT
+        with ESMTP id S1349511AbiDEJuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:19:25 -0400
+        Tue, 5 Apr 2022 05:50:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B926D13F4F;
-        Tue,  5 Apr 2022 03:04:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979A31B6;
+        Tue,  5 Apr 2022 02:48:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2621BB81BC0;
-        Tue,  5 Apr 2022 10:04:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ED03C385A1;
-        Tue,  5 Apr 2022 10:04:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52C20B818F3;
+        Tue,  5 Apr 2022 09:48:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD348C385A2;
+        Tue,  5 Apr 2022 09:47:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153078;
-        bh=eIHtbjrdsYsyO9vjQmEJzlYHgDTIqtUdRD6j/Q59o9U=;
+        s=korg; t=1649152079;
+        bh=ryI4nmnWCITwgMxyxAhVGbPtmN7Hf4iB4cJjnuFKMfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lPjcY0BM4ZDsw+RrJ+nCdbXd0iRmhmK3j6QGDYSq9RbDkUUBVkdB6B52X1YwL11uJ
-         vjbKDM5D2ouKFM6/xBto6hQq+uv8UHB6wNd4LOEF+ZgNFRyw27oISPJzz5of6nP0DL
-         WVxNRn+d/8Jo6vf3WD9A8vxuMcmG9uTWQH5ov7qY=
+        b=CsJr897De82IAoZIGx9hb0XukUDwGOoql/OqpSwoAlCWVDJOHSqxKZzgMVAklcXP0
+         Ok6nnsA/jeqUY24cjnEYKlbtlkndXq3ELwVNZ9wqYVdNBv9IdD+uc8CI6xDgoaM+ts
+         OcsM37c5t1+8932y5bd9OqGqvRuhsUL4YtcqBGAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 077/599] mm,hwpoison: unmap poisoned page before invalidation
-Date:   Tue,  5 Apr 2022 09:26:11 +0200
-Message-Id: <20220405070301.117379793@linuxfoundation.org>
+        stable@vger.kernel.org,
+        anton ivanov <anton.ivanov@cambridgegreys.com>,
+        Julius Werner <jwerner@chromium.org>,
+        David Gow <davidgow@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 646/913] firmware: google: Properly state IOMEM dependency
+Date:   Tue,  5 Apr 2022 09:28:28 +0200
+Message-Id: <20220405070359.203583469@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,67 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van Riel <riel@surriel.com>
+From: David Gow <davidgow@google.com>
 
-commit 3149c79f3cb0e2e3bafb7cfadacec090cbd250d3 upstream.
+[ Upstream commit 37fd83916da2e4cae03d350015c82a67b1b334c4 ]
 
-In some cases it appears the invalidation of a hwpoisoned page fails
-because the page is still mapped in another process.  This can cause a
-program to be continuously restarted and die when it page faults on the
-page that was not invalidated.  Avoid that problem by unmapping the
-hwpoisoned page when we find it.
+The Google Coreboot implementation requires IOMEM functions
+(memmremap, memunmap, devm_memremap), but does not specify this is its
+Kconfig. This results in build errors when HAS_IOMEM is not set, such as
+on some UML configurations:
 
-Another issue is that sometimes we end up oopsing in finish_fault, if
-the code tries to do something with the now-NULL vmf->page.  I did not
-hit this error when submitting the previous patch because there are
-several opportunities for alloc_set_pte to bail out before accessing
-vmf->page, and that apparently happened on those systems, and most of
-the time on other systems, too.
+/usr/bin/ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
+coreboot_table.c:(.text+0x311): undefined reference to `memremap'
+/usr/bin/ld: coreboot_table.c:(.text+0x34e): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
+memconsole-coreboot.c:(.text+0x12d): undefined reference to `memremap'
+/usr/bin/ld: memconsole-coreboot.c:(.text+0x17e): undefined reference to `devm_memremap'
+/usr/bin/ld: memconsole-coreboot.c:(.text+0x191): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
+vpd.c:(.text+0x300): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
+vpd.c:(.text+0x382): undefined reference to `memremap'
+/usr/bin/ld: vpd.c:(.text+0x459): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
+vpd.c:(.text+0x59d): undefined reference to `memremap'
+/usr/bin/ld: vpd.c:(.text+0x5d3): undefined reference to `memunmap'
+collect2: error: ld returned 1 exit status
 
-However, across several million systems that error does occur a handful
-of times a day.  It can be avoided by returning VM_FAULT_NOPAGE which
-will cause do_read_fault to return before calling finish_fault.
-
-Link: https://lkml.kernel.org/r/20220325161428.5068d97e@imladris.surriel.com
-Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Tested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: a28aad66da8b ("firmware: coreboot: Collapse platform drivers into bus core")
+Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
+Acked-By: Julius Werner <jwerner@chromium.org>
+Signed-off-by: David Gow <davidgow@google.com>
+Link: https://lore.kernel.org/r/20220225041502.1901806-1-davidgow@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memory.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/firmware/google/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3676,14 +3676,18 @@ static vm_fault_t __do_fault(struct vm_f
- 		return ret;
+diff --git a/drivers/firmware/google/Kconfig b/drivers/firmware/google/Kconfig
+index 931544c9f63d..983e07dc022e 100644
+--- a/drivers/firmware/google/Kconfig
++++ b/drivers/firmware/google/Kconfig
+@@ -21,7 +21,7 @@ config GOOGLE_SMI
  
- 	if (unlikely(PageHWPoison(vmf->page))) {
-+		struct page *page = vmf->page;
- 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
- 		if (ret & VM_FAULT_LOCKED) {
-+			if (page_mapped(page))
-+				unmap_mapping_pages(page_mapping(page),
-+						    page->index, 1, false);
- 			/* Retry if a clean page was removed from the cache. */
--			if (invalidate_inode_page(vmf->page))
--				poisonret = 0;
--			unlock_page(vmf->page);
-+			if (invalidate_inode_page(page))
-+				poisonret = VM_FAULT_NOPAGE;
-+			unlock_page(page);
- 		}
--		put_page(vmf->page);
-+		put_page(page);
- 		vmf->page = NULL;
- 		return poisonret;
- 	}
+ config GOOGLE_COREBOOT_TABLE
+ 	tristate "Coreboot Table Access"
+-	depends on ACPI || OF
++	depends on HAS_IOMEM && (ACPI || OF)
+ 	help
+ 	  This option enables the coreboot_table module, which provides other
+ 	  firmware modules access to the coreboot table. The coreboot table
+-- 
+2.34.1
+
 
 
