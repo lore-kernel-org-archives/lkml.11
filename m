@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83128C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCFAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbiDEW4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
+        id S229806AbiDEW5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349066AbiDEJtD (ORCPT
+        with ESMTP id S1355855AbiDEKWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0376BA94F2;
-        Tue,  5 Apr 2022 02:39:40 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0905A5E99;
+        Tue,  5 Apr 2022 03:05:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98D30B81B14;
-        Tue,  5 Apr 2022 09:39:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F31EC385A1;
-        Tue,  5 Apr 2022 09:39:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 029EDB81BC0;
+        Tue,  5 Apr 2022 10:05:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47514C385A1;
+        Tue,  5 Apr 2022 10:05:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151578;
-        bh=Z6EtSuCeXdh+PqwaoRlWSAWz4RHxvKlbnH7nuI5gNC0=;
+        s=korg; t=1649153106;
+        bh=WIur+IZSr4WUw7s7h6O+Yd9AzCOgKPc5ajD44zcjWiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M/1Fj+Ta169HxbnUWcnDgOkRS9BUjeE8STfB0F2QMmSnjOZ0aiU8p28PKBUlBcgb5
-         yYTO9KZwCKr8NtThl1IgEof+5hwSOO2sazRk5lRErFTFlTUDBYEqZofOeBGyOV/O8h
-         ZqiX3jXQrgrH/GIZlQWUJ/AZC00TS63t8UbBgRxk=
+        b=wOYXBUt6/TgcyMpG/9m0FsB6UWaj57sIeySZ1nmVN1AVnZec87qOKMERNfGdSSPQf
+         hcyGfmzOGtPdjHz1M3h4taTpYZX9TvaffFiOWzsGw/HBi6kBPRs1jJjf+hElhTg7FI
+         +CK2Y+cMJqW/jK4HQpFqKIASF8ui3wFN72TWqJnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 467/913] iwlwifi: mvm: Fix an error code in iwl_mvm_up()
-Date:   Tue,  5 Apr 2022 09:25:29 +0200
-Message-Id: <20220405070353.846025776@linuxfoundation.org>
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        Stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 5.10 104/599] carl9170: fix missing bit-wise or operator for tx_params
+Date:   Tue,  5 Apr 2022 09:26:38 +0200
+Message-Id: <20220405070301.928654551@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,39 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Colin Ian King <colin.i.king@gmail.com>
 
-[ Upstream commit 583d18336abdfb1b355270289ff8f6a2608ba905 ]
+commit 02a95374b5eebdbd3b6413fd7ddec151d2ea75a1 upstream.
 
-Return -ENODEV instead of success on this error path.
+Currently tx_params is being re-assigned with a new value and the
+previous setting IEEE80211_HT_MCS_TX_RX_DIFF is being overwritten.
+The assignment operator is incorrect, the original intent was to
+bit-wise or the value in. Fix this by replacing the = operator
+with |= instead.
 
-Fixes: dd36a507c806 ("iwlwifi: mvm: look for the first supported channel when add/remove phy ctxt")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20210816183930.GA2068@kili
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Kudos to Christian Lamparter for suggesting the correct fix.
+
+Fixes: fe8ee9ad80b2 ("carl9170: mac80211 glue and command interface")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Cc: <Stable@vger.kernel.org>
+Acked-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220125004406.344422-1-colin.i.king@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/carl9170/main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-index bcc032c815dc..6d439ae7b50b 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-@@ -1489,8 +1489,10 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
- 	while (!sband && i < NUM_NL80211_BANDS)
- 		sband = mvm->hw->wiphy->bands[i++];
+--- a/drivers/net/wireless/ath/carl9170/main.c
++++ b/drivers/net/wireless/ath/carl9170/main.c
+@@ -1916,7 +1916,7 @@ static int carl9170_parse_eeprom(struct
+ 		WARN_ON(!(tx_streams >= 1 && tx_streams <=
+ 			IEEE80211_HT_MCS_TX_MAX_STREAMS));
  
--	if (WARN_ON_ONCE(!sband))
-+	if (WARN_ON_ONCE(!sband)) {
-+		ret = -ENODEV;
- 		goto error;
-+	}
+-		tx_params = (tx_streams - 1) <<
++		tx_params |= (tx_streams - 1) <<
+ 			    IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT;
  
- 	chan = &sband->channels[0];
- 
--- 
-2.34.1
-
+ 		carl9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
 
 
