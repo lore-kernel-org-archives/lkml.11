@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64BD7C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64409C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378870AbiDELjg (ORCPT
+        id S1378898AbiDELjm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
+        Tue, 5 Apr 2022 07:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244717AbiDEIwf (ORCPT
+        with ESMTP id S244718AbiDEIwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D9B1AF0D;
-        Tue,  5 Apr 2022 01:42:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11F515718;
+        Tue,  5 Apr 2022 01:42:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 984D1B81A32;
-        Tue,  5 Apr 2022 08:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A5BC385A0;
-        Tue,  5 Apr 2022 08:42:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF41EB81C14;
+        Tue,  5 Apr 2022 08:42:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9FE3C385A1;
+        Tue,  5 Apr 2022 08:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148160;
-        bh=3jS/1+1QYAeYKa8cy05dKsvo8e3E1btsbL4192s26p4=;
+        s=korg; t=1649148149;
+        bh=YFr4/nojKaAOU/ZZjc5sHloKXZS8yH7kQ2huS/c3kYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gSA4FXOmo8JlRLEb+/omQfIEConP6H+p4DIbg0isqJT4+f+gcjUsaUlP/r3/kzrGQ
-         TTB3fJdL5XWYsa7rGnJw+ZGlzlscKFcggom/8z8ZrDPP6UGmE2vWDmd49UgAq4nYx1
-         HRiiuJ2sbR4W4nRgj5bK0QYYQPm4eem+4bF5p1WA=
+        b=dpGk3jeWY+cewBcUP4BRF3NZRPQlbE9XssvjxwanlUA04N/OS45P+B/MqNF7or1re
+         RjnD6iaLTSI5LzBktp9ekXcz+Kf3pTYwNZEbqa6Bja/d/EVl7mM2d/kUr/5ApoVfc1
+         nKKxGTnimpdNyZvaIsAgOOvRHWXAUckNF1qL3ano=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0255/1017] io_uring: dont check unrelated req->open.how in accept request
-Date:   Tue,  5 Apr 2022 09:19:28 +0200
-Message-Id: <20220405070401.832562237@linuxfoundation.org>
+Subject: [PATCH 5.16 0251/1017] crypto: ccree - Fix use after free in cc_cipher_exit()
+Date:   Tue,  5 Apr 2022 09:19:24 +0200
+Message-Id: <20220405070401.712674946@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,40 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit adf3a9e9f556613197583a1884f0de40a8bb6fb9 ]
+[ Upstream commit 3d950c34074ed74d2713c3856ba01264523289e6 ]
 
-Looks like a victim of too much copy/paste, we should not be looking
-at req->open.how in accept. The point is to check CLOEXEC and error
-out, which we don't invalid direct descriptors on exec. Hence any
-attempt to get a direct descriptor with CLOEXEC is invalid.
+kfree_sensitive(ctx_p->user.key) will free the ctx_p->user.key. But
+ctx_p->user.key is still used in the next line, which will lead to a
+use after free.
 
-No harm is done here, as req->open.how.flags overlaps with
-req->accept.flags, but it's very confusing and might change if either of
-those command structs are modified.
+We can call kfree_sensitive() after dev_dbg() to avoid the uaf.
 
-Fixes: aaa4db12ef7b ("io_uring: accept directly into fixed file table")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 63ee04c8b491 ("crypto: ccree - add skcipher support")
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/crypto/ccree/cc_cipher.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 783d7380331b..974f6fb327e7 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5178,8 +5178,7 @@ static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	accept->nofile = rlimit(RLIMIT_NOFILE);
+diff --git a/drivers/crypto/ccree/cc_cipher.c b/drivers/crypto/ccree/cc_cipher.c
+index 78833491f534..309da6334a0a 100644
+--- a/drivers/crypto/ccree/cc_cipher.c
++++ b/drivers/crypto/ccree/cc_cipher.c
+@@ -257,8 +257,8 @@ static void cc_cipher_exit(struct crypto_tfm *tfm)
+ 		&ctx_p->user.key_dma_addr);
  
- 	accept->file_slot = READ_ONCE(sqe->file_index);
--	if (accept->file_slot && ((req->open.how.flags & O_CLOEXEC) ||
--				  (accept->flags & SOCK_CLOEXEC)))
-+	if (accept->file_slot && (accept->flags & SOCK_CLOEXEC))
- 		return -EINVAL;
- 	if (accept->flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
- 		return -EINVAL;
+ 	/* Free key buffer in context */
+-	kfree_sensitive(ctx_p->user.key);
+ 	dev_dbg(dev, "Free key buffer in context. key=@%p\n", ctx_p->user.key);
++	kfree_sensitive(ctx_p->user.key);
+ }
+ 
+ struct tdes_keys {
 -- 
 2.34.1
 
