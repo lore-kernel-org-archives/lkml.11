@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C0FC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02194C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352439AbiDEKEe (ORCPT
+        id S1353219AbiDEKFw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52918 "EHLO
+        Tue, 5 Apr 2022 06:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237059AbiDEI3F (ORCPT
+        with ESMTP id S240320AbiDEIbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:29:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E9315FC9;
-        Tue,  5 Apr 2022 01:21:12 -0700 (PDT)
+        Tue, 5 Apr 2022 04:31:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053206A41B;
+        Tue,  5 Apr 2022 01:23:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F55561001;
-        Tue,  5 Apr 2022 08:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33467C385A0;
-        Tue,  5 Apr 2022 08:21:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A56BB81BA7;
+        Tue,  5 Apr 2022 08:23:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F25EC385A0;
+        Tue,  5 Apr 2022 08:23:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146871;
-        bh=hP7Ta8lHWxh6NeT9h5JeWb6KQ3S+wTrRwcg0WqNvRtc=;
+        s=korg; t=1649147032;
+        bh=ZLTP0CsQzKamaFohUBCVD0Y/Pr2t2IZyPkvu0eeCTco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=maMqZ1VJ+BT0/sHcM4x/Dvmnr8F3Bra5KY35fhaKqKfe/+sGip7FqK29MAKpMKCe9
-         PJM2Y1Ghvxqn66Gtzmd6W0zmt5WiRcgY+1zfweLsZM6KXsiLwJBBIO/Gg6ZcBV3v2d
-         J22m3hPAuAn2Q1jYtTMiYPuBt2PW81h0H6hFfnKc=
+        b=wzjvNdurNzCzJFuNDPAk19m/Vv+gX4Nka6Q/dUChkzSauC4FIlFw1HPj2leJaXYxi
+         Dsq46O3APiACl5iWSZ9xnkllp/eeepjyACabk64xoDXn2GgiSoqtvqpvvagLjdoIKX
+         80ziPRDWzLnCeaVlOplWI7dxBQHUbN9nV2v8Kl5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0917/1126] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
-Date:   Tue,  5 Apr 2022 09:27:44 +0200
-Message-Id: <20220405070434.437944181@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0978/1126] scsi: qla2xxx: Fix device reconnect in loop topology
+Date:   Tue,  5 Apr 2022 09:28:45 +0200
+Message-Id: <20220405070436.208692731@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,62 +52,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Arun Easi <aeasi@marvell.com>
 
-[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
+commit 8ad4be3d15cf144b5834bdb00d5bbe4050938dc7 upstream.
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+A device logout in loop topology initiates a device connection teardown
+which loses the FW device handle. In loop topo, the device handle is not
+regrabbed leading to device login failures and eventually to loss of the
+device. Fix this by taking the main login path that does it.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220110050218.3958-11-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/udlfb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |   15 +++++++++++++++
+ drivers/scsi/qla2xxx/qla_os.c   |    5 +++++
+ 2 files changed, 20 insertions(+)
 
-diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
-index b9cdd02c1000..90f48b71fd8f 100644
---- a/drivers/video/fbdev/udlfb.c
-+++ b/drivers/video/fbdev/udlfb.c
-@@ -1426,7 +1426,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_rendered));
- }
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -974,6 +974,9 @@ static void qla24xx_handle_gnl_done_even
+ 				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+ 			}
+ 			break;
++		case ISP_CFG_NL:
++			qla24xx_fcport_handle_login(vha, fcport);
++			break;
+ 		default:
+ 			break;
+ 		}
+@@ -1563,6 +1566,11 @@ static void qla_chk_n2n_b4_login(struct
+ 	u8 login = 0;
+ 	int rc;
  
-@@ -1434,7 +1434,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_identical));
- }
++	ql_dbg(ql_dbg_disc, vha, 0x307b,
++	    "%s %8phC DS %d LS %d lid %d retries=%d\n",
++	    __func__, fcport->port_name, fcport->disc_state,
++	    fcport->fw_login_state, fcport->loop_id, fcport->login_retry);
++
+ 	if (qla_tgt_mode_enabled(vha))
+ 		return;
  
-@@ -1442,7 +1442,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_sent));
- }
- 
-@@ -1450,7 +1450,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->cpu_kcycles_used));
- }
- 
--- 
-2.34.1
-
+@@ -5604,6 +5612,13 @@ qla2x00_configure_local_loop(scsi_qla_ho
+ 			memcpy(fcport->node_name, new_fcport->node_name,
+ 			    WWN_SIZE);
+ 			fcport->scan_state = QLA_FCPORT_FOUND;
++			if (fcport->login_retry == 0) {
++				fcport->login_retry = vha->hw->login_retry_count;
++				ql_dbg(ql_dbg_disc, vha, 0x2135,
++				    "Port login retry %8phN, lid 0x%04x retry cnt=%d.\n",
++				    fcport->port_name, fcport->loop_id,
++				    fcport->login_retry);
++			}
+ 			found++;
+ 			break;
+ 		}
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -5533,6 +5533,11 @@ void qla2x00_relogin(struct scsi_qla_hos
+ 					ea.fcport = fcport;
+ 					qla24xx_handle_relogin_event(vha, &ea);
+ 				} else if (vha->hw->current_topology ==
++					 ISP_CFG_NL &&
++					IS_QLA2XXX_MIDTYPE(vha->hw)) {
++					(void)qla24xx_fcport_handle_login(vha,
++									fcport);
++				} else if (vha->hw->current_topology ==
+ 				    ISP_CFG_NL) {
+ 					fcport->login_retry--;
+ 					status =
 
 
