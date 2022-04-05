@@ -2,118 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2FAEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D57C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:07:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351224AbiDELE1 (ORCPT
+        id S1351372AbiDELEj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
+        Tue, 5 Apr 2022 07:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237486AbiDEImf (ORCPT
+        with ESMTP id S237482AbiDEImc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:42:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E296E0CD;
-        Tue,  5 Apr 2022 01:34:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 04:42:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4080E0B1
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 01:34:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649147695;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M1utQ8fOMqM+ptvV6EXMLIBeco3zKQw5c48AAzoDAOw=;
+        b=Tgk3FZFIx74eJICgl+j63wwa2JvsKLGvapkhMqWsyIPb1HgTTq1NcCHcVZHz8t70YeVTC9
+        OdEp3d3i4PcR640OJBhH2zuZ/yImqFm64720S90F/c6JnsJMNgsUmLGcuDqOQHSYQ9RX+C
+        gy9LqwoWtXV1LURypJye/CawsXl9S30=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-563-h-SKvK9xOUO9bqCZ3DIYyA-1; Tue, 05 Apr 2022 04:34:52 -0400
+X-MC-Unique: h-SKvK9xOUO9bqCZ3DIYyA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DD6460B0A;
-        Tue,  5 Apr 2022 08:34:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78671C385A0;
-        Tue,  5 Apr 2022 08:34:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147697;
-        bh=iuu0YuAOVMFBxBVeMxgnFXwtYV2ssnNxwyvplSk10do=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=btCeQXJ1Ej0AY+OeUNKbpzVvgCki1pqIqjregzUe98kEpaNo/em/R4vu1Qx4/XPOv
-         CqRZGSj6eLpd2rjbtGSTt3DZX55pexYdctEq5uXWdEgoyNkU4fMLUAH24Uqt4wrWVw
-         DPxLODnisKpgjDNPx9Ir52LhQ4U7BCxjMBy7Ws0g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        John Hubbard <jhubbard@nvidia.com>,
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6F6C4811E76;
+        Tue,  5 Apr 2022 08:34:51 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.195.54])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 9DEA214A4F80;
+        Tue,  5 Apr 2022 08:34:47 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Tue,  5 Apr 2022 10:34:49 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 10:34:45 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
         Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 0089/1017] mm: invalidate hwpoison page cache page in fault path
-Date:   Tue,  5 Apr 2022 09:16:42 +0200
-Message-Id: <20220405070356.835980295@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: Re: [PATCH v2] ptrace: fix ptrace vs tasklist_lock race on
+ PREEMPT_RT.
+Message-ID: <20220405083445.GA31401@redhat.com>
+References: <Yh/b19JikC+Vnm8i@linutronix.de>
+ <20220314185429.GA30364@redhat.com>
+ <YjBO8yzxdmjTGNiy@linutronix.de>
+ <20220315142944.GA22670@redhat.com>
+ <YkW55u6u2fo5QmV7@linutronix.de>
+ <20220404161339.GA21531@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404161339.GA21531@redhat.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van Riel <riel@surriel.com>
+On 04/04, Oleg Nesterov wrote:
+>
+> Cough. Somehow I can hardly understand v2. For example, if we fix
+> wait_task_inactive() correctly, then why ptrace_freeze_traced()
+> should take saved_state into account? And how can unfreeze_traced
+> hit saved_state == __TASK_TRACED ?
 
-commit e53ac7374e64dede04d745ff0e70ff5048378d1f upstream.
+OK, somehow I forgot that ptrace_freeze_traced() is called before
+wait_task_inactive(), so it does need to check/change saved_state.
 
-Sometimes the page offlining code can leave behind a hwpoisoned clean
-page cache page.  This can lead to programs being killed over and over
-and over again as they fault in the hwpoisoned page, get killed, and
-then get re-spawned by whatever wanted to run them.
+But still, ptrace_unfreeze_traced() can't see task->saved_state ==
+__TASK_TRACED, right ?
 
-This is particularly embarrassing when the page was offlined due to
-having too many corrected memory errors.  Now we are killing tasks due
-to them trying to access memory that probably isn't even corrupted.
 
-This problem can be avoided by invalidating the page from the page fault
-handler, which already has a branch for dealing with these kinds of
-pages.  With this patch we simply pretend the page fault was successful
-if the page was invalidated, return to userspace, incur another page
-fault, read in the file from disk (to a new memory page), and then
-everything works again.
-
-Link: https://lkml.kernel.org/r/20220212213740.423efcea@imladris.surriel.com
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- mm/memory.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3888,11 +3888,16 @@ static vm_fault_t __do_fault(struct vm_f
- 		return ret;
- 
- 	if (unlikely(PageHWPoison(vmf->page))) {
--		if (ret & VM_FAULT_LOCKED)
-+		vm_fault_t poisonret = VM_FAULT_HWPOISON;
-+		if (ret & VM_FAULT_LOCKED) {
-+			/* Retry if a clean page was removed from the cache. */
-+			if (invalidate_inode_page(vmf->page))
-+				poisonret = 0;
- 			unlock_page(vmf->page);
-+		}
- 		put_page(vmf->page);
- 		vmf->page = NULL;
--		return VM_FAULT_HWPOISON;
-+		return poisonret;
- 	}
- 
- 	if (unlikely(!(ret & VM_FAULT_LOCKED)))
-
+Oleg.
 
