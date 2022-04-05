@@ -2,348 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 850ECC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3C6C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355207AbiDEVKw (ORCPT
+        id S1355517AbiDEVLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52086 "EHLO
+        Tue, 5 Apr 2022 17:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458145AbiDERKR (ORCPT
+        with ESMTP id S1357991AbiDEK1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:10:17 -0400
-Received: from 1.mo560.mail-out.ovh.net (1.mo560.mail-out.ovh.net [46.105.63.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E0F6D1A2
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:08:14 -0700 (PDT)
-Received: from player771.ha.ovh.net (unknown [10.108.1.181])
-        by mo560.mail-out.ovh.net (Postfix) with ESMTP id AFA6E23D5E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:59:42 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player771.ha.ovh.net (Postfix) with ESMTPSA id 593F3293E36F1;
-        Tue,  5 Apr 2022 16:59:37 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-106R006674b4758-f566-458a-9f6a-2a4a5c2e66b3,
-                    8AF55017BACD44284FC599BC4826E0280D36FCC4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 05/14] ASoC: max9*: use simple i2c probe function
-Date:   Tue,  5 Apr 2022 18:58:27 +0200
-Message-Id: <20220405165836.2165310-6-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220405165836.2165310-1-steve@sk2.org>
-References: <20220405165836.2165310-1-steve@sk2.org>
+        Tue, 5 Apr 2022 06:27:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAB6D4456;
+        Tue,  5 Apr 2022 03:12:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C0F0B81C89;
+        Tue,  5 Apr 2022 10:12:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74510C385A1;
+        Tue,  5 Apr 2022 10:12:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153539;
+        bh=Df5cw4uZOewNOibhwguds9r4nlmhDAJTRW1n8V1PLUM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ar+7zCg3OZzSuz0OsBk1/cY0RtXZsu7BSIOHvOC6PPG6tSgUbhDPZd/60DkDpvF5X
+         B2Pl/BRd+ID72bMvhLXTbzMfWodPGsx6MRX5X/AfPzGnDXgKSVVtgaaiCTNHKJHu7M
+         KWvARFrPBHxW1Yq5IZfOrX/mG3AI8mm6+vJx0F+c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 259/599] ARM: configs: multi_v5_defconfig: re-enable CONFIG_V4L_PLATFORM_DRIVERS
+Date:   Tue,  5 Apr 2022 09:29:13 +0200
+Message-Id: <20220405070306.545970135@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 8466204352922355334
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejgedguddtgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepjeelledvfeeiiedutdefveekgeeuheekkedvffegvdehudegkefgjeejkefgueegnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejuddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+From: Andre Przywara <andre.przywara@arm.com>
 
-This avoids scanning the identifier tables during probes.
+[ Upstream commit f5eb04d7a0e419d61f784de3ced708259ddb71d7 ]
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
+Commit 06b93644f4d1 ("media: Kconfig: add an option to filter in/out
+platform drivers") introduced CONFIG_MEDIA_PLATFORM_SUPPORT, to allow
+more fine grained control over the inclusion of certain Kconfig files.
+multi_v5_defconfig was selecting some drivers described in
+drivers/media/platform/Kconfig, which now wasn't included anymore.
+
+Explicitly set the new symbol in multi_v5_defconfig to bring those
+drivers back.
+This enables some new V4L2 and VIDEOBUF2 features, but as modules only.
+
+Fixes: 06b93644f4d1 ("media: Kconfig: add an option to filter in/out platform drivers")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Link: https://lore.kernel.org/r/20220317183043.948432-3-andre.przywara@arm.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max9768.c      | 5 ++---
- sound/soc/codecs/max98371.c     | 5 ++---
- sound/soc/codecs/max98373-i2c.c | 5 ++---
- sound/soc/codecs/max98390.c     | 5 ++---
- sound/soc/codecs/max9850.c      | 5 ++---
- sound/soc/codecs/max98504.c     | 5 ++---
- sound/soc/codecs/max98520.c     | 4 ++--
- sound/soc/codecs/max9867.c      | 5 ++---
- sound/soc/codecs/max9877.c      | 5 ++---
- sound/soc/codecs/max98925.c     | 5 ++---
- sound/soc/codecs/max98926.c     | 5 ++---
- sound/soc/codecs/max98927.c     | 5 ++---
- 12 files changed, 24 insertions(+), 35 deletions(-)
+ arch/arm/configs/multi_v5_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/max9768.c b/sound/soc/codecs/max9768.c
-index 39dda1b03b3d..d711eb1da0a8 100644
---- a/sound/soc/codecs/max9768.c
-+++ b/sound/soc/codecs/max9768.c
-@@ -167,8 +167,7 @@ static const struct regmap_config max9768_i2c_regmap_config = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int max9768_i2c_probe(struct i2c_client *client,
--			     const struct i2c_device_id *id)
-+static int max9768_i2c_probe(struct i2c_client *client)
- {
- 	struct max9768 *max9768;
- 	struct max9768_pdata *pdata = client->dev.platform_data;
-@@ -215,7 +214,7 @@ static struct i2c_driver max9768_i2c_driver = {
- 	.driver = {
- 		.name = "max9768",
- 	},
--	.probe = max9768_i2c_probe,
-+	.probe_new = max9768_i2c_probe,
- 	.id_table = max9768_i2c_id,
- };
- module_i2c_driver(max9768_i2c_driver);
-diff --git a/sound/soc/codecs/max98371.c b/sound/soc/codecs/max98371.c
-index 8d42f523e420..800f2bca6a0f 100644
---- a/sound/soc/codecs/max98371.c
-+++ b/sound/soc/codecs/max98371.c
-@@ -365,8 +365,7 @@ static const struct regmap_config max98371_regmap = {
- 	.cache_type       = REGCACHE_RBTREE,
- };
- 
--static int max98371_i2c_probe(struct i2c_client *i2c,
--		const struct i2c_device_id *id)
-+static int max98371_i2c_probe(struct i2c_client *i2c)
- {
- 	struct max98371_priv *max98371;
- 	int ret, reg;
-@@ -421,7 +420,7 @@ static struct i2c_driver max98371_i2c_driver = {
- 		.name = "max98371",
- 		.of_match_table = of_match_ptr(max98371_of_match),
- 	},
--	.probe  = max98371_i2c_probe,
-+	.probe_new  = max98371_i2c_probe,
- 	.id_table = max98371_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max98373-i2c.c b/sound/soc/codecs/max98373-i2c.c
-index ddb6436835d7..4fe065ece17c 100644
---- a/sound/soc/codecs/max98373-i2c.c
-+++ b/sound/soc/codecs/max98373-i2c.c
-@@ -516,8 +516,7 @@ static const struct regmap_config max98373_regmap = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int max98373_i2c_probe(struct i2c_client *i2c,
--			      const struct i2c_device_id *id)
-+static int max98373_i2c_probe(struct i2c_client *i2c)
- {
- 	int ret = 0;
- 	int reg = 0;
-@@ -622,7 +621,7 @@ static struct i2c_driver max98373_i2c_driver = {
- 		.acpi_match_table = ACPI_PTR(max98373_acpi_match),
- 		.pm = &max98373_pm,
- 	},
--	.probe = max98373_i2c_probe,
-+	.probe_new = max98373_i2c_probe,
- 	.id_table = max98373_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max98390.c b/sound/soc/codecs/max98390.c
-index 40fd6f363f35..d1fed8e2bded 100644
---- a/sound/soc/codecs/max98390.c
-+++ b/sound/soc/codecs/max98390.c
-@@ -1014,8 +1014,7 @@ static void max98390_slot_config(struct i2c_client *i2c,
- 		max98390->i_l_slot = 1;
- }
- 
--static int max98390_i2c_probe(struct i2c_client *i2c,
--		const struct i2c_device_id *id)
-+static int max98390_i2c_probe(struct i2c_client *i2c)
- {
- 	int ret = 0;
- 	int reg = 0;
-@@ -1121,7 +1120,7 @@ static struct i2c_driver max98390_i2c_driver = {
- 		.acpi_match_table = ACPI_PTR(max98390_acpi_match),
- 		.pm = &max98390_pm,
- 	},
--	.probe = max98390_i2c_probe,
-+	.probe_new = max98390_i2c_probe,
- 	.id_table = max98390_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max9850.c b/sound/soc/codecs/max9850.c
-index e073f0e029be..9ca6fc254883 100644
---- a/sound/soc/codecs/max9850.c
-+++ b/sound/soc/codecs/max9850.c
-@@ -299,8 +299,7 @@ static const struct snd_soc_component_driver soc_component_dev_max9850 = {
- 	.non_legacy_dai_naming	= 1,
- };
- 
--static int max9850_i2c_probe(struct i2c_client *i2c,
--			     const struct i2c_device_id *id)
-+static int max9850_i2c_probe(struct i2c_client *i2c)
- {
- 	struct max9850_priv *max9850;
- 	int ret;
-@@ -331,7 +330,7 @@ static struct i2c_driver max9850_i2c_driver = {
- 	.driver = {
- 		.name = "max9850",
- 	},
--	.probe = max9850_i2c_probe,
-+	.probe_new = max9850_i2c_probe,
- 	.id_table = max9850_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max98504.c b/sound/soc/codecs/max98504.c
-index a5aa124c4a2e..9da7381472e3 100644
---- a/sound/soc/codecs/max98504.c
-+++ b/sound/soc/codecs/max98504.c
-@@ -304,8 +304,7 @@ static const struct regmap_config max98504_regmap = {
- 	.cache_type		= REGCACHE_RBTREE,
- };
- 
--static int max98504_i2c_probe(struct i2c_client *client,
--			      const struct i2c_device_id *id)
-+static int max98504_i2c_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
- 	struct device_node *node = dev->of_node;
-@@ -371,7 +370,7 @@ static struct i2c_driver max98504_i2c_driver = {
- 		.name = "max98504",
- 		.of_match_table = of_match_ptr(max98504_of_match),
- 	},
--	.probe = max98504_i2c_probe,
-+	.probe_new = max98504_i2c_probe,
- 	.id_table = max98504_i2c_id,
- };
- module_i2c_driver(max98504_i2c_driver);
-diff --git a/sound/soc/codecs/max98520.c b/sound/soc/codecs/max98520.c
-index bb8649cd421c..f0f085ecab55 100644
---- a/sound/soc/codecs/max98520.c
-+++ b/sound/soc/codecs/max98520.c
-@@ -677,7 +677,7 @@ static void max98520_power_on(struct max98520_priv *max98520, bool poweron)
- 		gpiod_set_value_cansleep(max98520->reset_gpio, !poweron);
- }
- 
--static int max98520_i2c_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
-+static int max98520_i2c_probe(struct i2c_client *i2c)
- {
- 	int ret;
- 	int reg = 0;
-@@ -757,7 +757,7 @@ static struct i2c_driver max98520_i2c_driver = {
- 		.of_match_table = of_match_ptr(max98520_of_match),
- 		.pm = &max98520_pm,
- 	},
--	.probe = max98520_i2c_probe,
-+	.probe_new = max98520_i2c_probe,
- 	.id_table = max98520_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max9867.c b/sound/soc/codecs/max9867.c
-index c2b1151c75cc..eb628b7e84f5 100644
---- a/sound/soc/codecs/max9867.c
-+++ b/sound/soc/codecs/max9867.c
-@@ -613,8 +613,7 @@ static const struct regmap_config max9867_regmap = {
- 	.cache_type	= REGCACHE_RBTREE,
- };
- 
--static int max9867_i2c_probe(struct i2c_client *i2c,
--		const struct i2c_device_id *id)
-+static int max9867_i2c_probe(struct i2c_client *i2c)
- {
- 	struct max9867_priv *max9867;
- 	int ret, reg;
-@@ -662,7 +661,7 @@ static struct i2c_driver max9867_i2c_driver = {
- 		.name = "max9867",
- 		.of_match_table = of_match_ptr(max9867_of_match),
- 	},
--	.probe  = max9867_i2c_probe,
-+	.probe_new  = max9867_i2c_probe,
- 	.id_table = max9867_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max9877.c b/sound/soc/codecs/max9877.c
-index 71fede9224c4..3bf86328d5cd 100644
---- a/sound/soc/codecs/max9877.c
-+++ b/sound/soc/codecs/max9877.c
-@@ -133,8 +133,7 @@ static const struct regmap_config max9877_regmap = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int max9877_i2c_probe(struct i2c_client *client,
--			     const struct i2c_device_id *id)
-+static int max9877_i2c_probe(struct i2c_client *client)
- {
- 	struct regmap *regmap;
- 	int i;
-@@ -161,7 +160,7 @@ static struct i2c_driver max9877_i2c_driver = {
- 	.driver = {
- 		.name = "max9877",
- 	},
--	.probe = max9877_i2c_probe,
-+	.probe_new = max9877_i2c_probe,
- 	.id_table = max9877_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max98925.c b/sound/soc/codecs/max98925.c
-index f34fa274ae4f..63849ebcfd35 100644
---- a/sound/soc/codecs/max98925.c
-+++ b/sound/soc/codecs/max98925.c
-@@ -558,8 +558,7 @@ static const struct regmap_config max98925_regmap = {
- 	.cache_type       = REGCACHE_RBTREE,
- };
- 
--static int max98925_i2c_probe(struct i2c_client *i2c,
--			     const struct i2c_device_id *id)
-+static int max98925_i2c_probe(struct i2c_client *i2c)
- {
- 	int ret, reg;
- 	u32 value;
-@@ -637,7 +636,7 @@ static struct i2c_driver max98925_i2c_driver = {
- 		.name = "max98925",
- 		.of_match_table = of_match_ptr(max98925_of_match),
- 	},
--	.probe  = max98925_i2c_probe,
-+	.probe_new  = max98925_i2c_probe,
- 	.id_table = max98925_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max98926.c b/sound/soc/codecs/max98926.c
-index 1fbbc62bb0a2..56e0a87c7112 100644
---- a/sound/soc/codecs/max98926.c
-+++ b/sound/soc/codecs/max98926.c
-@@ -510,8 +510,7 @@ static const struct regmap_config max98926_regmap = {
- 	.cache_type		= REGCACHE_RBTREE,
- };
- 
--static int max98926_i2c_probe(struct i2c_client *i2c,
--		const struct i2c_device_id *id)
-+static int max98926_i2c_probe(struct i2c_client *i2c)
- {
- 	int ret, reg;
- 	u32 value;
-@@ -584,7 +583,7 @@ static struct i2c_driver max98926_i2c_driver = {
- 		.name = "max98926",
- 		.of_match_table = of_match_ptr(max98926_of_match),
- 	},
--	.probe	= max98926_i2c_probe,
-+	.probe_new = max98926_i2c_probe,
- 	.id_table = max98926_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max98927.c b/sound/soc/codecs/max98927.c
-index bf78d3c98514..b7cff76d7b5b 100644
---- a/sound/soc/codecs/max98927.c
-+++ b/sound/soc/codecs/max98927.c
-@@ -863,8 +863,7 @@ static void max98927_slot_config(struct i2c_client *i2c,
- 		max98927->i_l_slot = 1;
- }
- 
--static int max98927_i2c_probe(struct i2c_client *i2c,
--	const struct i2c_device_id *id)
-+static int max98927_i2c_probe(struct i2c_client *i2c)
- {
- 
- 	int ret = 0, value;
-@@ -977,7 +976,7 @@ static struct i2c_driver max98927_i2c_driver = {
- 		.acpi_match_table = ACPI_PTR(max98927_acpi_match),
- 		.pm = &max98927_pm,
- 	},
--	.probe  = max98927_i2c_probe,
-+	.probe_new = max98927_i2c_probe,
- 	.remove = max98927_i2c_remove,
- 	.id_table = max98927_i2c_id,
- };
+diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
+index e00be9faa23b..4393e689f235 100644
+--- a/arch/arm/configs/multi_v5_defconfig
++++ b/arch/arm/configs/multi_v5_defconfig
+@@ -187,6 +187,7 @@ CONFIG_REGULATOR=y
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+ CONFIG_MEDIA_SUPPORT=y
+ CONFIG_MEDIA_CAMERA_SUPPORT=y
++CONFIG_MEDIA_PLATFORM_SUPPORT=y
+ CONFIG_V4L_PLATFORM_DRIVERS=y
+ CONFIG_VIDEO_ASPEED=m
+ CONFIG_VIDEO_ATMEL_ISI=m
 -- 
-2.27.0
+2.34.1
+
+
 
