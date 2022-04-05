@@ -2,143 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DABC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F687C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835963AbiDFAeX (ORCPT
+        id S1835992AbiDFAe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
+        Tue, 5 Apr 2022 20:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573606AbiDETX0 (ORCPT
+        with ESMTP id S1358074AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF12353719;
-        Tue,  5 Apr 2022 12:21:26 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7665D5E1;
+        Tue,  5 Apr 2022 03:14:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E28FB81FA5;
-        Tue,  5 Apr 2022 19:21:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C286C385A1;
-        Tue,  5 Apr 2022 19:21:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186485;
-        bh=UyhoaEfN26kChKGPTQMMPNGQiUm6otQmJCvQT6vOeVI=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3750461562;
+        Tue,  5 Apr 2022 10:14:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44E93C385A3;
+        Tue,  5 Apr 2022 10:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153681;
+        bh=RqXiEueM5KylFbJqKWh30dyk69vrDuZhdVzjjd3RllY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hy9oPgfHZ178DRYZNlzmpYwSt9a7y7tuEeZdQVKXo6BFXh3FbqxXieJG9rJpHZbwr
-         P7x8hxMfmdHFV5RiqEFM5rWcfmudlsqLssv687p6QjMUu6SwsCoLxbsuHLErRslSnZ
-         kiWAqbjGV1ZDBSX67BSOYZBCKhklrUjmubSfNvSrG0Onj+kL6BvAnXVhlWoW5SzZBh
-         vXlbUu1zhEDHiX8nLpbU+Dek3h0Na6KtomU1EMElYgdL3yjKG5xTQJp2Chzd7lHCwB
-         ZAd7u8J3JnCl6w+hr0UUpt+CXrWJOVnC71hgzPzvmx9mAAHpROTHnCeBPpr14vfcOR
-         qR/RLSYhkRy9g==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 58/59] ceph: add encryption support to writepage
-Date:   Tue,  5 Apr 2022 15:20:29 -0400
-Message-Id: <20220405192030.178326-59-jlayton@kernel.org>
+        b=U8h8lU7nuYlZZV9D90sfU3b1Sjz3jExdxkGPp/aosg9T8WDW36purIVFDbJz8bdDA
+         QvNj8krfZgnXv6jkDLK/eMRF7w2HG+ANJSgdyXLNfI+4l2GhJRPtngLVSIeUf+qWsZ
+         q8USr45sQDn244/jNPqc0nn+ldLYFMZ6YGB5XVIc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 309/599] scsi: pm8001: Fix command initialization in pm80XX_send_read_log()
+Date:   Tue,  5 Apr 2022 09:30:03 +0200
+Message-Id: <20220405070308.029261486@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow writepage to issue encrypted writes. Extend out the requested size
-and offset to cover complete blocks, and then encrypt and write them to
-the OSDs.
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+[ Upstream commit 1a37b6738b58d86f6b144b3fc754ace0f2e0166d ]
+
+Since the sata_cmd struct is zeroed out before its fields are initialized,
+there is no need for using "|=" to initialize the ncqtag_atap_dir_m
+field. Using a standard assignment removes the sparse warning:
+
+warning: invalid assignment: |=
+
+Also, since the ncqtag_atap_dir_m field has type __le32, use cpu_to_le32()
+to generate the assigned value.
+
+Link: https://lore.kernel.org/r/20220220031810.738362-5-damien.lemoal@opensource.wdc.com
+Fixes: c6b9ef5779c3 ("[SCSI] pm80xx: NCQ error handling changes")
+Reviewed-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/addr.c | 34 +++++++++++++++++++++++++++-------
- 1 file changed, 27 insertions(+), 7 deletions(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
+ drivers/scsi/pm8001/pm80xx_hwi.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
-index bcb74b1d46bb..ff015f251fcc 100644
---- a/fs/ceph/addr.c
-+++ b/fs/ceph/addr.c
-@@ -584,10 +584,12 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
- 	loff_t page_off = page_offset(page);
- 	int err;
- 	loff_t len = thp_size(page);
-+	loff_t wlen;
- 	struct ceph_writeback_ctl ceph_wbc;
- 	struct ceph_osd_client *osdc = &fsc->client->osdc;
- 	struct ceph_osd_request *req;
- 	bool caching = ceph_is_cache_enabled(inode);
-+	struct page *bounce_page = NULL;
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 9b318958d78c..eb63f8c5a6f9 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -1804,7 +1804,7 @@ static void pm8001_send_read_log(struct pm8001_hba_info *pm8001_ha,
  
- 	dout("writepage %p idx %lu\n", page, page->index);
+ 	sata_cmd.tag = cpu_to_le32(ccb_tag);
+ 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
+-	sata_cmd.ncqtag_atap_dir_m |= ((0x1 << 7) | (0x5 << 9));
++	sata_cmd.ncqtag_atap_dir_m = cpu_to_le32((0x1 << 7) | (0x5 << 9));
+ 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
  
-@@ -619,6 +621,8 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
+ 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd,
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 2a3ce4680734..9f0ce8668113 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -1830,7 +1830,7 @@ static void pm80xx_send_read_log(struct pm8001_hba_info *pm8001_ha,
  
- 	if (ceph_wbc.i_size < page_off + len)
- 		len = ceph_wbc.i_size - page_off;
-+	if (IS_ENCRYPTED(inode))
-+		wlen = round_up(len, CEPH_FSCRYPT_BLOCK_SIZE);
+ 	sata_cmd.tag = cpu_to_le32(ccb_tag);
+ 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
+-	sata_cmd.ncqtag_atap_dir_m_dad |= ((0x1 << 7) | (0x5 << 9));
++	sata_cmd.ncqtag_atap_dir_m_dad = cpu_to_le32(((0x1 << 7) | (0x5 << 9)));
+ 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
  
- 	dout("writepage %p page %p index %lu on %llu~%llu snapc %p seq %lld\n",
- 	     inode, page, page->index, page_off, len, snapc, snapc->seq);
-@@ -627,22 +631,37 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
- 	    CONGESTION_ON_THRESH(fsc->mount_options->congestion_kb))
- 		fsc->write_congested = true;
- 
--	req = ceph_osdc_new_request(osdc, &ci->i_layout, ceph_vino(inode), page_off, &len, 0, 1,
--				    CEPH_OSD_OP_WRITE, CEPH_OSD_FLAG_WRITE, snapc,
--				    ceph_wbc.truncate_seq, ceph_wbc.truncate_size,
--				    true);
-+	req = ceph_osdc_new_request(osdc, &ci->i_layout, ceph_vino(inode),
-+				    page_off, &wlen, 0, 1, CEPH_OSD_OP_WRITE,
-+				    CEPH_OSD_FLAG_WRITE, snapc,
-+				    ceph_wbc.truncate_seq,
-+				    ceph_wbc.truncate_size, true);
- 	if (IS_ERR(req))
- 		return PTR_ERR(req);
- 
-+	if (wlen < len)
-+		len = wlen;
-+
- 	set_page_writeback(page);
- 	if (caching)
- 		ceph_set_page_fscache(page);
- 	ceph_fscache_write_to_cache(inode, page_off, len, caching);
- 
-+	if (IS_ENCRYPTED(inode)) {
-+		bounce_page = fscrypt_encrypt_pagecache_blocks(page, CEPH_FSCRYPT_BLOCK_SIZE,
-+								0, GFP_NOFS);
-+		if (IS_ERR(bounce_page)) {
-+			err = PTR_ERR(bounce_page);
-+			goto out;
-+		}
-+	}
- 	/* it may be a short write due to an object boundary */
- 	WARN_ON_ONCE(len > thp_size(page));
--	osd_req_op_extent_osd_data_pages(req, 0, &page, len, 0, false, false);
--	dout("writepage %llu~%llu (%llu bytes)\n", page_off, len, len);
-+	osd_req_op_extent_osd_data_pages(req, 0,
-+			bounce_page ? &bounce_page : &page, wlen, 0,
-+			false, false);
-+	dout("writepage %llu~%llu (%llu bytes, %sencrypted)\n",
-+	     page_off, len, wlen, IS_ENCRYPTED(inode) ? "" : "not ");
- 
- 	req->r_mtime = inode->i_mtime;
- 	err = ceph_osdc_start_request(osdc, req, true);
-@@ -651,7 +670,8 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
- 
- 	ceph_update_write_metrics(&fsc->mdsc->metric, req->r_start_latency,
- 				  req->r_end_latency, len, err);
--
-+	fscrypt_free_bounce_page(bounce_page);
-+out:
- 	ceph_osdc_put_request(req);
- 	if (err == 0)
- 		err = len;
+ 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd,
 -- 
-2.35.1
+2.34.1
+
+
 
