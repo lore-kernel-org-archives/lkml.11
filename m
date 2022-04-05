@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E66C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9261C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232098AbiDEHza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47388 "EHLO
+        id S231500AbiDEHze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233512AbiDEHry (ORCPT
+        with ESMTP id S233569AbiDEHr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:54 -0400
+        Tue, 5 Apr 2022 03:47:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7CDE91560;
-        Tue,  5 Apr 2022 00:44:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A12229;
+        Tue,  5 Apr 2022 00:45:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70757B81B7F;
-        Tue,  5 Apr 2022 07:44:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 968A4C340EE;
-        Tue,  5 Apr 2022 07:44:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 065F5B81A22;
+        Tue,  5 Apr 2022 07:45:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 438E9C340EE;
+        Tue,  5 Apr 2022 07:45:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144673;
-        bh=LEvzur6CzlpPWA2cJkZ3mY5Wpvx1nDCsYjk7OYDTgcM=;
+        s=korg; t=1649144754;
+        bh=Uup66fe9U42GW/CL9Li8fks4q1jkU37HfQqNHFuGopI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zgMF+bh8MuzuXb7eaukTeoe9i0q/18r4JE2s5yVPPsT60uKqZE5BPEKovdJZyATfR
-         Px0JzsziyiGcNnaGFU/bR+N8o2kI1bNeg8uX0IFlhalOiP9GdapdkU7R+nYxzsC/9N
-         CkRxnqAkV9Xu/sRQDXYJZDUVAD3sowAt1r+kXuNo=
+        b=n25FOGAec0Sb5izZhIZA8k/Q+IG3Q7w8BZJ6DwqTbboD12k3qEp5KLwzPSZm0hffI
+         6d2y2AjVerC2widGygCaNE0jzHB1vdER5kNp8lvsH15pTKUpXx8aU2Y6ECfE4xxvXp
+         Tz7llfsdhrZ9fBindFpITPrSm6lSncWbZbQuxCmM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Baluta <daniel.baluta@nxp.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Keyon Jie <yang.jie@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rander Wang <rander.wang@intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: [PATCH 5.17 0128/1126] ASoC: SOF: Intel: Fix NULL ptr dereference when ENOMEM
-Date:   Tue,  5 Apr 2022 09:14:35 +0200
-Message-Id: <20220405070411.333525257@linuxfoundation.org>
+        stable@vger.kernel.org, Ariadne Conill <ariadne@dereferenced.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Rich Felker <dalias@libc.org>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@kernel.org>
+Subject: [PATCH 5.17 0159/1126] exec: Force single empty string when argv is empty
+Date:   Tue,  5 Apr 2022 09:15:06 +0200
+Message-Id: <20220405070412.257121465@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -59,106 +55,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+From: Kees Cook <keescook@chromium.org>
 
-commit b7fb0ae09009d076964afe4c1a2bde1ee2bd88a9 upstream.
+commit dcd46d897adb70d63e025f175a00a89797d31a43 upstream.
 
-Do not call snd_dma_free_pages() when snd_dma_alloc_pages() returns
--ENOMEM because it leads to a NULL pointer dereference bug.
+Quoting[1] Ariadne Conill:
 
-The dmesg says:
+"In several other operating systems, it is a hard requirement that the
+second argument to execve(2) be the name of a program, thus prohibiting
+a scenario where argc < 1. POSIX 2017 also recommends this behaviour,
+but it is not an explicit requirement[2]:
 
-  [ T1387] sof-audio-pci-intel-tgl 0000:00:1f.3: error: memory alloc failed: -12
-  [ T1387] BUG: kernel NULL pointer dereference, address: 0000000000000000
-  [ T1387] #PF: supervisor read access in kernel mode
-  [ T1387] #PF: error_code(0x0000) - not-present page
-  [ T1387] PGD 0 P4D 0
-  [ T1387] Oops: 0000 [#1] PREEMPT SMP NOPTI
-  [ T1387] CPU: 6 PID: 1387 Comm: alsa-sink-HDA A Tainted: G        W         5.17.0-rc4-superb-owl-00055-g80d47f5de5e3
-  [ T1387] Hardware name: HP HP Laptop 14s-dq2xxx/87FD, BIOS F.15 09/15/2021
-  [ T1387] RIP: 0010:dma_free_noncontiguous+0x37/0x80
-  [ T1387] Code: [... snip ...]
-  [ T1387] RSP: 0000:ffffc90002b87770 EFLAGS: 00010246
-  [ T1387] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-  [ T1387] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888101db30d0
-  [ T1387] RBP: 00000000fffffff4 R08: 0000000000000000 R09: 0000000000000000
-  [ T1387] R10: 0000000000000000 R11: ffffc90002b874d0 R12: 0000000000000001
-  [ T1387] R13: 0000000000058000 R14: ffff888105260c68 R15: ffff888105260828
-  [ T1387] FS:  00007f42e2ffd640(0000) GS:ffff888466b80000(0000) knlGS:0000000000000000
-  [ T1387] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [ T1387] CR2: 0000000000000000 CR3: 000000014acf0003 CR4: 0000000000770ee0
-  [ T1387] PKRU: 55555554
-  [ T1387] Call Trace:
-  [ T1387]  <TASK>
-  [ T1387]  cl_stream_prepare+0x10a/0x120 [snd_sof_intel_hda_common 146addf995b9279ae7f509621078cccbe4f875e1]
-  [... snip ...]
-  [ T1387]  </TASK>
+    The argument arg0 should point to a filename string that is
+    associated with the process being started by one of the exec
+    functions.
+...
+Interestingly, Michael Kerrisk opened an issue about this in 2008[3],
+but there was no consensus to support fixing this issue then.
+Hopefully now that CVE-2021-4034 shows practical exploitative use[4]
+of this bug in a shellcode, we can reconsider.
 
-Cc: Daniel Baluta <daniel.baluta@nxp.com>
-Cc: Jaroslav Kysela <perex@perex.cz>
-Cc: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Cc: Keyon Jie <yang.jie@linux.intel.com>
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Rander Wang <rander.wang@intel.com>
-Cc: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Cc: Takashi Iwai <tiwai@suse.com>
-Cc: sound-open-firmware@alsa-project.org
-Cc: alsa-devel@alsa-project.org
-Cc: linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org # v5.2+
-Fixes: d16046ffa6de040bf580a64d5f4d0aa18258a854 ("ASoC: SOF: Intel: Add Intel specific HDA firmware loader")
-Link: https://lore.kernel.org/lkml/20220224145124.15985-1-ammarfaizi2@gnuweeb.org/ # v1
-Link: https://lore.kernel.org/lkml/20220224180850.34592-1-ammarfaizi2@gnuweeb.org/ # v2
-Link: https://lore.kernel.org/lkml/20220224182818.40301-1-ammarfaizi2@gnuweeb.org/ # v3
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Link: https://lore.kernel.org/r/20220224185836.44907-1-ammarfaizi2@gnuweeb.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This issue is being tracked in the KSPP issue tracker[5]."
+
+While the initial code searches[6][7] turned up what appeared to be
+mostly corner case tests, trying to that just reject argv == NULL
+(or an immediately terminated pointer list) quickly started tripping[8]
+existing userspace programs.
+
+The next best approach is forcing a single empty string into argv and
+adjusting argc to match. The number of programs depending on argc == 0
+seems a smaller set than those calling execve with a NULL argv.
+
+Account for the additional stack space in bprm_stack_limits(). Inject an
+empty string when argc == 0 (and set argc = 1). Warn about the case so
+userspace has some notice about the change:
+
+    process './argc0' launched './argc0' with NULL argv: empty string added
+
+Additionally WARN() and reject NULL argv usage for kernel threads.
+
+[1] https://lore.kernel.org/lkml/20220127000724.15106-1-ariadne@dereferenced.org/
+[2] https://pubs.opengroup.org/onlinepubs/9699919799/functions/exec.html
+[3] https://bugzilla.kernel.org/show_bug.cgi?id=8408
+[4] https://www.qualys.com/2022/01/25/cve-2021-4034/pwnkit.txt
+[5] https://github.com/KSPP/linux/issues/176
+[6] https://codesearch.debian.net/search?q=execve%5C+*%5C%28%5B%5E%2C%5D%2B%2C+*NULL&literal=0
+[7] https://codesearch.debian.net/search?q=execlp%3F%5Cs*%5C%28%5B%5E%2C%5D%2B%2C%5Cs*NULL&literal=0
+[8] https://lore.kernel.org/lkml/20220131144352.GE16385@xsang-OptiPlex-9020/
+
+Reported-by: Ariadne Conill <ariadne@dereferenced.org>
+Reported-by: Michael Kerrisk <mtk.manpages@gmail.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Christian Brauner <brauner@kernel.org>
+Cc: Rich Felker <dalias@libc.org>
+Cc: Eric Biederman <ebiederm@xmission.com>
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+Cc: linux-fsdevel@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Acked-by: Ariadne Conill <ariadne@dereferenced.org>
+Acked-by: Andy Lutomirski <luto@kernel.org>
+Link: https://lore.kernel.org/r/20220201000947.2453721-1-keescook@chromium.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/intel/hda-loader.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ fs/exec.c |   26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
---- a/sound/soc/sof/intel/hda-loader.c
-+++ b/sound/soc/sof/intel/hda-loader.c
-@@ -47,7 +47,7 @@ static struct hdac_ext_stream *cl_stream
- 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV_SG, &pci->dev, size, dmab);
- 	if (ret < 0) {
- 		dev_err(sdev->dev, "error: memory alloc failed: %d\n", ret);
--		goto error;
-+		goto out_put;
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -495,8 +495,14 @@ static int bprm_stack_limits(struct linu
+ 	 * the stack. They aren't stored until much later when we can't
+ 	 * signal to the parent that the child has run out of stack space.
+ 	 * Instead, calculate it here so it's possible to fail gracefully.
++	 *
++	 * In the case of argc = 0, make sure there is space for adding a
++	 * empty string (which will bump argc to 1), to ensure confused
++	 * userspace programs don't start processing from argv[1], thinking
++	 * argc can never be 0, to keep them from walking envp by accident.
++	 * See do_execveat_common().
+ 	 */
+-	ptr_size = (bprm->argc + bprm->envc) * sizeof(void *);
++	ptr_size = (max(bprm->argc, 1) + bprm->envc) * sizeof(void *);
+ 	if (limit <= ptr_size)
+ 		return -E2BIG;
+ 	limit -= ptr_size;
+@@ -1897,6 +1903,9 @@ static int do_execveat_common(int fd, st
  	}
  
- 	hstream->period_bytes = 0;/* initialize period_bytes */
-@@ -58,22 +58,23 @@ static struct hdac_ext_stream *cl_stream
- 		ret = hda_dsp_iccmax_stream_hw_params(sdev, dsp_stream, dmab, NULL);
- 		if (ret < 0) {
- 			dev_err(sdev->dev, "error: iccmax stream prepare failed: %d\n", ret);
--			goto error;
+ 	retval = count(argv, MAX_ARG_STRINGS);
++	if (retval == 0)
++		pr_warn_once("process '%s' launched '%s' with NULL argv: empty string added\n",
++			     current->comm, bprm->filename);
+ 	if (retval < 0)
+ 		goto out_free;
+ 	bprm->argc = retval;
+@@ -1923,6 +1932,19 @@ static int do_execveat_common(int fd, st
+ 	if (retval < 0)
+ 		goto out_free;
+ 
++	/*
++	 * When argv is empty, add an empty string ("") as argv[0] to
++	 * ensure confused userspace programs that start processing
++	 * from argv[1] won't end up walking envp. See also
++	 * bprm_stack_limits().
++	 */
++	if (bprm->argc == 0) {
++		retval = copy_string_kernel("", bprm);
++		if (retval < 0)
 +			goto out_free;
- 		}
- 	} else {
- 		ret = hda_dsp_stream_hw_params(sdev, dsp_stream, dmab, NULL);
- 		if (ret < 0) {
- 			dev_err(sdev->dev, "error: hdac prepare failed: %d\n", ret);
--			goto error;
-+			goto out_free;
- 		}
- 		hda_dsp_stream_spib_config(sdev, dsp_stream, HDA_DSP_SPIB_ENABLE, size);
++		bprm->argc = 1;
++	}
++
+ 	retval = bprm_execve(bprm, fd, filename, flags);
+ out_free:
+ 	free_bprm(bprm);
+@@ -1951,6 +1973,8 @@ int kernel_execve(const char *kernel_fil
  	}
  
- 	return dsp_stream;
- 
--error:
--	hda_dsp_stream_put(sdev, direction, hstream->stream_tag);
-+out_free:
- 	snd_dma_free_pages(dmab);
-+out_put:
-+	hda_dsp_stream_put(sdev, direction, hstream->stream_tag);
- 	return ERR_PTR(ret);
- }
- 
+ 	retval = count_strings_kernel(argv);
++	if (WARN_ON_ONCE(retval == 0))
++		retval = -EINVAL;
+ 	if (retval < 0)
+ 		goto out_free;
+ 	bprm->argc = retval;
 
 
