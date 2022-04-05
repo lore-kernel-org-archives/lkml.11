@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1403EC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6307C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241637AbiDEL0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
+        id S243485AbiDEL0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242941AbiDEItn (ORCPT
+        with ESMTP id S243169AbiDEIuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:49:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531D7793A4;
-        Tue,  5 Apr 2022 01:38:00 -0700 (PDT)
+        Tue, 5 Apr 2022 04:50:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE7CB716B;
+        Tue,  5 Apr 2022 01:38:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20F55B81C82;
-        Tue,  5 Apr 2022 08:37:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC8FC385A1;
-        Tue,  5 Apr 2022 08:37:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8808161516;
+        Tue,  5 Apr 2022 08:38:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9394BC385A2;
+        Tue,  5 Apr 2022 08:38:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147863;
-        bh=B/RiR4B/SIpEqAuuuwCZ/BSWIAePiwRb5+A2vsL9lPo=;
+        s=korg; t=1649147898;
+        bh=rMKBD1koYZ8J49XDOyG6OKlNOGIa8Bmni21RPT14hTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bpw1R1VvlL70HHMLPpbaEk4ZvwizQy6iAp1Y6HDP5lh3JMO2AVVUOulW65T5RKBZN
-         NpM/Qe7/xWb/13TdKdxsjLIUy52fM+g86jcla8kb5CsU3+1BouPm4pA3U3r4Elemhr
-         UJs/l3tIa0ihNl+Q/41RTnoyw/hwFfcIMToeZMag=
+        b=uLdj4oQBi3UFVII6IWu5psc6YXNLBmbTN5CUOICnXl9XLIX1dI3k/DGFDK9O6+vjM
+         /QIfkpxKg4c6LmmBPX4T4LdBGbqzdNlZ+thL5u2gm16MxdUB/omeL9UaLNvZ7zbzIf
+         5X6BLrfVCQBkUedNlbZhw9OBACUudsM2w3C6D8ko=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Josef Bacik <jbacik@fb.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 0148/1017] block: dont merge across cgroup boundaries if blkcg is enabled
-Date:   Tue,  5 Apr 2022 09:17:41 +0200
-Message-Id: <20220405070358.599717605@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.16 0162/1017] thermal: int340x: Increase bitmap size
+Date:   Tue,  5 Apr 2022 09:17:55 +0200
+Message-Id: <20220405070359.029157462@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -48,112 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-commit 6b2b04590b51aa4cf395fcd185ce439cab5961dc upstream.
+commit 668f69a5f863b877bc3ae129efe9a80b6f055141 upstream.
 
-blk-iocost and iolatency are cgroup aware rq-qos policies but they didn't
-disable merges across different cgroups. This obviously can lead to
-accounting and control errors but more importantly to priority inversions -
-e.g. an IO which belongs to a higher priority cgroup or IO class may end up
-getting throttled incorrectly because it gets merged to an IO issued from a
-low priority cgroup.
+The number of policies are 10, so can't be supported by the bitmap size
+of u8.
 
-Fix it by adding blk_cgroup_mergeable() which is called from merge paths and
-rejects cross-cgroup and cross-issue_as_root merges.
+Even though there are no platfoms with these many policies, but
+for correctness increase to u32.
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Fixes: d70675121546 ("block: introduce blk-iolatency io controller")
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Josef Bacik <jbacik@fb.com>
-Link: https://lore.kernel.org/r/Yi/eE/6zFNyWJ+qd@slm.duckdns.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Fixes: 16fc8eca1975 ("thermal/int340x_thermal: Add additional UUIDs")
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-merge.c          |   11 +++++++++++
- include/linux/blk-cgroup.h |   17 +++++++++++++++++
- 2 files changed, 28 insertions(+)
+ drivers/thermal/intel/int340x_thermal/int3400_thermal.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/block/blk-merge.c
-+++ b/block/blk-merge.c
-@@ -8,6 +8,7 @@
- #include <linux/blkdev.h>
- #include <linux/blk-integrity.h>
- #include <linux/scatterlist.h>
-+#include <linux/blk-cgroup.h>
- 
- #include <trace/events/block.h>
- 
-@@ -598,6 +599,9 @@ static inline unsigned int blk_rq_get_ma
- static inline int ll_new_hw_segment(struct request *req, struct bio *bio,
- 		unsigned int nr_phys_segs)
- {
-+	if (!blk_cgroup_mergeable(req, bio))
-+		goto no_merge;
-+
- 	if (blk_integrity_merge_bio(req->q, req, bio) == false)
- 		goto no_merge;
- 
-@@ -694,6 +698,9 @@ static int ll_merge_requests_fn(struct r
- 	if (total_phys_segments > blk_rq_get_max_segments(req))
- 		return 0;
- 
-+	if (!blk_cgroup_mergeable(req, next->bio))
-+		return 0;
-+
- 	if (blk_integrity_merge_rq(q, req, next) == false)
- 		return 0;
- 
-@@ -907,6 +914,10 @@ bool blk_rq_merge_ok(struct request *rq,
- 	if (rq->rq_disk != bio->bi_bdev->bd_disk)
- 		return false;
- 
-+	/* don't merge across cgroup boundaries */
-+	if (!blk_cgroup_mergeable(rq, bio))
-+		return false;
-+
- 	/* only merge integrity protected bio into ditto rq */
- 	if (blk_integrity_merge_bio(rq->q, rq, bio) == false)
- 		return false;
---- a/include/linux/blk-cgroup.h
-+++ b/include/linux/blk-cgroup.h
-@@ -24,6 +24,7 @@
- #include <linux/atomic.h>
- #include <linux/kthread.h>
- #include <linux/fs.h>
-+#include <linux/blk-mq.h>
- 
- /* percpu_counter batch for blkg_[rw]stats, per-cpu drift doesn't matter */
- #define BLKG_STAT_CPU_BATCH	(INT_MAX / 2)
-@@ -604,6 +605,21 @@ static inline void blkcg_clear_delay(str
- 		atomic_dec(&blkg->blkcg->css.cgroup->congestion_count);
- }
- 
-+/**
-+ * blk_cgroup_mergeable - Determine whether to allow or disallow merges
-+ * @rq: request to merge into
-+ * @bio: bio to merge
-+ *
-+ * @bio and @rq should belong to the same cgroup and their issue_as_root should
-+ * match. The latter is necessary as we don't want to throttle e.g. a metadata
-+ * update because it happens to be next to a regular IO.
-+ */
-+static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio)
-+{
-+	return rq->bio->bi_blkg == bio->bi_blkg &&
-+		bio_issue_as_root_blkg(rq->bio) == bio_issue_as_root_blkg(bio);
-+}
-+
- void blk_cgroup_bio_start(struct bio *bio);
- void blkcg_add_delay(struct blkcg_gq *blkg, u64 now, u64 delta);
- void blkcg_schedule_throttle(struct request_queue *q, bool use_memdelay);
-@@ -659,6 +675,7 @@ static inline void blkg_put(struct blkcg
- static inline bool blkcg_punt_bio_submit(struct bio *bio) { return false; }
- static inline void blkcg_bio_issue_init(struct bio *bio) { }
- static inline void blk_cgroup_bio_start(struct bio *bio) { }
-+static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio) { return true; }
- 
- #define blk_queue_for_each_rl(rl, q)	\
- 	for ((rl) = &(q)->root_rl; (rl); (rl) = NULL)
+--- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
++++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+@@ -53,7 +53,7 @@ struct int3400_thermal_priv {
+ 	struct art *arts;
+ 	int trt_count;
+ 	struct trt *trts;
+-	u8 uuid_bitmap;
++	u32 uuid_bitmap;
+ 	int rel_misc_dev_res;
+ 	int current_uuid_index;
+ 	char *data_vault;
 
 
