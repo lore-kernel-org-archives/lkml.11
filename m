@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 242CAC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB42BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233651AbiDEIXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
+        id S233802AbiDEIXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235537AbiDEH7u (ORCPT
+        with ESMTP id S235538AbiDEH7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:59:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414DC3EAB0;
-        Tue,  5 Apr 2022 00:55:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A9E3EBAC;
+        Tue,  5 Apr 2022 00:55:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E714EB81B14;
-        Tue,  5 Apr 2022 07:55:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FD57C340EE;
-        Tue,  5 Apr 2022 07:55:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16DB161668;
+        Tue,  5 Apr 2022 07:55:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24816C34110;
+        Tue,  5 Apr 2022 07:55:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145306;
-        bh=4mNg/F94fD5ePGFoWZAISjOcsN7uVsRt2932zEV02wk=;
+        s=korg; t=1649145309;
+        bh=HNcaj8pxkaHvVNgXI8qUhk/xiw6pJnSiFyMlMkidhQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dzHeXWfe1/3ExWb1uS2Uk3EQrIZ6fIg4v2Vi1eG9nbuXfSkqM6xZL0lM3FTjK9VeE
-         8pOXnATgrsP0H1+e9nYN78qvHITMRgaPdn/2WSluDMTXd1O7stIN12ZmF+4ublGtzU
-         DhJ5B0e46vRgjX9b7rDDYF9+WjcJMrpvDuZbqxlQ=
+        b=ByMjxZMqIn6emWuKrSEmNnrs5L+yeiRkRb81aB/O8UKpHzCpE7gRfcHVNswF/tMnB
+         r6JMJJLoV4Bd4gRUipNl5NT+6pC9uPrl1RD8KzLst07yazf3PLUPn6dtcoYowadPjo
+         99I479fZcLHdCXN6BJSewsnfkKxGaUT7UJAqcJIU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0342/1126] cpuidle: qcom-spm: Check if any CPU is managed by SPM
-Date:   Tue,  5 Apr 2022 09:18:09 +0200
-Message-Id: <20220405070417.654379203@linuxfoundation.org>
+Subject: [PATCH 5.17 0360/1126] ASoC: codecs: va-macro: fix accessing array out of bounds for enum type
+Date:   Tue,  5 Apr 2022 09:18:27 +0200
+Message-Id: <20220405070418.195055601@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,76 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan@gerhold.net>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 0ee30ace67e425ab83a1673bf51f50b577328cf9 ]
+[ Upstream commit 0ea5eff7c6063a8f124188424f8e4c6727f35051 ]
 
-At the moment, the "qcom-spm-cpuidle" platform device is always created,
-even if none of the CPUs is actually managed by the SPM. On non-qcom
-platforms this will result in infinite probe-deferral due to the
-failing qcom_scm_is_available() call.
+Accessing enums using integer would result in array out of bounds access
+on platforms like aarch64 where sizeof(long) is 8 compared to enum size
+which is 4 bytes.
 
-To avoid this, look through the CPU DT nodes and check if there is
-actually any CPU managed by a SPM (as indicated by the qcom,saw property).
-It should also be available because e.g. MSM8916 has qcom,saw defined
-but it's typically not enabled with ARM64/PSCI firmwares.
-
-This is needed in preparation of a follow-up change that calls
-qcom_scm_set_warm_boot_addr() a single time before registering any
-cpuidle drivers. Otherwise this call might be made even on devices
-that have this driver enabled but actually make use of PSCI.
-
-Fixes: 60f3692b5f0b ("cpuidle: qcom_spm: Detach state machine from main SPM handling")
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Link: https://lore.kernel.org/r/86e3e09f-a8d7-3dff-3fc6-ddd7d30c5d78@samsung.com/
-Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211201130505.257379-2-stephan@gerhold.net
+Fixes: 908e6b1df26e ("ASoC: codecs: lpass-va-macro: Add support to VA Macro")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220222183212.11580-5-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpuidle/cpuidle-qcom-spm.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ sound/soc/codecs/lpass-va-macro.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cpuidle/cpuidle-qcom-spm.c b/drivers/cpuidle/cpuidle-qcom-spm.c
-index 01e77913a414..5f27dcc6c110 100644
---- a/drivers/cpuidle/cpuidle-qcom-spm.c
-+++ b/drivers/cpuidle/cpuidle-qcom-spm.c
-@@ -155,6 +155,22 @@ static struct platform_driver spm_cpuidle_driver = {
- 	},
- };
+diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
+index 11147e35689b..e14c277e6a8b 100644
+--- a/sound/soc/codecs/lpass-va-macro.c
++++ b/sound/soc/codecs/lpass-va-macro.c
+@@ -780,7 +780,7 @@ static int va_macro_dec_mode_get(struct snd_kcontrol *kcontrol,
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	int path = e->shift_l;
  
-+static bool __init qcom_spm_find_any_cpu(void)
-+{
-+	struct device_node *cpu_node, *saw_node;
-+
-+	for_each_of_cpu_node(cpu_node) {
-+		saw_node = of_parse_phandle(cpu_node, "qcom,saw", 0);
-+		if (of_device_is_available(saw_node)) {
-+			of_node_put(saw_node);
-+			of_node_put(cpu_node);
-+			return true;
-+		}
-+		of_node_put(saw_node);
-+	}
-+	return false;
-+}
-+
- static int __init qcom_spm_cpuidle_init(void)
+-	ucontrol->value.integer.value[0] = va->dec_mode[path];
++	ucontrol->value.enumerated.item[0] = va->dec_mode[path];
+ 
+ 	return 0;
+ }
+@@ -789,7 +789,7 @@ static int va_macro_dec_mode_put(struct snd_kcontrol *kcontrol,
+ 				 struct snd_ctl_elem_value *ucontrol)
  {
- 	struct platform_device *pdev;
-@@ -164,6 +180,10 @@ static int __init qcom_spm_cpuidle_init(void)
- 	if (ret)
- 		return ret;
- 
-+	/* Make sure there is actually any CPU managed by the SPM */
-+	if (!qcom_spm_find_any_cpu())
-+		return 0;
-+
- 	pdev = platform_device_register_simple("qcom-spm-cpuidle",
- 					       -1, NULL, 0);
- 	if (IS_ERR(pdev)) {
+ 	struct snd_soc_component *comp = snd_soc_kcontrol_component(kcontrol);
+-	int value = ucontrol->value.integer.value[0];
++	int value = ucontrol->value.enumerated.item[0];
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	int path = e->shift_l;
+ 	struct va_macro *va = snd_soc_component_get_drvdata(comp);
 -- 
 2.34.1
 
