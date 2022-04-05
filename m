@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D450CC38161
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0457EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237607AbiDEImy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53276 "EHLO
+        id S237651AbiDEIm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236280AbiDEIBz (ORCPT
+        with ESMTP id S230282AbiDEICa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:01:55 -0400
+        Tue, 5 Apr 2022 04:02:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C690249FB3;
-        Tue,  5 Apr 2022 00:59:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF12254FA9;
+        Tue,  5 Apr 2022 01:00:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1903761668;
-        Tue,  5 Apr 2022 07:59:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C8ACC340EE;
-        Tue,  5 Apr 2022 07:59:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55D446177F;
+        Tue,  5 Apr 2022 08:00:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E087C34110;
+        Tue,  5 Apr 2022 08:00:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145594;
-        bh=RMDCIpgqoRMmnnuBwu/bpCkTKuBa8Q1wElxe8DXBVS0=;
+        s=korg; t=1649145631;
+        bh=5ViWBbsLPxdn3zqyYlQXpfb56RiI3TzY2TRM9WAalvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uM1XR2k6yO1O8upXZhDFHLBkUPgthYlQOHrsbaaqUsOZCp8ulh29o85clO3Tf0uD+
-         8BPhy2vjejLZGD2q+JXnTpkiLuyTDXPq1wzpY8YaHGeFSaLCTKyC4nub+hDxHUEdbH
-         8fT779XW+2wuzOnOjzSU58lwVKYKC3e0oUGRj8xM=
+        b=gXMn3DghpYyPV/BB/aGRtvB/iul++SpI/BGgowFWnmHSSEIOmN8qASfHljD6HBNOH
+         4fJM7dIzwhSsD7wG2vKXAxKZ6lXbJ2Gd477K2BZoCeIRzuHc18/SHOnd5ip2WkwQ/I
+         um9eRkRZiw9PQrybWuL1mFCJFs5RxW4a9BpVeydU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
+        stable@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0459/1126] ionic: fix up printing of timeout error
-Date:   Tue,  5 Apr 2022 09:20:06 +0200
-Message-Id: <20220405070421.098402779@linuxfoundation.org>
+Subject: [PATCH 5.17 0474/1126] selftests/net: timestamping: Fix bind_phc check
+Date:   Tue,  5 Apr 2022 09:20:21 +0200
+Message-Id: <20220405070421.539916834@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,41 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shannon Nelson <snelson@pensando.io>
+From: Gerhard Engleder <gerhard@engleder-embedded.com>
 
-[ Upstream commit 4cc787bd88be6974f3362fa49fd8c5609bd039b8 ]
+[ Upstream commit 678dfd5280341d877ca646499bfdc82a3d8b4356 ]
 
-Make sure we print the TIMEOUT string if we had a timeout
-error, rather than printing the wrong status.
+timestamping checks socket options during initialisation. For the field
+bind_phc of the socket option SO_TIMESTAMPING it expects the value -1 if
+PHC is not bound. Actually the value of bind_phc is 0 if PHC is not
+bound. This results in the following output:
 
-Fixes: 8c9d956ab6fb ("ionic: allow adminq requests to override default error message")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
+SIOCSHWTSTAMP: tx_type 0 requested, got 0; rx_filter 0 requested, got 0
+SO_TIMESTAMP 0
+SO_TIMESTAMPNS 0
+SO_TIMESTAMPING flags 0, bind phc 0
+   not expected, flags 0, bind phc -1
+
+This is fixed by setting default value and expected value of bind_phc to
+0.
+
+Fixes: 2214d7032479 ("selftests/net: timestamping: support binding PHC")
+Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/timestamping.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index a548f2a01806..2e4294a4fa83 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -215,9 +215,13 @@ static void ionic_adminq_flush(struct ionic_lif *lif)
- void ionic_adminq_netdev_err_print(struct ionic_lif *lif, u8 opcode,
- 				   u8 status, int err)
- {
-+	const char *stat_str;
-+
-+	stat_str = (err == -ETIMEDOUT) ? "TIMEOUT" :
-+					 ionic_error_to_str(status);
-+
- 	netdev_err(lif->netdev, "%s (%d) failed: %s (%d)\n",
--		   ionic_opcode_to_str(opcode), opcode,
--		   ionic_error_to_str(status), err);
-+		   ionic_opcode_to_str(opcode), opcode, stat_str, err);
- }
- 
- static int ionic_adminq_check_err(struct ionic_lif *lif,
+diff --git a/tools/testing/selftests/net/timestamping.c b/tools/testing/selftests/net/timestamping.c
+index aee631c5284e..044bc0e9ed81 100644
+--- a/tools/testing/selftests/net/timestamping.c
++++ b/tools/testing/selftests/net/timestamping.c
+@@ -325,8 +325,8 @@ int main(int argc, char **argv)
+ 	struct ifreq device;
+ 	struct ifreq hwtstamp;
+ 	struct hwtstamp_config hwconfig, hwconfig_requested;
+-	struct so_timestamping so_timestamping_get = { 0, -1 };
+-	struct so_timestamping so_timestamping = { 0, -1 };
++	struct so_timestamping so_timestamping_get = { 0, 0 };
++	struct so_timestamping so_timestamping = { 0, 0 };
+ 	struct sockaddr_in addr;
+ 	struct ip_mreq imr;
+ 	struct in_addr iaddr;
 -- 
 2.34.1
 
