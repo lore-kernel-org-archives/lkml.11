@@ -2,94 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 542A8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63435C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352627AbiDEVOo (ORCPT
+        id S1353977AbiDEVOy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
+        Tue, 5 Apr 2022 17:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444188AbiDEPk7 (ORCPT
+        with ESMTP id S1349064AbiDEJtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:59 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99939117C;
-        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 235E2k8K021295;
-        Tue, 5 Apr 2022 23:02:48 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8K021295
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649167368;
-        bh=8ckilN9UB4blZbcYmDCNzJh4V9ShLvfJ5JTGztZasQY=;
+        Tue, 5 Apr 2022 05:49:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C1B9682D;
+        Tue,  5 Apr 2022 02:39:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B0AC615E5;
+        Tue,  5 Apr 2022 09:39:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E2AC385A3;
+        Tue,  5 Apr 2022 09:39:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151572;
+        bh=2w7bBj4tgoZF311c8KSGA9qi0/m+8Nb4Ri8/8MzK1rU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mY6yJ0bcFyc31gsjkbO/eUW6UNMRDhZ/vih7O5ZT3Se2kpUukdNoJOH6wN0wbISoi
-         2nqN4DVb1p78+JOukCm9A7rA5rLjRnfpOuH3M1DWOFSpLKrcVlJuqTpbon7I78aRMB
-         5A+d9XUeASWwLF17FcaW0blC2VECkPfbzA77FZNeBrVPWOHwZxUHZG/OpVCarbDhj6
-         IYgFvJqdAMs6McqDC8mEYcBtOHMjQyLNZx3Bij+H0p4WtugCNMxPAqKA6DOfkQpEgj
-         VDIoMtXlXCC4J7lwPxJEslobIQjv9vQ0/C8UbMQ06G+RM3tM1/7lxCRNiv7NuaUtY2
-         mzu5opxy01K+A==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 02/10] kbuild: do not remove empty *.symtypes explicitly
-Date:   Tue,  5 Apr 2022 23:02:21 +0900
-Message-Id: <20220405140229.2895394-3-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
-References: <20220405140229.2895394-1-masahiroy@kernel.org>
+        b=qkAFsk7kFXOJbpxooP/SZ1roRzwge+l/DzAvTSRIfjXDn0mpEAELKHLcqFzsx/1+C
+         dq63SbzNELU/JEEVX2LQrbXkb//CUZKHNqT4HQhhBuAkWTWnF4xhrBMuUWQTQJe0b9
+         pXVtk4SciZs/mQkgqBFKC5lZzCd+bZ+SjqmM6M3I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Rotem Saado <rotem.saado@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 465/913] iwlwifi: yoyo: remove DBGI_SRAM address reset writing
+Date:   Tue,  5 Apr 2022 09:25:27 +0200
+Message-Id: <20220405070353.786762755@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Presumably, 'test -s $@ || rm -f $@' intends to remove the output when
-the genksyms command fails.
+From: Rotem Saado <rotem.saado@intel.com>
 
-It is unneeded because .DELETE_ON_ERROR automatically removes the output
-on failure.
+[ Upstream commit ce014c9861544bb4e789323d0d8956a5ad262e25 ]
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Due to preg protection we cannot write to this register
+while FW is running (when FW in Halt it is ok).
+since we have some cases that we need to dump this
+region while FW is running remove this writing from DRV.
+FW will do this writing.
+
+Signed-off-by: Rotem Saado <rotem.saado@intel.com>
+Fixes: 89639e06d0f3 ("iwlwifi: yoyo: support for new DBGI_SRAM region")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220129105618.209f3078bc74.I463530bd2f40daedb39f6d9df987bb7cee209033@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/net/wireless/intel/iwlwifi/fw/dbg.c   | 2 --
+ drivers/net/wireless/intel/iwlwifi/iwl-prph.h | 2 --
+ 2 files changed, 4 deletions(-)
 
-Changes in v2:
-  - Fix accidental drop of '> /dev/null'
-
- scripts/Makefile.build | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 31e0e33dfe5d..3ef2373f0a57 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -135,9 +135,7 @@ genksyms = scripts/genksyms/genksyms		\
- cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+index 6dcafd0a3d4b..b00cf92c8965 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+@@ -1532,8 +1532,6 @@ iwl_dump_ini_dbgi_sram_iter(struct iwl_fw_runtime *fwrt,
+ 		return -EBUSY;
  
- quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
--cmd_cc_symtypes_c =                                                         \
--    $(call cmd_gensymtypes_c,true,$@) >/dev/null;                           \
--    test -s $@ || rm -f $@
-+      cmd_cc_symtypes_c = $(call cmd_gensymtypes_c,true,$@) >/dev/null
+ 	range->range_data_size = reg->dev_addr.size;
+-	iwl_write_prph_no_grab(fwrt->trans, DBGI_SRAM_TARGET_ACCESS_CFG,
+-			       DBGI_SRAM_TARGET_ACCESS_CFG_RESET_ADDRESS_MSK);
+ 	for (i = 0; i < (le32_to_cpu(reg->dev_addr.size) / 4); i++) {
+ 		prph_data = iwl_read_prph(fwrt->trans, (i % 2) ?
+ 					  DBGI_SRAM_TARGET_ACCESS_RDATA_MSB :
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
+index d0a7d58336a9..6c4f1c949541 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
+@@ -350,8 +350,6 @@
+ #define WFPM_GP2			0xA030B4
  
- $(obj)/%.symtypes : $(src)/%.c FORCE
- 	$(call cmd,cc_symtypes_c)
-@@ -348,9 +346,7 @@ cmd_gensymtypes_S =                                                         \
-     $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
+ /* DBGI SRAM Register details */
+-#define DBGI_SRAM_TARGET_ACCESS_CFG			0x00A2E14C
+-#define DBGI_SRAM_TARGET_ACCESS_CFG_RESET_ADDRESS_MSK	0x10000
+ #define DBGI_SRAM_TARGET_ACCESS_RDATA_LSB		0x00A2E154
+ #define DBGI_SRAM_TARGET_ACCESS_RDATA_MSB		0x00A2E158
  
- quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
--cmd_cc_symtypes_S =                                                         \
--    $(call cmd_gensymtypes_S,true,$@) >/dev/null;                           \
--    test -s $@ || rm -f $@
-+      cmd_cc_symtypes_S = $(call cmd_gensymtypes_S,true,$@) >/dev/null
- 
- $(obj)/%.symtypes : $(src)/%.S FORCE
- 	$(call cmd,cc_symtypes_S)
 -- 
-2.32.0
+2.34.1
+
+
 
