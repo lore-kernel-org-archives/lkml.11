@@ -2,129 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D25BDC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9169DC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350474AbiDEVEn (ORCPT
+        id S1349637AbiDEVEc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        Tue, 5 Apr 2022 17:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447829AbiDEPrL (ORCPT
+        with ESMTP id S1358022AbiDEK1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:47:11 -0400
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1184BEBACD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:24:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=6g3c5Q4Z/LFu4/Wrn12KWc9/StZCVYQpQv1kSUWt60A=; b=VwKt43XP5gw6bL5HbiyH/2sGot
-        OPyWtJ8GTb4SrAqYDwSxRvzREnSaXHYxxa40hhh8pL/SPdyIRy7GKqQ53M9E3V+4TYQptsWR98OEA
-        EydmtKrm8FcuEeBCNFXZSNI51Xaq7vDxxqlRi283FByw2Y22e16EDnTnR7TVupJZqoiGOMXAwJgj7
-        HXkn7L5Og7eFDOfVTzfwoHJVbyJtCG3XSfEyOEa0P2BOUoDLVV3VmZj4JFVCc0lhwNzOavYR4pfEX
-        zDGRoUzYTZprRusFa5rgrf9Hwl7bmL6LURY97eQ3MTAqA9TWfRL5v14YGjWPH8gwSj3cxCrB1q+Dn
-        HYCeVoAA==;
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbk6O-002oq7-Ut; Tue, 05 Apr 2022 14:24:13 +0000
-Date:   Tue, 5 Apr 2022 14:24:12 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     tj@kernel.org, gregkh@linuxfoundation.org,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH v7 1/8] kernfs: Introduce interface to access
- global kernfs_open_file_mutex.
-Message-ID: <YkxRDJ2ynEHGdjeT@zeniv-ca.linux.org.uk>
-References: <20220317072612.163143-1-imran.f.khan@oracle.com>
- <20220317072612.163143-2-imran.f.khan@oracle.com>
- <YjOpedPDj+3KCJjk@zeniv-ca.linux.org.uk>
- <10b5d071-7f69-da59-6395-064550c6c6cb@oracle.com>
+        Tue, 5 Apr 2022 06:27:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C8968334;
+        Tue,  5 Apr 2022 03:13:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0DD06179E;
+        Tue,  5 Apr 2022 10:13:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A16BBC385A1;
+        Tue,  5 Apr 2022 10:13:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153582;
+        bh=t9kcOGRydPGLOmrxkJKyhL9e/RChrQb3otSRVxw7mAQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rKjJcma5JRYjFDPNAy+FcxbzbJZm5tadfkmO3Rav6nVl088ek143srVp1fxBZfWGz
+         Qvq2VUX09vt7oxvumBqRrpRSk6g+XjoNgfoFPMIsGUannDGzec5ec29OQLZJbE1vww
+         lBDO1dXx/9oBANwO0WDs+2yZKd545mRfT4DZMPVQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 272/599] drm/edid: Dont clear formats if using deep color
+Date:   Tue,  5 Apr 2022 09:29:26 +0200
+Message-Id: <20220405070306.932383798@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <10b5d071-7f69-da59-6395-064550c6c6cb@oracle.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 03:36:03PM +1000, Imran Khan wrote:
-> Hello Al,
-> 
-> On 18/3/22 8:34 am, Al Viro wrote:
-> > On Thu, Mar 17, 2022 at 06:26:05PM +1100, Imran Khan wrote:
-> > 
-> >> @@ -570,9 +571,10 @@ static void kernfs_put_open_node(struct kernfs_node *kn,
-> >>  				 struct kernfs_open_file *of)
-> [...]
-> 
-> > As the matter of fact, we can do even better - make freeing
-> > that thing rcu-delayed, use rcu_assign_pointer() for stores,
-> > rcu_dereference() for loads and have kernfs_notify() do
-> > 	rcu_read_lock();
-> > 	on = rcu_dereference(kn->attr.open);
-> > 	if (on) {
-> > 		atomic_inc(&on->event);
-> > 		wake_up_interruptible(&on->poll);
-> > 	}
-> > 	rcu_read_unlock();
-> > and kernfs_open_node_lock becomes useless - all places that
-> > grab it are under kernfs_open_file_mutex.
-> 
-> There are some issues in freeing ->attr.open under RCU callback.
+From: Maxime Ripard <maxime@cerno.tech>
 
-Such as?
+[ Upstream commit 75478b3b393bcbdca4e6da76fe3a9f1a4133ec5d ]
 
-> There
-> are some users of ->attr.open that can block and hence can't operate
-> under rcu_read_lock. For example in kernfs_drain_open_files we are
-> traversing list of open files corresponding to ->attr.open and unmapping
-> those as well. The unmapping operation can block in i_mmap_lock_write.
+The current code, when parsing the EDID Deep Color depths, that the
+YUV422 cannot be used, referring to the HDMI 1.3 Specification.
 
-Yes.
+This specification, in its section 6.2.4, indeed states:
 
-> So even after removing refcnt we will still need kernfs_open_node_lock.
+  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
+  optionally YCBCR 4:4:4 may be supported.
 
-What for?  Again, have kernfs_drain_open_files() do this:
-{
-        struct kernfs_open_node *on;
-	struct kernfs_open_file *of;
+  YCBCR 4:2:2 is not permitted for any Deep Color mode.
 
-	if (!(kn->flags & (KERNFS_HAS_MMAP | KERNFS_HAS_RELEASE)))
-		return;
-	if (rcu_dereference(kn->attr.open) == NULL)
-		return;
-	mutex_lock(&kernfs_open_file_mutex);
-	// now ->attr.open is stable (all stores are under kernfs_open_file_mutex)
-	on = rcu_dereference(kn->attr.open);
-	if (!on) {
-		mutex_unlock(&kernfs_open_file_mutex);
-		return;
-	}
-	// on->files contents is stable
-	list_for_each_entry(of, &on->files, list) {
-		struct inode *inode = file_inode(of->file);
+This indeed can be interpreted like the code does, but the HDMI 1.4
+specification further clarifies that statement in its section 6.2.4:
 
-		if (kn->flags & KERNFS_HAS_MMAP)
-			unmap_mapping_range(inode->i_mapping, 0, 0, 1);
+  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
+  optionally YCBCR 4:4:4 may be supported.
 
-		if (kn->flags & KERNFS_HAS_RELEASE)
-			kernfs_release_file(kn, of);
-	}
-	mutex_unlock(&kernfs_open_file_mutex);
-}
+  YCBCR 4:2:2 is also 36-bit mode but does not require the further use
+  of the Deep Color modes described in section 6.5.2 and 6.5.3.
 
-What's the problem?  The caller has already guaranteed that no additions will
-happen.  Once we'd grabbed kernfs_open_file_mutex, we know that
-	* kn->attr.open value won't change until we drop the mutex
-	* nothing gets removed from kn->attr.open->files until we drop the mutex
-so we can bloody well walk that list, blocking as much as we want.
+This means that, even though YUV422 can be used with 12 bit per color,
+it shouldn't be treated as a deep color mode.
 
-We don't need rcu_read_lock() there - we are already holding the mutex used
-by writers for exclusion among themselves.  RCU *allows* lockless readers,
-it doesn't require all readers to be such.  kernfs_notify() can be made
-lockless, this one can't and that's fine.
+This is also broken with YUV444 if it's supported by the display, but
+DRM_EDID_HDMI_DC_Y444 isn't set. In such a case, the code will clear
+color_formats of the YUV444 support set previously in
+drm_parse_cea_ext(), but will not set it back.
 
-BTW, speaking of kernfs_notify() - can calls of that come from NMI handlers?
-If not, I'd consider using llist for kernfs_notify_list...
+Since the formats supported are already setup properly in
+drm_parse_cea_ext(), let's just remove the code modifying the formats in
+drm_parse_hdmi_deep_color_info()
+
+Fixes: d0c94692e0a3 ("drm/edid: Parse and handle HDMI deep color modes.")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220120151625.594595-3-maxime@cerno.tech
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/drm_edid.c |    8 --------
+ 1 file changed, 8 deletions(-)
+
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -4960,16 +4960,8 @@ static void drm_parse_hdmi_deep_color_in
+ 		  connector->name, dc_bpc);
+ 	info->bpc = dc_bpc;
+ 
+-	/*
+-	 * Deep color support mandates RGB444 support for all video
+-	 * modes and forbids YCRCB422 support for all video modes per
+-	 * HDMI 1.3 spec.
+-	 */
+-	info->color_formats = DRM_COLOR_FORMAT_RGB444;
+-
+ 	/* YCRCB444 is optional according to spec. */
+ 	if (hdmi[6] & DRM_EDID_HDMI_DC_Y444) {
+-		info->color_formats |= DRM_COLOR_FORMAT_YCRCB444;
+ 		DRM_DEBUG("%s: HDMI sink does YCRCB444 in deep color.\n",
+ 			  connector->name);
+ 	}
+
+
