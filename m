@@ -2,130 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F43DC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 522A2C4707E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573941AbiDEWxt (ORCPT
+        id S1573970AbiDEWxz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48542 "EHLO
+        Tue, 5 Apr 2022 18:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443182AbiDEPjI (ORCPT
+        with ESMTP id S1573640AbiDET1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:39:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE6D147518;
-        Tue,  5 Apr 2022 06:55:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50E3E6190C;
-        Tue,  5 Apr 2022 13:55:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACDFCC385A7;
-        Tue,  5 Apr 2022 13:55:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649166901;
-        bh=WJDtWZlx8PhCLSQbiQxyxwVjD8Kor4/GI5UPPJoh1tc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P7sO+dfP4ImhYMQerSrgVvrKvDHH0K1NUbkRU3Tead6/Q57oB2bNx0OvgVFPFQqr7
-         IuL0Q7hWkOQpY8BWqat0kIhKOCCniqIIWIDl//iqs/khijBRdC9mYmS07SRfiv/Lyb
-         pIAH3gtNl99wtf5VHao4vwWH5ZhKa8/A5N3kQxsFsjH9XDXGYJdUbq0hunie9Qjb77
-         EUx264vcf4L+HHqBd1R/+tBOA3J0n7qMytgfPvgIMt3TLVd+WYhly/NW2yBoaBSIk0
-         eOgGVmAYN8kE8jP4EsimmLZtoeanauBM98gWg1EZdqS3cU4o6BNCiapbB5ciCUHdp4
-         CL6RZBd/HFADQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nbje7-001q4g-Oi; Tue, 05 Apr 2022 14:54:59 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v2 02/10] gpio: Expose the gpiochip_irq_re[ql]res helpers
-Date:   Tue,  5 Apr 2022 14:54:36 +0100
-Message-Id: <20220405135444.199295-3-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-References: <20220405135444.199295-1-maz@kernel.org>
+        Tue, 5 Apr 2022 15:27:47 -0400
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C55EBD7C6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:25:48 -0700 (PDT)
+Received: by mail-il1-x12c.google.com with SMTP id 14so286478ily.11
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:25:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u+T3NU6QNFkOQKHYYcZy7EJ0pKJCkBa9x+ezT/MG77s=;
+        b=fHGI43HnzKEaZ07fIjKBZkHadZt8X8koXagtbSwmRMHFHmPgl9iQmJnTwHdQkVFRcO
+         GU46qvE9L5+uBxPExQk4gtIc5KvuEeUYhLhWLcZ36mJgUc5Fk0FlnOoPz0BKzSuT+nJl
+         64Qeom+Zf9OtQ1GOxzg8pQLZywcy1w3SwLtIE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u+T3NU6QNFkOQKHYYcZy7EJ0pKJCkBa9x+ezT/MG77s=;
+        b=bSU3Y4CniODsyE6YmvJujSIh/gbBrtODerkqrxEm4DWsZ68HVHW65iMQ9hDsIr4jF4
+         UfWO7F8brW9LdiSpNSNrvxvDBiQuFw883U1KghuLZGQaevRrU79/qyebAAkrs3Tz9Pv1
+         B20OMzx8IkG+Xmc3nW7ZboLNqIbw/Wrb3WncsxPDhHb6MiZd4gVme41kBslf/LNWfmsV
+         1eGh/DRUpNn3JxhtMa/97r05YiqEKzVUNqsWsGbyuPNMucQhGeZ3QRQCzGXJHld5AJOv
+         BpndhdgnFqVniRWN0hgIxoQvjxSeWFZpnMLI5d9M6aZF8yIj94m84Elhyvmg0cPLCuXo
+         PTaw==
+X-Gm-Message-State: AOAM531kUXb5KM8uYxak39q5oTVvnD2YXXqyNtsTGO+AC3VK2fANfyJ9
+        BPY00Xr0xj8cpsAGchh2n0SqYJxVjYKZMSVJ8kWu3Q==
+X-Google-Smtp-Source: ABdhPJxTgVZ2jFFHgxN7D/AtvnXeF5uqH4Yvnf+QwwOB4lFId32budFznnvimZWza/nh+PWTqsX5Q6prwTm7+Xq/tXk=
+X-Received: by 2002:a92:cac4:0:b0:2c8:1095:b352 with SMTP id
+ m4-20020a92cac4000000b002c81095b352mr2384844ilq.103.1649186747658; Tue, 05
+ Apr 2022 12:25:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+References: <20220330160535.GN8939@worktop.programming.kicks-ass.net>
+ <CAEXW_YQNi42gahbSJ1skadh_8D+Ry6ZOmMqSU5BdidfCbmOtRg@mail.gmail.com> <YkbmCr6ojXYiWzkP@hirez.programming.kicks-ass.net>
+In-Reply-To: <YkbmCr6ojXYiWzkP@hirez.programming.kicks-ass.net>
+From:   Joel Fernandes <joel@joelfernandes.org>
+Date:   Tue, 5 Apr 2022 15:25:36 -0400
+Message-ID: <CAEXW_YSHVUgqc_Uvx6dyiC2ynYTi2YLTuX87KkrAJDpm6D0EzQ@mail.gmail.com>
+Subject: Re: [PATCH] sched/core: Fix forceidle balancing
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Guenter Roeck <groeck@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The GPIO subsystem has a couple of internal helpers to manage
-resources on behalf of the irqchip. Expose them so that GPIO
-drivers can use them directly.
+On Fri, Apr 1, 2022 at 7:46 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Thu, Mar 31, 2022 at 03:00:40PM -0400, Joel Fernandes wrote:
+> > Hi,
+> >
+> > By the way, might be slightly related - we still see crashes with
+> > pick_task_fair() in our kernel even with this change:
+> > https://lkml.org/lkml/2020/11/17/2137
+>
+> Please as to not use lkml.org. Please use something with a MsgID in like
+> lore.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/gpio/gpiolib.c      | 6 ++++--
- include/linux/gpio/driver.h | 4 ++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+Yep, will do.
 
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index 48191e62a3cc..36e436a66e09 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -1423,19 +1423,21 @@ static int gpiochip_to_irq(struct gpio_chip *gc, unsigned int offset)
- 	return irq_create_mapping(domain, offset);
- }
- 
--static int gpiochip_irq_reqres(struct irq_data *d)
-+int gpiochip_irq_reqres(struct irq_data *d)
- {
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 
- 	return gpiochip_reqres_irq(gc, d->hwirq);
- }
-+EXPORT_SYMBOL(gpiochip_irq_reqres);
- 
--static void gpiochip_irq_relres(struct irq_data *d)
-+void gpiochip_irq_relres(struct irq_data *d)
- {
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 
- 	gpiochip_relres_irq(gc, d->hwirq);
- }
-+EXPORT_SYMBOL(gpiochip_irq_relres);
- 
- static void gpiochip_irq_mask(struct irq_data *d)
- {
-diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
-index 98c93510640e..066bcfdf878d 100644
---- a/include/linux/gpio/driver.h
-+++ b/include/linux/gpio/driver.h
-@@ -579,6 +579,10 @@ void gpiochip_relres_irq(struct gpio_chip *gc, unsigned int offset);
- void gpiochip_disable_irq(struct gpio_chip *gc, unsigned int offset);
- void gpiochip_enable_irq(struct gpio_chip *gc, unsigned int offset);
- 
-+/* irq_data versions of the above */
-+int gpiochip_irq_reqres(struct irq_data *data);
-+void gpiochip_irq_relres(struct irq_data *data);
-+
- /* Line status inquiry for drivers */
- bool gpiochip_line_is_open_drain(struct gpio_chip *gc, unsigned int offset);
- bool gpiochip_line_is_open_source(struct gpio_chip *gc, unsigned int offset);
--- 
-2.34.1
+> > Is it possible that when doing pick_task_fair() especially on a remote
+> > CPU, both the "cfs_rq->curr" and the rbtree's "left" be NULL with core
+> > scheduling? In this case, se will be NULL and can cause crashes right?
+> > I think the code assumes this can never happen.
+> >
+> > +Guenter Roeck  kindly debugged pick_task_fair() in a crash as
+> > follows. Copying some details he mentioned in a bug report:
+> >
+> > Assembler/source:
+> >
+> >   25:   e8 4f 11 00 00          call   0x1179             ; se =
+> > pick_next_entity(cfs_rq, curr);
+> >   2a:*  48 8b 98 60 01 00 00    mov    0x160(%rax),%rbx   ; trapping
+> > instruction [cfs_rq = group_cfs_rq(se);]
+> >   31:   48 85 db                test   %rbx,%rbx
+> >   34:   75 d1                   jne    0x7
+> >   36:   48 89 c7                mov    %rax,%rdi
+> >
+> > At 2a: RAX = se == NULL after pick_next_entity(). Looking closely into
+> > pick_next_entity(), it can indeed return NULL if curr is NULL and if
+> > left in pick_next_entity() is NULL. Per line 7:, curr is in %r14 and
+> > indeed 0.
+> >
+> > Thoughts?
+>
+> It is possible for ->curr and ->leftmost to be NULL, but then we should
+> also be having ->nr_running == 0 and not call pick in the first place.
+> Because picking a task from no tasks doesn't make much sense.
 
+Indeed the code checks for nr_running so it is really bizarre. My
+guess is this is kernel memory corruption due to an unrelated bug or
+something, it is also not easy to trigger.
+
+Thanks,
+
+ - Joel
