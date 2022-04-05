@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9357C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F94C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350748AbiDEUC3 (ORCPT
+        id S1351371AbiDEUCt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
+        Tue, 5 Apr 2022 16:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348907AbiDEJsp (ORCPT
+        with ESMTP id S1354225AbiDEKMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:45 -0400
+        Tue, 5 Apr 2022 06:12:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92255ECC6B;
-        Tue,  5 Apr 2022 02:37:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2CA5A5A0;
+        Tue,  5 Apr 2022 02:59:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36CF6B81B14;
-        Tue,  5 Apr 2022 09:37:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 975C7C385A0;
-        Tue,  5 Apr 2022 09:37:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4EAEB81BAE;
+        Tue,  5 Apr 2022 09:59:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED431C385A2;
+        Tue,  5 Apr 2022 09:59:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151427;
-        bh=5ViWBbsLPxdn3zqyYlQXpfb56RiI3TzY2TRM9WAalvU=;
+        s=korg; t=1649152756;
+        bh=5l6ORz8eE2NVxh7n5XMeTQ77XrdLfW9u905815LIC3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gcJab2+6MJauQH9NG3L9xvgEO5wS5VbhAd2hAEiRJaq+thy88okY6DKySYb1i4OrI
-         I2iRGYAldj9QnNN8X603jwSibs6TwXNKR4wk1bqA0Hls0Pk0RPN6NOaZMAxoMldmev
-         BTTcavTAbawP8pp3PC/0u4hykLul9+0sOtdTfBfQ=
+        b=UI+Zl7wmKbfGU/6AhVgihqDR87zc6C2WOZin1BqY/VdviVfJRP6EjfDOSu6JapN7d
+         7f+AI4oDLM+t/v+DciMxCHUM959u6x30RlN3tI7UC0sfQ2VVjf0coOqSfvDdGQhzZ5
+         Y4Tq8CNg64rs5M+m94e7pDAxjDlL50REPu5xoTcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 409/913] selftests/net: timestamping: Fix bind_phc check
-Date:   Tue,  5 Apr 2022 09:24:31 +0200
-Message-Id: <20220405070352.105680077@linuxfoundation.org>
+        stable@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.15 891/913] media: ov6650: Fix crop rectangle affected by set format
+Date:   Tue,  5 Apr 2022 09:32:33 +0200
+Message-Id: <20220405070406.530053519@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,49 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gerhard Engleder <gerhard@engleder-embedded.com>
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 
-[ Upstream commit 678dfd5280341d877ca646499bfdc82a3d8b4356 ]
+commit 985d2d7a482e9b64ef9643702b066da9cbd6ae8e upstream.
 
-timestamping checks socket options during initialisation. For the field
-bind_phc of the socket option SO_TIMESTAMPING it expects the value -1 if
-PHC is not bound. Actually the value of bind_phc is 0 if PHC is not
-bound. This results in the following output:
+According to subdevice interface specification found in V4L2 API
+documentation, set format pad operations should not affect image
+geometry set in preceding image processing steps. Unfortunately, that
+requirement is not respected by the driver implementation of set format
+as it was not the case when that code was still implementing a pair of
+now obsolete .s_mbus_fmt() / .try_mbus_fmt() video operations before
+they have been merged and reused as an implementation of .set_fmt() pad
+operation by commit 717fd5b4907a ("[media] v4l2: replace try_mbus_fmt
+by set_fmt").
 
-SIOCSHWTSTAMP: tx_type 0 requested, got 0; rx_filter 0 requested, got 0
-SO_TIMESTAMP 0
-SO_TIMESTAMPNS 0
-SO_TIMESTAMPING flags 0, bind phc 0
-   not expected, flags 0, bind phc -1
+Exclude non-compliant crop rectangle adjustments from set format try,
+as well as a call to .set_selection() from set format active processing
+path, so only frame scaling is applied as needed and crop rectangle is
+no longer modified.
 
-This is fixed by setting default value and expected value of bind_phc to
-0.
+[Sakari Ailus: Rebase on subdev state patches]
 
-Fixes: 2214d7032479 ("selftests/net: timestamping: support binding PHC")
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 717fd5b4907a ("[media] v4l2: replace try_mbus_fmt by set_fmt")
+Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/timestamping.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/i2c/ov6650.c |   28 ++++------------------------
+ 1 file changed, 4 insertions(+), 24 deletions(-)
 
-diff --git a/tools/testing/selftests/net/timestamping.c b/tools/testing/selftests/net/timestamping.c
-index aee631c5284e..044bc0e9ed81 100644
---- a/tools/testing/selftests/net/timestamping.c
-+++ b/tools/testing/selftests/net/timestamping.c
-@@ -325,8 +325,8 @@ int main(int argc, char **argv)
- 	struct ifreq device;
- 	struct ifreq hwtstamp;
- 	struct hwtstamp_config hwconfig, hwconfig_requested;
--	struct so_timestamping so_timestamping_get = { 0, -1 };
--	struct so_timestamping so_timestamping = { 0, -1 };
-+	struct so_timestamping so_timestamping_get = { 0, 0 };
-+	struct so_timestamping so_timestamping = { 0, 0 };
- 	struct sockaddr_in addr;
- 	struct ip_mreq imr;
- 	struct in_addr iaddr;
--- 
-2.34.1
-
+--- a/drivers/media/i2c/ov6650.c
++++ b/drivers/media/i2c/ov6650.c
+@@ -693,11 +693,7 @@ static int ov6650_set_fmt(struct v4l2_su
+ 	struct v4l2_mbus_framefmt *mf = &format->format;
+ 	struct i2c_client *client = v4l2_get_subdevdata(sd);
+ 	struct ov6650 *priv = to_ov6650(client);
+-	struct v4l2_subdev_selection sel = {
+-		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+-		.target = V4L2_SEL_TGT_CROP,
+-	};
+-	struct v4l2_rect *crop = &sel.r;
++	struct v4l2_rect *crop;
+ 	bool half_scale;
+ 
+ 	if (format->pad)
+@@ -721,24 +717,13 @@ static int ov6650_set_fmt(struct v4l2_su
+ 	}
+ 
+ 	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
+-		*crop = sd_state->pads->try_crop;
++		crop = &sd_state->pads->try_crop;
+ 	else
+-		*crop = priv->rect;
++		crop = &priv->rect;
+ 
+ 	half_scale = !is_unscaled_ok(mf->width, mf->height, crop);
+ 
+-	/* adjust new crop rectangle position against its current center */
+-	crop->left += (crop->width - (mf->width << half_scale)) / 2;
+-	crop->top += (crop->height - (mf->height << half_scale)) / 2;
+-	/* adjust new crop rectangle size */
+-	crop->width = mf->width << half_scale;
+-	crop->height = mf->height << half_scale;
+-
+ 	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
+-		/* store new crop rectangle, hadware bound, in pad config */
+-		ov6650_bind_align_crop_rectangle(crop);
+-		sd_state->pads->try_crop = *crop;
+-
+ 		/* store new mbus frame format code and size in pad config */
+ 		sd_state->pads->try_fmt.width = crop->width >> half_scale;
+ 		sd_state->pads->try_fmt.height = crop->height >> half_scale;
+@@ -751,12 +736,7 @@ static int ov6650_set_fmt(struct v4l2_su
+ 		mf->code = sd_state->pads->try_fmt.code;
+ 
+ 	} else {
+-		int ret;
+-
+-		/* apply new crop rectangle */
+-		ret = ov6650_set_selection(sd, NULL, &sel);
+-		if (ret)
+-			return ret;
++		int ret = 0;
+ 
+ 		/* apply new media bus frame format and scaling if changed */
+ 		if (mf->code != priv->code || half_scale != priv->half_scale)
 
 
