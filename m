@@ -2,83 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D824C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E71C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844147AbiDFBpx (ORCPT
+        id S1844166AbiDFBqK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
+        Tue, 5 Apr 2022 21:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345018AbiDEKka (ORCPT
+        with ESMTP id S1357363AbiDELQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:40:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF052D1C8;
-        Tue,  5 Apr 2022 03:25:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7807FB81B18;
-        Tue,  5 Apr 2022 10:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEB74C385A0;
-        Tue,  5 Apr 2022 10:25:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154336;
-        bh=V1dSezKMQi7It/JLVcsxrKnoiJ813/TiZAnJflpYOMo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wvqa0Lo4ojwwqWLpqhL63JKH8r0HW9n+2TW3/KBfsNPXbN7RlH1gFVCZRvLxpwOvz
-         Qc20ZDzGF1Dq4wFUIFYqoHrCH0hOZvpAiXeQLF6XmeoWC8jplyr+Ofb9ZzerbAL98o
-         VlemLzS7PMFrKqYeQi06uMcw43JdLERoIjOkoEME=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.10 544/599] ubifs: rename_whiteout: correct old_dir size computing
-Date:   Tue,  5 Apr 2022 09:33:58 +0200
-Message-Id: <20220405070315.030706054@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:16:21 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60157DF53;
+        Tue,  5 Apr 2022 03:41:09 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 193ACD6E;
+        Tue,  5 Apr 2022 03:41:09 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A35C13F5A1;
+        Tue,  5 Apr 2022 03:41:07 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     joro@8bytes.org, baolu.lu@linux.intel.com,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        mika.westerberg@linux.intel.com, YehezkelShB@gmail.com
+Cc:     iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mario.limonciello@amd.com, hch@lst.de
+Subject: [PATCH v3 0/4] thunderbolt: Make iommu_dma_protection more accurate
+Date:   Tue,  5 Apr 2022 11:41:00 +0100
+Message-Id: <cover.1649089693.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+Hi all,
 
-commit 705757274599e2e064dd3054aabc74e8af31a095 upstream.
+Here's the third and hopefully final outing for this series, addressing
+Mika's review comments from last time and taking advantage of 5.18-rc1
+goodies to be even cleaner and more complete. I've also picked up
+Mario's AMD IOMMU patch to keep the whole topic together.
 
-When renaming the whiteout file, the old whiteout file is not deleted.
-Therefore, we add the old dentry size to the old dir like XFS.
-Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
-in check_indes.
+Unless there's other pending Thunderbolt development which might
+conflict, I suspect it would be simplest for the whole lot to go through
+the IOMMU tree.
 
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/ubifs/dir.c |    3 +++
- 1 file changed, 3 insertions(+)
+Thanks,
+Robin.
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -1360,6 +1360,9 @@ static int do_rename(struct inode *old_d
- 			iput(whiteout);
- 			goto out_release;
- 		}
-+
-+		/* Add the old_dentry size to the old_dir size. */
-+		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
- 	}
- 
- 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
 
+Mario Limonciello (1):
+  iommu/amd: Indicate whether DMA remap support is enabled
+
+Robin Murphy (3):
+  iommu: Introduce device_iommu_capable()
+  iommu: Add capability for pre-boot DMA protection
+  thunderbolt: Make iommu_dma_protection more accurate
+
+ drivers/iommu/amd/amd_iommu_types.h         |  4 ++
+ drivers/iommu/amd/init.c                    |  3 ++
+ drivers/iommu/amd/iommu.c                   |  4 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  2 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  2 +-
+ drivers/iommu/fsl_pamu_domain.c             |  2 +-
+ drivers/iommu/intel/iommu.c                 |  4 +-
+ drivers/iommu/iommu.c                       | 25 +++++++++++-
+ drivers/iommu/s390-iommu.c                  |  2 +-
+ drivers/thunderbolt/domain.c                | 12 ++----
+ drivers/thunderbolt/nhi.c                   | 44 +++++++++++++++++++++
+ include/linux/iommu.h                       | 10 ++++-
+ include/linux/thunderbolt.h                 |  2 +
+ 14 files changed, 100 insertions(+), 18 deletions(-)
+
+-- 
+2.28.0.dirty
 
