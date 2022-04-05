@@ -2,207 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E3EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2A6C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:54:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454639AbiDEWjM (ORCPT
+        id S1454666AbiDEWjQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
+        Tue, 5 Apr 2022 18:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455447AbiDEQAC (ORCPT
+        with ESMTP id S1349489AbiDEJt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:00:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7783EAB9;
-        Tue,  5 Apr 2022 08:15:34 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4362725C5;
+        Tue,  5 Apr 2022 02:47:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DFF3614BF;
-        Tue,  5 Apr 2022 15:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C50C385A6;
-        Tue,  5 Apr 2022 15:15:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649171733;
-        bh=b7HiLYng6ZcxAx+QP9a6ZDXxt7R3Fo4ys8vPQiWJYZA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dbWLHWHfXZzDgCWo2NUyR1dwtPqFuYGXJ/9aBoNePziXJchr/loOg0AnDOzH7qZXn
-         BfEWs7ZN1sEnWIcLOVM0NHMpWeaJ0UUDqv0dJz8rXHLFrG+i+ePScN5uC+DLwYA/VW
-         CMYvtUmMi53jCjSzdbCzNfP+ina0DQc7pf7a4pHF0BA3Whp4TYrqASfwCQVEVVpAWA
-         O1Omt7RpLiFuhAPMfxuKrqkLX6Qr1p266A5qoZVPZgR6l++VQPKNeEjVCo49tvWW4L
-         0vYFpfL9t8dZvJ5dg3lLmfjM6AbW+qneXeciDzOrFEAkA5Y9897rTXtFHdVQhS7OKB
-         F4jGqUm4JVLCQ==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     linux-sgx@vger.kernel.rog
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        "H. Peter Anvin" <hpa@zytor.com>,
-        linux-sgx@vger.kernel.org (open list:INTEL SGX),
-        linux-kernel@vger.kernel.org (open list:X86 ARCHITECTURE (32-BIT AND
-        64-BIT))
-Subject: [PATCH RFC] x86/sgx: Simplify struct sgx_enclave_restrict_permissions
-Date:   Tue,  5 Apr 2022 18:16:41 +0300
-Message-Id: <20220405151642.96096-1-jarkko@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D37D461577;
+        Tue,  5 Apr 2022 09:47:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9395C385A1;
+        Tue,  5 Apr 2022 09:47:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152046;
+        bh=2valnc8op0vBurNY+QIL/EnW2wscb8NHYd9VGwj8E/o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=INjGMO3aO5Aoi3Pl6X3h6bPrWEme141kaEbzbv2Uprhb9IyMYQGbvqud2NbP9ipb5
+         1yh3lJoAdGPg9x96ffgo81t8KvzbgnBNK0D4CKke2s/neGqPOTDy1Pc/zokxJhqj5T
+         RvfW2Np033w3uLwoRjTd2jDyHa7EgDCoNAaPmrQs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 618/913] nvdimm/region: Fix default alignment for small regions
+Date:   Tue,  5 Apr 2022 09:28:00 +0200
+Message-Id: <20220405070358.365277244@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reasoning to change SECINFO to simply flags is stated in this inline
-comment:
+From: Dan Williams <dan.j.williams@intel.com>
 
-/*
- * Return valid permission fields from a secinfo structure provided by
- * user space. The secinfo structure is required to only have bits in
- * the permission fields set.
- */
+[ Upstream commit d9d290d7e659e9db3e4518040cc18b97f5535f4a ]
 
-It is better to simply change the parameter type than require to use
-a malformed version of a data structure.
+In preparation for removing BLK aperture support the NVDIMM unit tests
+discovered that the default alignment can be set higher than the
+capacity of the region. Fall back to PAGE_SIZE in that case.
 
-Link: https://lore.kernel.org/linux-sgx/26ab773de8842d03b40caf8645ca86884b195901.camel@kernel.org/T/#u
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Given this has not been seen in the wild, elide notifying -stable.
+
+Fixes: 2522afb86a8c ("libnvdimm/region: Introduce an 'align' attribute")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/164688416128.2879318.17890707310125575258.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Only compile-tested.
- arch/x86/include/uapi/asm/sgx.h |  5 ++-
- arch/x86/kernel/cpu/sgx/ioctl.c | 57 ++++++---------------------------
- 2 files changed, 12 insertions(+), 50 deletions(-)
+ drivers/nvdimm/region_devs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/include/uapi/asm/sgx.h b/arch/x86/include/uapi/asm/sgx.h
-index feda7f85b2ce..627136798f2a 100644
---- a/arch/x86/include/uapi/asm/sgx.h
-+++ b/arch/x86/include/uapi/asm/sgx.h
-@@ -88,15 +88,14 @@ struct sgx_enclave_provision {
-  * @offset:	starting page offset (page aligned relative to enclave base
-  *		address defined in SECS)
-  * @length:	length of memory (multiple of the page size)
-- * @secinfo:	address for the SECINFO data containing the new permission bits
-- *		for pages in range described by @offset and @length
-+ * @flags:	flags field of the SECINFO data
-  * @result:	(output) SGX result code of ENCLS[EMODPR] function
-  * @count:	(output) bytes successfully changed (multiple of page size)
-  */
- struct sgx_enclave_restrict_permissions {
- 	__u64 offset;
- 	__u64 length;
--	__u64 secinfo;
-+	__u64 flags;
- 	__u64 result;
- 	__u64 count;
- };
-diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/ioctl.c
-index f88bc1236276..3c334e0bd4d9 100644
---- a/arch/x86/kernel/cpu/sgx/ioctl.c
-+++ b/arch/x86/kernel/cpu/sgx/ioctl.c
-@@ -676,41 +676,6 @@ static int sgx_ioc_sgx2_ready(struct sgx_encl *encl)
- 	return 0;
- }
+diff --git a/drivers/nvdimm/region_devs.c b/drivers/nvdimm/region_devs.c
+index 9ccf3d608799..70ad891a76ba 100644
+--- a/drivers/nvdimm/region_devs.c
++++ b/drivers/nvdimm/region_devs.c
+@@ -1025,6 +1025,9 @@ static unsigned long default_align(struct nd_region *nd_region)
+ 		}
+ 	}
  
--/*
-- * Return valid permission fields from a secinfo structure provided by
-- * user space. The secinfo structure is required to only have bits in
-- * the permission fields set.
-- */
--static int sgx_perm_from_user_secinfo(void __user *_secinfo, u64 *secinfo_perm)
--{
--	struct sgx_secinfo secinfo;
--	u64 perm;
--
--	if (copy_from_user(&secinfo, (void __user *)_secinfo,
--			   sizeof(secinfo)))
--		return -EFAULT;
--
--	if (secinfo.flags & ~SGX_SECINFO_PERMISSION_MASK)
--		return -EINVAL;
--
--	if (memchr_inv(secinfo.reserved, 0, sizeof(secinfo.reserved)))
--		return -EINVAL;
--
--	perm = secinfo.flags & SGX_SECINFO_PERMISSION_MASK;
--
--	/*
--	 * Read access is required for the enclave to be able to use the page.
--	 * SGX instructions like ENCLU[EMODPE] and ENCLU[EACCEPT] require
--	 * read access.
--	 */
--	if (!(perm & SGX_SECINFO_R))
--		return -EINVAL;
--
--	*secinfo_perm = perm;
--
--	return 0;
--}
--
- /*
-  * Some SGX functions require that no cached linear-to-physical address
-  * mappings are present before they can succeed. Collaborate with
-@@ -753,7 +718,6 @@ static int sgx_enclave_etrack(struct sgx_encl *encl)
-  * sgx_enclave_restrict_permissions() - Restrict EPCM permissions
-  * @encl:	Enclave to which the pages belong.
-  * @modp:	Checked parameters from user on which pages need modifying.
-- * @secinfo_perm: New (validated) permission bits.
-  *
-  * Return:
-  * - 0:		Success.
-@@ -761,8 +725,7 @@ static int sgx_enclave_etrack(struct sgx_encl *encl)
-  */
- static long
- sgx_enclave_restrict_permissions(struct sgx_encl *encl,
--				 struct sgx_enclave_restrict_permissions *modp,
--				 u64 secinfo_perm)
-+				 struct sgx_enclave_restrict_permissions *modp)
- {
- 	struct sgx_encl_page *entry;
- 	struct sgx_secinfo secinfo;
-@@ -772,7 +735,7 @@ sgx_enclave_restrict_permissions(struct sgx_encl *encl,
- 	int ret;
- 
- 	memset(&secinfo, 0, sizeof(secinfo));
--	secinfo.flags = secinfo_perm;
-+	secinfo.flags = modp->flags;
- 
- 	for (c = 0 ; c < modp->length; c += PAGE_SIZE) {
- 		addr = encl->base + modp->offset + c;
-@@ -871,7 +834,6 @@ static long sgx_ioc_enclave_restrict_permissions(struct sgx_encl *encl,
- 						 void __user *arg)
- {
- 	struct sgx_enclave_restrict_permissions params;
--	u64 secinfo_perm;
- 	long ret;
- 
- 	ret = sgx_ioc_sgx2_ready(encl);
-@@ -884,15 +846,16 @@ static long sgx_ioc_enclave_restrict_permissions(struct sgx_encl *encl,
- 	if (sgx_validate_offset_length(encl, params.offset, params.length))
- 		return -EINVAL;
- 
--	ret = sgx_perm_from_user_secinfo((void __user *)params.secinfo,
--					 &secinfo_perm);
--	if (ret)
--		return ret;
--
--	if (params.result || params.count)
-+	/*
-+	 * Read access is required for the enclave to be able to use the page.
-+	 * SGX instructions like ENCLU[EMODPE] and ENCLU[EACCEPT] require read
-+	 * access.
-+	 */
-+	if (params.flags & ~SGX_SECINFO_PERMISSION_MASK || !(params.flags & SGX_SECINFO_R) ||
-+	    params.result || params.count)
- 		return -EINVAL;
- 
--	ret = sgx_enclave_restrict_permissions(encl, &params, secinfo_perm);
-+	ret = sgx_enclave_restrict_permissions(encl, &params);
- 
- 	if (copy_to_user(arg, &params, sizeof(params)))
- 		return -EFAULT;
++	if (nd_region->ndr_size < MEMREMAP_COMPAT_ALIGN_MAX)
++		align = PAGE_SIZE;
++
+ 	mappings = max_t(u16, 1, nd_region->ndr_mappings);
+ 	div_u64_rem(align, mappings, &remainder);
+ 	if (remainder)
 -- 
-2.35.1
+2.34.1
+
+
 
