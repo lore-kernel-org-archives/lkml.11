@@ -2,98 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E03E0C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D77C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838884AbiDFA5R (ORCPT
+        id S1838872AbiDFA5O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
+        Tue, 5 Apr 2022 20:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457918AbiDEQ7s (ORCPT
+        with ESMTP id S1358091AbiDEK16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:59:48 -0400
+        Tue, 5 Apr 2022 06:27:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6D85D5E7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:57:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6191F66C8C;
+        Tue,  5 Apr 2022 03:15:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A85A8618A6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFF82C385A5;
-        Tue,  5 Apr 2022 16:57:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649177866;
-        bh=mrR5/ytr+JrGPHmurePnWwp75ABUgQyCOCVkvWCCakM=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 011C7617AC;
+        Tue,  5 Apr 2022 10:15:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D952C385A1;
+        Tue,  5 Apr 2022 10:15:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153712;
+        bh=do5Wi18Fah0j3dGa06fMFlms+yMjfqPHRKwBB8HgvdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oAVAz9180ZeFPSMRdfJG2XeYPF01GHkfm9YV+4n1t7++Oqs8OT9QJnOJ3Cv/uUIOJ
-         3idcvgs2vxZE/pecqdpE/c5iMBX9Rnt0aM4IeRnbP83IpAnOElaEy5Zlye9+7xC+O0
-         4aFy3dXAh7OUWOr1fnexmloLBmfEomp/y+g6ajeod4xpyTdTN74F5Ief98G4u6A7hV
-         uR4G5tRY5YhDJJ89RgwGxXvPm/JIHCDhMTeS0sAKQ6Vz2rCuCiPtzAAUNyzbpsL6AQ
-         t9aKGtJMBrAn7n9eAoFgB+ZuUqRzizXEslrg9CMuuKOWlxrzwsLtnQSmoYXB+v2E9+
-         XIkqCVPk4ER7Q==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nbmUx-002uYX-Fm; Tue, 05 Apr 2022 18:57:43 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     alsa-devel@alsa-project.org
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        "Hans de Goede" <hdegoede@redhat.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/3] ASoC: Intel: sof_es8336: Huawei Matebook D15 uses a headphone gpio
-Date:   Tue,  5 Apr 2022 18:57:34 +0200
-Message-Id: <187a647be16d57f14b7f9a34c88ece66606c61fb.1649177516.git.mchehab@kernel.org>
+        b=bj33oiR0A/3U9oB6aw/mdcjk6e0+mJaONbeSV1N34tW1RLfz5QqVU5/LYzPRKg7Kz
+         Wa0wQy3QAU0TSbSrQdztNP0nvFF83r000mEwimUKswByW00G5uLLfhx7N3lgBsJbyL
+         GkRKbKMwJT0J8uJZJFwirqX1WrezXmezCNSJE14Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Aharon Landau <aharonl@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 319/599] RDMA/mlx5: Fix the flow of a miss in the allocation of a cache ODP MR
+Date:   Tue,  5 Apr 2022 09:30:13 +0200
+Message-Id: <20220405070308.325820580@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649177516.git.mchehab@kernel.org>
-References: <cover.1649177516.git.mchehab@kernel.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Based on experimental tests, Huawei Matebook D15 actually uses
-both gpio0 and gpio1: the first one controls the speaker, while
-the other one controls the headphone.
+From: Aharon Landau <aharonl@nvidia.com>
 
-Add a quirk for that.
+[ Upstream commit 2f0e60d5e9f96341a0c8a01be8878cdb3b29ff20 ]
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+When an ODP MR cache entry is empty and trying to allocate it, increment
+the ent->miss counter and call to queue_adjust_cache_locked() to verify
+the entry is balanced.
+
+Fixes: aad719dcf379 ("RDMA/mlx5: Allow MRs to be created in the cache synchronously")
+Link: https://lore.kernel.org/r/09503e295276dcacc92cb1d8aef1ad0961c99dc1.1644947594.git.leonro@nvidia.com
+Signed-off-by: Aharon Landau <aharonl@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/infiniband/hw/mlx5/mr.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-See [PATCH v3 0/3] at: https://lore.kernel.org/all/cover.1649177516.git.mchehab@kernel.org/
-
- sound/soc/intel/boards/sof_es8336.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index d15a58666cc6..2965c4c1cbea 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -291,6 +291,14 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
- 		},
- 		.driver_data = (void *)(SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
- 	},
-+	{
-+		.callback = sof_es8336_quirk_cb,
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "HUAWEI"),
-+			DMI_MATCH(DMI_BOARD_NAME, "BOHB-WAX9-PCB-B2"),
-+		},
-+		.driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO)
-+	},
- 	{}
- };
- 
+diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
+index 19346693c1da..6cd0cbd4fc9f 100644
+--- a/drivers/infiniband/hw/mlx5/mr.c
++++ b/drivers/infiniband/hw/mlx5/mr.c
+@@ -575,6 +575,8 @@ struct mlx5_ib_mr *mlx5_mr_cache_alloc(struct mlx5_ib_dev *dev,
+ 	ent = &cache->ent[entry];
+ 	spin_lock_irq(&ent->lock);
+ 	if (list_empty(&ent->head)) {
++		queue_adjust_cache_locked(ent);
++		ent->miss++;
+ 		spin_unlock_irq(&ent->lock);
+ 		mr = create_cache_mr(ent);
+ 		if (IS_ERR(mr))
 -- 
-2.35.1
+2.34.1
+
+
 
