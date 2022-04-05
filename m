@@ -2,61 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E1FC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B35C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381692AbiDEU3U (ORCPT
+        id S1381945AbiDEU3X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
+        Tue, 5 Apr 2022 16:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457676AbiDEQev (ORCPT
+        with ESMTP id S244837AbiDEKjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:34:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE63FC6EC0;
-        Tue,  5 Apr 2022 09:32:51 -0700 (PDT)
+        Tue, 5 Apr 2022 06:39:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF04A56CF;
+        Tue,  5 Apr 2022 03:24:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 685B7617D0;
-        Tue,  5 Apr 2022 16:32:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46925C385A1;
-        Tue,  5 Apr 2022 16:32:49 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 12:32:47 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
-        beaub@linux.microsoft.com, mhiramat@kernel.org,
-        linux-trace-devel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, alexei.starovoitov@gmail.com,
-        torvalds@linux-foundation.org, michal.lkml@markovi.net,
-        ndesaulniers@google.com, linux-kbuild@vger.kernel.org,
-        masahiroy@kernel.org
-Subject: Re: [PATCH] tracing: Move user_events.h temporarily out of
- include/uapi
-Message-ID: <20220405123247.2e98661d@gandalf.local.home>
-In-Reply-To: <164917564862.18481.12734568923836492201.git-patchwork-notify@kernel.org>
-References: <20220401143903.188384f3@gandalf.local.home>
-        <164917564862.18481.12734568923836492201.git-patchwork-notify@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A179B81B18;
+        Tue,  5 Apr 2022 10:24:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56967C385A1;
+        Tue,  5 Apr 2022 10:24:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154258;
+        bh=wHyyD1j+rtVNRgjNRVprUD2XKkYLjpE3fRupRb474Sw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zRPITcFEjgAkBtyCozfbcVwSHPJ0PCDxb1AuGQ/2NydfgympYzsJxs16M7zcjmSp+
+         dwjSuaXJpVlaVFmRVnVxW130MCOzokwO3vSFAoacdhDWlAulqXKdqi9xZntexX2F5o
+         Lvq/6HW0625217442ViHOZtpIf6XXcGi5vmihsUA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 515/599] powerpc/lib/sstep: Fix build errors with newer binutils
+Date:   Tue,  5 Apr 2022 09:33:29 +0200
+Message-Id: <20220405070314.164078381@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Apr 2022 16:20:48 +0000
-patchwork-bot+netdevbpf@kernel.org wrote:
+From: Anders Roxell <anders.roxell@linaro.org>
 
-> Hello:
-> 
-> This patch was applied to netdev/net-next.git (master)
-> by Steven Rostedt (Google) <rostedt@goodmis.org>:
+commit 8219d31effa7be5dbc7ff915d7970672e028c701 upstream.
 
-It was added to Linus's tree too.
+Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+2.37.90.20220207) the following build error shows up:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5cfff569cab8bf544bab62c911c5d6efd5af5e05
+  {standard input}: Assembler messages:
+  {standard input}:10576: Error: unrecognized opcode: `stbcx.'
+  {standard input}:10680: Error: unrecognized opcode: `lharx'
+  {standard input}:10694: Error: unrecognized opcode: `lbarx'
 
--- Steve
+Rework to add assembler directives [1] around the instruction.  The
+problem with this might be that we can trick a power6 into
+single-stepping through an stbcx. for instance, and it will execute that
+in kernel mode.
+
+[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
+
+Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
+Cc: stable@vger.kernel.org # v4.14+
+Co-developed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220224162215.3406642-3-anders.roxell@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/powerpc/lib/sstep.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -949,7 +949,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
+ 
+ #define __put_user_asmx(x, addr, err, op, cr)		\
+ 	__asm__ __volatile__(				\
++		".machine push\n"			\
++		".machine power8\n"			\
+ 		"1:	" op " %2,0,%3\n"		\
++		".machine pop\n"			\
+ 		"	mfcr	%1\n"			\
+ 		"2:\n"					\
+ 		".section .fixup,\"ax\"\n"		\
+@@ -962,7 +965,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
+ 
+ #define __get_user_asmx(x, addr, err, op)		\
+ 	__asm__ __volatile__(				\
++		".machine push\n"			\
++		".machine power8\n"			\
+ 		"1:	"op" %1,0,%2\n"			\
++		".machine pop\n"			\
+ 		"2:\n"					\
+ 		".section .fixup,\"ax\"\n"		\
+ 		"3:	li	%0,%3\n"		\
+
+
