@@ -2,82 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C32C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D8BC4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388673AbiDEOko (ORCPT
+        id S1388729AbiDEOkw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
+        Tue, 5 Apr 2022 10:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243769AbiDEJkV (ORCPT
+        with ESMTP id S243882AbiDEJkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:40:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2C7B82C0;
-        Tue,  5 Apr 2022 02:25:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 05:40:35 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82219B91BF;
+        Tue,  5 Apr 2022 02:25:04 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F6CC614F9;
-        Tue,  5 Apr 2022 09:25:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F091C385A0;
-        Tue,  5 Apr 2022 09:25:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150700;
-        bh=/maTMZpPyHrPXM73DSYyKjXwq5K+XsJdIA6vi+YbTEU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1CdFXc0HHymc35UXVFfCiYzU8ELPE8CNW3acW7w2ASH8Tw21AdaBQfm8nuivj7dSP
-         18J7KSw2R1Y5y6qTlPVZkMefy4xDNB9OdV5W58XaDACX6LovFTiPq5f+Tj1jVu3IO0
-         5lqFKc6LFcv/AoK+3v65xcihOz7zJJa4hdxm5arI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH 5.15 149/913] ARM: dts: exynos: add missing HDMI supplies on SMDK5250
-Date:   Tue,  5 Apr 2022 09:20:11 +0200
-Message-Id: <20220405070344.302310449@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 59A0022247;
+        Tue,  5 Apr 2022 11:25:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649150702;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LFGJ3O9qYA9938AO+AQNVvGHGDybEslbIOzd5ve6rOc=;
+        b=Q47t6wRO/Ontk9oWcJ4vW9oK8/E+y+rWODF0rkBnL9v+/QXeae/qrwlUfdccHnDmhLRVX6
+        4ZJYbomJ2z88PT80DLdLq9xDxngYJFp7nL83yRLw7NFbNN+nI/gjV3Tq583WBCexaCW0hv
+        31+C6oUMXrl2LMJ4rdbUhUXiJsSfdV0=
+From:   Michael Walle <michael@walle.cc>
+To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v4 2/2] hwmon: intel-m10-bmc-hwmon: use devm_hwmon_sanitize_name()
+Date:   Tue,  5 Apr 2022 11:24:52 +0200
+Message-Id: <20220405092452.4033674-3-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405092452.4033674-1-michael@walle.cc>
+References: <20220405092452.4033674-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Instead of open-coding the bad characters replacement in the hwmon name,
+use the new devm_hwmon_sanitize_name().
 
-commit 60a9914cb2061ba612a3f14f6ad329912b486360 upstream.
-
-Add required VDD supplies to HDMI block on SMDK5250.  Without them, the
-HDMI driver won't probe.  Because of lack of schematics, use same
-supplies as on Arndale 5250 board (voltage matches).
-
-Cc: <stable@vger.kernel.org> # v3.15+
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20220208171823.226211-2-krzysztof.kozlowski@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Xu Yilun <yilun.xu@intel.com>
 ---
- arch/arm/boot/dts/exynos5250-smdk5250.dts |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/hwmon/intel-m10-bmc-hwmon.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
---- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
-+++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-@@ -118,6 +118,9 @@
- 	status = "okay";
- 	ddc = <&i2c_2>;
- 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
-+	vdd-supply = <&ldo8_reg>;
-+	vdd_osc-supply = <&ldo10_reg>;
-+	vdd_pll-supply = <&ldo8_reg>;
- };
+diff --git a/drivers/hwmon/intel-m10-bmc-hwmon.c b/drivers/hwmon/intel-m10-bmc-hwmon.c
+index 7a08e4c44a4b..6e82f7200d1c 100644
+--- a/drivers/hwmon/intel-m10-bmc-hwmon.c
++++ b/drivers/hwmon/intel-m10-bmc-hwmon.c
+@@ -515,7 +515,6 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
+ 	struct intel_m10bmc *m10bmc = dev_get_drvdata(pdev->dev.parent);
+ 	struct device *hwmon_dev, *dev = &pdev->dev;
+ 	struct m10bmc_hwmon *hw;
+-	int i;
  
- &i2c_0 {
-
+ 	hw = devm_kzalloc(dev, sizeof(*hw), GFP_KERNEL);
+ 	if (!hw)
+@@ -528,13 +527,9 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
+ 	hw->chip.info = hw->bdata->hinfo;
+ 	hw->chip.ops = &m10bmc_hwmon_ops;
+ 
+-	hw->hw_name = devm_kstrdup(dev, id->name, GFP_KERNEL);
+-	if (!hw->hw_name)
+-		return -ENOMEM;
+-
+-	for (i = 0; hw->hw_name[i]; i++)
+-		if (hwmon_is_bad_char(hw->hw_name[i]))
+-			hw->hw_name[i] = '_';
++	hw->hw_name = devm_hwmon_sanitize_name(dev, id->name);
++	if (IS_ERR(hw->hw_name))
++		return PTR_ERR(hw->hw_name);
+ 
+ 	hwmon_dev = devm_hwmon_device_register_with_info(dev, hw->hw_name,
+ 							 hw, &hw->chip, NULL);
+-- 
+2.30.2
 
