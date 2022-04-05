@@ -2,104 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFF5C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75003C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576313AbiDEXKa (ORCPT
+        id S1576564AbiDEXKs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        Tue, 5 Apr 2022 19:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350015AbiDEJwU (ORCPT
+        with ESMTP id S1457556AbiDEQKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CB036E21;
-        Tue,  5 Apr 2022 02:50:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 169C1B817D3;
-        Tue,  5 Apr 2022 09:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA8EC385A3;
-        Tue,  5 Apr 2022 09:50:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152218;
-        bh=5KA/8ySZ2n1/KKSMcoJazR7rOJ6n1FuR1d09mg0Xu70=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S95rJj6TCs/BckiW1ouUzQeV0pV8zKIP9DQe1bTeuC5QUfFTK9mus06iXI48r/uiD
-         M0qrHjDA3Ra1RB0r0lJkMjuq6DFR9YqAus/zDVgBRghYB/01JFcuNRHUO19cVT3w45
-         h5nw7d2sXwKn0pdIN7qSIK0Hw7QL1pYzPIrn1quA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 697/913] irqchip/qcom-pdc: Fix broken locking
-Date:   Tue,  5 Apr 2022 09:29:19 +0200
-Message-Id: <20220405070400.727193727@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:10:44 -0400
+Received: from smtp-8fab.mail.infomaniak.ch (smtp-8fab.mail.infomaniak.ch [83.166.143.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F45627C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:08:40 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KXsyH363KzMqGSh;
+        Tue,  5 Apr 2022 18:08:39 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KXsyG1HnxzlhFgC;
+        Tue,  5 Apr 2022 18:08:38 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1649174919;
+        bh=i3oU7NU7ziCxqF8LgADjo6sEcbpRcshVXFm2U/900+U=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=05hjwZCfXtRlbuAPVKAqLxEozCUGiyJuKeR9DDy+LAIfvTjHN5Dda4CqaT6LR6AGj
+         0Y+D5L0C62XfZfPHEbOwNOtocUwvCHWgZiSizL41MxkNWkUODtKbPJGli0dLp5ZI0X
+         b0XiDi/o56PGQRzjdvJnsbHhsEcUIwMKSbhe4U14=
+Message-ID: <7e8d9f8a-f119-6d1a-7861-0493dc513aa7@digikod.net>
+Date:   Tue, 5 Apr 2022 18:09:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: 
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Heimes <christian@python.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        James Morris <jmorris@namei.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Paul Moore <paul@paul-moore.com>,
+        =?UTF-8?Q?Philippe_Tr=c3=a9buchet?= 
+        <philippe.trebuchet@ssi.gouv.fr>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Steve Dower <steve.dower@python.org>,
+        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
+        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-integrity <linux-integrity@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Theodore Ts'o <tytso@mit.edu>
+References: <20220321161557.495388-1-mic@digikod.net>
+ <202204041130.F649632@keescook>
+ <CAHk-=wgoC76v-4s0xVr1Xvnx-8xZ8M+LWgyq5qGLA5UBimEXtQ@mail.gmail.com>
+ <816667d8-2a6c-6334-94a4-6127699d4144@digikod.net>
+ <CAHk-=wjPuRi5uYs9SuQ2Xn+8+RnhoKgjPEwNm42+AGKDrjTU5g@mail.gmail.com>
+ <202204041451.CC4F6BF@keescook>
+ <CAHk-=whb=XuU=LGKnJWaa7LOYQz9VwHs8SLfgLbT5sf2VAbX1A@mail.gmail.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
+In-Reply-To: <CAHk-=whb=XuU=LGKnJWaa7LOYQz9VwHs8SLfgLbT5sf2VAbX1A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit a6aca2f460e203781dc41391913cc5b54f4bc0ce ]
+On 05/04/2022 01:26, Linus Torvalds wrote:
+> On Mon, Apr 4, 2022 at 3:25 PM Kees Cook <keescook@chromium.org> wrote:
 
-pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
-and has a raw spinlock for mutual exclusion, which is uses with
-interruptible primitives.
+[...]
 
-This means that this critical section can itself be interrupted.
-Should the interrupt also be a PDC interrupt, and the endpoint driver
-perform an irq_disable() on that interrupt, we end-up in a deadlock.
+> 
+>> I think this already exists as AT_EACCESS? It was added with
+>> faccessat2() itself, if I'm reading the history correctly.
+> 
+> Yeah, I noticed myself, I just hadn't looked (and I don't do enough
+> user-space programming to be aware of if that way).
 
-Fix this by using the irqsave/irqrestore variants of the locking
-primitives.
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
-Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/irqchip/qcom-pdc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 173e6520e06e..c0b457f26ec4 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -56,17 +56,18 @@ static u32 pdc_reg_read(int reg, u32 i)
- static void pdc_enable_intr(struct irq_data *d, bool on)
- {
- 	int pin_out = d->hwirq;
-+	unsigned long flags;
- 	u32 index, mask;
- 	u32 enable;
- 
- 	index = pin_out / 32;
- 	mask = pin_out % 32;
- 
--	raw_spin_lock(&pdc_lock);
-+	raw_spin_lock_irqsave(&pdc_lock, flags);
- 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
- 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
- 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
--	raw_spin_unlock(&pdc_lock);
-+	raw_spin_unlock_irqrestore(&pdc_lock, flags);
- }
- 
- static void qcom_pdc_gic_disable(struct irq_data *d)
--- 
-2.34.1
+I think AT_EACCESS should be usable with the new EXECVE_OK too.
 
 
+> 
+>>>      (a) "what about suid bits that user space cannot react to"
+>>
+>> What do you mean here? Do you mean setid bits on the file itself?
+> 
+> Right.
+> 
+> Maybe we don't care.
 
+I think we don't. I think the only corner case that could be different 
+is for files that are executable, SUID and non-readable. In this case it 
+wouldn't matter because userspace could not read the file, which is 
+required for interpretation/execution. Anyway, S[GU]ID bits in scripts 
+are just ignored by execve and we want to follow the same semantic.
+
+
+> 
+> Maybe we do.
+> 
+> Is the user-space loader going to honor them? Is it going to ignore
+> them? I don't know. And it actually interacts with things like
+> 'nosuid', which the kernel does know about, and user space has a hard
+> time figuring out.
+> 
+> So if the point is "give me an interface so that I can do the same
+> thing a kernel execve() loader would do", then those sgid/suid bits
+> actually may be exactly the kind of thing that user space wants the
+> kernel to react to - should it ignore them, or should it do something
+> special when it sees that they are set?
+> 
+> I'm not saying that they *should* be something we care about. All I'm
+> saying is that I want that *discussion* to happen.
+> 
+>                 Linus
