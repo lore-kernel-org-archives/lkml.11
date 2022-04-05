@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9EEC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC665C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381448AbiDELpq (ORCPT
+        id S1381486AbiDELqH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        Tue, 5 Apr 2022 07:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244875AbiDEIwo (ORCPT
+        with ESMTP id S244865AbiDEIwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C6D23BEB;
-        Tue,  5 Apr 2022 01:45:15 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECF7237EF;
+        Tue,  5 Apr 2022 01:45:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90121609D0;
-        Tue,  5 Apr 2022 08:45:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E4BC385A0;
-        Tue,  5 Apr 2022 08:45:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F0C8B81BC5;
+        Tue,  5 Apr 2022 08:45:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8FB4C385A1;
+        Tue,  5 Apr 2022 08:45:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148315;
-        bh=Yfa6Kmyb+1X+6X/9WKFe5fwbMvb+I65yU3dPuaielFA=;
+        s=korg; t=1649148301;
+        bh=f7lk/uatWZehCCEatvm6qnumEhlCGUuUHdGZqbrb3Fw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OMmp1E+EwTF3ggo4+OXuYY07gv5SluOwOqZXfft8FIAmkoTlET/RolSAbA/NgFl18
-         PuavZwvztlLNi6P+XDsks0eoNea4fccTKIraKLmuvJmaTH5R+s+TA7aKRDqKX3JNIZ
-         /qPCgtJMjRkirrZn9gd68smmeeaK53mDjd0O+lAo=
+        b=vgrS8Vp4HRlWT7ZdRtE3HtqgUW+0JzTrgs4O+zOjaJnTDzSYCD8woN6W9wG0ocbU/
+         wREti6KD0araK0Ewmq+e4WClou+Mm7WwmyHulR6PL1VnqB2z0KOiL/BQCcN6IAr/sJ
+         Jjqw1K2/MGqj/I0/TG5g+E//Sk21KS83KnkvWJDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0313/1017] soc: qcom: ocmem: Fix missing put_device() call in of_get_ocmem
-Date:   Tue,  5 Apr 2022 09:20:26 +0200
-Message-Id: <20220405070403.567967855@linuxfoundation.org>
+        stable@vger.kernel.org, Minye Zhu <zhuminye@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0269/1017] sched/cpuacct: Fix charge percpu cpuusage
+Date:   Tue,  5 Apr 2022 09:19:42 +0200
+Message-Id: <20220405070402.249536522@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,35 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Chengming Zhou <zhouchengming@bytedance.com>
 
-[ Upstream commit 0ff027027e05a866491bbb53494f0e2a61354c85 ]
+[ Upstream commit 248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+The cpuacct_account_field() is always called by the current task
+itself, so it's ok to use __this_cpu_add() to charge the tick time.
 
-Fixes: 01f937ffc468 ("soc: qcom: ocmem: don't return NULL in of_get_ocmem")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220107073126.2335-1-linmq006@gmail.com
+But cpuacct_charge() maybe called by update_curr() in load_balance()
+on a random CPU, different from the CPU on which the task is running.
+So __this_cpu_add() will charge that cputime to a random incorrect CPU.
+
+Fixes: 73e6aafd9ea8 ("sched/cpuacct: Simplify the cpuacct code")
+Reported-by: Minye Zhu <zhuminye@bytedance.com>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Tejun Heo <tj@kernel.org>
+Link: https://lore.kernel.org/r/20220220051426.5274-1-zhouchengming@bytedance.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/ocmem.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/sched/cpuacct.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soc/qcom/ocmem.c b/drivers/soc/qcom/ocmem.c
-index d2dacbbaafbd..97fd24c178f8 100644
---- a/drivers/soc/qcom/ocmem.c
-+++ b/drivers/soc/qcom/ocmem.c
-@@ -206,6 +206,7 @@ struct ocmem *of_get_ocmem(struct device *dev)
- 	ocmem = platform_get_drvdata(pdev);
- 	if (!ocmem) {
- 		dev_err(dev, "Cannot get ocmem\n");
-+		put_device(&pdev->dev);
- 		return ERR_PTR(-ENODEV);
- 	}
- 	return ocmem;
+diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
+index ab67d97a8442..cacc2076ad21 100644
+--- a/kernel/sched/cpuacct.c
++++ b/kernel/sched/cpuacct.c
+@@ -328,12 +328,13 @@ static struct cftype files[] = {
+  */
+ void cpuacct_charge(struct task_struct *tsk, u64 cputime)
+ {
++	unsigned int cpu = task_cpu(tsk);
+ 	struct cpuacct *ca;
+ 
+ 	rcu_read_lock();
+ 
+ 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
+-		__this_cpu_add(*ca->cpuusage, cputime);
++		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
+ 
+ 	rcu_read_unlock();
+ }
 -- 
 2.34.1
 
