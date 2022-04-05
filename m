@@ -2,139 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0775AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587207AbiDFAIJ (ORCPT
+        id S1587248AbiDFAIR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54860 "EHLO
+        Tue, 5 Apr 2022 20:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573261AbiDEShI (ORCPT
+        with ESMTP id S1573648AbiDETaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:37:08 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE8B167E3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:35:09 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id p9-20020a63f449000000b0035ec8c16f0bso58519pgk.11
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 11:35:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=K74uTYo0p50+68Eav5hPTlnLwyyYs0SvA0+aQKwvrcM=;
-        b=KQEqtHlUIrCMPDEZNKiPS9MvgfELfDBKde+wsTIq1ryHFf4ypzTaT5ALjkqm0JVA/K
-         97yK54GjAMf/hbNvHEfcLoErQsv6rPoLKHy2OA9GpDLManJ08OL6cBliH1pE8PSbtm7x
-         Egplaa+kzgODwKtSCsT31nZ0UmtGrh8hUA9msDIyH4k5N+aHpal+4rr8KrD7SYUpXE3m
-         nBRZDzeYOKQosGLkqviomA/pOiSPf+ru1BtqjlgFBULpSQyd2phEdgIk9HV/Y5NxCLe8
-         iqooldC/WoJSZZ1Savcf5GCUvvf+FBFSipfwHPk+DR5bRvXG/cGwBk20mzlgOlgGncf3
-         D7Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=K74uTYo0p50+68Eav5hPTlnLwyyYs0SvA0+aQKwvrcM=;
-        b=eyHsI5p2G9koB164nx4oA1WN2qVz1gCJY3L6vPRx8n70/1SLrIjzxa+8a3HpjrgUzq
-         03p9sG9n1TWgo2qkwJhxlue3vezNzlA1pNBR6KGScV9DhFEn7AFg8ccI9YXl+vKIrZXL
-         r6XzcPddhtMBnA3sZvxaALIb6HEQj0mOjv53gLeUdov325kbQTHElENV+tgbA/3XTEXm
-         v0mevYBkJyrC+iyQWqoqJXLmVuh7+iojRZC/1mzwoACV3eRuQv9q0yrm1z/KUDYNoDdl
-         mIaM++WSHZnsmVSwkVSU2A/Rv6WcyPl848J07iNF9/pDjE1ILfz1JHkR4O9SfNqE5fV9
-         /llQ==
-X-Gm-Message-State: AOAM530xuYj0Kvs9MkEAyhCBlDvrs1k1vfQVNM+TPNEcO4h3X7TYdEyo
-        Grmj3KuhlLdmzecxB8ioBg5jlEsX7oQ=
-X-Google-Smtp-Source: ABdhPJwWLVGLr/vHL4lq1ATs4OZuBgElqxvfAYIpOrbOfXGyZoR0O+W+IABkWZEAFyqxM0aqFqnkdt8jf2k=
-X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:9f5c:353e:771c:7686])
- (user=pgonda job=sendgmr) by 2002:a17:902:e545:b0:154:4d5b:2006 with SMTP id
- n5-20020a170902e54500b001544d5b2006mr4889343plf.94.1649183709169; Tue, 05 Apr
- 2022 11:35:09 -0700 (PDT)
-Date:   Tue,  5 Apr 2022 11:35:06 -0700
-Message-Id: <20220405183506.2138403-1-pgonda@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH V4] KVM, SEV: Add KVM_EXIT_SYSTEM_EVENT metadata for SEV-ES
-From:   Peter Gonda <pgonda@google.com>
-To:     kvm@vger.kernel.org
-Cc:     Peter Gonda <pgonda@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>, Marc Orr <marcorr@google.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 5 Apr 2022 15:30:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6999BE9FD;
+        Tue,  5 Apr 2022 12:28:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 798EBB81FA5;
+        Tue,  5 Apr 2022 19:28:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FFE8C385A0;
+        Tue,  5 Apr 2022 19:28:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186901;
+        bh=pVw+p9ycf47WcueumebtNHtrMlhZvyHvueOH6HyIgxg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H7DrYXUcnOILq8iiKmQblcUhP12doiBbqszAS+75nlkzSSWvfMtpz0NrUXQomLzqR
+         +wg1S6W0W4OJuwdK4xplboyrOrMqYJ1hjDXvV3JTxf4yj9KUf4MwuhApyFXwrL4xn6
+         i4R8tvEldQQd2TvYxEoD+pz//7BsB48i7XGg/dKrEdcPabZkiFhUwA5zpL5zC/0wiO
+         bKMul1zj1k7nTsCfMCNROi53v/8s0Vke0DQKca0hEBmzuYeY5HX7vF5sTupHXifJlm
+         vl57JKzt34mqZiEE69FjJkXJ2iSEmX65i56DMdMV8DIGdyjbyb16VGLECbl5YPeTL1
+         3+sLYUZjrxTuQ==
+Date:   Tue, 5 Apr 2022 19:28:19 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 3/5] ima: permit fsverity's file digests in the IMA
+ measurement list
+Message-ID: <YkyYUzEK9Tw4TgL2@gmail.com>
+References: <20220325223824.310119-1-zohar@linux.ibm.com>
+ <20220325223824.310119-4-zohar@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325223824.310119-4-zohar@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SEV-ES guests can request termination using the GHCB's MSR protocol. See
-AMD's GHCB spec section '4.1.13 Termination Request'. Currently when a
-guest does this the userspace VMM sees an KVM_EXIT_UNKNOWN (-EVINAL)
-return code from KVM_RUN. By adding a KVM_EXIT_SYSTEM_EVENT to kvm_run
-struct the userspace VMM can clearly see the guest has requested a SEV-ES
-termination including the termination reason code set and reason code.
+On Fri, Mar 25, 2022 at 06:38:22PM -0400, Mimi Zohar wrote:
+> Permit fsverity's file digest (a hash of struct fsverity_digest) to be
+> included in the IMA measurement list, based on the new measurement
+> policy rule 'digest_type=verity' option.
 
-Signed-off-by: Peter Gonda <pgonda@google.com>
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Brijesh Singh <brijesh.singh@amd.com>
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: Marc Orr <marcorr@google.com>
-Cc: kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+"fsverity's file digest" *is* 'struct fsverity_digest', not a hash of it.
+Did you mean to write 'struct fsverity_descriptor'?
 
----
+> diff --git a/Documentation/security/IMA-templates.rst b/Documentation/security/IMA-templates.rst
+> index 1a91d92950a7..2d4789dc7750 100644
+> --- a/Documentation/security/IMA-templates.rst
+> +++ b/Documentation/security/IMA-templates.rst
+> @@ -68,6 +68,9 @@ descriptors by adding their identifier to the format string
+>   - 'd-ng': the digest of the event, calculated with an arbitrary hash
+>     algorithm (field format: [<hash algo>:]digest, where the digest
+>     prefix is shown only if the hash algorithm is not SHA1 or MD5);
+> + - 'd-ngv2': same as d-ng, but prefixed with the digest type.
+> +    field format: [<digest type>:<hash algo>:]digest,
+> +        where the digest type is either "ima" or "verity".
 
-V4
- * Switch to using KVM_SYSTEM_EVENT exit reason.
+As in patch 2, it is not clear what the square brackets mean here.  Maybe they
+mean that "<digest type>:<hash algo>:" is optional, but it is not explained when
+they will be present and when they will not be present.
 
-V3
- * Add Documentation/ update.
- * Updated other KVM_EXIT_SHUTDOWN exits to clear ndata and set reason
-   to KVM_SHUTDOWN_REQ.
+>   - 'd-modsig': the digest of the event without the appended modsig;
+>   - 'n-ng': the name of the event, without size limitations;
+>   - 'sig': the file signature, or the EVM portable signature if the file
+> @@ -106,3 +109,8 @@ currently the following methods are supported:
+>     the ``ima_template=`` parameter;
+>   - register a new template descriptor with custom format through the kernel
+>     command line parameter ``ima_template_fmt=``.
+> +
+> +
+> +References
+> +==========
+> +[1] Documentation/filesystems/fsverity.rst
 
-V2
- * Add KVM_CAP_EXIT_SHUTDOWN_REASON check for KVM_CHECK_EXTENSION.
+Is this meant to be a footnote?  There are no references to it above.
 
-Tested by making an SEV-ES guest call sev_es_terminate() with hardcoded
-reason code set and reason code and then observing the codes from the
-userspace VMM in the kvm_run.system_event fields.
+> @@ -242,14 +267,29 @@ int ima_collect_measurement(struct integrity_iint_cache *iint,
+>  	 */
+>  	i_version = inode_query_iversion(inode);
+>  	hash.hdr.algo = algo;
+> +	hash.hdr.length = hash_digest_size[algo];
+>  
+>  	/* Initialize hash digest to 0's in case of failure */
+>  	memset(&hash.digest, 0, sizeof(hash.digest));
+>  
+> -	if (buf)
+> +	if (buf) {
+>  		result = ima_calc_buffer_hash(buf, size, &hash.hdr);
+> -	else
+> +	} else if (iint->flags & IMA_VERITY_REQUIRED) {
+> +		result = ima_get_verity_digest(iint, &hash);
+> +		switch (result) {
+> +		case 0:
+> +			break;
+> +		case -ENODATA:
+> +			audit_cause = "no-verity-digest";
+> +			result = -EINVAL;
+> +			break;
+> +		default:
+> +			audit_cause = "invalid-verity-digest";
+> +			break;
+> +		}
+> +	} else {
+>  		result = ima_calc_file_hash(file, &hash.hdr);
+> +	}
+>  
+>  	if (result && result != -EBADF && result != -EINVAL)
+>  		goto out;
 
----
- arch/x86/kvm/svm/sev.c   | 7 +++++--
- include/uapi/linux/kvm.h | 1 +
- 2 files changed, 6 insertions(+), 2 deletions(-)
+The above code only calls ima_get_verity_digest() if 'buf' is non-NULL,
+otherwise it calls ima_calc_buffer_hash().  Under what circumstances is 'buf'
+non-NULL?  Does this imply that 'digest_type=verity' does not always use verity
+digests, and if not, when are they used and when are they not used?
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 75fa6dd268f0..039b241a9fb5 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -2735,8 +2735,11 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
- 		pr_info("SEV-ES guest requested termination: %#llx:%#llx\n",
- 			reason_set, reason_code);
- 
--		ret = -EINVAL;
--		break;
-+		vcpu->run->exit_reason = KVM_EXIT_SHUTDOWN;
-+		vcpu->run->system_event.type = KVM_SYSTEM_EVENT_SEV_TERM;
-+		vcpu->run->system_event.flags = control->ghcb_gpa;
-+
-+		return 0;
- 	}
- 	default:
- 		/* Error, keep GHCB MSR value as-is */
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 8616af85dc5d..d9d24db12930 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -444,6 +444,7 @@ struct kvm_run {
- #define KVM_SYSTEM_EVENT_SHUTDOWN       1
- #define KVM_SYSTEM_EVENT_RESET          2
- #define KVM_SYSTEM_EVENT_CRASH          3
-+#define KVM_SYSTEM_EVENT_SEV_TERM       4
- 			__u32 type;
- 			__u64 flags;
- 		} system_event;
--- 
-2.35.1.1094.g7c7d902a7c-goog
+> +/*
+> + * Make sure the policy rule and template format are in sync.
+> + */
+> +static void check_template_field(const struct ima_template_desc *template,
+> +				 const char *field, const char *msg)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < template->num_fields; i++)
+> +		if (!strcmp(template->fields[i]->field_id, field))
+> +			return;
+> +
+> +	pr_notice_once("%s", msg);
+> +}
 
+A better description for this function would be something like "Warn if the
+template does not contain the given field."
+
+> index daf49894fd7d..d42a01903f08 100644
+> --- a/security/integrity/integrity.h
+> +++ b/security/integrity/integrity.h
+> @@ -32,7 +32,7 @@
+>  #define IMA_HASHED		0x00000200
+>  
+>  /* iint policy rule cache flags */
+> -#define IMA_NONACTION_FLAGS	0xff000000
+> +#define IMA_NONACTION_FLAGS	0xff800000
+>  #define IMA_DIGSIG_REQUIRED	0x01000000
+>  #define IMA_PERMIT_DIRECTIO	0x02000000
+>  #define IMA_NEW_FILE		0x04000000
+> @@ -40,6 +40,7 @@
+>  #define IMA_FAIL_UNVERIFIABLE_SIGS	0x10000000
+>  #define IMA_MODSIG_ALLOWED	0x20000000
+>  #define IMA_CHECK_BLACKLIST	0x40000000
+> +#define IMA_VERITY_REQUIRED	0x80000000
+
+It is intentional that the new bit added to IMA_NONACTION_FLAGS is not the same
+as IMA_VERITY_REQUIRED?
+
+- Eric
