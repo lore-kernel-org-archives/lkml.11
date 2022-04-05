@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E08E3C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 052ABC46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235131AbiDEH7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:59:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
+        id S235240AbiDEH7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233575AbiDEHsA (ORCPT
+        with ESMTP id S233554AbiDEHr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:48:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C128C281;
-        Tue,  5 Apr 2022 00:46:02 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7D892867;
+        Tue,  5 Apr 2022 00:45:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5486BB81BA4;
-        Tue,  5 Apr 2022 07:46:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A52C3410F;
-        Tue,  5 Apr 2022 07:45:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BD5F616C4;
+        Tue,  5 Apr 2022 07:45:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C15C340EE;
+        Tue,  5 Apr 2022 07:45:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144760;
-        bh=jLJHdncUYIgkXzg4FNI//hgrXP1ygYahSZ/ZDNplSPI=;
+        s=korg; t=1649144724;
+        bh=8EEY95TxpF936PDJ+mCL90Eb807SR//DOOEt2RlxtWE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lfPnZZzE9L01obbt4bCXJrRUyUVhENl0f/IiDBiEpVVjQURWnPziIzh0uMFHpZI0t
-         dUasT5zfA5IZfMwL6Wh3qoCxUzbgGTpyDlxk0sH2r/z8kAOiCrTTxeLpQVAIn9DJ2k
-         zb1/DC3hNkBBsBJfAVKIGeHa/mDQtS0klwN72SRM=
+        b=buiXvy2BFx1/jGFQWzLv0DgdbTKAPAHo5oA/h+v6tHuQ9DGZgxLa1JlbZ4E5ogfeC
+         hwM1TCtSlhSRzQBWFeMatZYJRIhMDN7P8rDuXJC+RAinG0l/4WJk5fIjN9uKoV+DyP
+         kNMfAaIblFr9CHePEfeD58+PbQSC+MrUVigfkd4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Chikunov <vt@altlinux.org>,
-        Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.17 0161/1126] crypto: rsa-pkcs1pad - correctly get hash from source scatterlist
-Date:   Tue,  5 Apr 2022 09:15:08 +0200
-Message-Id: <20220405070412.318064223@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: [PATCH 5.17 0149/1126] ARM: dts: at91: sama7g5: Remove unused properties in i2c nodes
+Date:   Tue,  5 Apr 2022 09:14:56 +0200
+Message-Id: <20220405070411.957745687@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,52 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit e316f7179be22912281ce6331d96d7c121fb2b17 upstream.
+commit cbb92a7717d2e1c512b7e81c6b22c7298b58a881 upstream.
 
-Commit c7381b012872 ("crypto: akcipher - new verify API for public key
-algorithms") changed akcipher_alg::verify to take in both the signature
-and the actual hash and do the signature verification, rather than just
-return the hash expected by the signature as was the case before.  To do
-this, it implemented a hack where the signature and hash are
-concatenated with each other in one scatterlist.
+The "atmel,use-dma-rx", "atmel,use-dma-rx" dt properties are not used by
+the i2c-at91 driver, nor they are defined in the bindings file, thus remove
+them.
 
-Obviously, for this to work correctly, akcipher_alg::verify needs to
-correctly extract the two items from the scatterlist it is given.
-Unfortunately, it doesn't correctly extract the hash in the case where
-the signature is longer than the RSA key size, as it assumes that the
-signature's length is equal to the RSA key size.  This causes a prefix
-of the hash, or even the entire hash, to be taken from the *signature*.
-
-(Note, the case of a signature longer than the RSA key size should not
-be allowed in the first place; a separate patch will fix that.)
-
-It is unclear whether the resulting scheme has any useful security
-properties.
-
-Fix this by correctly extracting the hash from the scatterlist.
-
-Fixes: c7381b012872 ("crypto: akcipher - new verify API for public key algorithms")
-Cc: <stable@vger.kernel.org> # v5.2+
-Reviewed-by: Vitaly Chikunov <vt@altlinux.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: stable@vger.kernel.org
+Fixes: 7540629e2fc7 ("ARM: dts: at91: add sama7g5 SoC DT and sama7g5-ek")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Reviewed-by: Eugen Hristev <eugen.hristev@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220302161854.32177-1-tudor.ambarus@microchip.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/rsa-pkcs1pad.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/sama7g5.dtsi |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/crypto/rsa-pkcs1pad.c
-+++ b/crypto/rsa-pkcs1pad.c
-@@ -495,7 +495,7 @@ static int pkcs1pad_verify_complete(stru
- 			   sg_nents_for_len(req->src,
- 					    req->src_len + req->dst_len),
- 			   req_ctx->out_buf + ctx->key_size,
--			   req->dst_len, ctx->key_size);
-+			   req->dst_len, req->src_len);
- 	/* Do the actual verification step. */
- 	if (memcmp(req_ctx->out_buf + ctx->key_size, out_buf + pos,
- 		   req->dst_len) != 0)
+--- a/arch/arm/boot/dts/sama7g5.dtsi
++++ b/arch/arm/boot/dts/sama7g5.dtsi
+@@ -382,8 +382,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(7)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(8)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -558,8 +556,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(21)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(22)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -584,8 +580,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(23)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(24)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
 
 
