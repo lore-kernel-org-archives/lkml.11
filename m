@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 082E7C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 374C0C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576051AbiDEXKO (ORCPT
+        id S1576401AbiDEXKj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        Tue, 5 Apr 2022 19:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353352AbiDEKGB (ORCPT
+        with ESMTP id S1358174AbiDEK2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:06:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA3CBF508;
-        Tue,  5 Apr 2022 02:54:47 -0700 (PDT)
+        Tue, 5 Apr 2022 06:28:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F40F9E9D0;
+        Tue,  5 Apr 2022 03:16:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0E3CBCE1C9C;
-        Tue,  5 Apr 2022 09:54:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21289C385A1;
-        Tue,  5 Apr 2022 09:54:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFFAD617A4;
+        Tue,  5 Apr 2022 10:16:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07AB7C385A1;
+        Tue,  5 Apr 2022 10:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152484;
-        bh=UAK0kOTAZzJ3osgfxruwduiyoCZIcrnooyC7WYDw5bQ=;
+        s=korg; t=1649153776;
+        bh=1I9ntHJiM21S0qLJy1WF+V3MuZ6FluhhpC6uOraCkoc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIfRXCL1T8u+U9Pyq7I6gnH2aIzfGzJq88jr487dtKAR/UTPuM9iUVkCfN4yYVza3
-         7mhCNHGN/rlulaKHg6v3P3JCtsjBX3ADb/JXv/nPKWRQNHCpyQUa7H9MdWO8Q+JCx5
-         5gaSfO/lt6Z/ELob+BfRGGvYlDZcayXNS6Rm6jAs=
+        b=FhyHz2h9BW8tUYcyZmlOqpdK5kecLKW6Zp6Sk672B3DMjcDUbonvla/dk5RyQIAZq
+         iSpoSOLIgn7gvgfHCiBywx7Hlbc0h/Bw9s7/neJ1XuH+xuz3JYtmdRLtk230qUfIvp
+         TvMRHtI9GX9LzVtOh8SHTOvjf47sEHTvDC8So2gg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 794/913] scsi: qla2xxx: Fix warning for missing error code
-Date:   Tue,  5 Apr 2022 09:30:56 +0200
-Message-Id: <20220405070403.633572309@linuxfoundation.org>
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 343/599] powerpc/sysdev: fix incorrect use to determine if list is empty
+Date:   Tue,  5 Apr 2022 09:30:37 +0200
+Message-Id: <20220405070309.039491125@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nilesh Javali <njavali@marvell.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-commit 14cb838d245ae0d523b2f7804af5a02c22e79f5a upstream.
+[ Upstream commit fa1321b11bd01752f5be2415e74a0e1a7c378262 ]
 
-Fix smatch-reported warning message:
+'gtm' will *always* be set by list_for_each_entry().
+It is incorrect to assume that the iterator value will be NULL if the
+list is empty.
 
-drivers/scsi/qla2xxx/qla_target.c:3324 qlt_xmit_response() warn: missing error
-code 'res'
+Instead of checking the pointer it should be checked if
+the list is empty.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-12-njavali@marvell.com
-Fixes: 4a8f71014b4d ("scsi: qla2xxx: Fix unmap of already freed sgl")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 83ff9dcf375c ("powerpc/sysdev: implement FSL GTM support")
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220228142434.576226-1-jakobkoschel@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_target.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/powerpc/sysdev/fsl_gtm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_target.c
-+++ b/drivers/scsi/qla2xxx/qla_target.c
-@@ -3318,6 +3318,7 @@ int qlt_xmit_response(struct qla_tgt_cmd
- 			"RESET-RSP online/active/old-count/new-count = %d/%d/%d/%d.\n",
- 			vha->flags.online, qla2x00_reset_active(vha),
- 			cmd->reset_count, qpair->chip_reset);
-+		res = 0;
- 		goto out_unmap_unlock;
+diff --git a/arch/powerpc/sysdev/fsl_gtm.c b/arch/powerpc/sysdev/fsl_gtm.c
+index 8963eaffb1b7..39186ad6b3c3 100644
+--- a/arch/powerpc/sysdev/fsl_gtm.c
++++ b/arch/powerpc/sysdev/fsl_gtm.c
+@@ -86,7 +86,7 @@ static LIST_HEAD(gtms);
+  */
+ struct gtm_timer *gtm_get_timer16(void)
+ {
+-	struct gtm *gtm = NULL;
++	struct gtm *gtm;
+ 	int i;
+ 
+ 	list_for_each_entry(gtm, &gtms, list_node) {
+@@ -103,7 +103,7 @@ struct gtm_timer *gtm_get_timer16(void)
+ 		spin_unlock_irq(&gtm->lock);
  	}
  
+-	if (gtm)
++	if (!list_empty(&gtms))
+ 		return ERR_PTR(-EBUSY);
+ 	return ERR_PTR(-ENODEV);
+ }
+-- 
+2.34.1
+
 
 
