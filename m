@@ -2,95 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4048CC35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EE8C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574330AbiDEWzm (ORCPT
+        id S1574379AbiDEWzv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
+        Tue, 5 Apr 2022 18:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352309AbiDEKEP (ORCPT
+        with ESMTP id S1573239AbiDESbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACB0B91B1;
-        Tue,  5 Apr 2022 02:53:04 -0700 (PDT)
+        Tue, 5 Apr 2022 14:31:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C86713F6B;
+        Tue,  5 Apr 2022 11:29:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3937961765;
-        Tue,  5 Apr 2022 09:53:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B83CC385A1;
-        Tue,  5 Apr 2022 09:53:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152383;
-        bh=8ZFmnqlSEMxKjuWziuwkhdq48STdoQ3qVnRC30Htjlg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XhJriy6DKE7L36WWr7d3U28yLr6N+4o5I5YRHApQq7n1sl6XL9F9sNWkug7IgxKa7
-         wNB4iB2ZEfji8ayahRWPkjHj1zfZQ0XwPNkwxQkEcpKySDzY/yrn5YSrFB6/VPTZAK
-         o3d/o3/RXuEzLGoCkwwdMm/MvIv1UaoQX/7hoNsk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Richard Leitner <richard.leitner@skidata.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 758/913] ARM: tegra: tamonten: Fix I2C3 pad setting
-Date:   Tue,  5 Apr 2022 09:30:20 +0200
-Message-Id: <20220405070402.553545181@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0B7A618CE;
+        Tue,  5 Apr 2022 18:29:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE7BC385A0;
+        Tue,  5 Apr 2022 18:29:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649183341;
+        bh=RipF2sDxCVo9q2EK1KCVAMcx4kdSJtLIqkmkUKxesng=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=UDtQPEvYZ04ZzfdoEjWld2hT2TMhLGg0yXVXsBO/Ak7o4umpRfbxucC7Z99uXH7cW
+         AjL4HQ8Cv2Q8/ii4mTu2moWoeSOc8jQbnGrub/IfxgaD11iFCrc7AQLER7gTOkSQXP
+         chHYTnCdfoqzHBcMCd7WyVxJciFaqtrMjwLdUqwJyUkfm+FgY2nV4fTRxSE8O1BbHH
+         4fqeSNDohq6f3/6vMQCIzJPzDiQn6HcWxLzP246GXjbwvh6iLdQIL8dcGsm/WXtVcq
+         m+dhqLcYc3gy8QaSnDiahvft4KfubFEEGkGLbLeLaBFBtUhG7rTt95XU8mdHLynpFW
+         yJ9r2pMNTlrxQ==
+Message-ID: <13a43c8d9e9d103009e652e7e8ff49e6844316d5.camel@kernel.org>
+Subject: Re: [PATCH RFC] x86/sgx: Simplify struct
+ sgx_enclave_restrict_permissions
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>,
+        linux-sgx@vger.kernel.rog
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:INTEL SGX" <linux-sgx@vger.kernel.org>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+Date:   Tue, 05 Apr 2022 21:30:10 +0300
+In-Reply-To: <76c6e673-71fb-1068-0114-c3eea93a2fd4@intel.com>
+References: <20220405151642.96096-1-jarkko@kernel.org>
+         <76c6e673-71fb-1068-0114-c3eea93a2fd4@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Leitner <richard.leitner@skidata.com>
+On Tue, 2022-04-05 at 10:21 -0700, Reinette Chatre wrote:
+> Hi Jarkko,
+>=20
+> On 4/5/2022 8:16 AM, Jarkko Sakkinen wrote:
+> > The reasoning to change SECINFO to simply flags is stated in this inlin=
+e
+> > comment:
+> >=20
+> > /*
+> > =C2=A0* Return valid permission fields from a secinfo structure provide=
+d by
+> > =C2=A0* user space. The secinfo structure is required to only have bits=
+ in
+> > =C2=A0* the permission fields set.
+> > =C2=A0*/
+> >=20
+> > It is better to simply change the parameter type than require to use
+> > a malformed version of a data structure.
+>=20
+> Could you please elaborate what is malformed?
 
-[ Upstream commit 0092c25b541a5422d7e71892a13c55ee91abc34b ]
+The structure that is accepted by the API. According to SDM permission
+changes are done with a structure where PT_REG is set, which gives
+-EINVAL. I categorize it as a bug.
 
-This patch fixes the tristate configuration for i2c3 function assigned
-to the dtf pins on the Tamonten Tegra20 SoM.
-
-Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
-index dd4d506683de..7f14f0d005c3 100644
---- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
-+++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
-@@ -183,8 +183,8 @@
- 			};
- 			conf_ata {
- 				nvidia,pins = "ata", "atb", "atc", "atd", "ate",
--					"cdev1", "cdev2", "dap1", "dtb", "gma",
--					"gmb", "gmc", "gmd", "gme", "gpu7",
-+					"cdev1", "cdev2", "dap1", "dtb", "dtf",
-+					"gma", "gmb", "gmc", "gmd", "gme", "gpu7",
- 					"gpv", "i2cp", "irrx", "irtx", "pta",
- 					"rm", "slxa", "slxk", "spia", "spib",
- 					"uac";
-@@ -203,7 +203,7 @@
- 			};
- 			conf_crtp {
- 				nvidia,pins = "crtp", "dap2", "dap3", "dap4",
--					"dtc", "dte", "dtf", "gpu", "sdio1",
-+					"dtc", "dte", "gpu", "sdio1",
- 					"slxc", "slxd", "spdi", "spdo", "spig",
- 					"uda";
- 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
--- 
-2.34.1
-
-
-
+BR, Jarkko
