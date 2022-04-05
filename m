@@ -2,133 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 828ECC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4335C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836491AbiDFAgZ (ORCPT
+        id S1836545AbiDFAge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
+        Tue, 5 Apr 2022 20:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355268AbiDEKSu (ORCPT
+        with ESMTP id S1572876AbiDERNN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:18:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4363C10FE1;
-        Tue,  5 Apr 2022 03:04:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 5 Apr 2022 13:13:13 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA1E32989
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:11:14 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDB5F61673;
-        Tue,  5 Apr 2022 10:04:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4FEC385A2;
-        Tue,  5 Apr 2022 10:04:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153076;
-        bh=uos+dZQFyuLbUjPtiaSV8Nc9hZwgOh9eP9pCprv8FZs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EMOpZ/6zfwaZ/KCCdwYhL17zUXNW2udDxGs2Zq+CTaC2r/tOsEG41czJSWiiSUD1s
-         DF9oOqmmW0fc9iQV7MbH28XJKuRiX9luX7mx9gKZzk5UNtUjHBXq/fVik3eSUspq2W
-         dF6xPXmOgGwIEneCrH8xpG++dT6t8oChCIGfONPI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 094/599] block: limit request dispatch loop duration
-Date:   Tue,  5 Apr 2022 09:26:28 +0200
-Message-Id: <20220405070301.627744791@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-out1.suse.de (Postfix) with ESMTPS id BEE1D210FD;
+        Tue,  5 Apr 2022 17:11:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649178672; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qXZaguQgzHHMZTiLw5gbfQ9kh4XyH0tzaiUaS6uMhFw=;
+        b=P1Niw4x7r4HvoVhVpJmYRniTerVWGNQa6wUn7Ui1YBWr3GPrTv/DDxtfkvC2CYjhu4hPwt
+        vRo+RBTSUTI2wSww9e+aNNtAJDjdZK/C+6YaX98Vj07u/ft/IbH09AI6kOOthu2Z+1MU0T
+        FXIgvSyFmpbK4wYkorchJoof5s0UgxM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649178672;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qXZaguQgzHHMZTiLw5gbfQ9kh4XyH0tzaiUaS6uMhFw=;
+        b=1mPAQK/8Tc5VWkJTuIOTeqpAAr7YKV2IrbOKQ8iV5kuhxX8JwS1ELK4F58khGigxtSLgop
+        AGReuck+EL/60AAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AB5D113A04;
+        Tue,  5 Apr 2022 17:11:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id AY4eKTB4TGK7HwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 05 Apr 2022 17:11:12 +0000
+Message-ID: <c56564cd-87f0-25c8-bb78-2bb8d8ad2655@suse.cz>
+Date:   Tue, 5 Apr 2022 19:11:12 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] mm/page_alloc: add same penalty is enough to get
+ round-robin order
+Content-Language: en-US
+To:     Wei Yang <richard.weiyang@gmail.com>, akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220123013537.20491-1-richard.weiyang@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220123013537.20491-1-richard.weiyang@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+On 1/23/22 02:35, Wei Yang wrote:
+> To make node order in round-robin in the same distance group, we add a
+> penalty to the first node we got in each round.
+> 
+> To get a round-robin order in the same distance group, we don't need to
+> decrease the penalty since:
+> 
+>   * find_next_best_node() always iterates node in the same order
+>   * distance matters more then penalty in find_next_best_node()
+>   * in nodes with the same distance, the first one would be picked up
+> 
+> So it is fine to increase same penalty when we get the first node in the
+> same distance group.
 
-commit 572299f03afd676dd4e20669cdaf5ed0fe1379d4 upstream.
+With that logic I'm not even sure if we need nr_online_nodes as penalty or
+it could be just 1. Would you know?
 
-When IO requests are made continuously and the target block device
-handles requests faster than request arrival, the request dispatch loop
-keeps on repeating to dispatch the arriving requests very long time,
-more than a minute. Since the loop runs as a workqueue worker task, the
-very long loop duration triggers workqueue watchdog timeout and BUG [1].
-
-To avoid the very long loop duration, break the loop periodically. When
-opportunity to dispatch requests still exists, check need_resched(). If
-need_resched() returns true, the dispatch loop already consumed its time
-slice, then reschedule the dispatch work and break the loop. With heavy
-IO load, need_resched() does not return true for 20~30 seconds. To cover
-such case, check time spent in the dispatch loop with jiffies. If more
-than 1 second is spent, reschedule the dispatch work and break the loop.
-
-[1]
-
-[  609.691437] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 35s!
-[  609.701820] Showing busy workqueues and worker pools:
-[  609.707915] workqueue events: flags=0x0
-[  609.712615]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  609.712626]     pending: drm_fb_helper_damage_work [drm_kms_helper]
-[  609.712687] workqueue events_freezable: flags=0x4
-[  609.732943]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  609.732952]     pending: pci_pme_list_scan
-[  609.732968] workqueue events_power_efficient: flags=0x80
-[  609.751947]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  609.751955]     pending: neigh_managed_work
-[  609.752018] workqueue kblockd: flags=0x18
-[  609.769480]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
-[  609.769488]     in-flight: 1020:blk_mq_run_work_fn
-[  609.769498]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
-[  609.769744] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=35s workers=2 idle: 67
-[  639.899730] BUG: workqueue lockup - pool cpus=10 node=1 flags=0x0 nice=-20 stuck for 66s!
-[  639.909513] Showing busy workqueues and worker pools:
-[  639.915404] workqueue events: flags=0x0
-[  639.920197]   pwq 0: cpus=0 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  639.920215]     pending: drm_fb_helper_damage_work [drm_kms_helper]
-[  639.920365] workqueue kblockd: flags=0x18
-[  639.939932]   pwq 21: cpus=10 node=1 flags=0x0 nice=-20 active=3/256 refcnt=4
-[  639.939942]     in-flight: 1020:blk_mq_run_work_fn
-[  639.939955]     pending: blk_mq_timeout_work, blk_mq_run_work_fn
-[  639.940212] pool 21: cpus=10 node=1 flags=0x0 nice=-20 hung=66s workers=2 idle: 67
-
-Fixes: 6e6fcbc27e778 ("blk-mq: support batching dispatch in case of io")
-Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-Cc: stable@vger.kernel.org # v5.10+
-Link: https://lore.kernel.org/linux-block/20220310091649.zypaem5lkyfadymg@shindev/
-Link: https://lore.kernel.org/r/20220318022641.133484-1-shinichiro.kawasaki@wdc.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- block/blk-mq-sched.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
---- a/block/blk-mq-sched.c
-+++ b/block/blk-mq-sched.c
-@@ -194,11 +194,18 @@ static int __blk_mq_do_dispatch_sched(st
- 
- static int blk_mq_do_dispatch_sched(struct blk_mq_hw_ctx *hctx)
- {
-+	unsigned long end = jiffies + HZ;
- 	int ret;
- 
- 	do {
- 		ret = __blk_mq_do_dispatch_sched(hctx);
--	} while (ret == 1);
-+		if (ret != 1)
-+			break;
-+		if (need_resched() || time_is_before_jiffies(end)) {
-+			blk_mq_delay_run_hw_queue(hctx, 0);
-+			break;
-+		}
-+	} while (1);
- 
- 	return ret;
- }
-
+> 
+> Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+> ---
+>  mm/page_alloc.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index c5952749ad40..f27afd517652 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -6245,13 +6245,12 @@ static void build_thisnode_zonelists(pg_data_t *pgdat)
+>  static void build_zonelists(pg_data_t *pgdat)
+>  {
+>  	static int node_order[MAX_NUMNODES];
+> -	int node, load, nr_nodes = 0;
+> +	int node, nr_nodes = 0;
+>  	nodemask_t used_mask = NODE_MASK_NONE;
+>  	int local_node, prev_node;
+>  
+>  	/* NUMA-aware ordering of nodes */
+>  	local_node = pgdat->node_id;
+> -	load = nr_online_nodes;
+>  	prev_node = local_node;
+>  
+>  	memset(node_order, 0, sizeof(node_order));
+> @@ -6263,11 +6262,10 @@ static void build_zonelists(pg_data_t *pgdat)
+>  		 */
+>  		if (node_distance(local_node, node) !=
+>  		    node_distance(local_node, prev_node))
+> -			node_load[node] += load;
+> +			node_load[node] += nr_online_nodes;
+>  
+>  		node_order[nr_nodes++] = node;
+>  		prev_node = node;
+> -		load--;
+>  	}
+>  
+>  	build_zonelists_in_node_order(pgdat, node_order, nr_nodes);
 
