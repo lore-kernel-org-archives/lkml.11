@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A55C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C51C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245381AbiDEMhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54948 "EHLO
+        id S1349355AbiDEMiL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235787AbiDEJCl (ORCPT
+        with ESMTP id S235839AbiDEJCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:02:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8472B26C;
-        Tue,  5 Apr 2022 01:54:25 -0700 (PDT)
+        Tue, 5 Apr 2022 05:02:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82382D1C6;
+        Tue,  5 Apr 2022 01:54:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 081A3B81A0C;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 199EECE1C71;
+        Tue,  5 Apr 2022 08:54:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27F72C385A1;
         Tue,  5 Apr 2022 08:54:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 560A2C385A1;
-        Tue,  5 Apr 2022 08:54:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148862;
-        bh=h2v0DIlqn7MvODtMU7B5duk+eFWQY+7yWPinQ/7cefg=;
+        s=korg; t=1649148865;
+        bh=b9CmBkPoTzeTLTQ03P0MF8/xi7jAsA2piHfG702kMsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nF2npzTtmp/gmkK43I9f3I+82WRHvIeEGsc5GsPmlcHANv02sBUPGhLgrHm8igSSp
-         SXCYSNLiZQW3DNfrjQqSOWV5yX7/NjY3+uQDN1glfkCXAXU1+UjjREgCYQxRkQbCQs
-         kuz/GYs+iNRAYHsRBkNbCV0EN/WjuM1e1g6qLKsQ=
+        b=PxepK3VUIEXKD51A8Xh2lMK10Q6ZJRoLe3AoPZqRbnSEBwFg8etZMCkGvQFbJ8a3T
+         mjyTb7bUBbpVPeIH3q2lbhrxKMqXTjEubq4WlZHblQSZv0iEfamjiT1oYN1o443KRB
+         aGa6GN+FrzESGy57zBpKgM33rrvqE1gTAndq+BDE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org, Geliang Tang <geliang.tang@suse.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0471/1017] mac80211: Remove a couple of obsolete TODO
-Date:   Tue,  5 Apr 2022 09:23:04 +0200
-Message-Id: <20220405070408.279247446@linuxfoundation.org>
+Subject: [PATCH 5.16 0507/1017] selftests: mptcp: add csum mib check for mptcp_connect
+Date:   Tue,  5 Apr 2022 09:23:40 +0200
+Message-Id: <20220405070409.349902133@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,65 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Geliang Tang <geliang.tang@suse.com>
 
-[ Upstream commit cee04f3c3a00ffd2a2a6ed1028e0ab58a3a28d25 ]
+[ Upstream commit 24720d7452df2dff2e539d9dff28904e25bb1c6d ]
 
-The HE capability IE is an extension IE so remove
-an irrelevant comments.
+This patch added the data checksum error mib counters check for the
+script mptcp_connect.sh when the data checksum is enabled.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211129152938.550b95b5fca7.Ia31395e880172aefcc0a8c70ed060f84b94bdb83@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+In do_transfer(), got the mib counters twice, before and after running
+the mptcp_connect commands. The latter minus the former is the actual
+number of the data checksum mib counter.
+
+The output looks like this:
+
+ns1 MPTCP -> ns2 (dead:beef:1::2:10007) MPTCP   (duration    86ms) [ OK ]
+ns1 MPTCP -> ns2 (10.0.2.1:10008      ) MPTCP   (duration    66ms) [ FAIL ]
+server got 1 data checksum error[s]
+
+Fixes: 94d66ba1d8e48 ("selftests: mptcp: enable checksum in mptcp_connect.sh")
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/255
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/main.c | 13 +++++--------
- net/mac80211/mlme.c |  4 ----
- 2 files changed, 5 insertions(+), 12 deletions(-)
+ .../selftests/net/mptcp/mptcp_connect.sh      | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/net/mac80211/main.c b/net/mac80211/main.c
-index 45fb517591ee..5311c3cd3050 100644
---- a/net/mac80211/main.c
-+++ b/net/mac80211/main.c
-@@ -1131,17 +1131,14 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
- 		local->scan_ies_len +=
- 			2 + sizeof(struct ieee80211_vht_cap);
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+index 559173a8e387..d75fa97609c1 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+@@ -445,6 +445,8 @@ do_transfer()
+ 	local stat_ackrx_last_l=$(get_mib_counter "${listener_ns}" "MPTcpExtMPCapableACKRX")
+ 	local stat_cookietx_last=$(get_mib_counter "${listener_ns}" "TcpExtSyncookiesSent")
+ 	local stat_cookierx_last=$(get_mib_counter "${listener_ns}" "TcpExtSyncookiesRecv")
++	local stat_csum_err_s=$(get_mib_counter "${listener_ns}" "MPTcpExtDataCsumErr")
++	local stat_csum_err_c=$(get_mib_counter "${connector_ns}" "MPTcpExtDataCsumErr")
  
--	/* HE cap element is variable in size - set len to allow max size */
- 	/*
--	 * TODO: 1 is added at the end of the calculation to accommodate for
--	 *	the temporary placing of the HE capabilities IE under EXT.
--	 *	Remove it once it is placed in the final place.
--	 */
--	if (supp_he)
-+	 * HE cap element is variable in size - set len to allow max size */
-+	if (supp_he) {
- 		local->scan_ies_len +=
--			2 + sizeof(struct ieee80211_he_cap_elem) +
-+			3 + sizeof(struct ieee80211_he_cap_elem) +
- 			sizeof(struct ieee80211_he_mcs_nss_supp) +
--			IEEE80211_HE_PPE_THRES_MAX_LEN + 1;
-+			IEEE80211_HE_PPE_THRES_MAX_LEN;
-+	}
+ 	timeout ${timeout_test} \
+ 		ip netns exec ${listener_ns} \
+@@ -537,6 +539,23 @@ do_transfer()
+ 		fi
+ 	fi
  
- 	if (!local->ops->hw_scan) {
- 		/* For hw_scan, driver needs to set these up. */
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 404b84650161..13496ba48514 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -650,10 +650,6 @@ static void ieee80211_add_he_ie(struct ieee80211_sub_if_data *sdata,
- 	if (!he_cap || !reg_cap)
- 		return;
- 
--	/*
--	 * TODO: the 1 added is because this temporarily is under the EXTENSION
--	 * IE. Get rid of it when it moves.
--	 */
- 	he_cap_size =
- 		2 + 1 + sizeof(he_cap->he_cap_elem) +
- 		ieee80211_he_mcs_nss_size(&he_cap->he_cap_elem) +
++	if $checksum; then
++		local csum_err_s=$(get_mib_counter "${listener_ns}" "MPTcpExtDataCsumErr")
++		local csum_err_c=$(get_mib_counter "${connector_ns}" "MPTcpExtDataCsumErr")
++
++		local csum_err_s_nr=$((csum_err_s - stat_csum_err_s))
++		if [ $csum_err_s_nr -gt 0 ]; then
++			printf "[ FAIL ]\nserver got $csum_err_s_nr data checksum error[s]"
++			rets=1
++		fi
++
++		local csum_err_c_nr=$((csum_err_c - stat_csum_err_c))
++		if [ $csum_err_c_nr -gt 0 ]; then
++			printf "[ FAIL ]\nclient got $csum_err_c_nr data checksum error[s]"
++			retc=1
++		fi
++	fi
++
+ 	if [ $retc -eq 0 ] && [ $rets -eq 0 ]; then
+ 		printf "[ OK ]"
+ 	fi
 -- 
 2.34.1
 
