@@ -2,99 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F19B2C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C52C35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387643AbiDEPTV (ORCPT
+        id S1387601AbiDEPTD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
+        Tue, 5 Apr 2022 11:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346783AbiDEJp2 (ORCPT
+        with ESMTP id S1346788AbiDEJp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:45:28 -0400
+        Tue, 5 Apr 2022 05:45:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE92DDB4BF;
-        Tue,  5 Apr 2022 02:31:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973B0DBD05;
+        Tue,  5 Apr 2022 02:31:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97250B81CC4;
-        Tue,  5 Apr 2022 09:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01AFC385A3;
-        Tue,  5 Apr 2022 09:31:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151109;
-        bh=eVZftVlJ42o4VmZTs29/3AwJXmVvKUpsGDEe+yjvsqk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zUMjfG53+cIsN6+5nFJznzk/wSm2iGk//y0Jt2vXa9F9EhM1iOMllC9ah1+K89cHa
-         sbvDXJVxU/TMmdYG8qy8MaW2LYrpMFqKdLeFbuL5N/UN0B7Q4Jv9GSS1QM+vgVN1kg
-         /CPvFKAU4xgvxd0dYZ7TEA9aC+IsfypyLiUuO74w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 298/913] soc: qcom: aoss: remove spurious IRQF_ONESHOT flags
-Date:   Tue,  5 Apr 2022 09:22:40 +0200
-Message-Id: <20220405070348.789077973@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C8F1B81CBE;
+        Tue,  5 Apr 2022 09:31:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7C1AC385A4;
+        Tue,  5 Apr 2022 09:31:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649151110;
+        bh=akJwXD5N3s4UPZe2aQccirJblgU77qRMdXJ8Vx02u74=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=QY5Z55casbm5lR6qsgeuDF3G8adn/VXiErF+RjsEtRsfg4GpaCYaLtvuCO7PosAxH
+         kkHB4iFMUltTTxoOVUAWWxvmuuENoZDt3kuzHs39r1ZJlxfJo0FdygNGNwcPqzn05n
+         alNWru1jDELUfjINuCrFeKn+QHu7c7guZdOzI3Ydp+JBlBhvMWG3hlkDXFuvqSvHwJ
+         U7Q/Eb5Lx3JOF0FPj5sUmQgVwgZuTweYoqr0Xm5Xuss8HGf8VTC/aTBs55mnupUSb6
+         0Gns2AVqDzFaYzE8FSOdZR42prBZ4S4Y3h/Je4fBzLhPxmb93jke+bOB178wwnQJwf
+         mSfQ0BvfzW62w==
+From:   Mark Brown <broonie@kernel.org>
+To:     Takashi Iwai <tiwai@suse.com>, Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Rob Herring <robh+dt@kernel.org>, povik+lin@cutebit.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kettenis@openbsd.org,
+        marcan@marcan.st, alsa-devel@alsa-project.org, sven@svenpeter.dev,
+        devicetree@vger.kernel.org
+In-Reply-To: <20220331000449.41062-1-povik+lin@cutebit.org>
+References: <20220331000449.41062-1-povik+lin@cutebit.org>
+Subject: Re: (subset) [RFC PATCH 0/5] Apple Macs machine-level ASoC driver
+Message-Id: <164915110754.276574.17127953624002951420.b4-ty@kernel.org>
+Date:   Tue, 05 Apr 2022 10:31:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Thompson <daniel.thompson@linaro.org>
+On Thu, 31 Mar 2022 02:04:44 +0200, Martin Povišer wrote:
+> I put together a machine-level ASoC driver for recent Apple Macs (the
+> ones with ARM64 SoCs) and want to gauge opinions.
+> 
+> Commit 1 is the binding. It is some subset of simple-audio-card with
+> the extra distinction of allowing multiple CPU/CODEC DAIs per a DAI
+> link. I want to draw special attention to the issue of describing
+> speaker topologies. The way it now works is that the driver expects
+> the speakers to be declared in a fixed order in the sound-dai= list.
+> This populates a topology the driver expects on a particular machine
+> model. Mark (in CC) has made the suggestion of keeping the topology
+> descriptions with the codec nodes themselves in some generic manner,
+> akin to how sound-name-prefix= already helps identify codecs to the
+> user.
+> 
+> [...]
 
-[ Upstream commit 8030cb9a55688c1339edd284d9d6ce5f9fc75160 ]
+Applied to
 
-Quoting the header comments, IRQF_ONESHOT is "Used by threaded interrupts
-which need to keep the irq line disabled until the threaded handler has
-been run.". When applied to an interrupt that doesn't request a threaded
-irq then IRQF_ONESHOT has a lesser known (undocumented?) side effect,
-which it to disable the forced threading of the irq. For "normal" kernels
-(without forced threading) then, if there is no thread_fn, then
-IRQF_ONESHOT is a nop.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-In this case disabling forced threading is not appropriate for this driver
-because it calls wake_up_all() and this API cannot be called from
-no-thread interrupt handlers on PREEMPT_RT systems (deadlock risk, triggers
-sleeping-while-atomic warnings).
+Thanks!
 
-Fix this by removing IRQF_ONESHOT.
+[4/5] ASoC: Introduce snd_soc_of_get_dai_link_cpus
+      commit: 900dedd7e47cc3f8d93dfa0ae6ac6cf49eda0c97
 
-Fixes: 2209481409b7 ("soc: qcom: Add AOSS QMP driver")
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-[bjorn: Added Fixes tag]
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220127173554.158111-1-daniel.thompson@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/soc/qcom/qcom_aoss.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
-index 536c3e4114fb..a0659cf27845 100644
---- a/drivers/soc/qcom/qcom_aoss.c
-+++ b/drivers/soc/qcom/qcom_aoss.c
-@@ -548,7 +548,7 @@ static int qmp_probe(struct platform_device *pdev)
- 	}
- 
- 	irq = platform_get_irq(pdev, 0);
--	ret = devm_request_irq(&pdev->dev, irq, qmp_intr, IRQF_ONESHOT,
-+	ret = devm_request_irq(&pdev->dev, irq, qmp_intr, 0,
- 			       "aoss-qmp", qmp);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to request interrupt\n");
--- 
-2.34.1
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
+Thanks,
+Mark
