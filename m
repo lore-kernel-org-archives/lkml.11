@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCF7C41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED50C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 19:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389907AbiDEP2H (ORCPT
+        id S1389792AbiDEP07 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        Tue, 5 Apr 2022 11:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347389AbiDEJqc (ORCPT
+        with ESMTP id S232069AbiDEJqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:46:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B56CDEBAE;
-        Tue,  5 Apr 2022 02:32:54 -0700 (PDT)
+        Tue, 5 Apr 2022 05:46:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6C8DE92A;
+        Tue,  5 Apr 2022 02:32:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8372616FD;
-        Tue,  5 Apr 2022 09:32:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08358C36AF8;
-        Tue,  5 Apr 2022 09:32:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49300615E5;
+        Tue,  5 Apr 2022 09:32:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 545A4C385A0;
+        Tue,  5 Apr 2022 09:32:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151173;
-        bh=FmdlVGqSYd/pxyUzpz1oSO1KapXiygYg74xNI4J9JIs=;
+        s=korg; t=1649151167;
+        bh=nuiZNS0LZFbxEnjILp8WzQte/2BsBW4S8IvxSkSRFMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EFfug5ZuUEfIyizPI7WWrkFVQj1HMv5H3XKj6oCulmhKb+QqaLtcXJ8DlLsXrcLyp
-         jVeL4vA5S9ufpFLgZ57VTBw/jLWXK0r0IMdd2pXQWnQZq0/BOJCr3VUJFwTc/JhAfJ
-         xokITEGt0meHo9yJuUDmsKTigajHaovX6cCpNJm8=
+        b=qd+1QqtHSbenpy1rJg9wl6GAEejFeuEaygaoTT80VhOLn5ZgZZ+7ecZnSVqGv/5vt
+         4v8uR8UdcqhvusDq+TclT0CwflYw+EhfxITjojZjUAvXbeuddmGX8M5z4z+gwbT7Pp
+         EQvdQdEDRo6saq64OGA+ta5T/NrJnMIW7jOsv8U0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 319/913] ASoC: codecs: va-macro: fix accessing array out of bounds for enum type
-Date:   Tue,  5 Apr 2022 09:23:01 +0200
-Message-Id: <20220405070349.413354436@linuxfoundation.org>
+Subject: [PATCH 5.15 317/913] ASoC: codecs: rx-macro: fix accessing compander for aux
+Date:   Tue,  5 Apr 2022 09:22:59 +0200
+Message-Id: <20220405070349.354288054@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,43 +53,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 0ea5eff7c6063a8f124188424f8e4c6727f35051 ]
+[ Upstream commit 42c709c4e1ce4c136891530646c9abd5dff3524f ]
 
-Accessing enums using integer would result in array out of bounds access
-on platforms like aarch64 where sizeof(long) is 8 compared to enum size
-which is 4 bytes.
+AUX interpolator does not have compander, so check before accessing
+compander data for this.
 
-Fixes: 908e6b1df26e ("ASoC: codecs: lpass-va-macro: Add support to VA Macro")
+Without this checkan array of out bounds access will be made in
+comp_enabled[] array.
+
+Fixes: 4f692926f562 ("ASoC: codecs: lpass-rx-macro: add dapm widgets and route")
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220222183212.11580-5-srinivas.kandagatla@linaro.org
+Link: https://lore.kernel.org/r/20220222183212.11580-2-srinivas.kandagatla@linaro.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/lpass-va-macro.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/lpass-rx-macro.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
-index 56c93f4465c9..08702a21212c 100644
---- a/sound/soc/codecs/lpass-va-macro.c
-+++ b/sound/soc/codecs/lpass-va-macro.c
-@@ -780,7 +780,7 @@ static int va_macro_dec_mode_get(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	int path = e->shift_l;
+diff --git a/sound/soc/codecs/lpass-rx-macro.c b/sound/soc/codecs/lpass-rx-macro.c
+index 0f932ca61c81..fafb8265dbb3 100644
+--- a/sound/soc/codecs/lpass-rx-macro.c
++++ b/sound/soc/codecs/lpass-rx-macro.c
+@@ -2039,6 +2039,10 @@ static int rx_macro_load_compander_coeff(struct snd_soc_component *component,
+ 	int i;
+ 	int hph_pwr_mode;
  
--	ucontrol->value.integer.value[0] = va->dec_mode[path];
-+	ucontrol->value.enumerated.item[0] = va->dec_mode[path];
++	/* AUX does not have compander */
++	if (comp == INTERP_AUX)
++		return 0;
++
+ 	if (!rx->comp_enabled[comp])
+ 		return 0;
  
- 	return 0;
- }
-@@ -789,7 +789,7 @@ static int va_macro_dec_mode_put(struct snd_kcontrol *kcontrol,
- 				 struct snd_ctl_elem_value *ucontrol)
- {
- 	struct snd_soc_component *comp = snd_soc_kcontrol_component(kcontrol);
--	int value = ucontrol->value.integer.value[0];
-+	int value = ucontrol->value.enumerated.item[0];
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	int path = e->shift_l;
- 	struct va_macro *va = snd_soc_component_get_drvdata(comp);
 -- 
 2.34.1
 
