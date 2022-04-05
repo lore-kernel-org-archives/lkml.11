@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E972CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C54C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354655AbiDEPMD (ORCPT
+        id S1353686AbiDEPLy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
+        Tue, 5 Apr 2022 11:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346003AbiDEJoR (ORCPT
+        with ESMTP id S1346015AbiDEJoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:44:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F41C6ECA;
-        Tue,  5 Apr 2022 02:29:57 -0700 (PDT)
+        Tue, 5 Apr 2022 05:44:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE10C6EDD;
+        Tue,  5 Apr 2022 02:29:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A21661675;
-        Tue,  5 Apr 2022 09:29:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 825EBC385A2;
-        Tue,  5 Apr 2022 09:29:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67E8D6165C;
+        Tue,  5 Apr 2022 09:29:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74002C385A0;
+        Tue,  5 Apr 2022 09:29:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150996;
-        bh=JeOP9O0E13lguv3kCPlsFj5DsdY61KNTlXlTpq8ZoHk=;
+        s=korg; t=1649150998;
+        bh=UMSFmd3ttuRjrOp67FfijTRIOZmj1IM7YS1F6/+NNsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u0KFBdEa1sKOUoMB3JNQPf8wruU8+0i0PeidgXQJwXnwTvStNpe9ajwf1QwoW1KVy
-         vnfh4EpubePbi/EEEJHEF4gClv2tSsvlsb/of8e+Bc0mhGlRuMmSwI+vwC8AgtIe/y
-         uUkzpQCef/zBSCVAMdbm9mdT4CBOURAOQfGzYwFI=
+        b=VBOQ2x/EgzeChTp3ANC9p1U4Tj/mD9ZXbw9ASl4/va6BqyuAzmS2xb3u/NYtZy60r
+         8mv3NTO5NTp5r6QepP0C06yV0B4u1QNhPIXAZ8+DmEeWOlyS5ce3+CUXLQ9HofNMIl
+         s6er3qMfkNL41xm3UHx5yr5zKered+rzZOoddCpk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Keeping <john@metanate.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        stable@vger.kernel.org, Zhiguo Niu <zhiguo.niu@unisoc.com>,
+        Jing Xia <jing.xia@unisoc.com>, Chao Yu <chao@kernel.org>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 257/913] sched/rt: Plug rt_mutex_setprio() vs push_rt_task() race
-Date:   Tue,  5 Apr 2022 09:21:59 +0200
-Message-Id: <20220405070347.559092278@linuxfoundation.org>
+Subject: [PATCH 5.15 258/913] f2fs: fix to avoid potential deadlock
+Date:   Tue,  5 Apr 2022 09:22:00 +0200
+Message-Id: <20220405070347.589455116@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,147 +51,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 49bef33e4b87b743495627a529029156c6e09530 ]
+[ Upstream commit 344150999b7fc88502a65bbb147a47503eca2033 ]
 
-John reported that push_rt_task() can end up invoking
-find_lowest_rq(rq->curr) when curr is not an RT task (in this case a CFS
-one), which causes mayhem down convert_prio().
+Quoted from Jing Xia's report, there is a potential deadlock may happen
+between kworker and checkpoint as below:
 
-This can happen when current gets demoted to e.g. CFS when releasing an
-rt_mutex, and the local CPU gets hit with an rto_push_work irqwork before
-getting the chance to reschedule. Exactly who triggers this work isn't
-entirely clear to me - switched_from_rt() only invokes rt_queue_pull_task()
-if there are no RT tasks on the local RQ, which means the local CPU can't
-be in the rto_mask.
+[T:writeback]				[T:checkpoint]
+- wb_writeback
+ - blk_start_plug
+bio contains NodeA was plugged in writeback threads
+					- do_writepages  -- sync write inodeB, inc wb_sync_req[DATA]
+					 - f2fs_write_data_pages
+					  - f2fs_write_single_data_page -- write last dirty page
+					   - f2fs_do_write_data_page
+					    - set_page_writeback  -- clear page dirty flag and
+					    PAGECACHE_TAG_DIRTY tag in radix tree
+					    - f2fs_outplace_write_data
+					     - f2fs_update_data_blkaddr
+					      - f2fs_wait_on_page_writeback -- wait NodeA to writeback here
+					   - inode_dec_dirty_pages
+ - writeback_sb_inodes
+  - writeback_single_inode
+   - do_writepages
+    - f2fs_write_data_pages -- skip writepages due to wb_sync_req[DATA]
+     - wbc->pages_skipped += get_dirty_pages() -- PAGECACHE_TAG_DIRTY is not set but get_dirty_pages() returns one
+  - requeue_inode -- requeue inode to wb->b_dirty queue due to non-zero.pages_skipped
+ - blk_finish_plug
 
-My current suspected sequence is something along the lines of the below,
-with the demoted task being current.
+Let's try to avoid deadlock condition by forcing unplugging previous bio via
+blk_finish_plug(current->plug) once we'v skipped writeback in writepages()
+due to valid sbi->wb_sync_req[DATA/NODE].
 
-  mark_wakeup_next_waiter()
-    rt_mutex_adjust_prio()
-      rt_mutex_setprio() // deboost originally-CFS task
-	check_class_changed()
-	  switched_from_rt() // Only rt_queue_pull_task() if !rq->rt.rt_nr_running
-	  switched_to_fair() // Sets need_resched
-      __balance_callbacks() // if pull_rt_task(), tell_cpu_to_push() can't select local CPU per the above
-      raw_spin_rq_unlock(rq)
-
-       // need_resched is set, so task_woken_rt() can't
-       // invoke push_rt_tasks(). Best I can come up with is
-       // local CPU has rt_nr_migratory >= 2 after the demotion, so stays
-       // in the rto_mask, and then:
-
-       <some other CPU running rto_push_irq_work_func() queues rto_push_work on this CPU>
-	 push_rt_task()
-	   // breakage follows here as rq->curr is CFS
-
-Move an existing check to check rq->curr vs the next pushable task's
-priority before getting anywhere near find_lowest_rq(). While at it, add an
-explicit sched_class of rq->curr check prior to invoking
-find_lowest_rq(rq->curr). Align the DL logic to also reschedule regardless
-of next_task's migratability.
-
-Fixes: a7c81556ec4d ("sched: Fix migrate_disable() vs rt/dl balancing")
-Reported-by: John Keeping <john@metanate.com>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Tested-by: John Keeping <john@metanate.com>
-Link: https://lore.kernel.org/r/20220127154059.974729-1-valentin.schneider@arm.com
+Fixes: 687de7f1010c ("f2fs: avoid IO split due to mixed WB_SYNC_ALL and WB_SYNC_NONE")
+Signed-off-by: Zhiguo Niu <zhiguo.niu@unisoc.com>
+Signed-off-by: Jing Xia <jing.xia@unisoc.com>
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/deadline.c | 12 ++++++------
- kernel/sched/rt.c       | 32 ++++++++++++++++++++++----------
- 2 files changed, 28 insertions(+), 16 deletions(-)
+ fs/f2fs/data.c | 6 +++++-
+ fs/f2fs/node.c | 6 +++++-
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index e94314633b39..1f811b375bf0 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -2145,12 +2145,6 @@ static int push_dl_task(struct rq *rq)
- 		return 0;
- 
- retry:
--	if (is_migration_disabled(next_task))
--		return 0;
--
--	if (WARN_ON(next_task == rq->curr))
--		return 0;
--
- 	/*
- 	 * If next_task preempts rq->curr, and rq->curr
- 	 * can move away, it makes sense to just reschedule
-@@ -2163,6 +2157,12 @@ static int push_dl_task(struct rq *rq)
- 		return 0;
- 	}
- 
-+	if (is_migration_disabled(next_task))
-+		return 0;
-+
-+	if (WARN_ON(next_task == rq->curr))
-+		return 0;
-+
- 	/* We might release rq lock */
- 	get_task_struct(next_task);
- 
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 54f9bb3f1560..2758cf5f7987 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -1900,6 +1900,16 @@ static int push_rt_task(struct rq *rq, bool pull)
- 		return 0;
- 
- retry:
-+	/*
-+	 * It's possible that the next_task slipped in of
-+	 * higher priority than current. If that's the case
-+	 * just reschedule current.
-+	 */
-+	if (unlikely(next_task->prio < rq->curr->prio)) {
-+		resched_curr(rq);
-+		return 0;
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index e662355cf8c9..f6e9fc36b837 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -3214,8 +3214,12 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
+ 	/* to avoid spliting IOs due to mixed WB_SYNC_ALL and WB_SYNC_NONE */
+ 	if (wbc->sync_mode == WB_SYNC_ALL)
+ 		atomic_inc(&sbi->wb_sync_req[DATA]);
+-	else if (atomic_read(&sbi->wb_sync_req[DATA]))
++	else if (atomic_read(&sbi->wb_sync_req[DATA])) {
++		/* to avoid potential deadlock */
++		if (current->plug)
++			blk_finish_plug(current->plug);
+ 		goto skip_write;
 +	}
-+
- 	if (is_migration_disabled(next_task)) {
- 		struct task_struct *push_task = NULL;
- 		int cpu;
-@@ -1907,6 +1917,18 @@ static int push_rt_task(struct rq *rq, bool pull)
- 		if (!pull || rq->push_busy)
- 			return 0;
  
-+		/*
-+		 * Invoking find_lowest_rq() on anything but an RT task doesn't
-+		 * make sense. Per the above priority check, curr has to
-+		 * be of higher priority than next_task, so no need to
-+		 * reschedule when bailing out.
-+		 *
-+		 * Note that the stoppers are masqueraded as SCHED_FIFO
-+		 * (cf. sched_set_stop_task()), so we can't rely on rt_task().
-+		 */
-+		if (rq->curr->sched_class != &rt_sched_class)
-+			return 0;
-+
- 		cpu = find_lowest_rq(rq->curr);
- 		if (cpu == -1 || cpu == rq->cpu)
- 			return 0;
-@@ -1931,16 +1953,6 @@ static int push_rt_task(struct rq *rq, bool pull)
- 	if (WARN_ON(next_task == rq->curr))
- 		return 0;
+ 	if (__should_serialize_io(inode, wbc)) {
+ 		mutex_lock(&sbi->writepages);
+diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
+index 556fcd8457f3..69c6bcaf5aae 100644
+--- a/fs/f2fs/node.c
++++ b/fs/f2fs/node.c
+@@ -2106,8 +2106,12 @@ static int f2fs_write_node_pages(struct address_space *mapping,
  
--	/*
--	 * It's possible that the next_task slipped in of
--	 * higher priority than current. If that's the case
--	 * just reschedule current.
--	 */
--	if (unlikely(next_task->prio < rq->curr->prio)) {
--		resched_curr(rq);
--		return 0;
--	}
--
- 	/* We might release rq lock */
- 	get_task_struct(next_task);
+ 	if (wbc->sync_mode == WB_SYNC_ALL)
+ 		atomic_inc(&sbi->wb_sync_req[NODE]);
+-	else if (atomic_read(&sbi->wb_sync_req[NODE]))
++	else if (atomic_read(&sbi->wb_sync_req[NODE])) {
++		/* to avoid potential deadlock */
++		if (current->plug)
++			blk_finish_plug(current->plug);
+ 		goto skip_write;
++	}
+ 
+ 	trace_f2fs_writepages(mapping->host, wbc, NODE);
  
 -- 
 2.34.1
