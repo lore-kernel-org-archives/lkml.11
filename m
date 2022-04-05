@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A90C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 450AAC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578086AbiDEXS0 (ORCPT
+        id S1578118AbiDEXSb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
+        Tue, 5 Apr 2022 19:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241752AbiDEKfP (ORCPT
+        with ESMTP id S1348808AbiDEJsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBEADFD49;
-        Tue,  5 Apr 2022 03:19:31 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E495190FD9;
+        Tue,  5 Apr 2022 02:35:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE55DB81B18;
-        Tue,  5 Apr 2022 10:19:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DDC8C385A1;
-        Tue,  5 Apr 2022 10:19:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9762EB81B75;
+        Tue,  5 Apr 2022 09:35:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E467FC385A2;
+        Tue,  5 Apr 2022 09:35:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153968;
-        bh=KkqvdNudypKbbtIijKOGeT0cNlIeNDr+yKjHsjcNilc=;
+        s=korg; t=1649151352;
+        bh=9XFbWrU7lWAogCoLR4xnEVL/QMKEss/87erBKW6mK7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=th9Mt93vdWpV2mTVYa2J4McMMQj6oj+xKRaum4fX2Ozx5F/uqfoxF/kOm9vs34HS6
-         HAK19zOCXzRzjnCujjac1OxyWvhLys9ZAQOh0xbvkZ9e1AagQ+vx6txP1QheToL3z0
-         oZCO0AJ2iP5zIiEnoQXnFokbuS0BQpjYxX89lGak=
+        b=Ea9ZPAhRp85B2t7C9UTu4IZSQm1MoE1oxUVXvbYo3dz0CA7/jmMQbCqKR4/impty2
+         He7G9JTSboR6JwNdnuKOfVxansWZh5CPgmMq/uus0vcSwLx811l6HfHlct7qQot5FH
+         gOBUCOcHrLx+0mZLwdJFB76lw0r1XqkJgLyVU6/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
+        stable@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 364/599] selftests/bpf: Fix error reporting from sock_fields programs
-Date:   Tue,  5 Apr 2022 09:30:58 +0200
-Message-Id: <20220405070309.663018774@linuxfoundation.org>
+Subject: [PATCH 5.15 385/913] libbpf: Fix possible NULL pointer dereference when destroying skeleton
+Date:   Tue,  5 Apr 2022 09:24:07 +0200
+Message-Id: <20220405070351.387736568@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,44 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Yafang Shao <laoar.shao@gmail.com>
 
-[ Upstream commit a4c9fe0ed4a13e25e43fcd44d9f89bc19ba8fbb7 ]
+[ Upstream commit a32ea51a3f17ce6524c9fc19d311e708331c8b5f ]
 
-The helper macro that records an error in BPF programs that exercise sock
-fields access has been inadvertently broken by adaptation work that
-happened in commit b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to
-use skel and global variables").
+When I checked the code in skeleton header file generated with my own
+bpf prog, I found there may be possible NULL pointer dereference when
+destroying skeleton. Then I checked the in-tree bpf progs, finding that is
+a common issue. Let's take the generated samples/bpf/xdp_redirect_cpu.skel.h
+for example. Below is the generated code in
+xdp_redirect_cpu__create_skeleton():
 
-BPF_NOEXIST flag cannot be used to update BPF_MAP_TYPE_ARRAY. The operation
-always fails with -EEXIST, which in turn means the error never gets
-recorded, and the checks for errors always pass.
+	xdp_redirect_cpu__create_skeleton
+		struct bpf_object_skeleton *s;
+		s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));
+		if (!s)
+			goto error;
+		...
+	error:
+		bpf_object__destroy_skeleton(s);
+		return  -ENOMEM;
 
-Revert the change in update flags.
+After goto error, the NULL 's' will be deferenced in
+bpf_object__destroy_skeleton().
 
-Fixes: b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to use skel and global variables")
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/bpf/20220317113920.1068535-2-jakub@cloudflare.com
+We can simply fix this issue by just adding a NULL check in
+bpf_object__destroy_skeleton().
+
+Fixes: d66562fba1ce ("libbpf: Add BPF object skeleton support")
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220108134739.32541-1-laoar.shao@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/test_sock_fields.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
-index 81b57b9aaaea..7967348b11af 100644
---- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
-+++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
-@@ -113,7 +113,7 @@ static void tpcpy(struct bpf_tcp_sock *dst,
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 0ad29203cbfb..693e14799fb9 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -10809,6 +10809,9 @@ void bpf_object__detach_skeleton(struct bpf_object_skeleton *s)
  
- #define RET_LOG() ({						\
- 	linum = __LINE__;					\
--	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_NOEXIST);	\
-+	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_ANY);	\
- 	return CG_OK;						\
- })
- 
+ void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s)
+ {
++	if (!s)
++		return;
++
+ 	if (s->progs)
+ 		bpf_object__detach_skeleton(s);
+ 	if (s->obj)
 -- 
 2.34.1
 
