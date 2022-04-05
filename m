@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD70C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4875FC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354299AbiDEOO7 (ORCPT
+        id S1352791AbiDEOOo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
+        Tue, 5 Apr 2022 10:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237937AbiDEJcH (ORCPT
+        with ESMTP id S238415AbiDEJce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:32:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D50D32E5;
-        Tue,  5 Apr 2022 02:19:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:32:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB98DC30;
+        Tue,  5 Apr 2022 02:19:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 712516144D;
-        Tue,  5 Apr 2022 09:19:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A01BC385A3;
-        Tue,  5 Apr 2022 09:19:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C29EB81B14;
+        Tue,  5 Apr 2022 09:19:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4039C385A0;
+        Tue,  5 Apr 2022 09:19:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150353;
-        bh=80uFsQUPPQey6gmqzFrvrYIR2Wecj3/7tPqFrUDtep8=;
+        s=korg; t=1649150362;
+        bh=uLyYd0uHzhSFJRh2HuZqwzNik1WL39MUA9/Bf0wUzQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yjpxTMkxv0S0+ZxYeuchz1AZLZLyK9UmybrdHCISMMzGmubxQrsfQktw6X3bl6l4h
-         gt2x0eWr+/URnyDAdaJrZvVg3of27RS1hO+SYmPfoxNJexZcHGHHs7oDkZjDWocsdj
-         W+xoBu+4aMYYUX+WPsUOrrnLvai91aoAV2O1lnW8=
+        b=w4zRMyccBnAnrFa0bEWDZ/6bvzfNicltMkQnr1e8506QNbRgKZmJ+zrCj0gfB65hz
+         p5q2SDmsOYjVvObGc+WUjEJYEfPAFaDmpGvTAXwNp+myZb7FW5ZaPjkfGvcbciBjWf
+         2BtRJuaKxsfkNgAFIsD8NfMl7gi95uVXnWoq3b4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 027/913] drm/amdgpu: only check for _PR3 on dGPUs
-Date:   Tue,  5 Apr 2022 09:18:09 +0200
-Message-Id: <20220405070340.629555726@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 5.15 003/913] dt-bindings: usb: hcd: correct usb-device path
+Date:   Tue,  5 Apr 2022 09:17:45 +0200
+Message-Id: <20220405070339.912669044@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,35 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-commit 85ac2021fe3ace59cc0afd6edf005abad35625b0 upstream.
+commit 801109b1a37ad99784e6370cc7e462596f505ea3 upstream.
 
-We don't support runtime pm on APUs.  They support more
-dynamic power savings using clock and powergating.
+The usb-device.yaml reference is absolute so it should use /schemas part
+in path.
 
-Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-Tested-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 23bf6fc7046c ("dt-bindings: usb: convert usb-device.txt to YAML schema")
+Cc: <stable@vger.kernel.org>
+Reported-by: Rob Herring <robh@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220314181830.245853-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/usb/usb-hcd.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -2178,8 +2178,10 @@ static int amdgpu_device_ip_early_init(s
- 	    !pci_is_thunderbolt_attached(to_pci_dev(dev->dev)))
- 		adev->flags |= AMD_IS_PX;
+--- a/Documentation/devicetree/bindings/usb/usb-hcd.yaml
++++ b/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+@@ -33,7 +33,7 @@ patternProperties:
+   "^.*@[0-9a-f]{1,2}$":
+     description: The hard wired USB devices
+     type: object
+-    $ref: /usb/usb-device.yaml
++    $ref: /schemas/usb/usb-device.yaml
  
--	parent = pci_upstream_bridge(adev->pdev);
--	adev->has_pr3 = parent ? pci_pr3_present(parent) : false;
-+	if (!(adev->flags & AMD_IS_APU)) {
-+		parent = pci_upstream_bridge(adev->pdev);
-+		adev->has_pr3 = parent ? pci_pr3_present(parent) : false;
-+	}
- 
- 	amdgpu_amdkfd_device_probe(adev);
+ additionalProperties: true
  
 
 
