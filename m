@@ -2,125 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70389C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D04C35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349752AbiDEVX5 (ORCPT
+        id S1352945AbiDEVYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
+        Tue, 5 Apr 2022 17:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452408AbiDEPyx (ORCPT
+        with ESMTP id S1354213AbiDEKMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:54:53 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83891177;
-        Tue,  5 Apr 2022 07:55:03 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 235EsMot006873
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 5 Apr 2022 10:54:23 -0400
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 9237D15C3EB6; Tue,  5 Apr 2022 10:54:22 -0400 (EDT)
-Date:   Tue, 5 Apr 2022 10:54:22 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Heimes <christian@python.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        James Morris <jmorris@namei.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Philippe =?iso-8859-1?Q?Tr=E9buchet?= 
-        <philippe.trebuchet@ssi.gouv.fr>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Steve Dower <steve.dower@python.org>,
-        Thibaut Sautereau <thibaut.sautereau@ssi.gouv.fr>,
-        Vincent Strubel <vincent.strubel@ssi.gouv.fr>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity <linux-integrity@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Christian Brauner <brauner@kernel.org>
-Subject: Re: [GIT PULL] Add trusted_for(2) (was O_MAYEXEC)
-Message-ID: <YkxYHqLqTEKFrCeg@mit.edu>
-References: <20220321161557.495388-1-mic@digikod.net>
- <202204041130.F649632@keescook>
- <CAHk-=wgoC76v-4s0xVr1Xvnx-8xZ8M+LWgyq5qGLA5UBimEXtQ@mail.gmail.com>
- <816667d8-2a6c-6334-94a4-6127699d4144@digikod.net>
+        Tue, 5 Apr 2022 06:12:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C771580F3;
+        Tue,  5 Apr 2022 02:59:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8239B817D3;
+        Tue,  5 Apr 2022 09:59:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42BE2C385A1;
+        Tue,  5 Apr 2022 09:59:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152741;
+        bh=58RmXMaSK5PuvhFzkytvjVsSYIvGzU7PtUDOIzpbiJs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Qp24ABv/CoyK+Ixdk2/s30wW/tyeSJZy3yhntrBdpNRewBA0uhW5pd/SFgtdbnXvi
+         NE9qrGYYuwqD9uM4NLLh5GTIC5YU5u1xoM9teSph0pBg9TVDJx1m8u98HrbTLzCKUv
+         XhpU5Sx1wDXZ4ABG/ZUStFDWzaw6l2aTut5L2MY0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 886/913] ubi: fastmap: Return error code if memory allocation fails in add_aeb()
+Date:   Tue,  5 Apr 2022 09:32:28 +0200
+Message-Id: <20220405070406.379050864@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <816667d8-2a6c-6334-94a4-6127699d4144@digikod.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 10:30:13PM +0200, Mickaël Salaün wrote:
-> > If you add a new X_OK variant to access(), maybe that could fly.
-> 
-> As answered in private, that was the approach I took for one of the early
-> versions but a dedicated syscall was requested by Al Viro:
-> https://lore.kernel.org/r/2ed377c4-3500-3ddc-7181-a5bc114ddf94@digikod.net
-> The main reason behind this request was that it doesn't have the exact same
-> semantic as faccessat(2). The changes for this syscall are documented here:
-> https://lore.kernel.org/all/20220104155024.48023-3-mic@digikod.net/
-> The whole history is linked in the cover letter:
-> https://lore.kernel.org/all/2ed377c4-3500-3ddc-7181-a5bc114ddf94@digikod.net/
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-As a suggestion, something that can be helpful for something which has
-been as heavily bike-sheded as this concept might be to write a
-"legislative history", or perhaps, a "bike shed history".
+commit c3c07fc25f37c157fde041b3a0c3dfcb1590cbce upstream.
 
-And not just with links to mailing list discussions, but a short
-summary of why, for example, we moved from the open flag O_MAYEXEC to
-the faccessat(2) approach.  I looked, but I couldn't find the
-reasoning while diving into the mail archives.  And there was some
-kind of request for some new functionality for IMA and other LSM's
-that I couldn't follow that is why the new AT_INTERETED flag, but at
-this point my time quantuum for mailing list archeology most
-definitely expired.  :-)
+Abort fastmap scanning and return error code if memory allocation fails
+in add_aeb(). Otherwise ubi will get wrong peb statistics information
+after scanning.
 
-It might be that when all of this is laid out, we can either revisit
-prior design decisions as "that bike-shed request to support this
-corner case was unreasonable", or "oh, OK, this is why we need as
-fully general a solution as this".
+Fixes: dbb7d2a88d2a7b ("UBI: Add fastmap core")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/mtd/ubi/fastmap.c |   28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-Also, some of examples of potential future use cases such as "magic
-links" that were linked in the cover letter, it's not clear to me
-actually make sense in the context of a "trusted for" system call
-(although might make more sense in the context of an open flag).  So
-revisiting some of those other cases to see whether they actually
-*could* be implemented as new "TRUSTED_FOR" flags might be
-instructive.
+--- a/drivers/mtd/ubi/fastmap.c
++++ b/drivers/mtd/ubi/fastmap.c
+@@ -468,7 +468,9 @@ static int scan_pool(struct ubi_device *
+ 			if (err == UBI_IO_FF_BITFLIPS)
+ 				scrub = 1;
+ 
+-			add_aeb(ai, free, pnum, ec, scrub);
++			ret = add_aeb(ai, free, pnum, ec, scrub);
++			if (ret)
++				goto out;
+ 			continue;
+ 		} else if (err == 0 || err == UBI_IO_BITFLIPS) {
+ 			dbg_bld("Found non empty PEB:%i in pool", pnum);
+@@ -638,8 +640,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
+ 
+-		add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 0);
++		ret = add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 0);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	/* read EC values from used list */
+@@ -649,8 +653,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
+ 
+-		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 0);
++		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 0);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	/* read EC values from scrub list */
+@@ -660,8 +666,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
+ 
+-		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 1);
++		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 1);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	/* read EC values from erase list */
+@@ -671,8 +679,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
+ 
+-		add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 1);
++		ret = add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 1);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	ai->mean_ec = div_u64(ai->ec_sum, ai->ec_count);
 
-Personally, I'm a bit skeptical about the prospct of additional use
-cases, since trusted_for(2) is essentially a mother_should_I(2)
-request where userspace is asking the kernel whether they should go
-ahead and do some particular policy thing.  And it's not clear to me
-how many of these policy questions exist where (a) the kernel is in
-the past position to answer that question, and (b) there isn't some
-additional information that the kernel doesn't have that might be
-needed to answer that question.
 
-For example, "Mother should I use that private key file" might require
-information about whether the SRE is currently on pager duty or not,
-at least for some policies, and the kernel isn't going to have that
-information.
-
-Other examples of TRUSTED_FOR flags that really make sense and would
-be useful might help alleviate my skepticsm.  And the "bike shed
-history" would help with my question about why some folks didn't like
-the original O_MAYEXEC flag?
-
-Cheers,
-
-					- Ted
