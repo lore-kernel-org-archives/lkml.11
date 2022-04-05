@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2C2C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2DEC43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391322AbiDEWFN (ORCPT
+        id S1391348AbiDEWFR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
+        Tue, 5 Apr 2022 18:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348786AbiDEJsf (ORCPT
+        with ESMTP id S1354207AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105F87520B;
-        Tue,  5 Apr 2022 02:35:17 -0700 (PDT)
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE98254BDA;
+        Tue,  5 Apr 2022 02:58:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 720D261675;
-        Tue,  5 Apr 2022 09:35:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AA5C385A0;
-        Tue,  5 Apr 2022 09:35:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 148A0B81B93;
+        Tue,  5 Apr 2022 09:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6918FC385A2;
+        Tue,  5 Apr 2022 09:58:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151316;
-        bh=kCf7i8CQ070ihBCpclSD5ljJByxCnKbymjN2NjY2v3o=;
+        s=korg; t=1649152724;
+        bh=+1uthk7lYAmO9wnvrPL07V5fVwTvslmy0jK66nFRxSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nbP3NrpzPaIKjo+X8Eq6SO6GNUpjFN1YaGZdVdoYZrxjcrXfbvA8Qc1DX2M0CXo71
-         7ImbaNiuxFqVtAchuLfPBm/MtqaCsbNxgxJn5iCsloLP49RoYLW0kKQj91z9950hjl
-         DAiHtuj+HXqQNXL8xjQaNtqIYAJwr4QV74OcWhF8=
+        b=zi4FH7fXcoTX5wxbjzuUTt+QEx/l1YRE9rz7rsnfM7nb0MyzKUv+0eP5iqjm4khF6
+         IzakVZrh15FgHJO4p+LCedKhNSuH3WRfANdbF4Lr0x8x5Cpdx5nQyqJ7UGWyaN4vYv
+         KGaNFGBPZUzAx5QclgZ74ZkwmrWuCpttZ6ySdbiw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 333/913] ASoC: ti: davinci-i2s: Add check for clk_enable()
-Date:   Tue,  5 Apr 2022 09:23:15 +0200
-Message-Id: <20220405070349.830628838@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.15 881/913] dt-bindings: mtd: nand-controller: Fix the reg property description
+Date:   Tue,  5 Apr 2022 09:32:23 +0200
+Message-Id: <20220405070406.230911932@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,49 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit ed7c9fef11931fc5d32a83d68017ff390bf5c280 ]
+commit 93f2ec9e401276fb4ea9903194a5bfcf175f9a2c upstream.
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+The reg property of a NAND device always references the chip-selects.
+The ready/busy lines are described in the nand-rb property. I believe
+this was a harmless copy/paste error during the conversion to yaml.
 
-Fixes: 5f9a50c3e55e ("ASoC: Davinci: McBSP: add device tree support for McBSP")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-Link: https://lore.kernel.org/r/20220228031540.3571959-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 212e49693592 ("dt-bindings: mtd: Add YAML schemas for the generic NAND options")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-2-miquel.raynal@bootlin.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/ti/davinci-i2s.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/mtd/nand-controller.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/ti/davinci-i2s.c b/sound/soc/ti/davinci-i2s.c
-index 6dca51862dd7..0363a088d2e0 100644
---- a/sound/soc/ti/davinci-i2s.c
-+++ b/sound/soc/ti/davinci-i2s.c
-@@ -708,7 +708,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
- 	dev->clk = clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(dev->clk))
- 		return -ENODEV;
--	clk_enable(dev->clk);
-+	ret = clk_enable(dev->clk);
-+	if (ret)
-+		goto err_put_clk;
+--- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
++++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
+@@ -55,7 +55,7 @@ patternProperties:
+     properties:
+       reg:
+         description:
+-          Contains the native Ready/Busy IDs.
++          Contains the chip-select IDs.
  
- 	dev->dev = &pdev->dev;
- 	dev_set_drvdata(&pdev->dev, dev);
-@@ -730,6 +732,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
- 	snd_soc_unregister_component(&pdev->dev);
- err_release_clk:
- 	clk_disable(dev->clk);
-+err_put_clk:
- 	clk_put(dev->clk);
- 	return ret;
- }
--- 
-2.34.1
-
+       nand-ecc-engine:
+         allOf:
 
 
