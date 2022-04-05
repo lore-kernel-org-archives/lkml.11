@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC05BC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA3FC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386207AbiDEMkf (ORCPT
+        id S1386193AbiDEMkc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
+        Tue, 5 Apr 2022 08:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236480AbiDEJDA (ORCPT
+        with ESMTP id S236425AbiDEJCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:03:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5D711C06;
-        Tue,  5 Apr 2022 01:54:45 -0700 (PDT)
+        Tue, 5 Apr 2022 05:02:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFFC11A06;
+        Tue,  5 Apr 2022 01:54:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6902B81C15;
-        Tue,  5 Apr 2022 08:54:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1F4C385A0;
-        Tue,  5 Apr 2022 08:54:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D835861562;
+        Tue,  5 Apr 2022 08:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E360EC385A1;
+        Tue,  5 Apr 2022 08:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148882;
-        bh=mPVrZdRJ9e3MIMaNoTtfRmSysmhMmo05jO1t2TBd+Ew=;
+        s=korg; t=1649148879;
+        bh=7oMBxw5Ep26R/6R297Y09+0/4ozMGQM2xnuGuzQcQu8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HWapMY3HxprYp+Q/91gZyl/qfS9vOAEDZCXUk3KwXyWiQfFlchso8uv+a7RgZwHSo
-         eLn7NhFJmapHghcT6lezybzrH9ocw3LLFUp8v1lIdP3y2C4T0d6Zb3R9D2pCsTDI96
-         uTzoZBkEVgIlpI2x6uZQU4xABXFziY2dYIytgG/w=
+        b=dk8Qr+Te81dPxZVCSbh8y/S3iONerNSiUrK8Y+YF39PEubH4FXFKBkhc6lc4RvAxs
+         4gSH3mRKPr3KpoNijyDXXfgxcOp/JXTM2poEn9wWBWNHUzwpV6rbkp9hEV0Vhk+Xcu
+         gigmfFkny5VTYuFNAW+Hee+nZVCZ6wlBPX5ziRWE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ryder Lee <ryder.lee@mediatek.com>,
-        MeiChia Chiu <meichia.chiu@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0467/1017] mt76: mt7915: fix the nss setting in bitrates
-Date:   Tue,  5 Apr 2022 09:23:00 +0200
-Message-Id: <20220405070408.160948329@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0476/1017] i2c: bcm2835: Use platform_get_irq() to get the interrupt
+Date:   Tue,  5 Apr 2022 09:23:09 +0200
+Message-Id: <20220405070408.427795995@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,41 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: MeiChia Chiu <meichia.chiu@mediatek.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit c41d2a075206fcbdc89695b874a6ac06160b4f1a ]
+[ Upstream commit c3b2f911ac11892b672df7829becf28d3a830073 ]
 
-without this change, the fixed MCS only supports 1 Nss.
+platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+allocation of IRQ resources in DT core code, this causes an issue
+when using hierarchical interrupt domains using "interrupts" property
+in the node as this bypasses the hierarchical setup and messes up the
+irq chaining.
 
-Fixes: 70fd1333cd32f ("mt76: mt7915: rework .set_bitrate_mask() to support more options")
-Reviewed-by: Ryder Lee <ryder.lee@mediatek.com>
-Signed-off-by: MeiChia Chiu <meichia.chiu@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+In preparation for removal of static setup of IRQ resource from DT core
+code use platform_get_irq().
+
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/i2c/busses/i2c-bcm2835.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index ef8b0d0a05ef..21fbe7a6141f 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -2124,9 +2124,12 @@ mt7915_mcu_add_rate_ctrl_fixed(struct mt7915_dev *dev,
- 			phy.sgi |= gi << (i << (_he));				\
- 			phy.he_ltf |= mask->control[band].he_ltf << (i << (_he));\
- 		}								\
--		for (i = 0; i < ARRAY_SIZE(mask->control[band]._mcs); i++) 	\
--			nrates += hweight16(mask->control[band]._mcs[i]);  	\
--		phy.mcs = ffs(mask->control[band]._mcs[0]) - 1;			\
-+		for (i = 0; i < ARRAY_SIZE(mask->control[band]._mcs); i++) {	\
-+			if (!mask->control[band]._mcs[i])			\
-+				continue;					\
-+			nrates += hweight16(mask->control[band]._mcs[i]);	\
-+			phy.mcs = ffs(mask->control[band]._mcs[i]) - 1;		\
-+		}								\
- 	} while (0)
+diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
+index ad3b124a2e37..5149454eef4a 100644
+--- a/drivers/i2c/busses/i2c-bcm2835.c
++++ b/drivers/i2c/busses/i2c-bcm2835.c
+@@ -407,7 +407,7 @@ static const struct i2c_adapter_quirks bcm2835_i2c_quirks = {
+ static int bcm2835_i2c_probe(struct platform_device *pdev)
+ {
+ 	struct bcm2835_i2c_dev *i2c_dev;
+-	struct resource *mem, *irq;
++	struct resource *mem;
+ 	int ret;
+ 	struct i2c_adapter *adap;
+ 	struct clk *mclk;
+@@ -457,12 +457,9 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
- 	if (sta->he_cap.has_he) {
+-	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (!irq) {
+-		dev_err(&pdev->dev, "No IRQ resource\n");
+-		return -ENODEV;
+-	}
+-	i2c_dev->irq = irq->start;
++	i2c_dev->irq = platform_get_irq(pdev, 0);
++	if (i2c_dev->irq < 0)
++		return i2c_dev->irq;
+ 
+ 	ret = request_irq(i2c_dev->irq, bcm2835_i2c_isr, IRQF_SHARED,
+ 			  dev_name(&pdev->dev), i2c_dev);
 -- 
 2.34.1
 
