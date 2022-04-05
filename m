@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E5BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB674C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378185AbiDELbz (ORCPT
+        id S1378200AbiDELb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46656 "EHLO
+        Tue, 5 Apr 2022 07:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244231AbiDEIvv (ORCPT
+        with ESMTP id S244431AbiDEIwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:51:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F7CD3AFB;
-        Tue,  5 Apr 2022 01:40:34 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6CBD5EA0;
+        Tue,  5 Apr 2022 01:41:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 967ECB81BC0;
-        Tue,  5 Apr 2022 08:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5405C385A1;
-        Tue,  5 Apr 2022 08:40:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D58DB81C14;
+        Tue,  5 Apr 2022 08:40:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78AECC385A1;
+        Tue,  5 Apr 2022 08:40:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148019;
-        bh=2z/35VQaKfwE4Ga7lWQQm5DUTaQ+l2Wpg+scRG9enwU=;
+        s=korg; t=1649148041;
+        bh=ChCoChCJ+bm2s/23Tdv+MYjgZvCiKzNdR0c3alOGOmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dczkMtcqYpMp8DWujeXpR56Vjwb8PNhlMAEFFCgycnmprVw3kEgcTpezaTgxa9zBb
-         sPje/Knunz5TnxtNc0CAWZJicwjNz1UlrxAN5eEq+F2r4N3oHNmgK9zgYz0Owz9Rtc
-         No4irjLCQjWgi56NbKGlOXRrcoSgEN1QIp4PDESI=
+        b=gTbGMc62rPkmj4V2DPdxHynrb45Y8KSqN4sgGVsAul1jADhCNmecOltvM1MpjGWLl
+         b1f7IBDPXYZZNR8XQWndX7YUL4dpG7ieuGnYEUrS0eFanbI+fVZTQ765oYTUKGXFEs
+         M/trcpXkfMRYCZJY4//MmmhKiYgiaze2YktCzHAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0205/1017] hwrng: cavium - HW_RANDOM_CAVIUM should depend on ARCH_THUNDER
-Date:   Tue,  5 Apr 2022 09:18:38 +0200
-Message-Id: <20220405070400.335890696@linuxfoundation.org>
+Subject: [PATCH 5.16 0212/1017] spi: tegra114: Add missing IRQ check in tegra_spi_probe
+Date:   Tue,  5 Apr 2022 09:18:45 +0200
+Message-Id: <20220405070400.544121890@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,36 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ab7d88549e2f7ae116afd303f32e1950cb790a1d ]
+[ Upstream commit 4f92724d4b92c024e721063f520d66e11ca4b54b ]
 
-The Cavium ThunderX Random Number Generator is only present on Cavium
-ThunderX SoCs, and not available as an independent PCIe endpoint.  Hence
-add a dependency on ARCH_THUNDER, to prevent asking the user about this
-driver when configuring a kernel without Cavium Thunder SoC  support.
+This func misses checking for platform_get_irq()'s call and may passes the
+negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
+causing it to fail with -EINVAL, overriding an original error code.
+Stop calling request_threaded_irq() with invalid IRQ #s.
 
-Fixes: cc2f1908c6b8f625 ("hwrng: cavium - Add Cavium HWRNG driver for ThunderX SoC.")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: f333a331adfa ("spi/tegra114: add spi driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220128165238.25615-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-tegra114.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
-index 1da64771ee2e..372859b43f89 100644
---- a/drivers/char/hw_random/Kconfig
-+++ b/drivers/char/hw_random/Kconfig
-@@ -414,7 +414,7 @@ config HW_RANDOM_MESON
+diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
+index e9de1d958bbd..8f345247a8c3 100644
+--- a/drivers/spi/spi-tegra114.c
++++ b/drivers/spi/spi-tegra114.c
+@@ -1352,6 +1352,10 @@ static int tegra_spi_probe(struct platform_device *pdev)
+ 	tspi->phys = r->start;
  
- config HW_RANDOM_CAVIUM
- 	tristate "Cavium ThunderX Random Number Generator support"
--	depends on HW_RANDOM && PCI && ARM64
-+	depends on HW_RANDOM && PCI && ARCH_THUNDER
- 	default HW_RANDOM
- 	help
- 	  This driver provides kernel-side support for the Random Number
+ 	spi_irq = platform_get_irq(pdev, 0);
++	if (spi_irq < 0) {
++		ret = spi_irq;
++		goto exit_free_master;
++	}
+ 	tspi->irq = spi_irq;
+ 
+ 	tspi->clk = devm_clk_get(&pdev->dev, "spi");
 -- 
 2.34.1
 
