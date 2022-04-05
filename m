@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD750C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D18C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1584513AbiDEX6X (ORCPT
+        id S1584465AbiDEX6U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        Tue, 5 Apr 2022 19:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358061AbiDEK15 (ORCPT
+        with ESMTP id S1351687AbiDEKDL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F543526C;
-        Tue,  5 Apr 2022 03:14:05 -0700 (PDT)
+        Tue, 5 Apr 2022 06:03:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3136973060;
+        Tue,  5 Apr 2022 02:52:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 904A5B81C6C;
-        Tue,  5 Apr 2022 10:14:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB6F9C385A1;
-        Tue,  5 Apr 2022 10:14:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81237616D7;
+        Tue,  5 Apr 2022 09:52:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BFB5C385A2;
+        Tue,  5 Apr 2022 09:52:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153643;
-        bh=sUs4HZTtGvzpA2DEMLbLc1C6w10Sx6kDMJePfSUfA/M=;
+        s=korg; t=1649152331;
+        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e29K7mOs3qijd282PyfY61Om0K2Nmpg0NTuFlulaxhJyjG4f98wa0VL+L9UJs66GS
-         75gFTVf8X5DQYfcIpyZ4XDYpkVr+9IEcqcMoNCTDQxuA1lvehluXHMct45WJL82fGf
-         rfyev+cr9NdqG3d7/pSy3+1X0g6d79/hJqkPn+Og=
+        b=qWz10RDKOyKNugTych2AqL1vRausJfYBSRUYZ7Bq5NDgsi8yNgQbA5wTyOj04hM/U
+         ymkdTxPnTD5fQHsoXt81rge6I7uNnlSgfKnq8kN7wkgILsUcuWU4OTSx4yohwcdkul
+         QnVLfc7pt1jbz6K0v2r907ZMYsHbfKm2K1SJBp+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 296/599] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
-Date:   Tue,  5 Apr 2022 09:29:50 +0200
-Message-Id: <20220405070307.642316016@linuxfoundation.org>
+        stable@vger.kernel.org, Antonino Daplas <adaplas@gmail.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Tim Gardner <tim.gardner@canonical.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 737/913] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
+Date:   Tue,  5 Apr 2022 09:29:59 +0200
+Message-Id: <20220405070401.926691966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Tim Gardner <tim.gardner@canonical.com>
 
-[ Upstream commit 6a4760463dbc6b603690938c468839985189ce0a ]
+[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+Coverity complains of a possible buffer overflow. However,
+given the 'static' scope of nvidia_setup_i2c_bus() it looks
+like that can't happen after examiniing the call sites.
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
+CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
+1. fixed_size_dest: You might overrun the 48-character fixed-size string
+  chan->adapter.name by copying name without checking the length.
+2. parameter_as_source: Note: This defect has an elevated risk because the
+  source argument is a parameter of the current function.
+ 89        strcpy(chan->adapter.name, name);
 
-Fix memory leak by calling kobject_put().
+Fix this warning by using strscpy() which will silence the warning and
+prevent any future buffer overflows should the names used to identify the
+channel become much longer.
 
-Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/ab8500_fg.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
-index f1da757c939f..a6b4a94c2766 100644
---- a/drivers/power/supply/ab8500_fg.c
-+++ b/drivers/power/supply/ab8500_fg.c
-@@ -2541,8 +2541,10 @@ static int ab8500_fg_sysfs_init(struct ab8500_fg *di)
- 	ret = kobject_init_and_add(&di->fg_kobject,
- 		&ab8500_fg_ktype,
- 		NULL, "battery");
--	if (ret < 0)
-+	if (ret < 0) {
-+		kobject_put(&di->fg_kobject);
- 		dev_err(di->dev, "failed to create sysfs entry\n");
-+	}
+diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
+index d7994a173245..0b48965a6420 100644
+--- a/drivers/video/fbdev/nvidia/nv_i2c.c
++++ b/drivers/video/fbdev/nvidia/nv_i2c.c
+@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
+ {
+ 	int rc;
  
- 	return ret;
- }
+-	strcpy(chan->adapter.name, name);
++	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
+ 	chan->adapter.owner = THIS_MODULE;
+ 	chan->adapter.class = i2c_class;
+ 	chan->adapter.algo_data = &chan->algo;
 -- 
 2.34.1
 
