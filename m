@@ -2,117 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FEDC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9ABC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574853AbiDEXBZ (ORCPT
+        id S1574757AbiDEXBC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
+        Tue, 5 Apr 2022 19:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381360AbiDEMy3 (ORCPT
+        with ESMTP id S1354622AbiDEKO4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:54:29 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E320929C9B;
-        Tue,  5 Apr 2022 04:57:44 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23584hp2001248;
-        Tue, 5 Apr 2022 13:57:34 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=RGZkwUJKEThI2ThqlcBsOIy4O4YxLaZE8yQWY5cVZSw=;
- b=5uqJEvk6QoTVRVQRBREnBXOC0lX62r5raYfwqm7TO2RLNuK3wQC4csM0O8RB39gjFP5M
- E6KGtfFjvPujmy+o1Pyu20Cb5b/Mn+TDIaadYNOsxUBdD969m+cOAoqg+5Dwmv44wsNM
- OywrI6+urdm72ONWXlBdL1ld6BfHB1uU/vjiCxHDkIhUuTL7oVX0k5Zy5XioL8e8/7xV
- 199C6WZCaSL0E5QgaMwx0sir+hbh5T56x1d5WkfjzJONa6iNuaL+dkS9ItBC4bz5j/QX
- go1pdP8SVkcr/1UgxKT+7ZTINWKnvboG1bObo59BAznW8heYeu3PfhrRW8Lx346vCuCK pQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6du0ptsq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 05 Apr 2022 13:57:34 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6DB0310002A;
-        Tue,  5 Apr 2022 13:57:34 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 58CF720FA4D;
-        Tue,  5 Apr 2022 13:57:34 +0200 (CEST)
-Received: from localhost (10.75.127.47) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 5 Apr 2022 13:57:34
- +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        <linux-riscv@lists.infradead.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <arnaud.pouliquen@foss.st.com>, <linux-kernel@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>,
-        Anup Patel <anup@brainfault.org>
-Subject: [PATCH v2] RISC-V: configs: Configs that had RPMSG_CHAR now get RPMSG_CTRL
-Date:   Tue, 5 Apr 2022 13:57:29 +0200
-Message-ID: <20220405115729.1020889-1-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 5 Apr 2022 06:14:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3509A6BDC6;
+        Tue,  5 Apr 2022 03:01:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C69D4B81C83;
+        Tue,  5 Apr 2022 10:01:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2594CC385A1;
+        Tue,  5 Apr 2022 10:01:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152891;
+        bh=ScwmD875nfYCsSx5Q9hrMEVZYdEQUwoF7X66WEA/Ibk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Gpi9csjRb+ncSjGxf500Dmi4ClIkBE8cF/7+wV22r+lF1bVqyPnEkvIrNDveTDb+3
+         WBcf0RmuOsPwFQuv1nRfwAj9CA2ayah9G0Tax5o09U3N7j4UXm82zt3bcvodOvbPlt
+         hVR/hPUtYKNScXWoSeNBi3JsP/BUK7yS307rZsyg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.10 026/599] xhci: fix garbage USBSTS being logged in some cases
+Date:   Tue,  5 Apr 2022 09:25:20 +0200
+Message-Id: <20220405070259.597723405@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-05_02,2022-04-05_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
-from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
-By default give everyone who had the old driver enabled the rpmsg_ctrl
-driver too.
+From: Anssi Hannula <anssi.hannula@bitwise.fi>
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Reviewed-by: Anup Patel <anup@brainfault.org>
+commit 3105bc977d7cbf2edc35e24cc7e009686f6e4a56 upstream.
+
+xhci_decode_usbsts() is expected to return a zero-terminated string by
+its only caller, xhci_stop_endpoint_command_watchdog(), which directly
+logs the return value:
+
+  xhci_warn(xhci, "USBSTS:%s\n", xhci_decode_usbsts(str, usbsts));
+
+However, if no recognized bits are set in usbsts, the function will
+return without having called any sprintf() and therefore return an
+untouched non-zero-terminated caller-provided buffer, causing garbage
+to be output to log.
+
+Fix that by always including the raw value in the output.
+
+Note that before commit 4843b4b5ec64 ("xhci: fix even more unsafe memory
+usage in xhci tracing") the result effect in the failure case was different
+as a static buffer was used here, but the code still worked incorrectly.
+
+Fixes: 9c1aa36efdae ("xhci: Show host status when watchdog triggers and host is assumed dead.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220303110903.1662404-3-mathias.nyman@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
+ drivers/usb/host/xhci.h |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-This patch is extracted from the series [1] that has been partially
-integrated in the Linux Kernel 5.18-rc1.
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -2612,8 +2612,11 @@ static inline const char *xhci_decode_us
+ {
+ 	int ret = 0;
+ 
++	ret = sprintf(str, " 0x%08x", usbsts);
++
+ 	if (usbsts == ~(u32)0)
+-		return " 0xffffffff";
++		return str;
++
+ 	if (usbsts & STS_HALT)
+ 		ret += sprintf(str + ret, " HCHalted");
+ 	if (usbsts & STS_FATAL)
 
-Update vs previous version:
-- remove "Fixes:" tag in commit, requested by Mathieu Poirier in [2]
-
-[1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
-[2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
----
- arch/riscv/configs/defconfig      | 1 +
- arch/riscv/configs/rv32_defconfig | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 30e3017f22bc..0cc17db8aaba 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -101,6 +101,7 @@ CONFIG_VIRTIO_BALLOON=y
- CONFIG_VIRTIO_INPUT=y
- CONFIG_VIRTIO_MMIO=y
- CONFIG_RPMSG_CHAR=y
-+CONFIG_RPMSG_CTRL=y
- CONFIG_RPMSG_VIRTIO=y
- CONFIG_EXT4_FS=y
- CONFIG_EXT4_FS_POSIX_ACL=y
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index 7e5efdc3829d..6cd9d84d3e13 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -93,6 +93,7 @@ CONFIG_VIRTIO_BALLOON=y
- CONFIG_VIRTIO_INPUT=y
- CONFIG_VIRTIO_MMIO=y
- CONFIG_RPMSG_CHAR=y
-+CONFIG_RPMSG_CTRL=y
- CONFIG_RPMSG_VIRTIO=y
- CONFIG_EXT4_FS=y
- CONFIG_EXT4_FS_POSIX_ACL=y
--- 
-2.25.1
 
