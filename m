@@ -2,87 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EE8C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16870C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574379AbiDEWzv (ORCPT
+        id S1574303AbiDEWz0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
+        Tue, 5 Apr 2022 18:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573239AbiDESbC (ORCPT
+        with ESMTP id S1573400AbiDETHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:31:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C86713F6B;
-        Tue,  5 Apr 2022 11:29:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0B7A618CE;
-        Tue,  5 Apr 2022 18:29:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE7BC385A0;
-        Tue,  5 Apr 2022 18:29:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649183341;
-        bh=RipF2sDxCVo9q2EK1KCVAMcx4kdSJtLIqkmkUKxesng=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=UDtQPEvYZ04ZzfdoEjWld2hT2TMhLGg0yXVXsBO/Ak7o4umpRfbxucC7Z99uXH7cW
-         AjL4HQ8Cv2Q8/ii4mTu2moWoeSOc8jQbnGrub/IfxgaD11iFCrc7AQLER7gTOkSQXP
-         chHYTnCdfoqzHBcMCd7WyVxJciFaqtrMjwLdUqwJyUkfm+FgY2nV4fTRxSE8O1BbHH
-         4fqeSNDohq6f3/6vMQCIzJPzDiQn6HcWxLzP246GXjbwvh6iLdQIL8dcGsm/WXtVcq
-         m+dhqLcYc3gy8QaSnDiahvft4KfubFEEGkGLbLeLaBFBtUhG7rTt95XU8mdHLynpFW
-         yJ9r2pMNTlrxQ==
-Message-ID: <13a43c8d9e9d103009e652e7e8ff49e6844316d5.camel@kernel.org>
-Subject: Re: [PATCH RFC] x86/sgx: Simplify struct
- sgx_enclave_restrict_permissions
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>,
-        linux-sgx@vger.kernel.rog
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:INTEL SGX" <linux-sgx@vger.kernel.org>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Date:   Tue, 05 Apr 2022 21:30:10 +0300
-In-Reply-To: <76c6e673-71fb-1068-0114-c3eea93a2fd4@intel.com>
-References: <20220405151642.96096-1-jarkko@kernel.org>
-         <76c6e673-71fb-1068-0114-c3eea93a2fd4@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.42.4 
+        Tue, 5 Apr 2022 15:07:10 -0400
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D7BDFD79
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:05:11 -0700 (PDT)
+Received: by mail-oo1-xc2f.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so2429752oos.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 12:05:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=k/P4HTCZVEzfUWOOxOtQU6Kr5BhLM038HkP4cKbJxBw=;
+        b=frQ8ZzBqSNym5klc+oZd3SLmKdd94Rs1jUZAtmY77iuFQm9Duihv7tj8Yah8hnsPDp
+         n/VPsrAwxGWC1DFtvBBPAX4ZmuHQOHBWefUYwQ6CXziGqHWTaTDPWSykVDoKEI8jkZUF
+         h54p3zRsPEsb9bERVG92imQjR75fFRdYw+R3o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=k/P4HTCZVEzfUWOOxOtQU6Kr5BhLM038HkP4cKbJxBw=;
+        b=UCzKLvU00+ZlG0XpOL7z9Zui37udrG1QzPdNCyj4X4HBvfNzN079QO0NH8ZGXIjI6y
+         1MH9sp1A4DoT3UiNTmvkZbHZOq6D87xon7OdwhMIGkizmZN/bW0lvVhh8DHchixfW6a0
+         7tHtwcqpPaHp5gYW1ITAa/Ulf3VjB7anQDwVEWOcvWfoxO9ZZgWxomO6x31i9ylBQBkh
+         YqbWe+wmzhPOkXL26zGuav3d4ijz9EFJ4MlTz8qtT0I0/Otk+YDGauBSctO/TtdNdL+q
+         fhVNUO0QFJbUU3Y0oi9swV1DusBbDK4uzn4lue0JLti78NAmeBwuB7PqvM0f/DoHUWya
+         DQ6Q==
+X-Gm-Message-State: AOAM530RPnskPYUzga+dlGHv6ocgmV65CJ8PfFvHnuiWgqCclSI9aEJj
+        W+sRpBU6l9qaDLoc8CEkCP7wxjH0zbVRuH4VGHu0zA==
+X-Google-Smtp-Source: ABdhPJweVtFg8E7N4djphN6bnwEALoFejs04NWhd4NdeHUBFdheJOkh0Eux+TUqAElSv5mcAiLpL4g8x+gFIwrbllYw=
+X-Received: by 2002:a4a:650c:0:b0:324:b0a0:2d23 with SMTP id
+ y12-20020a4a650c000000b00324b0a02d23mr1581619ooc.25.1649185511251; Tue, 05
+ Apr 2022 12:05:11 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 5 Apr 2022 14:05:10 -0500
 MIME-Version: 1.0
+In-Reply-To: <1649166633-25872-3-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com> <1649166633-25872-3-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 5 Apr 2022 14:05:10 -0500
+Message-ID: <CAE-0n51S5nB=rgJbEX+rbMCQVyKcb7wpOEc3+R64t_Yr0cXTOQ@mail.gmail.com>
+Subject: Re: [PATCH V9 2/6] dt-bindings: mfd: pm8008: Add pm8008 regulator bindings
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
+        quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-05 at 10:21 -0700, Reinette Chatre wrote:
-> Hi Jarkko,
->=20
-> On 4/5/2022 8:16 AM, Jarkko Sakkinen wrote:
-> > The reasoning to change SECINFO to simply flags is stated in this inlin=
-e
-> > comment:
-> >=20
-> > /*
-> > =C2=A0* Return valid permission fields from a secinfo structure provide=
-d by
-> > =C2=A0* user space. The secinfo structure is required to only have bits=
- in
-> > =C2=A0* the permission fields set.
-> > =C2=A0*/
-> >=20
-> > It is better to simply change the parameter type than require to use
-> > a malformed version of a data structure.
->=20
-> Could you please elaborate what is malformed?
+Quoting Satya Priya (2022-04-05 06:50:29)
+> Add bindings for pm8008 regulators device.
+>
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> ---
 
-The structure that is accepted by the API. According to SDM permission
-changes are done with a structure where PT_REG is set, which gives
--EINVAL. I categorize it as a bug.
-
-BR, Jarkko
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
