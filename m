@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A53D0C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA4BC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347805AbiDEN2M (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60884 "EHLO
+        id S244035AbiDEN0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345242AbiDEJWX (ORCPT
+        with ESMTP id S1345189AbiDEJWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E043586D;
-        Tue,  5 Apr 2022 02:09:54 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083A52A25D;
+        Tue,  5 Apr 2022 02:09:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC616614FC;
-        Tue,  5 Apr 2022 09:09:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD7BC385A2;
-        Tue,  5 Apr 2022 09:09:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3962CB80DA1;
+        Tue,  5 Apr 2022 09:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79102C385A0;
+        Tue,  5 Apr 2022 09:09:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149793;
-        bh=yD6j1fnTv8REaI/DYQ4/I9JyKfmStY72PLy1+LTQ6pg=;
+        s=korg; t=1649149766;
+        bh=93YLaa0zQ7hqgghUl04JHh02d/eZiQqyJBOIBGaKxuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XFmGhhY8wqGjxThk7JtdVHcIzd96xQvn+ZCTIR+K04VlqLAda4DOjXYwvq5NQ0Ex3
-         gL1L7vlOIGzqIpsgZVvbvqw78ATWBpcA/mAs3prfGyC7EPM9KwlTYsQlVdkAEuoqGi
-         ZwtWMEEAL5nUnbxcXUq1DbE3IibU1o98gmHmTJUk=
+        b=e0TDgbwmB0CFtpbNGx2bPRVne8VQV6WV4n9RHgEy7U188cFQ/LBJZ0NvlaIZVSDzJ
+         8oLMyWxERertOqSkJ9XW+58AnQhprax8O4EIl9yYOBuyLSkuTQat8Ccnxb++MIrzKl
+         OyLHk+zLSTO1HZHBTVugC6pcgV+wiSbAR6MsMbHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0844/1017] video: fbdev: sm712fb: Fix crash in smtcfb_write()
-Date:   Tue,  5 Apr 2022 09:29:17 +0200
-Message-Id: <20220405070419.293220424@linuxfoundation.org>
+        stable@vger.kernel.org, Richard Schleich <rs@noreya.tech>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0832/1017] ARM: dts: bcm2711: Add the missing L1/L2 cache information
+Date:   Tue,  5 Apr 2022 09:29:05 +0200
+Message-Id: <20220405070418.940087417@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,70 +50,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Richard Schleich <rs@noreya.tech>
 
-[ Upstream commit 4f01d09b2bbfbcb47b3eb305560a7f4857a32260 ]
+[ Upstream commit 618682b350990f8f1bee718949c4b3858711eb58 ]
 
-When the sm712fb driver writes three bytes to the framebuffer, the
-driver will crash:
+This patch fixes the kernel warning
+"cacheinfo: Unable to detect cache hierarchy for CPU 0"
+for the bcm2711 on newer kernel versions.
 
-    BUG: unable to handle page fault for address: ffffc90001ffffff
-    RIP: 0010:smtcfb_write+0x454/0x5b0
-    Call Trace:
-     vfs_write+0x291/0xd60
-     ? do_sys_openat2+0x27d/0x350
-     ? __fget_light+0x54/0x340
-     ksys_write+0xce/0x190
-     do_syscall_64+0x43/0x90
-     entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fix it by removing the open-coded endianness fixup-code.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Richard Schleich <rs@noreya.tech>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+[florian: Align and remove comments matching property values]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/sm712fb.c |   21 ++++-----------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
+ arch/arm/boot/dts/bcm2711.dtsi | 50 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
---- a/drivers/video/fbdev/sm712fb.c
-+++ b/drivers/video/fbdev/sm712fb.c
-@@ -1119,7 +1119,7 @@ static ssize_t smtcfb_write(struct fb_in
- 		count = total_size - p;
- 	}
+diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
+index 21294f775a20..89af57482bc8 100644
+--- a/arch/arm/boot/dts/bcm2711.dtsi
++++ b/arch/arm/boot/dts/bcm2711.dtsi
+@@ -459,12 +459,26 @@
+ 		#size-cells = <0>;
+ 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
  
--	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 * https://developer.arm.com/documentation/100095/0003
++		 * /Level-1-Memory-System/About-the-L1-memory-system?lang=en
++		 * Source for d/i-cache-size
++		 * https://www.raspberrypi.com/documentation/computers
++		 * /processors.html#bcm2711
++		 */
+ 		cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a72";
+ 			reg = <0>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000d8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			i-cache-size = <0xc000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
++			next-level-cache = <&l2>;
+ 		};
  
-@@ -1137,24 +1137,11 @@ static ssize_t smtcfb_write(struct fb_in
- 			break;
- 		}
+ 		cpu1: cpu@1 {
+@@ -473,6 +487,13 @@
+ 			reg = <1>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			i-cache-size = <0xc000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
++			next-level-cache = <&l2>;
+ 		};
  
--		for (i = c >> 2; i--;) {
--			fb_writel(big_swap(*src), dst++);
-+		for (i = (c + 3) >> 2; i--;) {
-+			fb_writel(big_swap(*src), dst);
-+			dst++;
- 			src++;
- 		}
--		if (c & 3) {
--			u8 *src8 = (u8 *)src;
--			u8 __iomem *dst8 = (u8 __iomem *)dst;
--
--			for (i = c & 3; i--;) {
--				if (i & 1) {
--					fb_writeb(*src8++, ++dst8);
--				} else {
--					fb_writeb(*src8++, --dst8);
--					dst8 += 2;
--				}
--			}
--			dst = (u32 __iomem *)dst8;
--		}
+ 		cpu2: cpu@2 {
+@@ -481,6 +502,13 @@
+ 			reg = <2>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			i-cache-size = <0xc000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
++			next-level-cache = <&l2>;
+ 		};
  
- 		*ppos += c;
- 		buf += c;
+ 		cpu3: cpu@3 {
+@@ -489,6 +517,28 @@
+ 			reg = <3>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000f0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			i-cache-size = <0xc000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
++			next-level-cache = <&l2>;
++		};
++
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 *  https://developer.arm.com/documentation/100095/0003
++		 *  /Level-2-Memory-System/About-the-L2-memory-system?lang=en
++		 *  Source for d/i-cache-size
++		 *  https://www.raspberrypi.com/documentation/computers
++		 *  /processors.html#bcm2711
++		 */
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x100000>;
++			cache-line-size = <64>;
++			cache-sets = <1024>; // 1MiB(size)/64(line-size)=16384ways/16-way set
++			cache-level = <2>;
+ 		};
+ 	};
+ 
+-- 
+2.34.1
+
 
 
