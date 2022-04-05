@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64225C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F934C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836370AbiDFAf7 (ORCPT
+        id S1836400AbiDFAgF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        Tue, 5 Apr 2022 20:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348913AbiDEJsq (ORCPT
+        with ESMTP id S1349089AbiDEJtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F05EEE4E3;
-        Tue,  5 Apr 2022 02:37:22 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3373EA995C;
+        Tue,  5 Apr 2022 02:40:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BC7E61368;
-        Tue,  5 Apr 2022 09:37:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A529C385A2;
-        Tue,  5 Apr 2022 09:37:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3699B81B14;
+        Tue,  5 Apr 2022 09:40:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58B88C385A1;
+        Tue,  5 Apr 2022 09:40:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151441;
-        bh=LVVgoah1FFD2uGXo9sEwOMtgTBJf1uME5I17THO9hX4=;
+        s=korg; t=1649151631;
+        bh=OThjdhWAJy2ZdOmn8E572dDHuYeVeeYjsuJEwal4jL0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C7fo7jGYUwGs3SCaon5/FsZ2tP6JJksma3POivtkP/XtweblnTEcOlFN0l+cuc7k7
-         lAuxuXCTRagJqKt6PLsg3epk8xclev0FXbtYH7wq1F9RISbAFpHYEGhJmi+mEUHj8e
-         vsP4QA1YAv/aGmd863dv8vBzRd5+LilyGVlJu/FM=
+        b=tmeNBzhO6aF12MDe7De6DhnG1c+FPS2Rg/jz+s7aZdJ9asZtjnwLkFpZ4btNV+sz+
+         IttXkVNMPqrPrOGM+03u4iAB88/WLtPSwpZ6IJBzjb3N+nua21W9lutLg/3f50y3F9
+         NvU9kLFjuYOLFXxIqi++hzwpu9pgwqFiTDlERCK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 377/913] drm/meson: Fix error handling when afbcd.ops->init fails
-Date:   Tue,  5 Apr 2022 09:23:59 +0200
-Message-Id: <20220405070351.148815841@linuxfoundation.org>
+Subject: [PATCH 5.15 484/913] scsi: pm8001: Fix payload initialization in pm80xx_encrypt_update()
+Date:   Tue,  5 Apr 2022 09:25:46 +0200
+Message-Id: <20220405070354.363687172@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,89 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit fa747d75f65d1b1cbc3f4691fa67b695e8a399c8 ]
+[ Upstream commit f8b12dfb476dad38ce755aaf5e2df46f06f1822e ]
 
-When afbcd.ops->init fails we need to free the struct drm_device. Also
-all errors which come after afbcd.ops->init was successful need to exit
-the AFBCD, just like meson_drv_unbind() does.
+All fields of the kek_mgmt_req structure have the type __le32. So make sure
+to use cpu_to_le32() to initialize them. This suppresses the sparse
+warning:
 
-Fixes: d1b5e41e13a7e9 ("drm/meson: Add AFBCD module driver")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211230235515.1627522-3-martin.blumenstingl@googlemail.com
+warning: incorrect type in assignment (different base types)
+   expected restricted __le32 [addressable] [assigned] [usertype] new_curidx_ksop
+   got int
+
+Link: https://lore.kernel.org/r/20220220031810.738362-10-damien.lemoal@opensource.wdc.com
+Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/meson/meson_drv.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
-index 45bfe9451db8..c98525d60df5 100644
---- a/drivers/gpu/drm/meson/meson_drv.c
-+++ b/drivers/gpu/drm/meson/meson_drv.c
-@@ -302,42 +302,42 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
- 	if (priv->afbcd.ops) {
- 		ret = priv->afbcd.ops->init(priv);
- 		if (ret)
--			return ret;
-+			goto free_drm;
- 	}
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 69789aa73fd1..e606a9b1c3af 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -1406,12 +1406,13 @@ static int pm80xx_encrypt_update(struct pm8001_hba_info *pm8001_ha)
+ 	/* Currently only one key is used. New KEK index is 1.
+ 	 * Current KEK index is 1. Store KEK to NVRAM is 1.
+ 	 */
+-	payload.new_curidx_ksop = ((1 << 24) | (1 << 16) | (1 << 8) |
+-					KEK_MGMT_SUBOP_KEYCARDUPDATE);
++	payload.new_curidx_ksop =
++		cpu_to_le32(((1 << 24) | (1 << 16) | (1 << 8) |
++			     KEK_MGMT_SUBOP_KEYCARDUPDATE));
  
- 	/* Encoder Initialization */
+ 	pm8001_dbg(pm8001_ha, DEV,
+ 		   "Saving Encryption info to flash. payload 0x%x\n",
+-		   payload.new_curidx_ksop);
++		   le32_to_cpu(payload.new_curidx_ksop));
  
- 	ret = meson_venc_cvbs_create(priv);
- 	if (ret)
--		goto free_drm;
-+		goto exit_afbcd;
- 
- 	if (has_components) {
- 		ret = component_bind_all(drm->dev, drm);
- 		if (ret) {
- 			dev_err(drm->dev, "Couldn't bind all components\n");
--			goto free_drm;
-+			goto exit_afbcd;
- 		}
- 	}
- 
- 	ret = meson_encoder_hdmi_init(priv);
- 	if (ret)
--		goto free_drm;
-+		goto exit_afbcd;
- 
- 	ret = meson_plane_create(priv);
- 	if (ret)
--		goto free_drm;
-+		goto exit_afbcd;
- 
- 	ret = meson_overlay_create(priv);
- 	if (ret)
--		goto free_drm;
-+		goto exit_afbcd;
- 
- 	ret = meson_crtc_create(priv);
- 	if (ret)
--		goto free_drm;
-+		goto exit_afbcd;
- 
- 	ret = request_irq(priv->vsync_irq, meson_irq, 0, drm->driver->name, drm);
- 	if (ret)
--		goto free_drm;
-+		goto exit_afbcd;
- 
- 	drm_mode_config_reset(drm);
- 
-@@ -355,6 +355,9 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
- 
- uninstall_irq:
- 	free_irq(priv->vsync_irq, drm);
-+exit_afbcd:
-+	if (priv->afbcd.ops)
-+		priv->afbcd.ops->exit(priv);
- free_drm:
- 	drm_dev_put(drm);
- 
+ 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
+ 			sizeof(payload), 0);
 -- 
 2.34.1
 
