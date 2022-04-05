@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAAE4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA9DC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385843AbiDEMjG (ORCPT
+        id S1385864AbiDEMjJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51614 "EHLO
+        Tue, 5 Apr 2022 08:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236737AbiDEJDe (ORCPT
+        with ESMTP id S236740AbiDEJDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:03:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684CCF76;
-        Tue,  5 Apr 2022 01:55:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1090103A;
+        Tue,  5 Apr 2022 01:55:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FE78B81BC5;
-        Tue,  5 Apr 2022 08:55:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7764FC385A4;
-        Tue,  5 Apr 2022 08:55:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CD65614E4;
+        Tue,  5 Apr 2022 08:55:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A025C385A0;
+        Tue,  5 Apr 2022 08:55:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148909;
-        bh=6+9kOnTAntUOhvfGm7xQGXJ5NZ8bUKFJ/hdZcBWcIkQ=;
+        s=korg; t=1649148912;
+        bh=VqGjegZfHHnvDHqgx50NeDfYYPQ+7pDQWp2m+VwfD28=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JnGWI3ZCpGH+see8TFKwT73Cdf8CKBC+MfC/4X9uNVl1SgeX3MVaZ8+gpUuHi7grK
-         Q6JdsxxdwTJ0MqAyLUKswAUMocKPndC1jUQqdukSMM62O2zBTlxvNtQf7fhjCQhsan
-         wpREv6eIsSuj/9CN90w+FKjGF9OBFA+gyfFaXn8o=
+        b=1JaOi3JNHeeiSKpq1LQQYU11Ty7aTHfm0vQqIlig3slvrWqN2VBT3JNZwBB4V2tkJ
+         GQQYZVlKjlFizV7pnOZ9JRYoSJNTC0kcP5HVlHO0NL9beLturRjjqy7HfAXixag7wb
+         pUzgljF2RqdMrx2RHyOOg7WEu6VzGHW2Dib1pkOg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aashish Sharma <shraash@google.com>,
-        Mike Snitzer <snitzer@redhat.com>,
+        stable@vger.kernel.org, Abhishek Sahu <abhsahu@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0526/1017] dm crypt: fix get_key_size compiler warning if !CONFIG_KEYS
-Date:   Tue,  5 Apr 2022 09:23:59 +0200
-Message-Id: <20220405070409.909378348@linuxfoundation.org>
+Subject: [PATCH 5.16 0527/1017] vfio/pci: fix memory leak during D3hot to D0 transition
+Date:   Tue,  5 Apr 2022 09:24:00 +0200
+Message-Id: <20220405070409.938685198@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,38 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aashish Sharma <shraash@google.com>
+From: Abhishek Sahu <abhsahu@nvidia.com>
 
-[ Upstream commit 6fc51504388c1a1a53db8faafe9fff78fccc7c87 ]
+[ Upstream commit eadf88ecf6ac7d6a9f47a76c6055d9a1987a8991 ]
 
-Explicitly convert unsigned int in the right of the conditional
-expression to int to match the left side operand and the return type,
-fixing the following compiler warning:
+If 'vfio_pci_core_device::needs_pm_restore' is set (PCI device does
+not have No_Soft_Reset bit set in its PMCSR config register), then
+the current PCI state will be saved locally in
+'vfio_pci_core_device::pm_save' during D0->D3hot transition and same
+will be restored back during D3hot->D0 transition.
+For saving the PCI state locally, pci_store_saved_state() is being
+used and the pci_load_and_free_saved_state() will free the allocated
+memory.
 
-drivers/md/dm-crypt.c:2593:43: warning: signed and unsigned
-type in conditional expression [-Wsign-compare]
+But for reset related IOCTLs, vfio driver calls PCI reset-related
+API's which will internally change the PCI power state back to D0. So,
+when the guest resumes, then it will get the current state as D0 and it
+will skip the call to vfio_pci_set_power_state() for changing the
+power state to D0 explicitly. In this case, the memory pointed by
+'pm_save' will never be freed. In a malicious sequence, the state changing
+to D3hot followed by VFIO_DEVICE_RESET/VFIO_DEVICE_PCI_HOT_RESET can be
+run in a loop and it can cause an OOM situation.
 
-Fixes: c538f6ec9f56 ("dm crypt: add ability to use keys from the kernel key retention service")
-Signed-off-by: Aashish Sharma <shraash@google.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+This patch frees the earlier allocated memory first before overwriting
+'pm_save' to prevent the mentioned memory leak.
+
+Fixes: 51ef3a004b1e ("vfio/pci: Restore device state on PM transition")
+Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
+Link: https://lore.kernel.org/r/20220217122107.22434-2-abhsahu@nvidia.com
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-crypt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/vfio/pci/vfio_pci_core.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
-index d4ae31558826..f51aea71cb03 100644
---- a/drivers/md/dm-crypt.c
-+++ b/drivers/md/dm-crypt.c
-@@ -2590,7 +2590,7 @@ static int crypt_set_keyring_key(struct crypt_config *cc, const char *key_string
- 
- static int get_key_size(char **key_string)
- {
--	return (*key_string[0] == ':') ? -EINVAL : strlen(*key_string) >> 1;
-+	return (*key_string[0] == ':') ? -EINVAL : (int)(strlen(*key_string) >> 1);
- }
- 
- #endif /* CONFIG_KEYS */
+diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+index f948e6cd2993..87b288affc13 100644
+--- a/drivers/vfio/pci/vfio_pci_core.c
++++ b/drivers/vfio/pci/vfio_pci_core.c
+@@ -228,6 +228,19 @@ int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev, pci_power_t stat
+ 	if (!ret) {
+ 		/* D3 might be unsupported via quirk, skip unless in D3 */
+ 		if (needs_save && pdev->current_state >= PCI_D3hot) {
++			/*
++			 * The current PCI state will be saved locally in
++			 * 'pm_save' during the D3hot transition. When the
++			 * device state is changed to D0 again with the current
++			 * function, then pci_store_saved_state() will restore
++			 * the state and will free the memory pointed by
++			 * 'pm_save'. There are few cases where the PCI power
++			 * state can be changed to D0 without the involvement
++			 * of the driver. For these cases, free the earlier
++			 * allocated memory first before overwriting 'pm_save'
++			 * to prevent the memory leak.
++			 */
++			kfree(vdev->pm_save);
+ 			vdev->pm_save = pci_store_saved_state(pdev);
+ 		} else if (needs_restore) {
+ 			pci_load_and_free_saved_state(pdev, &vdev->pm_save);
 -- 
 2.34.1
 
