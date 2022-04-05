@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22526C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 542E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240849AbiDEN6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44544 "EHLO
+        id S241635AbiDEN6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347788AbiDEJ2S (ORCPT
+        with ESMTP id S1347787AbiDEJ2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:28:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74D1DFDF7;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B80BDFDF0;
         Tue,  5 Apr 2022 02:15:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A78D6164E;
-        Tue,  5 Apr 2022 09:15:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30681C385A0;
-        Tue,  5 Apr 2022 09:15:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 601BCB81B14;
+        Tue,  5 Apr 2022 09:15:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A799AC385A0;
+        Tue,  5 Apr 2022 09:15:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150147;
-        bh=oHWJVGZerJimRvn7YMHPGhT+6D1L6vxaa4SWJ8iflK4=;
+        s=korg; t=1649150139;
+        bh=96oNeD33rHbyUhWlGPfvyGgsBdc7m1lgLLFr8IoWAsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zLzqoQk2OnyTEyTAje164qzVVuPoq6/fUftuSZwWwHSctSUUyFqjAmo2NRzhvvHyP
-         VuT4JN9V/XgSaPBZ3XMjDobej3r/QMbgWe9qVIQ2hZ2C6w9wbnDl1c3zR/ke3rewHr
-         tigkStYTWDfBIcO6uwgbarFTSAiUtN5fUtkWXhEM=
+        b=MmQyfqgCbs8W6HmsP02Tsw0scoQw9Ffx61df9K0Ww2ehQ54iTcf1g/76x4Qhmlnhv
+         ThuafJCFlXORaLHNBBvs5DyJetqhI7/BrEIm5dMHq9GVq03hsRpOchjgbpg3mMp9Jd
+         t1B6RvKWPEzPLqYymmeORG9EFuJpbpMDmEy3uwBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Ben Dooks <ben-linux@fluff.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, patches@armlinux.org.uk,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.16 0972/1017] ARM: 9187/1: JIVE: fix return value of __setup handler
-Date:   Tue,  5 Apr 2022 09:31:25 +0200
-Message-Id: <20220405070423.057803889@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 0969/1017] net: add skb_set_end_offset() helper
+Date:   Tue,  5 Apr 2022 09:31:22 +0200
+Message-Id: <20220405070422.968941177@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,56 +48,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 8b2360c7157b462c4870d447d1e65d30ef31f9aa upstream.
+commit 763087dab97547230a6807c865a6a5ae53a59247 upstream.
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings. Also, error return codes don't mean anything to
-obsolete_checksetup() -- only non-zero (usually 1) or zero.
-So return 1 from jive_mtdset().
+We have multiple places where this helper is convenient,
+and plan using it in the following patch.
 
-Fixes: 9db829f485c5 ("[ARM] JIVE: Initial machine support for Logitech Jive")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Ben Dooks <ben-linux@fluff.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-samsung-soc@vger.kernel.org
-Cc: patches@armlinux.org.uk
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-s3c/mach-jive.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/linux/skbuff.h |   10 ++++++++++
+ net/core/skbuff.c      |   19 +++++--------------
+ 2 files changed, 15 insertions(+), 14 deletions(-)
 
---- a/arch/arm/mach-s3c/mach-jive.c
-+++ b/arch/arm/mach-s3c/mach-jive.c
-@@ -236,11 +236,11 @@ static int __init jive_mtdset(char *opti
- 	unsigned long set;
- 
- 	if (options == NULL || options[0] == '\0')
--		return 0;
-+		return 1;
- 
- 	if (kstrtoul(options, 10, &set)) {
- 		printk(KERN_ERR "failed to parse mtdset=%s\n", options);
--		return 0;
-+		return 1;
- 	}
- 
- 	switch (set) {
-@@ -255,7 +255,7 @@ static int __init jive_mtdset(char *opti
- 		       "using default.", set);
- 	}
- 
--	return 0;
-+	return 1;
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1446,6 +1446,11 @@ static inline unsigned int skb_end_offse
+ {
+ 	return skb->end;
  }
++
++static inline void skb_set_end_offset(struct sk_buff *skb, unsigned int offset)
++{
++	skb->end = offset;
++}
+ #else
+ static inline unsigned char *skb_end_pointer(const struct sk_buff *skb)
+ {
+@@ -1456,6 +1461,11 @@ static inline unsigned int skb_end_offse
+ {
+ 	return skb->end - skb->head;
+ }
++
++static inline void skb_set_end_offset(struct sk_buff *skb, unsigned int offset)
++{
++	skb->end = skb->head + offset;
++}
+ #endif
  
- /* parse the mtdset= option given to the kernel command line */
+ /* Internal */
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -201,7 +201,7 @@ static void __build_skb_around(struct sk
+ 	skb->head = data;
+ 	skb->data = data;
+ 	skb_reset_tail_pointer(skb);
+-	skb->end = skb->tail + size;
++	skb_set_end_offset(skb, size);
+ 	skb->mac_header = (typeof(skb->mac_header))~0U;
+ 	skb->transport_header = (typeof(skb->transport_header))~0U;
+ 
+@@ -1738,11 +1738,10 @@ int pskb_expand_head(struct sk_buff *skb
+ 	skb->head     = data;
+ 	skb->head_frag = 0;
+ 	skb->data    += off;
++
++	skb_set_end_offset(skb, size);
+ #ifdef NET_SKBUFF_DATA_USES_OFFSET
+-	skb->end      = size;
+ 	off           = nhead;
+-#else
+-	skb->end      = skb->head + size;
+ #endif
+ 	skb->tail	      += off;
+ 	skb_headers_offset_update(skb, nhead);
+@@ -6138,11 +6137,7 @@ static int pskb_carve_inside_header(stru
+ 	skb->head = data;
+ 	skb->data = data;
+ 	skb->head_frag = 0;
+-#ifdef NET_SKBUFF_DATA_USES_OFFSET
+-	skb->end = size;
+-#else
+-	skb->end = skb->head + size;
+-#endif
++	skb_set_end_offset(skb, size);
+ 	skb_set_tail_pointer(skb, skb_headlen(skb));
+ 	skb_headers_offset_update(skb, 0);
+ 	skb->cloned = 0;
+@@ -6280,11 +6275,7 @@ static int pskb_carve_inside_nonlinear(s
+ 	skb->head = data;
+ 	skb->head_frag = 0;
+ 	skb->data = data;
+-#ifdef NET_SKBUFF_DATA_USES_OFFSET
+-	skb->end = size;
+-#else
+-	skb->end = skb->head + size;
+-#endif
++	skb_set_end_offset(skb, size);
+ 	skb_reset_tail_pointer(skb);
+ 	skb_headers_offset_update(skb, 0);
+ 	skb->cloned   = 0;
 
 
