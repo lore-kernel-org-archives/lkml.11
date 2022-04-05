@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88208C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9895BC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582523AbiDEXsP (ORCPT
+        id S1582542AbiDEXsc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
+        Tue, 5 Apr 2022 19:48:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349402AbiDEJts (ORCPT
+        with ESMTP id S1354189AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E66917A81;
-        Tue,  5 Apr 2022 02:44:58 -0700 (PDT)
+        Tue, 5 Apr 2022 06:12:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755BA52E16;
+        Tue,  5 Apr 2022 02:58:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 577F261675;
-        Tue,  5 Apr 2022 09:44:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6584FC385A2;
-        Tue,  5 Apr 2022 09:44:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BB82B817D3;
+        Tue,  5 Apr 2022 09:58:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FFF6C385A2;
+        Tue,  5 Apr 2022 09:58:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151897;
-        bh=vZCYosMR3xAeEcqaIxxhaQzuSAuF9vWSVdw/VukUcbY=;
+        s=korg; t=1649152693;
+        bh=a6oPxCJzwFg+auaLybS3Cz5xCfoOmB6qPAWpGmmbt78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LY4huCouIcDyL0SQCuaCjHVfRUfuWm6MdnKHGvjOB6vYpBwNv2WNaF5LmJxzOvQ52
-         ZFRgvxKB9WB20n9HuiN69exyZw/i0u9Ge2dC8H+m1JWHXOkUf+GSiwdRI+LbGFipI+
-         AZl8ndbmL6tDmJFi6lAlZyZqIO7mywWJ8YkKoYEI=
+        b=XaAAapZRjmfbQp8rxZaWtWDO+Gnl0wy1/N5RLHClfHy0lohavaEZ7LF5ztv2y9ccY
+         nci6URG20qUkD9x6A+KcAx39YE+J6wfEMIIUGOpqv/YZ8xuABqpBI9AWvLWrtS3eC3
+         Fg0x8Wbg4pW9cguP17glVUHZf662tWf+r9AE0EZk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 543/913] bpf, sockmap: Fix double uncharge the mem of sk_msg
-Date:   Tue,  5 Apr 2022 09:26:45 +0200
-Message-Id: <20220405070356.125960097@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH 5.15 831/913] XArray: Fix xas_create_range() when multi-order entry present
+Date:   Tue,  5 Apr 2022 09:31:33 +0200
+Message-Id: <20220405070404.741036756@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,72 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-[ Upstream commit 2486ab434b2c2a14e9237296db00b1e1b7ae3273 ]
+commit 3e3c658055c002900982513e289398a1aad4a488 upstream.
 
-If tcp_bpf_sendmsg is running during a tear down operation, psock may be
-freed.
+If there is already an entry present that is of order >= XA_CHUNK_SHIFT
+when we call xas_create_range(), xas_create_range() will misinterpret
+that entry as a node and dereference xa_node->parent, generally leading
+to a crash that looks something like this:
 
-tcp_bpf_sendmsg()
- tcp_bpf_send_verdict()
-  sk_msg_return()
-  tcp_bpf_sendmsg_redir()
-   unlikely(!psock))
-     sk_msg_free()
+general protection fault, probably for non-canonical address 0xdffffc0000000001:
+0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 0 PID: 32 Comm: khugepaged Not tainted 5.17.0-rc8-syzkaller-00003-g56e337f2cf13 #0
+RIP: 0010:xa_parent_locked include/linux/xarray.h:1207 [inline]
+RIP: 0010:xas_create_range+0x2d9/0x6e0 lib/xarray.c:725
 
-The mem of msg has been uncharged in tcp_bpf_send_verdict() by
-sk_msg_return(), and would be uncharged by sk_msg_free() again. When psock
-is null, we can simply returning an error code, this would then trigger
-the sk_msg_free_nocharge in the error path of __SK_REDIRECT and would have
-the side effect of throwing an error up to user space. This would be a
-slight change in behavior from user side but would look the same as an
-error if the redirect on the socket threw an error.
+It's deterministically reproducable once you know what the problem is,
+but producing it in a live kernel requires khugepaged to hit a race.
+While the problem has been present since xas_create_range() was
+introduced, I'm not aware of a way to hit it before the page cache was
+converted to use multi-index entries.
 
-This issue can cause the following info:
-WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
-Call Trace:
- <TASK>
- __sk_destruct+0x24/0x1f0
- sk_psock_destroy+0x19b/0x1c0
- process_one_work+0x1b3/0x3c0
- worker_thread+0x30/0x350
- ? process_one_work+0x3c0/0x3c0
- kthread+0xe6/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
- </TASK>
-
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220304081145.2037182-5-wangyufen@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
+Reported-by: syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_bpf.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ lib/test_xarray.c |   22 ++++++++++++++++++++++
+ lib/xarray.c      |    2 ++
+ 2 files changed, 24 insertions(+)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 304800c60427..1cdcb4df0eb7 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -138,10 +138,9 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
- 	struct sk_psock *psock = sk_psock_get(sk);
- 	int ret;
+--- a/lib/test_xarray.c
++++ b/lib/test_xarray.c
+@@ -1463,6 +1463,25 @@ unlock:
+ 	XA_BUG_ON(xa, !xa_empty(xa));
+ }
  
--	if (unlikely(!psock)) {
--		sk_msg_free(sk, msg);
--		return 0;
--	}
-+	if (unlikely(!psock))
-+		return -EPIPE;
++static noinline void check_create_range_5(struct xarray *xa,
++		unsigned long index, unsigned int order)
++{
++	XA_STATE_ORDER(xas, xa, index, order);
++	unsigned int i;
 +
- 	ret = ingress ? bpf_tcp_ingress(sk, psock, msg, bytes, flags) :
- 			tcp_bpf_push_locked(sk, msg, bytes, flags, false);
- 	sk_psock_put(sk, psock);
--- 
-2.34.1
-
++	xa_store_order(xa, index, order, xa_mk_index(index), GFP_KERNEL);
++
++	for (i = 0; i < order + 10; i++) {
++		do {
++			xas_lock(&xas);
++			xas_create_range(&xas);
++			xas_unlock(&xas);
++		} while (xas_nomem(&xas, GFP_KERNEL));
++	}
++
++	xa_destroy(xa);
++}
++
+ static noinline void check_create_range(struct xarray *xa)
+ {
+ 	unsigned int order;
+@@ -1490,6 +1509,9 @@ static noinline void check_create_range(
+ 		check_create_range_4(xa, (3U << order) + 1, order);
+ 		check_create_range_4(xa, (3U << order) - 1, order);
+ 		check_create_range_4(xa, (1U << 24) + 1, order);
++
++		check_create_range_5(xa, 0, order);
++		check_create_range_5(xa, (1U << order), order);
+ 	}
+ 
+ 	check_create_range_3();
+--- a/lib/xarray.c
++++ b/lib/xarray.c
+@@ -722,6 +722,8 @@ void xas_create_range(struct xa_state *x
+ 
+ 		for (;;) {
+ 			struct xa_node *node = xas->xa_node;
++			if (node->shift >= shift)
++				break;
+ 			xas->xa_node = xa_parent_locked(xas->xa, node);
+ 			xas->xa_offset = node->offset - 1;
+ 			if (node->offset != 0)
 
 
