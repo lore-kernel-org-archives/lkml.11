@@ -2,120 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C2DC35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117D0C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578300AbiDEXTS (ORCPT
+        id S1578245AbiDEXTJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43892 "EHLO
+        Tue, 5 Apr 2022 19:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452397AbiDEPyw (ORCPT
+        with ESMTP id S1345284AbiDEKk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:54:52 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F22445514
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:54:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=IewJ5FbjVkowhuDQ9RQAlMe54keYpdgNViGTWxozKWc=; b=quO14FwJRbcL5PXhvDM7UO5Np8
-        PtFikFw6HNTT4VBrn26VikUuxpv/d0fYcF/gCGbgvlkziJu1LFdY58GW5SIo/Pv0T2GCaQH0ovd7B
-        XprFHaRU6Lu5djhouvH0bASHSBScaXWPghaeye7xQotILop2kX1t7BIu1P1dRq9RrVgGzUIOnhwoc
-        5du3aiiFn+lI8erbF0GxXx3xZ9vq+WLjHRK5DWi+llwGsj2Sp9v9CGKKgamybsPtF+Xu7JbZ2GCOn
-        f5IDKUMvxu3E67c5yAfpRfJJBjiFZ9S9GF4ZhijZi6Aox5zKLamm7VtYQS/y0RZ7JGcwxwnR//ylO
-        XF2q3NFQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbkZq-001scK-3i; Tue, 05 Apr 2022 14:54:38 +0000
-Message-ID: <663906a0-b464-10e9-529f-249eb0214cea@infradead.org>
-Date:   Tue, 5 Apr 2022 07:54:32 -0700
+        Tue, 5 Apr 2022 06:40:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44D92BEE;
+        Tue,  5 Apr 2022 03:26:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60C6AB81C8B;
+        Tue,  5 Apr 2022 10:26:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9022C385A2;
+        Tue,  5 Apr 2022 10:26:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154388;
+        bh=GkMbuM0N3bx8zk89Q8KBknMKfuJoWp/romGhKcSfTfs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ez8YlS9OOeTkx6w5vbBYh88Y4fS4bWQvdGOLU3lxZBoq+wZwS9mwHU5eXu4DftVF1
+         Lp5QkxycYxTsahG/hmEDyANX2r92tcLR0oxKSRg2i69YOrq1iT392wNb1fmtzGMv0p
+         0qM3lIn4QTnrTl8YkvZPC6Z7Kvp5gmYKuDm2YC+w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Jann Horn <jannh@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 559/599] watch_queue: Free the page array when watch_queue is dismantled
+Date:   Tue,  5 Apr 2022 09:34:13 +0200
+Message-Id: <20220405070315.475995085@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] ARM: vexpress/spc: Fix doxygen comments
-Content-Language: en-US
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        kernel test robot <lkp@intel.com>
-References: <20220404130207.1162445-1-sudeep.holla@arm.com>
- <008aae79-4a6c-721f-7ef5-7b73f6d7e000@infradead.org>
- <20220405140800.baww2wrow3hdp5ho@bogus>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220405140800.baww2wrow3hdp5ho@bogus>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
+
+commit b490207017ba237d97b735b2aa66dc241ccd18f5 upstream.
+
+Commit 7ea1a0124b6d ("watch_queue: Free the alloc bitmap when the
+watch_queue is torn down") took care of the bitmap, but not the page
+array.
+
+  BUG: memory leak
+  unreferenced object 0xffff88810d9bc140 (size 32):
+  comm "syz-executor335", pid 3603, jiffies 4294946994 (age 12.840s)
+  hex dump (first 32 bytes):
+    40 a7 40 04 00 ea ff ff 00 00 00 00 00 00 00 00  @.@.............
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+     kmalloc_array include/linux/slab.h:621 [inline]
+     kcalloc include/linux/slab.h:652 [inline]
+     watch_queue_set_size+0x12f/0x2e0 kernel/watch_queue.c:251
+     pipe_ioctl+0x82/0x140 fs/pipe.c:632
+     vfs_ioctl fs/ioctl.c:51 [inline]
+     __do_sys_ioctl fs/ioctl.c:874 [inline]
+     __se_sys_ioctl fs/ioctl.c:860 [inline]
+     __x64_sys_ioctl+0xfc/0x140 fs/ioctl.c:860
+     do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+
+Reported-by: syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Cc: Jann Horn <jannh@google.com>
+Link: https://lore.kernel.org/r/20220322004654.618274-1-eric.dumazet@gmail.com/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ kernel/watch_queue.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -373,6 +373,7 @@ static void __put_watch_queue(struct kre
+ 
+ 	for (i = 0; i < wqueue->nr_pages; i++)
+ 		__free_page(wqueue->notes[i]);
++	kfree(wqueue->notes);
+ 	bitmap_free(wqueue->notes_bitmap);
+ 
+ 	wfilter = rcu_access_pointer(wqueue->filter);
 
 
-On 4/5/22 07:08, Sudeep Holla wrote:
-> Hi Randy,
-> 
-> On Mon, Apr 04, 2022 at 05:21:39PM -0700, Randy Dunlap wrote:
->> Hi--
->>
->> On 4/4/22 06:02, Sudeep Holla wrote:
->>> Kbuild bot reported the following doxygen build warning:
->>>
->>>   |  arch/arm/mach-versatile/spc.c:231: warning: This comment starts with
->>>   |		'/**', but isn't a kernel-doc comment.
->>>   |		Refer Documentation/doc-guide/kernel-doc.rst
->>>   |  		* ve_spc_cpu_in_wfi(u32 cpu, u32 cluster)
->>>
->>> Fix the issue by dropping the parameters specified in the kernel doc.
->>>
->>> Cc: Liviu Dudau <liviu.dudau@arm.com>
->>> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
->>> Reported-by: kernel test robot <lkp@intel.com>
->>> Link: https://lore.kernel.org/linux-doc/202204031026.4ogKxt89-lkp@intel.com
->>> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
->>> ---
->>>  arch/arm/mach-vexpress/spc.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
->>> index 1c6500c4e6a1..8f99d47d4b89 100644
->>> --- a/arch/arm/mach-vexpress/spc.c
->>> +++ b/arch/arm/mach-vexpress/spc.c
->>> @@ -228,7 +228,7 @@ static u32 standbywfi_cpu_mask(u32 cpu, u32 cluster)
->>>  }
->>>  
->>>  /**
->>> - * ve_spc_cpu_in_wfi(u32 cpu, u32 cluster)
->>> + * ve_spc_cpu_in_wfi()
->>
->> This line still needs a "function short description," e.g.
->>
->> + * ve_spc_cpu_in_wfi() - fooble the barfloppity
->>
->> similar to what you did in patch 2/2.
-> 
-> I did this intentionally, I can move only this from the other patch.
-> Since I saw few others w/o description, I addressed all at once in the
-> second patch and just remove warning reported in this patch. I am fine
-> either way.
-
-Oh, my bad. I didn't notice that it was the same function in
-both patches.
-So no problem there.
-
->>
->>>   *
->>>   * @cpu: mpidr[7:0] bitfield describing CPU affinity level within cluster
->>>   * @cluster: mpidr[15:8] bitfield describing cluster affinity level
->>
->> and I would s/doxygen/kernel-doc/ for both patches.
->>
-> 
-> Sure will do.
-> 
-
-thanks.
--- 
-~Randy
