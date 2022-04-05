@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C975C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC39C3527D
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352163AbiDENGy (ORCPT
+        id S1388027AbiDENUh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
+        Tue, 5 Apr 2022 09:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344000AbiDEJQo (ORCPT
+        with ESMTP id S1344279AbiDEJTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A90F76;
-        Tue,  5 Apr 2022 02:03:21 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5603122BC7;
+        Tue,  5 Apr 2022 02:07:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 08142CE1C6C;
-        Tue,  5 Apr 2022 09:03:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC74C385A1;
-        Tue,  5 Apr 2022 09:03:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14E6BB81B75;
+        Tue,  5 Apr 2022 09:07:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6276AC385A3;
+        Tue,  5 Apr 2022 09:07:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149398;
-        bh=qQXWyRu4TEliDafq6CKePkOIo5nPfDxb/EyW2btOqvo=;
+        s=korg; t=1649149624;
+        bh=ZhdGQAmWHHMFrACJpTe69z62VUQvcrG8v0VNxiUGKOw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UAjVP0C7VF+vaOL+kuiGDrueRHUpT7B9Q3XcfVDr1Bl4dlS0fXePCjWcK4hpl2aF0
-         b2C7JNJYN/pzLnwvZf2NFHWBljc12WxlT6jY9mpZIyjqtsSwPchP73ETkOgiDGCOzl
-         MU2Pms/zkl/FAPUbLr9GS+lZ9du+Q355dXDW8hKY=
+        b=ePBYkCeo4PJFSwc7znkg7hrnaClDTTh79n8NB5BFhBqqj/qStg+OmUhO0kOHhrFNt
+         rU0/m4w8aWUWgyswuduubVt0R+A1c/wqaNgF+tS765kBax+qeDyT7EXKLqmbSPrYJt
+         KSlZ5xrHfaajVNCFC7EBTeFasKsNU+ZOvlGYLqPE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        iommu@lists.linux-foundation.org,
-        Robin Murphy <robin.murphy@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0673/1017] dma-debug: fix return value of __setup handlers
-Date:   Tue,  5 Apr 2022 09:26:26 +0200
-Message-Id: <20220405070414.257099109@linuxfoundation.org>
+        stable@vger.kernel.org, Chris Leech <cleech@redhat.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0781/1017] nvme-tcp: lockdep: annotate in-kernel sockets
+Date:   Tue,  5 Apr 2022 09:28:14 +0200
+Message-Id: <20220405070417.439606522@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,70 +49,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Chris Leech <cleech@redhat.com>
 
-[ Upstream commit 80e4390981618e290616dbd06ea190d4576f219d ]
+[ Upstream commit 841aee4d75f18fdfb53935080b03de0c65e9b92c ]
 
-When valid kernel command line parameters
-  dma_debug=off dma_debug_entries=100
-are used, they are reported as Unknown parameters and added to init's
-environment strings, polluting it.
+Put NVMe/TCP sockets in their own class to avoid some lockdep warnings.
+Sockets created by nvme-tcp are not exposed to user-space, and will not
+trigger certain code paths that the general socket API exposes.
 
-  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc5
-    dma_debug=off dma_debug_entries=100", will be passed to user space.
+Lockdep complains about a circular dependency between the socket and
+filesystem locks, because setsockopt can trigger a page fault with a
+socket lock held, but nvme-tcp sends requests on the socket while file
+system locks are held.
 
-and
+  ======================================================
+  WARNING: possible circular locking dependency detected
+  5.15.0-rc3 #1 Not tainted
+  ------------------------------------------------------
+  fio/1496 is trying to acquire lock:
+  (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_sendpage+0x23/0x80
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     dma_debug=off
-     dma_debug_entries=100
+  but task is already holding lock:
+  (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
 
-Return 1 from these __setup handlers to indicate that the command line
-option has been handled.
+  which lock already depends on the new lock.
 
-Fixes: 59d3daafa1726 ("dma-debug: add kernel command line parameters")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org
-Cc: Robin Murphy <robin.murphy@arm.com>
+  other info that might help us debug this:
+
+  chain exists of:
+   sk_lock-AF_INET --> sb_internal --> &xfs_dir_ilock_class/5
+
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(&xfs_dir_ilock_class/5);
+                                lock(sb_internal);
+                                lock(&xfs_dir_ilock_class/5);
+   lock(sk_lock-AF_INET);
+
+  *** DEADLOCK ***
+
+  6 locks held by fio/1496:
+   #0: (sb_writers#13){.+.+}-{0:0}, at: path_openat+0x9fc/0xa20
+   #1: (&inode->i_sb->s_type->i_mutex_dir_key){++++}-{3:3}, at: path_openat+0x296/0xa20
+   #2: (sb_internal){.+.+}-{0:0}, at: xfs_trans_alloc_icreate+0x41/0xd0 [xfs]
+   #3: (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
+   #4: (hctx->srcu){....}-{0:0}, at: hctx_lock+0x51/0xd0
+   #5: (&queue->send_mutex){+.+.}-{3:3}, at: nvme_tcp_queue_rq+0x33e/0x380 [nvme_tcp]
+
+This annotation lets lockdep analyze nvme-tcp controlled sockets
+independently of what the user-space sockets API does.
+
+Link: https://lore.kernel.org/linux-nvme/CAHj4cs9MDYLJ+q+2_GXUK9HxFizv2pxUryUR0toX974M040z7g@mail.gmail.com/
+
+Signed-off-by: Chris Leech <cleech@redhat.com>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/debug.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/nvme/host/tcp.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 7a14ca29c377..f8ff598596b8 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -927,7 +927,7 @@ static __init int dma_debug_cmdline(char *str)
- 		global_disable = true;
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index 65e00c64a588..d66e2de044e0 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -30,6 +30,44 @@ static int so_priority;
+ module_param(so_priority, int, 0644);
+ MODULE_PARM_DESC(so_priority, "nvme tcp socket optimize priority");
+ 
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++/* lockdep can detect a circular dependency of the form
++ *   sk_lock -> mmap_lock (page fault) -> fs locks -> sk_lock
++ * because dependencies are tracked for both nvme-tcp and user contexts. Using
++ * a separate class prevents lockdep from conflating nvme-tcp socket use with
++ * user-space socket API use.
++ */
++static struct lock_class_key nvme_tcp_sk_key[2];
++static struct lock_class_key nvme_tcp_slock_key[2];
++
++static void nvme_tcp_reclassify_socket(struct socket *sock)
++{
++	struct sock *sk = sock->sk;
++
++	if (WARN_ON_ONCE(!sock_allow_reclassification(sk)))
++		return;
++
++	switch (sk->sk_family) {
++	case AF_INET:
++		sock_lock_init_class_and_name(sk, "slock-AF_INET-NVME",
++					      &nvme_tcp_slock_key[0],
++					      "sk_lock-AF_INET-NVME",
++					      &nvme_tcp_sk_key[0]);
++		break;
++	case AF_INET6:
++		sock_lock_init_class_and_name(sk, "slock-AF_INET6-NVME",
++					      &nvme_tcp_slock_key[1],
++					      "sk_lock-AF_INET6-NVME",
++					      &nvme_tcp_sk_key[1]);
++		break;
++	default:
++		WARN_ON_ONCE(1);
++	}
++}
++#else
++static void nvme_tcp_reclassify_socket(struct socket *sock) { }
++#endif
++
+ enum nvme_tcp_send_state {
+ 	NVME_TCP_SEND_CMD_PDU = 0,
+ 	NVME_TCP_SEND_H2C_PDU,
+@@ -1469,6 +1507,8 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
+ 		goto err_destroy_mutex;
  	}
  
--	return 0;
-+	return 1;
- }
++	nvme_tcp_reclassify_socket(queue->sock);
++
+ 	/* Single syn retry */
+ 	tcp_sock_set_syncnt(queue->sock->sk, 1);
  
- static __init int dma_debug_entries_cmdline(char *str)
-@@ -936,7 +936,7 @@ static __init int dma_debug_entries_cmdline(char *str)
- 		return -EINVAL;
- 	if (!get_option(&str, &nr_prealloc_entries))
- 		nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
--	return 0;
-+	return 1;
- }
- 
- __setup("dma_debug=", dma_debug_cmdline);
 -- 
 2.34.1
 
