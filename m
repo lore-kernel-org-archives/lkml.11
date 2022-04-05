@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA99CC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD5AC35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233607AbiDEV0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
+        id S239352AbiDEV0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355908AbiDEKWN (ORCPT
+        with ESMTP id S1352622AbiDEKEs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:13 -0400
+        Tue, 5 Apr 2022 06:04:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB15BA9957;
-        Tue,  5 Apr 2022 03:05:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F728BB90C;
+        Tue,  5 Apr 2022 02:53:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA4E61500;
-        Tue,  5 Apr 2022 10:05:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5781AC385A2;
-        Tue,  5 Apr 2022 10:05:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AEA161753;
+        Tue,  5 Apr 2022 09:53:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A63FC385A7;
+        Tue,  5 Apr 2022 09:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153123;
-        bh=C/750eIEw2xnKQ7Z3W6sdUklRUAe3atwbovg2TFjKWM=;
+        s=korg; t=1649152411;
+        bh=jpH1FFqHwA9Rcvx435BbU8+Ijry2x5lxT/g9E4on9Sg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I1gqnRvMswRkH8MRdOj8yW2FjDZHeIj2W5Oa9ORu+l0v7U06YDP3T0QqtDK6FFpVf
-         C+KUBjpzPafGcwNtQFb2Dcr9RwcQLT5rWIb6AT1N3XoOvfjXj9SVHs9cTQ5zKYOe0m
-         5pLBjTrRTho2C5nIAthUmUk1+q2QmE9mdWlqXQWE=
+        b=cJHXco2KhevIGCYiGI678m2ahclYGaRLGohEF9q+zhFekWNU//6WVn8ATkDpCJjo0
+         DEniOQOu9Va7+cUOy5516yL0viLhrVIqMU3KulwSUYsSSb0fdKMTYc2faboGOWpyVE
+         hRkeZw3peyCePw0XiS0kpKp7bH1qcPTi6+uCpSrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.10 109/599] crypto: rsa-pkcs1pad - only allow with rsa
-Date:   Tue,  5 Apr 2022 09:26:43 +0200
-Message-Id: <20220405070302.078174380@linuxfoundation.org>
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 767/913] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
+Date:   Tue,  5 Apr 2022 09:30:29 +0200
+Message-Id: <20220405070402.823510866@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,36 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-commit 9b30430ea356f237945e52f8a3a42158877bd5a9 upstream.
+[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
 
-The pkcs1pad template can be instantiated with an arbitrary akcipher
-algorithm, which doesn't make sense; it is specifically an RSA padding
-scheme.  Make it check that the underlying algorithm really is RSA.
+Even if the current WARN() notifies the user that something is severely
+wrong, we can still end up in a PANIC() when trying to invoke the missing
+->enable_sdio_irq() ops. Therefore, let's also return an error code and
+prevent the host from being added.
 
-Fixes: 3d5b1ecdea6f ("crypto: rsa - RSA padding algorithm")
-Cc: <stable@vger.kernel.org> # v4.5+
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+While at it, move the code into a separate function to prepare for
+subsequent changes and for further host caps validations.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/rsa-pkcs1pad.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/mmc/core/host.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
---- a/crypto/rsa-pkcs1pad.c
-+++ b/crypto/rsa-pkcs1pad.c
-@@ -621,6 +621,11 @@ static int pkcs1pad_create(struct crypto
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index cf140f4ec864..d739e2b631fe 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -588,6 +588,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
  
- 	rsa_alg = crypto_spawn_akcipher_alg(&ctx->spawn);
+ EXPORT_SYMBOL(mmc_alloc_host);
  
-+	if (strcmp(rsa_alg->base.cra_name, "rsa") != 0) {
-+		err = -EINVAL;
-+		goto err_free_inst;
++static int mmc_validate_host_caps(struct mmc_host *host)
++{
++	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
++		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
++		return -EINVAL;
 +	}
 +
- 	err = -ENAMETOOLONG;
- 	hash_name = crypto_attr_alg_name(tb[2]);
- 	if (IS_ERR(hash_name)) {
++	return 0;
++}
++
+ /**
+  *	mmc_add_host - initialise host hardware
+  *	@host: mmc host
+@@ -600,8 +610,9 @@ int mmc_add_host(struct mmc_host *host)
+ {
+ 	int err;
+ 
+-	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
+-		!host->ops->enable_sdio_irq);
++	err = mmc_validate_host_caps(host);
++	if (err)
++		return err;
+ 
+ 	err = device_add(&host->class_dev);
+ 	if (err)
+-- 
+2.34.1
+
 
 
