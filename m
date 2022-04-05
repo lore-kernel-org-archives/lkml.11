@@ -2,118 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5970BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D93C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245621AbiDFBcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59232 "EHLO
+        id S1842601AbiDFBdm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356025AbiDEKWr (ORCPT
+        with ESMTP id S242829AbiDEOwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086A1AA000;
-        Tue,  5 Apr 2022 03:05:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46BE06167E;
-        Tue,  5 Apr 2022 10:05:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 516F0C385A2;
-        Tue,  5 Apr 2022 10:05:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153137;
-        bh=CRkojIeG8hfsFSBTHg4oYYawOOdZgescy1u4wNygcPs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MvrN48pLoehhK0fZbYK4we3bnZ9kfoZ8K5fWKcvdCo447guioiSwYDLg0n0sqKCS5
-         FJRy/kmkHoTS9uP3Ly+6fwF3Rb2FCqcSaK6TW7hI3J80il7duNrfBtN0oGZ3ygTRFj
-         03ePlSnDyHEmf4iOxZldRbR/GBs4Q8eSqBZAS0CQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan-Benedict Glaw <jbglaw@lug-owl.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.10 114/599] DEC: Limit PMAX memory probing to R3k systems
-Date:   Tue,  5 Apr 2022 09:26:48 +0200
-Message-Id: <20220405070302.231375636@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 10:52:51 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587BDBF97B;
+        Tue,  5 Apr 2022 06:22:08 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso1643841wmn.1;
+        Tue, 05 Apr 2022 06:22:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=42pOK9ccsa2jjY6xkX2nlkLQuEWFF7Bk+1tRnHi96GI=;
+        b=elxm4jPIzGaUvukiv9OCU5WC3tOGLd7yKl16vtPMjYLE2D5vFxSu4UENBZY1jkWQd2
+         gOF0EXNlk1Fxq7wWKfP64LZ9Lg/+oqitp28xGmjju2Vkx+Knrdqcy4Vp8fVJHIwrWSUL
+         oou5HkSB9BYIJciPQ6RAN/m4mrcZ2Ef8Cd4iXB6ZbhUp2bCYp7NLp5TiPyJpX248EeJe
+         mGJbHmtfNDMd8HzPL6KNQX2D4U//E4h5ToOjWrCOYb9Ztt3fBVe0WLC6Vn2muqOlHZvQ
+         eXyrZ3aXEr1cM2rg9qsqcyT/cxSuFyF5tX4HiEM9gZC6YRsgcmCuVTyZFh+mPH4cQ9h2
+         rQWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=42pOK9ccsa2jjY6xkX2nlkLQuEWFF7Bk+1tRnHi96GI=;
+        b=za3KDLgHTvQ3fyG+npZJwlssjg/RPBLX6XsdepXB/fSXCBS8TRfRdawDstyomjnuav
+         NHIvEP2DT6H6cFqed9clyAKHrum+dNyHwS9qrsU+lnxugJwlv0eLN8/MHK3UiGUExy9K
+         9X54pe8ZYDpWGPitWQIKS+C/ziyIUH5wJ04hMiips8ReUMZFTEYAN3/OwqvJI3239aG+
+         56iWU2V2Fzd8EXxED0gyE6X8nJj5DZd3Y9tvBtZJ8ylM3Y0zlmaWqeUmOqFBv87Al6+d
+         o7quqwtwaU3ebvFGD4jANuSbC/r1pJ99KxLOFCXzZAuGByRvJhp/oKxc2y9prLRlGfrQ
+         mKlw==
+X-Gm-Message-State: AOAM533lRcqD7hJoHLLWLDxcXs7HP1JD0COEwoMhA3QGYlpLGPu3vWCM
+        kWj4ZH+bsd3IGKRQZ6v2vWdWZnZIVt0=
+X-Google-Smtp-Source: ABdhPJyTin3MLm6VWeXoWs2sztSrpiJP4TM84DHkMzMprxV9AoMxcZavqxVYsbM9sc2yNIC9cEX+RA==
+X-Received: by 2002:a05:600c:6026:b0:38e:746b:9414 with SMTP id az38-20020a05600c602600b0038e746b9414mr3202828wmb.141.1649164926604;
+        Tue, 05 Apr 2022 06:22:06 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id t4-20020adfe104000000b00205b50f04f0sm11951822wrz.86.2022.04.05.06.22.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 06:22:06 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <aad44bd9-7f5b-58e6-523a-ce9df57bee30@redhat.com>
+Date:   Tue, 5 Apr 2022 15:22:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 039/104] KVM: x86/mmu: Disallow fast page fault on
+ private GPA
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <56693f2e1e5bb1933288272255c662d6d04b94df.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <56693f2e1e5bb1933288272255c662d6d04b94df.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+> 
+> TDX requires TDX SEAMCALL to operate Secure EPT instead of direct memory
+> access and TDX SEAMCALL is heavy operation.  Fast page fault on private GPA
+> doesn't make sense.  Disallow fast page fault on private GPA.
+> 
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>   arch/x86/kvm/mmu/mmu.c | 7 +++++++
+>   1 file changed, 7 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index e9212394a530..d8c1505155b0 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -3185,6 +3185,13 @@ static int fast_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+>   	u64 *sptep = NULL;
+>   	uint retry_count = 0;
+>   
+> +	/*
+> +	 * TDX private mapping doesn't support fast page fault because the EPT
+> +	 * entry needs TDX SEAMCALL. not direct memory access.
 
-commit 244eae91a94c6dab82b3232967d10eeb9dfa21c6 upstream.
+"the EPT entry is read/written with TDX SEAMCALLs instead of direct 
+memory access".
 
-Recent tightening of the opcode table in binutils so as to consistently
-disallow the assembly or disassembly of CP0 instructions not supported
-by the processor architecture chosen has caused a regression like below:
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 
-arch/mips/dec/prom/locore.S: Assembler messages:
-arch/mips/dec/prom/locore.S:29: Error: opcode not supported on this processor: r4600 (mips3) `rfe'
-
-in a piece of code used to probe for memory with PMAX DECstation models,
-which have non-REX firmware.  Those computers always have an R2000 CPU
-and consequently the exception handler used in memory probing uses the
-RFE instruction, which those processors use.
-
-While adding 64-bit support this code was correctly excluded for 64-bit
-configurations, however it should have also been excluded for irrelevant
-32-bit configurations.  Do this now then, and only enable PMAX memory
-probing for R3k systems.
-
-Reported-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org # v2.6.12+
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/mips/dec/prom/Makefile      |    2 +-
- arch/mips/include/asm/dec/prom.h |   15 +++++----------
- 2 files changed, 6 insertions(+), 11 deletions(-)
-
---- a/arch/mips/dec/prom/Makefile
-+++ b/arch/mips/dec/prom/Makefile
-@@ -6,4 +6,4 @@
- 
- lib-y			+= init.o memory.o cmdline.o identify.o console.o
- 
--lib-$(CONFIG_32BIT)	+= locore.o
-+lib-$(CONFIG_CPU_R3000)	+= locore.o
---- a/arch/mips/include/asm/dec/prom.h
-+++ b/arch/mips/include/asm/dec/prom.h
-@@ -43,16 +43,11 @@
-  */
- #define REX_PROM_MAGIC		0x30464354
- 
--#ifdef CONFIG_64BIT
--
--#define prom_is_rex(magic)	1	/* KN04 and KN05 are REX PROMs.  */
--
--#else /* !CONFIG_64BIT */
--
--#define prom_is_rex(magic)	((magic) == REX_PROM_MAGIC)
--
--#endif /* !CONFIG_64BIT */
--
-+/* KN04 and KN05 are REX PROMs, so only do the check for R3k systems.  */
-+static inline bool prom_is_rex(u32 magic)
-+{
-+	return !IS_ENABLED(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC;
-+}
- 
- /*
-  * 3MIN/MAXINE PROM entry points for DS5000/1xx's, DS5000/xx's and
-
+> +	 */
+> +	if (kvm_is_private_gpa(vcpu->kvm, fault->addr))
+> +		return ret;
+> +
+>   	if (!page_fault_can_be_fast(fault))
+>   		return ret;
+>   
 
