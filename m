@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EA7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F67C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355735AbiDEKVp (ORCPT
+        id S1355764AbiDEKV6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        Tue, 5 Apr 2022 06:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241263AbiDEIdA (ORCPT
+        with ESMTP id S241267AbiDEIdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:33:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D53E7;
-        Tue,  5 Apr 2022 01:31:01 -0700 (PDT)
+        Tue, 5 Apr 2022 04:33:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7064B8E;
+        Tue,  5 Apr 2022 01:31:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93669B81B18;
-        Tue,  5 Apr 2022 08:31:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08517C385A1;
-        Tue,  5 Apr 2022 08:30:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77B71B81BC0;
+        Tue,  5 Apr 2022 08:31:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA58CC385A1;
+        Tue,  5 Apr 2022 08:31:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147459;
-        bh=huGTASasK66+O42HEm1qu8ol/K16alT3r/qn38hAIO0=;
+        s=korg; t=1649147462;
+        bh=xP6Tr2F4niH5CmG/43FEijRnvWU8Se3NAUyhudXwZWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FZIaaz6J9nQUpwC0/RThhAEVFna+JoH+Y1jxKZwT3+jsuJ6TmLXOxqGDkvP2DMMh/
-         7kg4TuGIFcOiag3kN0a0qG2Iuk0yBwQPN+tTjU0WWPcooOey/DMmUVdAqbQz7ImYGp
-         IadiFDAo1YMdTRR8MJTv0UaV3pSFLPxdStF3hCRQ=
+        b=M/c19MiUL0jaah/o582wXff29jDzWOBG+sVaBABUai/zgB6+PSk0bA7nuHs0J0Ie+
+         KvsIQ1K7eVDUiuEpTHx/2gW+sUq2pjaFY1y+MNX/tTa3zqVeZtTfnKXKAQtFIz6thD
+         lNXiLpQxMuriUlis2YIpk6y2Z24HxGJ50tP7tlNM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Rob Herring <robh@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.17 1093/1126] media: dt-bindings: media: hynix,hi846: add link-frequencies description
-Date:   Tue,  5 Apr 2022 09:30:40 +0200
-Message-Id: <20220405070439.527979939@linuxfoundation.org>
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.17 1084/1126] libbpf: Define BTF_KIND_* constants in btf.h to avoid compilation errors
+Date:   Tue,  5 Apr 2022 09:30:31 +0200
+Message-Id: <20220405070439.269923427@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,37 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Kepplinger <martin.kepplinger@puri.sm>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-commit a44b8e8c9b2615ea7cf2361cbca3c1dff8119c87 upstream.
+commit eaa266d83a3730a15de2ceebcc89e8f6290e8cf6 upstream.
 
-link-frequencies is required but only mentioned in the example. Add
-it to the description.
+The btf.h header included with libbpf contains inline helper functions to
+check for various BTF kinds. These helpers directly reference the
+BTF_KIND_* constants defined in the kernel header, and because the header
+file is included in user applications, this happens in the user application
+compile units.
 
-Fixes: f3ce7200ca18 ("media: dt-bindings: media: document SK Hynix Hi-846 MIPI CSI-2 8M pixel sensor")
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+This presents a problem if a user application is compiled on a system with
+older kernel headers because the constants are not available. To avoid
+this, add #defines of the constants directly in btf.h before using them.
+
+Since the kernel header moved to an enum for BTF_KIND_*, the #defines can
+shadow the enum values without any errors, so we only need #ifndef guards
+for the constants that predates the conversion to enum. We group these so
+there's only one guard for groups of values that were added together.
+
+  [0] Closes: https://github.com/libbpf/libbpf/issues/436
+
+Fixes: 223f903e9c83 ("bpf: Rename BTF_KIND_TAG to BTF_KIND_DECL_TAG")
+Fixes: 5b84bd10363e ("libbpf: Add support for BTF_KIND_TAG")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Link: https://lore.kernel.org/bpf/20220118141327.34231-1-toke@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml |    3 +++
- 1 file changed, 3 insertions(+)
+ tools/lib/bpf/btf.h |   22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml
-+++ b/Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml
-@@ -69,8 +69,11 @@ properties:
-                   - const: 1
-                   - const: 2
+--- a/tools/lib/bpf/btf.h
++++ b/tools/lib/bpf/btf.h
+@@ -375,8 +375,28 @@ btf_dump__dump_type_data(struct btf_dump
+ 			 const struct btf_dump_type_data_opts *opts);
  
-+          link-frequencies: true
+ /*
+- * A set of helpers for easier BTF types handling
++ * A set of helpers for easier BTF types handling.
++ *
++ * The inline functions below rely on constants from the kernel headers which
++ * may not be available for applications including this header file. To avoid
++ * compilation errors, we define all the constants here that were added after
++ * the initial introduction of the BTF_KIND* constants.
+  */
++#ifndef BTF_KIND_FUNC
++#define BTF_KIND_FUNC		12	/* Function	*/
++#define BTF_KIND_FUNC_PROTO	13	/* Function Proto	*/
++#endif
++#ifndef BTF_KIND_VAR
++#define BTF_KIND_VAR		14	/* Variable	*/
++#define BTF_KIND_DATASEC	15	/* Section	*/
++#endif
++#ifndef BTF_KIND_FLOAT
++#define BTF_KIND_FLOAT		16	/* Floating point	*/
++#endif
++/* The kernel header switched to enums, so these two were never #defined */
++#define BTF_KIND_DECL_TAG	17	/* Decl Tag */
++#define BTF_KIND_TYPE_TAG	18	/* Type Tag */
 +
-         required:
-           - data-lanes
-+          - link-frequencies
- 
- required:
-   - compatible
+ static inline __u16 btf_kind(const struct btf_type *t)
+ {
+ 	return BTF_INFO_KIND(t->info);
 
 
