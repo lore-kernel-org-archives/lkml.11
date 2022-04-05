@@ -2,98 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDD9C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFB7C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385148AbiDEVtL (ORCPT
+        id S1385402AbiDEVtl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53950 "EHLO
+        Tue, 5 Apr 2022 17:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352119AbiDEMI2 (ORCPT
+        with ESMTP id S1349209AbiDEJt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 08:08:28 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE7284EE0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:21:43 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id i27so18890903ejd.9
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:21:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=raspberrypi.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8HBpgOGIWG9ETgsG7Wst3wSQlsF6QqlUH/m56PYbcF4=;
-        b=r+WQ67jWrMQNbPPlSV6FaBSfL3cneBxyAUt8105r5J1wNlYb7d2d4cmBZogrNadtBD
-         4wbXAeKy3Fu17tpfyBJprZ5HroGpb+HIUitxYNkt//jw3+QfW0dkNKorw/46F+jpI6fB
-         ax8MJ3H3ufgSqV5PqItN5Skfbn/UhW0h9QMww4RXGg8rut3iqu7ZV0eBGk2oLAQOLXPA
-         ahCOX/6pCMCF3W7Y8HbW8F11M4gLfIPaNB/LFi9mnznGKmrPHOsi5JPuzyyjElkWielN
-         utf8nZEecvkvtE6HZ0eXr/nxd+eezu9DXFbd3u5FJhLEXmLGuBVeBwbz/gc4tlioJPO+
-         pQfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8HBpgOGIWG9ETgsG7Wst3wSQlsF6QqlUH/m56PYbcF4=;
-        b=i1De71E/mGZBTEQ50JUhZ2+nOSku1yyJLrzcnvgXzhv6X5jinhdaXB7ThcxYDmT28Z
-         Xi81Tw9Xmi+8nTGynwM0dHOF13eR9kpiV+zDZ6JvgZxcFzZYgra152vp0wXEZgcwVE5l
-         NZV6erABP3t02NiOaPPGbdk1CjARvmbqOO2RvSur6oPc2meAkKHoQp+pXagkYQefvmJ6
-         /au/Y4Kyu465LTPbdLatWAVFLfZQMKPz/9hE9Q018ICtxEC54L/UJWv5j0HcusgQ/RHM
-         N3hv5RDnbqBb7QG0NS/HIsAnZF3J7SUdpNWVAPr/6VQcO98p7c7z9gw0J0TlLo6qW1Kl
-         CTcA==
-X-Gm-Message-State: AOAM532EC0lT0EEoT4LPpKi3P0+0BGolgjQFtOjSR6lUszcgiyDE+Yzg
-        eqWUttM6/0zstfI+8zLn2u9iEQptcnDrv5tinjG2glDfSAo2DQ==
-X-Google-Smtp-Source: ABdhPJyN6ppDedI3VMUC8U84lVxFeRBGhb1ZgnbQuS7fhmJY9CvlWntbMJkTzXTB78FnsDDUaV+P9/XPaAAp+5Wojlk=
-X-Received: by 2002:a17:907:1b1f:b0:6e4:b202:db68 with SMTP id
- mp31-20020a1709071b1f00b006e4b202db68mr3138316ejc.294.1649157702311; Tue, 05
- Apr 2022 04:21:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA3822B0F;
+        Tue,  5 Apr 2022 02:42:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CE6461576;
+        Tue,  5 Apr 2022 09:42:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EEB1C385A1;
+        Tue,  5 Apr 2022 09:42:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151763;
+        bh=Okagw7fie1fM2en2TnMuv+aoslOZlViKQELnMUuOEYg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JOeMnUQEhiHGX4ip0YxnBypBh64CYxDk64w0Kvtzb4QfWI5OWHl2Sw4MBI541VP9k
+         92c8zBYg8zY3M/h2lxIt6GIzLSq+AflKi/dXMfGPBrMg+fYBfS4mwehx1OTH0/3m8k
+         YjtM+r3esxMDJ0W1zhQv81WU9g2p4dkXuWEU8Zpo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 496/913] power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
+Date:   Tue,  5 Apr 2022 09:25:58 +0200
+Message-Id: <20220405070354.722366911@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220405082503.61041-1-iivanov@suse.de> <20220405082503.61041-3-iivanov@suse.de>
-In-Reply-To: <20220405082503.61041-3-iivanov@suse.de>
-From:   Dave Stevenson <dave.stevenson@raspberrypi.com>
-Date:   Tue, 5 Apr 2022 12:21:25 +0100
-Message-ID: <CAPY8ntArikrec3DOv_yB9kdhZex97B2aY5bfK7ye_fkjjRSgxQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] clk: bcm: rpi: Handle pixel clock in firmware
-To:     "Ivan T. Ivanov" <iivanov@suse.de>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 at 09:25, Ivan T. Ivanov <iivanov@suse.de> wrote:
->
-> The clk-bcm2835 handling of the pixel clock does not function
-> correctly when the HDMI power domain is disabled.
->
-> The firmware supports it correctly, so add it to the
-> firmware clock driver.
->
-> Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>
-> Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
+From: Hans de Goede <hdegoede@redhat.com>
 
-Acked-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+[ Upstream commit f7731754fdce33dad19be746f647d6ac47c5d695 ]
 
-> ---
->  drivers/clk/bcm/clk-raspberrypi.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/clk/bcm/clk-raspberrypi.c b/drivers/clk/bcm/clk-raspberrypi.c
-> index 2e2491d85835..530820d13104 100644
-> --- a/drivers/clk/bcm/clk-raspberrypi.c
-> +++ b/drivers/clk/bcm/clk-raspberrypi.c
-> @@ -129,6 +129,9 @@ raspberrypi_clk_variants[RPI_FIRMWARE_NUM_CLK_ID] = {
->         [RPI_FIRMWARE_V3D_CLK_ID] = {
->                 .export = true,
->         },
-> +       [RPI_FIRMWARE_PIXEL_CLK_ID] = {
-> +               .export = true,
-> +       },
->         [RPI_FIRMWARE_HEVC_CLK_ID] = {
->                 .export = true,
->         },
-> --
-> 2.26.2
->
+The datasheet says that the BQ24190_REG_POC_CHG_CONFIG bits can
+have a value of either 10(0x2) or 11(0x3) for OTG (5V boost regulator)
+mode.
+
+Sofar bq24190_vbus_is_enabled() was only checking for 10 but some BIOS-es
+uses 11 when enabling the regulator at boot.
+
+Make bq24190_vbus_is_enabled() also check for 11 so that it does not
+wrongly returns false when the bits are set to 11.
+
+Fixes: 66b6bef2c4e0 ("power: supply: bq24190_charger: Export 5V boost converter as regulator")
+Cc: Bastien Nocera <hadess@hadess.net>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/power/supply/bq24190_charger.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/power/supply/bq24190_charger.c b/drivers/power/supply/bq24190_charger.c
+index 35ff0c8fe96f..16c4876fe5af 100644
+--- a/drivers/power/supply/bq24190_charger.c
++++ b/drivers/power/supply/bq24190_charger.c
+@@ -39,6 +39,7 @@
+ #define BQ24190_REG_POC_CHG_CONFIG_DISABLE		0x0
+ #define BQ24190_REG_POC_CHG_CONFIG_CHARGE		0x1
+ #define BQ24190_REG_POC_CHG_CONFIG_OTG			0x2
++#define BQ24190_REG_POC_CHG_CONFIG_OTG_ALT		0x3
+ #define BQ24190_REG_POC_SYS_MIN_MASK		(BIT(3) | BIT(2) | BIT(1))
+ #define BQ24190_REG_POC_SYS_MIN_SHIFT		1
+ #define BQ24190_REG_POC_SYS_MIN_MIN			3000
+@@ -550,7 +551,11 @@ static int bq24190_vbus_is_enabled(struct regulator_dev *dev)
+ 	pm_runtime_mark_last_busy(bdi->dev);
+ 	pm_runtime_put_autosuspend(bdi->dev);
+ 
+-	return ret ? ret : val == BQ24190_REG_POC_CHG_CONFIG_OTG;
++	if (ret)
++		return ret;
++
++	return (val == BQ24190_REG_POC_CHG_CONFIG_OTG ||
++		val == BQ24190_REG_POC_CHG_CONFIG_OTG_ALT);
+ }
+ 
+ static const struct regulator_ops bq24190_vbus_ops = {
+-- 
+2.34.1
+
+
+
