@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A008C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 549C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240776AbiDEJGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
+        id S240869AbiDEJGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238798AbiDEITY (ORCPT
+        with ESMTP id S238941AbiDEITc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33A074617;
-        Tue,  5 Apr 2022 01:09:32 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECA37563A;
+        Tue,  5 Apr 2022 01:09:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6370E60A5A;
-        Tue,  5 Apr 2022 08:09:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F221C385A1;
-        Tue,  5 Apr 2022 08:09:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64E2FB81B18;
+        Tue,  5 Apr 2022 08:09:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFDC7C385A1;
+        Tue,  5 Apr 2022 08:09:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146171;
-        bh=94tCqCpDfa0GaM5Otbk7GPqMCgsyJwd3rD7HBKSUU8E=;
+        s=korg; t=1649146188;
+        bh=4kehsUoFuHZvf+v386mFHnSayBJJEsioJWxUk8t19Es=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KniXB16StCamlQ8bRIbY6MwFSaAsl0VzD1HAxsUJOnAxDgOk9j0lx3eFOLHM3vlVf
-         bQDtWksHMwqGjY9vNbwOxS4tr7gtpobPV9C6YYPNOF2MeffXJzRKryVI9Bv+cc9R2u
-         AH5ixiHbIV1hg1/uejRo7u2gwccpLtr2KPx9QYd0=
+        b=iLPkSAPAqHbqqM5LTeaxVNcovjo4S6lHFuTJBwz7mzSriNQ/MSDBw3NCm92JiMisc
+         IcEpnVw3yyzxWBpilHe2dUuyUnbijpc3CxTFQMd8vNxgz9zVLEuDVFshiApZHYV/FR
+         EKAifcCXq+0jMrlzTLKsbPS4JQeMTetkK7DVWEig=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>,
+        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Scott Branden <scott.branden@broadcom.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0667/1126] RDMA/rxe: Change variable and function argument to proper type
-Date:   Tue,  5 Apr 2022 09:23:34 +0200
-Message-Id: <20220405070427.205144061@linuxfoundation.org>
+Subject: [PATCH 5.17 0635/1126] PCI: Reduce warnings on possible RW1C corruption
+Date:   Tue,  5 Apr 2022 09:23:02 +0200
+Message-Id: <20220405070426.276000207@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,71 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
 
-[ Upstream commit 7e8e611d6a0ff228577b1167335ffefb0f44d5d8 ]
+[ Upstream commit 92c45b63ce22c8898aa41806e8d6692bcd577510 ]
 
-The type of wqe length is u32 so in order to avoid overflow and shadow
-casting change variable and relevant function argument to proper type.
+For hardware that only supports 32-bit writes to PCI there is the
+possibility of clearing RW1C (write-one-to-clear) bits. A rate-limited
+messages was introduced by fb2659230120, but rate-limiting is not the best
+choice here. Some devices may not show the warnings they should if another
+device has just produced a bunch of warnings. Also, the number of messages
+can be a nuisance on devices which are otherwise working fine.
 
-Link: https://lore.kernel.org/r/20220307145047.3235675-1-cgxu519@mykernel.net
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Change the ratelimit to a single warning per bus. This ensures no bus is
+'starved' of emitting a warning and also that there isn't a continuous
+stream of warnings. It would be preferable to have a warning per device,
+but the pci_dev structure is not available here, and a lookup from devfn
+would be far too slow.
+
+Suggested-by: Bjorn Helgaas <helgaas@kernel.org>
+Fixes: fb2659230120 ("PCI: Warn on possible RW1C corruption for sub-32 bit config writes")
+Link: https://lore.kernel.org/r/20200806041455.11070-1-mark.tomlinson@alliedtelesis.co.nz
+Signed-off-by: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Scott Branden <scott.branden@broadcom.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_req.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/pci/access.c | 9 ++++++---
+ include/linux/pci.h  | 1 +
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
-index 5eb89052dd66..b28036a7a3b8 100644
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -359,7 +359,7 @@ static inline int get_mtu(struct rxe_qp *qp)
+diff --git a/drivers/pci/access.c b/drivers/pci/access.c
+index 0d9f6b21babb..708c7529647f 100644
+--- a/drivers/pci/access.c
++++ b/drivers/pci/access.c
+@@ -159,9 +159,12 @@ int pci_generic_config_write32(struct pci_bus *bus, unsigned int devfn,
+ 	 * write happen to have any RW1C (write-one-to-clear) bits set, we
+ 	 * just inadvertently cleared something we shouldn't have.
+ 	 */
+-	dev_warn_ratelimited(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
+-			     size, pci_domain_nr(bus), bus->number,
+-			     PCI_SLOT(devfn), PCI_FUNC(devfn), where);
++	if (!bus->unsafe_warn) {
++		dev_warn(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
++			 size, pci_domain_nr(bus), bus->number,
++			 PCI_SLOT(devfn), PCI_FUNC(devfn), where);
++		bus->unsafe_warn = 1;
++	}
  
- static struct sk_buff *init_req_packet(struct rxe_qp *qp,
- 				       struct rxe_send_wqe *wqe,
--				       int opcode, int payload,
-+				       int opcode, u32 payload,
- 				       struct rxe_pkt_info *pkt)
- {
- 	struct rxe_dev		*rxe = to_rdev(qp->ibqp.device);
-@@ -449,7 +449,7 @@ static struct sk_buff *init_req_packet(struct rxe_qp *qp,
+ 	mask = ~(((1 << (size * 8)) - 1) << ((where & 0x3) * 8));
+ 	tmp = readl(addr) & mask;
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 8253a5413d7c..678fecdf6b81 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -668,6 +668,7 @@ struct pci_bus {
+ 	struct bin_attribute	*legacy_io;	/* Legacy I/O for this bus */
+ 	struct bin_attribute	*legacy_mem;	/* Legacy mem */
+ 	unsigned int		is_added:1;
++	unsigned int		unsafe_warn:1;	/* warned about RW1C config write */
+ };
  
- static int finish_packet(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
- 		       struct rxe_pkt_info *pkt, struct sk_buff *skb,
--		       int paylen)
-+		       u32 paylen)
- {
- 	int err;
- 
-@@ -497,7 +497,7 @@ static void update_wqe_state(struct rxe_qp *qp,
- static void update_wqe_psn(struct rxe_qp *qp,
- 			   struct rxe_send_wqe *wqe,
- 			   struct rxe_pkt_info *pkt,
--			   int payload)
-+			   u32 payload)
- {
- 	/* number of packets left to send including current one */
- 	int num_pkt = (wqe->dma.resid + payload + qp->mtu - 1) / qp->mtu;
-@@ -540,7 +540,7 @@ static void rollback_state(struct rxe_send_wqe *wqe,
- }
- 
- static void update_state(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
--			 struct rxe_pkt_info *pkt, int payload)
-+			 struct rxe_pkt_info *pkt, u32 payload)
- {
- 	qp->req.opcode = pkt->opcode;
- 
-@@ -612,7 +612,7 @@ int rxe_requester(void *arg)
- 	struct sk_buff *skb;
- 	struct rxe_send_wqe *wqe;
- 	enum rxe_hdr_mask mask;
--	int payload;
-+	u32 payload;
- 	int mtu;
- 	int opcode;
- 	int ret;
+ #define to_pci_bus(n)	container_of(n, struct pci_bus, dev)
 -- 
 2.34.1
 
