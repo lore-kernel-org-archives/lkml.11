@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D89C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2007C35273
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349210AbiDEVXp (ORCPT
+        id S1350922AbiDEVYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
+        Tue, 5 Apr 2022 17:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356372AbiDEKXl (ORCPT
+        with ESMTP id S232686AbiDEKwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C262BB93A;
-        Tue,  5 Apr 2022 03:08:14 -0700 (PDT)
+        Tue, 5 Apr 2022 06:52:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94940A8885;
+        Tue,  5 Apr 2022 03:28:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 017626179D;
-        Tue,  5 Apr 2022 10:08:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F885C385A7;
-        Tue,  5 Apr 2022 10:08:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F11F3CE1CA2;
+        Tue,  5 Apr 2022 10:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1856AC385A0;
+        Tue,  5 Apr 2022 10:27:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153293;
-        bh=ya1hx1/fE2HUdn3yYRyBbOZsn1H1ZTI+2o0qI65TxsE=;
+        s=korg; t=1649154479;
+        bh=aB7lseUHHwrbAdSM5G9olk5YFjpyPBk6CkChr4Li2sw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xwGA8LUsf+m9um8N0BzHv9qnrrJKDZXGIj1m0cLrhbDv9lioZNb9CNqCdBYxQsz9l
-         6ioBKLq4SvlVBcwodFGYDwroUSsfEs8z2X0AExHBteKgWxiVITy2iSQ5Gcx8lbYCw3
-         DXxKYdKp2080impWxWgrmLVpErqOPy8P/R7PwR9w=
+        b=wS3ksYLINlsjpy7GMW9VPauKRmb9QpZg4rMZ9ikY2nk3oL01yZy3PR7PDQgvtRU+a
+         HMHVFpOQihNYE1dBjpDUKhB/2hiUl8BbMrkq0BdC4g87jHsHTDUg2ZbpCyrm9GBerX
+         OjYEg9cDjApTNUJqveR9lbXJsMLEW4BlyjF0hhUg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhipeng Tan <tanzhipeng@hust.edu.cn>,
-        Jicheng Shao <shaojicheng@hust.edu.cn>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 172/599] f2fs: fix to enable ATGC correctly via gc_idle sysfs interface
-Date:   Tue,  5 Apr 2022 09:27:46 +0200
-Message-Id: <20220405070303.960392461@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.10 593/599] can: m_can: m_can_tx_handler(): fix use after free of skb
+Date:   Tue,  5 Apr 2022 09:34:47 +0200
+Message-Id: <20220405070316.487398000@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,38 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 7d19e3dab0002e527052b0aaf986e8c32e5537bf ]
+commit 2e8e79c416aae1de224c0f1860f2e3350fa171f8 upstream.
 
-It needs to assign sbi->gc_mode with GC_IDLE_AT rather than GC_AT when
-user tries to enable ATGC via gc_idle sysfs interface, fix it.
+can_put_echo_skb() will clone skb then free the skb. Move the
+can_put_echo_skb() for the m_can version 3.0.x directly before the
+start of the xmit in hardware, similar to the 3.1.x branch.
 
-Fixes: 093749e296e2 ("f2fs: support age threshold based garbage collection")
-Cc: Zhipeng Tan <tanzhipeng@hust.edu.cn>
-Signed-off-by: Jicheng Shao <shaojicheng@hust.edu.cn>
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 80646733f11c ("can: m_can: update to support CAN FD features")
+Link: https://lore.kernel.org/all/20220317081305.739554-1-mkl@pengutronix.de
+Cc: stable@vger.kernel.org
+Reported-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/sysfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/m_can/m_can.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/f2fs/sysfs.c b/fs/f2fs/sysfs.c
-index 7ffd4bb398b0..a7e7d68256e0 100644
---- a/fs/f2fs/sysfs.c
-+++ b/fs/f2fs/sysfs.c
-@@ -386,7 +386,7 @@ static ssize_t __sbi_store(struct f2fs_attr *a,
- 		} else if (t == GC_IDLE_AT) {
- 			if (!sbi->am.atgc_enabled)
- 				return -EINVAL;
--			sbi->gc_mode = GC_AT;
-+			sbi->gc_mode = GC_IDLE_AT;
- 		} else {
- 			sbi->gc_mode = GC_NORMAL;
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1491,8 +1491,6 @@ static netdev_tx_t m_can_tx_handler(stru
+ 					 M_CAN_FIFO_DATA(i / 4),
+ 					 *(u32 *)(cf->data + i));
+ 
+-		can_put_echo_skb(skb, dev, 0);
+-
+ 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD) {
+ 			cccr = m_can_read(cdev, M_CAN_CCCR);
+ 			cccr &= ~(CCCR_CMR_MASK << CCCR_CMR_SHIFT);
+@@ -1509,6 +1507,9 @@ static netdev_tx_t m_can_tx_handler(stru
+ 			m_can_write(cdev, M_CAN_CCCR, cccr);
  		}
--- 
-2.34.1
-
+ 		m_can_write(cdev, M_CAN_TXBTIE, 0x1);
++
++		can_put_echo_skb(skb, dev, 0);
++
+ 		m_can_write(cdev, M_CAN_TXBAR, 0x1);
+ 		/* End of xmit function for version 3.0.x */
+ 	} else {
 
 
