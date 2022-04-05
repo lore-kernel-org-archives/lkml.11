@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A66AC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6CDC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344785AbiDELAI (ORCPT
+        id S1344453AbiDEK7v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58464 "EHLO
+        Tue, 5 Apr 2022 06:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234136AbiDEIiS (ORCPT
+        with ESMTP id S242362AbiDEIhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:38:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25E41D0DD;
-        Tue,  5 Apr 2022 01:32:49 -0700 (PDT)
+        Tue, 5 Apr 2022 04:37:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE9C1CFF7;
+        Tue,  5 Apr 2022 01:32:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CDE4B81B13;
-        Tue,  5 Apr 2022 08:32:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04390C385A0;
-        Tue,  5 Apr 2022 08:32:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 719796117D;
+        Tue,  5 Apr 2022 08:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CEA3C385A0;
+        Tue,  5 Apr 2022 08:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147567;
-        bh=z0MZUq/cr6LSD5n9+SgDZwG8ExGGT+HKRqHuTFk8Ndk=;
+        s=korg; t=1649147561;
+        bh=B8Q+cSPIOi/M5XObkjw1M58uMGbxfVaxxo5QHsotE6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z/K4k+WR7ftFSqRKhU9WNBRTIuMRPwCw8OBnF6+tnWBS0YCj9Wzl0b4WoFCEyHxLl
-         FMcZts4yaUM4OqiuByzqrU0Gn6g3y0AC3hjcS8VzMRyJYJq/3/sbzlnNxE0zwgmzhO
-         GBlzKpHS9engaOPWQghYOJM0YYroepon7bXv+hVw=
+        b=QNjpU4r4xnw3wB1AGK46MI/Pf+nu6YlizKrUKJxUGAMKkitgHU5uDS5eIYrNXECCw
+         1Xc39m8Vq0UDXKRp/BLHXugt0fBN2BPFdvdxs6EKdZd+a0lyQeBdUVmjodc0hqQWK8
+         +dFC94BSVsdR2wElA94DELUmUYLkQFtbFYsShiyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.16 0043/1017] docs: sphinx/requirements: Limit jinja2<3.1
-Date:   Tue,  5 Apr 2022 09:15:56 +0200
-Message-Id: <20220405070355.460162240@linuxfoundation.org>
+        stable@vger.kernel.org, Manivannan Sadhasivam <mani@kernel.org>,
+        Yonglin Tan <yonglin.tan@outlook.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 5.16 0041/1017] bus: mhi: pci_generic: Add mru_default for Quectel EM1xx series
+Date:   Tue,  5 Apr 2022 09:15:54 +0200
+Message-Id: <20220405070355.399862618@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,33 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Yokosawa <akiyks@gmail.com>
+From: Yonglin Tan <yonglin.tan@outlook.com>
 
-commit be78837ca3c88eebd405103a7a2ce891c466b0db upstream.
+commit 2413ffbf19a95cfcd7adf63135c5a9343a66d0a2 upstream.
 
-jinja2 release 3.1.0 (March 24, 2022) broke Sphinx<4.0.
-This looks like the result of deprecating Python 3.6.
-It has been tested against Sphinx 4.3.0 and later.
+For default mechanism, the driver uses default MRU 3500 if mru_default
+is not initialized. The Qualcomm configured the MRU size to 32768 in the
+WWAN device FW. So, we align the driver setting with Qualcomm FW setting.
 
-Setting an upper limit of <3.1 to junja2 can unbreak Sphinx<4.0
-including Sphinx 2.4.4.
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: stable@vger.kernel.org # v5.15+
-Link: https://lore.kernel.org/r/7dbff8a0-f4ff-34a0-71c7-1987baf471f9@gmail.com
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Link: https://lore.kernel.org/r/MEYP282MB2374EE345DADDB591AFDA6AFFD2E9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM
+Fixes: ac4bf60bbaa0 ("bus: mhi: pci_generic: Introduce quectel EM1XXGR-L support")
+Cc: stable@vger.kernel.org
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Link: https://lore.kernel.org/r/20220301160308.107452-2-manivannan.sadhasivam@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/sphinx/requirements.txt |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/bus/mhi/pci_generic.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/Documentation/sphinx/requirements.txt
-+++ b/Documentation/sphinx/requirements.txt
-@@ -1,2 +1,4 @@
-+# jinja2>=3.1 is not compatible with Sphinx<4.0
-+jinja2<3.1
- sphinx_rtd_theme
- Sphinx==2.4.4
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@ -327,6 +327,7 @@ static const struct mhi_pci_dev_info mhi
+ 	.config = &modem_quectel_em1xx_config,
+ 	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
+ 	.dma_data_width = 32,
++	.mru_default = 32768,
+ 	.sideband_wake = true,
+ };
+ 
 
 
