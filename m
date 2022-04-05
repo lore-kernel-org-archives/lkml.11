@@ -2,92 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F517C47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA59C35280
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839901AbiDFBGT (ORCPT
+        id S1839823AbiDFBGB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60960 "EHLO
+        Tue, 5 Apr 2022 21:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573147AbiDESCB (ORCPT
+        with ESMTP id S1348810AbiDEJsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 14:02:01 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC68EBB9D;
-        Tue,  5 Apr 2022 11:00:01 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id w4so20488284wrg.12;
-        Tue, 05 Apr 2022 11:00:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ps9sabn/FLiol/hOAkHVK8/MzrVBlohNvXit/I8IEYc=;
-        b=R44RXszOTrCfg9a6xQntX7eXLlcenLZQ79iHWwZfWh9PijVC/UjlQitBO/Yt/Wq/W5
-         dTA4dRF74W0DLZK0MUpa6PxqZxtBFxQmoUyDUjy0e4JVi5WXu/xU+Y1Hzb7op13pN/t1
-         Vco1rVX5eqUYMewLGvFa+zlth4/k7DCJ+ThdQOvI7x0KHIQ5FaPPk/UWHJC1orymLQX4
-         7XSCpRaubPqT0f6R2D/NEp8qzZ0wueIQDW44oLsn/B677uMWwY0PSYg/po63Ac2Z5RkA
-         BLP8vayDRRtqY/sys3mO8EU3v1ruGqddsM+LoJibpZoG4yzJujdjCt1+X2uICb0xzSeQ
-         swXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ps9sabn/FLiol/hOAkHVK8/MzrVBlohNvXit/I8IEYc=;
-        b=1OAgLFHfQ6LCXk2se/Fx8MowrtwgUHu+r+8eR2bLNVxhV+7Px0ZkBgV4mI2BgYS1fv
-         fvSgyS/DOxllkVRBNVLsdP8WXXUr7ft9TAP7cdjtXgTrGaVvlm4w/uqFe7T5gMniWA6t
-         E/YQpMxKW6zc6ZS2IKk+hWJkh/QgdhSTPjKPPTJPDp1mTXnB36ozXtTf98+b3qPqM/n2
-         Aw79UVnTh5pd1SIJLktRXcHTwMNfb4QjC/9r/Hf4w7N/KZ76Z9cBc/CRXO9gCi+Uihb2
-         GNJclavOv2Hnq9pQkZTyqYdhiIxVlObnD+54t+giQqode3fLTzlRcIsB5UM2RqpzXN4E
-         uKUg==
-X-Gm-Message-State: AOAM5309NQ0h/oYmjB2wHLcF0dNCP5wx751JG6Go4dd0zCEnSYTzlfUw
-        6dD+nUQeQhhOU1Z4hraB/PQ=
-X-Google-Smtp-Source: ABdhPJzPk+TK/I+NTaHUbvTpHCArFr87ss2K8cjZe77v1loJE5zgGUwLw+jFL7OH+UyTRqfqB5ZSBw==
-X-Received: by 2002:a5d:5608:0:b0:206:11c2:b65d with SMTP id l8-20020a5d5608000000b0020611c2b65dmr3663036wrv.215.1649181600255;
-        Tue, 05 Apr 2022 11:00:00 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id k9-20020adfb349000000b00206101fc58fsm6898756wrd.110.2022.04.05.10.59.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 10:59:59 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] media: platform: samsung: remove redundant assignment to variable m
-Date:   Tue,  5 Apr 2022 18:59:59 +0100
-Message-Id: <20220405175959.223443-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 5 Apr 2022 05:48:38 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1422090FE4;
+        Tue,  5 Apr 2022 02:35:54 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nbfbM-0002uq-9O; Tue, 05 Apr 2022 11:35:52 +0200
+Message-ID: <4746cf3e-a9e7-4968-2695-22dd3356638f@leemhuis.info>
+Date:   Tue, 5 Apr 2022 11:35:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] Revert "Input: clear BTN_RIGHT/MIDDLE on buttonpads"
+Content-Language: en-US
+To:     Peter Hutterer <peter.hutterer@who-t.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Takashi Iwai <tiwai@suse.de>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        "3.8+" <stable@vger.kernel.org>, regressions@lists.linux.dev,
+        lkml <linux-kernel@vger.kernel.org>
+References: <20220321184404.20025-1-jose.exposito89@gmail.com>
+ <44abc738-1532-63fa-9cd1-2b3870a963bc@leemhuis.info>
+ <CAO-hwJJweSuSBE_18ZbvqS12eX9GcS+aJoe7SRFJdASOrN3bqw@mail.gmail.com>
+ <YkUqajiNZmi+lAPC@google.com> <YkUwRIa4ZI3TLAs0@quokka>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <YkUwRIa4ZI3TLAs0@quokka>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1649151356;6ef4cca2;
+X-HE-SMSGID: 1nbfbM-0002uq-9O
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable m is being assigned a value that is never read, it
-is being re-assigned in both paths of the following if-statement.
-The assignment is redundant and can be removed.
+Just a quick add-on note for the record about another affected device:
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c | 1 -
- 1 file changed, 1 deletion(-)
+On 31.03.22 06:38, Peter Hutterer wrote:
+> On Wed, Mar 30, 2022 at 09:13:30PM -0700, Dmitry Torokhov wrote:
+>> On Wed, Mar 30, 2022 at 02:30:37PM +0200, Benjamin Tissoires wrote:
+>>> On Wed, Mar 30, 2022 at 2:27 PM Thorsten Leemhuis
+>>> <regressions@leemhuis.info> wrote:
+>>>> On 21.03.22 19:44, José Expósito wrote:
+>>>>> This reverts commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40.
+>>>>>
+>>>>> The touchpad present in the Dell Precision 7550 and 7750 laptops
+>>>>> reports a HID_DG_BUTTONTYPE of type MT_BUTTONTYPE_CLICKPAD. However,
+>>>>> the device is not a clickpad, it is a touchpad with physical buttons.
+>>>>>
+>>>>> In order to fix this issue, a quirk for the device was introduced in
+>>>>> libinput [1] [2] to disable the INPUT_PROP_BUTTONPAD property:
+>>>>>
+>>>>>       [Precision 7x50 Touchpad]
+>>>>>       MatchBus=i2c
+>>>>>       MatchUdevType=touchpad
+>>>>>       MatchDMIModalias=dmi:*svnDellInc.:pnPrecision7?50*
+>>>>>       AttrInputPropDisable=INPUT_PROP_BUTTONPAD
+>>>>>
+>>>>> However, because of the change introduced in 37ef4c19b4 ("Input: clear
+>>>>> BTN_RIGHT/MIDDLE on buttonpads") the BTN_RIGHT key bit is not mapped
+>>>>> anymore breaking the device right click button and making impossible to
+>>>>> workaround it in user space.
+>>>>>
+>>>>> In order to avoid breakage on other present or future devices, revert
+>>>>> the patch causing the issue.
+>>>>>
+>>>>> Cc: stable@vger.kernel.org
+>>>>> Link: https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/481 [1]
+>>>>> Link: https://bugzilla.redhat.com/show_bug.cgi?id=1868789  [2]
+>>>>> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+>>>>> [...]
+>>>>
+>>>> Jiri, Benjamin, what the status here? Sure, this is not a crucial
+>>>> regression and we are in the middle of the merge window, but it looks
+>>>> like nothing has happened for a week now. Or was progress made somewhere
+>>>> and I just missed it?
+>>>
+>>> No, I think it just wasn't picked up by the input maintainer yet
+>>> (Dmitry, now in CC).
+>>>
+>>> FWIW:
+>>> Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+>>>
+>>> José, please do not forget to add the input maintainer when you target
+>>> the input tree, not the HID one :)
+>>
+>> I see that there were several ACKs, but how many devices misuse the
+>> HID_DG_BUTTONTYPE? Would it be better to quirk against either affected
+>> Dell models, or particular touchpads (by HID IDs) instead of reverting
+>> wholesale?
+> 
+> fwiw, a quick git grep in libinput shows 12 entries for disabling BTN_RIGHT
+> and 9 entries for enabling/disabling INPUT_PROP_BUTTONPAD. That's not the
+> number of devices affected by this bug, merely devices we know advertise the
+> wrong combination.
+> 
+> Note that the cause for the revert is loss of functionality. Previously, a
+> device was just advertising buttons incorrectly but still worked fine. This
+> was mostly a cosmetic issue (and could be worked around in userspace). With
+> the patch in place some devices right button no longer works because it's
+> filtered by the kernel. That's why the revert is needed.
+> 
+> The device could/should still be quirked to drop INPUT_PROP_BUTTONPAD but that
+> is only required to work around the cosmetic issues then.
 
-diff --git a/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c b/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c
-index 01b47b3df1e7..33e6e85dfd78 100644
---- a/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c
-+++ b/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw-s5p.c
-@@ -52,7 +52,6 @@ void s5p_jpeg_proc_mode(void __iomem *regs, unsigned long mode)
- {
- 	unsigned long reg, m;
- 
--	m = S5P_PROC_MODE_DECOMPR;
- 	if (mode == S5P_JPEG_ENCODE)
- 		m = S5P_PROC_MODE_COMPR;
- 	else
--- 
-2.35.1
+I anyone cares now or in the future: seems the patch meanwhile reverted
+(thx) also broke the ICL Si1516:
+https://bugzilla.kernel.org/show_bug.cgi?id=215771
 
+Ciao, Thorsten
+
+P.S.: Any while at it, let me let regzbot about the fix as well:
+
+#regzbot fixed-by: 8b188fba75195745026e11d408e4a7e94e01d701
