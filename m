@@ -2,115 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F81C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E62C3C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345557AbiDEKlf (ORCPT
+        id S1346027AbiDEKmi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
+        Tue, 5 Apr 2022 06:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241234AbiDEIc5 (ORCPT
+        with ESMTP id S241197AbiDEIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818D0D8A;
-        Tue,  5 Apr 2022 01:30:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 353C1B81BC5;
-        Tue,  5 Apr 2022 08:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98B42C385A1;
-        Tue,  5 Apr 2022 08:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147410;
-        bh=89+pR9PH12ki5m/MYnRkohyxE/wShs8jdpgwEW/JbyQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sFKzmcBbla+jn9uLmKVCyl9ZLwxvWhBqbVrY5b4id80JBkHYfGsW8p80kL8XFkFhW
-         So+LFi+kEqkfTuldxXwxvPlFbJZpEgqVfImsUwfQWi9PDxHuI1HfLClyIaEpeI50kz
-         x8c4ji5sAxbpiB8eEr5g0WtpN7oFBSr4MClfw8ao=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 1087/1126] nbd: fix possible overflow on first_minor in nbd_dev_add()
-Date:   Tue,  5 Apr 2022 09:30:34 +0200
-Message-Id: <20220405070439.356293544@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:32:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358C917A86;
+        Tue,  5 Apr 2022 01:29:24 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:21 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147362;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=weL/Y/0bLbSr89Udbwco2BymGNu3H+Z73Jcjq6NeTuI=;
+        b=PPDV1NnBtSFLvt+bcYKiG4rGphZi2oyC3AxUFgeFR9azd2m3bY5YILSwXRH9zUEYevKbSf
+        6TgHUz7gPyC36Cul2Lh5ecKuM5r5ro/ZQdDhljRgq9DFCZzp4G9O0ZtvACwMc3D68gyiz8
+        h7XSSH5vUz69vCQP90l9SjYJu2ZntIk/exYEPgyxhE0EFT3tGlfcGtBWovfZ68oqhoC9sN
+        JZmu52rUUAzhG/CzCo6u7t9Am9nNhfynUJHeG1wCDLmzQZUhig/dncBKOaGJmS2ExxdcY3
+        Oxa6g5ZnL0jwIHJmCgXwttzUvo8aSzXjrGEd8ZeRxFI7S+Bs+TgntsMNBwzpJA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147362;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=weL/Y/0bLbSr89Udbwco2BymGNu3H+Z73Jcjq6NeTuI=;
+        b=f3PzWIp1F/sCFHuDCAPpTCS7V1P+VizleOlgVky2nSdFgu4dQLNEi8ZWjVFAk0V9bgVqmO
+        ElUnO1IoQ+aBq1AQ==
+From:   "tip-bot2 for Valentin Schneider" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] preempt/dynamic: Introduce preemption model accessors
+Cc:     Marco Elver <elver@google.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20211112185203.280040-3-valentin.schneider@arm.com>
+References: <20211112185203.280040-3-valentin.schneider@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914736184.389.17168803226310097171.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+The following commit has been merged into the sched/core branch of tip:
 
-commit 6d35d04a9e18990040e87d2bbf72689252669d54 upstream.
+Commit-ID:     cfe43f478b79ba45573ca22d52d0d8823be068fa
+Gitweb:        https://git.kernel.org/tip/cfe43f478b79ba45573ca22d52d0d8823be068fa
+Author:        Valentin Schneider <valentin.schneider@arm.com>
+AuthorDate:    Fri, 12 Nov 2021 18:52:01 
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 10:24:42 +02:00
 
-When 'index' is a big numbers, it may become negative which forced
-to 'int'. then 'index << part_shift' might overflow to a positive
-value that is not greater than '0xfffff', then sysfs might complains
-about duplicate creation. Because of this, move the 'index' judgment
-to the front will fix it and be better.
+preempt/dynamic: Introduce preemption model accessors
 
-Fixes: b0d9111a2d53 ("nbd: use an idr to keep track of nbd devices")
-Fixes: 940c264984fd ("nbd: fix possible overflow for 'first_minor' in nbd_dev_add()")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220310093224.4002895-1-zhangwensheng5@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CONFIG_PREEMPT{_NONE, _VOLUNTARY} designate either:
+o The build-time preemption model when !PREEMPT_DYNAMIC
+o The default boot-time preemption model when PREEMPT_DYNAMIC
+
+IOW, using those on PREEMPT_DYNAMIC kernels is meaningless - the actual
+model could have been set to something else by the "preempt=foo" cmdline
+parameter. Same problem applies to CONFIG_PREEMPTION.
+
+Introduce a set of helpers to determine the actual preemption model used by
+the live kernel.
+
+Suggested-by: Marco Elver <elver@google.com>
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Marco Elver <elver@google.com>
+Acked-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20211112185203.280040-3-valentin.schneider@arm.com
 ---
- drivers/block/nbd.c |   24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ include/linux/sched.h | 41 +++++++++++++++++++++++++++++++++++++++++
+ kernel/sched/core.c   | 12 ++++++++++++
+ 2 files changed, 53 insertions(+)
 
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1800,17 +1800,6 @@ static struct nbd_device *nbd_dev_add(in
- 	refcount_set(&nbd->refs, 0);
- 	INIT_LIST_HEAD(&nbd->list);
- 	disk->major = NBD_MAJOR;
--
--	/* Too big first_minor can cause duplicate creation of
--	 * sysfs files/links, since index << part_shift might overflow, or
--	 * MKDEV() expect that the max bits of first_minor is 20.
--	 */
--	disk->first_minor = index << part_shift;
--	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
--		err = -EINVAL;
--		goto out_free_work;
--	}
--
- 	disk->minors = 1 << part_shift;
- 	disk->fops = &nbd_fops;
- 	disk->private_data = nbd;
-@@ -1915,8 +1904,19 @@ static int nbd_genl_connect(struct sk_bu
- 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
- 		return -EPERM;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index d5e3c00..67f06f7 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -2117,6 +2117,47 @@ static inline void cond_resched_rcu(void)
+ #endif
+ }
  
--	if (info->attrs[NBD_ATTR_INDEX])
-+	if (info->attrs[NBD_ATTR_INDEX]) {
- 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
++#ifdef CONFIG_PREEMPT_DYNAMIC
 +
-+		/*
-+		 * Too big first_minor can cause duplicate creation of
-+		 * sysfs files/links, since index << part_shift might overflow, or
-+		 * MKDEV() expect that the max bits of first_minor is 20.
-+		 */
-+		if (index < 0 || index > MINORMASK >> part_shift) {
-+			printk(KERN_ERR "nbd: illegal input index %d\n", index);
-+			return -EINVAL;
-+		}
-+	}
- 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
- 		printk(KERN_ERR "nbd: must specify at least one socket\n");
- 		return -EINVAL;
-
-
++extern bool preempt_model_none(void);
++extern bool preempt_model_voluntary(void);
++extern bool preempt_model_full(void);
++
++#else
++
++static inline bool preempt_model_none(void)
++{
++	return IS_ENABLED(CONFIG_PREEMPT_NONE);
++}
++static inline bool preempt_model_voluntary(void)
++{
++	return IS_ENABLED(CONFIG_PREEMPT_VOLUNTARY);
++}
++static inline bool preempt_model_full(void)
++{
++	return IS_ENABLED(CONFIG_PREEMPT);
++}
++
++#endif
++
++static inline bool preempt_model_rt(void)
++{
++	return IS_ENABLED(CONFIG_PREEMPT_RT);
++}
++
++/*
++ * Does the preemption model allow non-cooperative preemption?
++ *
++ * For !CONFIG_PREEMPT_DYNAMIC kernels this is an exact match with
++ * CONFIG_PREEMPTION; for CONFIG_PREEMPT_DYNAMIC this doesn't work as the
++ * kernel is *built* with CONFIG_PREEMPTION=y but may run with e.g. the
++ * PREEMPT_NONE model.
++ */
++static inline bool preempt_model_preemptible(void)
++{
++	return preempt_model_full() || preempt_model_rt();
++}
++
+ /*
+  * Does a critical section need to be broken due to another
+  * task waiting?: (technically does not depend on CONFIG_PREEMPTION,
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index d575b49..068c088 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8409,6 +8409,18 @@ static void __init preempt_dynamic_init(void)
+ 	}
+ }
+ 
++#define PREEMPT_MODEL_ACCESSOR(mode) \
++	bool preempt_model_##mode(void)						 \
++	{									 \
++		WARN_ON_ONCE(preempt_dynamic_mode == preempt_dynamic_undefined); \
++		return preempt_dynamic_mode == preempt_dynamic_##mode;		 \
++	}									 \
++	EXPORT_SYMBOL_GPL(preempt_model_##mode)
++
++PREEMPT_MODEL_ACCESSOR(none);
++PREEMPT_MODEL_ACCESSOR(voluntary);
++PREEMPT_MODEL_ACCESSOR(full);
++
+ #else /* !CONFIG_PREEMPT_DYNAMIC */
+ 
+ static inline void preempt_dynamic_init(void) { }
