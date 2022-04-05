@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5C9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F89C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345928AbiDENF0 (ORCPT
+        id S1351465AbiDENGh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        Tue, 5 Apr 2022 09:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242459AbiDEJIA (ORCPT
+        with ESMTP id S1343991AbiDEJQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:08:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18BBF6C95C;
-        Tue,  5 Apr 2022 01:56:55 -0700 (PDT)
+        Tue, 5 Apr 2022 05:16:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9EAEB7;
+        Tue,  5 Apr 2022 02:03:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F9EEB81C19;
-        Tue,  5 Apr 2022 08:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A41C385A1;
-        Tue,  5 Apr 2022 08:56:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CFB261564;
+        Tue,  5 Apr 2022 09:03:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADC07C385A1;
+        Tue,  5 Apr 2022 09:03:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149010;
-        bh=Fuaowa36LZmZrZwM9VAhTPo1a9kG2y7HWx+kfZ1HWT4=;
+        s=korg; t=1649149393;
+        bh=iyz1Yk21oN71kPToOHP+9tfSQ5oWptc3Iu7o1QaJYJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffeACz8ziiDBheGrw1WTvTP8rTCFNmlnMSuUet4m9JhuxzMlevEFXo5QyBtBrRcFe
-         9idsxDTdmOIAP0ukA8Crpui/yub9Mvt6Z21Wsm5VR3YcTKPchOOz4D3YyiBaYPrs0R
-         Xdq0+FZhS9Lw9N7xdIKeU0jmSEIR2Zd3w7g2puho=
+        b=J1l3EbbpN8sjwY17VUejGCf21LkyA6ikG29081q5xVHJmLY06G0lxT9Lu9HGUyAqH
+         j38Mnj1UO70jTrOyESMLBBRcxvWJPPADAoYlNlgFyJOslDxqbWN4LxT+5vK9XGlcI/
+         1CSRmwdEG7J4alVya29jjLJsVfHKrZ0pkH5lIpeI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0562/1017] powerpc/Makefile: Dont pass -mcpu=powerpc64 when building 32-bit
-Date:   Tue,  5 Apr 2022 09:24:35 +0200
-Message-Id: <20220405070410.962528069@linuxfoundation.org>
+Subject: [PATCH 5.16 0698/1017] pinctrl: mediatek: paris: Fix "argument" argument type for mtk_pinconf_get()
+Date:   Tue,  5 Apr 2022 09:26:51 +0200
+Message-Id: <20220405070414.991737425@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,55 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit 2863dd2db23e0407f6c50b8ba5c0e55abef894f1 ]
+[ Upstream commit 19bce7ce0a593c7024030a0cda9e23facea3c93d ]
 
-When CONFIG_GENERIC_CPU=y (true for all our defconfigs) we pass
--mcpu=powerpc64 to the compiler, even when we're building a 32-bit
-kernel.
+For mtk_pinconf_get(), the "argument" argument is typically returned by
+pinconf_to_config_argument(), which holds the value for a given pinconf
+parameter. It certainly should not have the type of "enum pin_config_param",
+which describes the type of the pinconf parameter itself.
 
-This happens because we have an ifdef CONFIG_PPC_BOOK3S_64/else block in
-the Makefile that was written before 32-bit supported GENERIC_CPU. Prior
-to that the else block only applied to 64-bit Book3E.
+Change the type to u32, which matches the return type of
+pinconf_to_config_argument().
 
-The GCC man page says -mcpu=powerpc64 "[specifies] a pure ... 64-bit big
-endian PowerPC ... architecture machine [type], with an appropriate,
-generic processor model assumed for scheduling purposes."
-
-It's unclear how that interacts with -m32, which we are also passing,
-although obviously -m32 is taking precedence in some sense, as the
-32-bit kernel only contains 32-bit instructions.
-
-This was noticed by inspection, not via any bug reports, but it does
-affect code generation. Comparing before/after code generation, there
-are some changes to instruction scheduling, and the after case (with
--mcpu=powerpc64 removed) the compiler seems more keen to use r8.
-
-Fix it by making the else case only apply to Book3E 64, which excludes
-32-bit.
-
-Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220215112858.304779-1-mpe@ellerman.id.au
+Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-4-wenst@chromium.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
-index e02568f17334..3d2e74ebc014 100644
---- a/arch/powerpc/Makefile
-+++ b/arch/powerpc/Makefile
-@@ -171,7 +171,7 @@ else
- CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=power7,$(call cc-option,-mtune=power5))
- CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mcpu=power5,-mcpu=power4)
- endif
--else
-+else ifdef CONFIG_PPC_BOOK3E_64
- CFLAGS-$(CONFIG_GENERIC_CPU) += -mcpu=powerpc64
- endif
+diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
+index f7644530cee1..cbaad89fbe17 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-paris.c
++++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
+@@ -184,8 +184,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
+ }
  
+ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
+-			   enum pin_config_param param,
+-			   enum pin_config_param arg)
++			   enum pin_config_param param, u32 arg)
+ {
+ 	struct mtk_pinctrl *hw = pinctrl_dev_get_drvdata(pctldev);
+ 	const struct mtk_pin_desc *desc;
 -- 
 2.34.1
 
