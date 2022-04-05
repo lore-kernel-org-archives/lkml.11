@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7A6C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E11EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391038AbiDENq4 (ORCPT
+        id S1391002AbiDENqf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        Tue, 5 Apr 2022 09:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242674AbiDEJ0C (ORCPT
+        with ESMTP id S1347339AbiDEJ0B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:26:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A6CDE917;
-        Tue,  5 Apr 2022 02:15:19 -0700 (PDT)
+        Tue, 5 Apr 2022 05:26:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707E2DE92D;
+        Tue,  5 Apr 2022 02:15:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32737B81A12;
-        Tue,  5 Apr 2022 09:14:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 858E3C385A0;
-        Tue,  5 Apr 2022 09:14:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B72EB81B75;
+        Tue,  5 Apr 2022 09:15:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCCF6C385A0;
+        Tue,  5 Apr 2022 09:15:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150096;
-        bh=sbnwdoSVqLGy+sxt29AUW1vGB75AYvZ5+OBYERYQW0Y=;
+        s=korg; t=1649150119;
+        bh=a6oPxCJzwFg+auaLybS3Cz5xCfoOmB6qPAWpGmmbt78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dfwL0cc1pU9skU86pxUi4ICN2+TDnRVpABKXSRqAe0w21bM8QDqNydRZIoTySHX2H
-         9qPWxDd0DnBHoPSTnVvxps2ZxXB+R4WvMHAWWXTtpHE1T1P68TNGNzVdu6HohgSEH4
-         ND837U7vDixpsy+Sdr1DTi+ZaFV+7GNPZA2coHAs=
+        b=SvMPhZaRdqwzMm7sQTiiU53rPmf6/jFTSm5IWaUHQM1601SGqxAcpNS0xcczTdauh
+         s4qRps5G30Krs9YD3Dwl7hxZzkroZ0EncoML4wm8y85AuDS66bNBcSgI0clvoL/5fG
+         ie6IAaGCOaKDihgKGIOkxH36SfUrEJXKErlbFYQo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.16 0952/1017] virtio: use virtio_device_ready() in virtio_device_restore()
-Date:   Tue,  5 Apr 2022 09:31:05 +0200
-Message-Id: <20220405070422.470327478@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH 5.16 0922/1017] XArray: Fix xas_create_range() when multi-order entry present
+Date:   Tue,  5 Apr 2022 09:30:35 +0200
+Message-Id: <20220405070421.586364516@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,78 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-commit 8d65bc9a5be3f23c5e2ab36b6b8ef40095165b18 upstream.
+commit 3e3c658055c002900982513e289398a1aad4a488 upstream.
 
-After waking up a suspended VM, the kernel prints the following trace
-for virtio drivers which do not directly call virtio_device_ready() in
-the .restore:
+If there is already an entry present that is of order >= XA_CHUNK_SHIFT
+when we call xas_create_range(), xas_create_range() will misinterpret
+that entry as a node and dereference xa_node->parent, generally leading
+to a crash that looks something like this:
 
-    PM: suspend exit
-    irq 22: nobody cared (try booting with the "irqpoll" option)
-    Call Trace:
-     <IRQ>
-     dump_stack_lvl+0x38/0x49
-     dump_stack+0x10/0x12
-     __report_bad_irq+0x3a/0xaf
-     note_interrupt.cold+0xb/0x60
-     handle_irq_event+0x71/0x80
-     handle_fasteoi_irq+0x95/0x1e0
-     __common_interrupt+0x6b/0x110
-     common_interrupt+0x63/0xe0
-     asm_common_interrupt+0x1e/0x40
-     ? __do_softirq+0x75/0x2f3
-     irq_exit_rcu+0x93/0xe0
-     sysvec_apic_timer_interrupt+0xac/0xd0
-     </IRQ>
-     <TASK>
-     asm_sysvec_apic_timer_interrupt+0x12/0x20
-     arch_cpu_idle+0x12/0x20
-     default_idle_call+0x39/0xf0
-     do_idle+0x1b5/0x210
-     cpu_startup_entry+0x20/0x30
-     start_secondary+0xf3/0x100
-     secondary_startup_64_no_verify+0xc3/0xcb
-     </TASK>
-    handlers:
-    [<000000008f9bac49>] vp_interrupt
-    [<000000008f9bac49>] vp_interrupt
-    Disabling IRQ #22
+general protection fault, probably for non-canonical address 0xdffffc0000000001:
+0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 0 PID: 32 Comm: khugepaged Not tainted 5.17.0-rc8-syzkaller-00003-g56e337f2cf13 #0
+RIP: 0010:xa_parent_locked include/linux/xarray.h:1207 [inline]
+RIP: 0010:xas_create_range+0x2d9/0x6e0 lib/xarray.c:725
 
-This happens because we don't invoke .enable_cbs callback in
-virtio_device_restore(). That callback is used by some transports
-(e.g. virtio-pci) to enable interrupts.
+It's deterministically reproducable once you know what the problem is,
+but producing it in a live kernel requires khugepaged to hit a race.
+While the problem has been present since xas_create_range() was
+introduced, I'm not aware of a way to hit it before the page cache was
+converted to use multi-index entries.
 
-Let's fix it, by calling virtio_device_ready() as we do in
-virtio_dev_probe(). This function calls .enable_cts callback and sets
-DRIVER_OK status bit.
-
-This fix also avoids setting DRIVER_OK twice for those drivers that
-call virtio_device_ready() in the .restore.
-
-Fixes: d50497eb4e55 ("virtio_config: introduce a new .enable_cbs method")
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Link: https://lore.kernel.org/r/20220322114313.116516-1-sgarzare@redhat.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
+Reported-by: syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ lib/test_xarray.c |   22 ++++++++++++++++++++++
+ lib/xarray.c      |    2 ++
+ 2 files changed, 24 insertions(+)
 
---- a/drivers/virtio/virtio.c
-+++ b/drivers/virtio/virtio.c
-@@ -504,8 +504,9 @@ int virtio_device_restore(struct virtio_
- 			goto err;
+--- a/lib/test_xarray.c
++++ b/lib/test_xarray.c
+@@ -1463,6 +1463,25 @@ unlock:
+ 	XA_BUG_ON(xa, !xa_empty(xa));
+ }
+ 
++static noinline void check_create_range_5(struct xarray *xa,
++		unsigned long index, unsigned int order)
++{
++	XA_STATE_ORDER(xas, xa, index, order);
++	unsigned int i;
++
++	xa_store_order(xa, index, order, xa_mk_index(index), GFP_KERNEL);
++
++	for (i = 0; i < order + 10; i++) {
++		do {
++			xas_lock(&xas);
++			xas_create_range(&xas);
++			xas_unlock(&xas);
++		} while (xas_nomem(&xas, GFP_KERNEL));
++	}
++
++	xa_destroy(xa);
++}
++
+ static noinline void check_create_range(struct xarray *xa)
+ {
+ 	unsigned int order;
+@@ -1490,6 +1509,9 @@ static noinline void check_create_range(
+ 		check_create_range_4(xa, (3U << order) + 1, order);
+ 		check_create_range_4(xa, (3U << order) - 1, order);
+ 		check_create_range_4(xa, (1U << 24) + 1, order);
++
++		check_create_range_5(xa, 0, order);
++		check_create_range_5(xa, (1U << order), order);
  	}
  
--	/* Finally, tell the device we're all set */
--	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER_OK);
-+	/* If restore didn't do it, mark device DRIVER_OK ourselves. */
-+	if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
-+		virtio_device_ready(dev);
+ 	check_create_range_3();
+--- a/lib/xarray.c
++++ b/lib/xarray.c
+@@ -722,6 +722,8 @@ void xas_create_range(struct xa_state *x
  
- 	virtio_config_enable(dev);
- 
+ 		for (;;) {
+ 			struct xa_node *node = xas->xa_node;
++			if (node->shift >= shift)
++				break;
+ 			xas->xa_node = xa_parent_locked(xas->xa, node);
+ 			xas->xa_offset = node->offset - 1;
+ 			if (node->offset != 0)
 
 
