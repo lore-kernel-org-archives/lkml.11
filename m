@@ -2,147 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E31C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35AB0C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845405AbiDFBya (ORCPT
+        id S1845424AbiDFByk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34466 "EHLO
+        Tue, 5 Apr 2022 21:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380517AbiDELmj (ORCPT
+        with ESMTP id S239199AbiDEPBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:42:39 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B2A10CF2A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:07:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649156827; x=1680692827;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=e1INeSFg7esnR3hcJTDuT1auTFvTvVTZvHOFhQxsoT4=;
-  b=UERP7xjelMVBrbB6uANhWzPE/RQU/fOg9qnPa9dH1coLkYLrQKKZpJXP
-   tpky6uI47tSsuPhUTbVI53Qpr1nb0EsJLWLdRSuiV5qZQcHT8TFZz58M3
-   AYgllhpp6WLTRHGuLV4EiYf/t2NQfNN2szdHb6FOMh3pUZ/oDUn5s2Aoa
-   geJKEbtj65vWMmyekBuPPw/6N1xbLMcoIV10aXcZDAX7lw5kSD16x2EGh
-   gjrw+YSAtURoLrngm5qq+vG+IiKP04sIQHgzQlqPdUPSm+6gmUTpZvL4G
-   phPqdlIAIKXUafibAZyaxUSSX05IBZqAJjCKDMm0ZhRyld7uIg3DGLqid
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="258306556"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="258306556"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:07:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="523416957"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 05 Apr 2022 04:07:05 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbh1c-00036b-SH;
-        Tue, 05 Apr 2022 11:07:04 +0000
-Date:   Tue, 5 Apr 2022 19:07:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 26/40]
- fs/netfs/crypto.c:76:31: sparse: sparse: incompatible types in comparison
- expression (different type sizes):
-Message-ID: <202204051933.fe6riDOF-lkp@intel.com>
+        Tue, 5 Apr 2022 11:01:15 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4981F27B02
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:23:49 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-df0940c4eeso14342191fac.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:23:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6ScfzVYhoR0LHfyaru7LJ12VrLihpLGnKs+dyoaqZBU=;
+        b=bwM7MQ2CaERMuk5JUO51JviRs0GLe4rNKdBujPdlUJBzMHbt83Xm1/BfCx2S/bGpkt
+         YAi4FwH9eRFr2dxMt51ZgG7+C31WBhBvTjqU00QRQBbH1NDRlVYSh6TmLsSrrJCiDjkp
+         Mw34VPzQNst68DPRw25PP5suiV8z1xnnYlAQA0ZwO7U1/TEZ5jGaoUeG4pC5keRlIxYo
+         +/n31B07cpDqvUTsSLHD23wv93GjPx0EqFEwA04V5LEVy7aFc+l7KRDV7XkQtwUs77wD
+         yEvxY1cgO1wvyAD4uNRkIBQIDpML2g8ayWb9E1WxSFQJ1NF2wtJYumNNgb5/GIwu8kLy
+         SuOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6ScfzVYhoR0LHfyaru7LJ12VrLihpLGnKs+dyoaqZBU=;
+        b=HTWyo1o61FT6vM/KInIYLYDDozHcuXSGc5EUmIwi3Z5SIvcLdv6lL520tiaoZD3jVX
+         HeP/QFE3ejQ1lHZkVwfYBm+gEVUfx3IJzH8mJzHXaLw/PO7XZwAqbHzN/NH3swzxpdUd
+         Bxo8gIrEaFjourWcDfOS1XaspfLYjf9wNVdCJIggsiS3h/JvqbSnJxw/Q58bnxe2y53O
+         LayzslmoDrMQ2aHcieBqWLRk6dYm0yafSHTFXhDQ0O2b2oVCRkAzM97C+404opzysmrp
+         zCUuH6XvpoX20GE0jyPeMpq81xneYh46pVF+q3e1VGxhMFmv7zb+7w2Q8BH3rQDZwSWU
+         JZMA==
+X-Gm-Message-State: AOAM530bmBg8YPSqArt4Youopf4F2fsnGsIS154kFOEtO5Xy8fqJyY2M
+        BZRhfrj4y5bCDpeIlUPkb6eNOnDbARdDfspbaUM=
+X-Google-Smtp-Source: ABdhPJxsuNcRKCVnvwc6SiCT2E01/8qtrsJ9bRYQ6b3xCmhFmyTyi6bLE+dqO1fRo6Uwjo4tbwo9zjJTJQl8jycO/hg=
+X-Received: by 2002:a05:6870:311d:b0:de:9b6c:362b with SMTP id
+ v29-20020a056870311d00b000de9b6c362bmr1416658oaa.200.1649165029203; Tue, 05
+ Apr 2022 06:23:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220401025930.16365-1-guozhengkui@vivo.com>
+In-Reply-To: <20220401025930.16365-1-guozhengkui@vivo.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 5 Apr 2022 09:23:38 -0400
+Message-ID: <CADnq5_O5K60qP5Khgz7Ja+5yiHHt=juBNBj5o=+AK5CJwyjRRA@mail.gmail.com>
+Subject: Re: [PATCH] drm/radeon: simplify if-if to if-else
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "open list:RADEON and AMDGPU DRM DRIVERS" 
+        <amd-gfx@lists.freedesktop.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        zhengkui_guo@outlook.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   674eea41fc70a740ff83ec590f9833f805852464
-commit: fc693b2e39df6567a0312f21bb9004e1d7983286 [26/40] netfs: Perform content encryption
-config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220405/202204051933.fe6riDOF-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/fc693b2e39df6567a0312f21bb9004e1d7983286
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout fc693b2e39df6567a0312f21bb9004e1d7983286
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash fs/netfs/
+Applied.  Thanks!
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Alex
 
-
-sparse warnings: (new ones prefixed by >>)
->> fs/netfs/crypto.c:76:31: sparse: sparse: incompatible types in comparison expression (different type sizes):
->> fs/netfs/crypto.c:76:31: sparse:    unsigned int *
->> fs/netfs/crypto.c:76:31: sparse:    unsigned long *
-
-vim +76 fs/netfs/crypto.c
-
-    45	
-    46	/*
-    47	 * Populate a scatterlist from folios in an xarray.
-    48	 */
-    49	static int netfs_xarray_to_sglist(struct xarray *xa, loff_t pos, size_t len,
-    50					  struct scatterlist *sg, unsigned int n_sg)
-    51	{
-    52		struct scatterlist *p = sg;
-    53		struct folio *folio = NULL;
-    54		size_t seg, offset, skip = 0;
-    55		loff_t start = pos;
-    56		pgoff_t index = start >> PAGE_SHIFT;
-    57		int j;
-    58	
-    59		XA_STATE(xas, xa, index);
-    60	
-    61		sg_init_table(sg, n_sg);
-    62	
-    63		rcu_read_lock();
-    64	
-    65		xas_for_each(&xas, folio, ULONG_MAX) {
-    66			if (xas_retry(&xas, folio))
-    67				continue;
-    68			if (WARN_ON(xa_is_value(folio)) || WARN_ON(folio_test_hugetlb(folio)))
-    69				break;
-    70			for (j = (folio_index(folio) < index) ? index - folio_index(folio) : 0;
-    71			     j < folio_nr_pages(folio); j++
-    72			     ) {
-    73				struct page *subpage = folio_file_page(folio, j);
-    74	
-    75				offset = (pos + skip) & ~PAGE_MASK;
-  > 76				seg = min(len, PAGE_SIZE - offset);
-    77	
-    78				sg_set_page(p++, subpage, seg, offset);
-    79	
-    80				len -= seg;
-    81				skip += seg;
-    82				if (len == 0)
-    83					break;
-    84			}
-    85			if (len == 0)
-    86				break;
-    87		}
-    88	
-    89		rcu_read_unlock();
-    90		if (len > 0) {
-    91			kdebug("*** Insufficient source (%zx)", len);
-    92			//WARN_ON(len > 0);
-    93			return -EIO;
-    94		}
-    95	
-    96		sg_mark_end(p - 1);
-    97		return p - sg;
-    98	}
-    99	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On Thu, Mar 31, 2022 at 11:00 PM Guo Zhengkui <guozhengkui@vivo.com> wrote:
+>
+> Replace `if (!ret)` with `else` for simplification.
+>
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+> ---
+>  drivers/gpu/drm/radeon/radeon_pm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/radeon/radeon_pm.c b/drivers/gpu/drm/radeon/radeon_pm.c
+> index c67b6ddb29a4..e765abcb3b01 100644
+> --- a/drivers/gpu/drm/radeon/radeon_pm.c
+> +++ b/drivers/gpu/drm/radeon/radeon_pm.c
+> @@ -1629,7 +1629,7 @@ int radeon_pm_late_init(struct radeon_device *rdev)
+>                         ret = device_create_file(rdev->dev, &dev_attr_power_method);
+>                         if (ret)
+>                                 DRM_ERROR("failed to create device file for power method\n");
+> -                       if (!ret)
+> +                       else
+>                                 rdev->pm.sysfs_initialized = true;
+>                 }
+>         }
+> --
+> 2.20.1
+>
