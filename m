@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A13C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFC2C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345683AbiDENel (ORCPT
+        id S1383344AbiDENfR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
+        Tue, 5 Apr 2022 09:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346967AbiDEJYv (ORCPT
+        with ESMTP id S1346623AbiDEJYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:24:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E41A205D;
-        Tue,  5 Apr 2022 02:14:32 -0700 (PDT)
+        Tue, 5 Apr 2022 05:24:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4218A2D1C6;
+        Tue,  5 Apr 2022 02:13:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6713E61693;
-        Tue,  5 Apr 2022 09:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7386DC385A2;
-        Tue,  5 Apr 2022 09:14:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D81661673;
+        Tue,  5 Apr 2022 09:13:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 607ABC385A4;
+        Tue,  5 Apr 2022 09:13:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150046;
-        bh=xEF+OP1ljNay77jIZcx5islH8QqbrHyXClz2GbkB7RM=;
+        s=korg; t=1649150027;
+        bh=rh/sHor9Aw97ytCJh5RJpfrzwpfhvEGt5A32jaHkQXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lmVwKZ3qH8dF+d+qKJP+wMIaDcdIVHoUUwFHAXR61I8PNCsz355X/tr6gfNhiJqN0
-         7v8C5T1qgvZ8+Ev2ClZNJ/fF86IhNrfKrEzuOkg0e75ReKldUQ314RzLgZVXLBLpu8
-         tU14IKiB/hdgeDpVTK7WSTNANoW5F22WOIw5KmnA=
+        b=jBgWMTD2L9g8aAMWj1OWv3IRM/BoLxPxeSYUp2UkzOVD5ciVSboLKlNNk44x/a/0b
+         krkZOUl6WFdMnigW/xeMxD6lnvluown0CDF0j7BKSRQw4dk8cu2bfvWPwUz7aBpaxQ
+         1uPlimwbpva6LF7kVNuLQpXih9v3wT23jh4kW8sM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pankaj Raghav <p.raghav@samsung.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5.16 0918/1017] nvme: fix the read-only state for zoned namespaces with unsupposed features
-Date:   Tue,  5 Apr 2022 09:30:31 +0200
-Message-Id: <20220405070421.469209455@linuxfoundation.org>
+        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 0929/1017] loop: fix ioctl calls using compat_loop_info
+Date:   Tue,  5 Apr 2022 09:30:42 +0200
+Message-Id: <20220405070421.791439048@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,66 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pankaj Raghav <p.raghav@samsung.com>
+From: Carlos Llamas <cmllamas@google.com>
 
-commit 726be2c72efc0a64c206e854b8996ad3ab9c7507 upstream.
+commit f941c51eeac7ebe0f8ec30943bf78e7f60aad039 upstream.
 
-commit 2f4c9ba23b88 ("nvme: export zoned namespaces without Zone Append
-support read-only") marks zoned namespaces without append support
-read-only.  It does iso by setting NVME_NS_FORCE_RO in ns->flags in
-nvme_update_zone_info and checking for that flag later in
-nvme_update_disk_info to mark the disk as read-only.
+Support for cryptoloop was deleted in commit 47e9624616c8 ("block:
+remove support for cryptoloop and the xor transfer"), making the usage
+of loop_info->lo_encrypt_type obsolete. However, this member was also
+removed from the compat_loop_info definition and this breaks userspace
+ioctl calls for 32-bit binaries and CONFIG_COMPAT=y.
 
-But commit 73d90386b559 ("nvme: cleanup zone information initialization")
-rearranged nvme_update_disk_info to be called before
-nvme_update_zone_info and thus not marking the disk as read-only.
-The call order cannot be just reverted because nvme_update_zone_info sets
-certain queue parameters such as zone_write_granularity that depend on the
-prior call to nvme_update_disk_info.
+This patch restores the compat_loop_info->lo_encrypt_type member and
+marks it obsolete as well as in the uapi header definitions.
 
-Remove the call to set_disk_ro in nvme_update_disk_info. and call
-set_disk_ro after nvme_update_zone_info and nvme_update_disk_info to set
-the permission for ZNS drives correctly. The same applies to the
-multipath disk path.
-
-Fixes: 73d90386b559 ("nvme: cleanup zone information initialization")
-Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Fixes: 47e9624616c8 ("block: remove support for cryptoloop and the xor transfer")
+Signed-off-by: Carlos Llamas <cmllamas@google.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220329201815.1347500-1-cmllamas@google.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/core.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/block/loop.c      |    1 +
+ include/uapi/linux/loop.h |    4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1860,9 +1860,6 @@ static void nvme_update_disk_info(struct
- 	nvme_config_discard(disk, ns);
- 	blk_queue_max_write_zeroes_sectors(disk->queue,
- 					   ns->ctrl->max_zeroes_sectors);
--
--	set_disk_ro(disk, (id->nsattr & NVME_NS_ATTR_RO) ||
--		test_bit(NVME_NS_FORCE_RO, &ns->flags));
- }
- 
- static inline bool nvme_first_scan(struct gendisk *disk)
-@@ -1923,6 +1920,8 @@ static int nvme_update_ns_info(struct nv
- 			goto out_unfreeze;
- 	}
- 
-+	set_disk_ro(ns->disk, (id->nsattr & NVME_NS_ATTR_RO) ||
-+		test_bit(NVME_NS_FORCE_RO, &ns->flags));
- 	set_bit(NVME_NS_READY, &ns->flags);
- 	blk_mq_unfreeze_queue(ns->disk->queue);
- 
-@@ -1935,6 +1934,9 @@ static int nvme_update_ns_info(struct nv
- 	if (nvme_ns_head_multipath(ns->head)) {
- 		blk_mq_freeze_queue(ns->head->disk->queue);
- 		nvme_update_disk_info(ns->head->disk, ns, id);
-+		set_disk_ro(ns->head->disk,
-+			    (id->nsattr & NVME_NS_ATTR_RO) ||
-+				    test_bit(NVME_NS_FORCE_RO, &ns->flags));
- 		nvme_mpath_revalidate_paths(ns);
- 		blk_stack_limits(&ns->head->disk->queue->limits,
- 				 &ns->queue->limits, 0);
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -1603,6 +1603,7 @@ struct compat_loop_info {
+ 	compat_ulong_t	lo_inode;       /* ioctl r/o */
+ 	compat_dev_t	lo_rdevice;     /* ioctl r/o */
+ 	compat_int_t	lo_offset;
++	compat_int_t	lo_encrypt_type;        /* obsolete, ignored */
+ 	compat_int_t	lo_encrypt_key_size;    /* ioctl w/o */
+ 	compat_int_t	lo_flags;       /* ioctl r/o */
+ 	char		lo_name[LO_NAME_SIZE];
+--- a/include/uapi/linux/loop.h
++++ b/include/uapi/linux/loop.h
+@@ -45,7 +45,7 @@ struct loop_info {
+ 	unsigned long	   lo_inode; 		/* ioctl r/o */
+ 	__kernel_old_dev_t lo_rdevice; 		/* ioctl r/o */
+ 	int		   lo_offset;
+-	int		   lo_encrypt_type;
++	int		   lo_encrypt_type;		/* obsolete, ignored */
+ 	int		   lo_encrypt_key_size; 	/* ioctl w/o */
+ 	int		   lo_flags;
+ 	char		   lo_name[LO_NAME_SIZE];
+@@ -61,7 +61,7 @@ struct loop_info64 {
+ 	__u64		   lo_offset;
+ 	__u64		   lo_sizelimit;/* bytes, 0 == max available */
+ 	__u32		   lo_number;			/* ioctl r/o */
+-	__u32		   lo_encrypt_type;
++	__u32		   lo_encrypt_type;		/* obsolete, ignored */
+ 	__u32		   lo_encrypt_key_size;		/* ioctl w/o */
+ 	__u32		   lo_flags;
+ 	__u8		   lo_file_name[LO_NAME_SIZE];
 
 
