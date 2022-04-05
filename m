@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C68AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B7FC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390796AbiDENn0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
+        id S239965AbiDENjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345923AbiDEJXL (ORCPT
+        with ESMTP id S1345198AbiDEJWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE93BA76F8;
-        Tue,  5 Apr 2022 02:12:33 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3838D2CE13;
+        Tue,  5 Apr 2022 02:09:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7500EB81A22;
-        Tue,  5 Apr 2022 09:12:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8FD7C385A0;
-        Tue,  5 Apr 2022 09:12:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD23661577;
+        Tue,  5 Apr 2022 09:09:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF27FC385A0;
+        Tue,  5 Apr 2022 09:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149951;
-        bh=dXdjpfekDNrTTf5v3ALYDHyT1ftBFvjw95HyxuH5594=;
+        s=korg; t=1649149774;
+        bh=dfwslQshdOGJvbL0tDsFD7rVh7X7+dHJBiQvqfoAksw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tIclDgdIPNVFACjkwuCy482JBTth9kEzEaTz6CbvXn2/mLpBbrjraAzarQcgxRxiY
-         iFWlLxnVj7WrSTVzH1PkPYnciWr9lTxMo4OWc/dMLpsRPV35OadCpnB3W2XVma08z8
-         +hGuBX15Tji0qIhKVRGKYwAaTl7Cqjvb0xvXJCeY=
+        b=ebmFm1tILaLHhl2FprVv+5sMHi1WeeeXZ5xiCPBblmhxxpIEZmRWHsmZVGt8aAjyE
+         KI7itjlB1udBHKRibY4lWf1Ok1QmjS/4ZAHNy1Zhn7C315uaOsf1TV5NW59bMchOMs
+         Ey9hYthMTv8R8S+HKzIcCWNMeSvBF0vg7lWMj+M4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        kernel test robot <lkp@intel.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.16 0900/1017] MIPS: crypto: Fix CRC32 code
-Date:   Tue,  5 Apr 2022 09:30:13 +0200
-Message-Id: <20220405070420.941787880@linuxfoundation.org>
+        stable@vger.kernel.org, Boris Burkov <boris@bur.io>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0798/1017] btrfs: do not clean up repair bio if submit fails
+Date:   Tue,  5 Apr 2022 09:28:31 +0200
+Message-Id: <20220405070417.937994199@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,96 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Josef Bacik <josef@toxicpanda.com>
 
-commit 41022eff9c2d21e658c7a6fcd31005bf514d28b7 upstream.
+[ Upstream commit 8cbc3001a3264d998d6b6db3e23f935c158abd4d ]
 
-Commit 67512a8cf5a7 ("MIPS: Avoid macro redefinitions") changed how the
-MIPS register macros were defined, in order to allow the code to compile
-under LLVM/Clang.
+The submit helper will always run bio_endio() on the bio if it fails to
+submit, so cleaning up the bio just leads to a variety of use-after-free
+and NULL pointer dereference bugs because we race with the endio
+function that is cleaning up the bio.  Instead just return BLK_STS_OK as
+the repair function has to continue to process the rest of the pages,
+and the endio for the repair bio will do the appropriate cleanup for the
+page that it was given.
 
-The MIPS CRC32 code however wasn't updated accordingly, causing a build
-bug when using a MIPS32r6 toolchain without CRC support.
-
-Update the CRC32 code to use the macros correctly, to fix the build
-failures.
-
-Fixes: 67512a8cf5a7 ("MIPS: Avoid macro redefinitions")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Boris Burkov <boris@bur.io>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/crypto/crc32-mips.c |   46 +++++++++++++++++++++++-------------------
- 1 file changed, 26 insertions(+), 20 deletions(-)
+ fs/btrfs/extent_io.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
---- a/arch/mips/crypto/crc32-mips.c
-+++ b/arch/mips/crypto/crc32-mips.c
-@@ -28,7 +28,7 @@ enum crc_type {
- };
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index c3f466362103..ced0195f3390 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -2640,7 +2640,6 @@ int btrfs_repair_one_sector(struct inode *inode,
+ 	const int icsum = bio_offset >> fs_info->sectorsize_bits;
+ 	struct bio *repair_bio;
+ 	struct btrfs_bio *repair_bbio;
+-	blk_status_t status;
  
- #ifndef TOOLCHAIN_SUPPORTS_CRC
--#define _ASM_MACRO_CRC32(OP, SZ, TYPE)					  \
-+#define _ASM_SET_CRC(OP, SZ, TYPE)					  \
- _ASM_MACRO_3R(OP, rt, rs, rt2,						  \
- 	".ifnc	\\rt, \\rt2\n\t"					  \
- 	".error	\"invalid operands \\\"" #OP " \\rt,\\rs,\\rt2\\\"\"\n\t" \
-@@ -37,30 +37,36 @@ _ASM_MACRO_3R(OP, rt, rs, rt2,						  \
- 			  ((SZ) <<  6) | ((TYPE) << 8))			  \
- 	_ASM_INSN32_IF_MM(0x00000030 | (__rs << 16) | (__rt << 21) |	  \
- 			  ((SZ) << 14) | ((TYPE) << 3)))
--_ASM_MACRO_CRC32(crc32b,  0, 0);
--_ASM_MACRO_CRC32(crc32h,  1, 0);
--_ASM_MACRO_CRC32(crc32w,  2, 0);
--_ASM_MACRO_CRC32(crc32d,  3, 0);
--_ASM_MACRO_CRC32(crc32cb, 0, 1);
--_ASM_MACRO_CRC32(crc32ch, 1, 1);
--_ASM_MACRO_CRC32(crc32cw, 2, 1);
--_ASM_MACRO_CRC32(crc32cd, 3, 1);
--#define _ASM_SET_CRC ""
-+#define _ASM_UNSET_CRC(op, SZ, TYPE) ".purgem " #op "\n\t"
- #else /* !TOOLCHAIN_SUPPORTS_CRC */
--#define _ASM_SET_CRC ".set\tcrc\n\t"
-+#define _ASM_SET_CRC(op, SZ, TYPE) ".set\tcrc\n\t"
-+#define _ASM_UNSET_CRC(op, SZ, TYPE)
- #endif
+ 	btrfs_debug(fs_info,
+ 		   "repair read error: read error at %llu", start);
+@@ -2679,13 +2678,13 @@ int btrfs_repair_one_sector(struct inode *inode,
+ 		    "repair read error: submitting new read to mirror %d",
+ 		    failrec->this_mirror);
  
--#define _CRC32(crc, value, size, type)		\
--do {						\
--	__asm__ __volatile__(			\
--		".set	push\n\t"		\
--		_ASM_SET_CRC			\
--		#type #size "	%0, %1, %0\n\t"	\
--		".set	pop"			\
--		: "+r" (crc)			\
--		: "r" (value));			\
-+#define __CRC32(crc, value, op, SZ, TYPE)		\
-+do {							\
-+	__asm__ __volatile__(				\
-+		".set	push\n\t"			\
-+		_ASM_SET_CRC(op, SZ, TYPE)		\
-+		#op "	%0, %1, %0\n\t"			\
-+		_ASM_UNSET_CRC(op, SZ, TYPE)		\
-+		".set	pop"				\
-+		: "+r" (crc)				\
-+		: "r" (value));				\
- } while (0)
+-	status = submit_bio_hook(inode, repair_bio, failrec->this_mirror,
+-				 failrec->bio_flags);
+-	if (status) {
+-		free_io_failure(failure_tree, tree, failrec);
+-		bio_put(repair_bio);
+-	}
+-	return blk_status_to_errno(status);
++	/*
++	 * At this point we have a bio, so any errors from submit_bio_hook()
++	 * will be handled by the endio on the repair_bio, so we can't return an
++	 * error here.
++	 */
++	submit_bio_hook(inode, repair_bio, failrec->this_mirror, failrec->bio_flags);
++	return BLK_STS_OK;
+ }
  
-+#define _CRC32_crc32b(crc, value)	__CRC32(crc, value, crc32b, 0, 0)
-+#define _CRC32_crc32h(crc, value)	__CRC32(crc, value, crc32h, 1, 0)
-+#define _CRC32_crc32w(crc, value)	__CRC32(crc, value, crc32w, 2, 0)
-+#define _CRC32_crc32d(crc, value)	__CRC32(crc, value, crc32d, 3, 0)
-+#define _CRC32_crc32cb(crc, value)	__CRC32(crc, value, crc32cb, 0, 1)
-+#define _CRC32_crc32ch(crc, value)	__CRC32(crc, value, crc32ch, 1, 1)
-+#define _CRC32_crc32cw(crc, value)	__CRC32(crc, value, crc32cw, 2, 1)
-+#define _CRC32_crc32cd(crc, value)	__CRC32(crc, value, crc32cd, 3, 1)
-+
-+#define _CRC32(crc, value, size, op) \
-+	_CRC32_##op##size(crc, value)
-+
- #define CRC32(crc, value, size) \
- 	_CRC32(crc, value, size, crc32)
- 
+ static void end_page_read(struct page *page, bool uptodate, u64 start, u32 len)
+-- 
+2.34.1
+
 
 
