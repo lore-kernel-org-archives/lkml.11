@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 009E4C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F5E3C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355875AbiDEKWN (ORCPT
+        id S1355954AbiDEKWX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33842 "EHLO
+        Tue, 5 Apr 2022 06:22:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241270AbiDEIdE (ORCPT
+        with ESMTP id S241256AbiDEIc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:33:04 -0400
+        Tue, 5 Apr 2022 04:32:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061D8B93;
-        Tue,  5 Apr 2022 01:31:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D304D62D7;
+        Tue,  5 Apr 2022 01:30:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9982360AFB;
-        Tue,  5 Apr 2022 08:31:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A61F5C385A1;
-        Tue,  5 Apr 2022 08:31:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E233609D0;
+        Tue,  5 Apr 2022 08:30:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 789CCC385A1;
+        Tue,  5 Apr 2022 08:30:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147465;
-        bh=iwildyVqnCROdRe/aq3AeEE5XQVxtrltMWsv+qtg8Jg=;
+        s=korg; t=1649147445;
+        bh=+XNFu5tzAZ28lpUNmFeUfsDI3/CgFwn+nRal1GCbe9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gm6EEwrxo9qKVHwBtBGCQ/lXexJMK+fLAxOi5WP8w4LPRkfUtYGRpcno91S2XzVw9
-         DrQ55A6XQbfFfUhFZ0f23kMmMHZk2wk+VCFjvZYi+bxe3/Sq4bLvh7ons016MFZ/IE
-         SIwed6uxnpLIexaOX2nO22UZae5oGRx0rJGUbsFM=
+        b=R9HW318qcRDjd6FxgDir/48etQihrLiMdBd9pkzetI4d9S9FT5q4+dLVX8OXsR3EI
+         Cl7RK1uyWDUvJiGtjBxTk27z6UNWRWM5QtVfbfvPcczBJjdJotl55pHpTjFz3vx/+M
+         8w6v48BZbt3Hb0ANuX869ndkb7zakD2DLWruPkq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         Kees Cook <keescook@chromium.org>,
         "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.17 1126/1126] coredump: Use the vma snapshot in fill_files_note
-Date:   Tue,  5 Apr 2022 09:31:13 +0200
-Message-Id: <20220405070440.474758994@linuxfoundation.org>
+Subject: [PATCH 5.17 1125/1126] coredump/elf: Pass coredump_params into fill_note_info
+Date:   Tue,  5 Apr 2022 09:31:12 +0200
+Message-Id: <20220405070440.446167256@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,174 +52,105 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 390031c942116d4733310f0684beb8db19885fe6 upstream.
+commit 9ec7d3230717b4fe9b6c7afeb4811909c23fa1d7 upstream.
 
-Matthew Wilcox reported that there is a missing mmap_lock in
-file_files_note that could possibly lead to a user after free.
+Instead of individually passing cprm->siginfo and cprm->regs
+into fill_note_info pass all of struct coredump_params.
 
-Solve this by using the existing vma snapshot for consistency
-and to avoid the need to take the mmap_lock anywhere in the
-coredump code except for dump_vma_snapshot.
+This is preparation to allow fill_files_note to use the existing
+vma snapshot.
 
-Update the dump_vma_snapshot to capture vm_pgoff and vm_file
-that are neeeded by fill_files_note.
-
-Add free_vma_snapshot to free the captured values of vm_file.
-
-Reported-by: Matthew Wilcox <willy@infradead.org>
-Link: https://lkml.kernel.org/r/20220131153740.2396974-1-willy@infradead.org
-Cc: stable@vger.kernel.org
-Fixes: a07279c9a8cd ("binfmt_elf, binfmt_elf_fdpic: use a VMA list snapshot")
-Fixes: 2aa362c49c31 ("coredump: extend core dump note section to contain file names of mapped files")
+Reviewed-by: Jann Horn <jannh@google.com>
 Reviewed-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/binfmt_elf.c          |   24 ++++++++++++------------
- fs/coredump.c            |   22 +++++++++++++++++++++-
- include/linux/coredump.h |    2 ++
- 3 files changed, 35 insertions(+), 13 deletions(-)
+ fs/binfmt_elf.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
 --- a/fs/binfmt_elf.c
 +++ b/fs/binfmt_elf.c
-@@ -1642,17 +1642,16 @@ static void fill_siginfo_note(struct mem
-  *   long file_ofs
-  * followed by COUNT filenames in ASCII: "FILE1" NUL "FILE2" NUL...
-  */
--static int fill_files_note(struct memelfnote *note)
-+static int fill_files_note(struct memelfnote *note, struct coredump_params *cprm)
+@@ -1823,7 +1823,7 @@ static int fill_thread_core_info(struct
+ 
+ static int fill_note_info(struct elfhdr *elf, int phdrs,
+ 			  struct elf_note_info *info,
+-			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
++			  struct coredump_params *cprm)
  {
--	struct mm_struct *mm = current->mm;
--	struct vm_area_struct *vma;
- 	unsigned count, size, names_ofs, remaining, n;
- 	user_long_t *data;
- 	user_long_t *start_end_ofs;
- 	char *name_base, *name_curpos;
-+	int i;
- 
- 	/* *Estimated* file count and total data size needed */
--	count = mm->map_count;
-+	count = cprm->vma_count;
- 	if (count > UINT_MAX / 64)
- 		return -EINVAL;
- 	size = count * 64;
-@@ -1674,11 +1673,12 @@ static int fill_files_note(struct memelf
- 	name_base = name_curpos = ((char *)data) + names_ofs;
- 	remaining = size - names_ofs;
- 	count = 0;
--	for (vma = mm->mmap; vma != NULL; vma = vma->vm_next) {
-+	for (i = 0; i < cprm->vma_count; i++) {
-+		struct core_vma_metadata *m = &cprm->vma_meta[i];
- 		struct file *file;
- 		const char *filename;
- 
--		file = vma->vm_file;
-+		file = m->file;
- 		if (!file)
- 			continue;
- 		filename = file_path(file, name_curpos, remaining);
-@@ -1698,9 +1698,9 @@ static int fill_files_note(struct memelf
- 		memmove(name_curpos, filename, n);
- 		name_curpos += n;
- 
--		*start_end_ofs++ = vma->vm_start;
--		*start_end_ofs++ = vma->vm_end;
--		*start_end_ofs++ = vma->vm_pgoff;
-+		*start_end_ofs++ = m->start;
-+		*start_end_ofs++ = m->end;
-+		*start_end_ofs++ = m->pgoff;
- 		count++;
- 	}
- 
-@@ -1711,7 +1711,7 @@ static int fill_files_note(struct memelf
- 	 * Count usually is less than mm->map_count,
- 	 * we need to move filenames down.
+ 	struct task_struct *dump_task = current;
+ 	const struct user_regset_view *view = task_user_regset_view(dump_task);
+@@ -1895,7 +1895,7 @@ static int fill_note_info(struct elfhdr
+ 	 * Now fill in each thread's information.
  	 */
--	n = mm->map_count - count;
-+	n = cprm->vma_count - count;
- 	if (n != 0) {
- 		unsigned shift_bytes = n * 3 * sizeof(data[0]);
- 		memmove(name_base - shift_bytes, name_base,
-@@ -1910,7 +1910,7 @@ static int fill_note_info(struct elfhdr
+ 	for (t = info->thread; t != NULL; t = t->next)
+-		if (!fill_thread_core_info(t, view, siginfo->si_signo, &info->size))
++		if (!fill_thread_core_info(t, view, cprm->siginfo->si_signo, &info->size))
+ 			return 0;
+ 
+ 	/*
+@@ -1904,7 +1904,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_psinfo(psinfo, dump_task->group_leader, dump_task->mm);
+ 	info->size += notesize(&info->psinfo);
+ 
+-	fill_siginfo_note(&info->signote, &info->csigdata, siginfo);
++	fill_siginfo_note(&info->signote, &info->csigdata, cprm->siginfo);
+ 	info->size += notesize(&info->signote);
+ 
  	fill_auxv_note(&info->auxv, current->mm);
- 	info->size += notesize(&info->auxv);
+@@ -2052,7 +2052,7 @@ static int elf_note_info_init(struct elf
  
--	if (fill_files_note(&info->files) == 0)
-+	if (fill_files_note(&info->files, cprm) == 0)
- 		info->size += notesize(&info->files);
+ static int fill_note_info(struct elfhdr *elf, int phdrs,
+ 			  struct elf_note_info *info,
+-			  const kernel_siginfo_t *siginfo, struct pt_regs *regs)
++			  struct coredump_params *cprm)
+ {
+ 	struct core_thread *ct;
+ 	struct elf_thread_status *ets;
+@@ -2073,13 +2073,13 @@ static int fill_note_info(struct elfhdr
+ 	list_for_each_entry(ets, &info->thread_list, list) {
+ 		int sz;
  
- 	return 1;
-@@ -2099,7 +2099,7 @@ static int fill_note_info(struct elfhdr
+-		sz = elf_dump_thread_status(siginfo->si_signo, ets);
++		sz = elf_dump_thread_status(cprm->siginfo->si_signo, ets);
+ 		info->thread_status_size += sz;
+ 	}
+ 	/* now collect the dump for the current */
+ 	memset(info->prstatus, 0, sizeof(*info->prstatus));
+-	fill_prstatus(&info->prstatus->common, current, siginfo->si_signo);
+-	elf_core_copy_regs(&info->prstatus->pr_reg, regs);
++	fill_prstatus(&info->prstatus->common, current, cprm->siginfo->si_signo);
++	elf_core_copy_regs(&info->prstatus->pr_reg, cprm->regs);
+ 
+ 	/* Set up header */
+ 	fill_elf_header(elf, phdrs, ELF_ARCH, ELF_CORE_EFLAGS);
+@@ -2095,7 +2095,7 @@ static int fill_note_info(struct elfhdr
+ 	fill_note(info->notes + 1, "CORE", NT_PRPSINFO,
+ 		  sizeof(*info->psinfo), info->psinfo);
+ 
+-	fill_siginfo_note(info->notes + 2, &info->csigdata, siginfo);
++	fill_siginfo_note(info->notes + 2, &info->csigdata, cprm->siginfo);
  	fill_auxv_note(info->notes + 3, current->mm);
  	info->numnote = 4;
  
--	if (fill_files_note(info->notes + info->numnote) == 0) {
-+	if (fill_files_note(info->notes + info->numnote, cprm) == 0) {
- 		info->notes_files = info->notes + info->numnote;
- 		info->numnote++;
- 	}
---- a/fs/coredump.c
-+++ b/fs/coredump.c
-@@ -55,6 +55,7 @@
- #include <trace/events/sched.h>
- 
- static bool dump_vma_snapshot(struct coredump_params *cprm);
-+static void free_vma_snapshot(struct coredump_params *cprm);
- 
- static int core_uses_pid;
- static unsigned int core_pipe_limit;
-@@ -765,7 +766,7 @@ void do_coredump(const kernel_siginfo_t
- 			dump_emit(&cprm, "", 1);
- 		}
- 		file_end_write(cprm.file);
--		kvfree(cprm.vma_meta);
-+		free_vma_snapshot(&cprm);
- 	}
- 	if (ispipe && core_pipe_limit)
- 		wait_for_dump_helpers(cprm.file);
-@@ -1099,6 +1100,20 @@ static struct vm_area_struct *next_vma(s
- 	return gate_vma;
- }
- 
-+static void free_vma_snapshot(struct coredump_params *cprm)
-+{
-+	if (cprm->vma_meta) {
-+		int i;
-+		for (i = 0; i < cprm->vma_count; i++) {
-+			struct file *file = cprm->vma_meta[i].file;
-+			if (file)
-+				fput(file);
-+		}
-+		kvfree(cprm->vma_meta);
-+		cprm->vma_meta = NULL;
-+	}
-+}
-+
- /*
-  * Under the mmap_lock, take a snapshot of relevant information about the task's
-  * VMAs.
-@@ -1135,6 +1150,11 @@ static bool dump_vma_snapshot(struct cor
- 		m->end = vma->vm_end;
- 		m->flags = vma->vm_flags;
- 		m->dump_size = vma_dump_size(vma, cprm->mm_flags);
-+		m->pgoff = vma->vm_pgoff;
-+
-+		m->file = vma->vm_file;
-+		if (m->file)
-+			get_file(m->file);
+@@ -2105,8 +2105,8 @@ static int fill_note_info(struct elfhdr
  	}
  
- 	mmap_write_unlock(mm);
---- a/include/linux/coredump.h
-+++ b/include/linux/coredump.h
-@@ -12,6 +12,8 @@ struct core_vma_metadata {
- 	unsigned long start, end;
- 	unsigned long flags;
- 	unsigned long dump_size;
-+	unsigned long pgoff;
-+	struct file   *file;
- };
+ 	/* Try to dump the FPU. */
+-	info->prstatus->pr_fpvalid = elf_core_copy_task_fpregs(current, regs,
+-							       info->fpu);
++	info->prstatus->pr_fpvalid =
++		elf_core_copy_task_fpregs(current, cprm->regs, info->fpu);
+ 	if (info->prstatus->pr_fpvalid)
+ 		fill_note(info->notes + info->numnote++,
+ 			  "CORE", NT_PRFPREG, sizeof(*info->fpu), info->fpu);
+@@ -2219,7 +2219,7 @@ static int elf_core_dump(struct coredump
+ 	 * Collect all the non-memory information about the process for the
+ 	 * notes.  This also sets up the file header.
+ 	 */
+-	if (!fill_note_info(&elf, e_phnum, &info, cprm->siginfo, cprm->regs))
++	if (!fill_note_info(&elf, e_phnum, &info, cprm))
+ 		goto end_coredump;
  
- /*
+ 	has_dumped = 1;
 
 
