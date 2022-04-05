@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912B7C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA141C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382089AbiDEMAl (ORCPT
+        id S1382158AbiDEMAv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
+        Tue, 5 Apr 2022 08:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236378AbiDEIQn (ORCPT
+        with ESMTP id S241972AbiDEIsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:16:43 -0400
+        Tue, 5 Apr 2022 04:48:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849166FA02;
-        Tue,  5 Apr 2022 01:04:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24ACC2E0BC;
+        Tue,  5 Apr 2022 01:36:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AAD7B81BBC;
-        Tue,  5 Apr 2022 08:03:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82335C385A4;
-        Tue,  5 Apr 2022 08:03:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A5C8B81C6C;
+        Tue,  5 Apr 2022 08:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B1DBC385C4;
+        Tue,  5 Apr 2022 08:36:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145830;
-        bh=+dtZf56pDcVGj1Y2yGsngkE8Pr8vjsaRXriBUUn+Sa4=;
+        s=korg; t=1649147814;
+        bh=r/DXFQELdQq/ZadbKmQmE3MJc3KaS7IqcZw6aXOg4t8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XIfGGpCvyIJgGXR2Jwu/4cS+3RAQHWFaiLZj2mGrr8eWoQDFUNjbb20RnW0/A2Qby
-         irIo1Swi9CoruaIV83NPsY/5xlhA+x+pB1t1yudRIpJVoYw0c64ZNPSTOm+Eq53kgn
-         dwnV3hcojviaJYRSXtOItVg2wZ7UI+jBs4dx9qG8=
+        b=ZhnnYD+yM5/cgCRkwR4gPFP9D0qviTYgPqxp9w1qa/9c4ofTo28zllmumJa0Cg6hg
+         SsZ+6IyqtM5sfQifqAUYYu4I9BJomOf8lNGIhpIfNO6T48t4MGL8RSmRC+typ+wv32
+         b+h90tiCZRnsnC5ndkIV9R2b6zMjer6huwF/6k9I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pin-Yen Lin <treapking@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0544/1126] drm/bridge: anx7625: Fix overflow issue on reading EDID
-Date:   Tue,  5 Apr 2022 09:21:31 +0200
-Message-Id: <20220405070423.600520464@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+Subject: [PATCH 5.16 0131/1017] arm64: dts: ti: k3-j721e: Fix gic-v3 compatible regs
+Date:   Tue,  5 Apr 2022 09:17:24 +0200
+Message-Id: <20220405070358.090201579@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pin-Yen Lin <treapking@chromium.org>
+From: Nishanth Menon <nm@ti.com>
 
-[ Upstream commit d5c6f647aec9ed524aedd04a3aec5ebc21d39007 ]
+commit a06ed27f3bc63ab9e10007dc0118d910908eb045 upstream.
 
-The length of EDID block can be longer than 256 bytes, so we should use
-`int` instead of `u8` for the `edid_pos` variable.
+Though GIC ARE option is disabled for no GIC-v2 compatibility,
+Cortex-A72 is free to implement the CPU interface as long as it
+communicates with the GIC using the stream protocol. This requires
+that the SoC integration mark out the PERIPHBASE[1] as reserved area
+within the SoC. See longer discussion in [2] for further information.
 
-Fixes: 8bdfc5dae4e3 ("drm/bridge: anx7625: Add anx7625 MIPI DSI/DPI to DP")
-Signed-off-by: Pin-Yen Lin <treapking@chromium.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220210103827.402436-1-treapking@chromium.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Update the GIC register map to indicate offsets from PERIPHBASE based
+on [3]. Without doing this, systems like kvm will not function with
+gic-v2 emulation.
+
+[1] https://developer.arm.com/documentation/100095/0002/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
+[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
+[3] https://developer.arm.com/documentation/100095/0002/way1382452674438
+
+Cc: stable@vger.kernel.org # 5.10+
+Fixes: 2d87061e70de ("arm64: dts: ti: Add Support for J721E SoC")
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220215201008.15235-3-nm@ti.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/analogix/anx7625.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi |    5 ++++-
+ arch/arm64/boot/dts/ti/k3-j721e.dtsi      |    1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 2346dbcc505f..e596cacce9e3 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -846,7 +846,8 @@ static int segments_edid_read(struct anx7625_data *ctx,
- static int sp_tx_edid_read(struct anx7625_data *ctx,
- 			   u8 *pedid_blocks_buf)
- {
--	u8 offset, edid_pos;
-+	u8 offset;
-+	int edid_pos;
- 	int count, blocks_num;
- 	u8 pblock_buf[MAX_DPCD_BUFFER_SIZE];
- 	u8 i, j;
--- 
-2.34.1
-
+--- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
+@@ -76,7 +76,10 @@
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+ 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
+-		      <0x00 0x01900000 0x00 0x100000>;	/* GICR */
++		      <0x00 0x01900000 0x00 0x100000>,	/* GICR */
++		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
++		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
++		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
+ 
+ 		/* vcpumntirq: virtual CPU interface maintenance interrupt */
+ 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+--- a/arch/arm64/boot/dts/ti/k3-j721e.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721e.dtsi
+@@ -139,6 +139,7 @@
+ 			 <0x00 0x0e000000 0x00 0x0e000000 0x00 0x01800000>, /* PCIe Core*/
+ 			 <0x00 0x10000000 0x00 0x10000000 0x00 0x10000000>, /* PCIe DAT */
+ 			 <0x00 0x64800000 0x00 0x64800000 0x00 0x00800000>, /* C71 */
++			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A72 PERIPHBASE */
+ 			 <0x44 0x00000000 0x44 0x00000000 0x00 0x08000000>, /* PCIe2 DAT */
+ 			 <0x44 0x10000000 0x44 0x10000000 0x00 0x08000000>, /* PCIe3 DAT */
+ 			 <0x4d 0x80800000 0x4d 0x80800000 0x00 0x00800000>, /* C66_0 */
 
 
