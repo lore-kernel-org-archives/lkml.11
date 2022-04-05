@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB0BC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C17BC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579500AbiDEXbZ (ORCPT
+        id S1579535AbiDEXbq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
+        Tue, 5 Apr 2022 19:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243445AbiDEKfe (ORCPT
+        with ESMTP id S1344820AbiDEKkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:34 -0400
+        Tue, 5 Apr 2022 06:40:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60013389D;
-        Tue,  5 Apr 2022 03:20:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFB12CCA1;
+        Tue,  5 Apr 2022 03:25:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 729A0B81C8A;
-        Tue,  5 Apr 2022 10:20:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5377C385A1;
-        Tue,  5 Apr 2022 10:20:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DCE7B81C99;
+        Tue,  5 Apr 2022 10:25:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAB16C385A0;
+        Tue,  5 Apr 2022 10:25:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154035;
-        bh=u2Mr+BJrOZfvY5gcwdfQ0/mfeezzxarWxhXLWj6Mubc=;
+        s=korg; t=1649154325;
+        bh=PosF61ntB1uijio+vV8tUqN3VMsMmYWTHjqTxsw4wLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1aZQWY2ol7rrqfhNUQzgTO1Bt2rza4uUJDDKclu9oxjZbA1bAFwm7wkTfp93kJAd3
-         5WptFvvR7rNrOiinMspskrfWzJrL+B20nJpeqB8fNW4tPYm7JftnlqXicDPBn8UhMb
-         y7EIWEI0h8+hpX7eRHhPEYGcXwzP/LsBY5RYVZTA=
+        b=XJyhMph3d9a65XHUPN3hZOPyWxY3e9mQLmndQrQhrB3HaYxaW6RhViKSH9/bhWgTl
+         1oyuQtixHa1ENG56PiJhnWNFQHxG3Zu4yy60BBFxrJUJIWCrvu6+1/kN9r7XSecFKJ
+         PUPHBdXmuztPj1VaOP9/PfPbpbKouQILsA6uXfBM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 434/599] kdb: Fix the putarea helper function
-Date:   Tue,  5 Apr 2022 09:32:08 +0200
-Message-Id: <20220405070311.747206996@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.10 540/599] ubifs: Add missing iput if do_tmpfile() failed in rename whiteout
+Date:   Tue,  5 Apr 2022 09:33:54 +0200
+Message-Id: <20220405070314.911715436@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,47 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Thompson <daniel.thompson@linaro.org>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit c1cb81429df462eca1b6ba615cddd21dd3103c46 ]
+commit 716b4573026bcbfa7b58ed19fe15554bac66b082 upstream.
 
-Currently kdb_putarea_size() uses copy_from_kernel_nofault() to write *to*
-arbitrary kernel memory. This is obviously wrong and means the memory
-modify ('mm') command is a serious risk to debugger stability: if we poke
-to a bad address we'll double-fault and lose our debug session.
+whiteout inode should be put when do_tmpfile() failed if inode has been
+initialized. Otherwise we will get following warning during umount:
+  UBIFS error (ubi0:0 pid 1494): ubifs_assert_failed [ubifs]: UBIFS
+  assert failed: c->bi.dd_growth == 0, in fs/ubifs/super.c:1930
+  VFS: Busy inodes after unmount of ubifs. Self-destruct in 5 seconds.
 
-Fix this the (very) obvious way.
-
-Note that there are two Fixes: tags because the API was renamed and this
-patch will only trivially backport as far as the rename (and this is
-probably enough). Nevertheless Christoph's rename did not introduce this
-problem so I wanted to record that!
-
-Fixes: fe557319aa06 ("maccess: rename probe_kernel_{read,write} to copy_{from,to}_kernel_nofault")
-Fixes: 5d5314d6795f ("kdb: core for kgdb back end (1 of 2)")
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Link: https://lore.kernel.org/r/20220128144055.207267-1-daniel.thompson@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Suggested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/debug/kdb/kdb_support.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ubifs/dir.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/debug/kdb/kdb_support.c b/kernel/debug/kdb/kdb_support.c
-index 6226502ce049..13417f0045f0 100644
---- a/kernel/debug/kdb/kdb_support.c
-+++ b/kernel/debug/kdb/kdb_support.c
-@@ -350,7 +350,7 @@ int kdb_getarea_size(void *res, unsigned long addr, size_t size)
-  */
- int kdb_putarea_size(unsigned long addr, void *res, size_t size)
- {
--	int ret = copy_from_kernel_nofault((char *)addr, (char *)res, size);
-+	int ret = copy_to_kernel_nofault((char *)addr, (char *)res, size);
- 	if (ret) {
- 		if (!KDB_STATE(SUPPRESS)) {
- 			kdb_printf("kdb_putarea: Bad address 0x%lx\n", addr);
--- 
-2.34.1
-
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -431,6 +431,8 @@ out_inode:
+ 	make_bad_inode(inode);
+ 	if (!instantiated)
+ 		iput(inode);
++	else if (whiteout)
++		iput(*whiteout);
+ out_budg:
+ 	ubifs_release_budget(c, &req);
+ 	if (!instantiated)
 
 
