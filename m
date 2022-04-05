@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1B8C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 646E7C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454347AbiDFDU6 (ORCPT
+        id S1449420AbiDFDT4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39608 "EHLO
+        Tue, 5 Apr 2022 23:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449346AbiDFCPD (ORCPT
+        with ESMTP id S1449070AbiDFCO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:15:03 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0E61B2558
+        Tue, 5 Apr 2022 22:14:59 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E841B30B8
         for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1649201723; x=1680737723;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=3ia7XSoQgZLAv+AkOkspH/dc44a6T0r2MvrqAQyc1PU=;
-  b=j7gjqT3IYYkETFPGBRtigPfurGRoUYQYhsoeuk5oO3voe7hBpRiGsEQ1
-   FcCu1PjH99aC5vOdjoUQGslktmQuP6mGeMy5d2+x3tPw9oqkpeEchc3jF
-   YbaRe+NP692kQb+lFhdymImZ1mPzYGTuC50OtILb9MqpONYfuOBJ1PXVb
-   RPr9pKfBMipG0exNEQmH20VHPnPx/HRuZKtSsEruwI0YOw5eK9xy3rPAx
-   k27eTI8w4Is/+1g/4rnty7uTatfQIxOk1e3uBgVozJZweNXfkBxiqn23q
-   UAptFnVCrf7ooOEY+9Ptkg660COdTVaO+E/Y8xOd5Pi1dXhnS/rWbEiLZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261065455"
+  bh=8TtOVCgVVk6EmPQmazwH+aWxaBnQ5aDw9pjLJMTZLmE=;
+  b=n1alPOZWPz81uC3F1EHJ41AJvVzEhAC9U/f8fvfQIxV0txrRyiIwcz6n
+   rFe4gnjC+HUoSC65O/9OsXtADyMcoMqH8N/kxgTrbaTM2Kgv4cimftJa3
+   zZTN/INaQDsTxGOSHiuOCve7GFS2exdMlh0kEULpXM9iHiPQCUZ6+qLZO
+   Jpm0Y3CO9194hyXpuRTfo0x1m/8P70XzJgoEKVKyLTLc+hPiJKuppRBay
+   /orlMfzBPXyKadGEtP5V9nwhe4QhK/ZlwwFBhEuL6uMe6Nc7HnvSWi7Ib
+   TG5n6OeBV5dlpx0dqDdq2N5Ty7sNMFZXhFyW/kJMaMVgfcmOuIxENrdTb
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="324063657"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="261065455"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:54 -0700
+   d="scan'208";a="324063657"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:55 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="608652719"
+   d="scan'208";a="505482015"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 05 Apr 2022 16:34:48 -0700
+  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2022 16:34:49 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 50B78BE1; Wed,  6 Apr 2022 02:29:46 +0300 (EEST)
+        id BD4D9F1B; Wed,  6 Apr 2022 02:29:46 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,11 +52,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv8 16/30] x86/boot: Port I/O: add decompression-time support for TDX
-Date:   Wed,  6 Apr 2022 02:29:25 +0300
-Message-Id: <20220405232939.73860-17-kirill.shutemov@linux.intel.com>
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv8 24/30] x86/topology: Disable CPU online/offline control for TDX guests
+Date:   Wed,  6 Apr 2022 02:29:33 +0300
+Message-Id: <20220405232939.73860-25-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
 References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
@@ -66,229 +65,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Port I/O instructions trigger #VE in the TDX environment. In response to
-the exception, kernel emulates these instructions using hypercalls.
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-But during early boot, on the decompression stage, it is cumbersome to
-deal with #VE. It is cleaner to go to hypercalls directly, bypassing #VE
-handling.
+Unlike regular VMs, TDX guests use the firmware hand-off wakeup method
+to wake up the APs during the boot process. This wakeup model uses a
+mailbox to communicate with firmware to bring up the APs. As per the
+design, this mailbox can only be used once for the given AP, which means
+after the APs are booted, the same mailbox cannot be used to
+offline/online the given AP. More details about this requirement can be
+found in Intel TDX Virtual Firmware Design Guide, sec titled "AP
+initialization in OS" and in sec titled "Hotplug Device".
 
-Hook up TDX-specific port I/O helpers if booting in TDX environment.
+Since the architecture does not support any method of offlining the
+CPUs, disable CPU hotplug support in the kernel.
 
+Since this hotplug disable feature can be re-used by other VM guests,
+add a new CC attribute CC_ATTR_HOTPLUG_DISABLED and use it to disable
+the hotplug support.
+
+Attempt to offline CPU will fail with -EOPNOTSUPP.
+
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/boot/compressed/Makefile |  2 +-
- arch/x86/boot/compressed/tdcall.S |  3 ++
- arch/x86/boot/compressed/tdx.c    | 61 +++++++++++++++++++++++++++++++
- arch/x86/include/asm/shared/tdx.h | 32 ++++++++++++++++
- arch/x86/include/asm/tdx.h        | 27 --------------
- 5 files changed, 97 insertions(+), 28 deletions(-)
- create mode 100644 arch/x86/boot/compressed/tdcall.S
+ arch/x86/coco/core.c        |  1 +
+ include/linux/cc_platform.h | 10 ++++++++++
+ kernel/cpu.c                |  7 +++++++
+ 3 files changed, 18 insertions(+)
 
-diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-index 732f6b21ecbd..8fd0e6ae2e1f 100644
---- a/arch/x86/boot/compressed/Makefile
-+++ b/arch/x86/boot/compressed/Makefile
-@@ -101,7 +101,7 @@ ifdef CONFIG_X86_64
- endif
- 
- vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
--vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o
-+vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o $(obj)/tdcall.o
- 
- vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
- efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
-diff --git a/arch/x86/boot/compressed/tdcall.S b/arch/x86/boot/compressed/tdcall.S
-new file mode 100644
-index 000000000000..46d0495e0d3a
---- /dev/null
-+++ b/arch/x86/boot/compressed/tdcall.S
-@@ -0,0 +1,3 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#include "../../coco/tdx/tdcall.S"
-diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
-index 5f6d01a2f1f4..918a7606f53c 100644
---- a/arch/x86/boot/compressed/tdx.c
-+++ b/arch/x86/boot/compressed/tdx.c
-@@ -2,9 +2,65 @@
- 
- #include "../cpuflags.h"
- #include "../string.h"
-+#include "../io.h"
-+#include "error.h"
-+
-+#include <vdso/limits.h>
-+#include <uapi/asm/vmx.h>
- 
- #include <asm/shared/tdx.h>
- 
-+/* Called from __tdx_hypercall() for unrecoverable failure */
-+void __tdx_hypercall_failed(void)
-+{
-+	error("TDVMCALL failed. TDX module bug?");
-+}
-+
-+static inline unsigned int tdx_io_in(int size, u16 port)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = EXIT_REASON_IO_INSTRUCTION,
-+		.r12 = size,
-+		.r13 = 0,
-+		.r14 = port,
-+	};
-+
-+	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
-+		return UINT_MAX;
-+
-+	return args.r11;
-+}
-+
-+static inline void tdx_io_out(int size, u16 port, u32 value)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = EXIT_REASON_IO_INSTRUCTION,
-+		.r12 = size,
-+		.r13 = 1,
-+		.r14 = port,
-+		.r15 = value,
-+	};
-+
-+	__tdx_hypercall(&args, 0);
-+}
-+
-+static inline u8 tdx_inb(u16 port)
-+{
-+	return tdx_io_in(1, port);
-+}
-+
-+static inline void tdx_outb(u8 value, u16 port)
-+{
-+	tdx_io_out(1, port, value);
-+}
-+
-+static inline void tdx_outw(u16 value, u16 port)
-+{
-+	tdx_io_out(2, port, value);
-+}
-+
- void early_tdx_detect(void)
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index df08edc94f9b..70956f9d7c7e 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -20,6 +20,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
  {
- 	u32 eax, sig[3];
-@@ -13,4 +69,9 @@ void early_tdx_detect(void)
- 
- 	if (memcmp(TDX_IDENT, sig, sizeof(sig)))
- 		return;
+ 	switch (attr) {
+ 	case CC_ATTR_GUEST_UNROLL_STRING_IO:
++	case CC_ATTR_HOTPLUG_DISABLED:
+ 		return true;
+ 	default:
+ 		return false;
+diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
+index efd8205282da..691494bbaf5a 100644
+--- a/include/linux/cc_platform.h
++++ b/include/linux/cc_platform.h
+@@ -72,6 +72,16 @@ enum cc_attr {
+ 	 * Examples include TDX guest & SEV.
+ 	 */
+ 	CC_ATTR_GUEST_UNROLL_STRING_IO,
 +
-+	/* Use hypercalls instead of I/O instructions */
-+	pio_ops.f_inb  = tdx_inb;
-+	pio_ops.f_outb = tdx_outb;
-+	pio_ops.f_outw = tdx_outw;
- }
-diff --git a/arch/x86/include/asm/shared/tdx.h b/arch/x86/include/asm/shared/tdx.h
-index 8209ba9ffe1a..e53f26228fbb 100644
---- a/arch/x86/include/asm/shared/tdx.h
-+++ b/arch/x86/include/asm/shared/tdx.h
-@@ -2,7 +2,39 @@
- #ifndef _ASM_X86_SHARED_TDX_H
- #define _ASM_X86_SHARED_TDX_H
- 
-+#include <linux/bits.h>
-+#include <linux/types.h>
-+
-+#define TDX_HYPERCALL_STANDARD  0
-+
-+#define TDX_HCALL_HAS_OUTPUT	BIT(0)
-+#define TDX_HCALL_ISSUE_STI	BIT(1)
-+
- #define TDX_CPUID_LEAF_ID	0x21
- #define TDX_IDENT		"IntelTDX    "
- 
-+#ifndef __ASSEMBLY__
-+
-+/*
-+ * Used in __tdx_hypercall() to pass down and get back registers' values of
-+ * the TDCALL instruction when requesting services from the VMM.
-+ *
-+ * This is a software only structure and not part of the TDX module/VMM ABI.
-+ */
-+struct tdx_hypercall_args {
-+	u64 r10;
-+	u64 r11;
-+	u64 r12;
-+	u64 r13;
-+	u64 r14;
-+	u64 r15;
-+};
-+
-+/* Used to request services from the VMM */
-+u64 __tdx_hypercall(struct tdx_hypercall_args *args, unsigned long flags);
-+
-+/* Called from __tdx_hypercall() for unrecoverable failure */
-+void __tdx_hypercall_failed(void);
-+
-+#endif /* !__ASSEMBLY__ */
- #endif /* _ASM_X86_SHARED_TDX_H */
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index 81a1ec14e476..7944fd1ae07d 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -3,17 +3,11 @@
- #ifndef _ASM_X86_TDX_H
- #define _ASM_X86_TDX_H
- 
--#include <linux/bits.h>
- #include <linux/init.h>
- #include <linux/bits.h>
- #include <asm/ptrace.h>
- #include <asm/shared/tdx.h>
- 
--#define TDX_HYPERCALL_STANDARD  0
--
--#define TDX_HCALL_HAS_OUTPUT	BIT(0)
--#define TDX_HCALL_ISSUE_STI	BIT(1)
--
- /*
-  * SW-defined error codes.
-  *
-@@ -41,21 +35,6 @@ struct tdx_module_output {
- 	u64 r11;
++	/**
++	 * @CC_ATTR_HOTPLUG_DISABLED: Hotplug is not supported or disabled.
++	 *
++	 * The platform/OS is running as a guest/virtual machine does not
++	 * support CPU hotplug feature.
++	 *
++	 * Examples include TDX Guest.
++	 */
++	CC_ATTR_HOTPLUG_DISABLED,
  };
  
--/*
-- * Used in __tdx_hypercall() to pass down and get back registers' values of
-- * the TDCALL instruction when requesting services from the VMM.
-- *
-- * This is a software only structure and not part of the TDX module/VMM ABI.
-- */
--struct tdx_hypercall_args {
--	u64 r10;
--	u64 r11;
--	u64 r12;
--	u64 r13;
--	u64 r14;
--	u64 r15;
--};
--
- /*
-  * Used by the #VE exception handler to gather the #VE exception
-  * info from the TDX module. This is a software only structure
-@@ -80,12 +59,6 @@ void __init tdx_early_init(void);
- u64 __tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
- 		      struct tdx_module_output *out);
+ #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index 5797c2a7a93f..edb8c199f6a3 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -35,6 +35,7 @@
+ #include <linux/percpu-rwsem.h>
+ #include <linux/cpuset.h>
+ #include <linux/random.h>
++#include <linux/cc_platform.h>
  
--/* Used to request services from the VMM */
--u64 __tdx_hypercall(struct tdx_hypercall_args *args, unsigned long flags);
--
--/* Called from __tdx_hypercall() for unrecoverable failure */
--void __tdx_hypercall_failed(void);
--
- void tdx_get_ve_info(struct ve_info *ve);
+ #include <trace/events/power.h>
+ #define CREATE_TRACE_POINTS
+@@ -1186,6 +1187,12 @@ static int __ref _cpu_down(unsigned int cpu, int tasks_frozen,
  
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
+ static int cpu_down_maps_locked(unsigned int cpu, enum cpuhp_state target)
+ {
++	/*
++	 * If the platform does not support hotplug, report it explicitly to
++	 * differentiate it from a transient offlining failure.
++	 */
++	if (cc_platform_has(CC_ATTR_HOTPLUG_DISABLED))
++		return -EOPNOTSUPP;
+ 	if (cpu_hotplug_disabled)
+ 		return -EBUSY;
+ 	return _cpu_down(cpu, 0, target);
 -- 
 2.35.1
 
