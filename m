@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93293C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C89C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiDECn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
+        id S229789AbiDECnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229890AbiDECnG (ORCPT
+        with ESMTP id S229930AbiDECnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 4 Apr 2022 22:43:06 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B265315AE24
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:49:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DEB4618B335
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:48:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649123342;
+        s=mimecast20190719; t=1649123320;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1OYbScRjTNz5QBi4xGatPlRbPmUiT0LOinB85jUkB/M=;
-        b=L/BBwTYeBPsyYH4JiLRV2thymvAaY+vrSAIi67NrTTwBKM8boXGihDQShxCNODnL2UOEAY
-        0ELSrhYIa3phD0eKYKVtVB75NbeydG4JlbKuLGnimj1I0WyiZ2eiNX+yuNCzEpKon47PWv
-        aL8E9Usqd7fRKR3M6iK7lz1H42yDeOA=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=sVIJ8cJ4ZYWLy9njZqjP9dBoADUUbduMAUK9CqZAoa8=;
+        b=UdMJcHOnPK/KgaaaqIJ/WufnDJY3G4CHw2hv7tAy4qlSitJKRSL+b+cnD0nyINvozJFite
+        X2N22Qrbubc9JnNoLUZoN6eouJOuKdxZqWt6/TLJocAGomrlt5sTpprV0m9WMU480Q18wC
+        LQ7yz+Rz/JZfdRbS2CyHb6DWaf7SXzE=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-401-PnNWMM54ME6FFusKLR1g5w-1; Mon, 04 Apr 2022 21:49:02 -0400
-X-MC-Unique: PnNWMM54ME6FFusKLR1g5w-1
-Received: by mail-io1-f69.google.com with SMTP id x16-20020a6bfe10000000b006409f03e39eso7462484ioh.7
-        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:49:01 -0700 (PDT)
+ us-mta-221-6MwUwmLLPNeMVGSvJmw1Wg-1; Mon, 04 Apr 2022 21:48:39 -0400
+X-MC-Unique: 6MwUwmLLPNeMVGSvJmw1Wg-1
+Received: by mail-io1-f70.google.com with SMTP id z23-20020a6b0a17000000b00649f13ea3a7so7400482ioi.23
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 18:48:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1OYbScRjTNz5QBi4xGatPlRbPmUiT0LOinB85jUkB/M=;
-        b=njevMjeQHqnssYvm05IxuFjGh0Ow5j3csBZ3jVXQlnaSkoBM5AH1dpkmWTnPWl79dV
-         PCPKKwsTtgAEdbbBy+stYOn7kSEuE6Y7XNP0yr8jAoAehIzQUeDVT4qPr/LzuR1DEEFJ
-         zouX1G5BotDBx+M18a9RTFD+urc0s3RDmbiZbU/0TWu/FLL0jYQ3QhLf6PzeywCpH8NK
-         eRSxNII67jBLD6nd6/nbK1vp+UcwDemDA17ancaaU/bEQ8DwkXystq1JtPx664YRddv0
-         MY78IRtPS53XyLyU/k/K+m01Q2qovQq0jzpsLs/ayaDbOuEdTxEdNJPvWhBhv7U0QtbD
-         QBLA==
-X-Gm-Message-State: AOAM5303R+iWCB0l9u3EEkbKj6APeUVYflyPpPo1xou7T9dyqh7ikwgE
-        YZ6RswZq/PboHHUvL0T2j9k1JC4rbPHrWmA3+FIuJmHpL7hMimNViuGeEfMLsIvPftOmXu+Rrqd
-        663UzrpBruFn6UbsYq9G/q9dGCoFYtkXelH68hBIec5kme8MRSHoKVL0mwsWonEymawBdQTDrqw
+        bh=sVIJ8cJ4ZYWLy9njZqjP9dBoADUUbduMAUK9CqZAoa8=;
+        b=rqu0Oj6dh+/4pIQO8GASp88dNkCCSpdGff1oqtkUq9UOPFx9H4OWC7IyCQ+Cgtmraw
+         wr8SrnzLGXCMBQynCxCfzYXcxAWdk4KD9teyRCtJ9A5ZtPyNysQ+vRGZF2TknGBk27Xo
+         IzgHrRlsS0oodhUfeVHezKKR+40yzjrFvUuTmkYY5bho5yvX8m/A8/1ZcUIgKWvOCZ7B
+         WknnxvBkSNh6yCJcxanh4R/kq31uJnCkpUkgj6dWwOxATGUYzM0PXNildqvfEIaFzCIR
+         pWihoDDO9CB7rPNG6MYzZZ+8HrIQDhpI5EtMZ101AJMyWjP4i7NSUn18yxlcbXqBLGUv
+         2NJA==
+X-Gm-Message-State: AOAM530Vf+wuyjcgqCmPVJStweT0+O3QTO+/Hx1ZRzdKvjYwwsQyp2eL
+        WXpbB1ggaF2JehXa26gDdSatEd+t9FnFAs5nG4KS6+pOYAIpsyrPh8sQpRrEjtAB9b9sGHd01yl
+        H1qVjtnKSh6kc+jco/eIOdknI67W65nAH9+esdzGsWbofQgrO0wYsIWMZ7Jev8NUCYGvyS0iNHw
         ==
-X-Received: by 2002:a05:6638:a3a:b0:323:5c6d:ae20 with SMTP id 26-20020a0566380a3a00b003235c6dae20mr735143jao.80.1649123341205;
-        Mon, 04 Apr 2022 18:49:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxMAeWuW/3+txDsVV62vki1LADOgkDFuyCvrbdc9Pj11bhRHmjppURbT8nshi8PLqZuUQv4iQ==
-X-Received: by 2002:a05:6638:a3a:b0:323:5c6d:ae20 with SMTP id 26-20020a0566380a3a00b003235c6dae20mr735120jao.80.1649123340991;
-        Mon, 04 Apr 2022 18:49:00 -0700 (PDT)
+X-Received: by 2002:a92:cc41:0:b0:2ca:317d:1545 with SMTP id t1-20020a92cc41000000b002ca317d1545mr610371ilq.97.1649123319014;
+        Mon, 04 Apr 2022 18:48:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw4r+oclsvcEsUiRUe9DMRABSCkkiRtx/NYkAy387pbnwUItvkV/gFFJ6K8jTgQhR+UEusSug==
+X-Received: by 2002:a92:cc41:0:b0:2ca:317d:1545 with SMTP id t1-20020a92cc41000000b002ca317d1545mr610343ilq.97.1649123318645;
+        Mon, 04 Apr 2022 18:48:38 -0700 (PDT)
 Received: from localhost.localdomain (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id l14-20020a05660227ce00b00645ebb013c1sm8287007ios.45.2022.04.04.18.48.59
+        by smtp.gmail.com with ESMTPSA id s5-20020a056602168500b0064c82210ce4sm7650542iow.13.2022.04.04.18.48.37
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 04 Apr 2022 18:49:00 -0700 (PDT)
+        Mon, 04 Apr 2022 18:48:38 -0700 (PDT)
 From:   Peter Xu <peterx@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
 Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
@@ -70,9 +70,9 @@ Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Axel Rasmussen <axelrasmussen@google.com>,
         Alistair Popple <apopple@nvidia.com>, peterx@redhat.com
-Subject: [PATCH v8 11/23] mm/hugetlb: Introduce huge pte version of uffd-wp helpers
-Date:   Mon,  4 Apr 2022 21:48:58 -0400
-Message-Id: <20220405014858.14531-1-peterx@redhat.com>
+Subject: [PATCH v8 03/23] mm: Check against orig_pte for finish_fault()
+Date:   Mon,  4 Apr 2022 21:48:36 -0400
+Message-Id: <20220405014836.14077-1-peterx@redhat.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220405014646.13522-1-peterx@redhat.com>
 References: <20220405014646.13522-1-peterx@redhat.com>
@@ -82,70 +82,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-They will be used in the follow up patches to either check/set/clear uffd-wp
-bit of a huge pte.
+We used to check against none pte in finish_fault(), with the assumption
+that the orig_pte is always none pte.
 
-So far it reuses all the small pte helpers.  Archs can overwrite these versions
-when necessary (with __HAVE_ARCH_HUGE_PTE_UFFD_WP* macros) in the future.
+This change prepares us to be able to call do_fault() on !none ptes.  For
+example, we should allow that to happen for pte marker so that we can restore
+information out of the pte markers.
+
+Let's change the "pte_none" check into detecting changes since we fetched
+orig_pte.  One trivial thing to take care of here is, when pmd==NULL for
+the pgtable we may not initialize orig_pte at all in handle_pte_fault().
+
+By default orig_pte will be all zeros however the problem is not all
+architectures are using all-zeros for a none pte.  pte_clear() will be the
+right thing to use here so that we'll always have a valid orig_pte value
+for the whole handle_pte_fault() call.
 
 Signed-off-by: Peter Xu <peterx@redhat.com>
 ---
- arch/s390/include/asm/hugetlb.h | 15 +++++++++++++++
- include/asm-generic/hugetlb.h   | 15 +++++++++++++++
- 2 files changed, 30 insertions(+)
+ mm/memory.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/arch/s390/include/asm/hugetlb.h b/arch/s390/include/asm/hugetlb.h
-index bea47e7cc6a0..be99eda87f4d 100644
---- a/arch/s390/include/asm/hugetlb.h
-+++ b/arch/s390/include/asm/hugetlb.h
-@@ -115,6 +115,21 @@ static inline pte_t huge_pte_modify(pte_t pte, pgprot_t newprot)
- 	return pte_modify(pte, newprot);
- }
- 
-+static inline pte_t huge_pte_mkuffd_wp(pte_t pte)
-+{
-+	return pte;
-+}
-+
-+static inline pte_t huge_pte_clear_uffd_wp(pte_t pte)
-+{
-+	return pte;
-+}
-+
-+static inline int huge_pte_uffd_wp(pte_t pte)
-+{
-+	return 0;
-+}
-+
- static inline bool gigantic_page_runtime_supported(void)
- {
- 	return true;
-diff --git a/include/asm-generic/hugetlb.h b/include/asm-generic/hugetlb.h
-index f39cad20ffc6..896f341f614d 100644
---- a/include/asm-generic/hugetlb.h
-+++ b/include/asm-generic/hugetlb.h
-@@ -35,6 +35,21 @@ static inline pte_t huge_pte_modify(pte_t pte, pgprot_t newprot)
- 	return pte_modify(pte, newprot);
- }
- 
-+static inline pte_t huge_pte_mkuffd_wp(pte_t pte)
-+{
-+	return pte_mkuffd_wp(pte);
-+}
-+
-+static inline pte_t huge_pte_clear_uffd_wp(pte_t pte)
-+{
-+	return pte_clear_uffd_wp(pte);
-+}
-+
-+static inline int huge_pte_uffd_wp(pte_t pte)
-+{
-+	return pte_uffd_wp(pte);
-+}
-+
- #ifndef __HAVE_ARCH_HUGE_PTE_CLEAR
- static inline void huge_pte_clear(struct mm_struct *mm, unsigned long addr,
- 		    pte_t *ptep, unsigned long sz)
+diff --git a/mm/memory.c b/mm/memory.c
+index 3f396241a7db..b1af996b09ca 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -4241,7 +4241,7 @@ vm_fault_t finish_fault(struct vm_fault *vmf)
+ 				      vmf->address, &vmf->ptl);
+ 	ret = 0;
+ 	/* Re-check under ptl */
+-	if (likely(pte_none(*vmf->pte)))
++	if (likely(pte_same(*vmf->pte, vmf->orig_pte)))
+ 		do_set_pte(vmf, page, vmf->address);
+ 	else
+ 		ret = VM_FAULT_NOPAGE;
+@@ -4709,6 +4709,13 @@ static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
+ 		 * concurrent faults and from rmap lookups.
+ 		 */
+ 		vmf->pte = NULL;
++		/*
++		 * Always initialize orig_pte.  This matches with below
++		 * code to have orig_pte to be the none pte if pte==NULL.
++		 * This makes the rest code to be always safe to reference
++		 * it, e.g. in finish_fault() we'll detect pte changes.
++		 */
++		pte_clear(vmf->vma->vm_mm, vmf->address, &vmf->orig_pte);
+ 	} else {
+ 		/*
+ 		 * If a huge pmd materialized under us just retry later.  Use
 -- 
 2.32.0
 
