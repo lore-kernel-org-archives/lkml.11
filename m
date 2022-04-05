@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCC0C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 606ACC352B6
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390524AbiDENmV (ORCPT
+        id S1390594AbiDENmh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
+        Tue, 5 Apr 2022 09:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345235AbiDEJWW (ORCPT
+        with ESMTP id S1345323AbiDEJW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293E62A726;
-        Tue,  5 Apr 2022 02:09:48 -0700 (PDT)
+        Tue, 5 Apr 2022 05:22:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B69F443C6;
+        Tue,  5 Apr 2022 02:10:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A078B81A22;
-        Tue,  5 Apr 2022 09:09:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6C8EC385A0;
-        Tue,  5 Apr 2022 09:09:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE5BD61576;
+        Tue,  5 Apr 2022 09:10:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05BE0C385A0;
+        Tue,  5 Apr 2022 09:10:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149785;
-        bh=a3X9AFzHlu8+WSu53lKw4fxPUWErvt/B1kO6xdYwI7g=;
+        s=korg; t=1649149832;
+        bh=H/g05GSqYLVNe7009eSkpVEVcdTs0rLY9M5I/WTcBDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UW92J+oDxrW2ONOSE52ob5AhL71QMbCjwWn6p7LHJMLxeykMO8SlvbXMfvoPgqLPd
-         VvSP0RX0rFapKTRwUwfpv9gLpeZ2GNeE30P7JlQbmOhJD3bFc7upUj2da9mYxgOx8G
-         QKX7eALckNG3IUax/mycU6Wr192ZXmA/DH08m8jg=
+        b=zZo2WCKK6YexZBxkd6aceRG4LT5N3NIsrRZuzgbKO72rgJ4XlwuHXKA/SQTt60GVr
+         xo0G2h1qt0PIxWuF/6+9yEBWhI/lPCFbV/KHeJCJzF7b6MWoP8PXM94NdgXC/ecPjI
+         a0Of1IrkOTD6Kg9x1ah2735yQu5jl87m/aSHIsUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0802/1017] ntfs: add sanity check on allocation size
-Date:   Tue,  5 Apr 2022 09:28:35 +0200
-Message-Id: <20220405070418.055812793@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 0857/1017] KVM: x86: Reinitialize context if host userspace toggles EFER.LME
+Date:   Tue,  5 Apr 2022 09:29:30 +0200
+Message-Id: <20220405070419.674290454@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,43 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit 714fbf2647b1a33d914edd695d4da92029c7e7c0 ]
+commit d6174299365ddbbf491620c0b8c5ca1a6ef2eea5 upstream.
 
-ntfs_read_inode_mount invokes ntfs_malloc_nofs with zero allocation
-size.  It triggers one BUG in the __ntfs_malloc function.
+While the guest runs, EFER.LME cannot change unless CR0.PG is clear, and
+therefore EFER.NX is the only bit that can affect the MMU role.  However,
+set_efer accepts a host-initiated change to EFER.LME even with CR0.PG=1.
+In that case, the MMU has to be reset.
 
-Fix this by adding sanity check on ni->attr_list_size.
-
-Link: https://lkml.kernel.org/r/20220120094914.47736-1-dzm91@hust.edu.cn
-Reported-by: syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Acked-by: Anton Altaparmakov <anton@tuxera.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 11988499e62b ("KVM: x86: Skip EFER vs. guest CPUID checks for host-initiated writes")
+Cc: stable@vger.kernel.org
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs/inode.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/kvm/mmu.h |    1 +
+ arch/x86/kvm/x86.c |    3 +--
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
-index 4474adb393ca..517b71c73aa9 100644
---- a/fs/ntfs/inode.c
-+++ b/fs/ntfs/inode.c
-@@ -1881,6 +1881,10 @@ int ntfs_read_inode_mount(struct inode *vi)
- 		}
- 		/* Now allocate memory for the attribute list. */
- 		ni->attr_list_size = (u32)ntfs_attr_size(a);
-+		if (!ni->attr_list_size) {
-+			ntfs_error(sb, "Attr_list_size is zero");
-+			goto put_err_out;
-+		}
- 		ni->attr_list = ntfs_malloc_nofs(ni->attr_list_size);
- 		if (!ni->attr_list) {
- 			ntfs_error(sb, "Not enough memory to allocate buffer "
--- 
-2.34.1
-
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -48,6 +48,7 @@
+ 			       X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE)
+ 
+ #define KVM_MMU_CR0_ROLE_BITS (X86_CR0_PG | X86_CR0_WP)
++#define KVM_MMU_EFER_ROLE_BITS (EFER_LME | EFER_NX)
+ 
+ static __always_inline u64 rsvd_bits(int s, int e)
+ {
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -1614,8 +1614,7 @@ static int set_efer(struct kvm_vcpu *vcp
+ 		return r;
+ 	}
+ 
+-	/* Update reserved bits */
+-	if ((efer ^ old_efer) & EFER_NX)
++	if ((efer ^ old_efer) & KVM_MMU_EFER_ROLE_BITS)
+ 		kvm_mmu_reset_context(vcpu);
+ 
+ 	return 0;
 
 
