@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB7B6C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7242C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbiDEHxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
+        id S231237AbiDEHxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233385AbiDEHrp (ORCPT
+        with ESMTP id S233467AbiDEHrw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4620692D03;
-        Tue,  5 Apr 2022 00:44:04 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77402A1462;
+        Tue,  5 Apr 2022 00:44:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1506616BF;
-        Tue,  5 Apr 2022 07:44:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABD60C340EE;
-        Tue,  5 Apr 2022 07:44:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C86C8B81A22;
+        Tue,  5 Apr 2022 07:44:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33397C340EE;
+        Tue,  5 Apr 2022 07:44:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144643;
-        bh=SFZhGojlTJsFtEcOoR6TsDZqCuHRKYKgaXsoBWxvPMc=;
+        s=korg; t=1649144651;
+        bh=QcVwkp7O9+jJeRmlPsB9ykrIZBzzp/L241o1BMnZ4n8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vhrdB62zTARGu1HtMObJHJTKA2hs1/jS5yMjP2o1oYqTawGPL9sWSv/u6wgQAewNz
-         9oA41j3vFoAfVqbGej+gXNeVUBdbEZ4XIwLR/Q5htdjI3DClpAl5KRcCxGDBfTtWo0
-         n8B7poUQmGrj9T1VyeHW6aPeJlr7NMsYUAhwW7uI=
+        b=AOGg/UggbgEI3ML9PdT/3jptExhoTUH3c5clIY4032T25+vz3jAAjWrjhkzYcyCit
+         PECW5Fw6CCAJQLIdTiUbgQjanaig0gL322WSJKiSNHsESWDsrCx1DmgsaL7eZaQjBF
+         urGHGaTEl7i2vOtXPVAK9TxJkhd48zfGX4erV06Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.17 0118/1126] can: isotp: sanitize CAN ID checks in isotp_bind()
-Date:   Tue,  5 Apr 2022 09:14:25 +0200
-Message-Id: <20220405070411.037293289@linuxfoundation.org>
+        Vijay Balakrishna <vijayb@linux.microsoft.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.17 0121/1126] arm64: Do not defer reserve_crashkernel() for platforms with no DMA memory zones
+Date:   Tue,  5 Apr 2022 09:14:28 +0200
+Message-Id: <20220405070411.126012691@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,104 +50,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Vijay Balakrishna <vijayb@linux.microsoft.com>
 
-commit 3ea566422cbde9610c2734980d1286ab681bb40e upstream.
+commit 031495635b4668f94e964e037ca93d0d38bfde58 upstream.
 
-Syzbot created an environment that lead to a state machine status that
-can not be reached with a compliant CAN ID address configuration.
-The provided address information consisted of CAN ID 0x6000001 and 0xC28001
-which both boil down to 11 bit CAN IDs 0x001 in sending and receiving.
+The following patches resulted in deferring crash kernel reservation to
+mem_init(), mainly aimed at platforms with DMA memory zones (no IOMMU),
+in particular Raspberry Pi 4.
 
-Sanitize the SFF/EFF CAN ID values before performing the address checks.
+commit 1a8e1cef7603 ("arm64: use both ZONE_DMA and ZONE_DMA32")
+commit 8424ecdde7df ("arm64: mm: Set ZONE_DMA size based on devicetree's dma-ranges")
+commit 0a30c53573b0 ("arm64: mm: Move reserve_crashkernel() into mem_init()")
+commit 2687275a5843 ("arm64: Force NO_BLOCK_MAPPINGS if crashkernel reservation is required")
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/20220316164258.54155-1-socketcan@hartkopp.net
-Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Above changes introduced boot slowdown due to linear map creation for
+all the memory banks with NO_BLOCK_MAPPINGS, see discussion[1].  The proposed
+changes restore crash kernel reservation to earlier behavior thus avoids
+slow boot, particularly for platforms with IOMMU (no DMA memory zones).
+
+Tested changes to confirm no ~150ms boot slowdown on our SoC with IOMMU
+and 8GB memory.  Also tested with ZONE_DMA and/or ZONE_DMA32 configs to confirm
+no regression to deferring scheme of crash kernel memory reservation.
+In both cases successfully collected kernel crash dump.
+
+[1] https://lore.kernel.org/all/9436d033-579b-55fa-9b00-6f4b661c2dd7@linux.microsoft.com/
+
+Signed-off-by: Vijay Balakrishna <vijayb@linux.microsoft.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+Link: https://lore.kernel.org/r/1646242689-20744-1-git-send-email-vijayb@linux.microsoft.com
+[will: Add #ifdef CONFIG_KEXEC_CORE guards to fix 'crashk_res' references in allnoconfig build]
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c |   38 ++++++++++++++++++++------------------
- 1 file changed, 20 insertions(+), 18 deletions(-)
+ arch/arm64/mm/init.c |   36 ++++++++++++++++++++++++++++++++----
+ arch/arm64/mm/mmu.c  |   32 +++++++++++++++++++++++++++++++-
+ 2 files changed, 63 insertions(+), 5 deletions(-)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1104,6 +1104,7 @@ static int isotp_bind(struct socket *soc
- 	struct net *net = sock_net(sk);
- 	int ifindex;
- 	struct net_device *dev;
-+	canid_t tx_id, rx_id;
- 	int err = 0;
- 	int notify_enetdown = 0;
- 	int do_rx_reg = 1;
-@@ -1111,8 +1112,18 @@ static int isotp_bind(struct socket *soc
- 	if (len < ISOTP_MIN_NAMELEN)
- 		return -EINVAL;
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -61,8 +61,34 @@ EXPORT_SYMBOL(memstart_addr);
+  * unless restricted on specific platforms (e.g. 30-bit on Raspberry Pi 4).
+  * In such case, ZONE_DMA32 covers the rest of the 32-bit addressable memory,
+  * otherwise it is empty.
++ *
++ * Memory reservation for crash kernel either done early or deferred
++ * depending on DMA memory zones configs (ZONE_DMA) --
++ *
++ * In absence of ZONE_DMA configs arm64_dma_phys_limit initialized
++ * here instead of max_zone_phys().  This lets early reservation of
++ * crash kernel memory which has a dependency on arm64_dma_phys_limit.
++ * Reserving memory early for crash kernel allows linear creation of block
++ * mappings (greater than page-granularity) for all the memory bank rangs.
++ * In this scheme a comparatively quicker boot is observed.
++ *
++ * If ZONE_DMA configs are defined, crash kernel memory reservation
++ * is delayed until DMA zone memory range size initilazation performed in
++ * zone_sizes_init().  The defer is necessary to steer clear of DMA zone
++ * memory range to avoid overlap allocation.  So crash kernel memory boundaries
++ * are not known when mapping all bank memory ranges, which otherwise means
++ * not possible to exclude crash kernel range from creating block mappings
++ * so page-granularity mappings are created for the entire memory range.
++ * Hence a slightly slower boot is observed.
++ *
++ * Note: Page-granularity mapppings are necessary for crash kernel memory
++ * range for shrinking its size via /sys/kernel/kexec_crash_size interface.
+  */
+-phys_addr_t arm64_dma_phys_limit __ro_after_init;
++#if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
++phys_addr_t __ro_after_init arm64_dma_phys_limit;
++#else
++const phys_addr_t arm64_dma_phys_limit = PHYS_MASK + 1;
++#endif
  
--	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
--		return -EADDRNOTAVAIL;
-+	/* sanitize tx/rx CAN identifiers */
-+	tx_id = addr->can_addr.tp.tx_id;
-+	if (tx_id & CAN_EFF_FLAG)
-+		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
-+	else
-+		tx_id &= CAN_SFF_MASK;
+ #ifdef CONFIG_KEXEC_CORE
+ /*
+@@ -153,8 +179,6 @@ static void __init zone_sizes_init(unsig
+ 	if (!arm64_dma_phys_limit)
+ 		arm64_dma_phys_limit = dma32_phys_limit;
+ #endif
+-	if (!arm64_dma_phys_limit)
+-		arm64_dma_phys_limit = PHYS_MASK + 1;
+ 	max_zone_pfns[ZONE_NORMAL] = max;
+ 
+ 	free_area_init(max_zone_pfns);
+@@ -315,6 +339,9 @@ void __init arm64_memblock_init(void)
+ 
+ 	early_init_fdt_scan_reserved_mem();
+ 
++	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
++		reserve_crashkernel();
 +
-+	rx_id = addr->can_addr.tp.rx_id;
-+	if (rx_id & CAN_EFF_FLAG)
-+		rx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
-+	else
-+		rx_id &= CAN_SFF_MASK;
+ 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+ }
  
- 	if (!addr->can_ifindex)
- 		return -ENODEV;
-@@ -1124,21 +1135,13 @@ static int isotp_bind(struct socket *soc
- 		do_rx_reg = 0;
+@@ -361,7 +388,8 @@ void __init bootmem_init(void)
+ 	 * request_standard_resources() depends on crashkernel's memory being
+ 	 * reserved, so do it here.
+ 	 */
+-	reserve_crashkernel();
++	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
++		reserve_crashkernel();
  
- 	/* do not validate rx address for functional addressing */
--	if (do_rx_reg) {
--		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
--			err = -EADDRNOTAVAIL;
--			goto out;
--		}
--
--		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
--			err = -EADDRNOTAVAIL;
--			goto out;
--		}
-+	if (do_rx_reg && rx_id == tx_id) {
-+		err = -EADDRNOTAVAIL;
-+		goto out;
- 	}
+ 	memblock_dump_all();
+ }
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -517,7 +517,7 @@ static void __init map_mem(pgd_t *pgdp)
+ 	 */
+ 	BUILD_BUG_ON(pgd_index(direct_map_end - 1) == pgd_index(direct_map_end));
  
- 	if (so->bound && addr->can_ifindex == so->ifindex &&
--	    addr->can_addr.tp.rx_id == so->rxid &&
--	    addr->can_addr.tp.tx_id == so->txid)
-+	    rx_id == so->rxid && tx_id == so->txid)
- 		goto out;
+-	if (can_set_direct_map() || crash_mem_map || IS_ENABLED(CONFIG_KFENCE))
++	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
+ 		flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
  
- 	dev = dev_get_by_index(net, addr->can_ifindex);
-@@ -1162,8 +1165,7 @@ static int isotp_bind(struct socket *soc
- 	ifindex = dev->ifindex;
+ 	/*
+@@ -528,6 +528,17 @@ static void __init map_mem(pgd_t *pgdp)
+ 	 */
+ 	memblock_mark_nomap(kernel_start, kernel_end - kernel_start);
  
- 	if (do_rx_reg)
--		can_rx_register(net, dev, addr->can_addr.tp.rx_id,
--				SINGLE_MASK(addr->can_addr.tp.rx_id),
-+		can_rx_register(net, dev, rx_id, SINGLE_MASK(rx_id),
- 				isotp_rcv, sk, "isotp", sk);
++#ifdef CONFIG_KEXEC_CORE
++	if (crash_mem_map) {
++		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
++		    IS_ENABLED(CONFIG_ZONE_DMA32))
++			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
++		else if (crashk_res.end)
++			memblock_mark_nomap(crashk_res.start,
++			    resource_size(&crashk_res));
++	}
++#endif
++
+ 	/* map all the memory banks */
+ 	for_each_mem_range(i, &start, &end) {
+ 		if (start >= end)
+@@ -554,6 +565,25 @@ static void __init map_mem(pgd_t *pgdp)
+ 	__map_memblock(pgdp, kernel_start, kernel_end,
+ 		       PAGE_KERNEL, NO_CONT_MAPPINGS);
+ 	memblock_clear_nomap(kernel_start, kernel_end - kernel_start);
++
++	/*
++	 * Use page-level mappings here so that we can shrink the region
++	 * in page granularity and put back unused memory to buddy system
++	 * through /sys/kernel/kexec_crash_size interface.
++	 */
++#ifdef CONFIG_KEXEC_CORE
++	if (crash_mem_map &&
++	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
++		if (crashk_res.end) {
++			__map_memblock(pgdp, crashk_res.start,
++				       crashk_res.end + 1,
++				       PAGE_KERNEL,
++				       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
++			memblock_clear_nomap(crashk_res.start,
++					     resource_size(&crashk_res));
++		}
++	}
++#endif
+ }
  
- 	dev_put(dev);
-@@ -1183,8 +1185,8 @@ static int isotp_bind(struct socket *soc
- 
- 	/* switch to new settings */
- 	so->ifindex = ifindex;
--	so->rxid = addr->can_addr.tp.rx_id;
--	so->txid = addr->can_addr.tp.tx_id;
-+	so->rxid = rx_id;
-+	so->txid = tx_id;
- 	so->bound = 1;
- 
- out:
+ void mark_rodata_ro(void)
 
 
