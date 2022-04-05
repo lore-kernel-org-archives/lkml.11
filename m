@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D454DC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9665C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbiDEVwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        id S1356558AbiDEVw0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349416AbiDEJtt (ORCPT
+        with ESMTP id S1357931AbiDEK12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:49 -0400
+        Tue, 5 Apr 2022 06:27:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45311A398;
-        Tue,  5 Apr 2022 02:45:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08F17E583;
+        Tue,  5 Apr 2022 03:11:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6AFBBB817D3;
-        Tue,  5 Apr 2022 09:45:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD700C385A2;
-        Tue,  5 Apr 2022 09:45:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF148B81C8A;
+        Tue,  5 Apr 2022 10:11:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C03C385A0;
+        Tue,  5 Apr 2022 10:11:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151906;
-        bh=3SyFg1Ox2BVv77hwr5Q+brbLvYJwdOjO6I/B8CTdJ5k=;
+        s=korg; t=1649153476;
+        bh=2oZ6o3YYR84xrbyRZvsWvVcONdqA2nZyWHB3WsSIGY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LqrK3/RQpostobhbszMtEBMQpT/i1F3I+dMWhMuuVr3oOojxQS3tAi7C/fTBqA6qd
-         6T6Qd9DTlFeVjtzrLPz2+hnfMbPdQj7nhz5nm57wX6c1Rggd/foUs9uW8GQXTuHbht
-         nuq+tSKd0E8lCfwojElZFXd9HH0PQkUTEMwEENsE=
+        b=P+AsENyt31V1Lp6BR5ATFf6dFLpIVfvE3IgBN7iK5iQOnAJSiQhz6FAVlX1IZ3T2h
+         fo9zs3WMQE2O1plV9738EM99B5GmAz5eYnXRF0GbR9sMmhDM7eP5Z+ru/pKAlz9nvk
+         GydyYMM2Eo2vxVkBIPdCtuxD61PgODBf6E+n5XL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 585/913] misc: alcor_pci: Fix an error handling path
-Date:   Tue,  5 Apr 2022 09:27:27 +0200
-Message-Id: <20220405070357.379902451@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 234/599] ALSA: firewire-lib: fix uninitialized flag for AV/C deferred transaction
+Date:   Tue,  5 Apr 2022 09:28:48 +0200
+Message-Id: <20220405070305.804021520@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,70 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
 
-[ Upstream commit 5b3dc949f554379edcb8ef6111aa5ecb78feb798 ]
+[ Upstream commit bf0cd60b7e33cf221fbe1114e4acb2c828b0af0d ]
 
-A successful ida_simple_get() should be balanced by a corresponding
-ida_simple_remove().
+AV/C deferred transaction was supported at a commit 00a7bb81c20f ("ALSA:
+firewire-lib: Add support for deferred transaction") while 'deferrable'
+flag can be uninitialized for non-control/notify AV/C transactions.
+UBSAN reports it:
 
-Add the missing call in the error handling path of the probe.
+kernel: ================================================================================
+kernel: UBSAN: invalid-load in /build/linux-aa0B4d/linux-5.15.0/sound/firewire/fcp.c:363:9
+kernel: load of value 158 is not a valid value for type '_Bool'
+kernel: CPU: 3 PID: 182227 Comm: irq/35-firewire Tainted: P           OE     5.15.0-18-generic #18-Ubuntu
+kernel: Hardware name: Gigabyte Technology Co., Ltd. AX370-Gaming 5/AX370-Gaming 5, BIOS F42b 08/01/2019
+kernel: Call Trace:
+kernel:  <IRQ>
+kernel:  show_stack+0x52/0x58
+kernel:  dump_stack_lvl+0x4a/0x5f
+kernel:  dump_stack+0x10/0x12
+kernel:  ubsan_epilogue+0x9/0x45
+kernel:  __ubsan_handle_load_invalid_value.cold+0x44/0x49
+kernel:  fcp_response.part.0.cold+0x1a/0x2b [snd_firewire_lib]
+kernel:  fcp_response+0x28/0x30 [snd_firewire_lib]
+kernel:  fw_core_handle_request+0x230/0x3d0 [firewire_core]
+kernel:  handle_ar_packet+0x1d9/0x200 [firewire_ohci]
+kernel:  ? handle_ar_packet+0x1d9/0x200 [firewire_ohci]
+kernel:  ? transmit_complete_callback+0x9f/0x120 [firewire_core]
+kernel:  ar_context_tasklet+0xa8/0x2e0 [firewire_ohci]
+kernel:  tasklet_action_common.constprop.0+0xea/0xf0
+kernel:  tasklet_action+0x22/0x30
+kernel:  __do_softirq+0xd9/0x2e3
+kernel:  ? irq_finalize_oneshot.part.0+0xf0/0xf0
+kernel:  do_softirq+0x75/0xa0
+kernel:  </IRQ>
+kernel:  <TASK>
+kernel:  __local_bh_enable_ip+0x50/0x60
+kernel:  irq_forced_thread_fn+0x7e/0x90
+kernel:  irq_thread+0xba/0x190
+kernel:  ? irq_thread_fn+0x60/0x60
+kernel:  kthread+0x11e/0x140
+kernel:  ? irq_thread_check_affinity+0xf0/0xf0
+kernel:  ? set_kthread_struct+0x50/0x50
+kernel:  ret_from_fork+0x22/0x30
+kernel:  </TASK>
+kernel: ================================================================================
 
-While at it, switch to ida_alloc()/ida_free() instead to
-ida_simple_get()/ida_simple_remove().
-The latter is deprecated and more verbose.
+This commit fixes the bug. The bug has no disadvantage for the non-
+control/notify AV/C transactions since the flag has an effect for AV/C
+response with INTERIM (0x0f) status which is not used for the transactions
+in AV/C general specification.
 
-Fixes: 4f556bc04e3c ("misc: cardreader: add new Alcor Micro Cardreader PCI driver")
-Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/918a9875b7f67b7f8f123c4446452603422e8c5e.1644136776.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 00a7bb81c20f ("ALSA: firewire-lib: Add support for deferred transaction")
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220304125647.78430-1-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/cardreader/alcor_pci.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ sound/firewire/fcp.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/misc/cardreader/alcor_pci.c b/drivers/misc/cardreader/alcor_pci.c
-index de6d44a158bb..3f514d77a843 100644
---- a/drivers/misc/cardreader/alcor_pci.c
-+++ b/drivers/misc/cardreader/alcor_pci.c
-@@ -266,7 +266,7 @@ static int alcor_pci_probe(struct pci_dev *pdev,
- 	if (!priv)
- 		return -ENOMEM;
+diff --git a/sound/firewire/fcp.c b/sound/firewire/fcp.c
+index bbfbebf4affb..df44dd5dc4b2 100644
+--- a/sound/firewire/fcp.c
++++ b/sound/firewire/fcp.c
+@@ -240,9 +240,7 @@ int fcp_avc_transaction(struct fw_unit *unit,
+ 	t.response_match_bytes = response_match_bytes;
+ 	t.state = STATE_PENDING;
+ 	init_waitqueue_head(&t.wait);
+-
+-	if (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03)
+-		t.deferrable = true;
++	t.deferrable = (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03);
  
--	ret = ida_simple_get(&alcor_pci_idr, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&alcor_pci_idr, GFP_KERNEL);
- 	if (ret < 0)
- 		return ret;
- 	priv->id = ret;
-@@ -280,7 +280,8 @@ static int alcor_pci_probe(struct pci_dev *pdev,
- 	ret = pci_request_regions(pdev, DRV_NAME_ALCOR_PCI);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Cannot request region\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto error_free_ida;
- 	}
- 
- 	if (!(pci_resource_flags(pdev, bar) & IORESOURCE_MEM)) {
-@@ -324,6 +325,8 @@ static int alcor_pci_probe(struct pci_dev *pdev,
- 
- error_release_regions:
- 	pci_release_regions(pdev);
-+error_free_ida:
-+	ida_free(&alcor_pci_idr, priv->id);
- 	return ret;
- }
- 
-@@ -337,7 +340,7 @@ static void alcor_pci_remove(struct pci_dev *pdev)
- 
- 	mfd_remove_devices(&pdev->dev);
- 
--	ida_simple_remove(&alcor_pci_idr, priv->id);
-+	ida_free(&alcor_pci_idr, priv->id);
- 
- 	pci_release_regions(pdev);
- 	pci_set_drvdata(pdev, NULL);
+ 	spin_lock_irq(&transactions_lock);
+ 	list_add_tail(&t.list, &transactions);
 -- 
 2.34.1
 
