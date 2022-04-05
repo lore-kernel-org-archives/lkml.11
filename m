@@ -2,130 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49429C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C314DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844755AbiDFBwR (ORCPT
+        id S1844797AbiDFBwh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
+        Tue, 5 Apr 2022 21:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573594AbiDETXO (ORCPT
+        with ESMTP id S1381349AbiDEMy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB3B4C788;
-        Tue,  5 Apr 2022 12:21:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE896618CD;
-        Tue,  5 Apr 2022 19:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A36F0C385A5;
-        Tue,  5 Apr 2022 19:21:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186474;
-        bh=X1L6/wSKaDTpim1XpoJnpAgGMETaa+8EmWzAIXZ00gU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WAbgfrhtoy5Sg+CRvEU3jPw5dlTccrhLVEjqBezzHxrwoRfdA4Sugg7I5/we2/5qh
-         VjYiVx+SkN6deDnpy0CG/hTJ1D+OKnWhYD4PZ8/UjNQ66ynQ+QgAuKhx3sTXRBeJ/m
-         6eO+VQsKQMYYNaWLSpcocP93NoL3TE+hDJLx4uZT/NDQkLnxHCBEC+Mrw4ncARdX09
-         YYQK3BfJs0lsBHx7P/esthLyd9mG/NTAtIpGUc8c4y7jF6rT4JUpFWvO2CMiqg8iPR
-         nAvtMobnrz25BZm33+RP4eG7bwJr3SQ2w0nGpqPAnQ/dmiS5kcj2Ma4UDtX7CdIZtH
-         UrOzn7R1rr4Jg==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 46/59] ceph: add object version support for sync read
-Date:   Tue,  5 Apr 2022 15:20:17 -0400
-Message-Id: <20220405192030.178326-47-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        Tue, 5 Apr 2022 08:54:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45E4C29C92
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 04:57:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649159848;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yZyeehLgo43vPEC1Sp1n3r3jpBNtdCjtLwgkplLP3v4=;
+        b=Gh1urVgDOeB9+9TxPEQeRkhcqCncaFa8w1U9aVXPwWd9+BzvwtLgauDuT5npxZ7ZsYGpEy
+        +2cLGfjg87/sbCwjZPmJfPObdYuRuPoNUmNfjDY/szAPb3aPdw9c1mV+t+FVj9LCzmEPm1
+        ma0vA+nyG5qidYPD19KL428n3aY96z4=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-145-KIqRJy3MMeaGuU1ZouRE6w-1; Tue, 05 Apr 2022 07:57:27 -0400
+X-MC-Unique: KIqRJy3MMeaGuU1ZouRE6w-1
+Received: by mail-wm1-f70.google.com with SMTP id c19-20020a05600c4a1300b0038e6b4a104cso1219216wmp.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 04:57:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yZyeehLgo43vPEC1Sp1n3r3jpBNtdCjtLwgkplLP3v4=;
+        b=38l5yMxt+/9Smcu7hpV6skp/yyRD7O0FxJPsbRpLa0pc55JOPeCAtkjUoNlm41vw1k
+         /1AaRIGdxbgr+Rj2s7uphTh0fWFq3fnIMJqmtMwNQGfaCizTGHpAt35RkJsb6twusilq
+         HXn/7oI0FNWuEYE0FRFP5hbZufSVKdliF6DUAR1M/imlds1s7QTWuRRn5TFvKSRAsln7
+         YbDXUa7xkMgxB9J88n9IGrxo/o+12ShfVUKjGbbJf5wi0PbCoyUfmTTx6TEswsDo0xyE
+         B2dJ1I4s9xLJfRxXzIEkj5ELdhgvm14e4fU2XGaZWdS5lkuWMRKya/pr2VR3AnOxRi0Y
+         6SiQ==
+X-Gm-Message-State: AOAM533w5BGZUB9bNH8VCne+HXDZhm/ItIwTvahPH5pKKntYYxvOcjBY
+        B/R22Sp+6rp4UM9NndPrWbYMXacw3al4CYvIqcueEExjrYgwTKb0hvqZfgSaUYTpNdFr0yXNvUQ
+        ICq0fw/HHS9zuRC6jnBxURmPK
+X-Received: by 2002:a05:6000:184a:b0:203:f8f0:3407 with SMTP id c10-20020a056000184a00b00203f8f03407mr2604222wri.190.1649159846182;
+        Tue, 05 Apr 2022 04:57:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJypIKxQBes9FfmGLsTQSI+o8ZS7lLWmQJBmsfPcPeNLWB/aoHg6W8W0oB4kBqUTKA7V4gN8eQ==
+X-Received: by 2002:a05:6000:184a:b0:203:f8f0:3407 with SMTP id c10-20020a056000184a00b00203f8f03407mr2604202wri.190.1649159845981;
+        Tue, 05 Apr 2022 04:57:25 -0700 (PDT)
+Received: from redhat.com ([2.52.17.211])
+        by smtp.gmail.com with ESMTPSA id m4-20020a7bcb84000000b00389efb7a5b4sm1883255wmi.17.2022.04.05.04.57.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 04:57:25 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 07:57:21 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        virtualization list <virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH 8/8] virtio_ring.h: do not include <stdint.h> from
+ exported header
+Message-ID: <20220405075627-mutt-send-email-mst@kernel.org>
+References: <20220404061948.2111820-1-masahiroy@kernel.org>
+ <20220404061948.2111820-9-masahiroy@kernel.org>
+ <Ykqh3mEy5uY8spe8@infradead.org>
+ <CAK8P3a07ZdqA0UBC_qkqzMsZWLUK=Rti3AkFe2VVEWLivuZAqA@mail.gmail.com>
+ <YkvVOLj/Rv4yPf5K@infradead.org>
+ <CAK8P3a0FjfSyUtv9a9dM7ixsK2oY9VF7WZPvDctn2JRi7A0YyQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0FjfSyUtv9a9dM7ixsK2oY9VF7WZPvDctn2JRi7A0YyQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+On Tue, Apr 05, 2022 at 08:29:36AM +0200, Arnd Bergmann wrote:
+> On Tue, Apr 5, 2022 at 7:35 AM Christoph Hellwig <hch@infradead.org> wrote:
+> >
+> > On Mon, Apr 04, 2022 at 10:04:02AM +0200, Arnd Bergmann wrote:
+> > > The header is shared between kernel and other projects using virtio, such as
+> > > qemu and any boot loaders booting from virtio devices. It's not technically a
+> > > /kernel/ ABI, but it is an ABI and for practical reasons the kernel version is
+> > > maintained as the master copy if I understand it correctly.
+> >
+> > Besides that fact that as you correctly states these are not a UAPI at
+> > all, qemu and bootloades are not specific to Linux and can't require a
+> > specific kernel version.  So the same thing we do for file system
+> > formats or network protocols applies here:  just copy the damn header.
+> > And as stated above any reasonably portable userspace needs to have a
+> > copy anyway.
+> 
+> I think the users all have their own copies, at least the ones I could
+> find on codesearch.debian.org.
 
-Always return the last object's version.
+kvmtool does not seem to have its own copy, just grep vring_init.
 
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- fs/ceph/file.c  | 12 ++++++++++--
- fs/ceph/super.h |  3 ++-
- 2 files changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-index c4300381851e..175a59277726 100644
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -928,7 +928,8 @@ enum {
-  * only return a short read to the caller if we hit EOF.
-  */
- ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
--			 struct iov_iter *to, int *retry_op)
-+			 struct iov_iter *to, int *retry_op,
-+			 u64 *last_objver)
- {
- 	struct ceph_inode_info *ci = ceph_inode(inode);
- 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
-@@ -938,6 +939,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
- 	u64 len = iov_iter_count(to);
- 	u64 i_size = i_size_read(inode);
- 	bool sparse = ceph_test_mount_opt(fsc, SPARSEREAD);
-+	u64 objver = 0;
- 
- 	dout("sync_read on inode %p %llx~%llx\n", inode, *ki_pos, len);
- 
-@@ -1008,6 +1010,9 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
- 					 req->r_end_latency,
- 					 len, ret);
- 
-+		if (ret > 0)
-+			objver = req->r_version;
-+
- 		i_size = i_size_read(inode);
- 		dout("sync_read %llu~%llu got %zd i_size %llu%s\n",
- 		     off, len, ret, i_size, (more ? " MORE" : ""));
-@@ -1069,6 +1074,9 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
- 		}
- 	}
- 
-+	if (last_objver && ret > 0)
-+		*last_objver = objver;
-+
- 	dout("sync_read result %zd retry_op %d\n", ret, *retry_op);
- 	return ret;
- }
-@@ -1082,7 +1090,7 @@ static ssize_t ceph_sync_read(struct kiocb *iocb, struct iov_iter *to,
- 	dout("sync_read on file %p %llx~%zx %s\n", file, iocb->ki_pos,
- 	     iov_iter_count(to), (file->f_flags & O_DIRECT) ? "O_DIRECT" : "");
- 
--	return __ceph_sync_read(inode, &iocb->ki_pos, to, retry_op);
-+	return __ceph_sync_read(inode, &iocb->ki_pos, to, retry_op, NULL);
- }
- 
- struct ceph_aio_request {
-diff --git a/fs/ceph/super.h b/fs/ceph/super.h
-index d7ab820aed34..9809bc97b89e 100644
---- a/fs/ceph/super.h
-+++ b/fs/ceph/super.h
-@@ -1259,7 +1259,8 @@ extern int ceph_open(struct inode *inode, struct file *file);
- extern int ceph_atomic_open(struct inode *dir, struct dentry *dentry,
- 			    struct file *file, unsigned flags, umode_t mode);
- extern ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
--				struct iov_iter *to, int *retry_op);
-+				struct iov_iter *to, int *retry_op,
-+				u64 *last_objver);
- extern int ceph_release(struct inode *inode, struct file *filp);
- extern void ceph_fill_inline_data(struct inode *inode, struct page *locked_page,
- 				  char *data, size_t len);
--- 
-2.35.1
+> However, there are 27 virtio_*.h
+> files in include/uapi/linux that probably should stay together for
+> the purpose of defining the virtio protocol, and some others might
+> be uapi relevant.
+> 
+> I see that at least include/uapi/linux/vhost.h has ioctl() definitions
+> in it, and includes the virtio_ring.h header indirectly.
+> 
+> Adding the virtio maintainers to Cc to see if they can provide
+> more background on this.
+> 
+> > If it is just as a "master copy" it can live in drivers/virtio/, just
+> > like we do for other formats.
+> 
+> It has to be in include/linux/ at least because it's used by a number
+> of drivers outside of drivers/virtio/.
+> 
+>         Arnd
+> _______________________________________________
+> Virtualization mailing list
+> Virtualization@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+> 
 
