@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFA4C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B56C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381456AbiDEMOt (ORCPT
+        id S1382358AbiDEMPB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
+        Tue, 5 Apr 2022 08:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244779AbiDEIwi (ORCPT
+        with ESMTP id S244776AbiDEIwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1AC5FD7;
-        Tue,  5 Apr 2022 01:43:45 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17267BC4;
+        Tue,  5 Apr 2022 01:43:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 197BF60FFC;
-        Tue,  5 Apr 2022 08:43:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D8FC385A1;
-        Tue,  5 Apr 2022 08:43:43 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 79A41CE1C6C;
+        Tue,  5 Apr 2022 08:43:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AA3BC385A0;
+        Tue,  5 Apr 2022 08:43:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148224;
-        bh=Bs37qhupQrzrwShQLMKh2eR5EW+wmQdn3FX3+6XNFbM=;
+        s=korg; t=1649148218;
+        bh=Ts1OsI3ZLCMyHQ1eqGV7NkwX+jLelzLpcnalARBhejs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iac2mOJfQD7kJkADt/LJKtIjvYovFJKi624IHm8AtVI21tnjfSrf41fS1lOdeSGsb
-         0mDtg8Jp8YyGt9QOL8/F1BNOGhpDkAiFV4uJCcSHfmqn1MvLeeEkB7L55MmDRHHLVu
-         Qj/E5noAOsYvrrT/89g89/KqltJpnLrylGrItZmQ=
+        b=L6K7aohJJ4RgKNBpj4iZ/yaVmikftQPMzDsohmNDP4rO7zvwTswhfX5BwgSvk+pYw
+         j6PrV2XuR/S5gtplyys2w5+R8ofGxo/rif7R7H8cOO/BxITHEXZFABrOGX2oRYahNE
+         8GsCkU4l7Fpflbl7xwLK2qVh6ENzxI4Kflxyd6F8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0262/1017] sched/uclamp: Fix iowait boost escaping uclamp restriction
-Date:   Tue,  5 Apr 2022 09:19:35 +0200
-Message-Id: <20220405070402.040322476@linuxfoundation.org>
+Subject: [PATCH 5.16 0278/1017] media: staging: media: zoran: fix usage of vb2_dma_contig_set_max_seg_size
+Date:   Tue,  5 Apr 2022 09:19:51 +0200
+Message-Id: <20220405070402.519586275@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,41 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qais Yousef <qais.yousef@arm.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit d37aee9018e68b0d356195caefbb651910e0bbfa ]
+[ Upstream commit 241f5b67fb48def58643f279dfb8468bdd54b443 ]
 
-iowait_boost signal is applied independently of util and doesn't take
-into account uclamp settings of the rq. An io heavy task that is capped
-by uclamp_max could still request higher frequency because
-sugov_iowait_apply() doesn't clamp the boost via uclamp_rq_util_with()
-like effective_cpu_util() does.
+vb2_dma_contig_set_max_seg_size need to have a size in parameter and not
+a DMA_BIT_MASK().
+While fixing this issue, also fix error handling of all DMA size
+setting.
 
-Make sure that iowait_boost honours uclamp requests by calling
-uclamp_rq_util_with() when applying the boost.
-
-Fixes: 982d9cdc22c9 ("sched/cpufreq, sched/uclamp: Add clamps for FAIR and RT tasks")
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Link: https://lore.kernel.org/r/20211216225320.2957053-3-qais.yousef@arm.com
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: d4ae3689226e5 ("media: zoran: device support only 32bit DMA address")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/cpufreq_schedutil.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/media/zoran/zoran_card.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
-index e7af18857371..7f6bb37d3a2f 100644
---- a/kernel/sched/cpufreq_schedutil.c
-+++ b/kernel/sched/cpufreq_schedutil.c
-@@ -289,6 +289,7 @@ static void sugov_iowait_apply(struct sugov_cpu *sg_cpu, u64 time)
- 	 * into the same scale so we can compare.
- 	 */
- 	boost = (sg_cpu->iowait_boost * sg_cpu->max) >> SCHED_CAPACITY_SHIFT;
-+	boost = uclamp_rq_util_with(cpu_rq(sg_cpu->cpu), boost, NULL);
- 	if (sg_cpu->util < boost)
- 		sg_cpu->util = boost;
- }
+diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
+index f259585b0689..c578ef3c32f5 100644
+--- a/drivers/staging/media/zoran/zoran_card.c
++++ b/drivers/staging/media/zoran/zoran_card.c
+@@ -1069,8 +1069,10 @@ static int zoran_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+ 	if (err)
+-		return -ENODEV;
+-	vb2_dma_contig_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
++		return err;
++	err = vb2_dma_contig_set_max_seg_size(&pdev->dev, U32_MAX);
++	if (err)
++		return err;
+ 
+ 	nr = zoran_num++;
+ 	if (nr >= BUZ_MAX) {
 -- 
 2.34.1
 
