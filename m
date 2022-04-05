@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B18D6C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B24C4707E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378918AbiDELjr (ORCPT
+        id S1378959AbiDELj4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:39:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
+        Tue, 5 Apr 2022 07:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244758AbiDEIwh (ORCPT
+        with ESMTP id S244744AbiDEIwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1831CFFA;
-        Tue,  5 Apr 2022 01:43:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62981CB32;
+        Tue,  5 Apr 2022 01:43:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3B98B81C19;
-        Tue,  5 Apr 2022 08:43:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D15C385A0;
-        Tue,  5 Apr 2022 08:43:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51B0E61003;
+        Tue,  5 Apr 2022 08:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6708CC385A0;
+        Tue,  5 Apr 2022 08:43:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148199;
-        bh=WUARvHMnxR/HMiG3z7KbysMJPPbOUMTkSbauZ+e6w5w=;
+        s=korg; t=1649148188;
+        bh=GDkhXDUtppKjqDANeL6Q/shPJCjo5cy4GQ0T5NVoiQ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VOFDraaLumiumTUcm+9dSaMY0xz/dwkfoyNeAVgk8focOs+2VGMlf6lHFC7HHwhAR
-         QIA2/AswCjm6vfVhwYt08eFp+ffdwYfsUWC5DeLd/UrY8YKjOud7FcT1rIRT1zH7zQ
-         KrwEk0HVe21F4B2AWQ44VpldpccFxOBOevOCwKX8=
+        b=WZQbN95K9EBRtdqpSllJR1uP6FKFO8DMUYH+iwIux5Oy/UtcEIOE6eFB6llKYfhDr
+         M3xQGm9nmxMqmW9ft/NE5Lzevvi3+euEIz7d6UboVmOjnn6SXnQxPokPqTsMf8VC2i
+         K55nASfzkVCLfcEywdBNiAmtFZpTCazTWAsvD618=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhiguo Niu <zhiguo.niu@unisoc.com>,
-        Jing Xia <jing.xia@unisoc.com>, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Marcello Sylvester Bauer <sylv@sylv.io>,
+        Alan Tull <atull@opensource.altera.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0271/1017] f2fs: fix to avoid potential deadlock
-Date:   Tue,  5 Apr 2022 09:19:44 +0200
-Message-Id: <20220405070402.310055433@linuxfoundation.org>
+Subject: [PATCH 5.16 0227/1017] hwmon: (pmbus) Add mutex to regulator ops
+Date:   Tue,  5 Apr 2022 09:19:00 +0200
+Message-Id: <20220405070400.992560063@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,86 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Patrick Rudolph <patrick.rudolph@9elements.com>
 
-[ Upstream commit 344150999b7fc88502a65bbb147a47503eca2033 ]
+[ Upstream commit 686d303ee6301261b422ea51e64833d7909a2c36 ]
 
-Quoted from Jing Xia's report, there is a potential deadlock may happen
-between kworker and checkpoint as below:
+On PMBUS devices with multiple pages, the regulator ops need to be
+protected with the update mutex. This prevents accidentally changing
+the page in a separate thread while operating on the PMBUS_OPERATION
+register.
 
-[T:writeback]				[T:checkpoint]
-- wb_writeback
- - blk_start_plug
-bio contains NodeA was plugged in writeback threads
-					- do_writepages  -- sync write inodeB, inc wb_sync_req[DATA]
-					 - f2fs_write_data_pages
-					  - f2fs_write_single_data_page -- write last dirty page
-					   - f2fs_do_write_data_page
-					    - set_page_writeback  -- clear page dirty flag and
-					    PAGECACHE_TAG_DIRTY tag in radix tree
-					    - f2fs_outplace_write_data
-					     - f2fs_update_data_blkaddr
-					      - f2fs_wait_on_page_writeback -- wait NodeA to writeback here
-					   - inode_dec_dirty_pages
- - writeback_sb_inodes
-  - writeback_single_inode
-   - do_writepages
-    - f2fs_write_data_pages -- skip writepages due to wb_sync_req[DATA]
-     - wbc->pages_skipped += get_dirty_pages() -- PAGECACHE_TAG_DIRTY is not set but get_dirty_pages() returns one
-  - requeue_inode -- requeue inode to wb->b_dirty queue due to non-zero.pages_skipped
- - blk_finish_plug
+Tested on Infineon xdpe11280 while a separate thread polls for sensor
+data.
 
-Let's try to avoid deadlock condition by forcing unplugging previous bio via
-blk_finish_plug(current->plug) once we'v skipped writeback in writepages()
-due to valid sbi->wb_sync_req[DATA/NODE].
-
-Fixes: 687de7f1010c ("f2fs: avoid IO split due to mixed WB_SYNC_ALL and WB_SYNC_NONE")
-Signed-off-by: Zhiguo Niu <zhiguo.niu@unisoc.com>
-Signed-off-by: Jing Xia <jing.xia@unisoc.com>
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+Link: https://lore.kernel.org/r/b991506bcbf665f7af185945f70bf9d5cf04637c.1645804976.git.sylv@sylv.io
+Fixes: ddbb4db4ced1b ("hwmon: (pmbus) Add regulator support")
+Cc: Alan Tull <atull@opensource.altera.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/data.c | 6 +++++-
- fs/f2fs/node.c | 6 +++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ drivers/hwmon/pmbus/pmbus_core.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 3ba75587a2cd..04e82dedb4df 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3267,8 +3267,12 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
- 	/* to avoid spliting IOs due to mixed WB_SYNC_ALL and WB_SYNC_NONE */
- 	if (wbc->sync_mode == WB_SYNC_ALL)
- 		atomic_inc(&sbi->wb_sync_req[DATA]);
--	else if (atomic_read(&sbi->wb_sync_req[DATA]))
-+	else if (atomic_read(&sbi->wb_sync_req[DATA])) {
-+		/* to avoid potential deadlock */
-+		if (current->plug)
-+			blk_finish_plug(current->plug);
- 		goto skip_write;
-+	}
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index ac2fbee1ba9c..b1386a4df4cc 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2391,10 +2391,14 @@ static int pmbus_regulator_is_enabled(struct regulator_dev *rdev)
+ {
+ 	struct device *dev = rdev_get_dev(rdev);
+ 	struct i2c_client *client = to_i2c_client(dev->parent);
++	struct pmbus_data *data = i2c_get_clientdata(client);
+ 	u8 page = rdev_get_id(rdev);
+ 	int ret;
  
- 	if (__should_serialize_io(inode, wbc)) {
- 		mutex_lock(&sbi->writepages);
-diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
-index 556fcd8457f3..69c6bcaf5aae 100644
---- a/fs/f2fs/node.c
-+++ b/fs/f2fs/node.c
-@@ -2106,8 +2106,12 @@ static int f2fs_write_node_pages(struct address_space *mapping,
++	mutex_lock(&data->update_lock);
+ 	ret = pmbus_read_byte_data(client, page, PMBUS_OPERATION);
++	mutex_unlock(&data->update_lock);
++
+ 	if (ret < 0)
+ 		return ret;
  
- 	if (wbc->sync_mode == WB_SYNC_ALL)
- 		atomic_inc(&sbi->wb_sync_req[NODE]);
--	else if (atomic_read(&sbi->wb_sync_req[NODE]))
-+	else if (atomic_read(&sbi->wb_sync_req[NODE])) {
-+		/* to avoid potential deadlock */
-+		if (current->plug)
-+			blk_finish_plug(current->plug);
- 		goto skip_write;
-+	}
+@@ -2405,11 +2409,17 @@ static int _pmbus_regulator_on_off(struct regulator_dev *rdev, bool enable)
+ {
+ 	struct device *dev = rdev_get_dev(rdev);
+ 	struct i2c_client *client = to_i2c_client(dev->parent);
++	struct pmbus_data *data = i2c_get_clientdata(client);
+ 	u8 page = rdev_get_id(rdev);
++	int ret;
  
- 	trace_f2fs_writepages(mapping->host, wbc, NODE);
+-	return pmbus_update_byte_data(client, page, PMBUS_OPERATION,
+-				      PB_OPERATION_CONTROL_ON,
+-				      enable ? PB_OPERATION_CONTROL_ON : 0);
++	mutex_lock(&data->update_lock);
++	ret = pmbus_update_byte_data(client, page, PMBUS_OPERATION,
++				     PB_OPERATION_CONTROL_ON,
++				     enable ? PB_OPERATION_CONTROL_ON : 0);
++	mutex_unlock(&data->update_lock);
++
++	return ret;
+ }
  
+ static int pmbus_regulator_enable(struct regulator_dev *rdev)
 -- 
 2.34.1
 
