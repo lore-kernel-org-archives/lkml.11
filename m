@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 199ACC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD95C35280
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234073AbiDEIMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
+        id S234096AbiDEIMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233510AbiDEH5N (ORCPT
+        with ESMTP id S233506AbiDEH5N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:57:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513794BFFD;
-        Tue,  5 Apr 2022 00:51:11 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5484E4B438;
+        Tue,  5 Apr 2022 00:51:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47A0E61766;
-        Tue,  5 Apr 2022 07:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5729EC340EE;
-        Tue,  5 Apr 2022 07:51:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82476B81B90;
+        Tue,  5 Apr 2022 07:51:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97FCC340EE;
+        Tue,  5 Apr 2022 07:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145066;
-        bh=lsQCMO2UAmOUxU32IZI7RqfmRogOdDAJkU+iTVAqMEs=;
+        s=korg; t=1649145061;
+        bh=RtY08vAV+n8Bb3+pI7h3rZV2KlUk36Dc4tx+NtF9oTc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iFJDYp7RNUXecmWjA/3QL3VpYiJOyQ9Z0GBTqGJwjc2tRsaiiWT3dhFk6XStt51y2
-         ioYjJmGw183Oca5Ef6Z+Q6tE7WMYmonvFuFbgjv+RKs2hZLu+8oKtZ83eJTZBbjyhL
-         xhdQTz9K/zPG93j8znBqhHrVQLeIkR05vWQMPUOA=
+        b=B6sL5Zls41N62MFP2xtSCxExNCVIfqKEoVHZtOmYXmjgvz6M/xbGjf2AwHN+DsbO5
+         8D3y3fqx/XwtM2Veho/T+v0bbKFIliz35Dx96iz1LcaPNx1MGVZ7vKSzN6M8tKYdAn
+         bK+B/3y4vFH4RNpwH/+ZK9VhyD1QwWU3xjCU1BHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0273/1126] rseq: Remove broken uapi field layout on 32-bit little endian
-Date:   Tue,  5 Apr 2022 09:17:00 +0200
-Message-Id: <20220405070415.623739529@linuxfoundation.org>
+Subject: [PATCH 5.17 0271/1126] sched/sugov: Ignore busy filter when rq is capped by uclamp_max
+Date:   Tue,  5 Apr 2022 09:16:58 +0200
+Message-Id: <20220405070415.565553606@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,93 +49,288 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+From: Qais Yousef <qais.yousef@arm.com>
 
-[ Upstream commit bfdf4e6208051ed7165b2e92035b4bf11f43eb63 ]
+[ Upstream commit 7a17e1db1265471f7718af100cfc5e41280d53a7 ]
 
-The rseq rseq_cs.ptr.{ptr32,padding} uapi endianness handling is
-entirely wrong on 32-bit little endian: a preprocessor logic mistake
-wrongly uses the big endian field layout on 32-bit little endian
-architectures.
+sugov_update_single_{freq, perf}() contains a 'busy' filter that ensures
+we don't bring the frqeuency down if there's no idle time (CPU is busy).
 
-Fortunately, those ptr32 accessors were never used within the kernel,
-and only meant as a convenience for user-space.
+The problem is that with uclamp_max we will have scenarios where a busy
+task is capped to run at a lower frequency and this filter prevents
+applying the capping when this task starts running.
 
-Remove those and replace the whole rseq_cs union by a __u64 type, as
-this is the only thing really needed to express the ABI. Document how
-32-bit architectures are meant to interact with this field.
+We handle this by skipping the filter when uclamp is enabled and the rq
+is being capped by uclamp_max.
 
-Fixes: ec9c82e03a74 ("rseq: uapi: Declare rseq_cs field as union, update includes")
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+We introduce a new function uclamp_rq_is_capped() to help detecting when
+this capping is taking effect. Some code shuffling was required to allow
+using cpu_util_{cfs, rt}() in this new function.
+
+On 2 Core SMT2 Intel laptop I see:
+
+Without this patch:
+
+	uclampset -M 0 sysbench --test=cpu --threads = 4 run
+
+produces a score of ~3200 consistently. Which is the highest possible.
+
+Compiling the kernel also results in frequency running at max 3.1GHz all
+the time - running uclampset -M 400 to cap it has no effect without this
+patch.
+
+With this patch:
+
+	uclampset -M 0 sysbench --test=cpu --threads = 4 run
+
+produces a score of ~1100 with some outliers in ~1700. Uclamp max
+aggregates the performance requirements, so having high values sometimes
+is expected if some other task happens to require that frequency starts
+running at the same time.
+
+When compiling the kernel with uclampset -M 400 I can see the
+frequencies mostly in the ~2GHz region. Helpful to conserve power and
+prevent heating when not plugged in.
+
+Fixes: 982d9cdc22c9 ("sched/cpufreq, sched/uclamp: Add clamps for FAIR and RT tasks")
+Signed-off-by: Qais Yousef <qais.yousef@arm.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220127152720.25898-1-mathieu.desnoyers@efficios.com
+Link: https://lkml.kernel.org/r/20211216225320.2957053-2-qais.yousef@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/rseq.h | 20 ++++----------------
- kernel/rseq.c             |  8 ++++----
- 2 files changed, 8 insertions(+), 20 deletions(-)
+ kernel/sched/cpufreq_schedutil.c |  10 +-
+ kernel/sched/sched.h             | 181 +++++++++++++++++--------------
+ 2 files changed, 107 insertions(+), 84 deletions(-)
 
-diff --git a/include/uapi/linux/rseq.h b/include/uapi/linux/rseq.h
-index 9a402fdb60e9..77ee207623a9 100644
---- a/include/uapi/linux/rseq.h
-+++ b/include/uapi/linux/rseq.h
-@@ -105,23 +105,11 @@ struct rseq {
- 	 * Read and set by the kernel. Set by user-space with single-copy
- 	 * atomicity semantics. This field should only be updated by the
- 	 * thread which registered this data structure. Aligned on 64-bit.
-+	 *
-+	 * 32-bit architectures should update the low order bits of the
-+	 * rseq_cs field, leaving the high order bits initialized to 0.
- 	 */
--	union {
--		__u64 ptr64;
--#ifdef __LP64__
--		__u64 ptr;
--#else
--		struct {
--#if (defined(__BYTE_ORDER) && (__BYTE_ORDER == __BIG_ENDIAN)) || defined(__BIG_ENDIAN)
--			__u32 padding;		/* Initialized to zero. */
--			__u32 ptr32;
--#else /* LITTLE */
--			__u32 ptr32;
--			__u32 padding;		/* Initialized to zero. */
--#endif /* ENDIAN */
--		} ptr;
--#endif
--	} rseq_cs;
-+	__u64 rseq_cs;
- 
+diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
+index 26778884d9ab..62d98b09aaa5 100644
+--- a/kernel/sched/cpufreq_schedutil.c
++++ b/kernel/sched/cpufreq_schedutil.c
+@@ -348,8 +348,11 @@ static void sugov_update_single_freq(struct update_util_data *hook, u64 time,
  	/*
- 	 * Restartable sequences flags field.
-diff --git a/kernel/rseq.c b/kernel/rseq.c
-index 6d45ac3dae7f..97ac20b4f738 100644
---- a/kernel/rseq.c
-+++ b/kernel/rseq.c
-@@ -128,10 +128,10 @@ static int rseq_get_rseq_cs(struct task_struct *t, struct rseq_cs *rseq_cs)
- 	int ret;
- 
- #ifdef CONFIG_64BIT
--	if (get_user(ptr, &t->rseq->rseq_cs.ptr64))
-+	if (get_user(ptr, &t->rseq->rseq_cs))
- 		return -EFAULT;
- #else
--	if (copy_from_user(&ptr, &t->rseq->rseq_cs.ptr64, sizeof(ptr)))
-+	if (copy_from_user(&ptr, &t->rseq->rseq_cs, sizeof(ptr)))
- 		return -EFAULT;
- #endif
- 	if (!ptr) {
-@@ -217,9 +217,9 @@ static int clear_rseq_cs(struct task_struct *t)
- 	 * Set rseq_cs to NULL.
+ 	 * Do not reduce the frequency if the CPU has not been idle
+ 	 * recently, as the reduction is likely to be premature then.
++	 *
++	 * Except when the rq is capped by uclamp_max.
  	 */
- #ifdef CONFIG_64BIT
--	return put_user(0UL, &t->rseq->rseq_cs.ptr64);
-+	return put_user(0UL, &t->rseq->rseq_cs);
- #else
--	if (clear_user(&t->rseq->rseq_cs.ptr64, sizeof(t->rseq->rseq_cs.ptr64)))
-+	if (clear_user(&t->rseq->rseq_cs, sizeof(t->rseq->rseq_cs)))
- 		return -EFAULT;
- 	return 0;
+-	if (sugov_cpu_is_busy(sg_cpu) && next_f < sg_policy->next_freq) {
++	if (!uclamp_rq_is_capped(cpu_rq(sg_cpu->cpu)) &&
++	    sugov_cpu_is_busy(sg_cpu) && next_f < sg_policy->next_freq) {
+ 		next_f = sg_policy->next_freq;
+ 
+ 		/* Restore cached freq as next_freq has changed */
+@@ -395,8 +398,11 @@ static void sugov_update_single_perf(struct update_util_data *hook, u64 time,
+ 	/*
+ 	 * Do not reduce the target performance level if the CPU has not been
+ 	 * idle recently, as the reduction is likely to be premature then.
++	 *
++	 * Except when the rq is capped by uclamp_max.
+ 	 */
+-	if (sugov_cpu_is_busy(sg_cpu) && sg_cpu->util < prev_util)
++	if (!uclamp_rq_is_capped(cpu_rq(sg_cpu->cpu)) &&
++	    sugov_cpu_is_busy(sg_cpu) && sg_cpu->util < prev_util)
+ 		sg_cpu->util = prev_util;
+ 
+ 	cpufreq_driver_adjust_perf(sg_cpu->cpu, map_util_perf(sg_cpu->bw_dl),
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index de53be905739..9b33ba9c3c42 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -2841,88 +2841,6 @@ static inline void cpufreq_update_util(struct rq *rq, unsigned int flags)
+ static inline void cpufreq_update_util(struct rq *rq, unsigned int flags) {}
+ #endif /* CONFIG_CPU_FREQ */
+ 
+-#ifdef CONFIG_UCLAMP_TASK
+-unsigned long uclamp_eff_value(struct task_struct *p, enum uclamp_id clamp_id);
+-
+-/**
+- * uclamp_rq_util_with - clamp @util with @rq and @p effective uclamp values.
+- * @rq:		The rq to clamp against. Must not be NULL.
+- * @util:	The util value to clamp.
+- * @p:		The task to clamp against. Can be NULL if you want to clamp
+- *		against @rq only.
+- *
+- * Clamps the passed @util to the max(@rq, @p) effective uclamp values.
+- *
+- * If sched_uclamp_used static key is disabled, then just return the util
+- * without any clamping since uclamp aggregation at the rq level in the fast
+- * path is disabled, rendering this operation a NOP.
+- *
+- * Use uclamp_eff_value() if you don't care about uclamp values at rq level. It
+- * will return the correct effective uclamp value of the task even if the
+- * static key is disabled.
+- */
+-static __always_inline
+-unsigned long uclamp_rq_util_with(struct rq *rq, unsigned long util,
+-				  struct task_struct *p)
+-{
+-	unsigned long min_util = 0;
+-	unsigned long max_util = 0;
+-
+-	if (!static_branch_likely(&sched_uclamp_used))
+-		return util;
+-
+-	if (p) {
+-		min_util = uclamp_eff_value(p, UCLAMP_MIN);
+-		max_util = uclamp_eff_value(p, UCLAMP_MAX);
+-
+-		/*
+-		 * Ignore last runnable task's max clamp, as this task will
+-		 * reset it. Similarly, no need to read the rq's min clamp.
+-		 */
+-		if (rq->uclamp_flags & UCLAMP_FLAG_IDLE)
+-			goto out;
+-	}
+-
+-	min_util = max_t(unsigned long, min_util, READ_ONCE(rq->uclamp[UCLAMP_MIN].value));
+-	max_util = max_t(unsigned long, max_util, READ_ONCE(rq->uclamp[UCLAMP_MAX].value));
+-out:
+-	/*
+-	 * Since CPU's {min,max}_util clamps are MAX aggregated considering
+-	 * RUNNABLE tasks with _different_ clamps, we can end up with an
+-	 * inversion. Fix it now when the clamps are applied.
+-	 */
+-	if (unlikely(min_util >= max_util))
+-		return min_util;
+-
+-	return clamp(util, min_util, max_util);
+-}
+-
+-/*
+- * When uclamp is compiled in, the aggregation at rq level is 'turned off'
+- * by default in the fast path and only gets turned on once userspace performs
+- * an operation that requires it.
+- *
+- * Returns true if userspace opted-in to use uclamp and aggregation at rq level
+- * hence is active.
+- */
+-static inline bool uclamp_is_used(void)
+-{
+-	return static_branch_likely(&sched_uclamp_used);
+-}
+-#else /* CONFIG_UCLAMP_TASK */
+-static inline
+-unsigned long uclamp_rq_util_with(struct rq *rq, unsigned long util,
+-				  struct task_struct *p)
+-{
+-	return util;
+-}
+-
+-static inline bool uclamp_is_used(void)
+-{
+-	return false;
+-}
+-#endif /* CONFIG_UCLAMP_TASK */
+-
+ #ifdef arch_scale_freq_capacity
+ # ifndef arch_scale_freq_invariant
+ #  define arch_scale_freq_invariant()	true
+@@ -3020,6 +2938,105 @@ static inline unsigned long cpu_util_rt(struct rq *rq)
+ }
  #endif
+ 
++#ifdef CONFIG_UCLAMP_TASK
++unsigned long uclamp_eff_value(struct task_struct *p, enum uclamp_id clamp_id);
++
++/**
++ * uclamp_rq_util_with - clamp @util with @rq and @p effective uclamp values.
++ * @rq:		The rq to clamp against. Must not be NULL.
++ * @util:	The util value to clamp.
++ * @p:		The task to clamp against. Can be NULL if you want to clamp
++ *		against @rq only.
++ *
++ * Clamps the passed @util to the max(@rq, @p) effective uclamp values.
++ *
++ * If sched_uclamp_used static key is disabled, then just return the util
++ * without any clamping since uclamp aggregation at the rq level in the fast
++ * path is disabled, rendering this operation a NOP.
++ *
++ * Use uclamp_eff_value() if you don't care about uclamp values at rq level. It
++ * will return the correct effective uclamp value of the task even if the
++ * static key is disabled.
++ */
++static __always_inline
++unsigned long uclamp_rq_util_with(struct rq *rq, unsigned long util,
++				  struct task_struct *p)
++{
++	unsigned long min_util = 0;
++	unsigned long max_util = 0;
++
++	if (!static_branch_likely(&sched_uclamp_used))
++		return util;
++
++	if (p) {
++		min_util = uclamp_eff_value(p, UCLAMP_MIN);
++		max_util = uclamp_eff_value(p, UCLAMP_MAX);
++
++		/*
++		 * Ignore last runnable task's max clamp, as this task will
++		 * reset it. Similarly, no need to read the rq's min clamp.
++		 */
++		if (rq->uclamp_flags & UCLAMP_FLAG_IDLE)
++			goto out;
++	}
++
++	min_util = max_t(unsigned long, min_util, READ_ONCE(rq->uclamp[UCLAMP_MIN].value));
++	max_util = max_t(unsigned long, max_util, READ_ONCE(rq->uclamp[UCLAMP_MAX].value));
++out:
++	/*
++	 * Since CPU's {min,max}_util clamps are MAX aggregated considering
++	 * RUNNABLE tasks with _different_ clamps, we can end up with an
++	 * inversion. Fix it now when the clamps are applied.
++	 */
++	if (unlikely(min_util >= max_util))
++		return min_util;
++
++	return clamp(util, min_util, max_util);
++}
++
++/* Is the rq being capped/throttled by uclamp_max? */
++static inline bool uclamp_rq_is_capped(struct rq *rq)
++{
++	unsigned long rq_util;
++	unsigned long max_util;
++
++	if (!static_branch_likely(&sched_uclamp_used))
++		return false;
++
++	rq_util = cpu_util_cfs(cpu_of(rq)) + cpu_util_rt(rq);
++	max_util = READ_ONCE(rq->uclamp[UCLAMP_MAX].value);
++
++	return max_util != SCHED_CAPACITY_SCALE && rq_util >= max_util;
++}
++
++/*
++ * When uclamp is compiled in, the aggregation at rq level is 'turned off'
++ * by default in the fast path and only gets turned on once userspace performs
++ * an operation that requires it.
++ *
++ * Returns true if userspace opted-in to use uclamp and aggregation at rq level
++ * hence is active.
++ */
++static inline bool uclamp_is_used(void)
++{
++	return static_branch_likely(&sched_uclamp_used);
++}
++#else /* CONFIG_UCLAMP_TASK */
++static inline
++unsigned long uclamp_rq_util_with(struct rq *rq, unsigned long util,
++				  struct task_struct *p)
++{
++	return util;
++}
++
++static inline bool uclamp_rq_is_capped(struct rq *rq) { return false; }
++
++static inline bool uclamp_is_used(void)
++{
++	return false;
++}
++#endif /* CONFIG_UCLAMP_TASK */
++
+ #ifdef CONFIG_HAVE_SCHED_AVG_IRQ
+ static inline unsigned long cpu_util_irq(struct rq *rq)
+ {
 -- 
 2.34.1
 
