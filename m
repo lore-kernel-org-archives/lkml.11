@@ -2,85 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 260E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01802C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450396AbiDEW1V (ORCPT
+        id S1450444AbiDEW1q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:27:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
+        Tue, 5 Apr 2022 18:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357084AbiDEKZg (ORCPT
+        with ESMTP id S1442422AbiDEPhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:25:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AAAC6818;
-        Tue,  5 Apr 2022 03:09:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 919B261500;
-        Tue,  5 Apr 2022 10:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AAC6C385A1;
-        Tue,  5 Apr 2022 10:09:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153370;
-        bh=YHj8iQCd/OzW6n3qVyhCaXbJn2snqvg9rtDApIgkDJ4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j97EIoCRX29QQYFj35eX3LJ/aRX8tqasjRQiLZ4p7TdfLN7ebL6aqat6dhu6XEwU/
-         elVswZpSDU0KFMIvtJdsFyrwm165Faq4kcsOcM+tgsNcbrYFb92XPggfQNidEwCcKW
-         SGCjJ8QsToDO2myWSWAnNFF6MpOyOM/H+SsEMceI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Z. Liu" <liuzx@knownsec.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 197/599] video: fbdev: matroxfb: set maxvram of vbG200eW to the same as vbG200 to avoid black screen
-Date:   Tue,  5 Apr 2022 09:28:11 +0200
-Message-Id: <20220405070304.703511882@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:37:40 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EB2111DD8;
+        Tue,  5 Apr 2022 06:51:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649166713; x=1680702713;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=5+nWAPFQHv6Q16Bxq/GwQj6VzCNcFVPIYMa5uQiSOBU=;
+  b=ZNQLPuExRktDuO3QUPcaEEaJhceRk2h+SvKRHCwuU0S2g+0Yty7WBYBW
+   f78U9xlsFPUap+/29LTjspm8aSHEHFVlaRHUYlBh+Xhdt3PCFlgKDdMOO
+   9g6QYtkcVaXYQztJWcj8c3jGPRB5U4KCk8u0We7HLxvuiDpCporPcgpUi
+   Y=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 06:51:52 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:37 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 06:51:36 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 06:51:32 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: [PATCH V9 6/6] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
+Date:   Tue, 5 Apr 2022 19:20:33 +0530
+Message-ID: <1649166633-25872-7-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Z. Liu <liuzx@knownsec.com>
+Add pm8008 infra and regulators support for sc7280 idp.
 
-[ Upstream commit 62d89a7d49afe46e6b9bbe9e23b004ad848dbde4 ]
-
-Start from commit 11be60bd66d54 "matroxfb: add Matrox MGA-G200eW board
-support", when maxvram is 0x800000, monitor become black w/ error message
-said: "The current input timing is not supported by the monitor display.
-Please change your input timing to 1920x1080@60Hz ...".
-
-Fixes: 11be60bd66d5 ("matroxfb: add Matrox MGA-G200eW board support")
-Signed-off-by: Z. Liu <liuzx@knownsec.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 ---
- drivers/video/fbdev/matrox/matroxfb_base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in V6:
+ - No changes.
 
-diff --git a/drivers/video/fbdev/matrox/matroxfb_base.c b/drivers/video/fbdev/matrox/matroxfb_base.c
-index 570439b32655..daaa99818d3b 100644
---- a/drivers/video/fbdev/matrox/matroxfb_base.c
-+++ b/drivers/video/fbdev/matrox/matroxfb_base.c
-@@ -1377,7 +1377,7 @@ static struct video_board vbG200 = {
- 	.lowlevel = &matrox_G100
+Changes in V7:
+ - No Changes.
+
+Changes in V8:
+ - Add an extra phandle "pm8008_bus" and then include pm8008 dtsi files inside it.
+ - Remove output-high from pm8008_active node.
+
+Changes in V9:
+ - Added interrupts properties.
+
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 68 ++++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index ecbf2b8..6f39c05 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -263,6 +263,65 @@
+ 	};
  };
- static struct video_board vbG200eW = {
--	.maxvram = 0x800000,
-+	.maxvram = 0x100000,
- 	.maxdisplayable = 0x800000,
- 	.accelID = FB_ACCEL_MATROX_MGAG200,
- 	.lowlevel = &matrox_G100
+ 
++pm8008_bus: &i2c1 {
++	status = "okay";
++};
++
++#include "pm8008.dtsi"
++
++&pm8008 {
++	interrupt-parent = <&tlmm>;
++	interrupts = <24 IRQ_TYPE_EDGE_RISING>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&pm8008_active>;
++
++	reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>;
++};
++
++&pm8008_regulators {
++	vdd_l1_l2-supply = <&vreg_s8b_1p2>;
++	vdd_l3_l4-supply = <&vreg_s1b_1p8>;
++	vdd_l5-supply = <&vreg_bob>;
++	vdd_l6-supply = <&vreg_bob>;
++	vdd_l7-supply = <&vreg_bob>;
++};
++
++&pm8008_l1 {
++	regulator-min-microvolt = <950000>;
++	regulator-max-microvolt = <1300000>;
++};
++
++&pm8008_l2 {
++	regulator-min-microvolt = <950000>;
++	regulator-max-microvolt = <1250000>;
++};
++
++&pm8008_l3 {
++	regulator-min-microvolt = <1650000>;
++	regulator-max-microvolt = <3000000>;
++};
++
++&pm8008_l4 {
++	regulator-min-microvolt = <1504000>;
++	regulator-max-microvolt = <1600000>;
++};
++
++&pm8008_l5 {
++	regulator-min-microvolt = <2600000>;
++	regulator-max-microvolt = <3000000>;
++};
++
++&pm8008_l6 {
++	regulator-min-microvolt = <2600000>;
++	regulator-max-microvolt = <3000000>;
++};
++
++&pm8008_l7 {
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3544000>;
++};
++
+ &qfprom {
+ 	vcc-supply = <&vreg_l1c_1p8>;
+ };
+@@ -375,6 +434,15 @@
+ 	drive-strength = <2>;
+ };
+ 
++&pm8350c_gpios {
++	pm8008_active: pm8008-active {
++		pins = "gpio4";
++		function = "normal";
++		bias-disable;
++		power-source = <0>;
++	};
++};
++
+ &qspi_cs0 {
+ 	bias-disable;
+ };
 -- 
-2.34.1
-
-
+2.7.4
 
