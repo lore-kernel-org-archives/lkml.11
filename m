@@ -2,104 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 853ACC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC96C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235036AbiDEUhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
+        id S238645AbiDEUhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356150AbiDEKXA (ORCPT
+        with ESMTP id S1442389AbiDEPhh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC8CBA316;
-        Tue,  5 Apr 2022 03:07:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65FA6B81C98;
-        Tue,  5 Apr 2022 10:07:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4549C385A1;
-        Tue,  5 Apr 2022 10:07:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153224;
-        bh=BcSDo9r3IFVheWMF8RqV0FJSBjYtjvRasfb3M1YVooo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wXnKDTTBAUycApl018fTHgrcjZ9XBdFBP1idxk3RyGf5jhf4YnuCRZ+VDxW3ct98l
-         GW/oh3Wiek/Y+vrE2ooZfwerl7fTaGTqy6c2k8hxtYETrkIeahIJNVgiredmqAbdx3
-         4rt2CqC1ECJMnYRpINtLoeAvC2w8zELoyQp4B2fI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Keith Busch <kbusch@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 146/599] nvme: cleanup __nvme_check_ids
-Date:   Tue,  5 Apr 2022 09:27:20 +0200
-Message-Id: <20220405070303.187179042@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:37:37 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734BE11176C;
+        Tue,  5 Apr 2022 06:51:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649166709; x=1680702709;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=3CrOD25U3ySH2uSvK1Gaz4RsMlsq+CbHlHbLLw9go20=;
+  b=JljUFUuXV3jwSeCr5L3ws9/DyLSa+YFTffiph6whYqcM7I4RCAhY7SBp
+   YGyRRrnKBlq3P7vnEPwESzxPim8R5WTwFjlY+0Ux9UZW92cefpz0dfdnj
+   8UVn0cQBaeziusCF13lG9LX4DF5q2aIkFHUVZfjLGCM/9U1O7LiZApUOD
+   g=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 06:51:49 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:32 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 06:51:32 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 06:51:28 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: [PATCH V9 5/6] arm64: dts: qcom: pm8008: Add base dts file
+Date:   Tue, 5 Apr 2022 19:20:32 +0530
+Message-ID: <1649166633-25872-6-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+Add base DTS file for pm8008 with infra and regulator nodes.
 
-[ Upstream commit fd8099e7918cd2df39ef306dd1d1af7178a15b81 ]
-
-Pass the actual nvme_ns_ids used for the comparison instead of the
-ns_head that isn't needed and use a more descriptive function name.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 ---
- drivers/nvme/host/core.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+Changes in V9:
+ - Add single dt file for pm8008 instead of adding files like in V8.
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 71c85c99e86c..853b9a24f744 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3681,16 +3681,15 @@ static struct nvme_ns_head *nvme_find_ns_head(struct nvme_subsystem *subsys,
- 	return NULL;
- }
- 
--static int __nvme_check_ids(struct nvme_subsystem *subsys,
--		struct nvme_ns_head *new)
-+static int nvme_subsys_check_duplicate_ids(struct nvme_subsystem *subsys,
-+		struct nvme_ns_ids *ids)
- {
- 	struct nvme_ns_head *h;
- 
- 	lockdep_assert_held(&subsys->lock);
- 
- 	list_for_each_entry(h, &subsys->nsheads, entry) {
--		if (nvme_ns_ids_valid(&new->ids) &&
--		    nvme_ns_ids_equal(&new->ids, &h->ids))
-+		if (nvme_ns_ids_valid(ids) && nvme_ns_ids_equal(ids, &h->ids))
- 			return -EINVAL;
- 	}
- 
-@@ -3724,7 +3723,7 @@ static struct nvme_ns_head *nvme_alloc_ns_head(struct nvme_ctrl *ctrl,
- 	head->ids = *ids;
- 	kref_init(&head->ref);
- 
--	ret = __nvme_check_ids(ctrl->subsys, head);
-+	ret = nvme_subsys_check_duplicate_ids(ctrl->subsys, &head->ids);
- 	if (ret) {
- 		dev_err(ctrl->device,
- 			"duplicate IDs for nsid %d\n", nsid);
+ arch/arm64/boot/dts/qcom/pm8008.dtsi | 47 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
+
+diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+new file mode 100644
+index 0000000..24bd832
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: BSD-3-Clause
++// Copyright (c) 2022, The Linux Foundation. All rights reserved.
++
++&pm8008_bus {
++	pm8008: pm8008@8 {
++		compatible = "qcom,pm8008";
++		reg = <0x8>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		#interrupt-cells = <2>;
++	};
++
++	pm8008_regulators: pm8008@9 {
++		compatible = "qcom,pm8008-regulators";
++		reg = <0x9>;
++		#address-cells = <0>;
++		#size-cells = <0>;
++
++		pm8008_l1: ldo1 {
++			regulator-name = "pm8008_l1";
++		};
++
++		pm8008_l2: ldo2 {
++			regulator-name = "pm8008_l2";
++		};
++
++		pm8008_l3: ldo3 {
++			regulator-name = "pm8008_l3";
++		};
++
++		pm8008_l4: ldo4 {
++			regulator-name = "pm8008_l4";
++		};
++
++		pm8008_l5: ldo5 {
++			regulator-name = "pm8008_l5";
++		};
++
++		pm8008_l6: ldo6 {
++			regulator-name = "pm8008_l6";
++		};
++
++		pm8008_l7: ldo7 {
++			regulator-name = "pm8008_l7";
++		};
++	};
++};
 -- 
-2.34.1
-
-
+2.7.4
 
