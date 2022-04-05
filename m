@@ -2,83 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF3E9C3527D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0761BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377311AbiDEL2k (ORCPT
+        id S1377347AbiDEL2q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42518 "EHLO
+        Tue, 5 Apr 2022 07:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243447AbiDEIu3 (ORCPT
+        with ESMTP id S243464AbiDEIua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:50:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E6E13F68;
-        Tue,  5 Apr 2022 01:38:55 -0700 (PDT)
+        Tue, 5 Apr 2022 04:50:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A78F11C36;
+        Tue,  5 Apr 2022 01:38:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5ECCAB81B18;
-        Tue,  5 Apr 2022 08:38:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2CB2C385A1;
-        Tue,  5 Apr 2022 08:38:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147906;
-        bh=C/750eIEw2xnKQ7Z3W6sdUklRUAe3atwbovg2TFjKWM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWOvQmlTLKveOhPvrQ5jmH2tlg6mBdm0tjVCgQ4oELdVymYwpIxsaD5/tu4yT5zz8
-         aKaLmNSkjdXil5TG8V65i6WseDiT7j396WSpAAGv+hhO9GGQ/3QCxrOmbcRJQy7TbQ
-         VElP1CTz9k+6u9T7yJdZK6FCcT01AHCGZ021knUU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.16 0165/1017] crypto: rsa-pkcs1pad - only allow with rsa
-Date:   Tue,  5 Apr 2022 09:17:58 +0200
-Message-Id: <20220405070359.119948282@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82853614E4;
+        Tue,  5 Apr 2022 08:38:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F022C385A1;
+        Tue,  5 Apr 2022 08:38:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649147899;
+        bh=5oEKvyvDsm4nX1f5sd5X9vxlvOxfYV0575LO2WUqqGQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=c3NTkZV7kSPJrt2W33ieNRkzNEKcCCZ8f9a0rAbjXtGXYd5QerIahjqwE0fg8mzoA
+         c0t5Z8xkhPKUhHrVD9SUFI3hk202bDJ0wb1DvP/zUJxbKQ8XXKJeCbUmqSQ5VvLK0E
+         W6w7dJ0Sd0B7ufNRXK9FG+Z/KnbWt3v73UhdPz6guUUKKRef7qyGzAGwpW3kLHO0p4
+         fOTUoVjACDLAB5Co/UgnYKYiznriPXfsYQH1gB3NkOTkqHiQ7qJGezCpG1OMusqs0B
+         iEgaXreNEj46/pkZWsWq3AQkJyoC5LfkkRWJPvahHSMiiS7E3PEZDIWV1MRiBtJIIR
+         9yVLR3IKQe3iQ==
+Date:   Tue, 5 Apr 2022 09:38:14 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: qcom: update maintainers (drop Akash and
+ Mukesh)
+Message-ID: <Ykv/9gB01cFRdQiT@sirena.org.uk>
+References: <20220405063724.12850-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="MzPEjjyGDoi8R4A1"
+Content-Disposition: inline
+In-Reply-To: <20220405063724.12850-1-krzysztof.kozlowski@linaro.org>
+X-Cookie: diplomacy, n:
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
 
-commit 9b30430ea356f237945e52f8a3a42158877bd5a9 upstream.
+--MzPEjjyGDoi8R4A1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-The pkcs1pad template can be instantiated with an arbitrary akcipher
-algorithm, which doesn't make sense; it is specifically an RSA padding
-scheme.  Make it check that the underlying algorithm really is RSA.
+On Tue, Apr 05, 2022 at 08:37:24AM +0200, Krzysztof Kozlowski wrote:
+> Emails to Akash Asthana and Mukesh Savaliya bounce (550: Recipient
+> address rejected: User unknown in virtual alias table), so switch
+> maintainer to Bjorn (as active Qualcomm platform maintainer).
 
-Fixes: 3d5b1ecdea6f ("crypto: rsa - RSA padding algorithm")
-Cc: <stable@vger.kernel.org> # v4.5+
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- crypto/rsa-pkcs1pad.c |    5 +++++
- 1 file changed, 5 insertions(+)
+Acked-by: Mark Brown <broonie@kernel.org>
 
---- a/crypto/rsa-pkcs1pad.c
-+++ b/crypto/rsa-pkcs1pad.c
-@@ -621,6 +621,11 @@ static int pkcs1pad_create(struct crypto
- 
- 	rsa_alg = crypto_spawn_akcipher_alg(&ctx->spawn);
- 
-+	if (strcmp(rsa_alg->base.cra_name, "rsa") != 0) {
-+		err = -EINVAL;
-+		goto err_free_inst;
-+	}
-+
- 	err = -ENAMETOOLONG;
- 	hash_name = crypto_attr_alg_name(tb[2]);
- 	if (IS_ERR(hash_name)) {
+--MzPEjjyGDoi8R4A1
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJL//UACgkQJNaLcl1U
+h9AwrQf/aOVI3k9H5QjN71ONU/w9xjBiWoqyUl3Nsg8bH38SG/SpKjiyIEuI65zS
+L5OjehWZO0GLFJcayYCsJFPNhePpsc06H1FNspExegH9oeWfbiMech6FFRfK54Ku
+i2fqAeLUt+OLAMyxcIwT3N7vPpXP92eHhLgDm8C3646BgWjpUQtnRC3u5tJBkFSr
+TGNK1KG6n0SBRVKsLqsCLVy6caFt3aPij2TR6zfpQlyucY9CqZEU8m6LmxS3nQLX
+TVOt7LYt68nNgJSfdPvWsMXlcSmYeaUpFO9f+fFGx7q+4db+MRPZueNm/gQMQNTi
+TvfIg3ee7IKdHuoNZSc0UhWnHN1+Qg==
+=UYIt
+-----END PGP SIGNATURE-----
+
+--MzPEjjyGDoi8R4A1--
