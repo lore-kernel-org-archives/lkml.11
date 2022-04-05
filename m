@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 842BAC4708D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE79EC3A59F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235803AbiDEIAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        id S236187AbiDEIBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230328AbiDEHsh (ORCPT
+        with ESMTP id S233181AbiDEHwM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:48:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4642B7;
-        Tue,  5 Apr 2022 00:46:39 -0700 (PDT)
+        Tue, 5 Apr 2022 03:52:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4B6369D9;
+        Tue,  5 Apr 2022 00:48:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FBF5B81A22;
-        Tue,  5 Apr 2022 07:46:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66E6FC340EE;
-        Tue,  5 Apr 2022 07:46:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66BB261668;
+        Tue,  5 Apr 2022 07:48:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ACE7C34110;
+        Tue,  5 Apr 2022 07:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144796;
-        bh=AE8siXgTZ1H7IScJ7cFvEU7Ff6JT4XzexfIs6peE5Z8=;
+        s=korg; t=1649144915;
+        bh=ADAnpuWgvatAfPDBvpAVYJ5LgziMw3umFs1wbdX/OoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oz9ae59UgD6m2EjAhHWDHEExYPaMwbvRHcT/ayXbVu2bBx+gPNLbcWsif3aNU0Vbs
-         QqGSf0nqMgR3FSi9+//FwOT8xQfaA4l0wtaW0p79y98IXo0QhEj8r1NoEIXmc+CmTS
-         rZNI8AT2hMJKiPSzP3dHgkWKD0A537MIINBZsl3I=
+        b=Pk4dJn8qxLeqG/RGBnAyLZZFUXAimbshPV8E8hIbpewW3WWFneM7iFdTix6ngouu7
+         DsHQ+IjC+loMMz+pjRNNQ8zx6OM4+NNvy+TwNawFumxNnGsPBcooFU6PEl90GicJu0
+         fHQEStpXPx57JZCj2FpOEmzKwis9RmKafiHgv2IU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-        Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.17 0173/1126] media: davinci: vpif: fix unbalanced runtime PM enable
-Date:   Tue,  5 Apr 2022 09:15:20 +0200
-Message-Id: <20220405070412.679606348@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Nirmoy Das <nirmoy.das@linux.intel.com>
+Subject: [PATCH 5.17 0183/1126] drm/syncobj: flatten dma_fence_chains on transfer
+Date:   Tue,  5 Apr 2022 09:15:30 +0200
+Message-Id: <20220405070412.977638019@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,56 +49,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Christian König <christian.koenig@amd.com>
 
-commit d42b3ad105b5d3481f6a56bc789aa2b27aa09325 upstream.
+commit 721255b52700b320c4ae2e23d57f7d9ad1db50b9 upstream.
 
-Make sure to disable runtime PM before returning on probe errors.
+It is illegal to add a dma_fence_chain as timeline point. Flatten out
+the fences into a dma_fence_array instead.
 
-Fixes: 479f7a118105 ("[media] davinci: vpif: adaptions for DT support")
-Cc: stable@vger.kernel.org
-Cc: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Nirmoy Das <nirmoy.das@linux.intel.com>
+Cc: <stable@vger.kernel.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220209182600.434803-1-christian.koenig@amd.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/davinci/vpif.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/drm_syncobj.c |   61 ++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 56 insertions(+), 5 deletions(-)
 
---- a/drivers/media/platform/davinci/vpif.c
-+++ b/drivers/media/platform/davinci/vpif.c
-@@ -428,6 +428,7 @@ static int vpif_probe(struct platform_de
- 	static struct resource *res_irq;
- 	struct platform_device *pdev_capture, *pdev_display;
- 	struct device_node *endpoint = NULL;
-+	int ret;
- 
- 	vpif_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(vpif_base))
-@@ -456,8 +457,8 @@ static int vpif_probe(struct platform_de
- 	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	if (!res_irq) {
- 		dev_warn(&pdev->dev, "Missing IRQ resource.\n");
--		pm_runtime_put(&pdev->dev);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_put_rpm;
- 	}
- 
- 	pdev_capture = devm_kzalloc(&pdev->dev, sizeof(*pdev_capture),
-@@ -491,6 +492,12 @@ static int vpif_probe(struct platform_de
- 	}
- 
- 	return 0;
-+
-+err_put_rpm:
-+	pm_runtime_put(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+
-+	return ret;
+--- a/drivers/gpu/drm/drm_syncobj.c
++++ b/drivers/gpu/drm/drm_syncobj.c
+@@ -853,12 +853,57 @@ drm_syncobj_fd_to_handle_ioctl(struct dr
+ 					&args->handle);
  }
  
- static int vpif_remove(struct platform_device *pdev)
++
++/*
++ * Try to flatten a dma_fence_chain into a dma_fence_array so that it can be
++ * added as timeline fence to a chain again.
++ */
++static int drm_syncobj_flatten_chain(struct dma_fence **f)
++{
++	struct dma_fence_chain *chain = to_dma_fence_chain(*f);
++	struct dma_fence *tmp, **fences;
++	struct dma_fence_array *array;
++	unsigned int count;
++
++	if (!chain)
++		return 0;
++
++	count = 0;
++	dma_fence_chain_for_each(tmp, &chain->base)
++		++count;
++
++	fences = kmalloc_array(count, sizeof(*fences), GFP_KERNEL);
++	if (!fences)
++		return -ENOMEM;
++
++	count = 0;
++	dma_fence_chain_for_each(tmp, &chain->base)
++		fences[count++] = dma_fence_get(tmp);
++
++	array = dma_fence_array_create(count, fences,
++				       dma_fence_context_alloc(1),
++				       1, false);
++	if (!array)
++		goto free_fences;
++
++	dma_fence_put(*f);
++	*f = &array->base;
++	return 0;
++
++free_fences:
++	while (count--)
++		dma_fence_put(fences[count]);
++
++	kfree(fences);
++	return -ENOMEM;
++}
++
+ static int drm_syncobj_transfer_to_timeline(struct drm_file *file_private,
+ 					    struct drm_syncobj_transfer *args)
+ {
+ 	struct drm_syncobj *timeline_syncobj = NULL;
+-	struct dma_fence *fence;
+ 	struct dma_fence_chain *chain;
++	struct dma_fence *fence;
+ 	int ret;
+ 
+ 	timeline_syncobj = drm_syncobj_find(file_private, args->dst_handle);
+@@ -869,16 +914,22 @@ static int drm_syncobj_transfer_to_timel
+ 				     args->src_point, args->flags,
+ 				     &fence);
+ 	if (ret)
+-		goto err;
++		goto err_put_timeline;
++
++	ret = drm_syncobj_flatten_chain(&fence);
++	if (ret)
++		goto err_free_fence;
++
+ 	chain = dma_fence_chain_alloc();
+ 	if (!chain) {
+ 		ret = -ENOMEM;
+-		goto err1;
++		goto err_free_fence;
+ 	}
++
+ 	drm_syncobj_add_point(timeline_syncobj, chain, fence, args->dst_point);
+-err1:
++err_free_fence:
+ 	dma_fence_put(fence);
+-err:
++err_put_timeline:
+ 	drm_syncobj_put(timeline_syncobj);
+ 
+ 	return ret;
 
 
