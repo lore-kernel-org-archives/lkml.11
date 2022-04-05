@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8053CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B56C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380050AbiDEUyX (ORCPT
+        id S1380193AbiDEUy3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        Tue, 5 Apr 2022 16:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349152AbiDEJtP (ORCPT
+        with ESMTP id S1354075AbiDEKL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:15 -0400
+        Tue, 5 Apr 2022 06:11:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4110B21BA;
-        Tue,  5 Apr 2022 02:41:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6771B4D9FE;
+        Tue,  5 Apr 2022 02:57:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4C5061368;
-        Tue,  5 Apr 2022 09:41:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4CBDC385A2;
-        Tue,  5 Apr 2022 09:41:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07F04616D7;
+        Tue,  5 Apr 2022 09:57:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13436C385A2;
+        Tue,  5 Apr 2022 09:57:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151698;
-        bh=CeZr6ICdh2BiYtwNF0fyFtjLR6iV2iC7gHrnHqzEX1Q=;
+        s=korg; t=1649152622;
+        bh=YMuvDVCXN0t5GEpEso/ItGrfwaHKye26v8Bn/LLLC+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s+GODKJiw3DtzGamskswd6GepnB8PozlrmwaS400116v3HMD5f7dWvVmo7C3Ia02t
-         19TLldsiLbC8/yxpBc/3sDrE+4PR8BjXreRa3WSeGfuq7RgI7jkoYmv97uC/LTkEBD
-         3asVXg9MnRAnXI9b52tcAuOilfrdDsKMUo/AOEu0=
+        b=PMGQHm4Koz5HHvsFx1OCwM4a4mHOJdYW/2HCk7qlhjAJbQqv1ZHlxahfufshwzAMj
+         1+Lw9vudA3PGbK1w8VEPpC6oymDXvpr2W9QMgo9Sf6XbRJhFp2xg66KrMgLU8TJHN/
+         1xU4plwFCYtfjWcrMxpNHDyJua8YeTDz87sjIBZk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 510/913] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
-Date:   Tue,  5 Apr 2022 09:26:12 +0200
-Message-Id: <20220405070355.142132025@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org, Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.15 843/913] rxrpc: Fix call timer start racing with call destruction
+Date:   Tue,  5 Apr 2022 09:31:45 +0200
+Message-Id: <20220405070405.098095347@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,68 +50,200 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
+commit 4a7f62f91933c8ae5308f9127fd8ea48188b6bc3 upstream.
 
-Per Intel's SDM on the "Instruction Set Reference", when
-loading segment descriptor, not-present segment check should
-be after all type and privilege checks. But the emulator checks
-it first, then #NP is triggered instead of #GP if privilege fails
-and segment is not present. Put not-present segment check after
-type and privilege checks in __load_segment_descriptor().
+The rxrpc_call struct has a timer used to handle various timed events
+relating to a call.  This timer can get started from the packet input
+routines that are run in softirq mode with just the RCU read lock held.
+Unfortunately, because only the RCU read lock is held - and neither ref or
+other lock is taken - the call can start getting destroyed at the same time
+a packet comes in addressed to that call.  This causes the timer - which
+was already stopped - to get restarted.  Later, the timer dispatch code may
+then oops if the timer got deallocated first.
 
-Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by trying to take a ref on the rxrpc_call struct and, if
+successful, passing that ref along to the timer.  If the timer was already
+running, the ref is discarded.
+
+The timer completion routine can then pass the ref along to the call's work
+item when it queues it.  If the timer or work item where already
+queued/running, the extra ref is discarded.
+
+Fixes: a158bdd3247b ("rxrpc: Fix call timeouts")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005073.html
+Link: https://lore.kernel.org/r/164865115696.2943015.11097991776647323586.stgit@warthog.procyon.org.uk
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/emulate.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ include/trace/events/rxrpc.h |    8 +++++++-
+ net/rxrpc/ar-internal.h      |   15 +++++++--------
+ net/rxrpc/call_event.c       |    2 +-
+ net/rxrpc/call_object.c      |   40 +++++++++++++++++++++++++++++++++++-----
+ 4 files changed, 50 insertions(+), 15 deletions(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 9a144ca8e146..4cf0938a876b 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1614,11 +1614,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		goto exception;
- 	}
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -83,12 +83,15 @@ enum rxrpc_call_trace {
+ 	rxrpc_call_error,
+ 	rxrpc_call_got,
+ 	rxrpc_call_got_kernel,
++	rxrpc_call_got_timer,
+ 	rxrpc_call_got_userid,
+ 	rxrpc_call_new_client,
+ 	rxrpc_call_new_service,
+ 	rxrpc_call_put,
+ 	rxrpc_call_put_kernel,
+ 	rxrpc_call_put_noqueue,
++	rxrpc_call_put_notimer,
++	rxrpc_call_put_timer,
+ 	rxrpc_call_put_userid,
+ 	rxrpc_call_queued,
+ 	rxrpc_call_queued_ref,
+@@ -278,12 +281,15 @@ enum rxrpc_tx_point {
+ 	EM(rxrpc_call_error,			"*E*") \
+ 	EM(rxrpc_call_got,			"GOT") \
+ 	EM(rxrpc_call_got_kernel,		"Gke") \
++	EM(rxrpc_call_got_timer,		"GTM") \
+ 	EM(rxrpc_call_got_userid,		"Gus") \
+ 	EM(rxrpc_call_new_client,		"NWc") \
+ 	EM(rxrpc_call_new_service,		"NWs") \
+ 	EM(rxrpc_call_put,			"PUT") \
+ 	EM(rxrpc_call_put_kernel,		"Pke") \
+-	EM(rxrpc_call_put_noqueue,		"PNQ") \
++	EM(rxrpc_call_put_noqueue,		"PnQ") \
++	EM(rxrpc_call_put_notimer,		"PnT") \
++	EM(rxrpc_call_put_timer,		"PTM") \
+ 	EM(rxrpc_call_put_userid,		"Pus") \
+ 	EM(rxrpc_call_queued,			"QUE") \
+ 	EM(rxrpc_call_queued_ref,		"QUR") \
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -777,14 +777,12 @@ void rxrpc_propose_ACK(struct rxrpc_call
+ 		       enum rxrpc_propose_ack_trace);
+ void rxrpc_process_call(struct work_struct *);
  
--	if (!seg_desc.p) {
--		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
--		goto exception;
--	}
--
- 	dpl = seg_desc.dpl;
- 
- 	switch (seg) {
-@@ -1658,6 +1653,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 	case VCPU_SREG_TR:
- 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
- 			goto exception;
-+		if (!seg_desc.p) {
-+			err_vec = NP_VECTOR;
-+			goto exception;
-+		}
- 		old_desc = seg_desc;
- 		seg_desc.type |= 2; /* busy */
- 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
-@@ -1682,6 +1681,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		break;
- 	}
- 
-+	if (!seg_desc.p) {
-+		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
-+		goto exception;
-+	}
+-static inline void rxrpc_reduce_call_timer(struct rxrpc_call *call,
+-					   unsigned long expire_at,
+-					   unsigned long now,
+-					   enum rxrpc_timer_trace why)
+-{
+-	trace_rxrpc_timer(call, why, now);
+-	timer_reduce(&call->timer, expire_at);
+-}
++void rxrpc_reduce_call_timer(struct rxrpc_call *call,
++			     unsigned long expire_at,
++			     unsigned long now,
++			     enum rxrpc_timer_trace why);
 +
- 	if (seg_desc.s) {
- 		/* mark segment as accessed */
- 		if (!(seg_desc.type & 1)) {
--- 
-2.34.1
-
++void rxrpc_delete_call_timer(struct rxrpc_call *call);
+ 
+ /*
+  * call_object.c
+@@ -808,6 +806,7 @@ void rxrpc_release_calls_on_socket(struc
+ bool __rxrpc_queue_call(struct rxrpc_call *);
+ bool rxrpc_queue_call(struct rxrpc_call *);
+ void rxrpc_see_call(struct rxrpc_call *);
++bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op);
+ void rxrpc_get_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_put_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_cleanup_call(struct rxrpc_call *);
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -310,7 +310,7 @@ recheck_state:
+ 	}
+ 
+ 	if (call->state == RXRPC_CALL_COMPLETE) {
+-		del_timer_sync(&call->timer);
++		rxrpc_delete_call_timer(call);
+ 		goto out_put;
+ 	}
+ 
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -53,10 +53,30 @@ static void rxrpc_call_timer_expired(str
+ 
+ 	if (call->state < RXRPC_CALL_COMPLETE) {
+ 		trace_rxrpc_timer(call, rxrpc_timer_expired, jiffies);
+-		rxrpc_queue_call(call);
++		__rxrpc_queue_call(call);
++	} else {
++		rxrpc_put_call(call, rxrpc_call_put);
++	}
++}
++
++void rxrpc_reduce_call_timer(struct rxrpc_call *call,
++			     unsigned long expire_at,
++			     unsigned long now,
++			     enum rxrpc_timer_trace why)
++{
++	if (rxrpc_try_get_call(call, rxrpc_call_got_timer)) {
++		trace_rxrpc_timer(call, why, now);
++		if (timer_reduce(&call->timer, expire_at))
++			rxrpc_put_call(call, rxrpc_call_put_notimer);
+ 	}
+ }
+ 
++void rxrpc_delete_call_timer(struct rxrpc_call *call)
++{
++	if (del_timer_sync(&call->timer))
++		rxrpc_put_call(call, rxrpc_call_put_timer);
++}
++
+ static struct lock_class_key rxrpc_call_user_mutex_lock_class_key;
+ 
+ /*
+@@ -463,6 +483,17 @@ void rxrpc_see_call(struct rxrpc_call *c
+ 	}
+ }
+ 
++bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
++{
++	const void *here = __builtin_return_address(0);
++	int n = atomic_fetch_add_unless(&call->usage, 1, 0);
++
++	if (n == 0)
++		return false;
++	trace_rxrpc_call(call->debug_id, op, n, here, NULL);
++	return true;
++}
++
+ /*
+  * Note the addition of a ref on a call.
+  */
+@@ -510,8 +541,7 @@ void rxrpc_release_call(struct rxrpc_soc
+ 	spin_unlock_bh(&call->lock);
+ 
+ 	rxrpc_put_call_slot(call);
+-
+-	del_timer_sync(&call->timer);
++	rxrpc_delete_call_timer(call);
+ 
+ 	/* Make sure we don't get any more notifications */
+ 	write_lock_bh(&rx->recvmsg_lock);
+@@ -618,6 +648,8 @@ static void rxrpc_destroy_call(struct wo
+ 	struct rxrpc_call *call = container_of(work, struct rxrpc_call, processor);
+ 	struct rxrpc_net *rxnet = call->rxnet;
+ 
++	rxrpc_delete_call_timer(call);
++
+ 	rxrpc_put_connection(call->conn);
+ 	rxrpc_put_peer(call->peer);
+ 	kfree(call->rxtx_buffer);
+@@ -652,8 +684,6 @@ void rxrpc_cleanup_call(struct rxrpc_cal
+ 
+ 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
+ 
+-	del_timer_sync(&call->timer);
+-
+ 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+ 	ASSERT(test_bit(RXRPC_CALL_RELEASED, &call->flags));
+ 
 
 
