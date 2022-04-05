@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A84C35273
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583279AbiDEXwD (ORCPT
+        id S1583321AbiDEXwR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        Tue, 5 Apr 2022 19:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349464AbiDEJty (ORCPT
+        with ESMTP id S1348215AbiDEKqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14253888;
-        Tue,  5 Apr 2022 02:46:39 -0700 (PDT)
+        Tue, 5 Apr 2022 06:46:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D6436163;
+        Tue,  5 Apr 2022 03:26:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D37EB81B76;
-        Tue,  5 Apr 2022 09:46:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFE16C385A1;
-        Tue,  5 Apr 2022 09:46:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E08456142E;
+        Tue,  5 Apr 2022 10:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED22DC385A0;
+        Tue,  5 Apr 2022 10:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151997;
-        bh=etYijgs80etYQU4mSdkRGuphdM0LfpViEFglpJItmQQ=;
+        s=korg; t=1649154418;
+        bh=y84qgXsxoEUAikPwoR4Mbefb/6Lca7pkYMZB4UujyCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kvc6APTwQaR7EWYUTjV/TvGOBa2xnX6loUiFi6jaFkkUb8Wtp0Sazo5KcMdvrSd9O
-         JAPQQ0rptAuJgnn+HRm+seUW07NQaJaMy15tllYvp9/qUEKwy6r6v3G3CypizrC7oE
-         TecdgAVyiUJj+Wa1vYKijfToDlNap4mh3fu6XLh4=
+        b=vL9ZEHV+hMWsLeRsr+yzJtY3SrfZlmF7HO9cEkPNEwdsqzilRQsmVTDmg6a2xA++z
+         O+fNFjdkRmYJjuISgRMgnpFK8m+HfcrvIPkDzcRZubdy/2CJZXhZca43DkrIJ2sAZF
+         JxtqPUzWSPsu7EF6pClsXlZqTIMukocu4ighCwXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 615/913] remoteproc: qcom: Fix missing of_node_put in adsp_alloc_memory_region
-Date:   Tue,  5 Apr 2022 09:27:57 +0200
-Message-Id: <20220405070358.275985460@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.10 533/599] KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasnt activated
+Date:   Tue,  5 Apr 2022 09:33:47 +0200
+Message-Id: <20220405070314.702100323@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit 505b5b1616e200042999de715dbe7c1e2735cd65 ]
+commit b1e34d325397a33d97d845e312d7cf2a8b646b44 upstream.
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Setting non-zero values to SYNIC/STIMER MSRs activates certain features,
+this should not happen when KVM_CAP_HYPERV_SYNIC{,2} was not activated.
 
-Fixes: dc160e449122 ("remoteproc: qcom: Introduce Non-PAS ADSP PIL driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308031219.4718-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Note, it would've been better to forbid writing anything to SYNIC/STIMER
+MSRs, including zeroes, however, at least QEMU tries clearing
+HV_X64_MSR_STIMER0_CONFIG without SynIC. HV_X64_MSR_EOM MSR is somewhat
+'special' as writing zero there triggers an action, this also should not
+happen when SynIC wasn't activated.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-4-vkuznets@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/remoteproc/qcom_q6v5_adsp.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kvm/hyperv.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c b/drivers/remoteproc/qcom_q6v5_adsp.c
-index 8b0d8bbacd2e..c10d452c9703 100644
---- a/drivers/remoteproc/qcom_q6v5_adsp.c
-+++ b/drivers/remoteproc/qcom_q6v5_adsp.c
-@@ -406,6 +406,7 @@ static int adsp_alloc_memory_region(struct qcom_adsp *adsp)
- 	}
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -207,7 +207,7 @@ static int synic_set_msr(struct kvm_vcpu
+ 	struct kvm_vcpu *vcpu = synic_to_vcpu(synic);
+ 	int ret;
  
- 	ret = of_address_to_resource(node, 0, &r);
-+	of_node_put(node);
- 	if (ret)
- 		return ret;
+-	if (!synic->active && !host)
++	if (!synic->active && (!host || data))
+ 		return 1;
  
--- 
-2.34.1
-
+ 	trace_kvm_hv_synic_set_msr(vcpu->vcpu_id, msr, data, host);
+@@ -253,6 +253,9 @@ static int synic_set_msr(struct kvm_vcpu
+ 	case HV_X64_MSR_EOM: {
+ 		int i;
+ 
++		if (!synic->active)
++			break;
++
+ 		for (i = 0; i < ARRAY_SIZE(synic->sint); i++)
+ 			kvm_hv_notify_acked_sint(vcpu, i);
+ 		break;
+@@ -636,7 +639,7 @@ static int stimer_set_config(struct kvm_
+ 	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
+ 	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
+ 
+-	if (!synic->active && !host)
++	if (!synic->active && (!host || config))
+ 		return 1;
+ 
+ 	trace_kvm_hv_stimer_set_config(stimer_to_vcpu(stimer)->vcpu_id,
+@@ -660,7 +663,7 @@ static int stimer_set_count(struct kvm_v
+ 	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
+ 	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
+ 
+-	if (!synic->active && !host)
++	if (!synic->active && (!host || count))
+ 		return 1;
+ 
+ 	trace_kvm_hv_stimer_set_count(stimer_to_vcpu(stimer)->vcpu_id,
 
 
