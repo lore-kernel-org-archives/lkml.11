@@ -2,117 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC1CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 02:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbiDECti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
+        id S230010AbiDECtw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbiDECtZ (ORCPT
+        with ESMTP id S230201AbiDECto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 22:49:25 -0400
-Received: from out203-205-251-80.mail.qq.com (out203-205-251-80.mail.qq.com [203.205.251.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B17D298D45
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 19:28:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649125721;
-        bh=Fi5/0/v4H6PMTzI+ECmpUXfpIn/7jccH/60tCObW+vY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=dFMs8PEXO8k9llYzQr5ju2Phukm0eRjsk+pH72/tWA2I6PGfuEm4naV6vPup/2Y5o
-         YDAeCNHRNFHWoOahV361XYGFGkNuCG0ao3mcocaCTjrXGXBLnIBUHT9x9x0Wbz2yv6
-         IIpiDNIAqvbNbvOrBFEysJ6puI1061EYNvkQrLms=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc9.qq.com (NewEsmtp) with SMTP
-        id 7262DA03; Tue, 05 Apr 2022 10:28:38 +0800
-X-QQ-mid: xmsmtpt1649125718t4dndk6oa
-Message-ID: <tencent_024087572951FED38148303BE79A7094500A@qq.com>
-X-QQ-XMAILINFO: NMnM0wIZ7bQB4eljLfNrvpPvU1VldOJ8f0V9xwoiiMBcWuw4YhAMv+BOCZuRwd
-         CQof1F6sQr0iCWt7GpcUgyZxuZ+tC2pExz4BAMivYbciyw+JLAqoxFlXyZ7c+KkJzUyZK+jCGu79
-         PJUkFY1YkqIohmBpMZGYLVHMf0zM4j12tTx07DcZV/AQzdFVFQaGcE6z8IWX1gjVVrUsymUvLsvo
-         a72yWIliL7JYNXCKzKeQL9fPy7ld7oZ5FjZsjBYE82RZVb7k4g8wuPCXYto3BtzTy6K9jTxZCKKT
-         WRioXyguXfGIFYS9S6idKbeHHTsns2mENlMaujP9QwOpEcLSC/b8dQgrmblypWt22GQnz/XkjEXH
-         xVBUlGEHg7178lr2+x+vh3a9C0CVRxSgQ0Dy2RVHQZKRkJDhpFfdq6caJLCJGUn7ByFlChF0XaGl
-         aKXXKzXqdj+puAA6+pKvQTsx7hjSGgdIgM1IIE2k8GNi1o4wY7f5mweYCReTn1I3+MBtXkW3lV8t
-         Axd4UXNaj/Hi2E6U3v5GdHpLQVqX5k9QREMwm0bmKrbsYVB1I2Wxo4zMvs5p+Qw0voAPNoHhOGgm
-         SIoK0hZHX4B24Lg0VHO+Sk4K5Hz2a2X9usutYorspl3ik5lEYq2JA7SSmlKeAOktmjfmqRX3mLel
-         ItMvs5FOhI6DSEFhuyEaFTUktffXN9vQF+5H+60ysa80cPSET4mvt5p7hYn0F2/ege40RQ2O6/El
-         gMdowXt24AczipQDCxEzi1oWd8HljZhO5z/HsCsw8HXzFfCrPGekcEx72HN5iWAtp84whzeAk7e6
-         AIRsXL59oJnm/MVvDHzG33u0bOfVxVHIElctsDoJ5mRDBLdXC/yDCwweZtuYQz266xu9eKDWj/iv
-         Dl6usD7l2scg5k56+5qNNzu0ERQX9xcn6dU4n2oSFB5F4upAW7YVWqECIOzqxa8MwG6uZU4TvXTA
-         1zMRrZ6ws3cvtNNxKvng==
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2 2/3] staging: rtl8712: change the type of _r8712_init_recv_priv()
-Date:   Tue,  5 Apr 2022 10:28:18 +0800
-X-OQ-MSGID: <20220405022818.10970-1-xkernel.wang@foxmail.com>
-In-Reply-To: <tencent_FCEE3D8703C56F78B552FEFF070817736606@qq.com>
-References: <tencent_FCEE3D8703C56F78B552FEFF070817736606@qq.com>
+        Mon, 4 Apr 2022 22:49:44 -0400
+Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D054E3409A5;
+        Mon,  4 Apr 2022 18:56:12 -0700 (PDT)
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 2351tvOj030196;
+        Tue, 5 Apr 2022 10:55:58 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 2351tvOj030196
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649123758;
+        bh=PdP6YCUvmaSUiCxbB3ILanT4Hgdihlr9OSG1Kl9PsW4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=gW+l5oDUfiuOIwuFg2HGWp1UIZcR14E7rKQKOpraAnYpVZhf/y7HwV/P0r8mQMIF3
+         EUouHELoF6t0f4acQGN+Mqck7GqDvjTPLyqMFgpKzUVFlrlmlNsZ424U+PDxIvFHcv
+         WVcsW/IzDsQdTwf3CUIRxzEZnDazZNcLmi8kpCJJn9PUMxWxZoy1ucSq2QRk8Rc2MH
+         QcRgDEmHBKkolrH27J6kWxLOgLML0XEPbbq5tZYI9InDr8QsxTotRrppjw5/lBOExL
+         cOegUba4J+TtyYcPtZaLWq9VSH7hEubDDpbhIye0wOmdfr4ZSsgKxqt9jdD9/UeI1F
+         Pm1aCP1brpPnQ==
+X-Nifty-SrcIP: [209.85.210.177]
+Received: by mail-pf1-f177.google.com with SMTP id 7so3697386pfu.13;
+        Mon, 04 Apr 2022 18:55:57 -0700 (PDT)
+X-Gm-Message-State: AOAM530Wrl2FODZGw5gurPfGx1uk8kzrLHzYH0CYsYBRdAmo+Hr+hvMj
+        KpeY+IwOJxSEzm2DhIcRZH7IAZo6hWsUrLW+tv8=
+X-Google-Smtp-Source: ABdhPJxyowF3gUy7iO6+drJUCMa56w9yL809C9UvY6zKbVygHAEE/enomAV6RR4k3ReR7tqnWg4fmw1pB+HCgQvEizE=
+X-Received: by 2002:a05:6a00:234f:b0:4fa:f52b:46a1 with SMTP id
+ j15-20020a056a00234f00b004faf52b46a1mr1286578pfj.32.1649123756928; Mon, 04
+ Apr 2022 18:55:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220329021520.308997-1-masahiroy@kernel.org> <CAKwvOdkP12zrGu4iJStSJ5-pAKFBar=Cxf=CYO5gE9L636q8-w@mail.gmail.com>
+In-Reply-To: <CAKwvOdkP12zrGu4iJStSJ5-pAKFBar=Cxf=CYO5gE9L636q8-w@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 5 Apr 2022 10:55:09 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASisGfD4vrk2Duswg_tj+LQutd+zdyq9qyFiTptCM7NWA@mail.gmail.com>
+Message-ID: <CAK7LNASisGfD4vrk2Duswg_tj+LQutd+zdyq9qyFiTptCM7NWA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] kbuild: factor out genksyms command from cmd_gensymtypes_{c,S}
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Wed, Mar 30, 2022 at 3:18 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> On Mon, Mar 28, 2022 at 7:15 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> >
+> > The genksyms command part in cmd_gensymtypes_{c,S} is duplicated.
+> > Factor it out into the 'genksyms' macro.
+> >
+> > For the readability, I slightly refactor the arguments to genksyms.
+>
+> Looks nicer, thanks for the patch!
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+>
+> >
 
-There is a memory allocation in _r8712_init_recv_priv(). Since the
-original type of this function is void, now it is changed to int to
-make the error of allocation failures propagate to its caller easily.
+Applied to linux-kbuild.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
-ChangeLog:
-v1->v2 remove kmemleak_not_leak().
- drivers/staging/rtl8712/recv_osdep.h   | 2 +-
- drivers/staging/rtl8712/rtl871x_recv.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/rtl8712/recv_osdep.h b/drivers/staging/rtl8712/recv_osdep.h
-index d8c1fa7..f5b97c5 100644
---- a/drivers/staging/rtl8712/recv_osdep.h
-+++ b/drivers/staging/rtl8712/recv_osdep.h
-@@ -18,7 +18,7 @@
- #include "drv_types.h"
- #include <linux/skbuff.h>
- 
--void _r8712_init_recv_priv(struct recv_priv *precvpriv,
-+int _r8712_init_recv_priv(struct recv_priv *precvpriv,
- 			   struct _adapter *padapter);
- void _r8712_free_recv_priv(struct recv_priv *precvpriv);
- void r8712_recv_entry(union recv_frame *precv_frame);
-diff --git a/drivers/staging/rtl8712/rtl871x_recv.c b/drivers/staging/rtl8712/rtl871x_recv.c
-index c23f6b3..3464ee2 100644
---- a/drivers/staging/rtl8712/rtl871x_recv.c
-+++ b/drivers/staging/rtl8712/rtl871x_recv.c
-@@ -44,7 +44,7 @@ void _r8712_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
- 	_init_queue(&psta_recvpriv->defrag_q);
- }
- 
--void _r8712_init_recv_priv(struct recv_priv *precvpriv,
-+int _r8712_init_recv_priv(struct recv_priv *precvpriv,
- 			   struct _adapter *padapter)
- {
- 	sint i;
-@@ -60,8 +60,7 @@ void _r8712_init_recv_priv(struct recv_priv *precvpriv,
- 				sizeof(union recv_frame) + RXFRAME_ALIGN_SZ,
- 				GFP_ATOMIC);
- 	if (!precvpriv->pallocated_frame_buf)
--		return;
--	kmemleak_not_leak(precvpriv->pallocated_frame_buf);
-+		return -ENOMEM;
- 	precvpriv->precv_frame_buf = precvpriv->pallocated_frame_buf +
- 				    RXFRAME_ALIGN_SZ -
- 				    ((addr_t)(precvpriv->pallocated_frame_buf) &
-@@ -77,6 +76,7 @@ void _r8712_init_recv_priv(struct recv_priv *precvpriv,
- 	}
- 	precvpriv->rx_pending_cnt = 1;
- 	r8712_init_recv_priv(precvpriv, padapter);
-+	return 0;
- }
- 
- void _r8712_free_recv_priv(struct recv_priv *precvpriv)
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > ---
+> >
+> >  scripts/Makefile.build | 19 ++++++++-----------
+> >  1 file changed, 8 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> > index 9717e6f6fb31..3f2985df4d60 100644
+> > --- a/scripts/Makefile.build
+> > +++ b/scripts/Makefile.build
+> > @@ -125,13 +125,14 @@ cmd_cpp_i_c       = $(CPP) $(c_flags) -o $@ $<
+> >  $(obj)/%.i: $(src)/%.c FORCE
+> >         $(call if_changed_dep,cpp_i_c)
+> >
+> > +genksyms = scripts/genksyms/genksyms           \
+> > +       $(if $(1), -T $(2))                     \
+> > +       $(if $(CONFIG_MODULE_REL_CRCS), -R)     \
+> > +       $(if $(KBUILD_PRESERVE), -p)            \
+> > +       -r $(or $(wildcard $(2:.symtypes=.symref), /dev/null))
+> > +
+> >  # These mirror gensymtypes_S and co below, keep them in synch.
+> > -cmd_gensymtypes_c =                                                         \
+> > -    $(CPP) -D__GENKSYMS__ $(c_flags) $< |                                   \
+> > -    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
+> > -     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
+> > -     $(if $(KBUILD_PRESERVE),-p)                                            \
+> > -     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
+> > +cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
+> >
+> >  quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
+> >  cmd_cc_symtypes_c =                                                         \
+> > @@ -344,11 +345,7 @@ cmd_gensymtypes_S =                                                         \
+> >      $(CPP) $(a_flags) $< |                                                  \
+> >       grep "\<___EXPORT_SYMBOL\>" |                                          \
+> >       sed 's/.*___EXPORT_SYMBOL[[:space:]]*\([a-zA-Z0-9_]*\)[[:space:]]*,.*/EXPORT_SYMBOL(\1);/' ; } | \
+> > -    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - |                                \
+> > -    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
+> > -     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
+> > -     $(if $(KBUILD_PRESERVE),-p)                                            \
+> > -     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
+> > +    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
+> >
+> >  quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
+> >  cmd_cc_symtypes_S =                                                         \
+> > --
+> > 2.32.0
+> >
+>
+>
+> --
+> Thanks,
+> ~Nick Desaulniers
+
+
+
 -- 
+Best Regards
+Masahiro Yamada
