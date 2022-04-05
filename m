@@ -2,88 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D19B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C073C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345875AbiDEKmU (ORCPT
+        id S1346062AbiDEKmm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46260 "EHLO
+        Tue, 5 Apr 2022 06:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241200AbiDEIcy (ORCPT
+        with ESMTP id S241195AbiDEIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA7711156;
-        Tue,  5 Apr 2022 01:29:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46F3860B0E;
-        Tue,  5 Apr 2022 08:29:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54247C385A1;
-        Tue,  5 Apr 2022 08:29:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147370;
-        bh=7uhkbtOUa9s8KzYDK74oftBUK3hU4EOK2/CM37NcBEU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZNdWOBbf8EUHBrRBW44EgONtSetmgrAjpUXhvgkzNQyzTcqRkr+dn5uAlUIcMJ02v
-         /DcX0Rm0cyt7zhErs3sGCgCJXrAe/+VO/qoeyiiWFXW25Km7naOolpZoR9dXH0/gDC
-         +h3/Ztg0KTdKnbhIYe4cVzUK83IT5iA7s9LBMSto=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Zheng Bin <zhengbin13@huawei.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 1101/1126] ASoC: SOF: Intel: Fix build error without SND_SOC_SOF_PCI_DEV
-Date:   Tue,  5 Apr 2022 09:30:48 +0200
-Message-Id: <20220405070439.755867249@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6061707C;
+        Tue,  5 Apr 2022 01:29:22 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:19 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147360;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=h5uCs7UENJtSoAUyE+dqZLYGf6l4slWoZDuxdKMo52E=;
+        b=JRjfzcFlUoFZZGkU8is1r9XXTk9IhNaiZC0opudsuTKbhpFMn/HzhilKR1mHHVTSC6qRPd
+        qYPh/GrNnF6yElLSP8EhXpiwisRL1sA7zGXwFh4Vs4uir8lxf5wBJrI+iEr6p/ECdhZFgt
+        z4SRL0qKJaOVXuq72qHC+NndJGMrRJRqpjk2N2xN7r85uLGmG2nzSb9iwukAbakTVPWA1N
+        OcxXV74b7e/LVP8UmDD+k3O/5H14fIeFItkQ90TRhdP/1KhbAP4c1/gIypUgEngw5UOV7C
+        Sjm1tv72HmuvKO+8V+mDxgh+e9MRMJvsihWg95odmnJNfYBGz1dGmj/gfvsVLA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147360;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=h5uCs7UENJtSoAUyE+dqZLYGf6l4slWoZDuxdKMo52E=;
+        b=Gy/z4LFcD2b8I+Q7AsCYEtIj8fOgLLPMK6LzdbStw38Q1KDqT58wrZ7FEr87kD/XvWPe7G
+        dyDezNv0xAoMu6Bg==
+From:   "tip-bot2 for Valentin Schneider" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] ftrace: Use preemption model accessors for trace
+ header printout
+Cc:     Valentin Schneider <valentin.schneider@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Frederic Weisbecker <frederic@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20211112185203.280040-5-valentin.schneider@arm.com>
+References: <20211112185203.280040-5-valentin.schneider@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914735969.389.308359767987530418.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Bin <zhengbin13@huawei.com>
+The following commit has been merged into the sched/core branch of tip:
 
-commit 664d66dc0a64b32e60a5ad59a9aebb08676a612b upstream.
+Commit-ID:     089c02ae2771a14af2928c59c56abfb9b885a8d7
+Gitweb:        https://git.kernel.org/tip/089c02ae2771a14af2928c59c56abfb9b885a8d7
+Author:        Valentin Schneider <valentin.schneider@arm.com>
+AuthorDate:    Fri, 12 Nov 2021 18:52:03 
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 10:24:42 +02:00
 
-If SND_SOC_SOF_PCI_DEV is n, bulding fails:
+ftrace: Use preemption model accessors for trace header printout
 
-sound/soc/sof/intel/pci-tng.o:(.data+0x1c0): undefined reference to `sof_pci_probe'
-sound/soc/sof/intel/pci-tng.o:(.data+0x1c8): undefined reference to `sof_pci_remove'
-sound/soc/sof/intel/pci-tng.o:(.data+0x1e0): undefined reference to `sof_pci_shutdown'
-sound/soc/sof/intel/pci-tng.o:(.data+0x290): undefined reference to `sof_pci_pm'
+Per PREEMPT_DYNAMIC, checking CONFIG_PREEMPT doesn't tell you the actual
+preemption model of the live kernel. Use the newly-introduced accessors
+instead.
 
-Make SND_SOC_SOF_MERRIFIELD select SND_SOC_SOF_PCI_DEV to fix this.
-
-Fixes: 8d4ba1be3d22 ("ASoC: SOF: pci: split PCI into different drivers")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220323092501.145879-1-zhengbin13@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Acked-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20211112185203.280040-5-valentin.schneider@arm.com
 ---
- sound/soc/sof/intel/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/trace/trace.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
---- a/sound/soc/sof/intel/Kconfig
-+++ b/sound/soc/sof/intel/Kconfig
-@@ -84,6 +84,7 @@ if SND_SOC_SOF_PCI
- config SND_SOC_SOF_MERRIFIELD
- 	tristate "SOF support for Tangier/Merrifield"
- 	default SND_SOC_SOF_PCI
-+	select SND_SOC_SOF_PCI_DEV
- 	select SND_SOC_SOF_INTEL_ATOM_HIFI_EP
- 	help
- 	  This adds support for Sound Open Firmware for Intel(R) platforms
-
-
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index f4de111..124f189 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -4289,17 +4289,11 @@ print_trace_header(struct seq_file *m, struct trace_iterator *iter)
+ 		   entries,
+ 		   total,
+ 		   buf->cpu,
+-#if defined(CONFIG_PREEMPT_NONE)
+-		   "server",
+-#elif defined(CONFIG_PREEMPT_VOLUNTARY)
+-		   "desktop",
+-#elif defined(CONFIG_PREEMPT)
+-		   "preempt",
+-#elif defined(CONFIG_PREEMPT_RT)
+-		   "preempt_rt",
+-#else
++		   preempt_model_none()      ? "server" :
++		   preempt_model_voluntary() ? "desktop" :
++		   preempt_model_full()      ? "preempt" :
++		   preempt_model_rt()        ? "preempt_rt" :
+ 		   "unknown",
+-#endif
+ 		   /* These are reserved for later use */
+ 		   0, 0, 0, 0);
+ #ifdef CONFIG_SMP
