@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 986BDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E77EFC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578534AbiDEXXu (ORCPT
+        id S1578605AbiDEXYO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
+        Tue, 5 Apr 2022 19:24:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357914AbiDEK10 (ORCPT
+        with ESMTP id S1349450AbiDEJtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9426522DE;
-        Tue,  5 Apr 2022 03:11:16 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23BB27B20;
+        Tue,  5 Apr 2022 02:46:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34BC1B81C88;
-        Tue,  5 Apr 2022 10:11:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A498BC385A1;
-        Tue,  5 Apr 2022 10:11:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C4956164D;
+        Tue,  5 Apr 2022 09:46:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E93AC385A3;
+        Tue,  5 Apr 2022 09:46:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153474;
-        bh=+vNkrn4fO5sUcF7UdHE0tr717ptuDd7aFb+5A8RKrkE=;
+        s=korg; t=1649151972;
+        bh=Erirp5qaLkmT2KhloGasa14482cQS95b1zyeEUKtpyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1pfB0kNJy8qm2XTNKjSSq50DSaCo6cGBeXtvj2LhZ2zz6IbRmBF1+cTwR8lc/bh/B
-         +vF4TpGXGx7vIG8xUPJhzrOVtkh4olU91UQX2Cr37gaH5Ufz6YTYtCpfMP4ahZ4UUa
-         2HDjR0AkIn6eOZoSE3o07Giru4kh7jpswC7n9/l0=
+        b=mMr+n9w61cnl0LydRa2hhEDZgoMDJxB9UfThttNvQxhU8JqbmlWJqQ4aRlDXMGo83
+         mY2OdxT9pA8El8y7ivf/baSZ7d1PyXGQR5pZW2yVoz6obpVcm6Ha8oI8q4mx4qw7CG
+         LayLWgfc6lIh0aTB7vqe5UmBL5ilMrHlLDXOi5Go=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Martin Kaiser <martin@kaiser.cx>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 233/599] memory: emif: check the pointer temp in get_device_details()
-Date:   Tue,  5 Apr 2022 09:28:47 +0200
-Message-Id: <20220405070305.774722704@linuxfoundation.org>
+Subject: [PATCH 5.15 607/913] staging: r8188eu: fix endless loop in recv_func
+Date:   Tue,  5 Apr 2022 09:27:49 +0200
+Message-Id: <20220405070358.036454946@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Martin Kaiser <martin@kaiser.cx>
 
-[ Upstream commit 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87 ]
+[ Upstream commit 1327fcf175fa63d3b7a058b8148ed7714acdc035 ]
 
-The pointer temp is allocated by devm_kzalloc(), so it should be
-checked for error handling.
+Fix an endless loop in recv_func. If pending_frame is not NULL, we're
+stuck in the while loop forever. We have to call rtw_alloc_recvframe
+each time we loop.
 
-Fixes: 7ec944538dde ("memory: emif: add basic infrastructure for EMIF driver")
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225132552.27894-1-baijiaju1990@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
+Reported-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Link: https://lore.kernel.org/r/20220226181457.1138035-4-martin@kaiser.cx
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/emif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/r8188eu/core/rtw_recv.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index 55d4c842fcd9..5a059be3516c 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1403,7 +1403,7 @@ static struct emif_data *__init_or_module get_device_details(
- 	temp	= devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
- 	dev_info = devm_kzalloc(dev, sizeof(*dev_info), GFP_KERNEL);
+diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
+index e082edfbaad8..30ca9f1e0363 100644
+--- a/drivers/staging/r8188eu/core/rtw_recv.c
++++ b/drivers/staging/r8188eu/core/rtw_recv.c
+@@ -1942,8 +1942,7 @@ static int recv_func(struct adapter *padapter, struct recv_frame *rframe)
+ 		struct recv_frame *pending_frame;
+ 		int cnt = 0;
  
--	if (!emif || !pd || !dev_info) {
-+	if (!emif || !temp || !dev_info) {
- 		dev_err(dev, "%s:%d: allocation error\n", __func__, __LINE__);
- 		goto error;
- 	}
+-		pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue);
+-		while (pending_frame) {
++		while ((pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue))) {
+ 			cnt++;
+ 			recv_func_posthandle(padapter, pending_frame);
+ 		}
 -- 
 2.34.1
 
