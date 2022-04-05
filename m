@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0A7C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C91C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244617AbiDEM4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        id S244195AbiDEM4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243577AbiDEJPX (ORCPT
+        with ESMTP id S243108AbiDEJIq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:15:23 -0400
+        Tue, 5 Apr 2022 05:08:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79374954B5;
-        Tue,  5 Apr 2022 02:01:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30C492D25;
+        Tue,  5 Apr 2022 01:57:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0966461571;
-        Tue,  5 Apr 2022 09:01:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17B4AC385A1;
-        Tue,  5 Apr 2022 09:01:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F58061511;
+        Tue,  5 Apr 2022 08:57:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46FCCC385A1;
+        Tue,  5 Apr 2022 08:57:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149286;
-        bh=B4ZcG0QXqpeghTBVKDIRTsP/36gZD9K13i5RowxWSZc=;
+        s=korg; t=1649149059;
+        bh=SNPnTU2FhR3/j1aygeZyiR4/bDRnquHv0PF8lxvepnY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DSeqaRiTyTuqy2lo7B63LxfFpRSM4oCXxJjpFjpjalXMmaAzjzIPAHuNUB6VoQc3K
-         UJ3VeBfnV1wOr5BxMSjz0AG5Qn/BvZvKXYPG5rCTSpAPpwU37CO6zlBlU6MG5L6euj
-         9hh6ThP8PoVW1pluWufv+hvhkNAXhqmemf8QIwPU=
+        b=RtwjLdJLuPdtR3DSi6jPUbpjvP3b6Z7tHkinVCKeUJEnw7NgxlbH1CmCtTuI0CL3N
+         8gogzBiBPyXoRE0FCOcwR6/+7WpLqi9+8LeX9miKhbmxClj4rb3Ak70DwJTjwIjyp6
+         H2MjtJeHqBGbw+I18GLgvNXXU25Y1asU5BLIf5X4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0660/1017] pinctrl: renesas: r8a77470: Reduce size for narrow VIN1 channel
-Date:   Tue,  5 Apr 2022 09:26:13 +0200
-Message-Id: <20220405070413.873755034@linuxfoundation.org>
+Subject: [PATCH 5.16 0578/1017] MIPS: Sanitise Cavium switch cases in TLB handler synthesizers
+Date:   Tue,  5 Apr 2022 09:24:51 +0200
+Message-Id: <20220405070411.436808823@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,48 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit 9e04a0eda84fccab0ac22a33825ad53f47c968c7 ]
+[ Upstream commit 6ddcba9d480b6bcced4223a729794dfa6becb7eb ]
 
-The second video-in channel on RZ/G1C has only 12 data lanes, but the
-pin control driver uses the vin_data union, which is meant for 24 data
-lanes, thus wasting space.
+It makes no sense to fall through to `break'.  Therefore reorder the
+switch statements so as to have the Cavium cases first, followed by the
+default case, which improves readability and pacifies code analysis
+tools.  No change in semantics, assembly produced is exactly the same.
 
-Fix this by using the vin_data12 union instead.
-
-This reduces kernel size by 96 bytes.
-
-Fixes: 50f3f2d73e3426ba ("pinctrl: sh-pfc: Reduce kernel size for narrow VIN channels")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/52716fa89139f6f92592633edb52804d4c5e18f0.1640269757.git.geert+renesas@glider.be
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: bc431d2153cc ("MIPS: Fix fall-through warnings for Clang")
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/pfc-r8a77470.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/mips/mm/tlbex.c | 23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/pinctrl/renesas/pfc-r8a77470.c b/drivers/pinctrl/renesas/pfc-r8a77470.c
-index e6e5487691c1..cf7153d06a95 100644
---- a/drivers/pinctrl/renesas/pfc-r8a77470.c
-+++ b/drivers/pinctrl/renesas/pfc-r8a77470.c
-@@ -2140,7 +2140,7 @@ static const unsigned int vin0_clk_mux[] = {
- 	VI0_CLK_MARK,
- };
- /* - VIN1 ------------------------------------------------------------------- */
--static const union vin_data vin1_data_pins = {
-+static const union vin_data12 vin1_data_pins = {
- 	.data12 = {
- 		RCAR_GP_PIN(3,  1), RCAR_GP_PIN(3, 2),
- 		RCAR_GP_PIN(3,  3), RCAR_GP_PIN(3, 4),
-@@ -2150,7 +2150,7 @@ static const union vin_data vin1_data_pins = {
- 		RCAR_GP_PIN(3, 15), RCAR_GP_PIN(3, 16),
- 	},
- };
--static const union vin_data vin1_data_mux = {
-+static const union vin_data12 vin1_data_mux = {
- 	.data12 = {
- 		VI1_DATA0_MARK, VI1_DATA1_MARK,
- 		VI1_DATA2_MARK, VI1_DATA3_MARK,
+diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
+index b131e6a77383..5cda07688f67 100644
+--- a/arch/mips/mm/tlbex.c
++++ b/arch/mips/mm/tlbex.c
+@@ -2160,16 +2160,14 @@ static void build_r4000_tlb_load_handler(void)
+ 		uasm_i_tlbr(&p);
+ 
+ 		switch (current_cpu_type()) {
+-		default:
+-			if (cpu_has_mips_r2_exec_hazard) {
+-				uasm_i_ehb(&p);
+-			fallthrough;
+-
+ 		case CPU_CAVIUM_OCTEON:
+ 		case CPU_CAVIUM_OCTEON_PLUS:
+ 		case CPU_CAVIUM_OCTEON2:
+-				break;
+-			}
++			break;
++		default:
++			if (cpu_has_mips_r2_exec_hazard)
++				uasm_i_ehb(&p);
++			break;
+ 		}
+ 
+ 		/* Examine  entrylo 0 or 1 based on ptr. */
+@@ -2236,15 +2234,14 @@ static void build_r4000_tlb_load_handler(void)
+ 		uasm_i_tlbr(&p);
+ 
+ 		switch (current_cpu_type()) {
+-		default:
+-			if (cpu_has_mips_r2_exec_hazard) {
+-				uasm_i_ehb(&p);
+-
+ 		case CPU_CAVIUM_OCTEON:
+ 		case CPU_CAVIUM_OCTEON_PLUS:
+ 		case CPU_CAVIUM_OCTEON2:
+-				break;
+-			}
++			break;
++		default:
++			if (cpu_has_mips_r2_exec_hazard)
++				uasm_i_ehb(&p);
++			break;
+ 		}
+ 
+ 		/* Examine  entrylo 0 or 1 based on ptr. */
 -- 
 2.34.1
 
