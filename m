@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF43C38A02
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9DDC35280
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237860AbiDEIS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
+        id S235298AbiDEIP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235671AbiDEH77 (ORCPT
+        with ESMTP id S235503AbiDEH7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115EA1A049;
-        Tue,  5 Apr 2022 00:57:21 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5E26660A;
+        Tue,  5 Apr 2022 00:54:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEA14B81B14;
-        Tue,  5 Apr 2022 07:57:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0463CC340EE;
-        Tue,  5 Apr 2022 07:57:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4092A61668;
+        Tue,  5 Apr 2022 07:54:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 516E0C340EE;
+        Tue,  5 Apr 2022 07:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145438;
-        bh=3WCk8sBpIkZCS0IofelWfKv101rypvwobF2dXzA2GKA=;
+        s=korg; t=1649145292;
+        bh=K3TAybxi+nsvSrrQJTUFlqvaiEsAWoqPvFcXFTD1X88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bu0XZjhobqF7A3dCE1jaVjE3tgtnhxRv0tvQf8SmSddF79MjHULJLpajPbiysf4Bu
-         y0JjDnX6wrLMhC/m4LP2JRS8V48DH9XUvMQR/CssiwJ7T+HsAesaj2vegsU6SxPX+J
-         LGfuwhT+Gx5LMHAixSlEzhJcPaUYPuUFEVPaW8A8=
+        b=wAZOU37vd/dEajbEsWOGMY40xuMGvreF5c8crxGA7rYYbbwVK88LyDV4rV7e1FI2X
+         8f3nbw2P6CQ/5cjFyxyUAIYDPvr1jMBnzgvUE8+QUuSGryKHGsgJx14BF6XcWAqNge
+         nz2q/rceG+2Jhh63OPC5oucv6CS5zljvE59MI/wU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0405/1126] ASoC: rk817: Fix missing clk_disable_unprepare() in rk817_platform_probe
-Date:   Tue,  5 Apr 2022 09:19:12 +0200
-Message-Id: <20220405070419.513806222@linuxfoundation.org>
+Subject: [PATCH 5.17 0355/1126] media: cedrus: H265: Fix neighbour info buffer size
+Date:   Tue,  5 Apr 2022 09:18:22 +0200
+Message-Id: <20220405070418.049098515@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,43 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit a6b44a2518a08348bd0f0401e4d2b99233bbabc2 ]
+[ Upstream commit ee8b887329c78971967506f3ac79b9302c9f83c1 ]
 
-Fix the missing clk_disable_unprepare() before return
-from rk817_platform_probe() in the error handling case.
+Neighbour info buffer size needs to be 794 kiB in H6. This is actually
+already indirectly mentioned in the comment, but smaller size is used
+nevertheless.
 
-Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Tested-by: Chris Morgan <macromorgan@hotmail.com>
-Link: https://lore.kernel.org/r/20220307090146.4104-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Increase buffer size to cover H6 needs. Since increase is not that big
+in absolute numbers, it doesn't make sense to complicate logic for older
+generations.
+
+Bug was discovered using iommu, which reported access error when trying
+to play H265 video.
+
+Fixes: 86caab29da78 ("media: cedrus: Add HEVC/H.265 decoding support")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rk817_codec.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/staging/media/sunxi/cedrus/cedrus_h265.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
-index 03f24edfe4f6..8fffe378618d 100644
---- a/sound/soc/codecs/rk817_codec.c
-+++ b/sound/soc/codecs/rk817_codec.c
-@@ -508,12 +508,14 @@ static int rk817_platform_probe(struct platform_device *pdev)
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "%s() register codec error %d\n",
- 			__func__, ret);
--		goto err_;
-+		goto err_clk;
- 	}
- 
- 	return 0;
--err_:
- 
-+err_clk:
-+	clk_disable_unprepare(rk817_codec_data->mclk);
-+err_:
- 	return ret;
- }
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+index 8829a7bab07e..ffade5cbd2e4 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+@@ -23,7 +23,7 @@
+  * Subsequent BSP implementations seem to double the neighbor info buffer size
+  * for the H6 SoC, which may be related to 10 bit H265 support.
+  */
+-#define CEDRUS_H265_NEIGHBOR_INFO_BUF_SIZE	(397 * SZ_1K)
++#define CEDRUS_H265_NEIGHBOR_INFO_BUF_SIZE	(794 * SZ_1K)
+ #define CEDRUS_H265_ENTRY_POINTS_BUF_SIZE	(4 * SZ_1K)
+ #define CEDRUS_H265_MV_COL_BUF_UNIT_CTB_SIZE	160
  
 -- 
 2.34.1
