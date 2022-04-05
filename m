@@ -2,152 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F89C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B3BC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582559AbiDEXsk (ORCPT
+        id S1582577AbiDEXso (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
+        Tue, 5 Apr 2022 19:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355833AbiDEKWI (ORCPT
+        with ESMTP id S1357407AbiDELQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51DB9F6C7;
-        Tue,  5 Apr 2022 03:05:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 07:16:24 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E0F28E09;
+        Tue,  5 Apr 2022 03:45:14 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29C956172B;
-        Tue,  5 Apr 2022 10:05:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2C6C385A2;
-        Tue,  5 Apr 2022 10:05:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153109;
-        bh=MSTbhPiz+0gIdLuJbCp8xgfsyCNe3dcUzSOKZ3PzUac=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lnKPSqQ1PP6ZLhBthUQjLUPe+oa9LUZ600hkdiFrBtwtmuHUuZWZyS1fiJMqV6pUT
-         WzEMlaqElnSA/65kRilAWWZJmKRXrNXpIzqOLTBODXniAalUiDaPOpWlReUj9g+gMQ
-         QF/ZWF2nSsUysyCx1dOtyBq2/Isrcbig+b3doFtk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chinwen Chang <chinwen.chang@mediatek.com>,
-        Nicholas Tang <nicholas.tang@mediatek.com>,
-        Yee Lee <yee.lee@mediatek.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 078/599] mm/kmemleak: reset tag when compare object pointer
-Date:   Tue,  5 Apr 2022 09:26:12 +0200
-Message-Id: <20220405070301.147117364@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 7CE931EC02B9;
+        Tue,  5 Apr 2022 12:45:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649155509;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6/5LBcy5siohW4oFuFeRpf6DCnAk2CessNOW+twB7uY=;
+        b=LGiTheZnyXcmHnN6XZzLCW/0mEVkEf7wOP1WEXJasS41X6E41rojW0fFU3DUbi95ouWOvL
+        +qP8ubIgpxNuiDJ8B7mOShS68hHBrzc1vZijoUZorxOdnSsPWpR5IuIr9pdd9saOH/pVq9
+        4QE0lYfd7DhP+R9IBCJqJS8WuA9tED4=
+Date:   Tue, 5 Apr 2022 12:45:11 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Richard Biener <rguenther@suse.de>
+Cc:     linux-toolchains@vger.kernel.org, Michael Matz <matz@suse.de>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: older gccs and case labels producing integer constants
+Message-ID: <YkwdtxNCpiERLFGW@zn.tnic>
+References: <YkwQ6+tIH8GQpuct@zn.tnic>
+ <7o5nn52-nqn1-oo13-s6o9-59r85r91o768@fhfr.qr>
+ <onrq8p1-582o-6rs9-r682-rs9sqoq7sq6p@fhfr.qr>
+ <YkwbygWj/C3XooMV@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YkwbygWj/C3XooMV@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+On Tue, Apr 05, 2022 at 12:36:58PM +0200, Borislav Petkov wrote:
+> On Tue, Apr 05, 2022 at 12:06:45PM +0200, Richard Biener wrote:
+> > Wird auch mit gcc 11 rejected.  Kanns sein dass mit gcc 7 andere
+> > compiler flags genommen werden?
+> 
+> Found it:
+> 
+> $ gcc -fsanitize=shift -c switch.c
+> switch.c: In function ‘foo’:
+> switch.c:10:7: error: case label does not reduce to an integer constant
+>        case (((0xfc08) << 16) | (0x0101)):;
+> 
+> $ gcc --version
+> gcc (SUSE Linux) 7.4.1 20190905 [gcc-7-branch revision 275407]
+> Copyright (C) 2017 Free Software Foundation, Inc.
+> 
+> Something not fully backported?
 
-commit bfc8089f00fa526dea983844c880fa8106c33ac4 upstream.
+Ok, not really:
 
-When we use HW-tag based kasan and enable vmalloc support, we hit the
-following bug.  It is due to comparison between tagged object and
-non-tagged pointer.
+gcc-10 -fsanitize=shift -c switch.c
+switch.c: In function ‘foo’:
+switch.c:10:7: error: case label does not reduce to an integer constant
+   10 |       case (((0xfc08) << 16) | (0x0101)):;
+      |       ^~~~
 
-We need to reset the kasan tag when we need to compare tagged object and
-non-tagged pointer.
+BUT!
 
-  kmemleak: [name:kmemleak&]Scan area larger than object 0xffffffe77076f440
-  CPU: 4 PID: 1 Comm: init Tainted: G S      W         5.15.25-android13-0-g5cacf919c2bc #1
-  Hardware name: MT6983(ENG) (DT)
-  Call trace:
-   add_scan_area+0xc4/0x244
-   kmemleak_scan_area+0x40/0x9c
-   layout_and_allocate+0x1e8/0x288
-   load_module+0x2c8/0xf00
-   __se_sys_finit_module+0x190/0x1d0
-   __arm64_sys_finit_module+0x20/0x30
-   invoke_syscall+0x60/0x170
-   el0_svc_common+0xc8/0x114
-   do_el0_svc+0x28/0xa0
-   el0_svc+0x60/0xf8
-   el0t_64_sync_handler+0x88/0xec
-   el0t_64_sync+0x1b4/0x1b8
-  kmemleak: [name:kmemleak&]Object 0xf5ffffe77076b000 (size 32768):
-  kmemleak: [name:kmemleak&]  comm "init", pid 1, jiffies 4294894197
-  kmemleak: [name:kmemleak&]  min_count = 0
-  kmemleak: [name:kmemleak&]  count = 0
-  kmemleak: [name:kmemleak&]  flags = 0x1
-  kmemleak: [name:kmemleak&]  checksum = 0
-  kmemleak: [name:kmemleak&]  backtrace:
-       module_alloc+0x9c/0x120
-       move_module+0x34/0x19c
-       layout_and_allocate+0x1c4/0x288
-       load_module+0x2c8/0xf00
-       __se_sys_finit_module+0x190/0x1d0
-       __arm64_sys_finit_module+0x20/0x30
-       invoke_syscall+0x60/0x170
-       el0_svc_common+0xc8/0x114
-       do_el0_svc+0x28/0xa0
-       el0_svc+0x60/0xf8
-       el0t_64_sync_handler+0x88/0xec
-       el0t_64_sync+0x1b4/0x1b8
+when more switches are set with gcc-10 (full gcc cmdline from a kernel
+build), then that passes.
 
-Link: https://lkml.kernel.org/r/20220318034051.30687-1-Kuan-Ying.Lee@mediatek.com
-Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Chinwen Chang <chinwen.chang@mediatek.com>
-Cc: Nicholas Tang <nicholas.tang@mediatek.com>
-Cc: Yee Lee <yee.lee@mediatek.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- mm/kmemleak.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+But it doesn't pass with gcc-7.
 
---- a/mm/kmemleak.c
-+++ b/mm/kmemleak.c
-@@ -787,6 +787,8 @@ static void add_scan_area(unsigned long
- 	unsigned long flags;
- 	struct kmemleak_object *object;
- 	struct kmemleak_scan_area *area = NULL;
-+	unsigned long untagged_ptr;
-+	unsigned long untagged_objp;
- 
- 	object = find_and_get_object(ptr, 1);
- 	if (!object) {
-@@ -795,6 +797,9 @@ static void add_scan_area(unsigned long
- 		return;
- 	}
- 
-+	untagged_ptr = (unsigned long)kasan_reset_tag((void *)ptr);
-+	untagged_objp = (unsigned long)kasan_reset_tag((void *)object->pointer);
-+
- 	if (scan_area_cache)
- 		area = kmem_cache_alloc(scan_area_cache, gfp_kmemleak_mask(gfp));
- 
-@@ -806,8 +811,8 @@ static void add_scan_area(unsigned long
- 		goto out_unlock;
- 	}
- 	if (size == SIZE_MAX) {
--		size = object->pointer + object->size - ptr;
--	} else if (ptr + size > object->pointer + object->size) {
-+		size = untagged_objp + object->size - untagged_ptr;
-+	} else if (untagged_ptr + size > untagged_objp + object->size) {
- 		kmemleak_warn("Scan area larger than object 0x%08lx\n", ptr);
- 		dump_object_info(object);
- 		kmem_cache_free(scan_area_cache, area);
+Weird...
 
+-- 
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
