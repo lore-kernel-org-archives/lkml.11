@@ -2,210 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C84AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B7AC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850322AbiDFCtJ (ORCPT
+        id S1383703AbiDFCtb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:49:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
+        Tue, 5 Apr 2022 22:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586354AbiDFABY (ORCPT
+        with ESMTP id S1585294AbiDEX7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 20:01:24 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78610AD119
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:27:40 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id h19so783235pfv.1
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 15:27:40 -0700 (PDT)
+        Tue, 5 Apr 2022 19:59:40 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724A6213508
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:16:21 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d7eaa730d9so5192907b3.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 15:16:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/F9FcwctkCW+3E2y6H+mYNn9o98TaWKZ4egRhw2n8U4=;
-        b=CJBcRD2/eIRg2nJUKgCWXkp/3dt4Jks9/MQLAjuBfjmshUl+09vz9rWZTtwOURZaTY
-         TD8tFA4l6SCkHkvYEiWTZMaC3YUS68yWhWMjKvJdgmrjq7mkDrSxmeMePZUQAtb+bQ2l
-         cst0pG/3Mx9DEERt9Ia+Ey5cRCjFUZQeNMTU3aVOvHkKJcCODwPuQEqHliscG7BJDJsT
-         OXkJunvXAzqhk5OMmOU2IDLahBZgQt82hMiwgMjegFBB2LNtfG05qEr+egbGYMZS6VR1
-         +meQgCSGnIWCTCzqpLqbUTuAyD8J/DNCQV+/JRcnNh/wMSzdN6cB+JAs/XEHH8pB1fxr
-         LZ5w==
+        h=date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=NTGx3vO8sq1dXtBCR5+TJJ5C7vnKyf9ljgD3Rl3d4sc=;
+        b=h8iz4EugNtzHw+TkxpZpBYCGCCOw0O9FMz2im/z0uUrLEs+1T52HjzmQ59g+6fbKtW
+         DKg7PkBnEW/HsKPM93MnIaFOO4AJeFN+m4VQiDY9nglhzeWUyn99nm3Y+Tfj00E6o1LV
+         clW7XpypS22Xo9AG8ovaE+We/efPkEUIcnfi3gTtLrw3lQfMfztiIjqMECCWvzHOrY5a
+         mrkFMxmIFvKclS6MRmCe9hcPjAj1px/J8E40FJt/mK7p3ItlwQNHAdg7tKwEalQSnFhZ
+         BCqc5MBXlrTwZkAHrKMfLBINPchgzD+FarD1hUAIYdqXoj3yR4SBE9MF9IJLHrUOiWek
+         /2AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/F9FcwctkCW+3E2y6H+mYNn9o98TaWKZ4egRhw2n8U4=;
-        b=EMaSUbkxz0+a9RLa9C4ypHZt9c7RYAeGuKt1lDwO4Zkz+YZD72cAyn/aJvTloFmjes
-         i6X08pHkb3t61mXOlZ04Hwz1UWCnfGQ1DRilGTCkfRv9gxfXyoU6WA/SCpA4E6NfDT0b
-         k/vlNwitc52apPS8fh/jtcUXhUyuuAzISto+WnXPkxpWlefza+yqVPdKW4GEnksWNYn3
-         EFkR3g44a4sUVtSFYkswFRBOa5+OG1QOoGSkGWZweehVY2CUmZkuN3rDznUaBT4HK1KP
-         d4mg8exHTfY0ElDXipMkXl7rH6Wd2XZRQA7v/orwGa5N/3p1Z2TX3yhFRG6t0X7rkNsr
-         nOeg==
-X-Gm-Message-State: AOAM533Qmve+1jdfKfUg35dMXdxQF6MutSMzZQJkuG246ZHHZYa5qiuj
-        eo3lEt0dDTdi1t9wAFW1joXAuQ==
-X-Google-Smtp-Source: ABdhPJxs9PH/uSAK+InP3KJdR6deavJYk0JCPXue0V3tWnYHg1tWuqMoOVV8w1miTG2AF29WKVFerg==
-X-Received: by 2002:a05:6a02:204:b0:399:1c4:3f45 with SMTP id bh4-20020a056a02020400b0039901c43f45mr4525831pgb.246.1649197659736;
-        Tue, 05 Apr 2022 15:27:39 -0700 (PDT)
-Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056a00229000b004fabe756ba6sm18332940pfe.54.2022.04.05.15.27.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 15:27:38 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 22:27:35 +0000
-From:   David Matlack <dmatlack@google.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>
-Subject: Re: [PATCH v3 04/11] KVM: selftests: Add memslot parameter to
- elf_load
-Message-ID: <YkzCV00n9KyZf5gs@google.com>
-References: <20220330174621.1567317-1-bgardon@google.com>
- <20220330174621.1567317-5-bgardon@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330174621.1567317-5-bgardon@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=NTGx3vO8sq1dXtBCR5+TJJ5C7vnKyf9ljgD3Rl3d4sc=;
+        b=KkEP8cZic4vSeJOJGVLtIIxYEVxZm2fue/Y8tNcP9PRp+NXvPJUDrbEeSjWvnMphoA
+         DJBLxM2Fp4uQ+GJh7tceitBoyqapOrBUW6N+IWs+Xb2+WUhHOG2aGEIven27MNmrwvoQ
+         xI5gaotQKW2IhPaZi/Z+5DWQbiC6LxVq+FcBfUSBdqF0Tbbf19DvTC85MNVNwriw3ZK/
+         +jTB72x8o61w9jMxPeBM96PX1ZCFjzztq51dWpBCjhSHFJ66ey0adPP8Bx1crVSZOrSw
+         yzBPrK1+gTpp+JF1pv4Ux2l/QCXF3ZcT4LPqPi4zXqDKE0zQsZyLGfw4tn2900WK5sgz
+         9RXw==
+X-Gm-Message-State: AOAM533sWg4PpASTP8BYTg0pdpUzv90pe52kiowPFN5GzLt/1AXWBDhY
+        59gmLKuISeAdwGwQepA9l3tngRWcebpwa+rbQrg=
+X-Google-Smtp-Source: ABdhPJyBrG2/HD25BUflFAr/K23ubnstDkiGKDaIC/pKd8iPOdfQRe4MLYYSwsJVi03d+N4cc1D11pTqqJBArQ1QSb8=
+X-Received: from samitolvanen1.mtv.corp.google.com ([2620:15c:201:2:1397:2ffa:35b2:9631])
+ (user=samitolvanen job=sendgmr) by 2002:a5b:ed1:0:b0:634:15f0:9e87 with SMTP
+ id a17-20020a5b0ed1000000b0063415f09e87mr4349556ybs.392.1649196980591; Tue,
+ 05 Apr 2022 15:16:20 -0700 (PDT)
+Date:   Tue,  5 Apr 2022 15:16:18 -0700
+Message-Id: <20220405221618.633743-1-samitolvanen@google.com>
+Mime-Version: 1.0
+X-Developer-Key: i=samitolvanen@google.com; a=openpgp; fpr=35CCFB63B283D6D3AEB783944CB5F6848BBC56EE
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3441; h=from:subject;
+ bh=/iQgT6IkB64+WL3JrTtJZgkW5s5WmdKdm+zLHBU/Yj8=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBiTL+vZsW7RO18a8xqCkt9rrmxEyA4NPySbVUngQFI
+ GoRLlPeJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYky/rwAKCRBMtfaEi7xW7sxGC/
+ 9fJkMV8Rpp0ZqAPvqv/HJc8HUBS0A0GaV+mAW1Mc7A/GfLHYuxGAej4UZCoReOA/39x6QJvaKX14D2
+ 6EJpSZDjN7cCi5wI7Py/0keVybKhdtWT0wR/jSk/ghcj8JNx+j2HCzCJPr8McUGQRKSv4wFDd7Tsk0
+ ZdP7Dh0reCxpBtYULYfuOxSepm1RVcsazYCtw+k1eMzCIIhswdU6blnr0WS9KS1a2yf/uNNx/O9ZUb
+ MSgPXA8pLH8iZAI4kGZgpRtsGwKiglvWb7mxA4vEgUrL8A0rt8hmLGuWH+AaPVVnBqKymT6/Rz9tFF
+ RDm/syXq8piAt3sbjdYRww/3twDWf/rt99fVORCBV16i73UCi4U6+LTgTGUjQwZ1sOmenzX7TFuNmi
+ SZAY9dsGF809rREBiSpK7NF8Yefj2T+I8Oa9mEHDhUBMD3kM4xi8lEffuaRaFuZAQSY6Ndjsgof+y8
+ PjuLLtAIB6ZoKCYxhWWWWARBW6r8eWL0dW48vsLMceES8=
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH v2] cfi: Use __builtin_function_start
+From:   Sami Tolvanen <samitolvanen@google.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Sami Tolvanen <samitolvanen@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 10:46:14AM -0700, Ben Gardon wrote:
-> Currently elf_load loads code into memslot 0. Add a parameter to allow
-> loading code into any memslot. This will be useful for backing code
-> pages with huge pages in future commits.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Ben Gardon <bgardon@google.com>
-> ---
->  .../testing/selftests/kvm/include/kvm_util_base.h  |  5 +++++
->  tools/testing/selftests/kvm/lib/elf.c              | 13 +++++++++++--
->  tools/testing/selftests/kvm/lib/kvm_util.c         | 14 ++++++++++----
->  3 files changed, 26 insertions(+), 6 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index 78c4407f36b4..72163ba2f878 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -122,7 +122,10 @@ uint32_t kvm_vm_reset_dirty_ring(struct kvm_vm *vm);
->  int kvm_memcmp_hva_gva(void *hva, struct kvm_vm *vm, const vm_vaddr_t gva,
->  		       size_t len);
->  
-> +void kvm_vm_elf_load_memslot(struct kvm_vm *vm, const char *filename,
-> +			     uint32_t memslot);
->  void kvm_vm_elf_load(struct kvm_vm *vm, const char *filename);
-> +
->  int kvm_memfd_alloc(size_t size, bool hugepages);
->  
->  void vm_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent);
-> @@ -169,6 +172,8 @@ void vm_mem_region_set_flags(struct kvm_vm *vm, uint32_t slot, uint32_t flags);
->  void vm_mem_region_move(struct kvm_vm *vm, uint32_t slot, uint64_t new_gpa);
->  void vm_mem_region_delete(struct kvm_vm *vm, uint32_t slot);
->  void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid);
-> +vm_vaddr_t vm_vaddr_alloc_memslot(struct kvm_vm *vm, size_t sz,
-> +				  vm_vaddr_t vaddr_min, uint32_t memslot);
->  vm_vaddr_t vm_vaddr_alloc(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min);
->  vm_vaddr_t vm_vaddr_alloc_pages(struct kvm_vm *vm, int nr_pages);
->  vm_vaddr_t vm_vaddr_alloc_page(struct kvm_vm *vm);
-> diff --git a/tools/testing/selftests/kvm/lib/elf.c b/tools/testing/selftests/kvm/lib/elf.c
-> index 13e8e3dcf984..899418e65f60 100644
-> --- a/tools/testing/selftests/kvm/lib/elf.c
-> +++ b/tools/testing/selftests/kvm/lib/elf.c
-> @@ -97,6 +97,7 @@ static void elfhdr_get(const char *filename, Elf64_Ehdr *hdrp)
->   *
->   * Input Args:
->   *   filename - Path to ELF file
-> + *   memslot - the memslot into which the elf should be loaded
->   *
->   * Output Args: None
->   *
-> @@ -111,7 +112,8 @@ static void elfhdr_get(const char *filename, Elf64_Ehdr *hdrp)
->   * by the image and it needs to have sufficient available physical pages, to
->   * back the virtual pages used to load the image.
->   */
-> -void kvm_vm_elf_load(struct kvm_vm *vm, const char *filename)
-> +void kvm_vm_elf_load_memslot(struct kvm_vm *vm, const char *filename,
-> +			     uint32_t memslot)
+Clang 14 added support for the __builtin_function_start function,
+which allows us to implement the function_nocfi macro without
+architecture-specific inline assembly and in a way that also works
+with static initializers.
 
-Feedback I've gotten in the past for kernel code and selftests is to
-just use double-underscores (i.e. __kvm_vm_elf_load()) for situations
-like this, rather than trying to encode the extra parameters in the
-function name.
+Change CONFIG_CFI_CLANG to depend on Clang >=3D 14, define
+function_nocfi using __builtin_function_start, and remove the arm64
+inline assembly implementation.
 
->  {
->  	off_t offset, offset_rv;
->  	Elf64_Ehdr hdr;
-> @@ -162,7 +164,9 @@ void kvm_vm_elf_load(struct kvm_vm *vm, const char *filename)
->  		seg_vend |= vm->page_size - 1;
->  		size_t seg_size = seg_vend - seg_vstart + 1;
->  
-> -		vm_vaddr_t vaddr = vm_vaddr_alloc(vm, seg_size, seg_vstart);
-> +		vm_vaddr_t vaddr = vm_vaddr_alloc_memslot(vm, seg_size,
-> +							  seg_vstart,
-> +							  memslot);
->  		TEST_ASSERT(vaddr == seg_vstart, "Unable to allocate "
->  			"virtual memory for segment at requested min addr,\n"
->  			"  segment idx: %u\n"
-> @@ -191,3 +195,8 @@ void kvm_vm_elf_load(struct kvm_vm *vm, const char *filename)
->  		}
->  	}
->  }
-> +
-> +void kvm_vm_elf_load(struct kvm_vm *vm, const char *filename)
-> +{
-> +	kvm_vm_elf_load_memslot(vm, filename, 0);
-> +}
-> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> index 9c4574381daa..09742a787546 100644
-> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> @@ -1336,8 +1336,7 @@ static vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz,
->   *   vm - Virtual Machine
->   *   sz - Size in bytes
->   *   vaddr_min - Minimum starting virtual address
-> - *   data_memslot - Memory region slot for data pages
-> - *   pgd_memslot - Memory region slot for new virtual translation tables
-> + *   memslot - Memory region slot for data pages
->   *
->   * Output Args: None
->   *
-> @@ -1350,13 +1349,15 @@ static vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz,
->   * a unique set of pages, with the minimum real allocation being at least
->   * a page.
->   */
-> -vm_vaddr_t vm_vaddr_alloc(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min)
-> +vm_vaddr_t vm_vaddr_alloc_memslot(struct kvm_vm *vm, size_t sz,
-> +				  vm_vaddr_t vaddr_min, uint32_t memslot)
+Link: https://github.com/llvm/llvm-project/commit/ec2e26eaf63558934f5b73a6e=
+530edc453cf9508
+Link: https://github.com/ClangBuiltLinux/linux/issues/1353
+Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-by: Mark Rutland <mark.rutland@arm.com>
+Tested-by: Mark Rutland <mark.rutland@arm.com>
+Acked-by: Will Deacon <will@kernel.org> # arm64
+---
+v2:
+- Changed CFI_CLANG to depend on Clang 14 instead of
+  __builtin_function_start.
+- Squashed all three patches into one.
 
-Same feedback here; use __vm_vaddr_alloc().
+---
+ arch/Kconfig                      |  5 +----
+ arch/arm64/include/asm/compiler.h | 16 ----------------
+ include/linux/compiler-clang.h    | 10 ++++++++++
+ 3 files changed, 11 insertions(+), 20 deletions(-)
 
->  {
->  	uint64_t pages = (sz >> vm->page_shift) + ((sz % vm->page_size) != 0);
->  
->  	virt_pgd_alloc(vm);
->  	vm_paddr_t paddr = vm_phy_pages_alloc(vm, pages,
-> -					      KVM_UTIL_MIN_PFN * vm->page_size, 0);
-> +					      KVM_UTIL_MIN_PFN * vm->page_size,
-> +					      memslot);
->  
->  	/*
->  	 * Find an unused range of virtual page addresses of at least
-> @@ -1377,6 +1378,11 @@ vm_vaddr_t vm_vaddr_alloc(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min)
->  	return vaddr_start;
->  }
->  
-> +vm_vaddr_t vm_vaddr_alloc(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min)
-> +{
-> +	return vm_vaddr_alloc_memslot(vm, sz, vaddr_min, 0);
-> +}
-> +
->  /*
->   * VM Virtual Address Allocate Pages
->   *
-> -- 
-> 2.35.1.1021.g381101b075-goog
-> 
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 29b0167c088b..c1627bce4a3a 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -723,10 +723,7 @@ config ARCH_SUPPORTS_CFI_CLANG
+ config CFI_CLANG
+ 	bool "Use Clang's Control Flow Integrity (CFI)"
+ 	depends on LTO_CLANG && ARCH_SUPPORTS_CFI_CLANG
+-	# Clang >=3D 12:
+-	# - https://bugs.llvm.org/show_bug.cgi?id=3D46258
+-	# - https://bugs.llvm.org/show_bug.cgi?id=3D47479
+-	depends on CLANG_VERSION >=3D 120000
++	depends on CLANG_VERSION >=3D 140000
+ 	select KALLSYMS
+ 	help
+ 	  This option enables Clang=E2=80=99s forward-edge Control Flow Integrity
+diff --git a/arch/arm64/include/asm/compiler.h b/arch/arm64/include/asm/com=
+piler.h
+index dc3ea4080e2e..6fb2e6bcc392 100644
+--- a/arch/arm64/include/asm/compiler.h
++++ b/arch/arm64/include/asm/compiler.h
+@@ -23,20 +23,4 @@
+ #define __builtin_return_address(val)					\
+ 	(void *)(ptrauth_clear_pac((unsigned long)__builtin_return_address(val)))
+=20
+-#ifdef CONFIG_CFI_CLANG
+-/*
+- * With CONFIG_CFI_CLANG, the compiler replaces function address
+- * references with the address of the function's CFI jump table
+- * entry. The function_nocfi macro always returns the address of the
+- * actual function instead.
+- */
+-#define function_nocfi(x) ({						\
+-	void *addr;							\
+-	asm("adrp %0, " __stringify(x) "\n\t"				\
+-	    "add  %0, %0, :lo12:" __stringify(x)			\
+-	    : "=3Dr" (addr));						\
+-	addr;								\
+-})
+-#endif
+-
+ #endif /* __ASM_COMPILER_H */
+diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.=
+h
+index babb1347148c..c84fec767445 100644
+--- a/include/linux/compiler-clang.h
++++ b/include/linux/compiler-clang.h
+@@ -69,6 +69,16 @@
+ #define __nocfi		__attribute__((__no_sanitize__("cfi")))
+ #define __cficanonical	__attribute__((__cfi_canonical_jump_table__))
+=20
++#if defined(CONFIG_CFI_CLANG)
++/*
++ * With CONFIG_CFI_CLANG, the compiler replaces function address
++ * references with the address of the function's CFI jump table
++ * entry. The function_nocfi macro always returns the address of the
++ * actual function instead.
++ */
++#define function_nocfi(x)	__builtin_function_start(x)
++#endif
++
+ /*
+  * Turn individual warnings and errors on and off locally, depending
+  * on version.
+--=20
+2.35.1.1094.g7c7d902a7c-goog
+
