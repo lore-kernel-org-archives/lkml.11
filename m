@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F2CC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DF2C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383822AbiDEM0b (ORCPT
+        id S1383729AbiDEM0W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        Tue, 5 Apr 2022 08:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240936AbiDEIsR (ORCPT
+        with ESMTP id S245161AbiDEIyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:17 -0400
+        Tue, 5 Apr 2022 04:54:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9930327B1E;
-        Tue,  5 Apr 2022 01:36:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171A9BE4;
+        Tue,  5 Apr 2022 01:51:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACB9E61540;
-        Tue,  5 Apr 2022 08:36:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE35BC385A4;
-        Tue,  5 Apr 2022 08:36:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7CFA61504;
+        Tue,  5 Apr 2022 08:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5064C385A1;
+        Tue,  5 Apr 2022 08:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147778;
-        bh=YZdqkHxdou06xEwB5O8wkX6sBT8EGjd1hPU579OKop8=;
+        s=korg; t=1649148701;
+        bh=ksj7NaMP7Eh/EV7FFmcfWjOot3c2gY7+vG8k34T7j4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=09AgoInte2gpBfjbn/ljy08/M8XtAjzBK3+tdc6I/8Le16Htm6RpCU3QNhJox2KRb
-         Xsk4fSKIDEWR4350fVnEkmsontbsro18fd9Tc0hLrdso0BjyjwFKHku2Y/EWIBO6GV
-         YYeBA6twWYWcawLlSY4m6rm4iQVcWlF9fa3lnwj4=
+        b=qkcbWWedk4Hndh8cy5qlrCGeG+mb5uQbBL6WUHOyH7bgtU2+6SCHbyaCTrtcnkryE
+         PjZpAZJ+GenAOpfh9aKCfIihXRc6+Nzc2tJGo/foEuBrQ0Wl1xhfdqL/h/b+rgPUCv
+         4ciDBFhVtB5ZPgiZThTZo6BGLhV9L/7hKUtcC/OA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.16 0069/1017] NFSD: prevent integer overflow on 32 bit systems
-Date:   Tue,  5 Apr 2022 09:16:22 +0200
-Message-Id: <20220405070356.238304577@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0450/1017] powerpc/perf: Dont use perf_hw_context for trace IMC PMU
+Date:   Tue,  5 Apr 2022 09:22:43 +0200
+Message-Id: <20220405070407.656770484@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,31 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-commit 23a9dbbe0faf124fc4c139615633b9d12a3a89ef upstream.
+[ Upstream commit 0198322379c25215b2778482bf1221743a76e2b5 ]
 
-On a 32 bit system, the "len * sizeof(*p)" operation can have an
-integer overflow.
+Trace IMC (In-Memory collection counters) in powerpc is useful for
+application level profiling.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For trace_imc, presently task context (task_ctx_nr) is set to
+perf_hw_context. But perf_hw_context should only be used for CPU PMU.
+See commit 26657848502b ("perf/core: Verify we have a single
+perf_hw_context PMU").
+
+So for trace_imc, even though it is per thread PMU, it is preferred to
+use sw_context in order to be able to do application level monitoring.
+Hence change the task_ctx_nr to use perf_sw_context.
+
+Fixes: 012ae244845f ("powerpc/perf: Trace imc PMU functions")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
+[mpe: Update subject & incorporate notes into change log, reflow comment]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220202041837.65968-1-atrajeev@linux.vnet.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sunrpc/xdr.h |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/perf/imc-pmu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/include/linux/sunrpc/xdr.h
-+++ b/include/linux/sunrpc/xdr.h
-@@ -731,6 +731,8 @@ xdr_stream_decode_uint32_array(struct xd
+diff --git a/arch/powerpc/perf/imc-pmu.c b/arch/powerpc/perf/imc-pmu.c
+index e106909ff9c3..e7583fbcc8fa 100644
+--- a/arch/powerpc/perf/imc-pmu.c
++++ b/arch/powerpc/perf/imc-pmu.c
+@@ -1457,7 +1457,11 @@ static int trace_imc_event_init(struct perf_event *event)
  
- 	if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
- 		return -EBADMSG;
-+	if (len > SIZE_MAX / sizeof(*p))
-+		return -EBADMSG;
- 	p = xdr_inline_decode(xdr, len * sizeof(*p));
- 	if (unlikely(!p))
- 		return -EBADMSG;
+ 	event->hw.idx = -1;
+ 
+-	event->pmu->task_ctx_nr = perf_hw_context;
++	/*
++	 * There can only be a single PMU for perf_hw_context events which is assigned to
++	 * core PMU. Hence use "perf_sw_context" for trace_imc.
++	 */
++	event->pmu->task_ctx_nr = perf_sw_context;
+ 	event->destroy = reset_global_refc;
+ 	return 0;
+ }
+-- 
+2.34.1
+
 
 
