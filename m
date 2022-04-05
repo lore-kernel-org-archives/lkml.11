@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9077BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC8CC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345731AbiDEJny (ORCPT
+        id S1345790AbiDEJoE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
+        Tue, 5 Apr 2022 05:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239600AbiDEIUP (ORCPT
+        with ESMTP id S239644AbiDEIUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:15 -0400
+        Tue, 5 Apr 2022 04:20:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AEC83;
-        Tue,  5 Apr 2022 01:17:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F47254;
+        Tue,  5 Apr 2022 01:18:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9394B81BB2;
-        Tue,  5 Apr 2022 08:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22650C385A1;
-        Tue,  5 Apr 2022 08:17:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96EB0B81A37;
+        Tue,  5 Apr 2022 08:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 072F8C385A1;
+        Tue,  5 Apr 2022 08:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146629;
-        bh=3KGFa6EC32xjqdgLhOOEcMv8VXMCN8d2FHi3RO5nQi4=;
+        s=korg; t=1649146684;
+        bh=GH4tvnJqzHy/GV+ENS19CUUuBijp1Yt8XgYpVSEgxSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K30RS9orHTn9vFLpPPhw5nkiFmcumWemH7adAwikgpvgooT4380kxTgMYTdA85Bq1
-         qRHvkZC6xJVtjjAd68LYLxUNIyRca+F5JV6HHg/QdqAdMFV3r+QedADyasQnSPfIqB
-         z+/nNHOyNTjAWpQ0gE7K/FP7twVqap5Ftv4Tolv4=
+        b=QMQMq7uOEpCuS/KmY7+LSYS0e8hG0OvdUC64o6EVDm8BzwapikvftY/OmPitSmkhT
+         M2roc5VpBiHluFU4yTrF1faQol3pUTebSED1XcxnsMZXQGzQ5cezcTYJHyZAKs9Dpr
+         dFbK+LBB6fZIvXYBdFZO2homaDoMEKKcrY9CCug8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fedor Pchelkin <aissur0002@gmail.com>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Christian Brauner <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.17 0832/1126] fs: fix fd table size alignment properly
-Date:   Tue,  5 Apr 2022 09:26:19 +0200
-Message-Id: <20220405070431.979689181@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0852/1126] Fix incorrect type in assignment of ipv6 port for audit
+Date:   Tue,  5 Apr 2022 09:26:39 +0200
+Message-Id: <20220405070432.554730668@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,53 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-[ Upstream commit d888c83fcec75194a8a48ccd283953bdba7b2550 ]
+[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
 
-Jason Donenfeld reports that my commit 1c24a186398f ("fs: fd tables have
-to be multiples of BITS_PER_LONG") doesn't work, and the reason is an
-embarrassing brown-paper-bag bug.
+Remove inappropriate use of ntohs() and assign the
+port value directly.
 
-Yes, we want to align the number of fds to BITS_PER_LONG, and yes, the
-reason they might not be aligned is because the incoming 'max_fd'
-argument might not be aligned.
-
-But aligining the argument - while simple - will cause a "infinitely
-big" maxfd (eg NR_OPEN_MAX) to just overflow to zero.  Which most
-definitely isn't what we want either.
-
-The obvious fix was always just to do the alignment last, but I had
-moved it earlier just to make the patch smaller and the code look
-simpler.  Duh.  It certainly made _me_ look simple.
-
-Fixes: 1c24a186398f ("fs: fd tables have to be multiples of BITS_PER_LONG")
-Reported-and-tested-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: Fedor Pchelkin <aissur0002@gmail.com>
-Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Cc: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/file.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ security/smack/smack_lsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/file.c b/fs/file.c
-index c01c29417ae6..ee9317346702 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -303,10 +303,9 @@ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
- 	unsigned int count;
- 
- 	count = count_open_files(fdt);
--	max_fds = ALIGN(max_fds, BITS_PER_LONG);
- 	if (max_fds < NR_OPEN_DEFAULT)
- 		max_fds = NR_OPEN_DEFAULT;
--	return min(count, max_fds);
-+	return ALIGN(min(count, max_fds), BITS_PER_LONG);
- }
- 
- /*
+diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
+index 14b279cc75c9..6207762dbdb1 100644
+--- a/security/smack/smack_lsm.c
++++ b/security/smack/smack_lsm.c
+@@ -2510,7 +2510,7 @@ static int smk_ipv6_check(struct smack_known *subject,
+ #ifdef CONFIG_AUDIT
+ 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
+ 	ad.a.u.net->family = PF_INET6;
+-	ad.a.u.net->dport = ntohs(address->sin6_port);
++	ad.a.u.net->dport = address->sin6_port;
+ 	if (act == SMK_RECEIVING)
+ 		ad.a.u.net->v6info.saddr = address->sin6_addr;
+ 	else
 -- 
 2.34.1
 
