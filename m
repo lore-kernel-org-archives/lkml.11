@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6398C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 945BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388168AbiDEOdO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
+        id S234516AbiDEOed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238890AbiDEJdC (ORCPT
+        with ESMTP id S238726AbiDEJcj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4397E22;
-        Tue,  5 Apr 2022 02:20:31 -0700 (PDT)
+        Tue, 5 Apr 2022 05:32:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECF5F4C;
+        Tue,  5 Apr 2022 02:19:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FD88B81B75;
-        Tue,  5 Apr 2022 09:20:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC10BC385A0;
-        Tue,  5 Apr 2022 09:20:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8E0EB81B14;
+        Tue,  5 Apr 2022 09:19:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0FC1C385A2;
+        Tue,  5 Apr 2022 09:19:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150429;
-        bh=1VBBbhxbPqgOccqe/3AVFKFROwjjGJwCABhf+k4mAfs=;
+        s=korg; t=1649150390;
+        bh=u8cclAT3USm2ckXvRzJKzZhIhuNCejG+lU+PnBp3YA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nU5NKpLG4r+NYXksfdmBRjHmUzzHpO7CuiEgCiXU/4AxpWqQJzY9MI4U2qBK/mG/e
-         SEwebO80/+i+9JY21+YcVSdjvVJW3ogBB7W5lDdGZHA76GCUuNLonTrrpQM+kfrNfI
-         N1RJ8a1urtQ+6iK66JV8AO+iW72BU6dT/6cuXnJA=
+        b=bCjtr0cucKFAjJ5iOZO9Lqaf4MuGsaaisMkpUMI8MVe2szrZ7rK1qpYPsifmTPfUa
+         iwB1ubFxveXrdtmFycmRUpUmTOihdXQH9iNWF8iVl0BbGDcZC1dXs+JeUqhJTgcTiJ
+         W29x/6uApjfZTbFedCfuJBN+MUOYaa6QMpFHlPJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 053/913] cifs: fix handlecache and multiuser
-Date:   Tue,  5 Apr 2022 09:18:35 +0200
-Message-Id: <20220405070341.410072988@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Tomas Winkler <tomas.winkler@intel.com>
+Subject: [PATCH 5.15 039/913] mei: avoid iterator usage outside of list_for_each_entry
+Date:   Tue,  5 Apr 2022 09:18:21 +0200
+Message-Id: <20220405070340.989545773@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,80 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Alexander Usyskin <alexander.usyskin@intel.com>
 
-commit 47178c7722ac528ea08aa82c3ef9ffa178962d7a upstream.
+commit c10187b1c5ebb8681ca467ab7b0ded5ea415d258 upstream.
 
-In multiuser each individual user has their own tcon structure for the
-share and thus their own handle for a cached directory.
-When we umount such a share we much make sure to release the pinned down dentry
-for each such tcon and not just the master tcon.
+Usage of the iterator outside of the list_for_each_entry
+is considered harmful. https://lkml.org/lkml/2022/2/17/1032
 
-Otherwise we will get nasty warnings on umount that dentries are still in use:
-[ 3459.590047] BUG: Dentry 00000000115c6f41{i=12000000019d95,n=/}  still in use\
- (2) [unmount of cifs cifs]
-...
-[ 3459.590492] Call Trace:
-[ 3459.590500]  d_walk+0x61/0x2a0
-[ 3459.590518]  ? shrink_lock_dentry.part.0+0xe0/0xe0
-[ 3459.590526]  shrink_dcache_for_umount+0x49/0x110
-[ 3459.590535]  generic_shutdown_super+0x1a/0x110
-[ 3459.590542]  kill_anon_super+0x14/0x30
-[ 3459.590549]  cifs_kill_sb+0xf5/0x104 [cifs]
-[ 3459.590773]  deactivate_locked_super+0x36/0xa0
-[ 3459.590782]  cleanup_mnt+0x131/0x190
-[ 3459.590789]  task_work_run+0x5c/0x90
-[ 3459.590798]  exit_to_user_mode_loop+0x151/0x160
-[ 3459.590809]  exit_to_user_mode_prepare+0x83/0xd0
-[ 3459.590818]  syscall_exit_to_user_mode+0x12/0x30
-[ 3459.590828]  do_syscall_64+0x48/0x90
-[ 3459.590833]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+Do not reference the loop variable outside of the loop,
+by rearranging the orders of execution.
+Instead of performing search loop and checking outside the loop
+if the end of the list was hit and no matching element was found,
+the execution is performed inside the loop upon a successful match
+followed by a goto statement to the next step,
+therefore no condition has to be performed after the loop has ended.
 
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Cc: stable@vger.kernel.org
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Link: https://lore.kernel.org/r/20220308095926.300412-1-tomas.winkler@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/cifsfs.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/misc/mei/interrupt.c |   35 +++++++++++++++--------------------
+ 1 file changed, 15 insertions(+), 20 deletions(-)
 
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -254,6 +254,9 @@ static void cifs_kill_sb(struct super_bl
- 	struct cifs_sb_info *cifs_sb = CIFS_SB(sb);
- 	struct cifs_tcon *tcon;
- 	struct cached_fid *cfid;
-+	struct rb_root *root = &cifs_sb->tlink_tree;
-+	struct rb_node *node;
-+	struct tcon_link *tlink;
- 
- 	/*
- 	 * We ned to release all dentries for the cached directories
-@@ -263,17 +266,21 @@ static void cifs_kill_sb(struct super_bl
- 		dput(cifs_sb->root);
- 		cifs_sb->root = NULL;
- 	}
--	tcon = cifs_sb_master_tcon(cifs_sb);
--	if (tcon) {
-+	spin_lock(&cifs_sb->tlink_tree_lock);
-+	node = rb_first(root);
-+	while (node != NULL) {
-+		tlink = rb_entry(node, struct tcon_link, tl_rbnode);
-+		tcon = tlink_tcon(tlink);
- 		cfid = &tcon->crfid;
- 		mutex_lock(&cfid->fid_mutex);
- 		if (cfid->dentry) {
--
- 			dput(cfid->dentry);
- 			cfid->dentry = NULL;
+--- a/drivers/misc/mei/interrupt.c
++++ b/drivers/misc/mei/interrupt.c
+@@ -424,31 +424,26 @@ int mei_irq_read_handler(struct mei_devi
+ 	list_for_each_entry(cl, &dev->file_list, link) {
+ 		if (mei_cl_hbm_equal(cl, mei_hdr)) {
+ 			cl_dbg(dev, cl, "got a message\n");
+-			break;
++			ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
++			goto reset_slots;
  		}
- 		mutex_unlock(&cfid->fid_mutex);
-+		node = rb_next(node);
  	}
-+	spin_unlock(&cifs_sb->tlink_tree_lock);
  
- 	kill_anon_super(sb);
- 	cifs_umount(cifs_sb);
+ 	/* if no recipient cl was found we assume corrupted header */
+-	if (&cl->link == &dev->file_list) {
+-		/* A message for not connected fixed address clients
+-		 * should be silently discarded
+-		 * On power down client may be force cleaned,
+-		 * silently discard such messages
+-		 */
+-		if (hdr_is_fixed(mei_hdr) ||
+-		    dev->dev_state == MEI_DEV_POWER_DOWN) {
+-			mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
+-			ret = 0;
+-			goto reset_slots;
+-		}
+-		dev_err(dev->dev, "no destination client found 0x%08X\n",
+-				dev->rd_msg_hdr[0]);
+-		ret = -EBADMSG;
+-		goto end;
++	/* A message for not connected fixed address clients
++	 * should be silently discarded
++	 * On power down client may be force cleaned,
++	 * silently discard such messages
++	 */
++	if (hdr_is_fixed(mei_hdr) ||
++	    dev->dev_state == MEI_DEV_POWER_DOWN) {
++		mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
++		ret = 0;
++		goto reset_slots;
+ 	}
+-
+-	ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
+-
++	dev_err(dev->dev, "no destination client found 0x%08X\n", dev->rd_msg_hdr[0]);
++	ret = -EBADMSG;
++	goto end;
+ 
+ reset_slots:
+ 	/* reset the number of slots and header */
 
 
