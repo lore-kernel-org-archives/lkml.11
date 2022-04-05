@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9C7C352AA
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D24A5C47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236115AbiDEIB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
+        id S235819AbiDEIAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232841AbiDEHvn (ORCPT
+        with ESMTP id S232086AbiDEHso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C61985B5;
-        Tue,  5 Apr 2022 00:47:55 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B302B7;
+        Tue,  5 Apr 2022 00:46:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFB79616C3;
-        Tue,  5 Apr 2022 07:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C36E6C340EE;
-        Tue,  5 Apr 2022 07:47:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAA88B81B98;
+        Tue,  5 Apr 2022 07:46:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40EA1C34110;
+        Tue,  5 Apr 2022 07:46:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144874;
-        bh=9O4WwJcVZHyVCNAhD625hdBxv0ETQ7GrIEIGwSSzUAo=;
+        s=korg; t=1649144799;
+        bh=4ZYE+YnlX6ZXr0Mpn8C8QagEhJ13qfYl0HC5aYEyi4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ET7iX/+20OLgd0mEwSYPnP+hRX/w0Kw+t2wZI3oPOfrRhmL8mZE9lc/v0TpqBTjSL
-         cSSI/1KllBw5VR6agf3JeW5C8BE6vpZu+bQCSish4St+WTqe29k7d24VxIkri/Gg+f
-         bG/rBils1b8WWB82g67z3iXXmqaXjdrSVSK+FHB0=
+        b=sKx8oF5RDBqyyuJUF6BiF472rjxZeoae35hnvcTc5T4c8n9Nu2KPRx8BX9W/2pZpj
+         PU4joH3jhZlP+bQOVK4p7Dx5T6E6ANTOuoYg1jOGGmDaL7NfNFTVJKxJeD0N4JDY1e
+         gSMkbPGh8fzeYzefQjonSVs2SoFg81YxcEWrFXkg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0202/1126] crypto: qat - fix a signedness bug in get_service_enabled()
-Date:   Tue,  5 Apr 2022 09:15:49 +0200
-Message-Id: <20220405070413.535798562@linuxfoundation.org>
+        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
+        Johan Hovold <johan@kernel.org>,
+        Lad Prabhakar <prabhakar.csengg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.17 0174/1126] media: davinci: vpif: fix use-after-free on driver unbind
+Date:   Tue,  5 Apr 2022 09:15:21 +0200
+Message-Id: <20220405070412.708721579@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,37 +51,183 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 844318dfd31f7c99f6cebbdba5d6f8392c4c115c ]
+commit 43acb728bbc40169d2e2425e84a80068270974be upstream.
 
-The "ret" variable needs to be signed or there is an error message which
-will not be printed correctly.
+The driver allocates and registers two platform device structures during
+probe, but the devices were never deregistered on driver unbind.
 
-Fixes: 0cec19c761e5 ("crypto: qat - add support for compression for 4xxx")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This results in a use-after-free on driver unbind as the device
+structures were allocated using devres and would be freed by driver
+core when remove() returns.
+
+Fix this by adding the missing deregistration calls to the remove()
+callback and failing probe on registration errors.
+
+Note that the platform device structures must be freed using a proper
+release callback to avoid leaking associated resources like device
+names.
+
+Fixes: 479f7a118105 ("[media] davinci: vpif: adaptions for DT support")
+Cc: stable@vger.kernel.org      # 4.12
+Cc: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Lad Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/davinci/vpif.c |   97 ++++++++++++++++++++++++----------
+ 1 file changed, 71 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c b/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
-index 6d10edc40aca..68d39c833332 100644
---- a/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
-+++ b/drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c
-@@ -52,7 +52,7 @@ static const char *const dev_cfg_services[] = {
- static int get_service_enabled(struct adf_accel_dev *accel_dev)
- {
- 	char services[ADF_CFG_MAX_VAL_LEN_IN_BYTES] = {0};
--	u32 ret;
-+	int ret;
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -41,6 +41,11 @@ MODULE_ALIAS("platform:" VPIF_DRIVER_NAM
+ #define VPIF_CH2_MAX_MODES	15
+ #define VPIF_CH3_MAX_MODES	2
  
- 	ret = adf_cfg_get_param_value(accel_dev, ADF_GENERAL_SEC,
- 				      ADF_SERVICES_ENABLED, services);
--- 
-2.34.1
-
++struct vpif_data {
++	struct platform_device *capture;
++	struct platform_device *display;
++};
++
+ DEFINE_SPINLOCK(vpif_lock);
+ EXPORT_SYMBOL_GPL(vpif_lock);
+ 
+@@ -423,17 +428,31 @@ int vpif_channel_getfid(u8 channel_id)
+ }
+ EXPORT_SYMBOL(vpif_channel_getfid);
+ 
++static void vpif_pdev_release(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++
++	kfree(pdev);
++}
++
+ static int vpif_probe(struct platform_device *pdev)
+ {
+ 	static struct resource *res_irq;
+ 	struct platform_device *pdev_capture, *pdev_display;
+ 	struct device_node *endpoint = NULL;
++	struct vpif_data *data;
+ 	int ret;
+ 
+ 	vpif_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(vpif_base))
+ 		return PTR_ERR(vpif_base);
+ 
++	data = kzalloc(sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, data);
++
+ 	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_get(&pdev->dev);
+ 
+@@ -461,49 +480,75 @@ static int vpif_probe(struct platform_de
+ 		goto err_put_rpm;
+ 	}
+ 
+-	pdev_capture = devm_kzalloc(&pdev->dev, sizeof(*pdev_capture),
+-				    GFP_KERNEL);
+-	if (pdev_capture) {
+-		pdev_capture->name = "vpif_capture";
+-		pdev_capture->id = -1;
+-		pdev_capture->resource = res_irq;
+-		pdev_capture->num_resources = 1;
+-		pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
+-		pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
+-		pdev_capture->dev.parent = &pdev->dev;
+-		platform_device_register(pdev_capture);
+-	} else {
+-		dev_warn(&pdev->dev, "Unable to allocate memory for pdev_capture.\n");
++	pdev_capture = kzalloc(sizeof(*pdev_capture), GFP_KERNEL);
++	if (!pdev_capture) {
++		ret = -ENOMEM;
++		goto err_put_rpm;
+ 	}
+ 
+-	pdev_display = devm_kzalloc(&pdev->dev, sizeof(*pdev_display),
+-				    GFP_KERNEL);
+-	if (pdev_display) {
+-		pdev_display->name = "vpif_display";
+-		pdev_display->id = -1;
+-		pdev_display->resource = res_irq;
+-		pdev_display->num_resources = 1;
+-		pdev_display->dev.dma_mask = pdev->dev.dma_mask;
+-		pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
+-		pdev_display->dev.parent = &pdev->dev;
+-		platform_device_register(pdev_display);
+-	} else {
+-		dev_warn(&pdev->dev, "Unable to allocate memory for pdev_display.\n");
++	pdev_capture->name = "vpif_capture";
++	pdev_capture->id = -1;
++	pdev_capture->resource = res_irq;
++	pdev_capture->num_resources = 1;
++	pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
++	pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
++	pdev_capture->dev.parent = &pdev->dev;
++	pdev_capture->dev.release = vpif_pdev_release;
++
++	ret = platform_device_register(pdev_capture);
++	if (ret)
++		goto err_put_pdev_capture;
++
++	pdev_display = kzalloc(sizeof(*pdev_display), GFP_KERNEL);
++	if (!pdev_display) {
++		ret = -ENOMEM;
++		goto err_put_pdev_capture;
+ 	}
+ 
++	pdev_display->name = "vpif_display";
++	pdev_display->id = -1;
++	pdev_display->resource = res_irq;
++	pdev_display->num_resources = 1;
++	pdev_display->dev.dma_mask = pdev->dev.dma_mask;
++	pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
++	pdev_display->dev.parent = &pdev->dev;
++	pdev_display->dev.release = vpif_pdev_release;
++
++	ret = platform_device_register(pdev_display);
++	if (ret)
++		goto err_put_pdev_display;
++
++	data->capture = pdev_capture;
++	data->display = pdev_display;
++
+ 	return 0;
+ 
++err_put_pdev_display:
++	platform_device_put(pdev_display);
++err_put_pdev_capture:
++	platform_device_put(pdev_capture);
+ err_put_rpm:
+ 	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
++	kfree(data);
+ 
+ 	return ret;
+ }
+ 
+ static int vpif_remove(struct platform_device *pdev)
+ {
++	struct vpif_data *data = platform_get_drvdata(pdev);
++
++	if (data->capture)
++		platform_device_unregister(data->capture);
++	if (data->display)
++		platform_device_unregister(data->display);
++
+ 	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
++
++	kfree(data);
++
+ 	return 0;
+ }
+ 
 
 
