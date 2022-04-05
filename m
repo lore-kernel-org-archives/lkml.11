@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 716CCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C914C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345395AbiDEKlP (ORCPT
+        id S1345265AbiDEKk5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
+        Tue, 5 Apr 2022 06:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240354AbiDEIby (ORCPT
+        with ESMTP id S238734AbiDEIa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8976FA21;
-        Tue,  5 Apr 2022 01:24:21 -0700 (PDT)
+        Tue, 5 Apr 2022 04:30:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99BCE0B0;
+        Tue,  5 Apr 2022 01:22:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B9FC60FFB;
-        Tue,  5 Apr 2022 08:24:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61EF0C385A0;
-        Tue,  5 Apr 2022 08:24:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8138FB81BAF;
+        Tue,  5 Apr 2022 08:22:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E015BC385A0;
+        Tue,  5 Apr 2022 08:22:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147045;
-        bh=gKjV3QLPv6TeU0BZhoxIGrkmjtEcGY8pEsjKlh+Y7xY=;
+        s=korg; t=1649146963;
+        bh=ppawhTxMMMVcV1N7BeWGj9uOleWrybjfaO/20N1Ey08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fMmmA1kbMLWccjQJkW4E2Ci/gZHkrt96z7JRKv77cbYrlQjIMY6muNThVnFj+Bofp
-         mc4hiROlnChCbe8BcjeMhd7aDIQAVyw4FXjk1MW6RjnT5T73MO9vjXk9n2comORmMc
-         Wnzv6I4Ny7sX7x7OFghtdzsJLyLBiRpwHPAk54EQ=
+        b=DolGDmwQtqbe9xtqg9ruOr/7ZhWzWjhnZ4UdJvgbx5dXI1fXfPIlt28Ohxu9Vpd5t
+         FJHQx/EnfNfYm56Zs1LuIAUtDA+fBSKPJGxl1oarWtm8c3pu5szpbVwsMaYJM3UwKo
+         QBZWZbLCDYQBuxHWrJ5zFXDWrd9xP5JnAIVxSLew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Carnuccio <joe.carnuccio@cavium.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 0982/1126] scsi: qla2xxx: Check for firmware dump already collected
-Date:   Tue,  5 Apr 2022 09:28:49 +0200
-Message-Id: <20220405070436.323124241@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.17 0951/1126] KVM: x86: Reinitialize context if host userspace toggles EFER.LME
+Date:   Tue,  5 Apr 2022 09:28:18 +0200
+Message-Id: <20220405070435.418687174@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,39 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Carnuccio <joe.carnuccio@cavium.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-commit cfbafad7c6032d449a5a07f2d273acd2437bbc6a upstream.
+commit d6174299365ddbbf491620c0b8c5ca1a6ef2eea5 upstream.
 
-While allocating firmware dump, check if dump is already collected and do
-not re-allocate the buffer.
+While the guest runs, EFER.LME cannot change unless CR0.PG is clear, and
+therefore EFER.NX is the only bit that can affect the MMU role.  However,
+set_efer accepts a host-initiated change to EFER.LME even with CR0.PG=1.
+In that case, the MMU has to be reset.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-17-njavali@marvell.com
+Fixes: 11988499e62b ("KVM: x86: Skip EFER vs. guest CPUID checks for host-initiated writes")
 Cc: stable@vger.kernel.org
-Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/x86/kvm/mmu.h |    1 +
+ arch/x86/kvm/x86.c |    3 +--
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -3482,6 +3482,14 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
- 	struct rsp_que *rsp = ha->rsp_q_map[0];
- 	struct qla2xxx_fw_dump *fw_dump;
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -48,6 +48,7 @@
+ 			       X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE)
  
-+	if (ha->fw_dump) {
-+		ql_dbg(ql_dbg_init, vha, 0x00bd,
-+		    "Firmware dump already allocated.\n");
-+		return;
-+	}
-+
-+	ha->fw_dumped = 0;
-+	ha->fw_dump_cap_flags = 0;
- 	dump_size = fixed_size = mem_size = eft_size = fce_size = mq_size = 0;
- 	req_q_size = rsp_q_size = 0;
+ #define KVM_MMU_CR0_ROLE_BITS (X86_CR0_PG | X86_CR0_WP)
++#define KVM_MMU_EFER_ROLE_BITS (EFER_LME | EFER_NX)
  
+ static __always_inline u64 rsvd_bits(int s, int e)
+ {
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -1656,8 +1656,7 @@ static int set_efer(struct kvm_vcpu *vcp
+ 		return r;
+ 	}
+ 
+-	/* Update reserved bits */
+-	if ((efer ^ old_efer) & EFER_NX)
++	if ((efer ^ old_efer) & KVM_MMU_EFER_ROLE_BITS)
+ 		kvm_mmu_reset_context(vcpu);
+ 
+ 	return 0;
 
 
