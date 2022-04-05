@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19593C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0A7C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243848AbiDEM4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
+        id S244617AbiDEM4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243214AbiDEJIu (ORCPT
+        with ESMTP id S243577AbiDEJPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:08:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1439F3A6;
-        Tue,  5 Apr 2022 01:57:47 -0700 (PDT)
+        Tue, 5 Apr 2022 05:15:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79374954B5;
+        Tue,  5 Apr 2022 02:01:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F918B81C77;
-        Tue,  5 Apr 2022 08:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B032EC385A0;
-        Tue,  5 Apr 2022 08:57:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0966461571;
+        Tue,  5 Apr 2022 09:01:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17B4AC385A1;
+        Tue,  5 Apr 2022 09:01:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149065;
-        bh=dDEgLEE+d+dNNd5zKLzfFJYE/4qo9BE4nxHk/OiZzKA=;
+        s=korg; t=1649149286;
+        bh=B4ZcG0QXqpeghTBVKDIRTsP/36gZD9K13i5RowxWSZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=clVY+BKzFrPu44LwKPepLRd1ri9lTo0B4d2+//DTOExn54i0N3scq/uKfE//aPG0c
-         cvRasiJGpTGnuOJwVJfdsbyFnX7OxoRrl1gD1IC+OoZzXZg1NXC/arPHenJ1+HAMwV
-         FnEL5Gt/CNQWPozfHcqPfCjRIZA+/rSubG1ukkBA=
+        b=DSeqaRiTyTuqy2lo7B63LxfFpRSM4oCXxJjpFjpjalXMmaAzjzIPAHuNUB6VoQc3K
+         UJ3VeBfnV1wOr5BxMSjz0AG5Qn/BvZvKXYPG5rCTSpAPpwU37CO6zlBlU6MG5L6euj
+         9hh6ThP8PoVW1pluWufv+hvhkNAXhqmemf8QIwPU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Nageswara R Sastry <rnsastry@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0580/1017] powerpc/64s: Dont use DSISR for SLB faults
-Date:   Tue,  5 Apr 2022 09:24:53 +0200
-Message-Id: <20220405070411.496151286@linuxfoundation.org>
+Subject: [PATCH 5.16 0660/1017] pinctrl: renesas: r8a77470: Reduce size for narrow VIN1 channel
+Date:   Tue,  5 Apr 2022 09:26:13 +0200
+Message-Id: <20220405070413.873755034@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,101 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit d4679ac8ea2e5078704aa1c026db36580cc1bf9a ]
+[ Upstream commit 9e04a0eda84fccab0ac22a33825ad53f47c968c7 ]
 
-Since commit 46ddcb3950a2 ("powerpc/mm: Show if a bad page fault on data
-is read or write.") we use page_fault_is_write(regs->dsisr) in
-__bad_page_fault() to determine if the fault is for a read or write, and
-change the message printed accordingly.
+The second video-in channel on RZ/G1C has only 12 data lanes, but the
+pin control driver uses the vin_data union, which is meant for 24 data
+lanes, thus wasting space.
 
-But SLB faults, aka Data Segment Interrupts, don't set DSISR (Data
-Storage Interrupt Status Register) to a useful value. All ISA versions
-from v2.03 through v3.1 specify that the Data Segment Interrupt sets
-DSISR "to an undefined value". As far as I can see there's no mention of
-SLB faults setting DSISR in any BookIV content either.
+Fix this by using the vin_data12 union instead.
 
-This manifests as accesses that should be a read being incorrectly
-reported as writes, for example, using the xmon "dump" command:
+This reduces kernel size by 96 bytes.
 
-  0:mon> d 0x5deadbeef0000000
-  5deadbeef0000000
-  [359526.415354][    C6] BUG: Unable to handle kernel data access on write at 0x5deadbeef0000000
-  [359526.415611][    C6] Faulting instruction address: 0xc00000000010a300
-  cpu 0x6: Vector: 380 (Data SLB Access) at [c00000000ffbf400]
-      pc: c00000000010a300: mread+0x90/0x190
-
-If we disassemble the PC, we see a load instruction:
-
-  0:mon> di c00000000010a300
-  c00000000010a300 89490000      lbz     r10,0(r9)
-
-We can also see in exceptions-64s.S that the data_access_slb block
-doesn't set IDSISR=1, which means it doesn't load DSISR into pt_regs. So
-the value we're using to determine if the fault is a read/write is some
-stale value in pt_regs from a previous page fault.
-
-Rework the printing logic to separate the SLB fault case out, and only
-print read/write in the cases where we can determine it.
-
-The result looks like eg:
-
-  0:mon> d 0x5deadbeef0000000
-  5deadbeef0000000
-  [  721.779525][    C6] BUG: Unable to handle kernel data access at 0x5deadbeef0000000
-  [  721.779697][    C6] Faulting instruction address: 0xc00000000014cbe0
-  cpu 0x6: Vector: 380 (Data SLB Access) at [c00000000ffbf390]
-
-  0:mon> d 0
-  0000000000000000
-  [  742.793242][    C6] BUG: Kernel NULL pointer dereference at 0x00000000
-  [  742.793316][    C6] Faulting instruction address: 0xc00000000014cbe0
-  cpu 0x6: Vector: 380 (Data SLB Access) at [c00000000ffbf390]
-
-Fixes: 46ddcb3950a2 ("powerpc/mm: Show if a bad page fault on data is read or write.")
-Reported-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Link: https://lore.kernel.org/r/20220222113449.319193-1-mpe@ellerman.id.au
+Fixes: 50f3f2d73e3426ba ("pinctrl: sh-pfc: Reduce kernel size for narrow VIN channels")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/52716fa89139f6f92592633edb52804d4c5e18f0.1640269757.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/fault.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/pinctrl/renesas/pfc-r8a77470.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/mm/fault.c b/arch/powerpc/mm/fault.c
-index a8d0ce85d39a..4a15172dfef2 100644
---- a/arch/powerpc/mm/fault.c
-+++ b/arch/powerpc/mm/fault.c
-@@ -568,18 +568,24 @@ NOKPROBE_SYMBOL(hash__do_page_fault);
- static void __bad_page_fault(struct pt_regs *regs, int sig)
- {
- 	int is_write = page_fault_is_write(regs->dsisr);
-+	const char *msg;
- 
- 	/* kernel has accessed a bad area */
- 
-+	if (regs->dar < PAGE_SIZE)
-+		msg = "Kernel NULL pointer dereference";
-+	else
-+		msg = "Unable to handle kernel data access";
-+
- 	switch (TRAP(regs)) {
- 	case INTERRUPT_DATA_STORAGE:
--	case INTERRUPT_DATA_SEGMENT:
- 	case INTERRUPT_H_DATA_STORAGE:
--		pr_alert("BUG: %s on %s at 0x%08lx\n",
--			 regs->dar < PAGE_SIZE ? "Kernel NULL pointer dereference" :
--			 "Unable to handle kernel data access",
-+		pr_alert("BUG: %s on %s at 0x%08lx\n", msg,
- 			 is_write ? "write" : "read", regs->dar);
- 		break;
-+	case INTERRUPT_DATA_SEGMENT:
-+		pr_alert("BUG: %s at 0x%08lx\n", msg, regs->dar);
-+		break;
- 	case INTERRUPT_INST_STORAGE:
- 	case INTERRUPT_INST_SEGMENT:
- 		pr_alert("BUG: Unable to handle kernel instruction fetch%s",
+diff --git a/drivers/pinctrl/renesas/pfc-r8a77470.c b/drivers/pinctrl/renesas/pfc-r8a77470.c
+index e6e5487691c1..cf7153d06a95 100644
+--- a/drivers/pinctrl/renesas/pfc-r8a77470.c
++++ b/drivers/pinctrl/renesas/pfc-r8a77470.c
+@@ -2140,7 +2140,7 @@ static const unsigned int vin0_clk_mux[] = {
+ 	VI0_CLK_MARK,
+ };
+ /* - VIN1 ------------------------------------------------------------------- */
+-static const union vin_data vin1_data_pins = {
++static const union vin_data12 vin1_data_pins = {
+ 	.data12 = {
+ 		RCAR_GP_PIN(3,  1), RCAR_GP_PIN(3, 2),
+ 		RCAR_GP_PIN(3,  3), RCAR_GP_PIN(3, 4),
+@@ -2150,7 +2150,7 @@ static const union vin_data vin1_data_pins = {
+ 		RCAR_GP_PIN(3, 15), RCAR_GP_PIN(3, 16),
+ 	},
+ };
+-static const union vin_data vin1_data_mux = {
++static const union vin_data12 vin1_data_mux = {
+ 	.data12 = {
+ 		VI1_DATA0_MARK, VI1_DATA1_MARK,
+ 		VI1_DATA2_MARK, VI1_DATA3_MARK,
 -- 
 2.34.1
 
