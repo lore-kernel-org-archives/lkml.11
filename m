@@ -2,297 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4797EC35276
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 333ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349263AbiDFBH6 (ORCPT
+        id S1444054AbiDFBIe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34486 "EHLO
+        Tue, 5 Apr 2022 21:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350264AbiDEJ4z (ORCPT
+        with ESMTP id S1458054AbiDERGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:56:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BC04D9FE;
-        Tue,  5 Apr 2022 02:51:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E2D2B818F3;
-        Tue,  5 Apr 2022 09:50:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F088DC385AB;
-        Tue,  5 Apr 2022 09:50:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152258;
-        bh=fTvotsAghNfZAgPIATbprPL4uwToHew9EWZZf+s89us=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHD5ilRGF9bm43qVxbSOdzVZywfzAT/XZ22nfifV1LjEBsTHsSh2C+W6+alslde52
-         XTR/aQVIYU2TEg2eTbywlvE6x3JzRxOJ7Z5BfE1OvXjh7K7zypzLbS4XGQW6M6OkEr
-         zsIplyhXWSldwMeO30ZWljZYDNaHKIpD0YxqVJ0g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 713/913] sched/tracing: Dont re-read p->state when emitting sched_switch event
-Date:   Tue,  5 Apr 2022 09:29:35 +0200
-Message-Id: <20220405070401.206780262@linuxfoundation.org>
+        Tue, 5 Apr 2022 13:06:31 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC31AC071
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:04:32 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id x16so4508pfa.10
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:04:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pROGuwStiro9rcSYW3YeAtKJaGC9ZWqC+E1qhRzShxk=;
+        b=tA6Lp2KTlzqbzCItB0ys8viPQghH3YJ6+SdbGwcrPNlITBfn8nt3mBaneYmi6Ifz19
+         CJiVBsCpL+c6HqbbfYgHzDZsuF/gkKXK2lc4bTgNxgAK0/S4mz/rsh1hqwAlMUKEjKul
+         w4GTz21a+EhIjdikEvLqtLFgIfLRaNS4O1VLUqQ4S1I5lgeSNNvm0TyL80b59lj1OXUa
+         hXj0ircE3zWV8P0ASeIP76xonjuC1AoHwd7xnKPxA8+7Ewp9e+chhvgblMU270xglxj+
+         rlavD5UNtimCx/YI+j+fTfO8nmEkwYIbCLnqEcie9L/jpvqMoWWcBJR7XFjpUQvB+ZAa
+         7E8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pROGuwStiro9rcSYW3YeAtKJaGC9ZWqC+E1qhRzShxk=;
+        b=to4cLf40hmZzsRBDmnaG6s2+glaIxAb3I1vAyq44yjPcUCVmQOwnYhzBmB31bp6EvN
+         THXoXYqE9qxL4mPeuptLCV2U0Pna7pbh+nPVvbykrQbdgfeZd5ekfzJ4I4In2woxKhcd
+         RD9Px/kfOopCKMAA4dYziSpONqEM5qdoVN7JZ4W/QRTrwbGqEcXrPnc3cnU9hQXtpGtJ
+         tILg62c9GAs3P/UWZvL3xXx5PAjTZeEpDFgjfxMa8+Xfk/EK9l8lIFbKitKQIBqJKcC7
+         2skgVnkN5WErrYEtRS/WV1pjIASDhd5h6149bmT2buYETgxC+p3vw7UAPUclwbyiCEbf
+         yX4g==
+X-Gm-Message-State: AOAM532mwbeisg/NS2GLDTlwWakU/CqjGeyn3j8JHaMwt/DXB6xEnxqM
+        2bK3w9QCIEIrjrQ3gWyM0JHwJQ==
+X-Google-Smtp-Source: ABdhPJwD7B9L7RiPiFfKaGMQkGtYLA2hahKEheRhiKEh42v4f/MZK/KIfpScH9FOO2wpWsopqWEb2w==
+X-Received: by 2002:a65:4647:0:b0:399:11b1:810b with SMTP id k7-20020a654647000000b0039911b1810bmr3638651pgr.449.1649178271389;
+        Tue, 05 Apr 2022 10:04:31 -0700 (PDT)
+Received: from localhost.localdomain ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id m7-20020a625807000000b004fe0a89f24fsm7796142pfb.112.2022.04.05.10.04.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 10:04:30 -0700 (PDT)
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+To:     bpf@vger.kernel.org
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>,
+        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        "KP Singh" <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
+Subject: [PATCH] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+Date:   Tue,  5 Apr 2022 10:03:56 -0700
+Message-Id: <20220405170356.43128-1-tadeusz.struk@linaro.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+Syzbot found a Use After Free bug in compute_effective_progs().
+The reproducer creates a number of BPF links, and causes a fault
+injected alloc to fail, while calling bpf_link_detach on them.
+Link detach triggers the link to be freed by bpf_link_free(),
+which calls __cgroup_bpf_detach() and update_effective_progs().
+If the memory allocation in this function fails, the function restores
+the pointer to the bpf_cgroup_link on the cgroup list, but the memory
+gets freed just after it returns. After this, every subsequent call to
+update_effective_progs() causes this already deallocated pointer to be
+dereferenced in prog_list_length(), and triggers KASAN UAF error.
+To fix this don't preserve the pointer to the link on the cgroup list
+in __cgroup_bpf_detach(), but proceed with the cleanup and retry calling
+update_effective_progs() again afterwards.
 
-[ Upstream commit fa2c3254d7cfff5f7a916ab928a562d1165f17bb ]
 
-As of commit
+Cc: "Alexei Starovoitov" <ast@kernel.org>
+Cc: "Daniel Borkmann" <daniel@iogearbox.net>
+Cc: "Andrii Nakryiko" <andrii@kernel.org>
+Cc: "Martin KaFai Lau" <kafai@fb.com>
+Cc: "Song Liu" <songliubraving@fb.com>
+Cc: "Yonghong Song" <yhs@fb.com>
+Cc: "John Fastabend" <john.fastabend@gmail.com>
+Cc: "KP Singh" <kpsingh@kernel.org>
+Cc: <netdev@vger.kernel.org>
+Cc: <bpf@vger.kernel.org>
+Cc: <stable@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
-  c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
-
-the following sequence becomes possible:
-
-		      p->__state = TASK_INTERRUPTIBLE;
-		      __schedule()
-			deactivate_task(p);
-  ttwu()
-    READ !p->on_rq
-    p->__state=TASK_WAKING
-			trace_sched_switch()
-			  __trace_sched_switch_state()
-			    task_state_index()
-			      return 0;
-
-TASK_WAKING isn't in TASK_REPORT, so the task appears as TASK_RUNNING in
-the trace event.
-
-Prevent this by pushing the value read from __schedule() down the trace
-event.
-
-Reported-by: Abhijeet Dharmapurikar <adharmap@quicinc.com>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220120162520.570782-2-valentin.schneider@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
+Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
 ---
- include/linux/sched.h             | 11 ++++++++---
- include/trace/events/sched.h      | 11 +++++++----
- kernel/sched/core.c               |  4 ++--
- kernel/trace/fgraph.c             |  4 +++-
- kernel/trace/ftrace.c             |  4 +++-
- kernel/trace/trace_events.c       |  8 ++++++--
- kernel/trace/trace_osnoise.c      |  4 +++-
- kernel/trace/trace_sched_switch.c |  1 +
- kernel/trace/trace_sched_wakeup.c |  1 +
- 9 files changed, 34 insertions(+), 14 deletions(-)
+ kernel/bpf/cgroup.c | 25 ++++++++++++++-----------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 76e869550646..8fcf76fed984 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1616,10 +1616,10 @@ static inline pid_t task_pgrp_nr(struct task_struct *tsk)
- #define TASK_REPORT_IDLE	(TASK_REPORT + 1)
- #define TASK_REPORT_MAX		(TASK_REPORT_IDLE << 1)
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 128028efda64..b6307337a3c7 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -723,10 +723,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 	pl->link = NULL;
  
--static inline unsigned int task_state_index(struct task_struct *tsk)
-+static inline unsigned int __task_state_index(unsigned int tsk_state,
-+					      unsigned int tsk_exit_state)
- {
--	unsigned int tsk_state = READ_ONCE(tsk->__state);
--	unsigned int state = (tsk_state | tsk->exit_state) & TASK_REPORT;
-+	unsigned int state = (tsk_state | tsk_exit_state) & TASK_REPORT;
+ 	err = update_effective_progs(cgrp, atype);
+-	if (err)
+-		goto cleanup;
+-
+-	/* now can actually delete it from this cgroup list */
++	/*
++	 * Proceed regardless of error. The link and/or prog will be freed
++	 * just after this function returns so just delete it from this
++	 * cgroup list and retry calling update_effective_progs again later.
++	 */
+ 	list_del(&pl->node);
+ 	kfree(pl);
+ 	if (list_empty(progs))
+@@ -735,12 +736,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 	if (old_prog)
+ 		bpf_prog_put(old_prog);
+ 	static_branch_dec(&cgroup_bpf_enabled_key[atype]);
+-	return 0;
  
- 	BUILD_BUG_ON_NOT_POWER_OF_2(TASK_REPORT_MAX);
- 
-@@ -1629,6 +1629,11 @@ static inline unsigned int task_state_index(struct task_struct *tsk)
- 	return fls(state);
- }
- 
-+static inline unsigned int task_state_index(struct task_struct *tsk)
-+{
-+	return __task_state_index(READ_ONCE(tsk->__state), tsk->exit_state);
-+}
+-cleanup:
+-	/* restore back prog or link */
+-	pl->prog = old_prog;
+-	pl->link = link;
++	/* In case of error call update_effective_progs again */
++	if (err)
++		err = update_effective_progs(cgrp, atype);
 +
- static inline char task_index_to_char(unsigned int state)
- {
- 	static const char state_char[] = "RSDTtXZPI";
-diff --git a/include/trace/events/sched.h b/include/trace/events/sched.h
-index 94640482cfe7..65e786756321 100644
---- a/include/trace/events/sched.h
-+++ b/include/trace/events/sched.h
-@@ -187,7 +187,9 @@ DEFINE_EVENT(sched_wakeup_template, sched_wakeup_new,
- 	     TP_ARGS(p));
- 
- #ifdef CREATE_TRACE_POINTS
--static inline long __trace_sched_switch_state(bool preempt, struct task_struct *p)
-+static inline long __trace_sched_switch_state(bool preempt,
-+					      unsigned int prev_state,
-+					      struct task_struct *p)
- {
- 	unsigned int state;
- 
-@@ -208,7 +210,7 @@ static inline long __trace_sched_switch_state(bool preempt, struct task_struct *
- 	 * it for left shift operation to get the correct task->state
- 	 * mapping.
- 	 */
--	state = task_state_index(p);
-+	state = __task_state_index(prev_state, p->exit_state);
- 
- 	return state ? (1 << (state - 1)) : state;
+ 	return err;
  }
-@@ -220,10 +222,11 @@ static inline long __trace_sched_switch_state(bool preempt, struct task_struct *
- TRACE_EVENT(sched_switch,
  
- 	TP_PROTO(bool preempt,
-+		 unsigned int prev_state,
- 		 struct task_struct *prev,
- 		 struct task_struct *next),
+@@ -881,6 +881,7 @@ static void bpf_cgroup_link_release(struct bpf_link *link)
+ 	struct bpf_cgroup_link *cg_link =
+ 		container_of(link, struct bpf_cgroup_link, link);
+ 	struct cgroup *cg;
++	int err;
  
--	TP_ARGS(preempt, prev, next),
-+	TP_ARGS(preempt, prev_state, prev, next),
+ 	/* link might have been auto-detached by dying cgroup already,
+ 	 * in that case our work is done here
+@@ -896,8 +897,10 @@ static void bpf_cgroup_link_release(struct bpf_link *link)
+ 		return;
+ 	}
  
- 	TP_STRUCT__entry(
- 		__array(	char,	prev_comm,	TASK_COMM_LEN	)
-@@ -239,7 +242,7 @@ TRACE_EVENT(sched_switch,
- 		memcpy(__entry->next_comm, next->comm, TASK_COMM_LEN);
- 		__entry->prev_pid	= prev->pid;
- 		__entry->prev_prio	= prev->prio;
--		__entry->prev_state	= __trace_sched_switch_state(preempt, prev);
-+		__entry->prev_state	= __trace_sched_switch_state(preempt, prev_state, prev);
- 		memcpy(__entry->prev_comm, prev->comm, TASK_COMM_LEN);
- 		__entry->next_pid	= next->pid;
- 		__entry->next_prio	= next->prio;
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index c51bd3692316..2fd338bcbdcc 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -4787,7 +4787,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
- {
- 	struct rq *rq = this_rq();
- 	struct mm_struct *mm = rq->prev_mm;
--	long prev_state;
-+	unsigned int prev_state;
+-	WARN_ON(__cgroup_bpf_detach(cg_link->cgroup, NULL, cg_link,
+-				    cg_link->type));
++	err = __cgroup_bpf_detach(cg_link->cgroup, NULL, cg_link,
++				  cg_link->type);
++	if (err)
++		pr_warn("cgroup_bpf_detach() failed, err %d\n", err);
  
- 	/*
- 	 * The previous task will have left us with a preempt_count of 2
-@@ -6295,7 +6295,7 @@ static void __sched notrace __schedule(unsigned int sched_mode)
- 		migrate_disable_switch(rq, prev);
- 		psi_sched_switch(prev, next, !task_on_rq_queued(prev));
- 
--		trace_sched_switch(sched_mode & SM_MASK_PREEMPT, prev, next);
-+		trace_sched_switch(sched_mode & SM_MASK_PREEMPT, prev_state, prev, next);
- 
- 		/* Also unlocks the rq: */
- 		rq = context_switch(rq, prev, next, &rf);
-diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
-index b8a0d1d564fb..bb383ac91198 100644
---- a/kernel/trace/fgraph.c
-+++ b/kernel/trace/fgraph.c
-@@ -413,7 +413,9 @@ static int alloc_retstack_tasklist(struct ftrace_ret_stack **ret_stack_list)
- 
- static void
- ftrace_graph_probe_sched_switch(void *ignore, bool preempt,
--			struct task_struct *prev, struct task_struct *next)
-+				unsigned int prev_state,
-+				struct task_struct *prev,
-+				struct task_struct *next)
- {
- 	unsigned long long timestamp;
- 	int index;
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index c672040142e9..136520a5b7c0 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -7093,7 +7093,9 @@ ftrace_func_t ftrace_ops_get_func(struct ftrace_ops *ops)
- 
- static void
- ftrace_filter_pid_sched_switch_probe(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+				     unsigned int prev_state,
-+				     struct task_struct *prev,
-+				     struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *pid_list;
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 44d031ffe511..dd17171829d6 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -759,7 +759,9 @@ void trace_event_follow_fork(struct trace_array *tr, bool enable)
- 
- static void
- event_filter_pid_sched_switch_probe_pre(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+					unsigned int prev_state,
-+					struct task_struct *prev,
-+					struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *no_pid_list;
-@@ -783,7 +785,9 @@ event_filter_pid_sched_switch_probe_pre(void *data, bool preempt,
- 
- static void
- event_filter_pid_sched_switch_probe_post(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+					 unsigned int prev_state,
-+					 struct task_struct *prev,
-+					 struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *no_pid_list;
-diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-index 93de784ee681..c3bd968e6147 100644
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -1000,7 +1000,9 @@ thread_exit(struct osnoise_variables *osn_var, struct task_struct *t)
-  * used to record the beginning and to report the end of a thread noise window.
-  */
- static void
--trace_sched_switch_callback(void *data, bool preempt, struct task_struct *p,
-+trace_sched_switch_callback(void *data, bool preempt,
-+			    unsigned int prev_state,
-+			    struct task_struct *p,
- 			    struct task_struct *n)
- {
- 	struct osnoise_variables *osn_var = this_cpu_osn_var();
-diff --git a/kernel/trace/trace_sched_switch.c b/kernel/trace/trace_sched_switch.c
-index e304196d7c28..993b0ed10d8c 100644
---- a/kernel/trace/trace_sched_switch.c
-+++ b/kernel/trace/trace_sched_switch.c
-@@ -22,6 +22,7 @@ static DEFINE_MUTEX(sched_register_mutex);
- 
- static void
- probe_sched_switch(void *ignore, bool preempt,
-+		   unsigned int prev_state,
- 		   struct task_struct *prev, struct task_struct *next)
- {
- 	int flags;
-diff --git a/kernel/trace/trace_sched_wakeup.c b/kernel/trace/trace_sched_wakeup.c
-index 2402de520eca..46429f9a96fa 100644
---- a/kernel/trace/trace_sched_wakeup.c
-+++ b/kernel/trace/trace_sched_wakeup.c
-@@ -426,6 +426,7 @@ tracing_sched_wakeup_trace(struct trace_array *tr,
- 
- static void notrace
- probe_wakeup_sched_switch(void *ignore, bool preempt,
-+			  unsigned int prev_state,
- 			  struct task_struct *prev, struct task_struct *next)
- {
- 	struct trace_array_cpu *data;
+ 	cg = cg_link->cgroup;
+ 	cg_link->cgroup = NULL;
 -- 
-2.34.1
-
-
-
+2.35.1
