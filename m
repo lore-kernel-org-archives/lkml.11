@@ -2,99 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F089DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A89BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:25:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbiDEB0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 21:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
+        id S229535AbiDEB1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 21:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiDEB0m (ORCPT
+        with ESMTP id S229494AbiDEB1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 21:26:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F456282560;
-        Mon,  4 Apr 2022 17:38:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F128B81ACE;
-        Tue,  5 Apr 2022 00:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB376C2BBE4;
-        Tue,  5 Apr 2022 00:33:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649118805;
-        bh=YSFtuUAqB2/ReZ8hG4SKRlDqnAPGKpbCyB9tK2n6JDg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hLVyFlpfDATmZr5XGDrA5o2tW4Uc/njYc3HnyYS97SwPrMihRlv8F5i9GKUHv9kE7
-         zuttzYRilaN1bC1amXThpboMBXg4PIlW6SpLPDvBv419u6QE2v+W+GR15gxy6UeYS6
-         X2hb+RmYygXnGkr11tkfWxwYtokTT8Qwh6W/z/fGwwJsQsm70tYw7LX+MFkBGyeZHq
-         RLIQzG+ChmmiQFwcbQwh1ZSTlQyNJAg+9yr+DEx8Xgz+mWdPXi7Ut+28690acjXHYD
-         D7DdIVKxpJGnqbSTkM5/eWReADCF099Mnj5mMmvVeIjzeJ5tJ64kftaaFGD7CfOygJ
-         j7a0KanXvwr4Q==
-Date:   Mon, 4 Apr 2022 17:33:22 -0700
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Remove tls vs. ktls separation
- as it is the same
-Message-ID: <20220405003322.afko7uo527w5j3zu@sx1>
-References: <cover.1649073691.git.leonro@nvidia.com>
- <67e596599edcffb0de43f26551208dfd34ac777e.1649073691.git.leonro@nvidia.com>
+        Mon, 4 Apr 2022 21:27:24 -0400
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4113E28AB3C
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 17:39:02 -0700 (PDT)
+Received: by mail-oo1-xc2c.google.com with SMTP id h3-20020a4ae8c3000000b00324b9ae6ff2so2015967ooe.10
+        for <linux-kernel@vger.kernel.org>; Mon, 04 Apr 2022 17:39:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iVbRFb3pHKJObhGTfG4TyT4E0cfow5X3SEOtVm7qSqU=;
+        b=D8RB3yzwW1THTOskjZcYFnmP4WkVo9Xx0bih+Eq2XdF3des0BmB41dk8Q5MCyR9mOi
+         hPh+AGv+gTG3fUM3DRMyZK1EbiSGLDNPOU7EnkVBOkRhgVfqnSgj5p58xQTZoL/Z9YeK
+         xGUATkEXjRYfTWebIUnQ9lyOTaUDql4l47eER4ak4WIxGXEuoPWdzBFCkzUNwRALUxyq
+         Lzd5n36eq80YTcSls+P/7hSSS11v8hMRbmgDWIMPPjpS66vs84SeW/vxqNJ68iEFvbGR
+         Joqf9+/Xje/9GvhVKr67Ql5MRB/x8+s8JamGESZisUs8ae6JyhWJT7ENUkr/fx10J7QD
+         +1+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iVbRFb3pHKJObhGTfG4TyT4E0cfow5X3SEOtVm7qSqU=;
+        b=bI8hDCYTMl8Z2Br/SDTgEBfRTscARfEgNese4WVRsqTylgfC8LAdNC2vK8+VHv+6IP
+         ltfbkV4uqruIuh/4P0VoERmDwj1YS9n8Y0jLGg8Vfomh/BvxLQm4p+mYMlZftscwNfN8
+         m9BTZgIzsRz28Up7oiBmQl0nppX8Ga97niuvJcdpCkPUozT6gs2ECCbmPxT9ecO37o/k
+         teBqgWAWFVNxIvWevTHqOveHMl09zd1Pqa6DRsKSCrfco+O35Xar47rxFTc3U/+9e/h6
+         BMEkVpSL8m0S//iAwCSsLIxL0mNfiQEDfGb+012u64wa+jL174jAPJST3HjhASo4Tah/
+         1bdQ==
+X-Gm-Message-State: AOAM533JKPVQ2c0Jaj5Lz4XJqNluRI8hHE+RQF9sYTyaRgkvoK+mFa7b
+        ynIyGdcDupMNvZvNRbMv/NtT6rU5hBral+msMwY/s80Gk7Y=
+X-Google-Smtp-Source: ABdhPJxtx/GH6LWYXx8C6ldpwgMglrOnpypW5aqgzqo7wrMaQbWjNebWBzYw94xuXDp+yqNNkgufUEvGH5nrWfeZq1Y=
+X-Received: by 2002:a9d:6250:0:b0:5cd:afcf:999d with SMTP id
+ i16-20020a9d6250000000b005cdafcf999dmr293865otk.75.1649118183603; Mon, 04 Apr
+ 2022 17:23:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <67e596599edcffb0de43f26551208dfd34ac777e.1649073691.git.leonro@nvidia.com>
+References: <20220329134632.6064-1-likexu@tencent.com> <CALMp9eRqrkLRQ7UWNUdp3Z58WWgTqO-OPRuNo+EjcOW3c5eteQ@mail.gmail.com>
+In-Reply-To: <CALMp9eRqrkLRQ7UWNUdp3Z58WWgTqO-OPRuNo+EjcOW3c5eteQ@mail.gmail.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Mon, 4 Apr 2022 17:22:51 -0700
+Message-ID: <CALMp9eTCqRD+LyQ13+-3nyKAHcJ-T00K-vfK3iu0RnFR=Ax0hQ@mail.gmail.com>
+Subject: Re: [PATCH] KVM: x86/pmu: Update AMD PMC smaple period to fix guest NMI-watchdog
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Eric Hankland <ehankland@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04 Apr 15:08, Leon Romanovsky wrote:
->From: Leon Romanovsky <leonro@nvidia.com>
->
->After removal FPGA TLS, we can remove tls->ktls indirection too,
->as it is the same thing.
->
->Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
->Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->---
-> .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
-> .../ethernet/mellanox/mlx5/core/en/params.c   |  2 +-
-> .../mellanox/mlx5/core/en_accel/en_accel.h    | 11 +--
-> .../mellanox/mlx5/core/en_accel/ktls.c        | 22 ++++-
-> .../mellanox/mlx5/core/en_accel/ktls.h        | 32 +++++++
-> .../mellanox/mlx5/core/en_accel/ktls_rx.c     |  2 +-
-> .../en_accel/{tls_stats.c => ktls_stats.c}    | 38 ++++-----
-> .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 18 +++-
-> .../mellanox/mlx5/core/en_accel/ktls_txrx.h   | 28 +++++-
-> .../mellanox/mlx5/core/en_accel/tls.c         | 70 ---------------
-> .../mellanox/mlx5/core/en_accel/tls.h         | 85 -------------------
-> .../mellanox/mlx5/core/en_accel/tls_rxtx.c    | 70 ---------------
-> .../mellanox/mlx5/core/en_accel/tls_rxtx.h    | 85 -------------------
-> .../net/ethernet/mellanox/mlx5/core/en_main.c |  8 +-
-> .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  5 +-
-> .../ethernet/mellanox/mlx5/core/en_stats.c    |  8 +-
-> 16 files changed, 130 insertions(+), 356 deletions(-)
-> rename drivers/net/ethernet/mellanox/mlx5/core/en_accel/{tls_stats.c => ktls_stats.c} (76%)
-
-Why not ktls_*.c => tls_*.c ? 
-
-Since we now have one TLS implementation, it would've been easier to maybe
-repurpose TLS to be KTLS only and avoid renaming every TLS to KTLS in all
-functions and files.
-
-So just keep tls.c and all mlx5_tls_xyz functions and implement ktls
-directly in them, the renaming will be done only on the ktls implementation
-part of the code rather than in every caller.
-
-> delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c
-> delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h
-> delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
-> delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
->
-
+Minor nit: "sample" is misspelled in the subject line.
