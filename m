@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9895BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F89C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582542AbiDEXsc (ORCPT
+        id S1582559AbiDEXsk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:48:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
+        Tue, 5 Apr 2022 19:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354189AbiDEKMP (ORCPT
+        with ESMTP id S1355833AbiDEKWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755BA52E16;
-        Tue,  5 Apr 2022 02:58:16 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51DB9F6C7;
+        Tue,  5 Apr 2022 03:05:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BB82B817D3;
-        Tue,  5 Apr 2022 09:58:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FFF6C385A2;
-        Tue,  5 Apr 2022 09:58:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29C956172B;
+        Tue,  5 Apr 2022 10:05:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2C6C385A2;
+        Tue,  5 Apr 2022 10:05:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152693;
-        bh=a6oPxCJzwFg+auaLybS3Cz5xCfoOmB6qPAWpGmmbt78=;
+        s=korg; t=1649153109;
+        bh=MSTbhPiz+0gIdLuJbCp8xgfsyCNe3dcUzSOKZ3PzUac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XaAAapZRjmfbQp8rxZaWtWDO+Gnl0wy1/N5RLHClfHy0lohavaEZ7LF5ztv2y9ccY
-         nci6URG20qUkD9x6A+KcAx39YE+J6wfEMIIUGOpqv/YZ8xuABqpBI9AWvLWrtS3eC3
-         Fg0x8Wbg4pW9cguP17glVUHZf662tWf+r9AE0EZk=
+        b=lnKPSqQ1PP6ZLhBthUQjLUPe+oa9LUZ600hkdiFrBtwtmuHUuZWZyS1fiJMqV6pUT
+         WzEMlaqElnSA/65kRilAWWZJmKRXrNXpIzqOLTBODXniAalUiDaPOpWlReUj9g+gMQ
+         QF/ZWF2nSsUysyCx1dOtyBq2/Isrcbig+b3doFtk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 5.15 831/913] XArray: Fix xas_create_range() when multi-order entry present
-Date:   Tue,  5 Apr 2022 09:31:33 +0200
-Message-Id: <20220405070404.741036756@linuxfoundation.org>
+        stable@vger.kernel.org, Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chinwen Chang <chinwen.chang@mediatek.com>,
+        Nicholas Tang <nicholas.tang@mediatek.com>,
+        Yee Lee <yee.lee@mediatek.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 078/599] mm/kmemleak: reset tag when compare object pointer
+Date:   Tue,  5 Apr 2022 09:26:12 +0200
+Message-Id: <20220405070301.147117364@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,85 +55,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
 
-commit 3e3c658055c002900982513e289398a1aad4a488 upstream.
+commit bfc8089f00fa526dea983844c880fa8106c33ac4 upstream.
 
-If there is already an entry present that is of order >= XA_CHUNK_SHIFT
-when we call xas_create_range(), xas_create_range() will misinterpret
-that entry as a node and dereference xa_node->parent, generally leading
-to a crash that looks something like this:
+When we use HW-tag based kasan and enable vmalloc support, we hit the
+following bug.  It is due to comparison between tagged object and
+non-tagged pointer.
 
-general protection fault, probably for non-canonical address 0xdffffc0000000001:
-0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 32 Comm: khugepaged Not tainted 5.17.0-rc8-syzkaller-00003-g56e337f2cf13 #0
-RIP: 0010:xa_parent_locked include/linux/xarray.h:1207 [inline]
-RIP: 0010:xas_create_range+0x2d9/0x6e0 lib/xarray.c:725
+We need to reset the kasan tag when we need to compare tagged object and
+non-tagged pointer.
 
-It's deterministically reproducable once you know what the problem is,
-but producing it in a live kernel requires khugepaged to hit a race.
-While the problem has been present since xas_create_range() was
-introduced, I'm not aware of a way to hit it before the page cache was
-converted to use multi-index entries.
+  kmemleak: [name:kmemleak&]Scan area larger than object 0xffffffe77076f440
+  CPU: 4 PID: 1 Comm: init Tainted: G S      W         5.15.25-android13-0-g5cacf919c2bc #1
+  Hardware name: MT6983(ENG) (DT)
+  Call trace:
+   add_scan_area+0xc4/0x244
+   kmemleak_scan_area+0x40/0x9c
+   layout_and_allocate+0x1e8/0x288
+   load_module+0x2c8/0xf00
+   __se_sys_finit_module+0x190/0x1d0
+   __arm64_sys_finit_module+0x20/0x30
+   invoke_syscall+0x60/0x170
+   el0_svc_common+0xc8/0x114
+   do_el0_svc+0x28/0xa0
+   el0_svc+0x60/0xf8
+   el0t_64_sync_handler+0x88/0xec
+   el0t_64_sync+0x1b4/0x1b8
+  kmemleak: [name:kmemleak&]Object 0xf5ffffe77076b000 (size 32768):
+  kmemleak: [name:kmemleak&]  comm "init", pid 1, jiffies 4294894197
+  kmemleak: [name:kmemleak&]  min_count = 0
+  kmemleak: [name:kmemleak&]  count = 0
+  kmemleak: [name:kmemleak&]  flags = 0x1
+  kmemleak: [name:kmemleak&]  checksum = 0
+  kmemleak: [name:kmemleak&]  backtrace:
+       module_alloc+0x9c/0x120
+       move_module+0x34/0x19c
+       layout_and_allocate+0x1c4/0x288
+       load_module+0x2c8/0xf00
+       __se_sys_finit_module+0x190/0x1d0
+       __arm64_sys_finit_module+0x20/0x30
+       invoke_syscall+0x60/0x170
+       el0_svc_common+0xc8/0x114
+       do_el0_svc+0x28/0xa0
+       el0_svc+0x60/0xf8
+       el0t_64_sync_handler+0x88/0xec
+       el0t_64_sync+0x1b4/0x1b8
 
-Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
-Reported-by: syzbot+0d2b0bf32ca5cfd09f2e@syzkaller.appspotmail.com
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Link: https://lkml.kernel.org/r/20220318034051.30687-1-Kuan-Ying.Lee@mediatek.com
+Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Chinwen Chang <chinwen.chang@mediatek.com>
+Cc: Nicholas Tang <nicholas.tang@mediatek.com>
+Cc: Yee Lee <yee.lee@mediatek.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/test_xarray.c |   22 ++++++++++++++++++++++
- lib/xarray.c      |    2 ++
- 2 files changed, 24 insertions(+)
+ mm/kmemleak.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/lib/test_xarray.c
-+++ b/lib/test_xarray.c
-@@ -1463,6 +1463,25 @@ unlock:
- 	XA_BUG_ON(xa, !xa_empty(xa));
- }
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -787,6 +787,8 @@ static void add_scan_area(unsigned long
+ 	unsigned long flags;
+ 	struct kmemleak_object *object;
+ 	struct kmemleak_scan_area *area = NULL;
++	unsigned long untagged_ptr;
++	unsigned long untagged_objp;
  
-+static noinline void check_create_range_5(struct xarray *xa,
-+		unsigned long index, unsigned int order)
-+{
-+	XA_STATE_ORDER(xas, xa, index, order);
-+	unsigned int i;
-+
-+	xa_store_order(xa, index, order, xa_mk_index(index), GFP_KERNEL);
-+
-+	for (i = 0; i < order + 10; i++) {
-+		do {
-+			xas_lock(&xas);
-+			xas_create_range(&xas);
-+			xas_unlock(&xas);
-+		} while (xas_nomem(&xas, GFP_KERNEL));
-+	}
-+
-+	xa_destroy(xa);
-+}
-+
- static noinline void check_create_range(struct xarray *xa)
- {
- 	unsigned int order;
-@@ -1490,6 +1509,9 @@ static noinline void check_create_range(
- 		check_create_range_4(xa, (3U << order) + 1, order);
- 		check_create_range_4(xa, (3U << order) - 1, order);
- 		check_create_range_4(xa, (1U << 24) + 1, order);
-+
-+		check_create_range_5(xa, 0, order);
-+		check_create_range_5(xa, (1U << order), order);
+ 	object = find_and_get_object(ptr, 1);
+ 	if (!object) {
+@@ -795,6 +797,9 @@ static void add_scan_area(unsigned long
+ 		return;
  	}
  
- 	check_create_range_3();
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -722,6 +722,8 @@ void xas_create_range(struct xa_state *x
++	untagged_ptr = (unsigned long)kasan_reset_tag((void *)ptr);
++	untagged_objp = (unsigned long)kasan_reset_tag((void *)object->pointer);
++
+ 	if (scan_area_cache)
+ 		area = kmem_cache_alloc(scan_area_cache, gfp_kmemleak_mask(gfp));
  
- 		for (;;) {
- 			struct xa_node *node = xas->xa_node;
-+			if (node->shift >= shift)
-+				break;
- 			xas->xa_node = xa_parent_locked(xas->xa, node);
- 			xas->xa_offset = node->offset - 1;
- 			if (node->offset != 0)
+@@ -806,8 +811,8 @@ static void add_scan_area(unsigned long
+ 		goto out_unlock;
+ 	}
+ 	if (size == SIZE_MAX) {
+-		size = object->pointer + object->size - ptr;
+-	} else if (ptr + size > object->pointer + object->size) {
++		size = untagged_objp + object->size - untagged_ptr;
++	} else if (untagged_ptr + size > untagged_objp + object->size) {
+ 		kmemleak_warn("Scan area larger than object 0x%08lx\n", ptr);
+ 		dump_object_info(object);
+ 		kmem_cache_free(scan_area_cache, area);
 
 
