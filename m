@@ -2,166 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89661C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41459C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235915AbiDFCyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        id S1386673AbiDFCyw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 22:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1839754AbiDFBFh (ORCPT
+        with ESMTP id S1840321AbiDFBHq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 21:05:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18EF122C8D9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:03:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649199756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tJmB3NyGHJPctZ5Tp6VQA6j7TxUED1zTYueXlEtvASc=;
-        b=Pr+WOuJpeivT/mrGIod9jIPKj950xIQds6vH7Q7Kgd0EXV834PoE4nJHKJ0Bbi3F9zWgMW
-        2Hr9elWZ4yIJr/s7aTsGE6DZ9R4sM3oPz8uWQ+OLHuhqMAu+xq8ZuIcXyXhdcJ3NM1OBOe
-        ZEdVgcVqkVRJArdf6ucTfiaNgs2E5pE=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-613-9s39xV1AP6GmXI42-iS1pw-1; Tue, 05 Apr 2022 19:02:35 -0400
-X-MC-Unique: 9s39xV1AP6GmXI42-iS1pw-1
-Received: by mail-il1-f198.google.com with SMTP id y19-20020a056e02119300b002c2d3ef05bfso557162ili.18
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 16:02:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tJmB3NyGHJPctZ5Tp6VQA6j7TxUED1zTYueXlEtvASc=;
-        b=0vfAqBw0czs+SRIZW7WINjBNDn8VemTeaZHyF+uM3ImC6L4uaEGJ7y3z/6AT6h8oWg
-         9do/o6lSAIXG1+5B+8ajiqFS0d+FuZHB7WO7noHYRhv7BMmNyyLPKqhBdPgmJlEJKGOS
-         iSseX80oYFESmlAnJLlYWrZ4rb2jihJOQOaN+YlqQvL8h1URjULO07F7cBhb6JIUqvEe
-         QUxDrZX+eBQP8slr/W45c1Hk8r/c99/DiKiF7vftO3W96oH27tNSTmM7EFahCxNAVUHH
-         pz441Gdr7tGjSazfVDAZZlmXIlAFD412wSsGmvzGGbiX7tETi/XMueaKe5NTe0k6AgKS
-         BO9g==
-X-Gm-Message-State: AOAM531+ZuEUaC1HCRCoEeTzULRR8gW5ODKhoQ0xNuoipzpN6nQYWeck
-        +8JiMtcqOoMjI5Ur998+ExXoVjV8X3wGx6cQTF4BadAFTDYEMHU2myV9y8VD6xL30/Z9/prT+le
-        5zMLyzTV4MuG9BsMlGMnjVVnD
-X-Received: by 2002:a02:cb4a:0:b0:323:5e9a:255c with SMTP id k10-20020a02cb4a000000b003235e9a255cmr3038732jap.12.1649199754967;
-        Tue, 05 Apr 2022 16:02:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy+9hSCp/2bZlP91Ebv6INEUuSFgp3H+pRfrTy0zNtLnQiDSpakgEIaIy1Up1k16a9mCzdMNw==
-X-Received: by 2002:a02:cb4a:0:b0:323:5e9a:255c with SMTP id k10-20020a02cb4a000000b003235e9a255cmr3038706jap.12.1649199754675;
-        Tue, 05 Apr 2022 16:02:34 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id r9-20020a6b6009000000b006412abddbbbsm9285044iog.24.2022.04.05.16.02.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 16:02:34 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 19:02:32 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        David Hildenbrand <david@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Hugh Dickins <hughd@google.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: Re: [PATCH v8 00/23] userfaultfd-wp: Support shmem and hugetlbfs
-Message-ID: <YkzKiM8tI4+qOfXF@xz-m1.local>
-References: <20220405014646.13522-1-peterx@redhat.com>
- <20220405151616.bf25fa4aad55536cd031e1ab@linux-foundation.org>
- <YkzF4/e86qwcuXiA@xz-m1.local>
- <20220405154912.4cda03c2cc5d801d25d5c2dd@linux-foundation.org>
+        Tue, 5 Apr 2022 21:07:46 -0400
+Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85E29232114;
+        Tue,  5 Apr 2022 16:04:24 -0700 (PDT)
+Received: from dread.disaster.area (pa49-180-43-123.pa.nsw.optusnet.com.au [49.180.43.123])
+        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 8A01D10E56A4;
+        Wed,  6 Apr 2022 09:04:22 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1nbsDk-00EERK-OM; Wed, 06 Apr 2022 09:04:20 +1000
+Date:   Wed, 6 Apr 2022 09:04:20 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Jan Kara <jack@suse.cz>, Matthew Wilcox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        reiserfs-devel@vger.kernel.org
+Subject: Re: Is it time to remove reiserfs?
+Message-ID: <20220405230420.GX1609613@dread.disaster.area>
+References: <YhIwUEpymVzmytdp@casper.infradead.org>
+ <20220222100408.cyrdjsv5eun5pzij@quack3.lan>
+ <20220222221614.GC3061737@dread.disaster.area>
+ <20220402105749.GB16346@amd>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="3ob9n8+f6vq4lAWQ"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220405154912.4cda03c2cc5d801d25d5c2dd@linux-foundation.org>
+In-Reply-To: <20220402105749.GB16346@amd>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=VuxAv86n c=1 sm=1 tr=0 ts=624ccaf7
+        a=MV6E7+DvwtTitA3W+3A2Lw==:117 a=MV6E7+DvwtTitA3W+3A2Lw==:17
+        a=_MjYSGqaCGpKE7YW:21 a=kj9zAlcOel0A:10 a=z0gMJWrwH1QA:10 a=VwQbUJbxAAAA:8
+        a=7-415B0cAAAA:8 a=AvG-BbIAFkt7vrdm4KcA:9 a=CjuIK1q_8ugA:10
+        a=xNNtwZicer8A:10 a=aebnku51ZD03SSuSuSm5:22 a=AjGcO6oz07-iQ99wixmX:22
+        a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---3ob9n8+f6vq4lAWQ
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-
-On Tue, Apr 05, 2022 at 03:49:12PM -0700, Andrew Morton wrote:
-> On Tue, 5 Apr 2022 18:42:43 -0400 Peter Xu <peterx@redhat.com> wrote:
-> 
-> > On Tue, Apr 05, 2022 at 03:16:16PM -0700, Andrew Morton wrote:
-> > > On Mon,  4 Apr 2022 21:46:23 -0400 Peter Xu <peterx@redhat.com> wrote:
+On Sat, Apr 02, 2022 at 12:57:49PM +0200, Pavel Machek wrote:
+> > > So from my distro experience installed userbase of reiserfs is pretty small
+> > > and shrinking. We still do build reiserfs in openSUSE / SLES kernels but
+> > > for enterprise offerings it is unsupported (for like 3-4 years) and the module
+> > > is not in the default kernel rpm anymore.
 > > > 
-> > > > This is v8 of the series to add shmem+hugetlbfs support for userfaultfd
-> > > > write protection. 
-> > > 
-> > > Various compilation catastrophes with x86_64 allnoconfig.  I poked at
-> > > the include ordering for a while but other things quickly became more
-> > > attractive ;)
+> > > So clearly the filesystem is on the deprecation path, the question is
+> > > whether it is far enough to remove it from the kernel completely. Maybe
+> > > time to start deprecation by printing warnings when reiserfs gets mounted
+> > > and then if nobody yells for year or two, we'll go ahead and remove it?
 > > 
-> > Sorry about that.  I still don't know what's the problem, but I'll give it
-> > a shot soon.
+> > Yup, I'd say we should deprecate it and add it to the removal
+> > schedule. The less poorly tested legacy filesystem code we have to
+> > maintain the better.
 > > 
-> > I think I only tried out with the new configs but not all the rest configs.
-> > I thought there're some bot looking after that one, from which I used to
-> > receive build reports. And IIRC I fixed some build issues in early versions
-> > from those reports.  Maybe I was wrong..
+> > Along those lines, I think we really need to be more aggressive
+> > about deprecating and removing filesystems that cannot (or will not)
+> > be made y2038k compliant in the new future. We're getting to close
+> > to the point where long term distro and/or product development life
+> > cycles will overlap with y2038k, so we should be thinking of
+> > deprecating and removing such filesystems before they end up in
+> > products that will still be in use in 15 years time.
 > > 
-> > Any more hints on the latter?
+> > And just so everyone in the discussion is aware: XFS already has a
+> > deprecation and removal schedule for the non-y2038k-compliant v4
+> > filesystem format. It's officially deprecated right now, we'll stop
+> > building kernels with v4 support enabled by default in 2025, and
+> > we're removing the code that supports the v4 format entirely in
+> > 2030.
 > 
-> `make allnoconfig'?
+> Haha.
 > 
+> It is not up to you. You can't remove feature people are
+> using. Sorry. Talk to Linus about that.
 
-Ah!  I thought when you mentioned "other things" you meant there're other
-more severe issues... :)
+I think you have the wrong end of the stick. We're not removing
+stuff that people use, we're removing support for functionality that
+will be *fundamentally broken* and *unfixable* come 2038. Hence we
+need a process for ensuring that nobody is still requiring us to
+support it by the scheduled removal date.
 
-For the allnoconfig, could you try with the attached quick fixup (upon
-patch "mm/uffd: PTE_MARKER_UFFD_WP")?
+Every long term project needs to have a deprecation process so that
+they can clean out unmaintained, broken, unfixable and/or unused
+code without putting users at risk. If we can't/won't/don't clear
+out unmaintained or unfixable code, the risk of data loss, security
+breaches, etc in that code is a real and present danger to
+any kernel that includes that code. We learnt this lesson the hard
+way recently, and we simply removed the legacy code responsible in
+response. Even Linus agreed that prompt removal of the functionality
+was the right thing to do.
 
-That works for me on x86/arm, but I'm still trying out some other configs.
+This occurred despite the fact we had a feature deprecation policy
+for XFS long before that incident occurred - we just had not been
+applying it to dusty corners of the user API we inherited from Irix.
+It has been used for things like proc/sysfs knobs and mount options
+that are no longer supported, and the lesson we learn is that is
+should be applied to user APIs as well. We'd already extended that
+process for deprecation and removal of support for on-disk formats
+(i.e. the V4 format) but not legacy user APIS.
 
-Thanks,
+W.r.t to the V4 format deprecation, the kernel issues warnings
+at mount time right now to say that the v4 format is deprecated and
+will be going away.
 
+XFS (dm-0): Deprecated V4 format (crc=0) will not be supported after September 2030.
+XFS (dm-0): Mounting V4 Filesystem
+XFS (dm-0): Ending clean mount
+xfs filesystem being mounted at /mnt/scratch supports timestamps until 2038 (0x7fffffff)
+
+mkfs.xfs warns if you explicitly make a v4 fielsystem:
+
+# mkfs.xfs -N -m crc=0 /dev/mapper/fast
+V4 filesystems are deprecated and will not be supported by future versions.
+....
+#
+
+The timeframe for support is documented in both the mkfs.xfs man
+page and the XFS section of the kernel admin guide published here:
+
+https://docs.kernel.org/admin-guide/xfs.html#deprecation-of-v4-format
+
+Indeed, if you keep reading down that link, you'll see all the
+deprecated mount options, sysctls, etc and their removal schedule,
+as well as all the removed options and when they were removed.
+
+Deprecation and removal of old features is something that all long
+term projects need to be able to perform, and the Linux kernel is no
+different.  Just because the Linux kernel project as a whole
+doesn't have full software lifecycle management processes, it
+doesn't mean that every kernel subsystems have no full software
+lifecycle management processes.
+
+Rather than saying "you cannot do X", it is better to learn why "we
+*need* to do X" and then come up with a sane process for allowing X
+to occur. The recent a.out removal and the reverted /dev/urandom
+changes are good examples of how having a well thought out feature
+deprecation and removal process is a really good thing to have.
+
+Cheers,
+
+Dave.
 -- 
-Peter Xu
-
---3ob9n8+f6vq4lAWQ
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: attachment;
-	filename="0001-fixup-mm-uffd-PTE_MARKER_UFFD_WP.patch"
-
-From 83dbc502eeaba12071413691374474c09e9f24bb Mon Sep 17 00:00:00 2001
-From: Peter Xu <peterx@redhat.com>
-Date: Tue, 5 Apr 2022 19:00:37 -0400
-Subject: [PATCH] fixup! mm/uffd: PTE_MARKER_UFFD_WP
-
-Signed-off-by: Peter Xu <peterx@redhat.com>
----
- include/linux/userfaultfd_k.h | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/include/linux/userfaultfd_k.h b/include/linux/userfaultfd_k.h
-index ea11bed9bb7e..732b522bacb7 100644
---- a/include/linux/userfaultfd_k.h
-+++ b/include/linux/userfaultfd_k.h
-@@ -277,8 +277,12 @@ static inline bool uffd_disable_fault_around(struct vm_area_struct *vma)
- 
- static inline bool pte_marker_entry_uffd_wp(swp_entry_t entry)
- {
-+#ifdef CONFIG_PTE_MARKER_UFFD_WP
- 	return is_pte_marker_entry(entry) &&
- 	    (pte_marker_get(entry) & PTE_MARKER_UFFD_WP);
-+#else
-+	return false;
-+#endif
- }
- 
- static inline bool pte_marker_uffd_wp(pte_t pte)
--- 
-2.32.0
-
-
---3ob9n8+f6vq4lAWQ--
-
+Dave Chinner
+david@fromorbit.com
