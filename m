@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F2EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA730C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236768AbiDEU5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
+        id S238193AbiDEU5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:57:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354197AbiDEKMP (ORCPT
+        with ESMTP id S1350042AbiDEJw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FDE532E3;
-        Tue,  5 Apr 2022 02:58:28 -0700 (PDT)
+        Tue, 5 Apr 2022 05:52:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885473D4B9;
+        Tue,  5 Apr 2022 02:50:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9B8FCCE1BF8;
-        Tue,  5 Apr 2022 09:58:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A770C385A2;
-        Tue,  5 Apr 2022 09:58:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45D44B818F3;
+        Tue,  5 Apr 2022 09:50:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A764BC385A1;
+        Tue,  5 Apr 2022 09:50:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152705;
-        bh=oHWJVGZerJimRvn7YMHPGhT+6D1L6vxaa4SWJ8iflK4=;
+        s=korg; t=1649152228;
+        bh=CSFgzneWzetHHE0l8wItQgzA1USHHq7Fhwl/rMkc5I4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXdjmqphU7NP0Vd58QMa1k0EVO/tAUqRWizL2yc+P7YuoyK2Q1QfoYoHlZRXUfYrv
-         IEAyrQZc0JXwfOxXKJB9EDFfdPoZbH/ez188lAydipbFBTTlkbaVrttijzP9cJe2NS
-         CSVY5SS1h+vJ6/GMtfk3k8VFZWIbuy0eTMC2dtWk=
+        b=kNmAlgmhS+3UO7wVEbfLLjMLHaS8y4Y1ZWmlWNxUdSiieroT5WIuLV+UO77hry1kq
+         uyAWzD53DGMowa9s9yKOWdtYjr2s5o+SxumVdV/NL1axT/phwLJ3E/JBVYjNjAJGmv
+         whGNXukUdFTHkujiz387/6hzH/Z+q8l3HGQYEtDo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Ben Dooks <ben-linux@fluff.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, patches@armlinux.org.uk,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 5.15 874/913] ARM: 9187/1: JIVE: fix return value of __setup handler
-Date:   Tue,  5 Apr 2022 09:32:16 +0200
-Message-Id: <20220405070406.021493747@linuxfoundation.org>
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 663/913] net: hns3: add vlan list lock to protect vlan list
+Date:   Tue,  5 Apr 2022 09:28:45 +0200
+Message-Id: <20220405070359.710704908@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,56 +50,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jian Shen <shenjian15@huawei.com>
 
-commit 8b2360c7157b462c4870d447d1e65d30ef31f9aa upstream.
+[ Upstream commit 1932a624ab88ff407d1a1d567fe581faa15dc725 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings. Also, error return codes don't mean anything to
-obsolete_checksetup() -- only non-zero (usually 1) or zero.
-So return 1 from jive_mtdset().
+When adding port base VLAN, vf VLAN need to remove from HW and modify
+the vlan state in vf VLAN list as false. If the periodicity task is
+freeing the same node, it may cause "use after free" error.
+This patch adds a vlan list lock to protect the vlan list.
 
-Fixes: 9db829f485c5 ("[ARM] JIVE: Initial machine support for Logitech Jive")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Ben Dooks <ben-linux@fluff.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-samsung-soc@vger.kernel.org
-Cc: patches@armlinux.org.uk
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c6075b193462 ("net: hns3: Record VF vlan tables")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-s3c/mach-jive.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 38 +++++++++++++++++--
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  1 +
+ 2 files changed, 35 insertions(+), 4 deletions(-)
 
---- a/arch/arm/mach-s3c/mach-jive.c
-+++ b/arch/arm/mach-s3c/mach-jive.c
-@@ -236,11 +236,11 @@ static int __init jive_mtdset(char *opti
- 	unsigned long set;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 4be90d0f2b91..af6c4a5cb0a2 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -10078,19 +10078,28 @@ static void hclge_add_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 				       bool writen_to_tbl)
+ {
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
++	struct hclge_dev *hdev = vport->back;
  
- 	if (options == NULL || options[0] == '\0')
--		return 0;
-+		return 1;
+-	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node)
+-		if (vlan->vlan_id == vlan_id)
++	mutex_lock(&hdev->vport_lock);
++
++	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
++		if (vlan->vlan_id == vlan_id) {
++			mutex_unlock(&hdev->vport_lock);
+ 			return;
++		}
++	}
  
- 	if (kstrtoul(options, 10, &set)) {
- 		printk(KERN_ERR "failed to parse mtdset=%s\n", options);
--		return 0;
-+		return 1;
- 	}
+ 	vlan = kzalloc(sizeof(*vlan), GFP_KERNEL);
+-	if (!vlan)
++	if (!vlan) {
++		mutex_unlock(&hdev->vport_lock);
+ 		return;
++	}
  
- 	switch (set) {
-@@ -255,7 +255,7 @@ static int __init jive_mtdset(char *opti
- 		       "using default.", set);
- 	}
+ 	vlan->hd_tbl_status = writen_to_tbl;
+ 	vlan->vlan_id = vlan_id;
  
--	return 0;
-+	return 1;
+ 	list_add_tail(&vlan->node, &vport->vlan_list);
++	mutex_unlock(&hdev->vport_lock);
  }
  
- /* parse the mtdset= option given to the kernel command line */
+ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+@@ -10099,6 +10108,8 @@ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+ 	struct hclge_dev *hdev = vport->back;
+ 	int ret;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (!vlan->hd_tbl_status) {
+ 			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
+@@ -10108,12 +10119,16 @@ static int hclge_add_vport_all_vlan_table(struct hclge_vport *vport)
+ 				dev_err(&hdev->pdev->dev,
+ 					"restore vport vlan list failed, ret=%d\n",
+ 					ret);
++
++				mutex_unlock(&hdev->vport_lock);
+ 				return ret;
+ 			}
+ 		}
+ 		vlan->hd_tbl_status = true;
+ 	}
+ 
++	mutex_unlock(&hdev->vport_lock);
++
+ 	return 0;
+ }
+ 
+@@ -10123,6 +10138,8 @@ static void hclge_rm_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
+ 	struct hclge_dev *hdev = vport->back;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (vlan->vlan_id == vlan_id) {
+ 			if (is_write_tbl && vlan->hd_tbl_status)
+@@ -10137,6 +10154,8 @@ static void hclge_rm_vport_vlan_table(struct hclge_vport *vport, u16 vlan_id,
+ 			break;
+ 		}
+ 	}
++
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+@@ -10144,6 +10163,8 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+ 	struct hclge_vport_vlan_cfg *vlan, *tmp;
+ 	struct hclge_dev *hdev = vport->back;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 		if (vlan->hd_tbl_status)
+ 			hclge_set_vlan_filter_hw(hdev,
+@@ -10159,6 +10180,7 @@ void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list)
+ 		}
+ 	}
+ 	clear_bit(vport->vport_id, hdev->vf_vlan_full);
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+@@ -10167,6 +10189,8 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+ 	struct hclge_vport *vport;
+ 	int i;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	for (i = 0; i < hdev->num_alloc_vport; i++) {
+ 		vport = &hdev->vport[i];
+ 		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+@@ -10174,6 +10198,8 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
+ 			kfree(vlan);
+ 		}
+ 	}
++
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ void hclge_restore_vport_port_base_vlan_config(struct hclge_dev *hdev)
+@@ -10213,6 +10239,8 @@ void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
+ 	struct hclge_dev *hdev = vport->back;
+ 	int ret;
+ 
++	mutex_lock(&hdev->vport_lock);
++
+ 	if (vport->port_base_vlan_cfg.state == HNAE3_PORT_BASE_VLAN_DISABLE) {
+ 		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
+ 			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
+@@ -10223,6 +10251,8 @@ void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
+ 			vlan->hd_tbl_status = true;
+ 		}
+ 	}
++
++	mutex_unlock(&hdev->vport_lock);
+ }
+ 
+ /* For global reset and imp reset, hardware will clear the mac table,
+@@ -12120,8 +12150,8 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	hclge_misc_irq_uninit(hdev);
+ 	hclge_devlink_uninit(hdev);
+ 	hclge_pci_uninit(hdev);
+-	mutex_destroy(&hdev->vport_lock);
+ 	hclge_uninit_vport_vlan_table(hdev);
++	mutex_destroy(&hdev->vport_lock);
+ 	ae_dev->priv = NULL;
+ }
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index ae8c26c194ec..4d6dbfe0be7a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -1057,6 +1057,7 @@ struct hclge_vport {
+ 	spinlock_t mac_list_lock; /* protect mac address need to add/detele */
+ 	struct list_head uc_mac_list;   /* Store VF unicast table */
+ 	struct list_head mc_mac_list;   /* Store VF multicast table */
++
+ 	struct list_head vlan_list;     /* Store VF vlan table */
+ };
+ 
+-- 
+2.34.1
+
 
 
