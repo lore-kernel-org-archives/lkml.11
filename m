@@ -2,92 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAA5C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0DBC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452651AbiDEWcN (ORCPT
+        id S1452622AbiDEWcH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        Tue, 5 Apr 2022 18:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358077AbiDEK16 (ORCPT
+        with ESMTP id S1442147AbiDEPhC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0967A5DA70;
-        Tue,  5 Apr 2022 03:14:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA404B81C6C;
-        Tue,  5 Apr 2022 10:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 275A8C385A0;
-        Tue,  5 Apr 2022 10:14:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153684;
-        bh=39PmLqv2+w5GKMPNLeMPqqK1B/qn7bVnaO5kt9RT0oE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r1h3gkttgCmNHNQMrXhvmBtE4WgbgU5YgfxYBk8vbYf9n6vNFAqlnw2aVQ6BEL90a
-         XFW4uV9i2wSO0np/hkV2hjM90GVpx/V9iU5zdIE0b4Gpc6DtvMn/KKfam0kImjrgmk
-         K4mEzGeOlgw5QXKTe0qcdGLALXIcI4pek0LbmK6U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 310/599] scsi: pm8001: Fix command initialization in pm8001_chip_ssp_tm_req()
-Date:   Tue,  5 Apr 2022 09:30:04 +0200
-Message-Id: <20220405070308.058265444@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:37:02 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067CAECB23;
+        Tue,  5 Apr 2022 06:51:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649166677; x=1680702677;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=/SGY5EudjaGdSXrVzfUtedVft2d5wnuxaMlMNW2aRB0=;
+  b=bDib/z5acJoDX72Rq0ubmgNBrtCtrPuMLTklQhg7YnPgddIYXswV85Xq
+   CWoEAISiZ/elzyyctQbrk4GPkwZV/EK3EMOacBkZ4oEH7HE+bgUr2Tiet
+   1b2jcOSDbyzGrayNYeIwn5gnIu4bwHcOrD3zhtGc6W3PRWaljzt2owj3M
+   g=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 05 Apr 2022 06:51:15 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:15 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 06:51:14 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 06:51:10 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: [PATCH V9 1/6] dt-bindings: mfd: pm8008: Add reset-gpios
+Date:   Tue, 5 Apr 2022 19:20:28 +0530
+Message-ID: <1649166633-25872-2-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Add reset-gpios property for pm8008.
 
-[ Upstream commit cd2268a180117aa8ebb23e090ba204324b2d0e93 ]
-
-The ds_ads_m field of struct ssp_ini_tm_start_req has the type __le32.
-Assigning a value to it should thus use cpu_to_le32(). This fixes the
-sparse warning:
-
-warning: incorrect type in assignment (different base types)
-   expected restricted __le32 [addressable] [assigned] [usertype] ds_ads_m
-   got int
-
-Link: https://lore.kernel.org/r/20220220031810.738362-7-damien.lemoal@opensource.wdc.com
-Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in V7:
+ - Removed the intermediate regulators node and added ldos
+   directly under mfd node.
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index eb63f8c5a6f9..0e6a0b50bfb9 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -4575,7 +4575,7 @@ int pm8001_chip_ssp_tm_req(struct pm8001_hba_info *pm8001_ha,
- 	memcpy(sspTMCmd.lun, task->ssp_task.LUN, 8);
- 	sspTMCmd.tag = cpu_to_le32(ccb->ccb_tag);
- 	if (pm8001_ha->chip_id != chip_8001)
--		sspTMCmd.ds_ads_m = 0x08;
-+		sspTMCmd.ds_ads_m = cpu_to_le32(0x08);
- 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
- 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sspTMCmd,
- 			sizeof(sspTMCmd), 0);
+Changes in V8:
+ - Change the compatible as per driver, remove interrupts from required
+   properties, add reset-gpios and move regulators to separate binding.
+
+Changes in V9:
+ - Undo the changes from V8 and only add reset-gpios. Leave interrupts
+   as required properties and do not change compatible.
+   
+ Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+index ec3138c..3312784 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+@@ -44,6 +44,9 @@ properties:
+   "#size-cells":
+     const: 0
+ 
++  reset-gpios:
++    maxItems: 1
++
+ patternProperties:
+   "^gpio@[0-9a-f]+$":
+     type: object
+@@ -92,6 +95,7 @@ required:
+   - "#address-cells"
+   - "#size-cells"
+   - "#interrupt-cells"
++  - reset-gpios
+ 
+ additionalProperties: false
+ 
+@@ -99,6 +103,7 @@ examples:
+   - |
+     #include <dt-bindings/mfd/qcom-pm8008.h>
+     #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
+     qupv3_se13_i2c {
+       #address-cells = <1>;
+       #size-cells = <0>;
+@@ -113,6 +118,8 @@ examples:
+         interrupt-parent = <&tlmm>;
+         interrupts = <32 IRQ_TYPE_EDGE_RISING>;
+ 
++        reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>;
++
+         pm8008_gpios: gpio@c000 {
+           compatible = "qcom,pm8008-gpio", "qcom,spmi-gpio";
+           reg = <0xc000>;
 -- 
-2.34.1
-
-
+2.7.4
 
