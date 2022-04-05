@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9558C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9077BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345689AbiDEJnq (ORCPT
+        id S1345731AbiDEJny (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
+        Tue, 5 Apr 2022 05:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239607AbiDEIUQ (ORCPT
+        with ESMTP id S239600AbiDEIUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:20:16 -0400
+        Tue, 5 Apr 2022 04:20:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8ECF4;
-        Tue,  5 Apr 2022 01:17:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AEC83;
+        Tue,  5 Apr 2022 01:17:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21C9CB81A37;
-        Tue,  5 Apr 2022 08:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 876BBC385A1;
-        Tue,  5 Apr 2022 08:17:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9394B81BB2;
+        Tue,  5 Apr 2022 08:17:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22650C385A1;
+        Tue,  5 Apr 2022 08:17:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146637;
-        bh=PaGBNH3IO+vHhfj5CQrJJiXJVdx0NKXBLXt6WjCBSr8=;
+        s=korg; t=1649146629;
+        bh=3KGFa6EC32xjqdgLhOOEcMv8VXMCN8d2FHi3RO5nQi4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=obUNSg++14W6yndgyLV/rGWhGUjfX1NZk056hv8sM5WZTQsOHomxUKrA1apIoKC1w
-         VMsIFVzJAz7zFrpIi+7wQjBY8PUKy4/lWtxxjM+13HGcQ8l5dgMG5J3cCeb9QJWP/n
-         Xry9hVUEXhbpZAXV9wdKmFC7ZXoPjFfDS49+WiFc=
+        b=K30RS9orHTn9vFLpPPhw5nkiFmcumWemH7adAwikgpvgooT4380kxTgMYTdA85Bq1
+         qRHvkZC6xJVtjjAd68LYLxUNIyRca+F5JV6HHg/QdqAdMFV3r+QedADyasQnSPfIqB
+         z+/nNHOyNTjAWpQ0gE7K/FP7twVqap5Ftv4Tolv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Detlev Casanova <detlev.casanova@collabora.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0834/1126] regulator: rpi-panel: Handle I2C errors/timing to the Atmel
-Date:   Tue,  5 Apr 2022 09:26:21 +0200
-Message-Id: <20220405070432.038286312@linuxfoundation.org>
+        stable@vger.kernel.org, Fedor Pchelkin <aissur0002@gmail.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Christian Brauner <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.17 0832/1126] fs: fix fd table size alignment properly
+Date:   Tue,  5 Apr 2022 09:26:19 +0200
+Message-Id: <20220405070431.979689181@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -52,141 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 5665eee7a3800430e7dc3ef6f25722476b603186 ]
+[ Upstream commit d888c83fcec75194a8a48ccd283953bdba7b2550 ]
 
-The Atmel is doing some things in the I2C ISR, during which
-period it will not respond to further commands. This is
-particularly true of the POWERON command.
+Jason Donenfeld reports that my commit 1c24a186398f ("fs: fd tables have
+to be multiples of BITS_PER_LONG") doesn't work, and the reason is an
+embarrassing brown-paper-bag bug.
 
-Increase delays appropriately, and retry should I2C errors be
-reported.
+Yes, we want to align the number of fds to BITS_PER_LONG, and yes, the
+reason they might not be aligned is because the incoming 'max_fd'
+argument might not be aligned.
 
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
-Link: https://lore.kernel.org/r/20220124220129.158891-3-detlev.casanova@collabora.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+But aligining the argument - while simple - will cause a "infinitely
+big" maxfd (eg NR_OPEN_MAX) to just overflow to zero.  Which most
+definitely isn't what we want either.
+
+The obvious fix was always just to do the alignment last, but I had
+moved it earlier just to make the patch smaller and the code look
+simpler.  Duh.  It certainly made _me_ look simple.
+
+Fixes: 1c24a186398f ("fs: fd tables have to be multiples of BITS_PER_LONG")
+Reported-and-tested-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Fedor Pchelkin <aissur0002@gmail.com>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../regulator/rpi-panel-attiny-regulator.c    | 56 +++++++++++++++----
- 1 file changed, 46 insertions(+), 10 deletions(-)
+ fs/file.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
-index ee46bfbf5eee..991b4730d768 100644
---- a/drivers/regulator/rpi-panel-attiny-regulator.c
-+++ b/drivers/regulator/rpi-panel-attiny-regulator.c
-@@ -37,11 +37,24 @@ static const struct regmap_config attiny_regmap_config = {
- static int attiny_lcd_power_enable(struct regulator_dev *rdev)
- {
- 	unsigned int data;
-+	int ret, i;
+diff --git a/fs/file.c b/fs/file.c
+index c01c29417ae6..ee9317346702 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -303,10 +303,9 @@ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
+ 	unsigned int count;
  
- 	regmap_write(rdev->regmap, REG_POWERON, 1);
-+	msleep(80);
-+
- 	/* Wait for nPWRDWN to go low to indicate poweron is done. */
--	regmap_read_poll_timeout(rdev->regmap, REG_PORTB, data,
--					data & BIT(0), 10, 1000000);
-+	for (i = 0; i < 20; i++) {
-+		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+		if (!ret) {
-+			if (data & BIT(0))
-+				break;
-+		}
-+		usleep_range(10000, 12000);
-+	}
-+	usleep_range(10000, 12000);
-+
-+	if (ret)
-+		pr_err("%s: regmap_read_poll_timeout failed %d\n", __func__, ret);
- 
- 	/* Default to the same orientation as the closed source
- 	 * firmware used for the panel.  Runtime rotation
-@@ -57,23 +70,34 @@ static int attiny_lcd_power_disable(struct regulator_dev *rdev)
- {
- 	regmap_write(rdev->regmap, REG_PWM, 0);
- 	regmap_write(rdev->regmap, REG_POWERON, 0);
--	udelay(1);
-+	msleep(30);
- 	return 0;
+ 	count = count_open_files(fdt);
+-	max_fds = ALIGN(max_fds, BITS_PER_LONG);
+ 	if (max_fds < NR_OPEN_DEFAULT)
+ 		max_fds = NR_OPEN_DEFAULT;
+-	return min(count, max_fds);
++	return ALIGN(min(count, max_fds), BITS_PER_LONG);
  }
  
- static int attiny_lcd_power_is_enabled(struct regulator_dev *rdev)
- {
- 	unsigned int data;
--	int ret;
-+	int ret, i;
- 
--	ret = regmap_read(rdev->regmap, REG_POWERON, &data);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(rdev->regmap, REG_POWERON, &data);
-+		if (!ret)
-+			break;
-+		usleep_range(10000, 12000);
-+	}
- 	if (ret < 0)
- 		return ret;
- 
- 	if (!(data & BIT(0)))
- 		return 0;
- 
--	ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+		if (!ret)
-+			break;
-+		usleep_range(10000, 12000);
-+	}
-+
- 	if (ret < 0)
- 		return ret;
- 
-@@ -103,20 +127,32 @@ static int attiny_update_status(struct backlight_device *bl)
- {
- 	struct regmap *regmap = bl_get_data(bl);
- 	int brightness = bl->props.brightness;
-+	int ret, i;
- 
- 	if (bl->props.power != FB_BLANK_UNBLANK ||
- 	    bl->props.fb_blank != FB_BLANK_UNBLANK)
- 		brightness = 0;
- 
--	return regmap_write(regmap, REG_PWM, brightness);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_write(regmap, REG_PWM, brightness);
-+		if (!ret)
-+			break;
-+	}
-+
-+	return ret;
- }
- 
- static int attiny_get_brightness(struct backlight_device *bl)
- {
- 	struct regmap *regmap = bl_get_data(bl);
--	int ret, brightness;
-+	int ret, brightness, i;
-+
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(regmap, REG_PWM, &brightness);
-+		if (!ret)
-+			break;
-+	}
- 
--	ret = regmap_read(regmap, REG_PWM, &brightness);
- 	if (ret)
- 		return ret;
- 
-@@ -166,7 +202,7 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
- 	}
- 
- 	regmap_write(regmap, REG_POWERON, 0);
--	mdelay(1);
-+	msleep(30);
- 
- 	config.dev = &i2c->dev;
- 	config.regmap = regmap;
+ /*
 -- 
 2.34.1
 
