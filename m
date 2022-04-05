@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F32C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C552FC35273
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582915AbiDEXuU (ORCPT
+        id S1582966AbiDEXun (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
+        Tue, 5 Apr 2022 19:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243499AbiDEKhC (ORCPT
+        with ESMTP id S1349238AbiDEJt2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:02 -0400
+        Tue, 5 Apr 2022 05:49:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44844541B9;
-        Tue,  5 Apr 2022 03:22:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA272315C;
+        Tue,  5 Apr 2022 02:43:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9C0D616D7;
-        Tue,  5 Apr 2022 10:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD9F9C385A1;
-        Tue,  5 Apr 2022 10:22:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD22B61675;
+        Tue,  5 Apr 2022 09:43:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4BD5C385A1;
+        Tue,  5 Apr 2022 09:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154127;
-        bh=bPX/khrWPtuH6lxw45TCKs76d2OxZC/P91UXYox1D2c=;
+        s=korg; t=1649151787;
+        bh=7Vx2WvST/3UetrRUM4JsvOUg6Uksvk+kePktchHbQIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rdu+d9tpB1p0fC4NE3qvvl34HyGIY72VvLUBE6QB1t4SKVGSFXdnDAPWgUC6M2XBm
-         +z6I3yfM1J79Hhq/QjFdrTr91bRTqLBTUSrRZgOyYdBmgGEbcwTfFycYQDvvNxlf3w
-         Xi3yDa2aqo4ccro15xgzwnyy/tgGNwye4mpvFNX8=
+        b=AQbyk6RB/rovKedEwfyVqomq9KQD1X0SLCUfBYT3J0Hltx2WGV9HGjzNLOJryZfTt
+         IZSNikf7fWCwoCDPOUDt6HFQQaIDW7typSr7Mo8qW317eLm2qmN1T57Dg2JoE91Q93
+         5YZU/82u8ecKHU5n9JNTq7psbH3BWARytNhN1B8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 467/599] parisc: Fix handling off probe non-access faults
-Date:   Tue,  5 Apr 2022 09:32:41 +0200
-Message-Id: <20220405070312.724163665@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        James Morris <jmorris@namei.org>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        tomoyo-dev-en@lists.osdn.me, "Serge E. Hallyn" <serge@hallyn.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 492/913] TOMOYO: fix __setup handlers return values
+Date:   Tue,  5 Apr 2022 09:25:54 +0200
+Message-Id: <20220405070354.602618440@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,166 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit e00b0a2ab8ec019c344e53bfc76e31c18bb587b7 ]
+[ Upstream commit 39844b7e3084baecef52d1498b5fa81afa2cefa9 ]
 
-Currently, the parisc kernel does not fully support non-access TLB
-fault handling for probe instructions. In the fast path, we set the
-target register to zero if it is not a shadowed register. The slow
-path is not implemented, so we call do_page_fault. The architecture
-indicates that non-access faults should not cause a page fault from
-disk.
+__setup() handlers should return 1 if the parameter is handled.
+Returning 0 causes the entire string to be added to init's
+environment strings (limited to 32 strings), unnecessarily polluting it.
 
-This change adds to code to provide non-access fault support for
-probe instructions. It also modifies the handling of faults on
-userspace so that if the address lies in a valid VMA and the access
-type matches that for the VMA, the probe target register is set to
-one. Otherwise, the target register is set to zero.
+Using the documented strings "TOMOYO_loader=string1" and
+"TOMOYO_trigger=string2" causes an Unknown parameter message:
+  Unknown kernel command line parameters
+    "BOOT_IMAGE=/boot/bzImage-517rc5 TOMOYO_loader=string1 \
+     TOMOYO_trigger=string2", will be passed to user space.
 
-This was done to make probe instructions more useful for userspace.
-Probe instructions are not very useful if they set the target register
-to zero whenever a page is not present in memory. Nominally, the
-purpose of the probe instruction is determine whether read or write
-access to a given address is allowed.
+and these strings are added to init's environment string space:
+  Run /sbin/init as init process
+    with arguments:
+     /sbin/init
+    with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     TOMOYO_loader=string1
+     TOMOYO_trigger=string2
 
-This fixes a problem in function pointer comparison noticed in the
-glibc testsuite (stdio-common/tst-vfprintf-user-type). The same
-problem is likely in glibc (_dl_lookup_address).
+With this change, these __setup handlers act as expected,
+and init's environment is not polluted with these strings.
 
-V2 adds flush and lpa instruction support to handle_nadtlb_fault.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 0e4ae0e0dec63 ("TOMOYO: Make several options configurable.")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: James Morris <jmorris@namei.org>
+Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
+Cc: tomoyo-dev-en@lists.osdn.me
+Cc: "Serge E. Hallyn" <serge@hallyn.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/include/asm/traps.h |  1 +
- arch/parisc/kernel/traps.c      |  2 +
- arch/parisc/mm/fault.c          | 89 +++++++++++++++++++++++++++++++++
- 3 files changed, 92 insertions(+)
+ security/tomoyo/load_policy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/parisc/include/asm/traps.h b/arch/parisc/include/asm/traps.h
-index 8ecc1f0c0483..d0e090a2c000 100644
---- a/arch/parisc/include/asm/traps.h
-+++ b/arch/parisc/include/asm/traps.h
-@@ -17,6 +17,7 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err);
- const char *trap_name(unsigned long code);
- void do_page_fault(struct pt_regs *regs, unsigned long code,
- 		unsigned long address);
-+int handle_nadtlb_fault(struct pt_regs *regs);
- #endif
- 
- #endif
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index 269b737d2629..bce47e0fb692 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -661,6 +661,8 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 			 by hand. Technically we need to emulate:
- 			 fdc,fdce,pdc,"fic,4f",prober,probeir,probew, probeiw
- 		*/
-+		if (code == 17 && handle_nadtlb_fault(regs))
-+			return;
- 		fault_address = regs->ior;
- 		fault_space = regs->isr;
- 		break;
-diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
-index 716960f5d92e..5faa3cff4738 100644
---- a/arch/parisc/mm/fault.c
-+++ b/arch/parisc/mm/fault.c
-@@ -424,3 +424,92 @@ void do_page_fault(struct pt_regs *regs, unsigned long code,
- 		goto no_context;
- 	pagefault_out_of_memory();
+diff --git a/security/tomoyo/load_policy.c b/security/tomoyo/load_policy.c
+index 3445ae6fd479..363b65be87ab 100644
+--- a/security/tomoyo/load_policy.c
++++ b/security/tomoyo/load_policy.c
+@@ -24,7 +24,7 @@ static const char *tomoyo_loader;
+ static int __init tomoyo_loader_setup(char *str)
+ {
+ 	tomoyo_loader = str;
+-	return 0;
++	return 1;
  }
-+
-+/* Handle non-access data TLB miss faults.
-+ *
-+ * For probe instructions, accesses to userspace are considered allowed
-+ * if they lie in a valid VMA and the access type matches. We are not
-+ * allowed to handle MM faults here so there may be situations where an
-+ * actual access would fail even though a probe was successful.
-+ */
-+int
-+handle_nadtlb_fault(struct pt_regs *regs)
-+{
-+	unsigned long insn = regs->iir;
-+	int breg, treg, xreg, val = 0;
-+	struct vm_area_struct *vma, *prev_vma;
-+	struct task_struct *tsk;
-+	struct mm_struct *mm;
-+	unsigned long address;
-+	unsigned long acc_type;
-+
-+	switch (insn & 0x380) {
-+	case 0x280:
-+		/* FDC instruction */
-+		fallthrough;
-+	case 0x380:
-+		/* PDC and FIC instructions */
-+		if (printk_ratelimit()) {
-+			pr_warn("BUG: nullifying cache flush/purge instruction\n");
-+			show_regs(regs);
-+		}
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x180:
-+		/* PROBE instruction */
-+		treg = insn & 0x1f;
-+		if (regs->isr) {
-+			tsk = current;
-+			mm = tsk->mm;
-+			if (mm) {
-+				/* Search for VMA */
-+				address = regs->ior;
-+				mmap_read_lock(mm);
-+				vma = find_vma_prev(mm, address, &prev_vma);
-+				mmap_read_unlock(mm);
-+
-+				/*
-+				 * Check if access to the VMA is okay.
-+				 * We don't allow for stack expansion.
-+				 */
-+				acc_type = (insn & 0x40) ? VM_WRITE : VM_READ;
-+				if (vma
-+				    && address >= vma->vm_start
-+				    && (vma->vm_flags & acc_type) == acc_type)
-+					val = 1;
-+			}
-+		}
-+		if (treg)
-+			regs->gr[treg] = val;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x300:
-+		/* LPA instruction */
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		treg = insn & 0x1f;
-+		if (treg)
-+			regs->gr[treg] = 0;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
+ 
+ __setup("TOMOYO_loader=", tomoyo_loader_setup);
+@@ -64,7 +64,7 @@ static const char *tomoyo_trigger;
+ static int __init tomoyo_trigger_setup(char *str)
+ {
+ 	tomoyo_trigger = str;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("TOMOYO_trigger=", tomoyo_trigger_setup);
 -- 
 2.34.1
 
