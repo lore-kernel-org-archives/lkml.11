@@ -2,219 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A65AC4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1327C41535
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835142AbiDFAWm (ORCPT
+        id S1378305AbiDFAiB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
+        Tue, 5 Apr 2022 20:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443714AbiDEPkL (ORCPT
+        with ESMTP id S1349536AbiDENRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:11 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DFB184B7F
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:18 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id b18so11058971qtk.13
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:58:18 -0700 (PDT)
+        Tue, 5 Apr 2022 09:17:30 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B769E12FFAF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:21:54 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id k23so22859271ejd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:21:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4Zo1koAQLSqT+JlliAq41n9EK+T7UuDXU3++Yy/OL90=;
-        b=pYOq3UGJ9TuIXdMMMK/F/k3jSEPQuAMk+I1l80ZkCtTU38iwbrbYh/MmB6ZwhRGL46
-         7ZF/j58tDSvOPdcKV47hG6AbEPYz91zXGhTpCa2J8xpZ/juYLcNWpAKAlTfFhqDYI/ng
-         tfCpikouSwxh9W4Q3CBrXgepftQ89pHlQ9VH8GnTvWJPjfI855qfNk2HAo0md0SjLMNO
-         yZoymPDDM/IIOizehI3PWyG0QjrKc19XUDE3yPjkc28DIFrfEi1r30qlb6T1aqd/oQTM
-         +PBLdeYs8i7R6+WZSzhPaHlAA9oAZx5z4by2ZDiCwd/V1jv7s89BtY1K3X9IGRu/XK6+
-         3rfw==
+        bh=Hyd/pfrY+6hwqlhuml6mv0gqkwBch+EmlReq/Qln8z4=;
+        b=nL1mp9dhQOkmWmGbkOINfE0v3Wjfwsd/cZQ1vukSvyZWGEYB3IJR1Zb2YedevBKc8n
+         pW6/1SSl2f9mVKLfvYm/J77tRixq2g3dQv7jgo3rj92Ky1RoG2jlFV6DKEqFk+cj5tSb
+         0BETCsQpGAYerpyypnP2McxFuR25X7pfYKq8gxVrsWLcCi2fORW9XszwnJqIvYYdYANl
+         g9TD2pJknTz/L4eN3lBqHBO+o41pjRKgYWkeju8w/XA7ABmuzZjEacboST6KSPF8vTkW
+         0FxkmiT+Me5Y2duYrDX07cH5cYm8zCLm8PPwg1/QyDnQFkCcJsvYGfrzL7n+Iymrqff1
+         HvJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4Zo1koAQLSqT+JlliAq41n9EK+T7UuDXU3++Yy/OL90=;
-        b=XI5dU3/bBBU7zxHe+1dEEHQwSZMug1hm7I3nnXeo2EHbdAiJpdcjvgDJWu+N1sZJHT
-         eGqYWMC6+NlpjW1k9giWhSHPj817AurVPZD8DfQInxxK89GAVbyeqmdNe4AC9ZixnVQp
-         N58H8ywrKD1JyE3vgU0MriK4utOUbamJSsN2Dk8sFjQR5ayW4tu69+xHEa4lcCJ0SwBx
-         00knEoEaJJcLlVqPJJKbfWeUxb2slKxPAU94+FKpjI0kw0aBKCrgvuQHA8IL1Aa9oF5F
-         0VcqWgI9UOKLnz7Zn/qPE6y9v7sGASI3+sRsbRkgfHIkO5t8ZVKN3xfP+68fC2jCZ7l8
-         un0Q==
-X-Gm-Message-State: AOAM533KdKJtap4qOjR5f3on+fG21M+Mbrc6iQw9HdaRdX/QsBtFlwZr
-        2qumRxohl6l34uS+cvmxe95gI8X5/YbxTMXsUz9KTw==
-X-Google-Smtp-Source: ABdhPJz/N9m3G+9VZYfO3dFBtZYE5Y4RILMfHESwLIPYnr2rLZvWX9Vt+wYFpiNptzVDvlPI4eFmvvGPXv4BsWAZL2E=
-X-Received: by 2002:ac8:7dd1:0:b0:2e0:6fe1:189b with SMTP id
- c17-20020ac87dd1000000b002e06fe1189bmr3138136qte.629.1649167097585; Tue, 05
- Apr 2022 06:58:17 -0700 (PDT)
+        bh=Hyd/pfrY+6hwqlhuml6mv0gqkwBch+EmlReq/Qln8z4=;
+        b=XBD0ZQzrPh6PLfEz8Qy1y7Dm2ti3ccfDogyNTbjgb1cmeJhHOcEd3uS5pg5Cwz/Xej
+         oIQGUD4P9rhbWawvNHreR62xk0SmVaclk7UI53bJMhA4mVNqel2xv0ilpxKSBfCbHkDd
+         NWLtiwYznRg/sVAwGlvSHGb6JiGcSaw0OcWLsWGO1AG2Fr0nHdcetd+eI0KeE2PtTB5E
+         n3qRhhJJdcgMHUCbSufJXDUQ744471QdEpS2xyHY6RJ1GtDDAzacRXQ2IEXfwd289R2l
+         EKqplY1qQbM7MAcX0DzQRCuCvJGR68Kau/0Tq6xtictHsaX+8mRIygQc/f+3t+M2n3Y0
+         5TBw==
+X-Gm-Message-State: AOAM533ayFQd8gCp8KrWunvoL2NoegAuhvSKgDUCG2w+eLXWrn2J7mv0
+        KSCrR+xb4hNO03f374pCAzpHqsVHYZihbmoM4yE0jg==
+X-Google-Smtp-Source: ABdhPJwHngR0iRaezdjPROigde8WDKR2Bt7Fj5Iw+EvDdD2I+vTb5RSGu7YkbPC6mcuF25QXqCav+lbZ+p6ixycK02M=
+X-Received: by 2002:a17:907:97cf:b0:6df:846f:ad0a with SMTP id
+ js15-20020a17090797cf00b006df846fad0amr3443415ejc.286.1649161312925; Tue, 05
+ Apr 2022 05:21:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220404163436.956875-1-vkoul@kernel.org> <20220404163436.956875-15-vkoul@kernel.org>
-In-Reply-To: <20220404163436.956875-15-vkoul@kernel.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Tue, 5 Apr 2022 16:58:06 +0300
-Message-ID: <CAA8EJpr5CwJ1_aKQ3Crqbjy8-=igazdWvN4VeZtp0fT85nXE6w@mail.gmail.com>
-Subject: Re: [PATCH v6 14/14] drm/msm/dsi: Add support for DSC configuration
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
+References: <20220330145910.1946-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220330145910.1946-1-andriy.shevchenko@linux.intel.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 5 Apr 2022 14:21:42 +0200
+Message-ID: <CAMRc=McZihs+aKOGE3M5_BW__CTiyX2u2bdS6xc+uHU9RCAZdw@mail.gmail.com>
+Subject: Re: [PATCH v1 1/3] gpiolib: Split out for_each_gpio_desc() macro
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Apr 2022 at 19:35, Vinod Koul <vkoul@kernel.org> wrote:
+On Wed, Mar 30, 2022 at 4:59 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 >
-> When DSC is enabled, we need to configure DSI registers accordingly and
-> configure the respective stream compression registers.
+> In some cases we want to traverse all GPIO descriptors for given
+> chip, let's split out for_each_gpio_desc() macro for such cases.
 >
-> Add support to calculate the register setting based on DSC params and
-> timing information and configure these registers.
->
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
-
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-
-
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  drivers/gpu/drm/msm/dsi/dsi_host.c | 98 +++++++++++++++++++++++++++++-
->  1 file changed, 97 insertions(+), 1 deletion(-)
+>  drivers/gpio/gpiolib.c | 10 +++-------
+>  drivers/gpio/gpiolib.h |  7 +++++--
+>  2 files changed, 8 insertions(+), 9 deletions(-)
 >
-> diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> index eb0be34add45..f3ed6c40b9e1 100644
-> --- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-> +++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> @@ -912,6 +912,65 @@ static void dsi_ctrl_config(struct msm_dsi_host *msm_host, bool enable,
->                 dsi_write(msm_host, REG_DSI_CPHY_MODE_CTRL, BIT(0));
->  }
+> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+> index e59884cc12a7..723411c13f1c 100644
+> --- a/drivers/gpio/gpiolib.c
+> +++ b/drivers/gpio/gpiolib.c
+> @@ -310,15 +310,11 @@ static struct gpio_desc *gpio_name_to_desc(const char * const name)
+>         spin_lock_irqsave(&gpio_lock, flags);
 >
-> +static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mode, u32 hdisplay)
-> +{
-> +       struct msm_display_dsc_config *dsc = msm_host->dsc;
-> +       u32 reg, intf_width, reg_ctrl, reg_ctrl2;
-> +       u32 slice_per_intf, total_bytes_per_intf;
-> +       u32 pkt_per_line;
-> +       u32 bytes_in_slice;
-> +       u32 eol_byte_num;
-> +
-> +       /* first calculate dsc parameters and then program
-> +        * compress mode registers
-> +        */
-> +       intf_width = hdisplay;
-> +       slice_per_intf = DIV_ROUND_UP(intf_width, dsc->drm->slice_width);
-> +
-> +       /* If slice_per_pkt is greater than slice_per_intf
-> +        * then default to 1. This can happen during partial
-> +        * update.
-> +        */
-> +       if (slice_per_intf > dsc->drm->slice_count)
-> +               dsc->drm->slice_count = 1;
-> +
-> +       slice_per_intf = DIV_ROUND_UP(hdisplay, dsc->drm->slice_width);
-> +       bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width * dsc->drm->bits_per_pixel, 8);
-> +
-> +       dsc->drm->slice_chunk_size = bytes_in_slice;
-> +
-> +       total_bytes_per_intf = bytes_in_slice * slice_per_intf;
-> +
-> +       eol_byte_num = total_bytes_per_intf % 3;
-> +       pkt_per_line = slice_per_intf / dsc->drm->slice_count;
-> +
-> +       if (is_cmd_mode) /* packet data type */
-> +               reg = DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(MIPI_DSI_DCS_LONG_WRITE);
-> +       else
-> +               reg = DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(MIPI_DSI_COMPRESSED_PIXEL_STREAM);
-> +
-> +       /* DSI_VIDEO_COMPRESSION_MODE & DSI_COMMAND_COMPRESSION_MODE
-> +        * registers have similar offsets, so for below common code use
-> +        * DSI_VIDEO_COMPRESSION_MODE_XXXX for setting bits
-> +        */
-> +       reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(pkt_per_line >> 1);
-> +       reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(eol_byte_num);
-> +       reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EN;
-> +
-> +       if (is_cmd_mode) {
-> +               reg_ctrl = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL);
-> +               reg_ctrl2 = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2);
-> +
-> +               reg_ctrl |= reg;
-> +               reg_ctrl2 |= DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(bytes_in_slice);
-> +
-> +               dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL, reg);
-> +               dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2, reg_ctrl2);
-> +       } else {
-> +               dsi_write(msm_host, REG_DSI_VIDEO_COMPRESSION_MODE_CTRL, reg);
-> +       }
-> +}
-> +
->  static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
->  {
->         struct drm_display_mode *mode = msm_host->mode;
-> @@ -944,7 +1003,38 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
->                 hdisplay /= 2;
->         }
+>         list_for_each_entry(gdev, &gpio_devices, list) {
+> +               struct gpio_desc *desc;
+>                 int i;
 >
-> +       if (msm_host->dsc) {
-> +               struct msm_display_dsc_config *dsc = msm_host->dsc;
-> +
-> +               /* update dsc params with timing params */
-> +               if (!dsc || !mode->hdisplay || !mode->vdisplay) {
-> +                       pr_err("DSI: invalid input: pic_width: %d pic_height: %d\n",
-> +                              mode->hdisplay, mode->vdisplay);
-> +                       return;
-> +               }
-> +
-> +               dsc->drm->pic_width = mode->hdisplay;
-> +               dsc->drm->pic_height = mode->vdisplay;
-> +               DBG("Mode %dx%d\n", dsc->drm->pic_width, dsc->drm->pic_height);
-> +
-> +               /* we do the calculations for dsc parameters here so that
-> +                * panel can use these parameters
-> +                */
-> +               dsi_populate_dsc_params(dsc);
-> +
-> +               /* Divide the display by 3 but keep back/font porch and
-> +                * pulse width same
-> +                */
-> +               h_total -= hdisplay;
-> +               hdisplay /= 3;
-> +               h_total += hdisplay;
-> +               ha_end = ha_start + hdisplay;
-> +       }
-> +
->         if (msm_host->mode_flags & MIPI_DSI_MODE_VIDEO) {
-> +               if (msm_host->dsc)
-> +                       dsi_update_dsc_timing(msm_host, false, mode->hdisplay);
-> +
->                 dsi_write(msm_host, REG_DSI_ACTIVE_H,
->                         DSI_ACTIVE_H_START(ha_start) |
->                         DSI_ACTIVE_H_END(ha_end));
-> @@ -963,8 +1053,14 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
->                         DSI_ACTIVE_VSYNC_VPOS_START(vs_start) |
->                         DSI_ACTIVE_VSYNC_VPOS_END(vs_end));
->         } else {                /* command mode */
-> +               if (msm_host->dsc)
-> +                       dsi_update_dsc_timing(msm_host, true, mode->hdisplay);
-> +
->                 /* image data and 1 byte write_memory_start cmd */
-> -               wc = hdisplay * dsi_get_bpp(msm_host->format) / 8 + 1;
-> +               if (!msm_host->dsc)
-> +                       wc = hdisplay * dsi_get_bpp(msm_host->format) / 8 + 1;
-> +               else
-> +                       wc = mode->hdisplay / 2 + 1;
+> -               for (i = 0; i != gdev->ngpio; ++i) {
+> -                       struct gpio_desc *desc = &gdev->descs[i];
+> -
+> -                       if (!desc->name)
+> -                               continue;
+> -
+> -                       if (!strcmp(desc->name, name)) {
+> +               for_each_gpio_desc(i, gdev->chip, desc) {
+> +                       if (desc->name && !strcmp(desc->name, name)) {
+>                                 spin_unlock_irqrestore(&gpio_lock, flags);
+>                                 return desc;
+>                         }
+> diff --git a/drivers/gpio/gpiolib.h b/drivers/gpio/gpiolib.h
+> index 06f3faa9fbef..450fb2fabe43 100644
+> --- a/drivers/gpio/gpiolib.h
+> +++ b/drivers/gpio/gpiolib.h
+> @@ -100,10 +100,13 @@ struct gpio_array {
 >
->                 dsi_write(msm_host, REG_DSI_CMD_MDP_STREAM0_CTRL,
->                         DSI_CMD_MDP_STREAM0_CTRL_WORD_COUNT(wc) |
+>  struct gpio_desc *gpiochip_get_desc(struct gpio_chip *gc, unsigned int hwnum);
+>
+> -#define for_each_gpio_desc_with_flag(i, gc, desc, flag)                \
+> +#define for_each_gpio_desc(i, gc, desc)                                \
+
+While at it: how about declaring the i variable in the loop definition?
+
+Bart
+
+>         for (i = 0, desc = gpiochip_get_desc(gc, i);            \
+>              i < gc->ngpio;                                     \
+> -            i++, desc = gpiochip_get_desc(gc, i))              \
+> +            i++, desc = gpiochip_get_desc(gc, i))
+> +
+> +#define for_each_gpio_desc_with_flag(i, gc, desc, flag)                \
+> +       for_each_gpio_desc(i, gc, desc)                         \
+>                 if (!test_bit(flag, &desc->flags)) {} else
+>
+>  int gpiod_get_array_value_complex(bool raw, bool can_sleep,
 > --
-> 2.34.1
+> 2.35.1
 >
-
-
--- 
-With best wishes
-Dmitry
