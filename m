@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD9BCC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC22CC4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350690AbiDEJ71 (ORCPT
+        id S1350718AbiDEJ7d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
+        Tue, 5 Apr 2022 05:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237960AbiDEISe (ORCPT
+        with ESMTP id S239992AbiDEIWJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A967EB7C6F;
-        Tue,  5 Apr 2022 01:07:48 -0700 (PDT)
+        Tue, 5 Apr 2022 04:22:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E213A1035;
+        Tue,  5 Apr 2022 01:19:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74AD1B81BAF;
-        Tue,  5 Apr 2022 08:07:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0256C385A1;
-        Tue,  5 Apr 2022 08:07:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A624609AD;
+        Tue,  5 Apr 2022 08:19:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E9C2C385A0;
+        Tue,  5 Apr 2022 08:19:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146066;
-        bh=67yb1/B6Sg6i3jl64lZRn2eNJU5+LSPF5bkVgEih44E=;
+        s=korg; t=1649146772;
+        bh=KL2U+DdtwFetDLdywa1BvKB0ub14yiL29O6JG2SZpkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E9I8VZO4FXzBrl7e8PLaDPoNzH+1YoIImL6erO8geMW+HNcjyFq4lA3lbSMwUXI1b
-         v/6bbY3nij1oAh2JLSLznAhDaE3iASZMz/ChzODf6SbydsO334XbMtVi0CWv43YZ6+
-         ojigBYoNSoWa9eou63a6Vs/Pq0tA0FH7fgSAER4s=
+        b=x/37nQwq60mxVYUfB+WklXeNKt4u1JVgaMznoT7NoYdWI61B2aw/ehjS8iK4SZHIX
+         X8ZzTscGfQNFelJPQIDD3LFgyds85TuBlNOYr758VDKHAWGBkHQVksdxmWMfBClFdS
+         EtADm2pR+K4NpgeWevmGBbYypPzAdxYkh2JmK+zU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Divya Koppera <Divya.Koppera@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Kai Ye <yekai13@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0628/1126] net: phy: micrel: Fix concurrent register access
-Date:   Tue,  5 Apr 2022 09:22:55 +0200
-Message-Id: <20220405070426.069996732@linuxfoundation.org>
+Subject: [PATCH 5.17 0845/1126] crypto: hisilicon/sec - not need to enable sm4 extra mode at HW V3
+Date:   Tue,  5 Apr 2022 09:26:32 +0200
+Message-Id: <20220405070432.353566176@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,73 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Divya Koppera <Divya.Koppera@microchip.com>
+From: Kai Ye <yekai13@huawei.com>
 
-[ Upstream commit 4488f6b6148045424459ef1d5b153c6895ee1dbb ]
+[ Upstream commit f8a2652826444d13181061840b96a5d975d5b6c6 ]
 
-Make Extended page register accessing atomic,
-to overcome unexpected output from register
-reads/writes.
+It is not need to enable sm4 extra mode in at HW V3. Here is fix it.
 
-Fixes: 7c2dcfa295b1 ("net: phy: micrel: Add support for LAN8804 PHY")
-Signed-off-by: Divya Koppera<Divya.Koppera@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+ drivers/crypto/hisilicon/sec2/sec_main.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index a7ebcdab415b..281cebc3d00c 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1596,11 +1596,13 @@ static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
- {
- 	u32 data;
+diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
+index 26d3ab1d308b..89d4cc767d36 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_main.c
++++ b/drivers/crypto/hisilicon/sec2/sec_main.c
+@@ -443,9 +443,11 @@ static int sec_engine_init(struct hisi_qm *qm)
  
--	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
--	phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
--	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
--		  (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
--	data = phy_read(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA);
-+	phy_lock_mdio_bus(phydev);
-+	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
-+	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
-+	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
-+		    (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
-+	data = __phy_read(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA);
-+	phy_unlock_mdio_bus(phydev);
+ 	writel(SEC_SAA_ENABLE, qm->io_base + SEC_SAA_EN_REG);
  
- 	return data;
- }
-@@ -1608,18 +1610,18 @@ static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
- static int lanphy_write_page_reg(struct phy_device *phydev, int page, u16 addr,
- 				 u16 val)
- {
--	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
--	phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
--	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
--		  (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
-+	phy_lock_mdio_bus(phydev);
-+	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
-+	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
-+	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
-+		    page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC);
- 
--	val = phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, val);
--	if (val) {
-+	val = __phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, val);
-+	if (val != 0)
- 		phydev_err(phydev, "Error: phy_write has returned error %d\n",
- 			   val);
--		return val;
--	}
--	return 0;
-+	phy_unlock_mdio_bus(phydev);
-+	return val;
- }
- 
- static int lan8814_config_init(struct phy_device *phydev)
+-	/* Enable sm4 extra mode, as ctr/ecb */
+-	writel_relaxed(SEC_BD_ERR_CHK_EN0,
+-		       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
++	/* HW V2 enable sm4 extra mode, as ctr/ecb */
++	if (qm->ver < QM_HW_V3)
++		writel_relaxed(SEC_BD_ERR_CHK_EN0,
++			       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
++
+ 	/* Enable sm4 xts mode multiple iv */
+ 	writel_relaxed(SEC_BD_ERR_CHK_EN1,
+ 		       qm->io_base + SEC_BD_ERR_CHK_EN_REG1);
 -- 
 2.34.1
 
