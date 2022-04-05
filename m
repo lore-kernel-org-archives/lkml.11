@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CCEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384731AbiDFBgW (ORCPT
+        id S1392526AbiDFBgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33856 "EHLO
+        Tue, 5 Apr 2022 21:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344108AbiDEKjp (ORCPT
+        with ESMTP id S1349502AbiDEJt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE812611D;
-        Tue,  5 Apr 2022 03:25:00 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7C6AB;
+        Tue,  5 Apr 2022 02:47:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4DCD8CE0B18;
-        Tue,  5 Apr 2022 10:24:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6280CC385A0;
-        Tue,  5 Apr 2022 10:24:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17BA7615E3;
+        Tue,  5 Apr 2022 09:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD2DC385A1;
+        Tue,  5 Apr 2022 09:47:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154297;
-        bh=IrqnNTvRac6zDFBz8lPZ519erod6BwbMDCIQfnHanu8=;
+        s=korg; t=1649152070;
+        bh=fS92WcltWMV/oLDH5M9/c4EeFe8ws+q7Xh7/PGg/Mi4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mO25bh0/cBSbAAIQQLoJD2VRvwsWkKqNoIetd6THlo0VsfZrXr4JGFfmdjimhmwIm
-         jc5CpxNZHuParllXKmopO1QFq+STvvXppR2PLdrsqNaR0GCdr6r5ccvPzlEaOaIwLI
-         ULu2JcM7mEvXo3pouUBS9Z0K1wwBNnww1L0BVcpY=
+        b=AySvFiob2XZuG8VHQmHUMU8OM0lSnhuh7bO9rINq4IrmMZ7mQXydp+MyWOmDaeXmb
+         hXj/vumwpDhJeXDK5nthl2Y9QaJCoSNij9BlPcOD3fHvDqHTJWX8VVp5jLnKH+w6Z2
+         yJ0JV0q9CFMyAkTF7p1o5T6OKKnOAMCGuWO6dryM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 492/599] ARM: ftrace: avoid redundant loads or clobbering IP
-Date:   Tue,  5 Apr 2022 09:33:06 +0200
-Message-Id: <20220405070313.468807707@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        Fei Li <fei1.li@intel.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 644/913] virt: acrn: fix a memory leak in acrn_dev_ioctl()
+Date:   Tue,  5 Apr 2022 09:28:26 +0200
+Message-Id: <20220405070359.143863831@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,133 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Xiaolong Huang <butterflyhuangxx@gmail.com>
 
-[ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
+[ Upstream commit ecd1735f14d6ac868ae5d8b7a2bf193fa11f388b ]
 
-Tweak the ftrace return paths to avoid redundant loads of SP, as well as
-unnecessary clobbering of IP.
+The vm_param and cpu_regs need to be freed via kfree()
+before return -EINVAL error.
 
-This also fixes the inconsistency of using MOV to perform a function
-return, which is sub-optimal on recent micro-architectures but more
-importantly, does not perform an interworking return, unlike compiler
-generated function returns in Thumb2 builds.
-
-Let's fix this by popping PC from the stack like most ordinary code
-does.
-
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 9c5137aedd11 ("virt: acrn: Introduce VM management interfaces")
+Fixes: 2ad2aaee1bc9 ("virt: acrn: Introduce an ioctl to set vCPU registers state")
+Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Signed-off-by: Fei Li <fei1.li@intel.com>
+Link: https://lore.kernel.org/r/20220308092047.1008409-1-butterflyhuangxx@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/kernel/entry-ftrace.S | 51 +++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 29 deletions(-)
+ drivers/virt/acrn/hsm.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/kernel/entry-ftrace.S b/arch/arm/kernel/entry-ftrace.S
-index f4886fb6e9ba..f33c171e3090 100644
---- a/arch/arm/kernel/entry-ftrace.S
-+++ b/arch/arm/kernel/entry-ftrace.S
-@@ -22,10 +22,7 @@
-  * mcount can be thought of as a function called in the middle of a subroutine
-  * call.  As such, it needs to be transparent for both the caller and the
-  * callee: the original lr needs to be restored when leaving mcount, and no
-- * registers should be clobbered.  (In the __gnu_mcount_nc implementation, we
-- * clobber the ip register.  This is OK because the ARM calling convention
-- * allows it to be clobbered in subroutines and doesn't use it to hold
-- * parameters.)
-+ * registers should be clobbered.
-  *
-  * When using dynamic ftrace, we patch out the mcount call by a "pop {lr}"
-  * instead of the __gnu_mcount_nc call (see arch/arm/kernel/ftrace.c).
-@@ -70,26 +67,25 @@
+diff --git a/drivers/virt/acrn/hsm.c b/drivers/virt/acrn/hsm.c
+index 130e12b8652a..af889cee6680 100644
+--- a/drivers/virt/acrn/hsm.c
++++ b/drivers/virt/acrn/hsm.c
+@@ -134,8 +134,10 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
+ 		if (IS_ERR(vm_param))
+ 			return PTR_ERR(vm_param);
  
- .macro __ftrace_regs_caller
+-		if ((vm_param->reserved0 | vm_param->reserved1) != 0)
++		if ((vm_param->reserved0 | vm_param->reserved1) != 0) {
++			kfree(vm_param);
+ 			return -EINVAL;
++		}
  
--	sub	sp, sp, #8	@ space for PC and CPSR OLD_R0,
-+	str	lr, [sp, #-8]!	@ store LR as PC and make space for CPSR/OLD_R0,
- 				@ OLD_R0 will overwrite previous LR
+ 		vm = acrn_vm_create(vm, vm_param);
+ 		if (!vm) {
+@@ -180,21 +182,29 @@ static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
+ 			return PTR_ERR(cpu_regs);
  
--	add 	ip, sp, #12	@ move in IP the value of SP as it was
--				@ before the push {lr} of the mcount mechanism
-+	ldr	lr, [sp, #8]    @ get previous LR
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->reserved); i++)
+-			if (cpu_regs->reserved[i])
++			if (cpu_regs->reserved[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
  
--	str     lr, [sp, #0]    @ store LR instead of PC
-+	str	r0, [sp, #8]	@ write r0 as OLD_R0 over previous LR
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_32); i++)
+-			if (cpu_regs->vcpu_regs.reserved_32[i])
++			if (cpu_regs->vcpu_regs.reserved_32[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
  
--	ldr     lr, [sp, #8]    @ get previous LR
-+	str	lr, [sp, #-4]!	@ store previous LR as LR
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.reserved_64); i++)
+-			if (cpu_regs->vcpu_regs.reserved_64[i])
++			if (cpu_regs->vcpu_regs.reserved_64[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
  
--	str	r0, [sp, #8]	@ write r0 as OLD_R0 over previous LR
-+	add 	lr, sp, #16	@ move in LR the value of SP as it was
-+				@ before the push {lr} of the mcount mechanism
+ 		for (i = 0; i < ARRAY_SIZE(cpu_regs->vcpu_regs.gdt.reserved); i++)
+ 			if (cpu_regs->vcpu_regs.gdt.reserved[i] |
+-			    cpu_regs->vcpu_regs.idt.reserved[i])
++			    cpu_regs->vcpu_regs.idt.reserved[i]) {
++				kfree(cpu_regs);
+ 				return -EINVAL;
++			}
  
--	stmdb   sp!, {ip, lr}
--	stmdb   sp!, {r0-r11, lr}
-+	push	{r0-r11, ip, lr}
- 
- 	@ stack content at this point:
- 	@ 0  4          48   52       56            60   64    68       72
--	@ R0 | R1 | ... | LR | SP + 4 | previous LR | LR | PSR | OLD_R0 |
-+	@ R0 | R1 | ... | IP | SP + 4 | previous LR | LR | PSR | OLD_R0 |
- 
--	mov r3, sp				@ struct pt_regs*
-+	mov	r3, sp				@ struct pt_regs*
- 
- 	ldr r2, =function_trace_op
- 	ldr r2, [r2]				@ pointer to the current
-@@ -112,11 +108,9 @@ ftrace_graph_regs_call:
- #endif
- 
- 	@ pop saved regs
--	ldmia   sp!, {r0-r12}			@ restore r0 through r12
--	ldr	ip, [sp, #8]			@ restore PC
--	ldr	lr, [sp, #4]			@ restore LR
--	ldr	sp, [sp, #0]			@ restore SP
--	mov	pc, ip				@ return
-+	pop	{r0-r11, ip, lr}		@ restore r0 through r12
-+	ldr	lr, [sp], #4			@ restore LR
-+	ldr	pc, [sp], #12
- .endm
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
-@@ -132,11 +126,9 @@ ftrace_graph_regs_call:
- 	bl	prepare_ftrace_return
- 
- 	@ pop registers saved in ftrace_regs_caller
--	ldmia   sp!, {r0-r12}			@ restore r0 through r12
--	ldr	ip, [sp, #8]			@ restore PC
--	ldr	lr, [sp, #4]			@ restore LR
--	ldr	sp, [sp, #0]			@ restore SP
--	mov	pc, ip				@ return
-+	pop	{r0-r11, ip, lr}		@ restore r0 through r12
-+	ldr	lr, [sp], #4			@ restore LR
-+	ldr	pc, [sp], #12
- 
- .endm
- #endif
-@@ -202,16 +194,17 @@ ftrace_graph_call\suffix:
- .endm
- 
- .macro mcount_exit
--	ldmia	sp!, {r0-r3, ip, lr}
--	ret	ip
-+	ldmia	sp!, {r0-r3}
-+	ldr	lr, [sp, #4]
-+	ldr	pc, [sp], #8
- .endm
- 
- ENTRY(__gnu_mcount_nc)
- UNWIND(.fnstart)
- #ifdef CONFIG_DYNAMIC_FTRACE
--	mov	ip, lr
--	ldmia	sp!, {lr}
--	ret	ip
-+	push	{lr}
-+	ldr	lr, [sp, #4]
-+	ldr	pc, [sp], #8
- #else
- 	__mcount
- #endif
+ 		ret = hcall_set_vcpu_regs(vm->vmid, virt_to_phys(cpu_regs));
+ 		if (ret < 0)
 -- 
 2.34.1
 
