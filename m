@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B305C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359320AbiDENMA (ORCPT
+        id S1388115AbiDENVD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:12:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
+        Tue, 5 Apr 2022 09:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344202AbiDEJSi (ORCPT
+        with ESMTP id S1344365AbiDEJTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 387A548E55;
-        Tue,  5 Apr 2022 02:05:25 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF092BA;
+        Tue,  5 Apr 2022 02:08:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 99E16CE1BF8;
-        Tue,  5 Apr 2022 09:05:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B00AFC385A1;
-        Tue,  5 Apr 2022 09:05:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56AFEB81A22;
+        Tue,  5 Apr 2022 09:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B48E9C385A0;
+        Tue,  5 Apr 2022 09:07:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149522;
-        bh=nRRBq/Jik1ej734zd5EJafMlkLa2+n+e12Jve3Y5fDU=;
+        s=korg; t=1649149680;
+        bh=aduOYBaXcm3bJGU5ljNOOCD1XxWS7V29veFoK8jq2cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FfH0tEjNkU6gt8cn5rkxjGs8jvPuVTuS7wYQLUM2iNuY30ngftsCe1s0Gu6E7iXnx
-         Vo9Ub8bG6VX0vQlO7iJ6LrPEowuh6Z4vMSZRdvg9OfY/J6+7FhmV/psL4zQoIqYoEy
-         dqRTPGE3bTkGHp+8fHjaAJAuouQoUwstrDS1Y8fE=
+        b=zxUApaUuGvK82xX4pI+K9eQQkajdLvjOXeRnVNpVVx1jboeQofuENF/NkfKNxLzuT
+         LSj0Kqf/Rw31yKjZxbVb4syIvGlr+KpqqrAYElYDfFsFs+/rbiHi6iG93JWOVsWnJx
+         twcBuXDkg7SHJLz3DfjVwSqJgAKcqnecD95f/cWc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Blakey <paulb@mellanox.com>,
-        dev@openvswitch.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0744/1017] net: prefer nf_ct_put instead of nf_conntrack_put
-Date:   Tue,  5 Apr 2022 09:27:37 +0200
-Message-Id: <20220405070416.347264359@linuxfoundation.org>
+Subject: [PATCH 5.16 0803/1017] media: staging: media: zoran: move videodev alloc
+Date:   Tue,  5 Apr 2022 09:28:36 +0200
+Message-Id: <20220405070418.085770417@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,124 +51,183 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit 408bdcfce8dfd6902f75fbcd3b99d8b24b506597 ]
+[ Upstream commit 82e3a496eb56da0b9f29fdc5b63cedb3289e91de ]
 
-Its the same as nf_conntrack_put(), but without the
-need for an indirect call.  The downside is a module dependency on
-nf_conntrack, but all of these already depend on conntrack anyway.
+Move some code out of zr36057_init() and create new functions for handling
+zr->video_dev. This permit to ease code reading and fix a zr->video_dev
+memory leak.
 
-Cc: Paul Blakey <paulb@mellanox.com>
-Cc: dev@openvswitch.org
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_core.c |  4 ++--
- net/openvswitch/conntrack.c       | 14 ++++++++++----
- net/sched/act_ct.c                |  6 +++---
- 3 files changed, 15 insertions(+), 9 deletions(-)
+ drivers/staging/media/zoran/zoran.h        |  2 +-
+ drivers/staging/media/zoran/zoran_card.c   | 80 ++++++++++++++--------
+ drivers/staging/media/zoran/zoran_driver.c |  5 +-
+ 3 files changed, 54 insertions(+), 33 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 7f7997460764..917e708a4561 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -989,7 +989,7 @@ static int __nf_ct_resolve_clash(struct sk_buff *skb,
+diff --git a/drivers/staging/media/zoran/zoran.h b/drivers/staging/media/zoran/zoran.h
+index b1ad2a2b914c..50d5a7acfab6 100644
+--- a/drivers/staging/media/zoran/zoran.h
++++ b/drivers/staging/media/zoran/zoran.h
+@@ -313,6 +313,6 @@ static inline struct zoran *to_zoran(struct v4l2_device *v4l2_dev)
  
- 		nf_ct_acct_merge(ct, ctinfo, loser_ct);
- 		nf_ct_add_to_dying_list(loser_ct);
--		nf_conntrack_put(&loser_ct->ct_general);
-+		nf_ct_put(loser_ct);
- 		nf_ct_set(skb, ct, ctinfo);
+ #endif
  
- 		NF_CT_STAT_INC(net, clash_resolve);
-@@ -1920,7 +1920,7 @@ nf_conntrack_in(struct sk_buff *skb, const struct nf_hook_state *state)
- 		/* Invalid: inverse of the return code tells
- 		 * the netfilter core what to do */
- 		pr_debug("nf_conntrack_in: Can't track with proto module\n");
--		nf_conntrack_put(&ct->ct_general);
-+		nf_ct_put(ct);
- 		skb->_nfct = 0;
- 		/* Special case: TCP tracker reports an attempt to reopen a
- 		 * closed/aborted connection. We have to go back and create a
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 8f47f4e78d32..f2b64cab9af7 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -574,7 +574,7 @@ ovs_ct_expect_find(struct net *net, const struct nf_conntrack_zone *zone,
- 			struct nf_conn *ct = nf_ct_tuplehash_to_ctrack(h);
- 
- 			nf_ct_delete(ct, 0, 0);
--			nf_conntrack_put(&ct->ct_general);
-+			nf_ct_put(ct);
- 		}
- 	}
- 
-@@ -723,7 +723,7 @@ static bool skb_nfct_cached(struct net *net,
- 		if (nf_ct_is_confirmed(ct))
- 			nf_ct_delete(ct, 0, 0);
- 
--		nf_conntrack_put(&ct->ct_general);
-+		nf_ct_put(ct);
- 		nf_ct_set(skb, NULL, 0);
- 		return false;
- 	}
-@@ -967,7 +967,8 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
- 
- 		/* Associate skb with specified zone. */
- 		if (tmpl) {
--			nf_conntrack_put(skb_nfct(skb));
-+			ct = nf_ct_get(skb, &ctinfo);
-+			nf_ct_put(ct);
- 			nf_conntrack_get(&tmpl->ct_general);
- 			nf_ct_set(skb, tmpl, IP_CT_NEW);
- 		}
-@@ -1328,7 +1329,12 @@ int ovs_ct_execute(struct net *net, struct sk_buff *skb,
- 
- int ovs_ct_clear(struct sk_buff *skb, struct sw_flow_key *key)
- {
--	nf_conntrack_put(skb_nfct(skb));
-+	enum ip_conntrack_info ctinfo;
-+	struct nf_conn *ct;
-+
-+	ct = nf_ct_get(skb, &ctinfo);
-+
-+	nf_ct_put(ct);
- 	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
- 	ovs_ct_fill_key(skb, key, false);
- 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 4ffea1290ce1..240b3c5d2eb1 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -592,7 +592,7 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
- 		if (nf_ct_is_confirmed(ct))
- 			nf_ct_kill(ct);
- 
--		nf_conntrack_put(&ct->ct_general);
-+		nf_ct_put(ct);
- 		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
- 
- 		return false;
-@@ -757,7 +757,7 @@ static void tcf_ct_params_free(struct rcu_head *head)
- 	tcf_ct_flow_table_put(params);
- 
- 	if (params->tmpl)
--		nf_conntrack_put(&params->tmpl->ct_general);
-+		nf_ct_put(params->tmpl);
- 	kfree(params);
+-int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq);
++int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir);
+ void zoran_queue_exit(struct zoran *zr);
+ int zr_set_buf(struct zoran *zr);
+diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
+index c578ef3c32f5..a83314b16548 100644
+--- a/drivers/staging/media/zoran/zoran_card.c
++++ b/drivers/staging/media/zoran/zoran_card.c
+@@ -803,6 +803,52 @@ int zoran_check_jpg_settings(struct zoran *zr,
+ 	return 0;
  }
  
-@@ -967,7 +967,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 		tc_skb_cb(skb)->post_ct = false;
- 		ct = nf_ct_get(skb, &ctinfo);
- 		if (ct) {
--			nf_conntrack_put(&ct->ct_general);
-+			nf_ct_put(ct);
- 			nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
- 		}
++static int zoran_init_video_device(struct zoran *zr, struct video_device *video_dev, int dir)
++{
++	int err;
++
++	/* Now add the template and register the device unit. */
++	*video_dev = zoran_template;
++	video_dev->v4l2_dev = &zr->v4l2_dev;
++	video_dev->lock = &zr->lock;
++	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
++
++	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
++	/*
++	 * It's not a mem2mem device, but you can both capture and output from one and the same
++	 * device. This should really be split up into two device nodes, but that's a job for
++	 * another day.
++	 */
++	video_dev->vfl_dir = VFL_DIR_M2M;
++	zoran_queue_init(zr, &zr->vq, V4L2_BUF_TYPE_VIDEO_CAPTURE);
++
++	err = video_register_device(video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
++	if (err < 0)
++		return err;
++	video_set_drvdata(video_dev, zr);
++	return 0;
++}
++
++static void zoran_exit_video_devices(struct zoran *zr)
++{
++	video_unregister_device(zr->video_dev);
++	kfree(zr->video_dev);
++}
++
++static int zoran_init_video_devices(struct zoran *zr)
++{
++	int err;
++
++	zr->video_dev = video_device_alloc();
++	if (!zr->video_dev)
++		return -ENOMEM;
++
++	err = zoran_init_video_device(zr, zr->video_dev, V4L2_CAP_VIDEO_CAPTURE);
++	if (err)
++		kfree(zr->video_dev);
++	return err;
++}
++
+ void zoran_open_init_params(struct zoran *zr)
+ {
+ 	int i;
+@@ -874,17 +920,11 @@ static int zr36057_init(struct zoran *zr)
+ 	zoran_open_init_params(zr);
  
+ 	/* allocate memory *before* doing anything to the hardware in case allocation fails */
+-	zr->video_dev = video_device_alloc();
+-	if (!zr->video_dev) {
+-		err = -ENOMEM;
+-		goto exit;
+-	}
+ 	zr->stat_com = dma_alloc_coherent(&zr->pci_dev->dev,
+ 					  BUZ_NUM_STAT_COM * sizeof(u32),
+ 					  &zr->p_sc, GFP_KERNEL);
+ 	if (!zr->stat_com) {
+-		err = -ENOMEM;
+-		goto exit_video;
++		return -ENOMEM;
+ 	}
+ 	for (j = 0; j < BUZ_NUM_STAT_COM; j++)
+ 		zr->stat_com[j] = cpu_to_le32(1); /* mark as unavailable to zr36057 */
+@@ -897,26 +937,9 @@ static int zr36057_init(struct zoran *zr)
+ 		goto exit_statcom;
+ 	}
+ 
+-	/* Now add the template and register the device unit. */
+-	*zr->video_dev = zoran_template;
+-	zr->video_dev->v4l2_dev = &zr->v4l2_dev;
+-	zr->video_dev->lock = &zr->lock;
+-	zr->video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_CAPTURE;
+-
+-	strscpy(zr->video_dev->name, ZR_DEVNAME(zr), sizeof(zr->video_dev->name));
+-	/*
+-	 * It's not a mem2mem device, but you can both capture and output from one and the same
+-	 * device. This should really be split up into two device nodes, but that's a job for
+-	 * another day.
+-	 */
+-	zr->video_dev->vfl_dir = VFL_DIR_M2M;
+-
+-	zoran_queue_init(zr, &zr->vq);
+-
+-	err = video_register_device(zr->video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
+-	if (err < 0)
++	err = zoran_init_video_devices(zr);
++	if (err)
+ 		goto exit_statcomb;
+-	video_set_drvdata(zr->video_dev, zr);
+ 
+ 	zoran_init_hardware(zr);
+ 	if (!pass_through) {
+@@ -931,9 +954,6 @@ static int zr36057_init(struct zoran *zr)
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
+ exit_statcom:
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32), zr->stat_com, zr->p_sc);
+-exit_video:
+-	kfree(zr->video_dev);
+-exit:
+ 	return err;
+ }
+ 
+@@ -965,7 +985,7 @@ static void zoran_remove(struct pci_dev *pdev)
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
+ 	pci_release_regions(pdev);
+ 	pci_disable_device(zr->pci_dev);
+-	video_unregister_device(zr->video_dev);
++	zoran_exit_video_devices(zr);
+ exit_free:
+ 	v4l2_ctrl_handler_free(&zr->hdl);
+ 	v4l2_device_unregister(&zr->v4l2_dev);
+diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
+index 46382e43f1bf..551db338c7f7 100644
+--- a/drivers/staging/media/zoran/zoran_driver.c
++++ b/drivers/staging/media/zoran/zoran_driver.c
+@@ -1008,7 +1008,7 @@ static const struct vb2_ops zr_video_qops = {
+ 	.wait_finish            = vb2_ops_wait_finish,
+ };
+ 
+-int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
++int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
+ {
+ 	int err;
+ 
+@@ -1016,7 +1016,8 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
+ 	INIT_LIST_HEAD(&zr->queued_bufs);
+ 
+ 	vq->dev = &zr->pci_dev->dev;
+-	vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
++	vq->type = dir;
++
+ 	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
+ 	vq->drv_priv = zr;
+ 	vq->buf_struct_size = sizeof(struct zr_buffer);
 -- 
 2.34.1
 
