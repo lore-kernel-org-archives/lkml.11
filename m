@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C8AC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E89DC4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356715AbiDEMKE (ORCPT
+        id S1356834AbiDEMKH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        Tue, 5 Apr 2022 08:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244730AbiDEIwg (ORCPT
+        with ESMTP id S244728AbiDEIwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ECC1B7BE;
-        Tue,  5 Apr 2022 01:42:57 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187C81B7BA;
+        Tue,  5 Apr 2022 01:42:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41D0060FFC;
-        Tue,  5 Apr 2022 08:42:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1E1C385A1;
-        Tue,  5 Apr 2022 08:42:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8C7E6117A;
+        Tue,  5 Apr 2022 08:42:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A13C385A1;
+        Tue,  5 Apr 2022 08:42:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148176;
-        bh=L/pyenQmUdfAnp5wcjo1xjpMHrfCLmOU2nZBPABT8/0=;
+        s=korg; t=1649148174;
+        bh=kvRwxX1fsm4vbiE6yY9Es3GHrv9VeOjjjPwmJ2nrnFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jc2xLUUQ8kNg12dAKVr8rAjpmu0cKf1l4Q1Ut937ew943hDBCGSnoGah0+9ru3pSx
-         Y69STawd3D5Ody4D32ebL12iqf3C/HWQX3Nbw2WST0HiPwjzrVLfvmh/HbDZAiEIsN
-         lnJnC4jjrJy3UMnkWAqyKkqXI6oiJPLQi4JlEEEk=
+        b=nyMjK+HF1wHdQzu6F8o4yjlEb1nN6H2/0TWBvynqXy5bodLHvmY4Z3jhQKDRA8BEB
+         P7aaASsM6U5lhkO1KD24GxTe/opqk71JTxDGkDmhFzlDnbdQGssPViA5QfkbId74xn
+         WiT5wWCVrouXauRbgJqdsUVnF8gbVvK8T8CeG9x4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Mimi Zohar <zohar@linux.ibm.com>,
+        stable@vger.kernel.org, Zhipeng Tan <tanzhipeng@hust.edu.cn>,
+        Jicheng Shao <shaojicheng@hust.edu.cn>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0223/1017] EVM: fix the evm= __setup handler return value
-Date:   Tue,  5 Apr 2022 09:18:56 +0200
-Message-Id: <20220405070400.870695370@linuxfoundation.org>
+Subject: [PATCH 5.16 0259/1017] f2fs: fix to enable ATGC correctly via gc_idle sysfs interface
+Date:   Tue,  5 Apr 2022 09:19:32 +0200
+Message-Id: <20220405070401.951544587@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,56 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit f2544f5e6c691679d56bb38637d2f347075b36fa ]
+[ Upstream commit 7d19e3dab0002e527052b0aaf986e8c32e5537bf ]
 
-__setup() handlers should return 1 if the parameter is handled.
-Returning 0 causes the entire string to be added to init's
-environment strings (limited to 32 strings), unnecessarily polluting it.
+It needs to assign sbi->gc_mode with GC_IDLE_AT rather than GC_AT when
+user tries to enable ATGC via gc_idle sysfs interface, fix it.
 
-Using the documented string "evm=fix" causes an Unknown parameter message:
-  Unknown kernel command line parameters
-  "BOOT_IMAGE=/boot/bzImage-517rc5 evm=fix", will be passed to user space.
-
-and that string is added to init's environment string space:
-  Run /sbin/init as init process
-    with arguments:
-     /sbin/init
-    with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     evm=fix
-
-With this change, using "evm=fix" acts as expected and an invalid
-option ("evm=evm") causes a warning to be printed:
-  evm: invalid "evm" mode
-but init's environment is not polluted with this string, as expected.
-
-Fixes: 7102ebcd65c1 ("evm: permit only valid security.evm xattrs to be updated")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Fixes: 093749e296e2 ("f2fs: support age threshold based garbage collection")
+Cc: Zhipeng Tan <tanzhipeng@hust.edu.cn>
+Signed-off-by: Jicheng Shao <shaojicheng@hust.edu.cn>
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/evm/evm_main.c | 2 +-
+ fs/f2fs/sysfs.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/security/integrity/evm/evm_main.c b/security/integrity/evm/evm_main.c
-index 08f907382c61..7d87772f0ce6 100644
---- a/security/integrity/evm/evm_main.c
-+++ b/security/integrity/evm/evm_main.c
-@@ -86,7 +86,7 @@ static int __init evm_set_fixmode(char *str)
- 	else
- 		pr_err("invalid \"%s\" mode", str);
- 
--	return 0;
-+	return 1;
- }
- __setup("evm=", evm_set_fixmode);
- 
+diff --git a/fs/f2fs/sysfs.c b/fs/f2fs/sysfs.c
+index 8cdeac090f81..8885c7383472 100644
+--- a/fs/f2fs/sysfs.c
++++ b/fs/f2fs/sysfs.c
+@@ -473,7 +473,7 @@ static ssize_t __sbi_store(struct f2fs_attr *a,
+ 		} else if (t == GC_IDLE_AT) {
+ 			if (!sbi->am.atgc_enabled)
+ 				return -EINVAL;
+-			sbi->gc_mode = GC_AT;
++			sbi->gc_mode = GC_IDLE_AT;
+ 		} else {
+ 			sbi->gc_mode = GC_NORMAL;
+ 		}
 -- 
 2.34.1
 
