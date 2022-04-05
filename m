@@ -2,116 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A248BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0057C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390554AbiDEUGO (ORCPT
+        id S1391011AbiDEUGa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
+        Tue, 5 Apr 2022 16:06:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355876AbiDELz0 (ORCPT
+        with ESMTP id S1349021AbiDEJs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:55:26 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0358813D0C;
-        Tue,  5 Apr 2022 04:13:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649157237; x=1680693237;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=bMF1K45Roo2ThIZC9UZTK48uojQEdXw0mlwouRg3AFE=;
-  b=N7+pe+0i8r7oyr/zjoLLnTmZUPQjMpKmxEOvYld7Hj50XQF/dKuVWqm9
-   aQd5XyiKGgKoi2lR8uOY9YH80Fbdx2Ja620fX6J+J0Z18tv9zQ/KXwMRk
-   W61WXz3ss4hCEL3ZGld0ytzdTlnL2vT75AfidJrxbmLJ9E1juxkaNU5nL
-   Q=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 04:13:56 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:13:56 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:13:56 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 04:13:52 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohitkr@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v6 0/3] Add soundcard support for sc7280 based platforms.
-Date:   Tue, 5 Apr 2022 16:43:37 +0530
-Message-ID: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 5 Apr 2022 05:48:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C55712631;
+        Tue,  5 Apr 2022 02:39:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 135A461368;
+        Tue,  5 Apr 2022 09:39:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 274A1C385A2;
+        Tue,  5 Apr 2022 09:39:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151545;
+        bh=GRVYjGN0oVU3bLQLZkS30dh2b8ueNqwEcosPDjmYZFA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=M1Lo6Znu/ouZ9sNfz/A+fsNa+6SHi0H42B9nXn8p257+2jhwFwdRdOvO1bjxyzpLq
+         8zh0WlSPgcHw2fkL1pHPiU7Js9Z2h30uu6CtKnouLn/cS8sv4uoB2O7XQbs3pFUhV3
+         z8j9lVLD4rUriU3JzHQxyJAC071mjxbXqnnDtfBE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 416/913] power: reset: gemini-poweroff: Fix IRQ check in gemini_poweroff_probe
+Date:   Tue,  5 Apr 2022 09:24:38 +0200
+Message-Id: <20220405070352.316647422@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch set is to add bolero digital macros, WCD and maxim codecs nodes
-for audio on sc7280 based platforms.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-This patch set depends on:
-    -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=625134
-    -- https://patchwork.kernel.org/project/alsa-devel/list/?series=625078
-    -- https://patchwork.kernel.org/project/linux-arm-msm/patch/20220202053207.14256-1-tdas@codeaurora.org/.
-    -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=601249
-    -- Clock reset control patches
+[ Upstream commit ba18dad0fb880cd29aa97b6b75560ef14d1061ba ]
 
-Changes Since V5:
-    -- Move soc specific bolero digital codec nodes to soc specific file.
-    -- Bring wcd938x codec reset pin control and US/EURO HS selection nodes from other series.
-    -- Change node name and remove redundant status property in sound node.
-Changes Since V4:
-    -- Update nodes in sorting order.
-    -- Update DTS node names as per dt-bindings.
-    -- Update Node properties in proper order.
-    -- Update missing pinctrl properties like US/EURO HS selection, wcd reset control.
-    -- Remove redundant labels.
-    -- Remove unused size cells and address cells in tx macro node.
-    -- Keep all same nodes at one place, which are defined in same file.
-    -- Add max98360a codec node to herobrine board specific targets.
-Changes Since V3:
-    -- Move digital codec macro nodes to board specific dtsi file.
-    -- Update pin controls in lpass cpu node.
-    -- Update dependency patch list.
-    -- Create patches on latest kernel.
-Changes Since V2:
-    -- Add power domains to digital codec macro nodes.
-    -- Change clock node usage in lpass cpu node.
-    -- Add codec mem clock to lpass cpu node.
-    -- Modify the node names to be generic.
-    -- Move sound and codec nodes to root node.
-    -- sort dai links as per reg.
-    -- Fix typo errors.
-Changes Since V1:
-    -- Update the commit message of cpu node patch.
-    -- Add gpio control property to support Euro headset in wcd938x node.
-    -- Fix clock properties in lpass cpu and digital codec macro node.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-Srinivasa Rao Mandadapu (3):
-  arm64: dts: qcom: sc7280: Add nodes for va tx and rx macros and
-    external codecs
-  arm64: dts: qcom: sc7280: Add lpass cpu node
-  arm64: dts: qcom: sc7280: Add dt nodes for sound card
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
 
- arch/arm64/boot/dts/qcom/sc7280-crd.dts        |  14 ++
- arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi |   8 +
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       | 209 +++++++++++++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi           | 184 ++++++++++++++++++++++
- 4 files changed, 415 insertions(+)
+Fix the check of return value to catch errors correctly.
 
+Fixes: f7a388d6cd1c ("power: reset: Add a driver for the Gemini poweroff")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/power/reset/gemini-poweroff.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/power/reset/gemini-poweroff.c b/drivers/power/reset/gemini-poweroff.c
+index 90e35c07240a..b7f7a8225f22 100644
+--- a/drivers/power/reset/gemini-poweroff.c
++++ b/drivers/power/reset/gemini-poweroff.c
+@@ -107,8 +107,8 @@ static int gemini_poweroff_probe(struct platform_device *pdev)
+ 		return PTR_ERR(gpw->base);
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (!irq)
+-		return -EINVAL;
++	if (irq < 0)
++		return irq;
+ 
+ 	gpw->dev = dev;
+ 
 -- 
-2.7.4
+2.34.1
+
+
 
