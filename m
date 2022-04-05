@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC665C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7F6C46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381486AbiDELqH (ORCPT
+        id S1381508AbiDELqL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        Tue, 5 Apr 2022 07:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244865AbiDEIwo (ORCPT
+        with ESMTP id S244878AbiDEIwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECF7237EF;
-        Tue,  5 Apr 2022 01:45:03 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35E5623BEE;
+        Tue,  5 Apr 2022 01:45:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F0C8B81BC5;
-        Tue,  5 Apr 2022 08:45:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8FB4C385A1;
-        Tue,  5 Apr 2022 08:45:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C27D4B81BC5;
+        Tue,  5 Apr 2022 08:45:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34018C385A1;
+        Tue,  5 Apr 2022 08:45:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148301;
-        bh=f7lk/uatWZehCCEatvm6qnumEhlCGUuUHdGZqbrb3Fw=;
+        s=korg; t=1649148320;
+        bh=SeEmVQ+6sOiq6KI47+xvkVim2p4SUR0DdCPXVwb5hVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vgrS8Vp4HRlWT7ZdRtE3HtqgUW+0JzTrgs4O+zOjaJnTDzSYCD8woN6W9wG0ocbU/
-         wREti6KD0araK0Ewmq+e4WClou+Mm7WwmyHulR6PL1VnqB2z0KOiL/BQCcN6IAr/sJ
-         Jjqw1K2/MGqj/I0/TG5g+E//Sk21KS83KnkvWJDg=
+        b=J6PT9+/wHlbrqnlf4GDW1yo3/+7Y7EDQkTdDKqaiydEmKAAjJdVECkSJBnEi6TvG9
+         6ztY4k6NS44dQt6P7Qlr12Z2Jsh1ltfrYPmv5LdhUVyldobQTPINS/0maAtZPP6Ma1
+         y/8OeanLH1qQw3Fp5LOBMDcZzBqUN1V69P2lVc8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Minye Zhu <zhuminye@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0269/1017] sched/cpuacct: Fix charge percpu cpuusage
-Date:   Tue,  5 Apr 2022 09:19:42 +0200
-Message-Id: <20220405070402.249536522@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0315/1017] soc: qcom: aoss: remove spurious IRQF_ONESHOT flags
+Date:   Tue,  5 Apr 2022 09:20:28 +0200
+Message-Id: <20220405070403.627715914@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,47 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-[ Upstream commit 248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd ]
+[ Upstream commit 8030cb9a55688c1339edd284d9d6ce5f9fc75160 ]
 
-The cpuacct_account_field() is always called by the current task
-itself, so it's ok to use __this_cpu_add() to charge the tick time.
+Quoting the header comments, IRQF_ONESHOT is "Used by threaded interrupts
+which need to keep the irq line disabled until the threaded handler has
+been run.". When applied to an interrupt that doesn't request a threaded
+irq then IRQF_ONESHOT has a lesser known (undocumented?) side effect,
+which it to disable the forced threading of the irq. For "normal" kernels
+(without forced threading) then, if there is no thread_fn, then
+IRQF_ONESHOT is a nop.
 
-But cpuacct_charge() maybe called by update_curr() in load_balance()
-on a random CPU, different from the CPU on which the task is running.
-So __this_cpu_add() will charge that cputime to a random incorrect CPU.
+In this case disabling forced threading is not appropriate for this driver
+because it calls wake_up_all() and this API cannot be called from
+no-thread interrupt handlers on PREEMPT_RT systems (deadlock risk, triggers
+sleeping-while-atomic warnings).
 
-Fixes: 73e6aafd9ea8 ("sched/cpuacct: Simplify the cpuacct code")
-Reported-by: Minye Zhu <zhuminye@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Tejun Heo <tj@kernel.org>
-Link: https://lore.kernel.org/r/20220220051426.5274-1-zhouchengming@bytedance.com
+Fix this by removing IRQF_ONESHOT.
+
+Fixes: 2209481409b7 ("soc: qcom: Add AOSS QMP driver")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+[bjorn: Added Fixes tag]
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220127173554.158111-1-daniel.thompson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/cpuacct.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/soc/qcom/qcom_aoss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
-index ab67d97a8442..cacc2076ad21 100644
---- a/kernel/sched/cpuacct.c
-+++ b/kernel/sched/cpuacct.c
-@@ -328,12 +328,13 @@ static struct cftype files[] = {
-  */
- void cpuacct_charge(struct task_struct *tsk, u64 cputime)
- {
-+	unsigned int cpu = task_cpu(tsk);
- 	struct cpuacct *ca;
+diff --git a/drivers/soc/qcom/qcom_aoss.c b/drivers/soc/qcom/qcom_aoss.c
+index e234d78b33e7..55c156aaf68a 100644
+--- a/drivers/soc/qcom/qcom_aoss.c
++++ b/drivers/soc/qcom/qcom_aoss.c
+@@ -501,7 +501,7 @@ static int qmp_probe(struct platform_device *pdev)
+ 	}
  
- 	rcu_read_lock();
- 
- 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
--		__this_cpu_add(*ca->cpuusage, cputime);
-+		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
- 
- 	rcu_read_unlock();
- }
+ 	irq = platform_get_irq(pdev, 0);
+-	ret = devm_request_irq(&pdev->dev, irq, qmp_intr, IRQF_ONESHOT,
++	ret = devm_request_irq(&pdev->dev, irq, qmp_intr, 0,
+ 			       "aoss-qmp", qmp);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to request interrupt\n");
 -- 
 2.34.1
 
