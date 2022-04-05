@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A775C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D116AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243432AbiDEJyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        id S1350108AbiDEJym (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238411AbiDEITE (ORCPT
+        with ESMTP id S238341AbiDEISw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:04 -0400
+        Tue, 5 Apr 2022 04:18:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2109FE2;
-        Tue,  5 Apr 2022 01:08:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE24D68;
+        Tue,  5 Apr 2022 01:08:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7730B81B18;
-        Tue,  5 Apr 2022 08:08:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27416C385A1;
-        Tue,  5 Apr 2022 08:08:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0EA6B81B90;
+        Tue,  5 Apr 2022 08:08:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03935C385A1;
+        Tue,  5 Apr 2022 08:08:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146126;
-        bh=OtMJiNTcTHUQcPH4dSGJwZZlh+3lpDszUo2IbFnk9JM=;
+        s=korg; t=1649146118;
+        bh=sQjWN0L8ZliOSDC5PB74ERNUxAish/045NCKzjPfV5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oXzYRE8gUJ+4M0Bs+a1bBvEARlpNXFmn6JgVvZJfAKNn5RIniAPSM3bm9wA/DKzvg
-         AoAhSA7syDpsEKVZmAUbD/1cMqG7FlqLryIr6SehUkDa+YR7QPnNS7a5s0GF/8nMl5
-         eTU7BqwfMFxZztmUPfYlFe4GTwjXXgpP0qbNqXIY=
+        b=a0vGTsEfNKY7X0MHk13+dZnAZsxm297gl0/rKoneVZy5jg7szPLfJpMJZCXQTkKF/
+         d2bJ5lVPXAU3UThSnVYuDPlfNgh741xBLnEj6J4VZHmA7ZPNzQiXkIAs54q1KTj3/r
+         N5fYyDn3jMjnOAUt1ych1evfBQqJOhgUsi3HG7h8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0652/1126] mips: cdmm: Fix refcount leak in mips_cdmm_phys_base
-Date:   Tue,  5 Apr 2022 09:23:19 +0200
-Message-Id: <20220405070426.767935771@linuxfoundation.org>
+Subject: [PATCH 5.17 0649/1126] iwlwifi: pcie: fix SW error MSI-X mapping
+Date:   Tue,  5 Apr 2022 09:23:16 +0200
+Message-Id: <20220405070426.680343058@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,35 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 4528668ca331f7ce5999b7746657b46db5b3b785 ]
+[ Upstream commit 7b9f485091a5755f6e0a7dd3725f3b312768ecd0 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+We need to also update the IVAR location, since we've shifted
+the bit.
 
-Fixes: 2121aa3e2312 ("mips: cdmm: Add mti,mips-cdmm dtb node support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 571836a02c7b ("iwlwifi: pcie: update sw error interrupt for BZ family")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220304131517.bcfb28484e50.I921df6b5134785d7eeb0c934e4a43157c582fa79@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/mips_cdmm.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bus/mips_cdmm.c b/drivers/bus/mips_cdmm.c
-index 626dedd110cb..fca0d0669aa9 100644
---- a/drivers/bus/mips_cdmm.c
-+++ b/drivers/bus/mips_cdmm.c
-@@ -351,6 +351,7 @@ phys_addr_t __weak mips_cdmm_phys_base(void)
- 	np = of_find_compatible_node(NULL, NULL, "mti,mips-cdmm");
- 	if (np) {
- 		err = of_address_to_resource(np, 0, &res);
-+		of_node_put(np);
- 		if (!err)
- 			return res.start;
- 	}
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index ef14584fc0a1..4b08eb46617c 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -1112,7 +1112,7 @@ static const struct iwl_causes_list causes_list_pre_bz[] = {
+ };
+ 
+ static const struct iwl_causes_list causes_list_bz[] = {
+-	{MSIX_HW_INT_CAUSES_REG_SW_ERR_BZ,	CSR_MSIX_HW_INT_MASK_AD, 0x29},
++	{MSIX_HW_INT_CAUSES_REG_SW_ERR_BZ,	CSR_MSIX_HW_INT_MASK_AD, 0x15},
+ };
+ 
+ static void iwl_pcie_map_list(struct iwl_trans *trans,
 -- 
 2.34.1
 
