@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D99C35273
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F25C3527A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233348AbiDEH5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
+        id S233733AbiDEH5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233168AbiDEHrb (ORCPT
+        with ESMTP id S232767AbiDEHrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB184BB0;
-        Tue,  5 Apr 2022 00:43:43 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:08 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA429AE4B;
+        Tue,  5 Apr 2022 00:42:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05211B81B14;
-        Tue,  5 Apr 2022 07:43:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B665C340EE;
-        Tue,  5 Apr 2022 07:43:40 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CCA56CE1BDB;
+        Tue,  5 Apr 2022 07:42:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E45DDC34110;
+        Tue,  5 Apr 2022 07:42:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144620;
-        bh=F2sXadztW3MARwarwpZlIp38N5A1LAVO17ur1+LgINs=;
+        s=korg; t=1649144576;
+        bh=FTdr9P169BdkCBRchSv5Z3/8Y8m9sOPzKMm0EvuZZRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uMyi0ODQEm/CQPZhNoq6sBJJI/v4rS6nxfbLNuG5uN0lPXCOXVEmvm90aDhHLmshD
-         yOJh4xDgDE+9/l4Ed2PPYy+Ck+95cBZTTcHLE+MDL+tZEqTbPSxaXQNdQHxVT+rTOx
-         GKUXKNYItLdg1ow4XTCGb1paGSzMC13xkj4hI1WM=
+        b=u/rd3mo3lX7/Ymj+J/+2c0YhheSlREXisrK49+ZMAJHgq+MyfHe2U1VO5z0MTpXSJ
+         bNOFgpQem5h313zsBd7FWaxm4apQ2Wir3+N7rr9Rha7rExYqUgKOdKQ+7fnXAFSgu0
+         i09Hrxcea04RHEVlMl0sNvYAI/bS+epC0TFAr7ig=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>
-Subject: [PATCH 5.17 0111/1126] dm stats: fix too short end duration_ns when using precise_timestamps
-Date:   Tue,  5 Apr 2022 09:14:18 +0200
-Message-Id: <20220405070410.829580346@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Shyam Prasad N <sprasad@microsoft.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.17 0093/1126] cifs: fix incorrect use of list iterator after the loop
+Date:   Tue,  5 Apr 2022 09:14:00 +0200
+Message-Id: <20220405070410.297721725@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,134 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 0cdb90f0f306384ecbc60dfd6dc48cdbc1f2d0d8 upstream.
+commit a96c94481f5993eac2271f9fb4d009b7dc076c24 upstream.
 
-dm_stats_account_io()'s STAT_PRECISE_TIMESTAMPS support doesn't handle
-the fact that with commit b879f915bc48 ("dm: properly fix redundant
-bio-based IO accounting") io->start_time _may_ be in the past (meaning
-the start_io_acct() was deferred until later).
+The bug is here:
+if (!tcon) {
+	resched = true;
+	list_del_init(&ses->rlist);
+	cifs_put_smb_ses(ses);
 
-Add a new dm_stats_recalc_precise_timestamps() helper that will
-set/clear a new 'precise_timestamps' flag in the dm_stats struct based
-on whether any configured stats enable STAT_PRECISE_TIMESTAMPS.
-And update DM core's alloc_io() to use dm_stats_record_start() to set
-stats_aux.duration_ns if stats->precise_timestamps is true.
+Because the list_for_each_entry() never exits early (without any
+break/goto/return inside the loop), the iterator 'ses' after the
+loop will always be an pointer to a invalid struct containing the
+HEAD (&pserver->smb_ses_list). As a result, the uses of 'ses' above
+will lead to a invalid memory access.
 
-Also, remove unused 'last_sector' and 'last_rw' members from the
-dm_stats struct.
+The original intention should have been to walk each entry 'ses' in
+'&tmp_ses_list', delete '&ses->rlist' and put 'ses'. So fix it with
+a list_for_each_entry_safe().
 
-Fixes: b879f915bc48 ("dm: properly fix redundant bio-based IO accounting")
-Cc: stable@vger.kernel.org
-Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Cc: stable@vger.kernel.org # 5.17
+Fixes: 3663c9045f51a ("cifs: check reconnects for channels of active tcons too")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-stats.c |   28 +++++++++++++++++++++++++---
- drivers/md/dm-stats.h |    9 +++++++--
- drivers/md/dm.c       |    2 ++
- 3 files changed, 34 insertions(+), 5 deletions(-)
+ fs/cifs/smb2pdu.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/md/dm-stats.c
-+++ b/drivers/md/dm-stats.c
-@@ -195,6 +195,7 @@ void dm_stats_init(struct dm_stats *stat
- 
- 	mutex_init(&stats->mutex);
- 	INIT_LIST_HEAD(&stats->list);
-+	stats->precise_timestamps = false;
- 	stats->last = alloc_percpu(struct dm_stats_last_position);
- 	for_each_possible_cpu(cpu) {
- 		last = per_cpu_ptr(stats->last, cpu);
-@@ -231,6 +232,22 @@ void dm_stats_cleanup(struct dm_stats *s
- 	mutex_destroy(&stats->mutex);
- }
- 
-+static void dm_stats_recalc_precise_timestamps(struct dm_stats *stats)
-+{
-+	struct list_head *l;
-+	struct dm_stat *tmp_s;
-+	bool precise_timestamps = false;
-+
-+	list_for_each(l, &stats->list) {
-+		tmp_s = container_of(l, struct dm_stat, list_entry);
-+		if (tmp_s->stat_flags & STAT_PRECISE_TIMESTAMPS) {
-+			precise_timestamps = true;
-+			break;
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -3858,8 +3858,10 @@ void smb2_reconnect_server(struct work_s
+ 	tcon = kzalloc(sizeof(struct cifs_tcon), GFP_KERNEL);
+ 	if (!tcon) {
+ 		resched = true;
+-		list_del_init(&ses->rlist);
+-		cifs_put_smb_ses(ses);
++		list_for_each_entry_safe(ses, ses2, &tmp_ses_list, rlist) {
++			list_del_init(&ses->rlist);
++			cifs_put_smb_ses(ses);
 +		}
-+	}
-+	stats->precise_timestamps = precise_timestamps;
-+}
-+
- static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
- 			   sector_t step, unsigned stat_flags,
- 			   unsigned n_histogram_entries,
-@@ -376,6 +393,9 @@ static int dm_stats_create(struct dm_sta
+ 		goto done;
  	}
- 	ret_id = s->id;
- 	list_add_tail_rcu(&s->list_entry, l);
-+
-+	dm_stats_recalc_precise_timestamps(stats);
-+
- 	mutex_unlock(&stats->mutex);
- 
- 	resume_callback(md);
-@@ -418,6 +438,9 @@ static int dm_stats_delete(struct dm_sta
- 	}
- 
- 	list_del_rcu(&s->list_entry);
-+
-+	dm_stats_recalc_precise_timestamps(stats);
-+
- 	mutex_unlock(&stats->mutex);
- 
- 	/*
-@@ -654,9 +677,8 @@ void dm_stats_account_io(struct dm_stats
- 	got_precise_time = false;
- 	list_for_each_entry_rcu(s, &stats->list, list_entry) {
- 		if (s->stat_flags & STAT_PRECISE_TIMESTAMPS && !got_precise_time) {
--			if (!end)
--				stats_aux->duration_ns = ktime_to_ns(ktime_get());
--			else
-+			/* start (!end) duration_ns is set by DM core's alloc_io() */
-+			if (end)
- 				stats_aux->duration_ns = ktime_to_ns(ktime_get()) - stats_aux->duration_ns;
- 			got_precise_time = true;
- 		}
---- a/drivers/md/dm-stats.h
-+++ b/drivers/md/dm-stats.h
-@@ -13,8 +13,7 @@ struct dm_stats {
- 	struct mutex mutex;
- 	struct list_head list;	/* list of struct dm_stat */
- 	struct dm_stats_last_position __percpu *last;
--	sector_t last_sector;
--	unsigned last_rw;
-+	bool precise_timestamps;
- };
- 
- struct dm_stats_aux {
-@@ -40,4 +39,10 @@ static inline bool dm_stats_used(struct
- 	return !list_empty(&st->list);
- }
- 
-+static inline void dm_stats_record_start(struct dm_stats *stats, struct dm_stats_aux *aux)
-+{
-+	if (unlikely(stats->precise_timestamps))
-+		aux->duration_ns = ktime_to_ns(ktime_get());
-+}
-+
- #endif
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -537,6 +537,8 @@ static struct dm_io *alloc_io(struct map
- 
- 	io->start_time = jiffies;
- 
-+	dm_stats_record_start(&md->stats, &io->stats_aux);
-+
- 	return io;
- }
  
 
 
