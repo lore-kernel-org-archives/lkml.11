@@ -2,191 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B389C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AE4C352A1
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244757AbiDEMS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
+        id S1359077AbiDEMUU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 08:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244995AbiDEIxA (ORCPT
+        with ESMTP id S244982AbiDEIw4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC566146;
-        Tue,  5 Apr 2022 01:48:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28D1961504;
-        Tue,  5 Apr 2022 08:48:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34481C385A1;
-        Tue,  5 Apr 2022 08:48:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148526;
-        bh=guVlBzD+z8QYs49QmnLxHxL7TQNESW7NlPWrZw/7gKc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b9iYr5P8sal8J/3C/1AtJ3UU13sgHj3G7tVMM8SDddgKiUldgwkkkXxO/TV+Rk2cR
-         HDyMaXo5G43jrZGm+OmnuTXOSLlVgGA21fgAd6hjqQH1L5i0Ei9b8xJOa//V2Oz+Jl
-         Pq82boMR4PqTUbzv3QRV6uqKr81ELlNV4CsGgYdc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0349/1017] uaccess: fix nios2 and microblaze get_user_8()
-Date:   Tue,  5 Apr 2022 09:21:02 +0200
-Message-Id: <20220405070404.642334717@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 04:52:56 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C226E0EB;
+        Tue,  5 Apr 2022 01:48:33 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id i6-20020a1c3b06000000b0038e710da2dcso1111817wma.1;
+        Tue, 05 Apr 2022 01:48:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=JysfUtBbV1yB6ulPL8qCt0+AynaBy1ohgfTXNgk6MB0=;
+        b=G6Gn4S/T+/2xjEfH19TC3Z2WEyythPt+0uqXFPhKHukxVYYb4iNuQdeun/cviMQ3Uq
+         EiiNVUDSSNsfAJepmOCBBRtqew8aO2h3+LnbBKIrUZnMJRK3TzB7lGyM6Yonn/DXA7pN
+         kOdKdDeXuB6IIstu7sMOUYYmikssPl/qgE43wIdGNL/AiuKNsGIs563HziGseiId3Omo
+         JN8yfCDrs1cajyuqcj22v00NX8NCvZ8VkUvh3c3eeeAZxyMp2MyYji4OFIvj4aFpRK7L
+         YepEkla7ezaypzMy+col8vnP/uoKWrCs/ZImUdH7UD39gfk/iyVaqnrBPcw2sa8cdr2k
+         OytA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=JysfUtBbV1yB6ulPL8qCt0+AynaBy1ohgfTXNgk6MB0=;
+        b=67GsNwOIw3vh8as3NFcrywYlnvrSpfPXEVCvJqH/h7SLvR199+7EN4Rg8g6w0Ofzr3
+         1JafX5mI8jBaSvCyJ25VfCIhZXQOvB4JDcvzvmyxgN9F+bluuH41WV+SmmRNqHhxM+Pm
+         Uqaxb5aOJwfasw3jTDp/BRsirK+uDujHapxE5iRVeFWxR8t+XLJ1QXuR2NB1w/zsw7Nb
+         Ee0l5rbwaM0vNlqnYgP7jA1+NiP8RpHMU2mMab8rqJUw7CEd1XiRxP0kVqKyPfLEc5YZ
+         MGnoiHGZL9V8LKBt3hrCO3ySh5Hp13Vr6NdbU2IevVBa4J15w/vOc8zy3za8CoSRVdBa
+         j/dA==
+X-Gm-Message-State: AOAM530Dj9F2cB8VUBM4oOXFlaAUh5F2dJX6IZZXAZwFmMLSEKD4oiHV
+        ZTVmoulKLjcCViP6/zzWnvE=
+X-Google-Smtp-Source: ABdhPJxTH9suN+qXTycbX3htbU0fTO28wuXG11xRAdNHXf7BB5No6ds07TokaCnxj2VFjdyc0ttNPQ==
+X-Received: by 2002:a7b:c844:0:b0:37b:b986:7726 with SMTP id c4-20020a7bc844000000b0037bb9867726mr2170955wml.160.1649148511840;
+        Tue, 05 Apr 2022 01:48:31 -0700 (PDT)
+Received: from smtpclient.apple ([95.128.147.62])
+        by smtp.gmail.com with ESMTPSA id bg8-20020a05600c3c8800b0038e4c5967besm1594651wmb.3.2022.04.05.01.48.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Apr 2022 01:48:31 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH] fs/proc/kcore.c: remove check of list iterator against
+ head past the loop body
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <20220404155516.a5fb4c23ee017a7212e4b22c@linux-foundation.org>
+Date:   Tue, 5 Apr 2022 10:48:30 +0200
+Cc:     Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <32C4FBEE-D56B-46AA-AB95-1A17B5CC0A87@gmail.com>
+References: <20220331223700.902556-1-jakobkoschel@gmail.com>
+ <20220331164843.b531fbf00d6e7afd6cdfe113@linux-foundation.org>
+ <A23914B0-BFD7-48D6-ADCF-42062E1D9887@gmail.com>
+ <20220404155516.a5fb4c23ee017a7212e4b22c@linux-foundation.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-
-[ Upstream commit a97b693c3712f040c5802f32b2d685352e08cefa ]
-
-These two architectures implement 8-byte get_user() through
-a memcpy() into a four-byte variable, which won't fit.
-
-Use a temporary 64-bit variable instead here, and use a double
-cast the way that risc-v and openrisc do to avoid compile-time
-warnings.
-
-Fixes: 6a090e97972d ("arch/microblaze: support get_user() of size 8 bytes")
-Fixes: 5ccc6af5e88e ("nios2: Memory management")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/microblaze/include/asm/uaccess.h | 18 +++++++++---------
- arch/nios2/include/asm/uaccess.h      | 26 ++++++++++++++++----------
- 2 files changed, 25 insertions(+), 19 deletions(-)
-
-diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
-index 5b6e0e7788f4..3fe96979d2c6 100644
---- a/arch/microblaze/include/asm/uaccess.h
-+++ b/arch/microblaze/include/asm/uaccess.h
-@@ -130,27 +130,27 @@ extern long __user_bad(void);
- 
- #define __get_user(x, ptr)						\
- ({									\
--	unsigned long __gu_val = 0;					\
- 	long __gu_err;							\
- 	switch (sizeof(*(ptr))) {					\
- 	case 1:								\
--		__get_user_asm("lbu", (ptr), __gu_val, __gu_err);	\
-+		__get_user_asm("lbu", (ptr), x, __gu_err);		\
- 		break;							\
- 	case 2:								\
--		__get_user_asm("lhu", (ptr), __gu_val, __gu_err);	\
-+		__get_user_asm("lhu", (ptr), x, __gu_err);		\
- 		break;							\
- 	case 4:								\
--		__get_user_asm("lw", (ptr), __gu_val, __gu_err);	\
-+		__get_user_asm("lw", (ptr), x, __gu_err);		\
- 		break;							\
--	case 8:								\
--		__gu_err = __copy_from_user(&__gu_val, ptr, 8);		\
--		if (__gu_err)						\
--			__gu_err = -EFAULT;				\
-+	case 8: {							\
-+		__u64 __x = 0;						\
-+		__gu_err = raw_copy_from_user(&__x, ptr, 8) ?		\
-+							-EFAULT : 0;	\
-+		(x) = (typeof(x))(typeof((x) - (x)))__x;		\
- 		break;							\
-+	}								\
- 	default:							\
- 		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
- 	}								\
--	x = (__force __typeof__(*(ptr))) __gu_val;			\
- 	__gu_err;							\
- })
- 
-diff --git a/arch/nios2/include/asm/uaccess.h b/arch/nios2/include/asm/uaccess.h
-index ba9340e96fd4..ca9285a915ef 100644
---- a/arch/nios2/include/asm/uaccess.h
-+++ b/arch/nios2/include/asm/uaccess.h
-@@ -88,6 +88,7 @@ extern __must_check long strnlen_user(const char __user *s, long n);
- /* Optimized macros */
- #define __get_user_asm(val, insn, addr, err)				\
- {									\
-+	unsigned long __gu_val;						\
- 	__asm__ __volatile__(						\
- 	"       movi    %0, %3\n"					\
- 	"1:   " insn " %1, 0(%2)\n"					\
-@@ -96,14 +97,20 @@ extern __must_check long strnlen_user(const char __user *s, long n);
- 	"       .section __ex_table,\"a\"\n"				\
- 	"       .word 1b, 2b\n"						\
- 	"       .previous"						\
--	: "=&r" (err), "=r" (val)					\
-+	: "=&r" (err), "=r" (__gu_val)					\
- 	: "r" (addr), "i" (-EFAULT));					\
-+	val = (__force __typeof__(*(addr)))__gu_val;			\
- }
- 
--#define __get_user_unknown(val, size, ptr, err) do {			\
-+extern void __get_user_unknown(void);
-+
-+#define __get_user_8(val, ptr, err) do {				\
-+	u64 __val = 0;							\
- 	err = 0;							\
--	if (__copy_from_user(&(val), ptr, size)) {			\
-+	if (raw_copy_from_user(&(__val), ptr, sizeof(val))) {		\
- 		err = -EFAULT;						\
-+	} else {							\
-+		val = (typeof(val))(typeof((val) - (val)))__val;	\
- 	}								\
- 	} while (0)
- 
-@@ -119,8 +126,11 @@ do {									\
- 	case 4:								\
- 		__get_user_asm(val, "ldw", ptr, err);			\
- 		break;							\
-+	case 8:								\
-+		__get_user_8(val, ptr, err);				\
-+		break;							\
- 	default:							\
--		__get_user_unknown(val, size, ptr, err);		\
-+		__get_user_unknown();					\
- 		break;							\
- 	}								\
- } while (0)
-@@ -129,9 +139,7 @@ do {									\
- 	({								\
- 	long __gu_err = -EFAULT;					\
- 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
--	unsigned long __gu_val = 0;					\
--	__get_user_common(__gu_val, sizeof(*(ptr)), __gu_ptr, __gu_err);\
--	(x) = (__force __typeof__(x))__gu_val;				\
-+	__get_user_common(x, sizeof(*(ptr)), __gu_ptr, __gu_err);	\
- 	__gu_err;							\
- 	})
- 
-@@ -139,11 +147,9 @@ do {									\
- ({									\
- 	long __gu_err = -EFAULT;					\
- 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
--	unsigned long __gu_val = 0;					\
- 	if (access_ok( __gu_ptr, sizeof(*__gu_ptr)))	\
--		__get_user_common(__gu_val, sizeof(*__gu_ptr),		\
-+		__get_user_common(x, sizeof(*__gu_ptr),			\
- 			__gu_ptr, __gu_err);				\
--	(x) = (__force __typeof__(x))__gu_val;				\
- 	__gu_err;							\
- })
- 
--- 
-2.34.1
 
 
+> On 5. Apr 2022, at 00:55, Andrew Morton <akpm@linux-foundation.org> =
+wrote:
+>=20
+> On Fri, 1 Apr 2022 09:19:57 +0200 Jakob Koschel =
+<jakobkoschel@gmail.com> wrote:
+>=20
+>>> Speaking of limiting scope...
+>>=20
+>> Fair point :-)
+>>=20
+>> I see you have applied this already to the -mm tree. Shall I still =
+move the iterator?
+>> The hope is to remove the 'iter' variable altogether when there are =
+no uses after
+>> the loop anymore.
+>=20
+> I don't really understand the question.
 
+Basically I was asking if I should send a v2 with the change you =
+suggested.
+>=20
+> My plan is to merge your patch with my fixlet immediately prior to
+> sending upstream.
+
+ok, great. Even better, so ignore my question.
+
+Thanks,
+Jakob=
