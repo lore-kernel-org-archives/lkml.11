@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69ACCC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C79DC35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385971AbiDEMjq (ORCPT
+        id S1386030AbiDEMj6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
+        Tue, 5 Apr 2022 08:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237084AbiDEJDz (ORCPT
+        with ESMTP id S236535AbiDEJDH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:03:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476D9E0F6;
-        Tue,  5 Apr 2022 01:55:39 -0700 (PDT)
+        Tue, 5 Apr 2022 05:03:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F10C7B;
+        Tue,  5 Apr 2022 01:54:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D705761572;
-        Tue,  5 Apr 2022 08:55:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC9D8C385A1;
-        Tue,  5 Apr 2022 08:55:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E58B361562;
+        Tue,  5 Apr 2022 08:54:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE36CC385A0;
+        Tue,  5 Apr 2022 08:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148938;
-        bh=BSg0ua3mEHihQvYBSe9qxUAZ1RJErAq1GCf/Om0A/mM=;
+        s=korg; t=1649148893;
+        bh=7kR5Em9KAFPcdr/UzJk7L2Vdy1QzIZOvLSTG4t3zRps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ROd0RGn17IiuPvd6XoTBIKSFSoz+dU4R56zxObjy61bk3zkNg1irxxNyreU/JQ8CX
-         zoRGxXIzLYdXxChSlvnwl+dt1i0sEEZMzRS+6EcBqY9/wPNQOOpPKnfAZv+scYkarf
-         asCOktNCY4pkclmsn/JE73lMxaxzIn4KdFTdty5o=
+        b=HhhzVP4fNzGh0o+/HHREXrjPVscwkvU8jDb8APttvFgYzX3EQ1FDA1BMowVNJbgvC
+         SxeUhiIcWKIP6uH//IQUjwDwlSLGfROmlNMup2DEr3wapxSrJfjVeyneHqL0R4wEXT
+         plUWhBt2kfzeQfIASUy531AVZHBR0oGAGNX63jcU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0535/1017] scsi: pm8001: Fix le32 values handling in pm80xx_chip_ssp_io_req()
-Date:   Tue,  5 Apr 2022 09:24:08 +0200
-Message-Id: <20220405070410.172758228@linuxfoundation.org>
+Subject: [PATCH 5.16 0520/1017] drm/msm/dsi/phy: fix 7nm v4.0 settings for C-PHY mode
+Date:   Tue,  5 Apr 2022 09:23:53 +0200
+Message-Id: <20220405070409.731669670@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,141 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 970404cc5744b1033b6ee601be4ef0e2d1fbcf72 ]
+[ Upstream commit bb07af2ed2a47dc6c4d0681f275bb27d4f845465 ]
 
-Make sure that the __le32 fields of struct ssp_ini_io_start_req are
-manipulated after applying the correct endian conversion. That is, use
-cpu_to_le32() for assigning values and le32_to_cpu() for consulting a field
-value. In particular, make sure that the calculations for the 4G boundary
-check are done using CPU endianness and *not* little endian values. With
-these fixes, many sparse warnings are removed.
+The dsi_7nm_phy_enable() disagrees with downstream for
+glbl_str_swi_cal_sel_ctrl and glbl_hstx_str_ctrl_0 values. Update
+programmed settings to match downstream driver. To remove the
+possibility for such errors in future drop less_than_1500_mhz
+assignment and specify settings explicitly.
 
-While at it, add blank lines after variable declarations and in some other
-places to make this code more readable.
-
-Link: https://lore.kernel.org/r/20220220031810.738362-11-damien.lemoal@opensource.wdc.com
-Fixes: 0ecdf00ba6e5 ("[SCSI] pm80xx: 4G boundary fix.")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 5ac178381d26 ("drm/msm/dsi: support CPHY mode for 7nm pll/phy")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Link: https://lore.kernel.org/r/20220217000837.435340-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 41 +++++++++++++++++++-------------
- 1 file changed, 25 insertions(+), 16 deletions(-)
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index d4b11b005fe2..e2459bd817a5 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4389,13 +4389,15 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 	struct ssp_ini_io_start_req ssp_cmd;
- 	u32 tag = ccb->ccb_tag;
- 	int ret;
--	u64 phys_addr, start_addr, end_addr;
-+	u64 phys_addr, end_addr;
- 	u32 end_addr_high, end_addr_low;
- 	struct inbound_queue_table *circularQ;
- 	u32 q_index, cpu_id;
- 	u32 opc = OPC_INB_SSPINIIOSTART;
-+
- 	memset(&ssp_cmd, 0, sizeof(ssp_cmd));
- 	memcpy(ssp_cmd.ssp_iu.lun, task->ssp_task.LUN, 8);
-+
- 	/* data address domain added for spcv; set to 0 by host,
- 	 * used internally by controller
- 	 * 0 for SAS 1.1 and SAS 2.0 compatible TLR
-@@ -4406,7 +4408,7 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 	ssp_cmd.device_id = cpu_to_le32(pm8001_dev->device_id);
- 	ssp_cmd.tag = cpu_to_le32(tag);
- 	if (task->ssp_task.enable_first_burst)
--		ssp_cmd.ssp_iu.efb_prio_attr |= 0x80;
-+		ssp_cmd.ssp_iu.efb_prio_attr = 0x80;
- 	ssp_cmd.ssp_iu.efb_prio_attr |= (task->ssp_task.task_prio << 3);
- 	ssp_cmd.ssp_iu.efb_prio_attr |= (task->ssp_task.task_attr & 7);
- 	memcpy(ssp_cmd.ssp_iu.cdb, task->ssp_task.cmd->cmnd,
-@@ -4438,21 +4440,24 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 			ssp_cmd.enc_esgl = cpu_to_le32(1<<31);
- 		} else if (task->num_scatter == 1) {
- 			u64 dma_addr = sg_dma_address(task->scatter);
-+
- 			ssp_cmd.enc_addr_low =
- 				cpu_to_le32(lower_32_bits(dma_addr));
- 			ssp_cmd.enc_addr_high =
- 				cpu_to_le32(upper_32_bits(dma_addr));
- 			ssp_cmd.enc_len = cpu_to_le32(task->total_xfer_len);
- 			ssp_cmd.enc_esgl = 0;
-+
- 			/* Check 4G Boundary */
--			start_addr = cpu_to_le64(dma_addr);
--			end_addr = (start_addr + ssp_cmd.enc_len) - 1;
--			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
--			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
--			if (end_addr_high != ssp_cmd.enc_addr_high) {
-+			end_addr = dma_addr + le32_to_cpu(ssp_cmd.enc_len) - 1;
-+			end_addr_low = lower_32_bits(end_addr);
-+			end_addr_high = upper_32_bits(end_addr);
-+
-+			if (end_addr_high != le32_to_cpu(ssp_cmd.enc_addr_high)) {
- 				pm8001_dbg(pm8001_ha, FAIL,
- 					   "The sg list address start_addr=0x%016llx data_len=0x%x end_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
--					   start_addr, ssp_cmd.enc_len,
-+					   dma_addr,
-+					   le32_to_cpu(ssp_cmd.enc_len),
- 					   end_addr_high, end_addr_low);
- 				pm8001_chip_make_sg(task->scatter, 1,
- 					ccb->buf_prd);
-@@ -4461,7 +4466,7 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 					cpu_to_le32(lower_32_bits(phys_addr));
- 				ssp_cmd.enc_addr_high =
- 					cpu_to_le32(upper_32_bits(phys_addr));
--				ssp_cmd.enc_esgl = cpu_to_le32(1<<31);
-+				ssp_cmd.enc_esgl = cpu_to_le32(1U<<31);
- 			}
- 		} else if (task->num_scatter == 0) {
- 			ssp_cmd.enc_addr_low = 0;
-@@ -4469,8 +4474,10 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 			ssp_cmd.enc_len = cpu_to_le32(task->total_xfer_len);
- 			ssp_cmd.enc_esgl = 0;
- 		}
-+
- 		/* XTS mode. All other fields are 0 */
--		ssp_cmd.key_cmode = 0x6 << 4;
-+		ssp_cmd.key_cmode = cpu_to_le32(0x6 << 4);
-+
- 		/* set tweak values. Should be the start lba */
- 		ssp_cmd.twk_val0 = cpu_to_le32((task->ssp_task.cmd->cmnd[2] << 24) |
- 						(task->ssp_task.cmd->cmnd[3] << 16) |
-@@ -4492,20 +4499,22 @@ static int pm80xx_chip_ssp_io_req(struct pm8001_hba_info *pm8001_ha,
- 			ssp_cmd.esgl = cpu_to_le32(1<<31);
- 		} else if (task->num_scatter == 1) {
- 			u64 dma_addr = sg_dma_address(task->scatter);
-+
- 			ssp_cmd.addr_low = cpu_to_le32(lower_32_bits(dma_addr));
- 			ssp_cmd.addr_high =
- 				cpu_to_le32(upper_32_bits(dma_addr));
- 			ssp_cmd.len = cpu_to_le32(task->total_xfer_len);
- 			ssp_cmd.esgl = 0;
-+
- 			/* Check 4G Boundary */
--			start_addr = cpu_to_le64(dma_addr);
--			end_addr = (start_addr + ssp_cmd.len) - 1;
--			end_addr_low = cpu_to_le32(lower_32_bits(end_addr));
--			end_addr_high = cpu_to_le32(upper_32_bits(end_addr));
--			if (end_addr_high != ssp_cmd.addr_high) {
-+			end_addr = dma_addr + le32_to_cpu(ssp_cmd.len) - 1;
-+			end_addr_low = lower_32_bits(end_addr);
-+			end_addr_high = upper_32_bits(end_addr);
-+			if (end_addr_high != le32_to_cpu(ssp_cmd.addr_high)) {
- 				pm8001_dbg(pm8001_ha, FAIL,
- 					   "The sg list address start_addr=0x%016llx data_len=0x%x end_addr_high=0x%08x end_addr_low=0x%08x has crossed 4G boundary\n",
--					   start_addr, ssp_cmd.len,
-+					   dma_addr,
-+					   le32_to_cpu(ssp_cmd.len),
- 					   end_addr_high, end_addr_low);
- 				pm8001_chip_make_sg(task->scatter, 1,
- 					ccb->buf_prd);
+diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+index 36eb6109cb88..6e506feb111f 100644
+--- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
++++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c
+@@ -864,20 +864,26 @@ static int dsi_7nm_phy_enable(struct msm_dsi_phy *phy,
+ 	/* Alter PHY configurations if data rate less than 1.5GHZ*/
+ 	less_than_1500_mhz = (clk_req->bitclk_rate <= 1500000000);
+ 
+-	/* For C-PHY, no low power settings for lower clk rate */
+-	if (phy->cphy_mode)
+-		less_than_1500_mhz = false;
+-
+ 	if (phy->cfg->quirks & DSI_PHY_7NM_QUIRK_V4_1) {
+ 		vreg_ctrl_0 = less_than_1500_mhz ? 0x53 : 0x52;
+-		glbl_rescode_top_ctrl = less_than_1500_mhz ? 0x3d :  0x00;
+-		glbl_rescode_bot_ctrl = less_than_1500_mhz ? 0x39 :  0x3c;
++		if (phy->cphy_mode) {
++			glbl_rescode_top_ctrl = 0x00;
++			glbl_rescode_bot_ctrl = 0x3c;
++		} else {
++			glbl_rescode_top_ctrl = less_than_1500_mhz ? 0x3d :  0x00;
++			glbl_rescode_bot_ctrl = less_than_1500_mhz ? 0x39 :  0x3c;
++		}
+ 		glbl_str_swi_cal_sel_ctrl = 0x00;
+ 		glbl_hstx_str_ctrl_0 = 0x88;
+ 	} else {
+ 		vreg_ctrl_0 = less_than_1500_mhz ? 0x5B : 0x59;
+-		glbl_str_swi_cal_sel_ctrl = less_than_1500_mhz ? 0x03 : 0x00;
+-		glbl_hstx_str_ctrl_0 = less_than_1500_mhz ? 0x66 : 0x88;
++		if (phy->cphy_mode) {
++			glbl_str_swi_cal_sel_ctrl = 0x03;
++			glbl_hstx_str_ctrl_0 = 0x66;
++		} else {
++			glbl_str_swi_cal_sel_ctrl = less_than_1500_mhz ? 0x03 : 0x00;
++			glbl_hstx_str_ctrl_0 = less_than_1500_mhz ? 0x66 : 0x88;
++		}
+ 		glbl_rescode_top_ctrl = 0x03;
+ 		glbl_rescode_bot_ctrl = 0x3c;
+ 	}
 -- 
 2.34.1
 
