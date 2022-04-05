@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC64DC41535
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D5EC3527B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:10:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379837AbiDEUEe (ORCPT
+        id S1381033AbiDEUEp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
+        Tue, 5 Apr 2022 16:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351381AbiDEKCV (ORCPT
+        with ESMTP id S1357001AbiDEKZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:02:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6296D3AA;
-        Tue,  5 Apr 2022 02:51:38 -0700 (PDT)
+        Tue, 5 Apr 2022 06:25:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6AA1F603;
+        Tue,  5 Apr 2022 03:09:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC9FB81B14;
-        Tue,  5 Apr 2022 09:51:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F45C385A2;
-        Tue,  5 Apr 2022 09:51:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E02E61500;
+        Tue,  5 Apr 2022 10:09:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E85C385A1;
+        Tue,  5 Apr 2022 10:09:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152295;
-        bh=aduOYBaXcm3bJGU5ljNOOCD1XxWS7V29veFoK8jq2cw=;
+        s=korg; t=1649153361;
+        bh=LUTYwhcnmybB6Lou8IoelB42nJG5tdqzX84/Z0p+xeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wod6/og0FzU0XumkeDhBnPSqVU1C9eoqifwxzN1Bd1BMvaSxW4oHLYgy4Qm/Z04m0
-         0nFXLPa3IPrcmDy4kYskjqi3PRnA0TpwwDjLkADZJdZaA/0i3FFQaHnbxM/ZEFTmOd
-         cYBXFLJOi0ZTvg1z5b31QXDgvWR8EhBrJP1Y2gAY=
+        b=PxTvuVB4Y4tNgonqZ/R/oQA9sG6zlCz7IGLTkEL1J4n522bagqh1Fi0rqx4gUoRJJ
+         N9RLELdoU0CwTnmvNSAnpOsQYbKtG5Jin70k6v+MbxV1Oas/61J1H0RtcREn9Q5YH3
+         3OQaCtgQiew2c3hSQniCmDLLb3w+ystVLr2RRSw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 725/913] media: staging: media: zoran: move videodev alloc
-Date:   Tue,  5 Apr 2022 09:29:47 +0200
-Message-Id: <20220405070401.564171738@linuxfoundation.org>
+Subject: [PATCH 5.10 194/599] media: meson: vdec: potential dereference of null pointer
+Date:   Tue,  5 Apr 2022 09:28:08 +0200
+Message-Id: <20220405070304.615044171@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,183 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 82e3a496eb56da0b9f29fdc5b63cedb3289e91de ]
+[ Upstream commit c8c80c996182239ff9b05eda4db50184cf3b2e99 ]
 
-Move some code out of zr36057_init() and create new functions for handling
-zr->video_dev. This permit to ease code reading and fix a zr->video_dev
-memory leak.
+As the possible failure of the kzalloc(), the 'new_ts' could be NULL
+pointer.
+Therefore, it should be better to check it in order to avoid the
+dereference of the NULL pointer.
+Also, the caller esparser_queue() needs to deal with the return value of
+the amvdec_add_ts().
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Fixes: 876f123b8956 ("media: meson: vdec: bring up to compliance")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Suggested-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/zoran/zoran.h        |  2 +-
- drivers/staging/media/zoran/zoran_card.c   | 80 ++++++++++++++--------
- drivers/staging/media/zoran/zoran_driver.c |  5 +-
- 3 files changed, 54 insertions(+), 33 deletions(-)
+ drivers/staging/media/meson/vdec/esparser.c     | 7 ++++++-
+ drivers/staging/media/meson/vdec/vdec_helpers.c | 8 ++++++--
+ drivers/staging/media/meson/vdec/vdec_helpers.h | 4 ++--
+ 3 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/media/zoran/zoran.h b/drivers/staging/media/zoran/zoran.h
-index b1ad2a2b914c..50d5a7acfab6 100644
---- a/drivers/staging/media/zoran/zoran.h
-+++ b/drivers/staging/media/zoran/zoran.h
-@@ -313,6 +313,6 @@ static inline struct zoran *to_zoran(struct v4l2_device *v4l2_dev)
+diff --git a/drivers/staging/media/meson/vdec/esparser.c b/drivers/staging/media/meson/vdec/esparser.c
+index db7022707ff8..86ccc8937afc 100644
+--- a/drivers/staging/media/meson/vdec/esparser.c
++++ b/drivers/staging/media/meson/vdec/esparser.c
+@@ -328,7 +328,12 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
  
- #endif
+ 	offset = esparser_get_offset(sess);
  
--int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq);
-+int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir);
- void zoran_queue_exit(struct zoran *zr);
- int zr_set_buf(struct zoran *zr);
-diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
-index c578ef3c32f5..a83314b16548 100644
---- a/drivers/staging/media/zoran/zoran_card.c
-+++ b/drivers/staging/media/zoran/zoran_card.c
-@@ -803,6 +803,52 @@ int zoran_check_jpg_settings(struct zoran *zr,
- 	return 0;
+-	amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset, vbuf->flags);
++	ret = amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset, vbuf->flags);
++	if (ret) {
++		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
++		return ret;
++	}
++
+ 	dev_dbg(core->dev, "esparser: ts = %llu pld_size = %u offset = %08X flags = %08X\n",
+ 		vb->timestamp, payload_size, offset, vbuf->flags);
+ 
+diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.c b/drivers/staging/media/meson/vdec/vdec_helpers.c
+index 7f07a9175815..db4a854e59a3 100644
+--- a/drivers/staging/media/meson/vdec/vdec_helpers.c
++++ b/drivers/staging/media/meson/vdec/vdec_helpers.c
+@@ -227,13 +227,16 @@ int amvdec_set_canvases(struct amvdec_session *sess,
  }
+ EXPORT_SYMBOL_GPL(amvdec_set_canvases);
  
-+static int zoran_init_video_device(struct zoran *zr, struct video_device *video_dev, int dir)
-+{
-+	int err;
+-void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
+-		   struct v4l2_timecode tc, u32 offset, u32 vbuf_flags)
++int amvdec_add_ts(struct amvdec_session *sess, u64 ts,
++		  struct v4l2_timecode tc, u32 offset, u32 vbuf_flags)
+ {
+ 	struct amvdec_timestamp *new_ts;
+ 	unsigned long flags;
+ 
+ 	new_ts = kzalloc(sizeof(*new_ts), GFP_KERNEL);
++	if (!new_ts)
++		return -ENOMEM;
 +
-+	/* Now add the template and register the device unit. */
-+	*video_dev = zoran_template;
-+	video_dev->v4l2_dev = &zr->v4l2_dev;
-+	video_dev->lock = &zr->lock;
-+	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
-+
-+	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
-+	/*
-+	 * It's not a mem2mem device, but you can both capture and output from one and the same
-+	 * device. This should really be split up into two device nodes, but that's a job for
-+	 * another day.
-+	 */
-+	video_dev->vfl_dir = VFL_DIR_M2M;
-+	zoran_queue_init(zr, &zr->vq, V4L2_BUF_TYPE_VIDEO_CAPTURE);
-+
-+	err = video_register_device(video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
-+	if (err < 0)
-+		return err;
-+	video_set_drvdata(video_dev, zr);
+ 	new_ts->ts = ts;
+ 	new_ts->tc = tc;
+ 	new_ts->offset = offset;
+@@ -242,6 +245,7 @@ void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
+ 	spin_lock_irqsave(&sess->ts_spinlock, flags);
+ 	list_add_tail(&new_ts->list, &sess->timestamps);
+ 	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
 +	return 0;
-+}
-+
-+static void zoran_exit_video_devices(struct zoran *zr)
-+{
-+	video_unregister_device(zr->video_dev);
-+	kfree(zr->video_dev);
-+}
-+
-+static int zoran_init_video_devices(struct zoran *zr)
-+{
-+	int err;
-+
-+	zr->video_dev = video_device_alloc();
-+	if (!zr->video_dev)
-+		return -ENOMEM;
-+
-+	err = zoran_init_video_device(zr, zr->video_dev, V4L2_CAP_VIDEO_CAPTURE);
-+	if (err)
-+		kfree(zr->video_dev);
-+	return err;
-+}
-+
- void zoran_open_init_params(struct zoran *zr)
- {
- 	int i;
-@@ -874,17 +920,11 @@ static int zr36057_init(struct zoran *zr)
- 	zoran_open_init_params(zr);
- 
- 	/* allocate memory *before* doing anything to the hardware in case allocation fails */
--	zr->video_dev = video_device_alloc();
--	if (!zr->video_dev) {
--		err = -ENOMEM;
--		goto exit;
--	}
- 	zr->stat_com = dma_alloc_coherent(&zr->pci_dev->dev,
- 					  BUZ_NUM_STAT_COM * sizeof(u32),
- 					  &zr->p_sc, GFP_KERNEL);
- 	if (!zr->stat_com) {
--		err = -ENOMEM;
--		goto exit_video;
-+		return -ENOMEM;
- 	}
- 	for (j = 0; j < BUZ_NUM_STAT_COM; j++)
- 		zr->stat_com[j] = cpu_to_le32(1); /* mark as unavailable to zr36057 */
-@@ -897,26 +937,9 @@ static int zr36057_init(struct zoran *zr)
- 		goto exit_statcom;
- 	}
- 
--	/* Now add the template and register the device unit. */
--	*zr->video_dev = zoran_template;
--	zr->video_dev->v4l2_dev = &zr->v4l2_dev;
--	zr->video_dev->lock = &zr->lock;
--	zr->video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_CAPTURE;
--
--	strscpy(zr->video_dev->name, ZR_DEVNAME(zr), sizeof(zr->video_dev->name));
--	/*
--	 * It's not a mem2mem device, but you can both capture and output from one and the same
--	 * device. This should really be split up into two device nodes, but that's a job for
--	 * another day.
--	 */
--	zr->video_dev->vfl_dir = VFL_DIR_M2M;
--
--	zoran_queue_init(zr, &zr->vq);
--
--	err = video_register_device(zr->video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
--	if (err < 0)
-+	err = zoran_init_video_devices(zr);
-+	if (err)
- 		goto exit_statcomb;
--	video_set_drvdata(zr->video_dev, zr);
- 
- 	zoran_init_hardware(zr);
- 	if (!pass_through) {
-@@ -931,9 +954,6 @@ static int zr36057_init(struct zoran *zr)
- 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
- exit_statcom:
- 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32), zr->stat_com, zr->p_sc);
--exit_video:
--	kfree(zr->video_dev);
--exit:
- 	return err;
  }
+ EXPORT_SYMBOL_GPL(amvdec_add_ts);
  
-@@ -965,7 +985,7 @@ static void zoran_remove(struct pci_dev *pdev)
- 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
- 	pci_release_regions(pdev);
- 	pci_disable_device(zr->pci_dev);
--	video_unregister_device(zr->video_dev);
-+	zoran_exit_video_devices(zr);
- exit_free:
- 	v4l2_ctrl_handler_free(&zr->hdl);
- 	v4l2_device_unregister(&zr->v4l2_dev);
-diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
-index 46382e43f1bf..551db338c7f7 100644
---- a/drivers/staging/media/zoran/zoran_driver.c
-+++ b/drivers/staging/media/zoran/zoran_driver.c
-@@ -1008,7 +1008,7 @@ static const struct vb2_ops zr_video_qops = {
- 	.wait_finish            = vb2_ops_wait_finish,
- };
+diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.h b/drivers/staging/media/meson/vdec/vdec_helpers.h
+index cfaed52ab526..798e5a8a9b3f 100644
+--- a/drivers/staging/media/meson/vdec/vdec_helpers.h
++++ b/drivers/staging/media/meson/vdec/vdec_helpers.h
+@@ -55,8 +55,8 @@ void amvdec_dst_buf_done_offset(struct amvdec_session *sess,
+  * @offset: offset in the VIFIFO where the associated packet was written
+  * @flags the vb2_v4l2_buffer flags
+  */
+-void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
+-		   struct v4l2_timecode tc, u32 offset, u32 flags);
++int amvdec_add_ts(struct amvdec_session *sess, u64 ts,
++		  struct v4l2_timecode tc, u32 offset, u32 flags);
+ void amvdec_remove_ts(struct amvdec_session *sess, u64 ts);
  
--int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
-+int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
- {
- 	int err;
- 
-@@ -1016,7 +1016,8 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
- 	INIT_LIST_HEAD(&zr->queued_bufs);
- 
- 	vq->dev = &zr->pci_dev->dev;
--	vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-+	vq->type = dir;
-+
- 	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
- 	vq->drv_priv = zr;
- 	vq->buf_struct_size = sizeof(struct zr_buffer);
+ /**
 -- 
 2.34.1
 
