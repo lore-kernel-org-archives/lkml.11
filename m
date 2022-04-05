@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D444C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B80F8C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840900AbiDFBNs (ORCPT
+        id S1840930AbiDFBOF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:13:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
+        Tue, 5 Apr 2022 21:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349077AbiDEJtE (ORCPT
+        with ESMTP id S242600AbiDEKcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:04 -0400
+        Tue, 5 Apr 2022 06:32:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A575AA9940;
-        Tue,  5 Apr 2022 02:40:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF84ADEB90;
+        Tue,  5 Apr 2022 03:18:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 535C6B818F3;
-        Tue,  5 Apr 2022 09:40:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BBC3C385A1;
-        Tue,  5 Apr 2022 09:40:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BC4DB81C8A;
+        Tue,  5 Apr 2022 10:18:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA3BCC385A1;
+        Tue,  5 Apr 2022 10:18:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151604;
-        bh=jf/0EApObABORwS/DhG/9UsbVEQxtDbTazbrKwfT8wI=;
+        s=korg; t=1649153932;
+        bh=7xJGK7P7esiNsrsH0rcjp1vdmbQy1Eu4U8KwJSKZR3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z7djd2FVzQ6M0GVtSFpu0P1KVwIDQdQ92SZIFFzWd2KDbGlyPZ/XkYQVqXRHlEtyf
-         v/UGbxtUgz98nmBfsDsyWpSdE00cfRM+HqgODEQ2SDngbDCS4RukBOQgN/LHkPZF7i
-         B3x3DNKIVTBPgOkD0Sh3nYrDzEmTlMALGW38Z0Ls=
+        b=eMNhXbtTijpaiJWNExvDcxGQlqWDWVUri7qeL5q4Dezr6f+QoOHMA407pHAYcIjzd
+         OD90511XP2oaqEWKUMBZ8nwlokzE7FyD5263x+dulBP6mlHehDBZZA4hKoY9n14wtS
+         utIeOaPAYZFg2SSuZUHXcsTW67xyWYXFsyhtwCGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 475/913] drm/msm/dpu: fix dp audio condition
-Date:   Tue,  5 Apr 2022 09:25:37 +0200
-Message-Id: <20220405070354.093780241@linuxfoundation.org>
+Subject: [PATCH 5.10 398/599] NFS: Return valid errors from nfs2/3_decode_dirent()
+Date:   Tue,  5 Apr 2022 09:31:32 +0200
+Message-Id: <20220405070310.674569114@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,39 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 1e0505a5a7a2fea243f8e6d7e13fcde65f9e41bc ]
+[ Upstream commit 64cfca85bacde54caa64e0ab855c48734894fa37 ]
 
-DP audio enablement code which is comparing intf_type,
-DRM_MODE_ENCODER_TMDS (= 2) with DRM_MODE_CONNECTOR_DisplayPort (= 10).
-Which would never succeed. Fix it to check for DRM_MODE_ENCODER_TMDS.
+Valid return values for decode_dirent() callback functions are:
+ 0: Success
+ -EBADCOOKIE: End of directory
+ -EAGAIN: End of xdr_stream
 
-Fixes: d13e36d7d222 ("drm/msm/dp: add audio support for Display Port on MSM")
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220217035358.465904-2-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+All errors need to map into one of those three values.
+
+Fixes: 573c4e1ef53a ("NFS: Simplify ->decode_dirent() calling sequence")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs2xdr.c |  2 +-
+ fs/nfs/nfs3xdr.c | 21 ++++++---------------
+ 2 files changed, 7 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 0e9d3fa1544b..6bde3e234ec8 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -1107,7 +1107,7 @@ static void _dpu_encoder_virt_enable_helper(struct drm_encoder *drm_enc)
+diff --git a/fs/nfs/nfs2xdr.c b/fs/nfs/nfs2xdr.c
+index f6676af37d5d..5e6453e9b307 100644
+--- a/fs/nfs/nfs2xdr.c
++++ b/fs/nfs/nfs2xdr.c
+@@ -948,7 +948,7 @@ int nfs2_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 
+ 	error = decode_filename_inline(xdr, &entry->name, &entry->len);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	/*
+ 	 * The type (size and byte order) of nfscookie isn't defined in
+diff --git a/fs/nfs/nfs3xdr.c b/fs/nfs/nfs3xdr.c
+index dff6b52d26a8..b5a9379b1450 100644
+--- a/fs/nfs/nfs3xdr.c
++++ b/fs/nfs/nfs3xdr.c
+@@ -1964,7 +1964,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 		       bool plus)
+ {
+ 	struct user_namespace *userns = rpc_userns(entry->server->client);
+-	struct nfs_entry old = *entry;
+ 	__be32 *p;
+ 	int error;
+ 	u64 new_cookie;
+@@ -1984,15 +1983,15 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 
+ 	error = decode_fileid3(xdr, &entry->ino);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	error = decode_inline_filename3(xdr, &entry->name, &entry->len);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	error = decode_cookie3(xdr, &new_cookie);
+ 	if (unlikely(error))
+-		return error;
++		return -EAGAIN;
+ 
+ 	entry->d_type = DT_UNKNOWN;
+ 
+@@ -2000,7 +1999,7 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 		entry->fattr->valid = 0;
+ 		error = decode_post_op_attr(xdr, entry->fattr, userns);
+ 		if (unlikely(error))
+-			return error;
++			return -EAGAIN;
+ 		if (entry->fattr->valid & NFS_ATTR_FATTR_V3)
+ 			entry->d_type = nfs_umode_to_dtype(entry->fattr->mode);
+ 
+@@ -2015,11 +2014,8 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 			return -EAGAIN;
+ 		if (*p != xdr_zero) {
+ 			error = decode_nfs_fh3(xdr, entry->fh);
+-			if (unlikely(error)) {
+-				if (error == -E2BIG)
+-					goto out_truncated;
+-				return error;
+-			}
++			if (unlikely(error))
++				return -EAGAIN;
+ 		} else
+ 			zero_nfs_fh3(entry->fh);
  	}
+@@ -2028,11 +2024,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+ 	entry->cookie = new_cookie;
  
+ 	return 0;
+-
+-out_truncated:
+-	dprintk("NFS: directory entry contains invalid file handle\n");
+-	*entry = old;
+-	return -EAGAIN;
+ }
  
--	if (dpu_enc->disp_info.intf_type == DRM_MODE_CONNECTOR_DisplayPort &&
-+	if (dpu_enc->disp_info.intf_type == DRM_MODE_ENCODER_TMDS &&
- 		dpu_enc->cur_master->hw_mdptop &&
- 		dpu_enc->cur_master->hw_mdptop->ops.intf_audio_select)
- 		dpu_enc->cur_master->hw_mdptop->ops.intf_audio_select(
+ /*
 -- 
 2.34.1
 
