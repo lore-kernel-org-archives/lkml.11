@@ -2,204 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F43C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F95C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382841AbiDEUzD (ORCPT
+        id S1383918AbiDEUz0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
+        Tue, 5 Apr 2022 16:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573569AbiDETWw (ORCPT
+        with ESMTP id S1443104AbiDEPi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:22:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8616C46652;
-        Tue,  5 Apr 2022 12:20:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22BA5617EE;
-        Tue,  5 Apr 2022 19:20:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFF06C385A3;
-        Tue,  5 Apr 2022 19:20:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186452;
-        bh=kyYkU/Dchft4ACwgY94oRFa28SIAQLGaoAiYc1wr4Js=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iAOjDvpPE74286q/P5TJcdZcpkEp7FNy6KNHZRseCCJLqb1zTmDAIV+SZQm+hBWi4
-         Vb68EptgER1RBKv1zpSJD5VAtA5IdIu+Qcv0APwLOyszhQa8/Dsqe7w2boNUKpeLod
-         7cct4kv6h4EeH0dIkAtquhK1V2JYekqb4FFFhApgr/ZbyazLIR2OI1x9mVT5xdRsgq
-         XW1gFIf7PG6AZ2Oxeggv6B6LUtvlnE+SaqEXKekUjsYEpaYQqHW0YItW4gxwMz5eHp
-         sCvWhm17YWahQP9feMct/iu50nDt46RQ7YmTjhslNesBLlccl9IJUEfw1HlzYIAFUN
-         hsx7ahqBtkHBQ==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 22/59] ceph: send altname in MClientRequest
-Date:   Tue,  5 Apr 2022 15:19:53 -0400
-Message-Id: <20220405192030.178326-23-jlayton@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+        Tue, 5 Apr 2022 11:38:57 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1A81456F4;
+        Tue,  5 Apr 2022 06:54:40 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 235BpSUC025148;
+        Tue, 5 Apr 2022 08:54:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=sKPCxZ+xTBcQoblGnSzkvv6udMhhqbVepx2ZD2fI5i0=;
+ b=ATDDzgl9AUjcR8Pw6A0mgx4kf0fSH/e85cwNTm/yhKInblbRe6Sp0a3tqHDado5wJO1+
+ uLpck0Wyx6piRQG9PHKHj34HO6+mGu1vHveI94nwEOr6q9y+8vhRu84aOaDHt5Uj4taO
+ vmIhpKdntkF8BiPWrAaVfErMrp9mzAWR7RlySY/mSLG0GUVzaFbx8DYCIs6sR063FTeK
+ 5xDC2tiyTZnh0eoTi4layLJtiRMlbOog07SVfAHCo6pnA8mS0uNK4hPJWi4VEfzf/dPm
+ D5kMPEE+t5XzzFX1jc/kz+St7r+jwHPaOs/vq0Ub9VfmmHI838qTK3AFNCSzvTutIo/3 xQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f6kw2brwt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 05 Apr 2022 08:54:25 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
+ 2022 14:54:23 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Tue, 5 Apr 2022 14:54:23 +0100
+Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.88])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 378B8B1A;
+        Tue,  5 Apr 2022 13:54:23 +0000 (UTC)
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+To:     <broonie@kernel.org>
+CC:     <robh+dt@kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Subject: [PATCH v2 1/5] ASoC: soc.h: Add SOC_SINGLE_S_TLV() macro
+Date:   Tue, 5 Apr 2022 14:54:15 +0100
+Message-ID: <20220405135419.1230088-2-rf@opensource.cirrus.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220405135419.1230088-1-rf@opensource.cirrus.com>
+References: <20220405135419.1230088-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: yuf6CHlyAXEpejNsxbiA-4FDRbynNDev
+X-Proofpoint-GUID: yuf6CHlyAXEpejNsxbiA-4FDRbynNDev
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the event that we have a filename longer than CEPH_NOHASH_NAME_MAX,
-we'll need to hash the tail of the filename. The client however will
-still need to know the full name of the file if it has a key.
+Add a convenience macro for defining a single (mono) TLV control
+with a signed value. This can already be done by using
+SOC_DOUBLE_R_S_TLV() with the same address for left and right
+registers, but a dedicated macro is more readable.
 
-To support this, the MClientRequest field has grown a new alternate_name
-field that we populate with the full (binary) crypttext of the filename.
-This is then transmitted to the clients in readdir or traces as part of
-the dentry lease.
-
-Add support for populating this field when the filenames are very long.
-
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
 ---
- fs/ceph/mds_client.c | 75 +++++++++++++++++++++++++++++++++++++++++---
- fs/ceph/mds_client.h |  3 ++
- 2 files changed, 73 insertions(+), 5 deletions(-)
+ include/sound/soc.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-index 13367a358a85..0be1668b2c32 100644
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -972,6 +972,7 @@ void ceph_mdsc_release_request(struct kref *kref)
- 	if (req->r_pagelist)
- 		ceph_pagelist_release(req->r_pagelist);
- 	kfree(req->r_fscrypt_auth);
-+	kfree(req->r_altname);
- 	put_request_session(req);
- 	ceph_unreserve_caps(req->r_mdsc, &req->r_caps_reservation);
- 	WARN_ON_ONCE(!list_empty(&req->r_wait));
-@@ -2386,6 +2387,63 @@ static inline  u64 __get_oldest_tid(struct ceph_mds_client *mdsc)
- 	return mdsc->oldest_tid;
- }
- 
-+#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-+static u8 *get_fscrypt_altname(const struct ceph_mds_request *req, u32 *plen)
-+{
-+	struct inode *dir = req->r_parent;
-+	struct dentry *dentry = req->r_dentry;
-+	u8 *cryptbuf = NULL;
-+	u32 len = 0;
-+	int ret = 0;
-+
-+	/* only encode if we have parent and dentry */
-+	if (!dir || !dentry)
-+		goto success;
-+
-+	/* No-op unless this is encrypted */
-+	if (!IS_ENCRYPTED(dir))
-+		goto success;
-+
-+	ret = __fscrypt_prepare_readdir(dir);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	/* No key? Just ignore it. */
-+	if (!fscrypt_has_encryption_key(dir))
-+		goto success;
-+
-+	if (!fscrypt_fname_encrypted_size(dir, dentry->d_name.len, NAME_MAX, &len)) {
-+		WARN_ON_ONCE(1);
-+		return ERR_PTR(-ENAMETOOLONG);
-+	}
-+
-+	/* No need to append altname if name is short enough */
-+	if (len <= CEPH_NOHASH_NAME_MAX) {
-+		len = 0;
-+		goto success;
-+	}
-+
-+	cryptbuf = kmalloc(len, GFP_KERNEL);
-+	if (!cryptbuf)
-+		return ERR_PTR(-ENOMEM);
-+
-+	ret = fscrypt_fname_encrypt(dir, &dentry->d_name, cryptbuf, len);
-+	if (ret) {
-+		kfree(cryptbuf);
-+		return ERR_PTR(ret);
-+	}
-+success:
-+	*plen = len;
-+	return cryptbuf;
-+}
-+#else
-+static u8 *get_fscrypt_altname(const struct ceph_mds_request *req, u32 *plen)
-+{
-+	*plen = 0;
-+	return NULL;
-+}
-+#endif
-+
- /**
-  * ceph_mdsc_build_path - build a path string to a given dentry
-  * @dentry: dentry to which path should be built
-@@ -2606,14 +2664,15 @@ static void encode_mclientrequest_tail(void **p, const struct ceph_mds_request *
- 	ceph_encode_timespec64(&ts, &req->r_stamp);
- 	ceph_encode_copy(p, &ts, sizeof(ts));
- 
--	/* gid_list */
-+	/* v4: gid_list */
- 	ceph_encode_32(p, req->r_cred->group_info->ngroups);
- 	for (i = 0; i < req->r_cred->group_info->ngroups; i++)
- 		ceph_encode_64(p, from_kgid(&init_user_ns,
- 					    req->r_cred->group_info->gid[i]));
- 
--	/* v5: altname (TODO: skip for now) */
--	ceph_encode_32(p, 0);
-+	/* v5: altname */
-+	ceph_encode_32(p, req->r_altname_len);
-+	ceph_encode_copy(p, req->r_altname, req->r_altname_len);
- 
- 	/* v6: fscrypt_auth and fscrypt_file */
- 	if (req->r_fscrypt_auth) {
-@@ -2669,7 +2728,13 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
- 		goto out_free1;
- 	}
- 
--	/* head */
-+	req->r_altname = get_fscrypt_altname(req, &req->r_altname_len);
-+	if (IS_ERR(req->r_altname)) {
-+		msg = ERR_CAST(req->r_altname);
-+		req->r_altname = NULL;
-+		goto out_free2;
-+	}
-+
- 	len = legacy ? sizeof(*head) : sizeof(struct ceph_mds_request_head);
- 
- 	/* filepaths */
-@@ -2695,7 +2760,7 @@ static struct ceph_msg *create_request_message(struct ceph_mds_session *session,
- 	len += sizeof(u32) + (sizeof(u64) * req->r_cred->group_info->ngroups);
- 
- 	/* alternate name */
--	len += sizeof(u32);	// TODO
-+	len += sizeof(u32) + req->r_altname_len;
- 
- 	/* fscrypt_auth */
- 	len += sizeof(u32); // fscrypt_auth
-diff --git a/fs/ceph/mds_client.h b/fs/ceph/mds_client.h
-index 2cc75f9ae7c7..cd719691a86d 100644
---- a/fs/ceph/mds_client.h
-+++ b/fs/ceph/mds_client.h
-@@ -290,6 +290,9 @@ struct ceph_mds_request {
- 
- 	struct ceph_fscrypt_auth *r_fscrypt_auth;
- 
-+	u8 *r_altname;		    /* fscrypt binary crypttext for long filenames */
-+	u32 r_altname_len;	    /* length of r_altname */
-+
- 	int r_fmode;        /* file mode, if expecting cap */
- 	int r_request_release_offset;
- 	const struct cred *r_cred;
+diff --git a/include/sound/soc.h b/include/sound/soc.h
+index d3d3a26e8867..55fb6a6d7d25 100644
+--- a/include/sound/soc.h
++++ b/include/sound/soc.h
+@@ -176,6 +176,8 @@
+ 	.get = snd_soc_get_volsw, .put = snd_soc_put_volsw, \
+ 	.private_value = SOC_DOUBLE_R_S_VALUE(reg_left, reg_right, xshift, \
+ 					    xmin, xmax, xsign_bit, xinvert) }
++#define SOC_SINGLE_S_TLV(xname, xreg, xshift, xmin, xmax, xsign_bit, xinvert, tlv_array) \
++	SOC_DOUBLE_R_S_TLV(xname, xreg, xreg, xshift, xmin, xmax, xsign_bit, xinvert, tlv_array)
+ #define SOC_SINGLE_S8_TLV(xname, xreg, xmin, xmax, tlv_array) \
+ {	.iface  = SNDRV_CTL_ELEM_IFACE_MIXER, .name = (xname), \
+ 	.access = SNDRV_CTL_ELEM_ACCESS_TLV_READ | \
 -- 
-2.35.1
+2.30.2
 
