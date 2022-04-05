@@ -2,114 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:58:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 212E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 01:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbiDECAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 4 Apr 2022 22:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
+        id S229558AbiDECAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 4 Apr 2022 22:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiDEB75 (ORCPT
+        with ESMTP id S229507AbiDEB76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 4 Apr 2022 21:59:57 -0400
+        Mon, 4 Apr 2022 21:59:58 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB953568E2
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:16:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF5563568CE
+        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 18:16:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649121369; x=1680657369;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Vd8a/QnNBSw3XlEeVYk+lJcby3alpNsJHuOnY1+hlpQ=;
-  b=S7OV/KWObLUFXMPkMuIGO+HLdGMLiJZdKo5rzJTE49diyWyvwb+lMRuO
-   WyD0/aMmCgbW7B/UCG4Ja9KpBCmTxFc3TQd/G0iKmu+Jvff8Ucd9nwklt
-   mGUAt0HKxeDZvlO3wu62QLJYrgIzkOYeOwOP0wxUKU2M7sbqQ64Sskv9L
-   rqMogHFCRiLEP4S4aPOyg7Xen7fyGv8MGyKtwMqKda3KAnv7FKxhlGoUN
-   Ngtn5cLdCRlsBiDCZ9F7oQCGFqxLfaaIFqNhiXt2JO+sjuL+5StLZLf7X
-   mQcuOp8sRaOBzyntyFU/G55HiJIKSFiqpyuGVdU4JwuyEyDloe2JcXVNu
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="285591198"
+  t=1649121365; x=1680657365;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=P7TngUwlH5TGDyK5h7dBrH4QJh3YwqOqlGAIIeRM8tM=;
+  b=iTj3yWeTZRARGk6jgYcVS6jz3Bl1SF5rIYG82f/cBiYZOm3aa4oLLpFw
+   8Wcv+NowjuKzsrnbqB9VoT15ynx1eBKprfhVW4TFyt8aaFea/6SFMhJrV
+   /YS2638MApivF4jMxdukOYa2FvKm9JWjeNpSB1ICUx9JJQJdaxndqs8GL
+   +ydJBP2Mz4Lwz1T9AulJ+AXF9V+SgYczBysvJcNc6Fg8VNc49XDDiEhUu
+   GNFdMv78rr5YWdoCYjMb2V41YyhH7vA5xiVsUfi5HJSIuAs5IYzVduref
+   u1eLd6p8S+z7YdfpOF1NgwYggjj2ARN3BYxlKP/JNv20Y5ooYu1n1pBu5
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="285589010"
 X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="285591198"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 17:23:51 -0700
+   d="scan'208";a="285589010"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 17:04:40 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="651686256"
-Received: from cwebber-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.54.91])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 17:23:46 -0700
-Message-ID: <a3d68966dbabc800adabef96b9a7e5d325d5b5f7.camel@intel.com>
-Subject: Re: [PATCHv7.1 02/30] x86/tdx: Provide common base for SEAMCALL and
- TDCALL C wrappers
-From:   Kai Huang <kai.huang@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        bp@alien8.de
-Cc:     aarcange@redhat.com, ak@linux.intel.com, brijesh.singh@amd.com,
-        dan.j.williams@intel.com, dave.hansen@linux.intel.com,
-        david@redhat.com, hpa@zytor.com, jgross@suse.com,
-        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
-        knsathya@kernel.org, linux-kernel@vger.kernel.org, luto@kernel.org,
-        mingo@redhat.com, pbonzini@redhat.com, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
-        seanjc@google.com, tglx@linutronix.de, thomas.lendacky@amd.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org
-Date:   Tue, 05 Apr 2022 12:23:44 +1200
-In-Reply-To: <5263978a-19ef-fff3-cc61-b272a833171f@intel.com>
-References: <YjXtK4awY6utz3wE@zn.tnic>
-         <20220321160245.42886-1-kirill.shutemov@linux.intel.com>
-         <9f8f57fdbbf76e70471541dc42b04f8a89be4a56.camel@intel.com>
-         <dd5c52ad-9c61-54c3-6654-7a30c56b1917@intel.com>
-         <2fcd12bb42c7d30f0e7bd09a7f66d76122493b32.camel@intel.com>
-         <5263978a-19ef-fff3-cc61-b272a833171f@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+   d="scan'208";a="548850835"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 04 Apr 2022 17:04:39 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbWgY-0002TP-Kp;
+        Tue, 05 Apr 2022 00:04:38 +0000
+Date:   Tue, 5 Apr 2022 08:03:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [avpatel:riscv_kvm_aia_v1 25/29] arch/riscv/kvm/aia.c:204:36:
+ sparse: sparse: incorrect type in argument 2 (different address spaces)
+Message-ID: <202204050835.ITBYCuGd-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-04 at 17:01 -0700, Dave Hansen wrote:
-> On 4/4/22 16:35, Kai Huang wrote:
-> > Both error code formats defined by P-SEAMLDR and TDX module has some reserved
-> > bits which will never be set to 1.  I think we can just add a simple comment
-> > explaining that and choose a value which has 1 set for those reserved bits (even
-> > doesn't have to be -1). For example:
-> > 
-> > 	/*
-> > 	 * Use -1ULL which will never conflict with any actual error code
-> > 	 * returned by both the P-SEAMLDR and the TDX module to represent
-> > 	 * VMfailInvalid.  Both error code definitions defined by the
-> > 	 * P-SEAMLDR and the TDX module have some reserved bits which will
-> > 	 * never be set to 1.
-> > 	 */
-> > 	#define TDX_SEAMCALL_VMFAILINVALID	GENMASK_ULL(63, 0)
-> 
-> The vague "some reserved bits" magic works for exactly *one* error code.
->  If you ever want to make it two, then you subject some some poor future
-> dope to a trip to TDX documentation purgatory.
-> 
-> All I'm asking is that this code stand on its own.  Just declare what
-> the *ACTUAL* reserved bits are.  Not some vague reference to "some
-> bits".  There are *REAL* documented bits.  Use them, please.
+tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
+head:   dab41b5c8f55fb8e864a5e10fd181dd0d4443778
+commit: 74de87a8890ab0c58f3e5142ff49d219872a0eb5 [25/29] RISC-V: KVM: Implement guest external interrupt line management
+config: riscv-randconfig-s032-20220404 (https://download.01.org/0day-ci/archive/20220405/202204050835.ITBYCuGd-lkp@intel.com/config)
+compiler: riscv32-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/avpatel/linux/commit/74de87a8890ab0c58f3e5142ff49d219872a0eb5
+        git remote add avpatel https://github.com/avpatel/linux.git
+        git fetch --no-tags avpatel riscv_kvm_aia_v1
+        git checkout 74de87a8890ab0c58f3e5142ff49d219872a0eb5
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash
 
-OK.  How about below:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-	/*
-	 * VMfailInvalid happens before any actual internal logic of the
-	 * P-SEAMLDR and the TDX module is reached.  Use a unique value which
-	 * will never conflict with any actual error code returned by both the
-	 * P-SEAMLDR and the TDX module to represent this case.
-	 *
-	 * Both error code definitions of the P-SEAMLDR and the TDX module have
-	 * some reserved bits (bits 61:48 for the TDX module and bits 62:32 for
-	 * the P-SEAMLDR) which will never be set to 1.  Choose -1ULL as it
-will
-	 * never be returned as error code by both of them.
-	 */
-	#define TDX_SEAMCALL_VMFAILINVALID	GENMASK_ULL(63, 0)
+
+sparse warnings: (new ones prefixed by >>)
+>> arch/riscv/kvm/aia.c:204:36: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void * @@     got struct aia_hgei_control [noderef] __percpu * @@
+   arch/riscv/kvm/aia.c:204:36: sparse:     expected void *
+   arch/riscv/kvm/aia.c:204:36: sparse:     got struct aia_hgei_control [noderef] __percpu *
+
+vim +204 arch/riscv/kvm/aia.c
+
+   200	
+   201	static void aia_hgei_exit(void)
+   202	{
+   203		/* Free per-CPU SGEI interrupt */
+ > 204		free_irq(hgei_parent_irq, &aia_hgei);
+   205	}
+   206	
 
 -- 
-Thanks,
--Kai
+0-DAY CI Kernel Test Service
+https://01.org/lkp
