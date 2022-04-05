@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447DDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 934BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232488AbiDEHyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
+        id S232466AbiDEHyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233539AbiDEHr4 (ORCPT
+        with ESMTP id S233533AbiDEHr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:47:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CDE91AEE;
-        Tue,  5 Apr 2022 00:45:09 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6925A9230F;
+        Tue,  5 Apr 2022 00:44:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA91C616C3;
-        Tue,  5 Apr 2022 07:45:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6BDCC340EE;
-        Tue,  5 Apr 2022 07:45:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E445B81B92;
+        Tue,  5 Apr 2022 07:44:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 480ADC340EE;
+        Tue,  5 Apr 2022 07:44:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144708;
-        bh=r14M1DWPwRyo4+jvdjnECycfq43gChG0BjIE5UEYJjs=;
+        s=korg; t=1649144694;
+        bh=LecwaT5KVLT3oBNuiWE6AgTFdlv3PkHkGM+dBuO+TkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VbtE5C6tPzYBrcQs+ljUTrJMFaSNILYNPWk08vfIOwaMPswwB8Gke7T6LBkNw4QdB
-         pc/Vrs3HvdaT2LM39QkARFOSozMP+pBbaZj824vKigvo6Geaz85oyWQ8ccP1NUegQC
-         5+jNEcXbpkMIhtCesYU0rnZhUT9mXDGQu32Lcdng=
+        b=DxHXus2ek6GYK0WNwOPkpZLJoFGt3tmvNr3ntOWWW0KlEbXB/DzrKE5irTbtQ6Axi
+         wxayW4alpfAbr3gcz6vgWmm9b6ypRg9VSqelYGtW5oGpkTDfU+FlHyle98UyQzBdme
+         69W6PskK14UOP8umbswPr0KVh0BIF3GI9t7V2nYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Dayvison <sathlerds@gmail.com>,
-        Valentin Vidic <vvidic@valentin-vidic.from.hr>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 0103/1126] ocfs2: fix crash when mount with quota enabled
-Date:   Tue,  5 Apr 2022 09:14:10 +0200
-Message-Id: <20220405070410.592049559@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Ojaswin Mujoo <ojaswin@linux.ibm.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.17 0135/1126] ext4: make mb_optimize_scan option work with set/unset mount cmd
+Date:   Tue,  5 Apr 2022 09:14:42 +0200
+Message-Id: <20220405070411.540956652@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,109 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joseph Qi <joseph.qi@linux.alibaba.com>
+From: Ojaswin Mujoo <ojaswin@linux.ibm.com>
 
-commit de19433423c7bedabbd4f9a25f7dbc62c5e78921 upstream.
+commit 27b38686a3bb601db48901dbc4e2fc5d77ffa2c1 upstream.
 
-There is a reported crash when mounting ocfs2 with quota enabled.
+After moving to the new mount API, mb_optimize_scan mount option
+handling was not working as expected due to the parsed value always
+being overwritten by default. Refactor and fix this to the expected
+behavior described below:
 
-  RIP: 0010:ocfs2_qinfo_lock_res_init+0x44/0x50 [ocfs2]
-  Call Trace:
-    ocfs2_local_read_info+0xb9/0x6f0 [ocfs2]
-    dquot_load_quota_sb+0x216/0x470
-    dquot_load_quota_inode+0x85/0x100
-    ocfs2_enable_quotas+0xa0/0x1c0 [ocfs2]
-    ocfs2_fill_super.cold+0xc8/0x1bf [ocfs2]
-    mount_bdev+0x185/0x1b0
-    legacy_get_tree+0x27/0x40
-    vfs_get_tree+0x25/0xb0
-    path_mount+0x465/0xac0
-    __x64_sys_mount+0x103/0x140
+*  mb_optimize_scan=1 - On
+*  mb_optimize_scan=0 - Off
+*  mb_optimize_scan not passed - On if no. of BGs > threshold else off
+*  Remounts retain previous value unless we explicitly pass the option
+   with a new value
 
-It is caused by when initializing dqi_gqlock, the corresponding dqi_type
-and dqi_sb are not properly initialized.
-
-This issue is introduced by commit 6c85c2c72819, which wants to avoid
-accessing uninitialized variables in error cases.  So make global quota
-info properly initialized.
-
-Link: https://lkml.kernel.org/r/20220323023644.40084-1-joseph.qi@linux.alibaba.com
-Link: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1007141
-Fixes: 6c85c2c72819 ("ocfs2: quota_local: fix possible uninitialized-variable access in ocfs2_local_read_info()")
-Signed-off-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Reported-by: Dayvison <sathlerds@gmail.com>
-Tested-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: cebe85d570cf ("ext4: switch to the new mount api")
+Cc: stable@kernel.org
+Reported-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
+Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Link: https://lore.kernel.org/r/c98970fe99f26718586d02e942f293300fb48ef3.1646732698.git.ojaswin@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ocfs2/quota_global.c |   23 ++++++++++++-----------
- fs/ocfs2/quota_local.c  |    2 --
- 2 files changed, 12 insertions(+), 13 deletions(-)
+ fs/ext4/super.c |   24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
---- a/fs/ocfs2/quota_global.c
-+++ b/fs/ocfs2/quota_global.c
-@@ -337,7 +337,6 @@ void ocfs2_unlock_global_qf(struct ocfs2
- /* Read information header from global quota file */
- int ocfs2_global_read_info(struct super_block *sb, int type)
- {
--	struct inode *gqinode = NULL;
- 	unsigned int ino[OCFS2_MAXQUOTAS] = { USER_QUOTA_SYSTEM_INODE,
- 					      GROUP_QUOTA_SYSTEM_INODE };
- 	struct ocfs2_global_disk_dqinfo dinfo;
-@@ -346,29 +345,31 @@ int ocfs2_global_read_info(struct super_
- 	u64 pcount;
- 	int status;
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -2021,12 +2021,12 @@ static int ext4_set_test_dummy_encryptio
+ #define EXT4_SPEC_s_commit_interval		(1 << 16)
+ #define EXT4_SPEC_s_fc_debug_max_replay		(1 << 17)
+ #define EXT4_SPEC_s_sb_block			(1 << 18)
++#define EXT4_SPEC_mb_optimize_scan		(1 << 19)
  
-+	oinfo->dqi_gi.dqi_sb = sb;
-+	oinfo->dqi_gi.dqi_type = type;
-+	ocfs2_qinfo_lock_res_init(&oinfo->dqi_gqlock, oinfo);
-+	oinfo->dqi_gi.dqi_entry_size = sizeof(struct ocfs2_global_disk_dqblk);
-+	oinfo->dqi_gi.dqi_ops = &ocfs2_global_ops;
-+	oinfo->dqi_gqi_bh = NULL;
-+	oinfo->dqi_gqi_count = 0;
-+
- 	/* Read global header */
--	gqinode = ocfs2_get_system_file_inode(OCFS2_SB(sb), ino[type],
-+	oinfo->dqi_gqinode = ocfs2_get_system_file_inode(OCFS2_SB(sb), ino[type],
- 			OCFS2_INVALID_SLOT);
--	if (!gqinode) {
-+	if (!oinfo->dqi_gqinode) {
- 		mlog(ML_ERROR, "failed to get global quota inode (type=%d)\n",
- 			type);
- 		status = -EINVAL;
- 		goto out_err;
- 	}
--	oinfo->dqi_gi.dqi_sb = sb;
--	oinfo->dqi_gi.dqi_type = type;
--	oinfo->dqi_gi.dqi_entry_size = sizeof(struct ocfs2_global_disk_dqblk);
--	oinfo->dqi_gi.dqi_ops = &ocfs2_global_ops;
--	oinfo->dqi_gqi_bh = NULL;
--	oinfo->dqi_gqi_count = 0;
--	oinfo->dqi_gqinode = gqinode;
-+
- 	status = ocfs2_lock_global_qf(oinfo, 0);
- 	if (status < 0) {
- 		mlog_errno(status);
- 		goto out_err;
+ struct ext4_fs_context {
+ 	char		*s_qf_names[EXT4_MAXQUOTAS];
+ 	char		*test_dummy_enc_arg;
+ 	int		s_jquota_fmt;	/* Format of quota to use */
+-	int		mb_optimize_scan;
+ #ifdef CONFIG_EXT4_DEBUG
+ 	int s_fc_debug_max_replay;
+ #endif
+@@ -2451,12 +2451,17 @@ static int ext4_parse_param(struct fs_co
+ 			ctx_clear_mount_opt(ctx, m->mount_opt);
+ 		return 0;
+ 	case Opt_mb_optimize_scan:
+-		if (result.int_32 != 0 && result.int_32 != 1) {
++		if (result.int_32 == 1) {
++			ctx_set_mount_opt2(ctx, EXT4_MOUNT2_MB_OPTIMIZE_SCAN);
++			ctx->spec |= EXT4_SPEC_mb_optimize_scan;
++		} else if (result.int_32 == 0) {
++			ctx_clear_mount_opt2(ctx, EXT4_MOUNT2_MB_OPTIMIZE_SCAN);
++			ctx->spec |= EXT4_SPEC_mb_optimize_scan;
++		} else {
+ 			ext4_msg(NULL, KERN_WARNING,
+ 				 "mb_optimize_scan should be set to 0 or 1.");
+ 			return -EINVAL;
+ 		}
+-		ctx->mb_optimize_scan = result.int_32;
+ 		return 0;
  	}
  
--	status = ocfs2_extent_map_get_blocks(gqinode, 0, &oinfo->dqi_giblk,
-+	status = ocfs2_extent_map_get_blocks(oinfo->dqi_gqinode, 0, &oinfo->dqi_giblk,
- 					     &pcount, NULL);
- 	if (status < 0)
- 		goto out_unlock;
---- a/fs/ocfs2/quota_local.c
-+++ b/fs/ocfs2/quota_local.c
-@@ -702,8 +702,6 @@ static int ocfs2_local_read_info(struct
- 	info->dqi_priv = oinfo;
- 	oinfo->dqi_type = type;
- 	INIT_LIST_HEAD(&oinfo->dqi_chunk);
--	oinfo->dqi_gqinode = NULL;
--	ocfs2_qinfo_lock_res_init(&oinfo->dqi_gqlock, oinfo);
- 	oinfo->dqi_rec = NULL;
- 	oinfo->dqi_lqi_bh = NULL;
- 	oinfo->dqi_libh = NULL;
+@@ -4369,7 +4374,6 @@ static int __ext4_fill_super(struct fs_c
+ 
+ 	/* Set defaults for the variables that will be set during parsing */
+ 	ctx->journal_ioprio = DEFAULT_JOURNAL_IOPRIO;
+-	ctx->mb_optimize_scan = DEFAULT_MB_OPTIMIZE_SCAN;
+ 
+ 	sbi->s_inode_readahead_blks = EXT4_DEF_INODE_READAHEAD_BLKS;
+ 	sbi->s_sectors_written_start =
+@@ -5320,12 +5324,12 @@ no_journal:
+ 	 * turned off by passing "mb_optimize_scan=0". This can also be
+ 	 * turned on forcefully by passing "mb_optimize_scan=1".
+ 	 */
+-	if (ctx->mb_optimize_scan == 1)
+-		set_opt2(sb, MB_OPTIMIZE_SCAN);
+-	else if (ctx->mb_optimize_scan == 0)
+-		clear_opt2(sb, MB_OPTIMIZE_SCAN);
+-	else if (sbi->s_groups_count >= MB_DEFAULT_LINEAR_SCAN_THRESHOLD)
+-		set_opt2(sb, MB_OPTIMIZE_SCAN);
++	if (!(ctx->spec & EXT4_SPEC_mb_optimize_scan)) {
++		if (sbi->s_groups_count >= MB_DEFAULT_LINEAR_SCAN_THRESHOLD)
++			set_opt2(sb, MB_OPTIMIZE_SCAN);
++		else
++			clear_opt2(sb, MB_OPTIMIZE_SCAN);
++	}
+ 
+ 	err = ext4_mb_init(sb);
+ 	if (err) {
 
 
