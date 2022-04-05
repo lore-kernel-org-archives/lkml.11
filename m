@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A41C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F022C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841092AbiDFBPM (ORCPT
+        id S1841076AbiDFBPG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
+        Tue, 5 Apr 2022 21:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354220AbiDEKMT (ORCPT
+        with ESMTP id S1354776AbiDEKPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705BA64E8;
-        Tue,  5 Apr 2022 02:59:01 -0700 (PDT)
+        Tue, 5 Apr 2022 06:15:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CB149C83;
+        Tue,  5 Apr 2022 03:02:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 293EAB817D3;
-        Tue,  5 Apr 2022 09:59:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DEE5C385A1;
-        Tue,  5 Apr 2022 09:58:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99C05B81C8B;
+        Tue,  5 Apr 2022 10:02:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17892C385A1;
+        Tue,  5 Apr 2022 10:02:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152738;
-        bh=TYA85x5KePZrtgYFgh6mR2q5VCFcpvIyZhFCo2/nG68=;
+        s=korg; t=1649152963;
+        bh=3TnHiDcoE4UN7piXzw8IEQIziQxDeP2KahwoBf8cuVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mphnfcTySsEPDMZGld5Rklu7Sr/pzTbd/8zBJXh7Sn07A6Ubd+jJLuLxFuRnC8hkC
-         oqoWRS8ZhqFMNADzy+6uWUNINOkaUT2kZIPQur0+i7SYbHJznrxf4auz4vHlcdDCAi
-         XAs4KfBJu5c4w9yYYHoJai59jCBNmWXo0XPUyTdk=
+        b=SJYjXxRc8m1RbNetZo3orsE7L7WKKxzlJcvlpQA3GArXcLp0l1/eGibsZSxVbkgrG
+         59rhFq8iqsiY1HSAkivy/H5uJTeS/cDP8P2OQExwpHLSJrcSeubSoVpctWFyYPQ6x+
+         D9FRmUG7Ya3eipyyI89HcVDh4KfhHrJgos/l1I4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.15 885/913] dt-bindings: pinctrl: pinctrl-microchip-sgpio: Fix example
-Date:   Tue,  5 Apr 2022 09:32:27 +0200
-Message-Id: <20220405070406.349744134@linuxfoundation.org>
+        stable@vger.kernel.org, Mason Yang <masonccyang@mxic.com.tw>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Zhengxun Li <zhengxunli@mxic.com.tw>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 053/599] spi: mxic: Fix the transmit path
+Date:   Tue,  5 Apr 2022 09:25:47 +0200
+Message-Id: <20220405070300.406181228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit a6ff90f3fbd4d902aad8777f0329cef3a2768bde upstream.
+commit 5fd6739e0df7e320bcac103dfb95fe75941fea17 upstream.
 
-The blamed commit adds support for irq, but the reqisters for irq are
-outside of the memory size. They are at address 0x108. Therefore update
-the memory size to cover all the registers used by the device.
+By working with external hardware ECC engines, we figured out that
+Under certain circumstances, it is needed for the SPI controller to
+check INT_TX_EMPTY and INT_RX_NOT_EMPTY in both receive and transmit
+path (not only in the receive path). The delay penalty being
+negligible, move this code in the common path.
 
-Fixes: 01a9350bdd49fb ("dt-bindings: pinctrl: pinctrl-microchip-sgpio: Add irq support")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Link: https://lore.kernel.org/r/20220204153535.465827-2-horatiu.vultur@microchip.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: b942d80b0a39 ("spi: Add MXIC controller driver")
+Cc: stable@vger.kernel.org
+Suggested-by: Mason Yang <masonccyang@mxic.com.tw>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Zhengxun Li <zhengxunli@mxic.com.tw>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20220127091808.1043392-10-miquel.raynal@bootlin.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-mxic.c |   26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
---- a/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml
-@@ -138,7 +138,7 @@ examples:
-       clocks = <&sys_clk>;
-       pinctrl-0 = <&sgpio2_pins>;
-       pinctrl-names = "default";
--      reg = <0x1101059c 0x100>;
-+      reg = <0x1101059c 0x118>;
-       microchip,sgpio-port-ranges = <0 0>, <16 18>, <28 31>;
-       bus-frequency = <25000000>;
-       sgpio_in2: gpio@0 {
+--- a/drivers/spi/spi-mxic.c
++++ b/drivers/spi/spi-mxic.c
+@@ -304,25 +304,21 @@ static int mxic_spi_data_xfer(struct mxi
+ 
+ 		writel(data, mxic->regs + TXD(nbytes % 4));
+ 
+-		if (rxbuf) {
+-			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
+-						 sts & INT_TX_EMPTY, 0,
+-						 USEC_PER_SEC);
+-			if (ret)
+-				return ret;
++		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
++					 sts & INT_TX_EMPTY, 0, USEC_PER_SEC);
++		if (ret)
++			return ret;
+ 
+-			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
+-						 sts & INT_RX_NOT_EMPTY, 0,
+-						 USEC_PER_SEC);
+-			if (ret)
+-				return ret;
++		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
++					 sts & INT_RX_NOT_EMPTY, 0,
++					 USEC_PER_SEC);
++		if (ret)
++			return ret;
+ 
+-			data = readl(mxic->regs + RXD);
++		data = readl(mxic->regs + RXD);
++		if (rxbuf) {
+ 			data >>= (8 * (4 - nbytes));
+ 			memcpy(rxbuf + pos, &data, nbytes);
+-			WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
+-		} else {
+-			readl(mxic->regs + RXD);
+ 		}
+ 		WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
+ 
 
 
