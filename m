@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14119C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C1DC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356221AbiDEUQU (ORCPT
+        id S1358184AbiDEUQc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42280 "EHLO
+        Tue, 5 Apr 2022 16:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357315AbiDEK0L (ORCPT
+        with ESMTP id S1354669AbiDEKPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:26:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E32436B4A;
-        Tue,  5 Apr 2022 03:09:59 -0700 (PDT)
+        Tue, 5 Apr 2022 06:15:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB32E6C480;
+        Tue,  5 Apr 2022 03:02:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D611B81C8A;
-        Tue,  5 Apr 2022 10:09:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8A98C385A1;
-        Tue,  5 Apr 2022 10:09:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83571B81C99;
+        Tue,  5 Apr 2022 10:02:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D310CC385A1;
+        Tue,  5 Apr 2022 10:02:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153397;
-        bh=nsMVqSRmbTxbVvk5/HlwdAtS8BXE3eHLwo+t3A5U5NU=;
+        s=korg; t=1649152941;
+        bh=kqaUHqM6O4hl0lTDnmR2y1n4YeTkZq5aA0IYcX8trSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mx3wquoogz9Ewj0P2CLiutDkq1Oto/U3+ejxvX9AYMY+4ljseW41UaZ4UoFq6ZuYb
-         XFRbATKQgetodSRa50W0MY9BlxIVgd4uaeOEewSWu3tl7r/UyBLh8Sm58aHicuy6TP
-         a8kgZeNQ4KefIDfji+vt5+TPf1B0PHBelGwm070Y=
+        b=UEVQwqHod0tOyQAXp3QMYA80CKNqqQJi555gfKK4X3cD2xtTEQtaaAebKt5aDKm5F
+         KkGF4gyZdIToAJK9n8Fypq6x9gz5LaBQKcAhohlh0ByCrDZhEWbLt+O8W0vgk5VMM/
+         scJQuG0dPTwAvvmCEW1v1UEF4f3ZJNNeJ0PTkiSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, devicetree@vger.kernel.org,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 209/599] arm64: dts: qcom: sm8150: Correct TCS configuration for apps rsc
-Date:   Tue,  5 Apr 2022 09:28:23 +0200
-Message-Id: <20220405070305.060056814@linuxfoundation.org>
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.10 045/599] SUNRPC: avoid race between mod_timer() and del_timer_sync()
+Date:   Tue,  5 Apr 2022 09:25:39 +0200
+Message-Id: <20220405070300.168786032@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,41 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maulik Shah <quic_mkshah@quicinc.com>
+From: NeilBrown <neilb@suse.de>
 
-[ Upstream commit 17ac8af678b6da6a8f1df7da8ebf2c5198741827 ]
+commit 3848e96edf4788f772d83990022fa7023a233d83 upstream.
 
-Correct the TCS config by updating the number of TCSes for each type.
+xprt_destory() claims XPRT_LOCKED and then calls del_timer_sync().
+Both xprt_unlock_connect() and xprt_release() call
+ ->release_xprt()
+which drops XPRT_LOCKED and *then* xprt_schedule_autodisconnect()
+which calls mod_timer().
 
-Cc: devicetree@vger.kernel.org
-Fixes: d8cf9372b654 ("arm64: dts: qcom: sm8150: Add apps shared nodes")
-Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1641749107-31979-2-git-send-email-quic_mkshah@quicinc.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This may result in mod_timer() being called *after* del_timer_sync().
+When this happens, the timer may fire long after the xprt has been freed,
+and run_timer_softirq() will probably crash.
+
+The pairing of ->release_xprt() and xprt_schedule_autodisconnect() is
+always called under ->transport_lock.  So if we take ->transport_lock to
+call del_timer_sync(), we can be sure that mod_timer() will run first
+(if it runs at all).
+
+Cc: stable@vger.kernel.org
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/sm8150.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/sunrpc/xprt.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-index 1aec54590a11..a8a47378ba68 100644
---- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-@@ -1114,9 +1114,9 @@
- 			qcom,tcs-offset = <0xd00>;
- 			qcom,drv-id = <2>;
- 			qcom,tcs-config = <ACTIVE_TCS  2>,
--					  <SLEEP_TCS   1>,
--					  <WAKE_TCS    1>,
--					  <CONTROL_TCS 0>;
-+					  <SLEEP_TCS   3>,
-+					  <WAKE_TCS    3>,
-+					  <CONTROL_TCS 1>;
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -2037,7 +2037,14 @@ static void xprt_destroy(struct rpc_xprt
+ 	 */
+ 	wait_on_bit_lock(&xprt->state, XPRT_LOCKED, TASK_UNINTERRUPTIBLE);
  
- 			rpmhcc: clock-controller {
- 				compatible = "qcom,sm8150-rpmh-clk";
--- 
-2.34.1
-
++	/*
++	 * xprt_schedule_autodisconnect() can run after XPRT_LOCKED
++	 * is cleared.  We use ->transport_lock to ensure the mod_timer()
++	 * can only run *before* del_time_sync(), never after.
++	 */
++	spin_lock(&xprt->transport_lock);
+ 	del_timer_sync(&xprt->timer);
++	spin_unlock(&xprt->transport_lock);
+ 
+ 	/*
+ 	 * Destroy sockets etc from the system workqueue so they can
 
 
