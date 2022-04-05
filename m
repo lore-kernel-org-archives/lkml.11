@@ -2,93 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29AC1C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB24C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243503AbiDFB2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        id S1842212AbiDFB1f (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 21:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349207AbiDEJt0 (ORCPT
+        with ESMTP id S1457636AbiDEQXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A98432253D;
-        Tue,  5 Apr 2022 02:42:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 5 Apr 2022 12:23:06 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8F670F53;
+        Tue,  5 Apr 2022 09:21:07 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35:2589:2a93:190d:b787])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53261B818F3;
-        Tue,  5 Apr 2022 09:42:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A883DC385A1;
-        Tue,  5 Apr 2022 09:42:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151761;
-        bh=u8PxMLCYo4rYp2EXONipyGluuU3I5q0QkRQTH2Ha+LM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1lVs05GRpXcBBO+qOUANVF2UhKmBtiCBn2AXDgUhP54FkG3ujQuYiD4dJ92wg93J0
-         b75qqRt3+Q0gO1/AM9lC4UTtIfoZxfd23IkfWFSf+rgBLs7a4kvedkABYRqiCxwKKz
-         OvzwYE4h5yGOdMs+ugNuGr/V6VT/BuL2kJVv/41I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jeff Johnson <quic_jjohnson@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 531/913] ath10k: Fix error handling in ath10k_setup_msa_resources
-Date:   Tue,  5 Apr 2022 09:26:33 +0200
-Message-Id: <20220405070355.766997510@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ms.lwn.net (Postfix) with ESMTPSA id 31D34608;
+        Tue,  5 Apr 2022 16:21:07 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 31D34608
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1649175667; bh=9FJqupExhv6jdwd0TZ/dWnNU37azUvwEVvEHHFmkmtk=;
+        h=From:To:Subject:In-Reply-To:References:Date:From;
+        b=l6ePVsg260vqv5CfEvstHtdOQvEpP02ZAhL3wz50QfIA1rHm7SFfL/QZ46w/XUIf8
+         YNtKblkXS2AJ4wWkAVOgrRunP2sEaJ7P6dC33ihFikdKYWyo1mYoQBJEyzh5O9PbOb
+         zjEcoXrOwPN6gc+LWnyXEQ/zZPuatXArODI7zt2KHq/0VMwx22gNhrOsWSbl1ATyYr
+         wTEF+EzKjFio55r0y4D+DCUVVUJN5+WFI/lq49cUK6cY9RLBc6VfK8xE1yeG9PXwjW
+         VAvxWVIBNpyD8+oBlkOmMqIezzanEhasf/NdMfcP/TPz1DNa37OSlq/QJlcY8mEjIo
+         sgK3Rrdr/TNrw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Markus Reichl <m.reichl@fivetechno.de>,
+        Evgeniy Polyakov <zbr@ioremap.net>,
+        Markus Reichl <m.reichl@fivetechno.de>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] w1: w1_therm: Document Maxim MAX31850 thermoelement IF.
+In-Reply-To: <20220321120415.27533-1-m.reichl@fivetechno.de>
+References: <20220321120415.27533-1-m.reichl@fivetechno.de>
+Date:   Tue, 05 Apr 2022 10:21:06 -0600
+Message-ID: <87ee2bec25.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Markus Reichl <m.reichl@fivetechno.de> writes:
 
-[ Upstream commit 9747a78d5f758a5284751a10aee13c30d02bd5f1 ]
+> w1_therm driver supports now MAX31850, too. Add it to documentation
+> and fix a small typo.
+>
+> Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
+> ---
+>  Documentation/w1/slaves/w1_therm.rst | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
 
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
+Applied, thanks.
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error path.
-
-Fixes: 727fec790ead ("ath10k: Setup the msa resources before qmi init")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220308070238.19295-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index 9513ab696fff..f79dd9a71690 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -1556,11 +1556,11 @@ static int ath10k_setup_msa_resources(struct ath10k *ar, u32 msa_size)
- 	node = of_parse_phandle(dev->of_node, "memory-region", 0);
- 	if (node) {
- 		ret = of_address_to_resource(node, 0, &r);
-+		of_node_put(node);
- 		if (ret) {
- 			dev_err(dev, "failed to resolve msa fixed region\n");
- 			return ret;
- 		}
--		of_node_put(node);
- 
- 		ar->msa.paddr = r.start;
- 		ar->msa.mem_size = resource_size(&r);
--- 
-2.34.1
-
-
-
+jon
