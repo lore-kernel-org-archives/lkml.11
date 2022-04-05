@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 860E8C3527B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 202F4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238406AbiDEITE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
+        id S238864AbiDEIT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235674AbiDEIAA (ORCPT
+        with ESMTP id S235676AbiDEIAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:00:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2346BCF4;
-        Tue,  5 Apr 2022 00:57:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143CEB48;
+        Tue,  5 Apr 2022 00:57:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0AB4B81B14;
-        Tue,  5 Apr 2022 07:57:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F7AAC340EE;
-        Tue,  5 Apr 2022 07:57:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A708B61668;
+        Tue,  5 Apr 2022 07:57:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CF2C340EE;
+        Tue,  5 Apr 2022 07:57:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145449;
-        bh=UCmlG4rd63t5l396pdjvaRu6Ova3zotoQonuVXPefqc=;
+        s=korg; t=1649145455;
+        bh=jnIWHDgOZkh/R09nfdNYG2FZyVhHJZY2eXP9w+iXCQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BjIIZKgcS9UFpEtMANGE8peZA2QazF3mWVYexlzKVJAoAgZdlAYj1ghviX3v2wnFp
-         QKMUh8RKJUB75a6K4Or3ww/Iw4onJRWnxxIdBbI9XjfgODIdE9YoMxTXDKhmx8xjhC
-         g7LzQaRZ9Q7M74q3kPic6QCx1AIBxdCUCtOuaxjE=
+        b=TEDtbmEdA1ui/UJlEpvGyF3eob33/wPVehj667KNWrpocUfEayPi7tI3CGOZBaZRG
+         lW2vm2YLA4nXS72w4P5UQSTZGcymUjjAFW/DFLp82mbQm9ldhLFT8qlMapyY+LRZry
+         xWWtQyDDbAEel3lqmYXupdjOi9fpkQb4813EXp6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Wensheng <wangwensheng4@huawei.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0409/1126] ASoC: imx-es8328: Fix error return code in imx_es8328_probe()
-Date:   Tue,  5 Apr 2022 09:19:16 +0200
-Message-Id: <20220405070419.631036762@linuxfoundation.org>
+Subject: [PATCH 5.17 0384/1126] ASoC: soc-compress: prevent the potentially use of null pointer
+Date:   Tue,  5 Apr 2022 09:18:51 +0200
+Message-Id: <20220405070418.897681538@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,34 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Wensheng <wangwensheng4@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 3b891513f95cba3944e72c1139ea706d04f3781b ]
+[ Upstream commit de2c6f98817fa5decb9b7d3b3a8a3ab864c10588 ]
 
-Fix to return a negative error code from the error handling case instead
-of 0, as done elsewhere in this function.
+There is one call trace that snd_soc_register_card()
+->snd_soc_bind_card()->soc_init_pcm_runtime()
+->snd_soc_dai_compress_new()->snd_soc_new_compress().
+In the trace the 'codec_dai' transfers from card->dai_link,
+and we can see from the snd_soc_add_pcm_runtime() in
+snd_soc_bind_card() that, if value of card->dai_link->num_codecs
+is 0, then 'codec_dai' could be null pointer caused
+by index out of bound in 'asoc_rtd_to_codec(rtd, 0)'.
+And snd_soc_register_card() is called by various platforms.
+Therefore, it is better to add the check in the case of misusing.
+And because 'cpu_dai' has already checked in soc_init_pcm_runtime(),
+there is no need to check again.
+Adding the check as follow, then if 'codec_dai' is null,
+snd_soc_new_compress() will not pass through the check
+'if (playback + capture != 1)', avoiding the leftover use of
+'codec_dai'.
 
-Fixes: 7e7292dba215 ("ASoC: fsl: add imx-es8328 machine driver")
-Signed-off-by: Wang Wensheng <wangwensheng4@huawei.com>
-Link: https://lore.kernel.org/r/20220310091902.129299-1-wangwensheng4@huawei.com
+Fixes: 467fece ("ASoC: soc-dai: move snd_soc_dai_stream_valid() to soc-dai.c")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/1634285633-529368-1-git-send-email-jiasheng@iscas.ac.cn
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-es8328.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/soc-compress.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-es8328.c b/sound/soc/fsl/imx-es8328.c
-index 09c674ee79f1..168973035e35 100644
---- a/sound/soc/fsl/imx-es8328.c
-+++ b/sound/soc/fsl/imx-es8328.c
-@@ -87,6 +87,7 @@ static int imx_es8328_probe(struct platform_device *pdev)
- 	if (int_port > MUX_PORT_MAX || int_port == 0) {
- 		dev_err(dev, "mux-int-port: hardware only has %d mux ports\n",
- 			MUX_PORT_MAX);
-+		ret = -EINVAL;
- 		goto fail;
+diff --git a/sound/soc/soc-compress.c b/sound/soc/soc-compress.c
+index 8e2494a9f3a7..f4b376a71be8 100644
+--- a/sound/soc/soc-compress.c
++++ b/sound/soc/soc-compress.c
+@@ -568,12 +568,14 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
  	}
  
+ 	/* check client and interface hw capabilities */
+-	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
+-	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
+-		playback = 1;
+-	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
+-	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
+-		capture = 1;
++	if (codec_dai) {
++		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
++		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
++			playback = 1;
++		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
++		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
++			capture = 1;
++	}
+ 
+ 	/*
+ 	 * Compress devices are unidirectional so only one of the directions
 -- 
 2.34.1
 
