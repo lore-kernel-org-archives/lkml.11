@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F32C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7362DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846437AbiDFCEH (ORCPT
+        id S1846552AbiDFCEl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
+        Tue, 5 Apr 2022 22:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349075AbiDEJtE (ORCPT
+        with ESMTP id S1349669AbiDEJux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:04 -0400
+        Tue, 5 Apr 2022 05:50:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414BCA94FF;
-        Tue,  5 Apr 2022 02:40:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4862AD2;
+        Tue,  5 Apr 2022 02:48:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D12006164D;
-        Tue,  5 Apr 2022 09:40:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEDC0C385A2;
-        Tue,  5 Apr 2022 09:40:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A5436164D;
+        Tue,  5 Apr 2022 09:48:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77D40C385A2;
+        Tue,  5 Apr 2022 09:48:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151601;
-        bh=bpHXttM/e3cLQHkW0j8q0tlu0YafmBGpQxC5mr2uDeU=;
+        s=korg; t=1649152133;
+        bh=tYBNv+Rr8wh+iAJ7nZMKqWcKvB1KnhDg52VIlRPlvfU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d6gv/HOmPK+xo3CK4lElpZG+QSGtrTSRzZdwFmPL+07AsCj1M07rjtBULvpEcBob1
-         rYhQBibbmzwl0+k79Im4Y/Bo9IR9gnEm8KObOGta6XLbaOyY4g9YZ6+zK+eKEzWDXj
-         LyFAjBao1J7zt5eKiU4JKbtJxxIKdVU+JuF52iMs=
+        b=EPeW/YXOaUJUCtGs8P5Q7XjBSiheMg0M6D4debqO+NggBoCDFYkqBSOM6F8g5UzaT
+         mSwp790ekTz0gFVLSFp99J4LmmtRjXVDV/JEQcxRq1dNLp1j3j/2bZNQcqWkqiVBzr
+         x56/xYXoBi3D83EwkcyUbicfky33nzZMKv38XRxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 474/913] drm/msm/dpu: add DSPP blocks teardown
-Date:   Tue,  5 Apr 2022 09:25:36 +0200
-Message-Id: <20220405070354.063763780@linuxfoundation.org>
+Subject: [PATCH 5.15 668/913] NFS: Dont loop forever in nfs_do_recoalesce()
+Date:   Tue,  5 Apr 2022 09:28:50 +0200
+Message-Id: <20220405070359.859072976@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,43 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit d5c5e78f217172e87d8fb2c3418dd8b58b4adfcb ]
+[ Upstream commit d02d81efc7564b4d5446a02e0214a164cf00b1f3 ]
 
-Add missing calls to dpu_hw_dspp_destroy() to free resources allocated
-for DSPP hardware blocks.
+If __nfs_pageio_add_request() fails to add the request, it will return
+with either desc->pg_error < 0, or mirror->pg_recoalesce will be set, so
+we are guaranteed either to exit the function altogether, or to loop.
 
-Fixes: e47616df008b ("drm/msm/dpu: add support for color processing blocks in dpu driver")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/20220121210618.3482550-3-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+However if there is nothing left in mirror->pg_list to coalesce, we must
+exit, so make sure that we clear mirror->pg_recoalesce every time we
+loop.
+
+Reported-by: Olga Kornievskaia <aglo@umich.edu>
+Fixes: 70536bf4eb07 ("NFS: Clean up reset of the mirror accounting variables")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/nfs/pagelist.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-index f9c83d6e427a..24fbaf562d41 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-@@ -35,6 +35,14 @@ int dpu_rm_destroy(struct dpu_rm *rm)
- {
- 	int i;
+diff --git a/fs/nfs/pagelist.c b/fs/nfs/pagelist.c
+index cc232d1f16f2..b1130dc200d2 100644
+--- a/fs/nfs/pagelist.c
++++ b/fs/nfs/pagelist.c
+@@ -1227,6 +1227,7 @@ static int nfs_do_recoalesce(struct nfs_pageio_descriptor *desc)
  
-+	for (i = 0; i < ARRAY_SIZE(rm->dspp_blks); i++) {
-+		struct dpu_hw_dspp *hw;
-+
-+		if (rm->dspp_blks[i]) {
-+			hw = to_dpu_hw_dspp(rm->dspp_blks[i]);
-+			dpu_hw_dspp_destroy(hw);
-+		}
-+	}
- 	for (i = 0; i < ARRAY_SIZE(rm->pingpong_blks); i++) {
- 		struct dpu_hw_pingpong *hw;
+ 	do {
+ 		list_splice_init(&mirror->pg_list, &head);
++		mirror->pg_recoalesce = 0;
  
+ 		while (!list_empty(&head)) {
+ 			struct nfs_page *req;
 -- 
 2.34.1
 
