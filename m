@@ -2,113 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B78BC3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAD5C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1572970AbiDEXP0 (ORCPT
+        id S1577709AbiDEXQB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
+        Tue, 5 Apr 2022 19:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452812AbiDEPzf (ORCPT
+        with ESMTP id S1392207AbiDENtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:55:35 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172177B546;
-        Tue,  5 Apr 2022 07:57:25 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id bx5so12076459pjb.3;
-        Tue, 05 Apr 2022 07:57:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0fNKMdl5EgB8iVKO3jm7hq1ylGNE7urfWADlkF8zHzk=;
-        b=ouZF9rErW74fo9ZonM3kbl48QBEP9m7ukEs8xbgviCGPBdG1trn8OYOgkunWQrv9Xp
-         6AsDq1Mz0OFkH2tTIlJgL6697IdMgJIPV0xamecang18e+ZTD9QzKrLKIOemtmNtZW6t
-         xMPbhL1GoZEAY6Vnb/Yj+ErgsRHJiFecRFJ2obcylz0YhPP5CkxJZqjNp9VG6pqKtxsD
-         U/JfTW3WzHYACaSRHW++KVgDT/a69ci5QEadZN53z7/PEuEX4DIIcYJtAvRS1y5+32vF
-         Nt5yBVd89OcTKFi9DIAkhjJiu7wvvHFYZiWP8TTmuLgqCpceUoKOnQWWRSKZRJiimpqL
-         se1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0fNKMdl5EgB8iVKO3jm7hq1ylGNE7urfWADlkF8zHzk=;
-        b=vYW9t33g0mxb9quEvP2AO+OL4fglUipaaue7Jn8kSMSyggi9I4tVVoYb1ZXNCjTfKw
-         dMgGvz7n/v/2l0d/Q8ntK1RVDPfYBBuVtHWPi/Ocu0GgqgPbCIhhYGq4wh8IE25ZCSv+
-         w5O9y5ZFytVQRiwrzSO4b7+rtwNA9rdc6NMpKIYdzqXL26lEiGaqJiCLWQoCuaIxCEP5
-         JfoAq2NMWVpu+p21kXNfmTjxb4yzhoVq/l0yi6sSxbyv8grvzl2Cy3wNNShDvYcShVr0
-         nhQicEUC2AJq0N13Bk8czCGgxtxVJ44HCFXMSVJEt9SawSvHcq5r9JO/gzhTfVnkb7NO
-         wO6Q==
-X-Gm-Message-State: AOAM532WEqjPW57GTP92zfbAVf/4h2mDAwh2k0R/RAJM2f9B3Q0Rc2Ti
-        P9CEOfJotoe9hUIS9roRUv0=
-X-Google-Smtp-Source: ABdhPJxNnD+uON5FVNi6s4DMI5cEjuwS1ZmzNMYMxcdxqmxddZ+4IwfYpWLoUaQhrUAbn0pDSnfLsg==
-X-Received: by 2002:a17:90a:4604:b0:1bc:8bdd:4a63 with SMTP id w4-20020a17090a460400b001bc8bdd4a63mr4582646pjg.147.1649170644566;
-        Tue, 05 Apr 2022 07:57:24 -0700 (PDT)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id 3-20020a17090a034300b001c779e82af6sm2687794pjf.48.2022.04.05.07.57.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 07:57:23 -0700 (PDT)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next] selftests/bpf: Fix file descriptor leak in load_kallsyms()
-Date:   Tue,  5 Apr 2022 22:57:11 +0800
-Message-Id: <20220405145711.49543-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 5 Apr 2022 09:49:40 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A1071A043;
+        Tue,  5 Apr 2022 05:51:42 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 07A13D6E;
+        Tue,  5 Apr 2022 05:51:42 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.8.234])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5DFE03F5A1;
+        Tue,  5 Apr 2022 05:51:39 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 13:51:30 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linux-arch@vger.kernel.org, gcc@gcc.gnu.org,
+        catalin.marinas@arm.com, will@kernel.org, marcan@marcan.st,
+        maz@kernel.org, szabolcs.nagy@arm.com, f.fainelli@gmail.com,
+        opendmb@gmail.com, Andrew Pinski <pinskia@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        andrew.cooper3@citrix.com, Jeremy Linton <jeremy.linton@arm.com>
+Subject: GCC 12 miscompilation of volatile asm (was: Re: [PATCH] arm64/io:
+ Remind compiler that there is a memory side effect)
+Message-ID: <Ykw7UnlTnx63z/Ca@FVFF77S0Q05N>
+References: <20220401164406.61583-1-jeremy.linton@arm.com>
+ <Ykc0xrLv391/jdJj@FVFF77S0Q05N>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ykc0xrLv391/jdJj@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, if sym_cnt > 0, it just returns and does not close file, fix it.
+Hi all,
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
- tools/testing/selftests/bpf/trace_helpers.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+[adding kernel folk who work on asm stuff]
 
-diff --git a/tools/testing/selftests/bpf/trace_helpers.c b/tools/testing/selftests/bpf/trace_helpers.c
-index 3d6217e3aff7..9c4be2cdb21a 100644
---- a/tools/testing/selftests/bpf/trace_helpers.c
-+++ b/tools/testing/selftests/bpf/trace_helpers.c
-@@ -25,15 +25,12 @@ static int ksym_cmp(const void *p1, const void *p2)
- 
- int load_kallsyms(void)
- {
--	FILE *f = fopen("/proc/kallsyms", "r");
-+	FILE *f;
- 	char func[256], buf[256];
- 	char symbol;
- 	void *addr;
- 	int i = 0;
- 
--	if (!f)
--		return -ENOENT;
--
- 	/*
- 	 * This is called/used from multiplace places,
- 	 * load symbols just once.
-@@ -41,6 +38,10 @@ int load_kallsyms(void)
- 	if (sym_cnt)
- 		return 0;
- 
-+	f = fopen("/proc/kallsyms", "r");
-+	if (!f)
-+		return -ENOENT;
-+
- 	while (fgets(buf, sizeof(buf), f)) {
- 		if (sscanf(buf, "%p %c %s", &addr, &symbol, func) != 3)
- 			break;
--- 
-2.35.1
+As a heads-up, GCC 12 (not yet released) appears to erroneously optimize away
+calls to functions with volatile asm. Szabolcs has raised an issue on the GCC
+bugzilla:  
 
+  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
+
+... which is a P1 release blocker, and is currently being investigated.
+
+Jemery originally reported this as an issue with {readl,writel}_relaxed(), but
+the underlying problem doesn't have anything to do with those specifically.
+
+I'm dumping a bunch of info here largely for posterity / archival, and to find
+out who (from the kernel side) is willing and able to test proposed compiler
+fixes, once those are available.
+
+I'm happy to do so for aarch64; Peter, I assume you'd be happy to look at the
+x86 side?
+
+This is a generic issue, and 
+
+I wrote test cases for aarch64 and x86_64. Those are inline later in this mail,
+and currently you can see them on compiler explorer:
+
+  aarch64: https://godbolt.org/z/vMczqjYvs
+
+  x86_64: https://godbolt.org/z/cveff9hq5
+
+
+
+My aarch64 test case is:
+
+| #define sysreg_read(regname)		\
+| ({					\
+| 	unsigned long __sr_val;		\
+| 	asm volatile(			\
+| 	"mrs %0, " #regname "\n"	\
+| 	: "=r" (__sr_val));		\
+| 					\
+| 	__sr_val;			\
+| })
+| 
+| #define sysreg_write(regname, __sw_val)	\
+| do {					\
+| 	asm volatile(			\
+| 	"msr " #regname ", %0\n"	\
+| 	:				\
+| 	: "r" (__sw_val));		\
+| } while (0)
+| 
+| #define isb()				\
+| do {					\
+| 	asm volatile(			\
+| 	"isb"				\
+| 	:				\
+| 	:				\
+| 	: "memory");			\
+| } while (0)
+| 
+| static unsigned long sctlr_read(void)
+| {
+| 	return sysreg_read(sctlr_el1);
+| }
+| 
+| static void sctlr_write(unsigned long val)
+| {
+| 	sysreg_write(sctlr_el1, val);
+| }
+| 
+| static void sctlr_rmw(void)
+| {
+| 	unsigned long val;
+| 
+| 	val = sctlr_read();
+| 	val |= 1UL << 7;
+| 	sctlr_write(val);
+| }
+| 
+| void sctlr_read_multiple(void)
+| {
+| 	sctlr_read();
+| 	sctlr_read();
+| 	sctlr_read();
+| 	sctlr_read();
+| }
+| 
+| void sctlr_write_multiple(void)
+| {
+| 	sctlr_write(0);
+| 	sctlr_write(0);
+| 	sctlr_write(0);
+| 	sctlr_write(0);
+| 	sctlr_write(0);
+| }
+| 
+| void sctlr_rmw_multiple(void)
+| {
+| 	sctlr_rmw();
+| 	sctlr_rmw();
+| 	sctlr_rmw();
+| 	sctlr_rmw();
+| }
+| 
+| void function(void)
+| {
+| 	sctlr_read_multiple();
+| 	sctlr_write_multiple();
+| 	sctlr_rmw_multiple();
+| 
+| 	isb();
+| }
+
+Per compiler explorer (https://godbolt.org/z/vMczqjYvs) GCC trunk currently
+compiles this as:
+
+| sctlr_rmw:
+|         mrs x0, sctlr_el1
+|         orr     x0, x0, 128
+|         msr sctlr_el1, x0
+|         ret
+| sctlr_read_multiple:
+|         mrs x0, sctlr_el1
+|         mrs x0, sctlr_el1
+|         mrs x0, sctlr_el1
+|         mrs x0, sctlr_el1
+|         ret
+| sctlr_write_multiple:
+|         mov     x0, 0
+|         msr sctlr_el1, x0
+|         msr sctlr_el1, x0
+|         msr sctlr_el1, x0
+|         msr sctlr_el1, x0
+|         msr sctlr_el1, x0
+|         ret
+| sctlr_rmw_multiple:
+|         ret
+| function:
+|         isb
+|         ret
+
+Whereas GCC 11.2 compiles this as:
+
+| sctlr_rmw:
+|         mrs x0, sctlr_el1
+|         orr     x0, x0, 128
+|         msr sctlr_el1, x0
+|         ret
+| sctlr_read_multiple:
+|         mrs x0, sctlr_el1
+|         mrs x0, sctlr_el1
+|         mrs x0, sctlr_el1
+|         mrs x0, sctlr_el1
+|         ret
+| sctlr_write_multiple:
+|         mov     x0, 0
+|         msr sctlr_el1, x0
+|         msr sctlr_el1, x0
+|         msr sctlr_el1, x0
+|         msr sctlr_el1, x0
+|         msr sctlr_el1, x0
+|         ret
+| sctlr_rmw_multiple:
+|         stp     x29, x30, [sp, -16]!
+|         mov     x29, sp
+|         bl      sctlr_rmw
+|         bl      sctlr_rmw
+|         bl      sctlr_rmw
+|         bl      sctlr_rmw
+|         ldp     x29, x30, [sp], 16
+|         ret
+| function:
+|         stp     x29, x30, [sp, -16]!
+|         mov     x29, sp
+|         bl      sctlr_read_multiple
+|         bl      sctlr_write_multiple
+|         bl      sctlr_rmw_multiple
+|         isb
+|         ldp     x29, x30, [sp], 16
+|         ret
+
+
+
+My x86_64 test case is:
+
+| unsigned long rdmsr(unsigned long reg)
+| {
+|     unsigned int lo, hi;
+| 
+|     asm volatile(
+|     "rdmsr"
+|     : "=d" (hi), "=a" (lo)
+|     : "c" (reg)
+|     );
+| 
+|     return ((unsigned long)hi << 32) | lo;
+| }
+| 
+| void wrmsr(unsigned long reg, unsigned long val)
+| {
+|     unsigned int lo = val;
+|     unsigned int hi = val >> 32;
+| 
+|     asm volatile(
+|     "wrmsr"
+|     :
+|     : "d" (hi), "a" (lo), "c" (reg)
+|     );
+| }
+| 
+| void msr_rmw_set_bits(unsigned long reg, unsigned long bits)
+| {
+|     unsigned long val;
+| 
+|     val = rdmsr(reg);
+|     val |= bits;
+|     wrmsr(reg, val);
+| }
+| 
+| void func_with_msr_side_effects(unsigned long reg)
+| {
+|     msr_rmw_set_bits(reg, 1UL << 0);
+|     msr_rmw_set_bits(reg, 1UL << 1);
+|     msr_rmw_set_bits(reg, 1UL << 2);
+|     msr_rmw_set_bits(reg, 1UL << 3);
+| }
+
+Per compiler explorer (https://godbolt.org/z/cveff9hq5) GCC trunk currently
+compiles this as:
+
+| msr_rmw_set_bits:
+|         mov     rcx, rdi
+|         rdmsr
+|         sal     rdx, 32
+|         mov     eax, eax
+|         or      rax, rsi
+|         or      rax, rdx
+|         mov     rdx, rax
+|         shr     rdx, 32
+|         wrmsr
+|         ret
+| func_with_msr_side_effects:
+|         ret
+
+While GCC 11.2 compiles that as:
+
+| msr_rmw_set_bits:
+|         mov     rcx, rdi
+|         rdmsr
+|         sal     rdx, 32
+|         mov     eax, eax
+|         or      rax, rsi
+|         or      rax, rdx
+|         mov     rdx, rax
+|         shr     rdx, 32
+|         wrmsr
+|         ret
+| func_with_msr_side_effects:
+|         push    rbp
+|         push    rbx
+|         mov     rbx, rdi
+|         mov     rbp, rsi
+|         call    msr_rmw_set_bits
+|         mov     rsi, rbp
+|         mov     rdi, rbx
+|         call    msr_rmw_set_bits
+|         mov     rsi, rbp
+|         mov     rdi, rbx
+|         call    msr_rmw_set_bits
+|         mov     rsi, rbp
+|         mov     rdi, rbx
+|         call    msr_rmw_set_bits
+|         pop     rbx
+|         pop     rbp
+|         ret
+
+Thanks,
+Mark.
