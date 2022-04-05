@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F24FFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 246FAC43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243861AbiDEJJc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S244002AbiDEJJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:09:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239493AbiDEIUI (ORCPT
+        with ESMTP id S239494AbiDEIUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4146B0A;
-        Tue,  5 Apr 2022 01:14:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288B6B18;
+        Tue,  5 Apr 2022 01:14:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6112EB81B90;
-        Tue,  5 Apr 2022 08:14:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D81C385A1;
-        Tue,  5 Apr 2022 08:14:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4AD7B81B92;
+        Tue,  5 Apr 2022 08:14:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CBFDC385A0;
+        Tue,  5 Apr 2022 08:14:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146461;
-        bh=oAyDcBuvjmsJalWEXosrvxoNCoCAuiWwe1NdEN4k2bk=;
+        s=korg; t=1649146469;
+        bh=dVgbqXFyIJgEUdV3/rc2N+Kowlljr3pdXtg4KzLOn70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z3CpbNMUMBkDAFdvLJtzphX8K19S/uRyxUTvqh4dgEbLOEa0rvrjiYMTsumubqu1l
-         gfDvlg92q4j8kIHsRYBs1C/bglTpJN7OmMd9MZDvq7EpGlGUKslCMb4zS98fu7zpkp
-         pQEUbu4MkunAUG2L/zwXSvKTGmMSkDgtYhcSWJlg=
+        b=ZFA6ljSorXmXZjANlhPFUZBDqhDqfBRoylZmfnGbyAE94v++PB8WplOf9MzHQdkDb
+         wLM6OkkUP6oVFsHDcaFGFpAdonaUgrxbLs6y/KWE/oGFOOMMcPDEOESotqgueoxNgK
+         1Bk+wJrLU4wg80u2DqQKfthNDRNY0fGC+J5EyAeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0755/1126] clk: actions: Terminate clk_div_table with sentinel element
-Date:   Tue,  5 Apr 2022 09:25:02 +0200
-Message-Id: <20220405070429.745909340@linuxfoundation.org>
+Subject: [PATCH 5.17 0775/1126] pinctrl: microchip-sgpio: lock RMW access
+Date:   Tue,  5 Apr 2022 09:25:22 +0200
+Message-Id: <20220405070430.327838901@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,53 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit d8a441e53e2434b1401e52dfd66b05263e442edc ]
+[ Upstream commit 7996c5f5ec7a20b3f6b8fae93fcf3cb8f1c01743 ]
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div = 0).
+Protect any RMW access to the registers by a spinlock.
 
-In owl-s900.s, the { 0, 8 } element was probably meant to be just that,
-so this patch changes { 0, 8 } to { 0, 0 }.
-
-Fixes: d47317ca4ade1 ("clk: actions: Add S700 SoC clock support")
-Fixes: d85d20053e195 ("clk: actions: Add S900 SoC clock support")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Link: https://lore.kernel.org/r/20220218000922.134857-2-j.neuschaefer@gmx.net
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: 7e5ea974e61c ("pinctrl: pinctrl-microchip-sgpio: Add pinctrl driver for Microsemi Serial GPIO")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Link: https://lore.kernel.org/r/20220226204507.2511633-2-michael@walle.cc
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/actions/owl-s700.c | 1 +
- drivers/clk/actions/owl-s900.c | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/pinctrl/pinctrl-microchip-sgpio.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/clk/actions/owl-s700.c b/drivers/clk/actions/owl-s700.c
-index a2f34d13fb54..6ea7da1d6d75 100644
---- a/drivers/clk/actions/owl-s700.c
-+++ b/drivers/clk/actions/owl-s700.c
-@@ -162,6 +162,7 @@ static struct clk_div_table hdmia_div_table[] = {
+diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
+index 639f1130e989..666f1e3889e0 100644
+--- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
++++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
+@@ -19,6 +19,7 @@
+ #include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/reset.h>
++#include <linux/spinlock.h>
  
- static struct clk_div_table rmii_div_table[] = {
- 	{0, 4},   {1, 10},
-+	{0, 0}
+ #include "core.h"
+ #include "pinconf.h"
+@@ -116,6 +117,7 @@ struct sgpio_priv {
+ 	u32 clock;
+ 	struct regmap *regs;
+ 	const struct sgpio_properties *properties;
++	spinlock_t lock;
  };
  
- /* divider clocks */
-diff --git a/drivers/clk/actions/owl-s900.c b/drivers/clk/actions/owl-s900.c
-index 790890978424..5144ada2c7e1 100644
---- a/drivers/clk/actions/owl-s900.c
-+++ b/drivers/clk/actions/owl-s900.c
-@@ -140,7 +140,7 @@ static struct clk_div_table rmii_ref_div_table[] = {
+ struct sgpio_port_addr {
+@@ -229,6 +231,7 @@ static void sgpio_output_set(struct sgpio_priv *priv,
+ 			     int value)
+ {
+ 	unsigned int bit = SGPIO_SRC_BITS * addr->bit;
++	unsigned long flags;
+ 	u32 clr, set;
  
- static struct clk_div_table usb3_mac_div_table[] = {
- 	{ 1, 2 }, { 2, 3 }, { 3, 4 },
--	{ 0, 8 },
-+	{ 0, 0 }
- };
+ 	switch (priv->properties->arch) {
+@@ -247,7 +250,10 @@ static void sgpio_output_set(struct sgpio_priv *priv,
+ 	default:
+ 		return;
+ 	}
++
++	spin_lock_irqsave(&priv->lock, flags);
+ 	sgpio_clrsetbits(priv, REG_PORT_CONFIG, addr->port, clr, set);
++	spin_unlock_irqrestore(&priv->lock, flags);
+ }
  
- static struct clk_div_table i2s_div_table[] = {
+ static int sgpio_output_get(struct sgpio_priv *priv,
+@@ -575,10 +581,13 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
+ 	struct sgpio_bank *bank = gpiochip_get_data(chip);
+ 	unsigned int gpio = irqd_to_hwirq(data);
+ 	struct sgpio_port_addr addr;
++	unsigned long flags;
+ 	u32 ena;
+ 
+ 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
+ 
++	spin_lock_irqsave(&bank->priv->lock, flags);
++
+ 	/* Disable interrupt while changing type */
+ 	ena = sgpio_readl(bank->priv, REG_INT_ENABLE, addr.bit);
+ 	sgpio_writel(bank->priv, ena & ~BIT(addr.port), REG_INT_ENABLE, addr.bit);
+@@ -595,6 +604,8 @@ static void microchip_sgpio_irq_settype(struct irq_data *data,
+ 
+ 	/* Possibly re-enable interrupts */
+ 	sgpio_writel(bank->priv, ena, REG_INT_ENABLE, addr.bit);
++
++	spin_unlock_irqrestore(&bank->priv->lock, flags);
+ }
+ 
+ static void microchip_sgpio_irq_setreg(struct irq_data *data,
+@@ -605,13 +616,16 @@ static void microchip_sgpio_irq_setreg(struct irq_data *data,
+ 	struct sgpio_bank *bank = gpiochip_get_data(chip);
+ 	unsigned int gpio = irqd_to_hwirq(data);
+ 	struct sgpio_port_addr addr;
++	unsigned long flags;
+ 
+ 	sgpio_pin_to_addr(bank->priv, gpio, &addr);
+ 
++	spin_lock_irqsave(&bank->priv->lock, flags);
+ 	if (clear)
+ 		sgpio_clrsetbits(bank->priv, reg, addr.bit, BIT(addr.port), 0);
+ 	else
+ 		sgpio_clrsetbits(bank->priv, reg, addr.bit, 0, BIT(addr.port));
++	spin_unlock_irqrestore(&bank->priv->lock, flags);
+ }
+ 
+ static void microchip_sgpio_irq_mask(struct irq_data *data)
+@@ -833,6 +847,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	priv->dev = dev;
++	spin_lock_init(&priv->lock);
+ 
+ 	reset = devm_reset_control_get_optional_shared(&pdev->dev, "switch");
+ 	if (IS_ERR(reset))
 -- 
 2.34.1
 
