@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1D2C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F93C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390355AbiDENiS (ORCPT
+        id S1390400AbiDENi1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
+        Tue, 5 Apr 2022 09:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344265AbiDEJTD (ORCPT
+        with ESMTP id S1344351AbiDEJTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:19:03 -0400
+        Tue, 5 Apr 2022 05:19:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247C949F20;
-        Tue,  5 Apr 2022 02:06:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956AA2A1;
+        Tue,  5 Apr 2022 02:07:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B566861571;
-        Tue,  5 Apr 2022 09:06:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA356C385A0;
-        Tue,  5 Apr 2022 09:06:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9466614E4;
+        Tue,  5 Apr 2022 09:07:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 029A9C385A1;
+        Tue,  5 Apr 2022 09:07:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149588;
-        bh=5KA/8ySZ2n1/KKSMcoJazR7rOJ6n1FuR1d09mg0Xu70=;
+        s=korg; t=1649149663;
+        bh=aHqT1HFZ5CvSbqfy/C/L/NOwod6STlMUwvXPGsSKQro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B808LNm8XrNKMn80s/Ouu3/uvKrCvzX9GsK6UTcZEeS6iPupS5PTS119mDJ9qoXNe
-         4sH77yMbTEW6P+d7fcI2zFwjUN/Ob+WXd7pk5PFiUbadkNdEGGp61Vnj6AH+STDI5X
-         HVNbwCOQR6qAtH3Uaj67SDVQogXmpoILpNBy3y3s=
+        b=2gTgpYkSEGPPLWsbv8mYgCYWIKpy1on72Zaavmc9yslEegKPvzwODsO//xZQDOwyj
+         T3iSPy6dfQbvpiW3esawNarHAb6iu2UzFcEknO00Ccy+mz0XiDVjLdj+AsASMdLIeA
+         xJq8Z2JuRWOClJNxYZDjfeXt7tseXiJMBTW5GUc8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
+        stable@vger.kernel.org, Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0770/1017] irqchip/qcom-pdc: Fix broken locking
-Date:   Tue,  5 Apr 2022 09:28:03 +0200
-Message-Id: <20220405070417.115714297@linuxfoundation.org>
+Subject: [PATCH 5.16 0757/1017] rcu: Mark writes to the rcu_segcblist structures ->flags field
+Date:   Tue,  5 Apr 2022 09:27:50 +0200
+Message-Id: <20220405070416.729358398@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,54 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit a6aca2f460e203781dc41391913cc5b54f4bc0ce ]
+[ Upstream commit c09929031018913b5783872a8b8cdddef4a543c7 ]
 
-pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
-and has a raw spinlock for mutual exclusion, which is uses with
-interruptible primitives.
+KCSAN reports data races between the rcu_segcblist_clear_flags() and
+rcu_segcblist_set_flags() functions, though misreporting the latter
+as a call to rcu_segcblist_is_enabled() from call_rcu().  This commit
+converts the updates of this field to WRITE_ONCE(), relying on the
+resulting unmarked reads to continue to detect buggy concurrent writes
+to this field.
 
-This means that this critical section can itself be interrupted.
-Should the interrupt also be a PDC interrupt, and the endpoint driver
-perform an irq_disable() on that interrupt, we end-up in a deadlock.
-
-Fix this by using the irqsave/irqrestore variants of the locking
-primitives.
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
-Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
+Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Cc: Frederic Weisbecker <frederic@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/qcom-pdc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ kernel/rcu/rcu_segcblist.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 173e6520e06e..c0b457f26ec4 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -56,17 +56,18 @@ static u32 pdc_reg_read(int reg, u32 i)
- static void pdc_enable_intr(struct irq_data *d, bool on)
+diff --git a/kernel/rcu/rcu_segcblist.h b/kernel/rcu/rcu_segcblist.h
+index 9a19328ff251..5d405943823e 100644
+--- a/kernel/rcu/rcu_segcblist.h
++++ b/kernel/rcu/rcu_segcblist.h
+@@ -56,13 +56,13 @@ static inline long rcu_segcblist_n_cbs(struct rcu_segcblist *rsclp)
+ static inline void rcu_segcblist_set_flags(struct rcu_segcblist *rsclp,
+ 					   int flags)
  {
- 	int pin_out = d->hwirq;
-+	unsigned long flags;
- 	u32 index, mask;
- 	u32 enable;
- 
- 	index = pin_out / 32;
- 	mask = pin_out % 32;
- 
--	raw_spin_lock(&pdc_lock);
-+	raw_spin_lock_irqsave(&pdc_lock, flags);
- 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
- 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
- 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
--	raw_spin_unlock(&pdc_lock);
-+	raw_spin_unlock_irqrestore(&pdc_lock, flags);
+-	rsclp->flags |= flags;
++	WRITE_ONCE(rsclp->flags, rsclp->flags | flags);
  }
  
- static void qcom_pdc_gic_disable(struct irq_data *d)
+ static inline void rcu_segcblist_clear_flags(struct rcu_segcblist *rsclp,
+ 					     int flags)
+ {
+-	rsclp->flags &= ~flags;
++	WRITE_ONCE(rsclp->flags, rsclp->flags & ~flags);
+ }
+ 
+ static inline bool rcu_segcblist_test_flags(struct rcu_segcblist *rsclp,
 -- 
 2.34.1
 
