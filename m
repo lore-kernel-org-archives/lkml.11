@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11617C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76435C352A1
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377542AbiDEL5k (ORCPT
+        id S1377249AbiDEL5f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
+        Tue, 5 Apr 2022 07:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245004AbiDEIxA (ORCPT
+        with ESMTP id S244994AbiDEIxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4841C211;
-        Tue,  5 Apr 2022 01:49:09 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C64DFE9;
+        Tue,  5 Apr 2022 01:48:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D30B060FFB;
-        Tue,  5 Apr 2022 08:49:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7CA1C385A0;
-        Tue,  5 Apr 2022 08:49:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22302B81A32;
+        Tue,  5 Apr 2022 08:48:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73450C385A1;
+        Tue,  5 Apr 2022 08:48:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148548;
-        bh=LG0B36g9ZWWMdeW/WzkjNVZ5NcrqZuW9Ts6j3rxaxdc=;
+        s=korg; t=1649148534;
+        bh=5xwjSXGcSyCL53TkO5UFu25SunMdXeXVvL0B5LJR5IY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fn+PrGN0lSfcdsOAxUlcDZGec2lYCb7P1qO/iLM/gcf2hJKiEPRYnGfqB763ljLIe
-         ujn6kryChGA14HDrTG6BifUDfQIiMskiBIx/LzoeiEWo0sLPNyObuGjFEoEM/qxgpg
-         /nHRNdzvaWbqEldVHSUPkFyZTgFqgD5oBxdidm1Q=
+        b=BF7jSxRQjvwGpSSSSPpR9GENGmxPTIEP3rQZd54DoD/LYQ+xlKrg6iPTQ+QOWxttq
+         7lFScANJ3TeMNaWnI5eAcvXG87eSV+qwx+VoP6mzHihtsCwuMdujhYc90XZMPXQGw7
+         kgJCnN8COtclUjuvKAaWeZUgFU57hEr8RN4BycWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0396/1017] ARM: configs: multi_v5_defconfig: re-enable CONFIG_V4L_PLATFORM_DRIVERS
-Date:   Tue,  5 Apr 2022 09:21:49 +0200
-Message-Id: <20220405070406.040364622@linuxfoundation.org>
+        stable@vger.kernel.org, Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0352/1017] soc: mediatek: pm-domains: Add wakeup capacity support in power domain
+Date:   Tue,  5 Apr 2022 09:21:05 +0200
+Message-Id: <20220405070404.733057449@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,41 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 
-[ Upstream commit f5eb04d7a0e419d61f784de3ced708259ddb71d7 ]
+[ Upstream commit ac0ca395543af061f7ad77afcda0afb323d82468 ]
 
-Commit 06b93644f4d1 ("media: Kconfig: add an option to filter in/out
-platform drivers") introduced CONFIG_MEDIA_PLATFORM_SUPPORT, to allow
-more fine grained control over the inclusion of certain Kconfig files.
-multi_v5_defconfig was selecting some drivers described in
-drivers/media/platform/Kconfig, which now wasn't included anymore.
+Due to some power domain needs to keep on for wakeup in system suspend,
+so add GENPD_FLAG_ACTIVE_WAKEUP support in Mediatek power domain driver.
 
-Explicitly set the new symbol in multi_v5_defconfig to bring those
-drivers back.
-This enables some new V4L2 and VIDEOBUF2 features, but as modules only.
-
-Fixes: 06b93644f4d1 ("media: Kconfig: add an option to filter in/out platform drivers")
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/20220317183043.948432-3-andre.przywara@arm.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 59b644b01cf4 ("soc: mediatek: Add MediaTek SCPSYS power domains")
+Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220130012104.5292-3-chun-jie.chen@mediatek.com
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/configs/multi_v5_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/soc/mediatek/mtk-pm-domains.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
-index fe8d760256a4..dac1db2e181f 100644
---- a/arch/arm/configs/multi_v5_defconfig
-+++ b/arch/arm/configs/multi_v5_defconfig
-@@ -188,6 +188,7 @@ CONFIG_REGULATOR=y
- CONFIG_REGULATOR_FIXED_VOLTAGE=y
- CONFIG_MEDIA_SUPPORT=y
- CONFIG_MEDIA_CAMERA_SUPPORT=y
-+CONFIG_MEDIA_PLATFORM_SUPPORT=y
- CONFIG_V4L_PLATFORM_DRIVERS=y
- CONFIG_VIDEO_ASPEED=m
- CONFIG_VIDEO_ATMEL_ISI=m
+diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
+index b762bc40f56b..afd2fd74802d 100644
+--- a/drivers/soc/mediatek/mtk-pm-domains.c
++++ b/drivers/soc/mediatek/mtk-pm-domains.c
+@@ -443,6 +443,9 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+ 	pd->genpd.power_off = scpsys_power_off;
+ 	pd->genpd.power_on = scpsys_power_on;
+ 
++	if (MTK_SCPD_CAPS(pd, MTK_SCPD_ACTIVE_WAKEUP))
++		pd->genpd.flags |= GENPD_FLAG_ACTIVE_WAKEUP;
++
+ 	if (MTK_SCPD_CAPS(pd, MTK_SCPD_KEEP_DEFAULT_OFF))
+ 		pm_genpd_init(&pd->genpd, NULL, true);
+ 	else
 -- 
 2.34.1
 
