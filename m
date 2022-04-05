@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8ABFC35294
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EA0C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381581AbiDEU3L (ORCPT
+        id S1378974AbiDEU2V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41194 "EHLO
+        Tue, 5 Apr 2022 16:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356703AbiDEKYt (ORCPT
+        with ESMTP id S1348934AbiDEJst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:24:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980E9BF502;
-        Tue,  5 Apr 2022 03:08:52 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB51EE4F7;
+        Tue,  5 Apr 2022 02:37:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3160AB81C8B;
-        Tue,  5 Apr 2022 10:08:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79387C385A6;
-        Tue,  5 Apr 2022 10:08:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A1746164D;
+        Tue,  5 Apr 2022 09:37:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A04C385A0;
+        Tue,  5 Apr 2022 09:37:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153329;
-        bh=2G8/AqG0+BbaHGBuCW1Wgi9beZzm2Mxp5cB/nqaBBfY=;
+        s=korg; t=1649151474;
+        bh=mzp1L8cy0zX1S7Ys8uWthZesAItRsz+BMm3QnuJIO2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1VOVI7ild3F6wRDaJmSopmKa4448/hYMG8TWNY5ch3FfiubAFTa0lLoZSqh6ebF9O
-         iTBcs4K0/82hk8/PL23D++v7IlJ0ZTv40TVqK+yXJAFtNJk61XiQh8ySygHajWaMoH
-         XL3mlSbm4z+/DLjwHkS32YqLN1PCVg6Kefg4cqCQ=
+        b=P7M5Yyw98SD+SVSM3j3ohZpNX8Z7QlICGRIrtPt3LDy5bRD0s31Q41Izf1pY3v5i3
+         7JqWmJxvIeWDonWOV+lqvuYW72lvQGcwImeKTbvjNylbI5u4BpA9iQTkgp9B4iyOfg
+         fkcsjZmHtFMwRGVTz9/fudLVg9nmBIGdnoRIOchs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Fengnan Chang <changfengnan@vivo.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 184/599] f2fs: fix compressed file start atomic write may cause data corruption
-Date:   Tue,  5 Apr 2022 09:27:58 +0200
-Message-Id: <20220405070304.316914552@linuxfoundation.org>
+Subject: [PATCH 5.15 429/913] net: dsa: mv88e6xxx: Enable port policy support on 6097
+Date:   Tue,  5 Apr 2022 09:24:51 +0200
+Message-Id: <20220405070352.704543078@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,76 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fengnan Chang <changfengnan@vivo.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-[ Upstream commit 9b56adcf525522e9ffa52471260298d91fc1d395 ]
+[ Upstream commit 585d42bb57bb358d48906660a8de273b078810b1 ]
 
-When compressed file has blocks, f2fs_ioc_start_atomic_write will succeed,
-but compressed flag will be remained in inode. If write partial compreseed
-cluster and commit atomic write will cause data corruption.
+This chip has support for the same per-port policy actions found in
+later versions of LinkStreet devices.
 
-This is the reproduction process:
-Step 1:
-create a compressed file ,write 64K data , call fsync(), then the blocks
-are write as compressed cluster.
-Step2:
-iotcl(F2FS_IOC_START_ATOMIC_WRITE)  --- this should be fail, but not.
-write page 0 and page 3.
-iotcl(F2FS_IOC_COMMIT_ATOMIC_WRITE)  -- page 0 and 3 write as normal file,
-Step3:
-drop cache.
-read page 0-4   -- Since page 0 has a valid block address, read as
-non-compressed cluster, page 1 and 2 will be filled with compressed data
-or zero.
-
-The root cause is, after commit 7eab7a696827 ("f2fs: compress: remove
-unneeded read when rewrite whole cluster"), in step 2, f2fs_write_begin()
-only set target page dirty, and in f2fs_commit_inmem_pages(), we will write
-partial raw pages into compressed cluster, result in corrupting compressed
-cluster layout.
-
-Fixes: 4c8ff7095bef ("f2fs: support data compression")
-Fixes: 7eab7a696827 ("f2fs: compress: remove unneeded read when rewrite whole cluster")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Fengnan Chang <changfengnan@vivo.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: f3a2cd326e44 ("net: dsa: mv88e6xxx: introduce .port_set_policy")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/data.c | 2 +-
- fs/f2fs/file.c | 5 ++++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 04e980c58319..b2016fd3a7ca 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3461,7 +3461,7 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
- 
- 		*fsdata = NULL;
- 
--		if (len == PAGE_SIZE)
-+		if (len == PAGE_SIZE && !(f2fs_is_atomic_file(inode)))
- 			goto repeat;
- 
- 		ret = f2fs_prepare_compress_overwrite(inode, pagep,
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 1fbaab1f7aba..792f9059d897 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -2035,7 +2035,10 @@ static int f2fs_ioc_start_atomic_write(struct file *filp)
- 
- 	inode_lock(inode);
- 
--	f2fs_disable_compressed_file(inode);
-+	if (!f2fs_disable_compressed_file(inode)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
- 
- 	if (f2fs_is_atomic_file(inode)) {
- 		if (is_inode_flag_set(inode, FI_ATOMIC_REVOKE_REQUEST))
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 056e3b65cd27..0830d7bb7a00 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3649,6 +3649,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
+ 	.port_sync_link = mv88e6185_port_sync_link,
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
++	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+ 	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
+ 	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
 -- 
 2.34.1
 
