@@ -2,190 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B754C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492EFC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235660AbiDEVRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58790 "EHLO
+        id S233095AbiDEVRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238925AbiDEKaZ (ORCPT
+        with ESMTP id S1379607AbiDELl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:30:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198ECDCE07;
-        Tue,  5 Apr 2022 03:18:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CCC66176C;
-        Tue,  5 Apr 2022 10:18:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EE6DC385A1;
-        Tue,  5 Apr 2022 10:18:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153896;
-        bh=3rzkx/yreIVc/blvWlOqW8WfIueqgzdq7d0YI+QKGUI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N7CxODvyApN+pZHL/YcpaJTLM9BazUCVYq5d45C3MAx7PJsxphsO/oU5osr7H4CGX
-         Bj0lcWtJ2einw7mDVP8+J87W8Db0KICchvNoBG0e3+qrxqNNQ1wknVrrpiP3v4LpAx
-         SiRxgasWSEQZZamfUSf/E9fBsSoyqxFbx7RBcu9o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 386/599] iio: mma8452: Fix probe failing when an i2c_device_id is used
-Date:   Tue,  5 Apr 2022 09:31:20 +0200
-Message-Id: <20220405070310.317174826@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:41:26 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2081.outbound.protection.outlook.com [40.107.94.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D6A1B788;
+        Tue,  5 Apr 2022 04:01:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cqCwQh0/FplUjABynj/PXpZdkbwr3gc9n9RYkuqGGnxk7XBd/W4XxItegsM+DTZYggYccKH+/noCsIkVbfYUlKFj4GXQc9nKnkYYECnR/haEyq9n/jPmAZvlznBzoaEqxSVi+bpcqX+nifodE3E2LlbzKmYJLUKNc0yGBVUlq/pA8fsldd3nHquBCv1yUGR0vgslPYLFJPbJ07ZR6K/bE4cLKPGAo3N5fofDLqjt/PvM6wuqf5SZW8Wp0JUTuCBwePl4awunalhxaUP7AWG5SAvC0j0n3B6Pwa9ViMUG/Ejb6DJax20ytTin3e8qtc5f2S3jRpzu6eBa19sBzXEUzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xS2nU0RhIeg1LduQ6MFdszX7otdZKsKhumsD//Aoqd8=;
+ b=XjCDtdY8As3hyvSG2DYJkp9EFvVsLM+wEHRDQw7L7eTOhsCrsmBzzinBUkSbYPnQFkz3EZfvbC9I5OXiHImWNaIH0Yhca4kdTgJGvFZyHqrptEtsjWSxFpY9ocLOAbXki1GPyEUK1IeqmnmjbR6gCOET/JjM+HRLAsqhD10nibfCHebbTBG/JvTrAdXrLlHKwWjTjUhtnTIHOxFGIyXAL1UD8u1NiAASsVkRqxMaOG3GmW38QytI/yrwujr23EX/8joYZq2hRalPLSC6EFB6hig0u7g7fQxuDrafNGG4/7aDPbweGuxWzCyHJH1I1U2J6Gj+Di+UDxSDhe4xTRxS1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xS2nU0RhIeg1LduQ6MFdszX7otdZKsKhumsD//Aoqd8=;
+ b=BK8ynb4Jc5iwEOnIrjMLxdTtKSWq7AZbXsKHJ9LUa4X2Nn2+9ZB6K73quq7By5eQDc5WIEbji7O88GAHHaE/1OVIhdvDRR673bOnkGhhuIcK2+jI1yKmt2nWsxhRXFoHVPoggrx7ExONPbHWKenUz74ZOvHLPXybLU+q1pfLodM=
+Received: from SN4PR0501CA0013.namprd05.prod.outlook.com
+ (2603:10b6:803:40::26) by BL3PR02MB7859.namprd02.prod.outlook.com
+ (2603:10b6:208:33e::5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
+ 2022 11:01:11 +0000
+Received: from SN1NAM02FT0003.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:40:cafe::10) by SN4PR0501CA0013.outlook.office365.com
+ (2603:10b6:803:40::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.19 via Frontend
+ Transport; Tue, 5 Apr 2022 11:01:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0003.mail.protection.outlook.com (10.97.4.80) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5123.19 via Frontend Transport; Tue, 5 Apr 2022 11:01:11 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Tue, 5 Apr 2022 04:01:04 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Tue, 5 Apr 2022 04:01:04 -0700
+Envelope-to: git@xilinx.com,
+ saikrishna12468@gmail.com,
+ broonie@kernel.org,
+ robh+dt@kernel.org,
+ p.yadav@ti.com,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-spi@vger.kernel.org
+Received: from [172.23.64.7] (port=48929 helo=xhdvnc107.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <lakshmi.sai.krishna.potthuri@xilinx.com>)
+        id 1nbgvn-000FiG-UO; Tue, 05 Apr 2022 04:01:04 -0700
+Received: by xhdvnc107.xilinx.com (Postfix, from userid 14964)
+        id 2DE416050D; Tue,  5 Apr 2022 16:31:03 +0530 (IST)
+From:   Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Pratyush Yadav <p.yadav@ti.com>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>, <git@xilinx.com>,
+        <saikrishna12468@gmail.com>, <sgoud@xilinx.com>,
+        "Sai Krishna Potthuri" <lakshmi.sai.krishna.potthuri@xilinx.com>
+Subject: [PATCH 0/2] spi: cadence-quadspi: Add OSPI device reset support
+Date:   Tue, 5 Apr 2022 16:30:35 +0530
+Message-ID: <1649156437-15609-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+X-Mailer: git-send-email 2.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0c68d1a7-5c09-4267-fe41-08da16f39868
+X-MS-TrafficTypeDiagnostic: BL3PR02MB7859:EE_
+X-Microsoft-Antispam-PRVS: <BL3PR02MB7859AA95B0AF6ED090A27B25BDE49@BL3PR02MB7859.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vyw4nmrsJfvEsdWlJZbQtA7zFL2ZxoM3Sjy/Yx4arWjTW5rDUffhjah1foxXd6Mjud4/zsZ1BXt5wfS9bD8FF0awNnF8TCL6acrF8Q8I5StRdWkNIqsFAl/QEI27V2VfSNfHl/A/U4D1u/ZOUl5SThBfS3uL/dI2qR7PVtXjMN4AM/edAK6GhLwuM28qTXrC4G3sDSG11a9F00F4EyRtLDIYOLRgXOmSaESfCCVE9lGeYNqQ2jWomqwpp7uBd1bCIMUxhX3O4qGjeO6N4KMs4mrPpG7milki6qcww8MLMNskxxjbVvmq1oAgaOFfyRQacW6Du4383n6ixfqiGoULUYvmdQkCX9zCvSrpSWEz7Jn01AkHNjVk+0BMbQXXbpfTLarbdT9c7vLJwV2odWIibNG/gm6Kq4S+WQykcon6qtMhpELP8anxfdTAIQ6ZnvobfORWCioAfCCzRfj+vrad+Akhf06b/5HqotzAMWYgTX7kOBKN2P6+sT2NqAdMckd8LjgIpRhqK543Hc7vXnwZzvJXeq5Z9F4cJ06TKJm8hqXvsADRhfklvujD9Z1N2cVd3hIqqv4rEumhrA6m9AXaezAqRmIFo8avDVjICNpRoJtpS6IG0x9hhN4zF+KsmVcVn5W+RLjmY8Njfh2gcQozQGyCgaUnblbm43B6dyJzh1BsZBAVxAUXNXrXu920EXy0rIfwywD0/M7i3dCdAh9CZQ==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(356005)(8676002)(5660300002)(6266002)(54906003)(7636003)(6666004)(110136005)(42186006)(316002)(4326008)(508600001)(83380400001)(70206006)(107886003)(47076005)(40460700003)(82310400005)(36756003)(336012)(26005)(426003)(186003)(36860700001)(70586007)(2616005)(4744005)(2906002)(8936002)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 11:01:11.4040
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c68d1a7-5c09-4267-fe41-08da16f39868
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0003.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR02MB7859
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+This patch series update dt-binding and OSPI driver to support OSPI flash
+device reset on Xilinx Versal platform.
 
-[ Upstream commit a47ac019e7e8129b93a0b991e04b2a59872e053d ]
+BRANCH: for-next
 
-The mma8452_driver declares both of_match_table and i2c_driver.id_table
-match-tables, but its probe() function only checked for of matches.
+Sai Krishna Potthuri (2):
+  dt-bindings: spi: cadence-quadspi: Add reset-gpios for Xilinx Versal
+    OSPI
+  spi: cadence-quadspi: Add support for OSPI device reset
 
-Add support for i2c_device_id matches. This fixes the driver not loading
-on some x86 tablets (e.g. the Nextbook Ares 8) where the i2c_client is
-instantiated by platform code using an i2c_device_id.
+ .../bindings/spi/cdns,qspi-nor.yaml           |  7 ++
+ drivers/spi/spi-cadence-quadspi.c             | 72 +++++++++++++++++++
+ 2 files changed, 79 insertions(+)
 
-Drop of_match_ptr() protection to avoid unused warning.
-
-Fixes: c3cdd6e48e35 ("iio: mma8452: refactor for seperating chip specific data")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220208124336.511884-1-hdegoede@redhat.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/accel/mma8452.c | 29 ++++++++++++++++++-----------
- 1 file changed, 18 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index a7208704d31c..e7e280282774 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -176,6 +176,7 @@ static const struct mma8452_event_regs trans_ev_regs = {
-  * @enabled_events:		event flags enabled and handled by this driver
-  */
- struct mma_chip_info {
-+	const char *name;
- 	u8 chip_id;
- 	const struct iio_chan_spec *channels;
- 	int num_channels;
-@@ -1303,6 +1304,7 @@ enum {
- 
- static const struct mma_chip_info mma_chip_info_table[] = {
- 	[mma8451] = {
-+		.name = "mma8451",
- 		.chip_id = MMA8451_DEVICE_ID,
- 		.channels = mma8451_channels,
- 		.num_channels = ARRAY_SIZE(mma8451_channels),
-@@ -1327,6 +1329,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8452] = {
-+		.name = "mma8452",
- 		.chip_id = MMA8452_DEVICE_ID,
- 		.channels = mma8452_channels,
- 		.num_channels = ARRAY_SIZE(mma8452_channels),
-@@ -1343,6 +1346,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8453] = {
-+		.name = "mma8453",
- 		.chip_id = MMA8453_DEVICE_ID,
- 		.channels = mma8453_channels,
- 		.num_channels = ARRAY_SIZE(mma8453_channels),
-@@ -1359,6 +1363,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8652] = {
-+		.name = "mma8652",
- 		.chip_id = MMA8652_DEVICE_ID,
- 		.channels = mma8652_channels,
- 		.num_channels = ARRAY_SIZE(mma8652_channels),
-@@ -1368,6 +1373,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 		.enabled_events = MMA8452_INT_FF_MT,
- 	},
- 	[mma8653] = {
-+		.name = "mma8653",
- 		.chip_id = MMA8653_DEVICE_ID,
- 		.channels = mma8653_channels,
- 		.num_channels = ARRAY_SIZE(mma8653_channels),
-@@ -1382,6 +1388,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 		.enabled_events = MMA8452_INT_FF_MT,
- 	},
- 	[fxls8471] = {
-+		.name = "fxls8471",
- 		.chip_id = FXLS8471_DEVICE_ID,
- 		.channels = mma8451_channels,
- 		.num_channels = ARRAY_SIZE(mma8451_channels),
-@@ -1525,13 +1532,6 @@ static int mma8452_probe(struct i2c_client *client,
- 	struct mma8452_data *data;
- 	struct iio_dev *indio_dev;
- 	int ret;
--	const struct of_device_id *match;
--
--	match = of_match_device(mma8452_dt_ids, &client->dev);
--	if (!match) {
--		dev_err(&client->dev, "unknown device model\n");
--		return -ENODEV;
--	}
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -1540,7 +1540,14 @@ static int mma8452_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	data->client = client;
- 	mutex_init(&data->lock);
--	data->chip_info = match->data;
-+
-+	data->chip_info = device_get_match_data(&client->dev);
-+	if (!data->chip_info && id) {
-+		data->chip_info = &mma_chip_info_table[id->driver_data];
-+	} else {
-+		dev_err(&client->dev, "unknown device model\n");
-+		return -ENODEV;
-+	}
- 
- 	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
- 	if (IS_ERR(data->vdd_reg))
-@@ -1584,11 +1591,11 @@ static int mma8452_probe(struct i2c_client *client,
- 	}
- 
- 	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
--		 match->compatible, data->chip_info->chip_id);
-+		 data->chip_info->name, data->chip_info->chip_id);
- 
- 	i2c_set_clientdata(client, indio_dev);
- 	indio_dev->info = &mma8452_info;
--	indio_dev->name = id->name;
-+	indio_dev->name = data->chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = data->chip_info->channels;
- 	indio_dev->num_channels = data->chip_info->num_channels;
-@@ -1814,7 +1821,7 @@ MODULE_DEVICE_TABLE(i2c, mma8452_id);
- static struct i2c_driver mma8452_driver = {
- 	.driver = {
- 		.name	= "mma8452",
--		.of_match_table = of_match_ptr(mma8452_dt_ids),
-+		.of_match_table = mma8452_dt_ids,
- 		.pm	= &mma8452_pm_ops,
- 	},
- 	.probe = mma8452_probe,
 -- 
-2.34.1
-
-
+2.17.1
 
