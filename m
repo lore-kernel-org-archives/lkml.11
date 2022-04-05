@@ -2,87 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6C6C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECDDC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844955AbiDFBx1 (ORCPT
+        id S1845010AbiDFBxj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50354 "EHLO
+        Tue, 5 Apr 2022 21:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358071AbiDEK15 (ORCPT
+        with ESMTP id S1354744AbiDEPMI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA96946654;
-        Tue,  5 Apr 2022 03:14:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F8CFB81C88;
-        Tue,  5 Apr 2022 10:14:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC9E8C385A0;
-        Tue,  5 Apr 2022 10:14:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153665;
-        bh=itq4pk8FAdxy92cH1h7fiSh2F6sNhVLjhlu07L9RDyk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lt5M4mKWkbZuG2stHem0sk5eZdZ6yEGcVajwHt018mJah+wgCE2pNzwMe0W0TdKfh
-         6fGTTi1tciHvzokBDUYwyzoA0/wwpk2eUv9aQ3+vhILzR/MYx3dRrnfCUbTGs7yyxc
-         R3smlWJWuL8M47Kb1Ec+UDZ7pKV/kTMnldhlEEd0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 303/599] iwlwifi: Fix -EIO error code that is never returned
-Date:   Tue,  5 Apr 2022 09:29:57 +0200
-Message-Id: <20220405070307.850369109@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 11:12:08 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94423109A72
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:44 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649165143;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fVfL+n5pd7cP1D7iEgDx1sRuang/QKBVMoT4FjG4/yk=;
+        b=Z4nVgeULPomW2cxkt6UXVHgmZZsRMtR4IhKYUvX3dM5ab8P35/8nOSw2UPU3Z1oXtFdcsa
+        ruMmgDJazjwdxEV9orlxT66kfiVD8ME6ej/Y+L6ugMmgKeVy52hACAmNsxZoA76Kd0Gimj
+        qhgKpK2NHrwmgFJk9GVhLymXgYtxDi2NviRzy4tdcV3vxFUY3Zb5vEq4Z1jOAqfr8CE6DR
+        OCYf2yPixn+L0+8f0H/1Xx3xyYRfYpvPJET58HWbcDlkop0n+K8/jlvov+ssjQ7PEp/kTi
+        K4fW0mqqUNZweAAT4Zw5cPgxWV8+Fgm6NGOmn+xRRzONzYx3ge0d4L1XoqzTRg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649165143;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fVfL+n5pd7cP1D7iEgDx1sRuang/QKBVMoT4FjG4/yk=;
+        b=sTMt6t9kqCm7ejmE2CrJp4LikiVOUb/79aOdzF8qg0ReNoJFzExYHeDQ2pMd6RIuFXjvCG
+        TL6DYm/M7xZ/6eAA==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH printk v2 12/12] printk: remove @console_locked
+Date:   Tue,  5 Apr 2022 15:31:35 +0206
+Message-Id: <20220405132535.649171-13-john.ogness@linutronix.de>
+In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
+References: <20220405132535.649171-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+The static global variable @console_locked is used to help debug
+VT code to make sure that certain code paths are running with
+the console_lock held. However, this information is also available
+with the static global variable @console_kthreads_blocked (for
+locking via console_lock()), and the static global variable
+@console_kthreads_active (for locking via console_trylock()).
 
-[ Upstream commit c305c94bdc18e45b5ad1db54da4269f8cbfdff6b ]
+Remove @console_locked and update is_console_locked() to use the
+alternative variables.
 
-Currently the error -EIO is being assinged to variable ret when
-the READY_BIT is not set but the function iwlagn_mac_start returns
-0 rather than ret. Fix this by returning ret instead of 0.
-
-Addresses-Coverity: ("Unused value")
-Fixes: 7335613ae27a ("iwlwifi: move all mac80211 related functions to one place")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Link: https://lore.kernel.org/r/20210907104658.14706-1-colin.king@canonical.com
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 ---
- drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/printk/printk.c | 29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-index 423d3c396b2d..1e21cdbb7313 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-@@ -304,7 +304,7 @@ static int iwlagn_mac_start(struct ieee80211_hw *hw)
- 
- 	priv->is_open = 1;
- 	IWL_DEBUG_MAC80211(priv, "leave\n");
--	return 0;
-+	return ret;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index a5525a7b7bc5..2da66adac87e 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -340,15 +340,7 @@ static void console_kthreads_unblock(void)
+ 	console_kthreads_blocked = false;
  }
  
- static void iwlagn_mac_stop(struct ieee80211_hw *hw)
+-/*
+- * This is used for debugging the mess that is the VT code by
+- * keeping track if we have the console semaphore held. It's
+- * definitely not the perfect debug tool (we don't know if _WE_
+- * hold it and are racing, but it helps tracking those weird code
+- * paths in the console code where we end up in places I want
+- * locked without the console semaphore held).
+- */
+-static int console_locked, console_suspended;
++static int console_suspended;
+ 
+ /*
+  *	Array of consoles built from command line options (console=)
+@@ -2675,7 +2667,6 @@ void console_lock(void)
+ 	if (console_suspended)
+ 		return;
+ 	console_kthreads_block();
+-	console_locked = 1;
+ 	console_may_schedule = 1;
+ }
+ EXPORT_SYMBOL(console_lock);
+@@ -2700,15 +2691,26 @@ int console_trylock(void)
+ 		up_console_sem();
+ 		return 0;
+ 	}
+-	console_locked = 1;
+ 	console_may_schedule = 0;
+ 	return 1;
+ }
+ EXPORT_SYMBOL(console_trylock);
+ 
++/*
++ * This is used to help to make sure that certain paths within the VT code are
++ * running with the console lock held. It is definitely not the perfect debug
++ * tool (it is not known if the VT code is the task holding the console lock),
++ * but it helps tracking those weird code paths in the console code such as
++ * when the console is suspended: where the console is not locked but no
++ * console printing may occur.
++ *
++ * Note: This returns true when the console is suspended but is not locked.
++ *       This is intentional because the VT code must consider that situation
++ *       the same as if the console was locked.
++ */
+ int is_console_locked(void)
+ {
+-	return (console_locked || atomic_read(&console_kthreads_active));
++	return (console_kthreads_blocked || atomic_read(&console_kthreads_active));
+ }
+ EXPORT_SYMBOL(is_console_locked);
+ 
+@@ -2759,8 +2761,6 @@ static inline bool console_is_usable(struct console *con)
+ 
+ static void __console_unlock(void)
+ {
+-	console_locked = 0;
+-
+ 	/*
+ 	 * Depending on whether console_lock() or console_trylock() was used,
+ 	 * appropriately allow the kthread printers to continue.
+@@ -3058,7 +3058,6 @@ void console_unblank(void)
+ 	} else
+ 		console_lock();
+ 
+-	console_locked = 1;
+ 	console_may_schedule = 0;
+ 	for_each_console(c)
+ 		if ((c->flags & CON_ENABLED) && c->unblank)
 -- 
-2.34.1
-
-
+2.30.2
 
