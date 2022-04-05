@@ -2,184 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F6AEC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A3BC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382757AbiDEUli (ORCPT
+        id S1382277AbiDEUlZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
+        Tue, 5 Apr 2022 16:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392421AbiDENuC (ORCPT
+        with ESMTP id S233184AbiDEJri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:50:02 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989D313FB2;
-        Tue,  5 Apr 2022 05:53:11 -0700 (PDT)
-X-UUID: 4d77f1da642d4783b1990008a6252d57-20220405
-X-UUID: 4d77f1da642d4783b1990008a6252d57-20220405
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <lecopzer.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1714771403; Tue, 05 Apr 2022 20:53:06 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 5 Apr 2022 20:53:04 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 5 Apr 2022 20:53:04 +0800
-From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
-To:     <pmladek@suse.com>
-CC:     <acme@kernel.org>, <akpm@linux-foundation.org>,
-        <alexander.shishkin@linux.intel.com>, <catalin.marinas@arm.com>,
-        <davem@davemloft.net>, <jolsa@redhat.com>, <jthierry@redhat.com>,
-        <keescook@chromium.org>, <kernelfans@gmail.com>,
-        <lecopzer.chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
-        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
-        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
-        <nixiaoming@huawei.com>, <peterz@infradead.org>,
-        <sparclinux@vger.kernel.org>, <sumit.garg@linaro.org>,
-        <wangqing@vivo.com>, <will@kernel.org>, <yj.chiang@mediatek.com>
-Subject: Re: [PATCH v3 5/5] arm64: Enable perf events based hard lockup detector
-Date:   Tue, 5 Apr 2022 20:53:04 +0800
-Message-ID: <20220405125304.3762-1-lecopzer.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220404141709.GA26840@pathway.suse.cz>
-References: <20220404141709.GA26840@pathway.suse.cz>
+        Tue, 5 Apr 2022 05:47:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 776716E35E;
+        Tue,  5 Apr 2022 02:33:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF268B81C8B;
+        Tue,  5 Apr 2022 09:33:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EBB4C385A2;
+        Tue,  5 Apr 2022 09:33:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151229;
+        bh=cFO6HgVokv2VEw7zhA3ChtpY/z8hbwaLiKRnodb+Hl4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=S7e/uhRn6bXU4HopxZxbCkwBLs8KSzreoNLIEZ4knaE4qnvwktp1pVhn1L7xD/VjW
+         XNfyIeTFz/VrZ/GIzFUecSMf0hFzncMw2mDr5tqcsoVC2/zUqDvd3YULoQrVnwFw9d
+         slSzj3s6ovTKw24mTcmSJsB+WXPDoeVhKvy5jFNg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 341/913] ASoC: soc-compress: prevent the potentially use of null pointer
+Date:   Tue,  5 Apr 2022 09:23:23 +0200
+Message-Id: <20220405070350.069350755@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+
+[ Upstream commit de2c6f98817fa5decb9b7d3b3a8a3ab864c10588 ]
+
+There is one call trace that snd_soc_register_card()
+->snd_soc_bind_card()->soc_init_pcm_runtime()
+->snd_soc_dai_compress_new()->snd_soc_new_compress().
+In the trace the 'codec_dai' transfers from card->dai_link,
+and we can see from the snd_soc_add_pcm_runtime() in
+snd_soc_bind_card() that, if value of card->dai_link->num_codecs
+is 0, then 'codec_dai' could be null pointer caused
+by index out of bound in 'asoc_rtd_to_codec(rtd, 0)'.
+And snd_soc_register_card() is called by various platforms.
+Therefore, it is better to add the check in the case of misusing.
+And because 'cpu_dai' has already checked in soc_init_pcm_runtime(),
+there is no need to check again.
+Adding the check as follow, then if 'codec_dai' is null,
+snd_soc_new_compress() will not pass through the check
+'if (playback + capture != 1)', avoiding the leftover use of
+'codec_dai'.
+
+Fixes: 467fece ("ASoC: soc-dai: move snd_soc_dai_stream_valid() to soc-dai.c")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/1634285633-529368-1-git-send-email-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/soc-compress.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/sound/soc/soc-compress.c b/sound/soc/soc-compress.c
+index 36060800e9bd..b3c64f87e054 100644
+--- a/sound/soc/soc-compress.c
++++ b/sound/soc/soc-compress.c
+@@ -535,12 +535,14 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
+ 	}
  
-> On Thu 2022-03-24 22:14:05, Lecopzer Chen wrote:
-> > With the recent feature added to enable perf events to use pseudo NMIs
-> > as interrupts on platforms which support GICv3 or later, its now been
-> > possible to enable hard lockup detector (or NMI watchdog) on arm64
-> > platforms. So enable corresponding support.
-> > 
-> > One thing to note here is that normally lockup detector is initialized
-> > just after the early initcalls but PMU on arm64 comes up much later as
-> > device_initcall(). To cope with that, overriding watchdog_nmi_probe() to
-> > let the watchdog framework know PMU not ready, and inform the framework
-> > to re-initialize lockup detection once PMU has been initialized.
-> > 
-> > [1]: http://lore.kernel.org/linux-arm-kernel/1610712101-14929-1-git-send-email-sumit.garg@linaro.org
-> > 
-> > --- /dev/null
-> > +++ b/arch/arm64/kernel/watchdog_hld.c
-> > @@ -0,0 +1,37 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <linux/nmi.h>
-> > +#include <linux/cpufreq.h>
-> > +#include <linux/perf/arm_pmu.h>
-> > +
-> > +/*
-> > + * Safe maximum CPU frequency in case a particular platform doesn't implement
-> > + * cpufreq driver. Although, architecture doesn't put any restrictions on
-> > + * maximum frequency but 5 GHz seems to be safe maximum given the available
-> > + * Arm CPUs in the market which are clocked much less than 5 GHz. On the other
-> > + * hand, we can't make it much higher as it would lead to a large hard-lockup
-> > + * detection timeout on parts which are running slower (eg. 1GHz on
-> > + * Developerbox) and doesn't possess a cpufreq driver.
-> > + */
-> > +#define SAFE_MAX_CPU_FREQ	5000000000UL // 5 GHz
-> > +u64 hw_nmi_get_sample_period(int watchdog_thresh)
-> > +{
-> > +	unsigned int cpu = smp_processor_id();
-> > +	unsigned long max_cpu_freq;
-> > +
-> > +	max_cpu_freq = cpufreq_get_hw_max_freq(cpu) * 1000UL;
-> > +	if (!max_cpu_freq)
-> > +		max_cpu_freq = SAFE_MAX_CPU_FREQ;
-> > +
-> > +	return (u64)max_cpu_freq * watchdog_thresh;
-> > +}
-> 
-> This change is not mentioned in the commit message.
-> Please, put it into a separate patch.
-
-
-Actully, This cames from
-[1]: http://lore.kernel.org/linux-arm-kernel/1610712101-14929-1-git-send-email-sumit.garg@linaro.org
-And I didn't touch the commit message from the origin patch.
-But of course, I could imporve it with proper description if
-anyone thinks it's not good enough.
-
-Would you mean put this function hw_nmi_get_sample_period() in patch 6th?
-In the view of "arm64 uses delayed init with all the functionality it need to set up",
-IMO, this make sense for me to put into a single patch.
-
-But if you still think this should put into a separate patch, I'll do it:)
-
-
-> 
-> > +int __init watchdog_nmi_probe(void)
-> > +{
-> > +	if (!allow_lockup_detector_init_retry)
-> > +		return -EBUSY;
-> 
-> How do you know that you should return -EBUSY
-> when retry in not enabled?
-> 
-> I guess that it is an optimization to make it fast
-> during the first call. But the logic is far from
-> obvious.
-> 
-
-Yes, you can see this as an optimization, because arm64 PMU is not ready
-during lockup_detector_init(), so the watchdog_nmi_probe() must fail.
-
-Thus we only want to do watchdog_nmi_probe() in delayed init,
-so if not in the state (allow_lockup_detector_init_retry=true), just tell
-
-if it's unclear, maybe a brief comment can be add like this:
-
-+	/* arm64 is only able to initialize lockup detecor during delayed init */
-+	if (!allow_lockup_detector_init_retry)
-+		return -EBUSY;
-
-
-
-
-> > +
-> > +	if (!arm_pmu_irq_is_nmi())
-> > +		return -ENODEV;
-> > +
-> > +	return hardlockup_detector_perf_init();
-> > +}
-> 
-> Is this just an optimization or is it really needed?
-> Why this was not needed in v2 patchset?
-> 
-> If it is just an optimization then I would remove it.
-> IMHO, it just adds confusion and it is not worth it.
-> 
-
-It was a mistake when I rebased v2, This should be included in v2
-but I missed it.
-
-For arm_pmu_irq_is_nmi() checking, we do need it, becasue arm64 needs
-explictly turns on Pseudo-NMI to support base function for NMI.
-
-hardlockup_detector_perf_init() will success even if we haven't had
-Pseudo-NMI turns on, however, the pmu interrupts will act like a
-normal interrupt instead of NMI and the hardlockup detector would be broken.
-
-
-thanks for all the comment
-
-BRs,
-Lecopzer
-
-
-
+ 	/* check client and interface hw capabilities */
+-	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
+-	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
+-		playback = 1;
+-	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
+-	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
+-		capture = 1;
++	if (codec_dai) {
++		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
++		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
++			playback = 1;
++		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
++		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
++			capture = 1;
++	}
+ 
+ 	/*
+ 	 * Compress devices are unidirectional so only one of the directions
+-- 
+2.34.1
 
 
 
