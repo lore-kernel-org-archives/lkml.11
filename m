@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB16C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E00B2C43217
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356896AbiDEMus (ORCPT
+        id S1357025AbiDEMuw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
+        Tue, 5 Apr 2022 08:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244112AbiDEJJq (ORCPT
+        with ESMTP id S244248AbiDEJJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:09:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73E318377;
-        Tue,  5 Apr 2022 01:59:10 -0700 (PDT)
+        Tue, 5 Apr 2022 05:09:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA29015FCE;
+        Tue,  5 Apr 2022 01:59:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D953B81BAE;
-        Tue,  5 Apr 2022 08:59:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA711C385A3;
-        Tue,  5 Apr 2022 08:59:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F33A61561;
+        Tue,  5 Apr 2022 08:59:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3022EC385A0;
+        Tue,  5 Apr 2022 08:59:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149147;
-        bh=sFS7G5rZj3C0ZMjUhhbET/vBcgSalnDjkfieF0x48Fg=;
+        s=korg; t=1649149141;
+        bh=ef63SUoVK6J5b3AlqYjE7V+Dbi7YliJ+HCPpNgIERHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mCTfE9IoUAhinV75Vll4X4HYP3ZayopUiTfMmff5bF7ekv/UGZMjeH3TyJaXNcO2q
-         Z7AI57G5ha+Pk7RmBGKjjYQ6sL6Svy7GOpRFNcHtrACNn27kUP6E2pctf7rJihgl09
-         c1zXt+AXqlx+toTPJpFAPmHtCbR57bQOEkDjNEwc=
+        b=KukfwuQK7dSJeUv/IUbbhhutlAfWcqluZ+tmykLD2Zmkk9OlHJBL+67EqlWB6tk6+
+         G8L12xtFiV4ya4B6hOKckjNFcqZq1vt5svqt3OZjfNeNNkGt4hz4slQqr54rkYxs5k
+         wvFIGzy7hlYMJBfAX6tcHCNkwCVGDo0FGE8flQTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Derek Will <derekrobertwill@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0611/1017] can: isotp: return -EADDRNOTAVAIL when reading from unbound socket
-Date:   Tue,  5 Apr 2022 09:25:24 +0200
-Message-Id: <20220405070412.417635334@linuxfoundation.org>
+Subject: [PATCH 5.16 0609/1017] netfilter: flowtable: Fix QinQ and pppoe support for inet table
+Date:   Tue,  5 Apr 2022 09:25:22 +0200
+Message-Id: <20220405070412.357675167@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,47 +49,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 30ffd5332e06316bd69a654c06aa033872979b7c ]
+[ Upstream commit 0492d857636e1c52cd71594a723c4b26a7b31978 ]
 
-When reading from an unbound can-isotp socket the syscall blocked
-indefinitely. As unbound sockets (without given CAN address information)
-do not make sense anyway we directly return -EADDRNOTAVAIL on read()
-analogue to the known behavior from sendmsg().
+nf_flow_offload_inet_hook() does not check for 802.1q and PPPoE.
+Fetch inner ethertype from these encapsulation protocols.
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://github.com/linux-can/can-utils/issues/349
-Link: https://lore.kernel.org/all/20220316164258.54155-2-socketcan@hartkopp.net
-Suggested-by: Derek Will <derekrobertwill@gmail.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 72efd585f714 ("netfilter: flowtable: add pppoe support")
+Fixes: 4cd91f7c290f ("netfilter: flowtable: add vlan support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/isotp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/net/netfilter/nf_flow_table.h | 18 ++++++++++++++++++
+ net/netfilter/nf_flow_table_inet.c    | 17 +++++++++++++++++
+ net/netfilter/nf_flow_table_ip.c      | 18 ------------------
+ 3 files changed, 35 insertions(+), 18 deletions(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index f8e3aeb79e3f..8966f06e0660 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1005,12 +1005,16 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- {
- 	struct sock *sk = sock->sk;
- 	struct sk_buff *skb;
-+	struct isotp_sock *so = isotp_sk(sk);
- 	int err = 0;
- 	int noblock;
+diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+index a3647fadf1cc..9f927c44087d 100644
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -10,6 +10,8 @@
+ #include <linux/netfilter/nf_conntrack_tuple_common.h>
+ #include <net/flow_offload.h>
+ #include <net/dst.h>
++#include <linux/if_pppox.h>
++#include <linux/ppp_defs.h>
  
- 	noblock = flags & MSG_DONTWAIT;
- 	flags &= ~MSG_DONTWAIT;
+ struct nf_flowtable;
+ struct nf_flow_rule;
+@@ -313,4 +315,20 @@ int nf_flow_rule_route_ipv6(struct net *net, const struct flow_offload *flow,
+ int nf_flow_table_offload_init(void);
+ void nf_flow_table_offload_exit(void);
  
-+	if (!so->bound)
-+		return -EADDRNOTAVAIL;
++static inline __be16 nf_flow_pppoe_proto(const struct sk_buff *skb)
++{
++	__be16 proto;
 +
- 	skb = skb_recv_datagram(sk, flags, noblock, &err);
- 	if (!skb)
- 		return err;
++	proto = *((__be16 *)(skb_mac_header(skb) + ETH_HLEN +
++			     sizeof(struct pppoe_hdr)));
++	switch (proto) {
++	case htons(PPP_IP):
++		return htons(ETH_P_IP);
++	case htons(PPP_IPV6):
++		return htons(ETH_P_IPV6);
++	}
++
++	return 0;
++}
++
+ #endif /* _NF_FLOW_TABLE_H */
+diff --git a/net/netfilter/nf_flow_table_inet.c b/net/netfilter/nf_flow_table_inet.c
+index bc4126d8ef65..280fdd32965f 100644
+--- a/net/netfilter/nf_flow_table_inet.c
++++ b/net/netfilter/nf_flow_table_inet.c
+@@ -6,12 +6,29 @@
+ #include <linux/rhashtable.h>
+ #include <net/netfilter/nf_flow_table.h>
+ #include <net/netfilter/nf_tables.h>
++#include <linux/if_vlan.h>
+ 
+ static unsigned int
+ nf_flow_offload_inet_hook(void *priv, struct sk_buff *skb,
+ 			  const struct nf_hook_state *state)
+ {
++	struct vlan_ethhdr *veth;
++	__be16 proto;
++
+ 	switch (skb->protocol) {
++	case htons(ETH_P_8021Q):
++		veth = (struct vlan_ethhdr *)skb_mac_header(skb);
++		proto = veth->h_vlan_encapsulated_proto;
++		break;
++	case htons(ETH_P_PPP_SES):
++		proto = nf_flow_pppoe_proto(skb);
++		break;
++	default:
++		proto = skb->protocol;
++		break;
++	}
++
++	switch (proto) {
+ 	case htons(ETH_P_IP):
+ 		return nf_flow_offload_ip_hook(priv, skb, state);
+ 	case htons(ETH_P_IPV6):
+diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
+index 889cf88d3dba..6257d87c3a56 100644
+--- a/net/netfilter/nf_flow_table_ip.c
++++ b/net/netfilter/nf_flow_table_ip.c
+@@ -8,8 +8,6 @@
+ #include <linux/ipv6.h>
+ #include <linux/netdevice.h>
+ #include <linux/if_ether.h>
+-#include <linux/if_pppox.h>
+-#include <linux/ppp_defs.h>
+ #include <net/ip.h>
+ #include <net/ipv6.h>
+ #include <net/ip6_route.h>
+@@ -239,22 +237,6 @@ static unsigned int nf_flow_xmit_xfrm(struct sk_buff *skb,
+ 	return NF_STOLEN;
+ }
+ 
+-static inline __be16 nf_flow_pppoe_proto(const struct sk_buff *skb)
+-{
+-	__be16 proto;
+-
+-	proto = *((__be16 *)(skb_mac_header(skb) + ETH_HLEN +
+-			     sizeof(struct pppoe_hdr)));
+-	switch (proto) {
+-	case htons(PPP_IP):
+-		return htons(ETH_P_IP);
+-	case htons(PPP_IPV6):
+-		return htons(ETH_P_IPV6);
+-	}
+-
+-	return 0;
+-}
+-
+ static bool nf_flow_skb_encap_protocol(const struct sk_buff *skb, __be16 proto,
+ 				       u32 *offset)
+ {
 -- 
 2.34.1
 
