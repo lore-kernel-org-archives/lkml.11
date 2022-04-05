@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0425EC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E972CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354988AbiDEPMQ (ORCPT
+        id S1354655AbiDEPMD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
+        Tue, 5 Apr 2022 11:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346086AbiDEJo1 (ORCPT
+        with ESMTP id S1346003AbiDEJoR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:44:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F169CC8BC0;
-        Tue,  5 Apr 2022 02:30:06 -0700 (PDT)
+        Tue, 5 Apr 2022 05:44:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F41C6ECA;
+        Tue,  5 Apr 2022 02:29:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 990ADB81CAC;
-        Tue,  5 Apr 2022 09:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E29EDC385A0;
-        Tue,  5 Apr 2022 09:30:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A21661675;
+        Tue,  5 Apr 2022 09:29:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 825EBC385A2;
+        Tue,  5 Apr 2022 09:29:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151004;
-        bh=cK/eTmMO1ar/cpLmr16wWiPao3SLZRntHcZdToKAgao=;
+        s=korg; t=1649150996;
+        bh=JeOP9O0E13lguv3kCPlsFj5DsdY61KNTlXlTpq8ZoHk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I7NXaezY2a1FQVAGvkKlDq3/iB21nkzNNIjA2GQN0tETT69nnrRZiZNHR4ZV8AAqU
-         37RVLI/kPxX6xPWSg4x4Xia4EZHy3GkaZQyo37S1JJHAiCAmzjzYW6DqToTPkJ6Obc
-         7jtouU1JHVxFewZr36UxrSbkJahwj4xf5E495HoY=
+        b=u0KFBdEa1sKOUoMB3JNQPf8wruU8+0i0PeidgXQJwXnwTvStNpe9ajwf1QwoW1KVy
+         vnfh4EpubePbi/EEEJHEF4gClv2tSsvlsb/of8e+Bc0mhGlRuMmSwI+vwC8AgtIe/y
+         uUkzpQCef/zBSCVAMdbm9mdT4CBOURAOQfGzYwFI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Fengnan Chang <changfengnan@vivo.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 260/913] f2fs: fix compressed file start atomic write may cause data corruption
-Date:   Tue,  5 Apr 2022 09:22:02 +0200
-Message-Id: <20220405070347.649783086@linuxfoundation.org>
+Subject: [PATCH 5.15 257/913] sched/rt: Plug rt_mutex_setprio() vs push_rt_task() race
+Date:   Tue,  5 Apr 2022 09:21:59 +0200
+Message-Id: <20220405070347.559092278@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,76 +52,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fengnan Chang <changfengnan@vivo.com>
+From: Valentin Schneider <valentin.schneider@arm.com>
 
-[ Upstream commit 9b56adcf525522e9ffa52471260298d91fc1d395 ]
+[ Upstream commit 49bef33e4b87b743495627a529029156c6e09530 ]
 
-When compressed file has blocks, f2fs_ioc_start_atomic_write will succeed,
-but compressed flag will be remained in inode. If write partial compreseed
-cluster and commit atomic write will cause data corruption.
+John reported that push_rt_task() can end up invoking
+find_lowest_rq(rq->curr) when curr is not an RT task (in this case a CFS
+one), which causes mayhem down convert_prio().
 
-This is the reproduction process:
-Step 1:
-create a compressed file ,write 64K data , call fsync(), then the blocks
-are write as compressed cluster.
-Step2:
-iotcl(F2FS_IOC_START_ATOMIC_WRITE)  --- this should be fail, but not.
-write page 0 and page 3.
-iotcl(F2FS_IOC_COMMIT_ATOMIC_WRITE)  -- page 0 and 3 write as normal file,
-Step3:
-drop cache.
-read page 0-4   -- Since page 0 has a valid block address, read as
-non-compressed cluster, page 1 and 2 will be filled with compressed data
-or zero.
+This can happen when current gets demoted to e.g. CFS when releasing an
+rt_mutex, and the local CPU gets hit with an rto_push_work irqwork before
+getting the chance to reschedule. Exactly who triggers this work isn't
+entirely clear to me - switched_from_rt() only invokes rt_queue_pull_task()
+if there are no RT tasks on the local RQ, which means the local CPU can't
+be in the rto_mask.
 
-The root cause is, after commit 7eab7a696827 ("f2fs: compress: remove
-unneeded read when rewrite whole cluster"), in step 2, f2fs_write_begin()
-only set target page dirty, and in f2fs_commit_inmem_pages(), we will write
-partial raw pages into compressed cluster, result in corrupting compressed
-cluster layout.
+My current suspected sequence is something along the lines of the below,
+with the demoted task being current.
 
-Fixes: 4c8ff7095bef ("f2fs: support data compression")
-Fixes: 7eab7a696827 ("f2fs: compress: remove unneeded read when rewrite whole cluster")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Fengnan Chang <changfengnan@vivo.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+  mark_wakeup_next_waiter()
+    rt_mutex_adjust_prio()
+      rt_mutex_setprio() // deboost originally-CFS task
+	check_class_changed()
+	  switched_from_rt() // Only rt_queue_pull_task() if !rq->rt.rt_nr_running
+	  switched_to_fair() // Sets need_resched
+      __balance_callbacks() // if pull_rt_task(), tell_cpu_to_push() can't select local CPU per the above
+      raw_spin_rq_unlock(rq)
+
+       // need_resched is set, so task_woken_rt() can't
+       // invoke push_rt_tasks(). Best I can come up with is
+       // local CPU has rt_nr_migratory >= 2 after the demotion, so stays
+       // in the rto_mask, and then:
+
+       <some other CPU running rto_push_irq_work_func() queues rto_push_work on this CPU>
+	 push_rt_task()
+	   // breakage follows here as rq->curr is CFS
+
+Move an existing check to check rq->curr vs the next pushable task's
+priority before getting anywhere near find_lowest_rq(). While at it, add an
+explicit sched_class of rq->curr check prior to invoking
+find_lowest_rq(rq->curr). Align the DL logic to also reschedule regardless
+of next_task's migratability.
+
+Fixes: a7c81556ec4d ("sched: Fix migrate_disable() vs rt/dl balancing")
+Reported-by: John Keeping <john@metanate.com>
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: John Keeping <john@metanate.com>
+Link: https://lore.kernel.org/r/20220127154059.974729-1-valentin.schneider@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/data.c | 2 +-
- fs/f2fs/file.c | 5 ++++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ kernel/sched/deadline.c | 12 ++++++------
+ kernel/sched/rt.c       | 32 ++++++++++++++++++++++----------
+ 2 files changed, 28 insertions(+), 16 deletions(-)
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index f6e9fc36b837..4cf522120cb1 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3410,7 +3410,7 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index e94314633b39..1f811b375bf0 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2145,12 +2145,6 @@ static int push_dl_task(struct rq *rq)
+ 		return 0;
  
- 		*fsdata = NULL;
+ retry:
+-	if (is_migration_disabled(next_task))
+-		return 0;
+-
+-	if (WARN_ON(next_task == rq->curr))
+-		return 0;
+-
+ 	/*
+ 	 * If next_task preempts rq->curr, and rq->curr
+ 	 * can move away, it makes sense to just reschedule
+@@ -2163,6 +2157,12 @@ static int push_dl_task(struct rq *rq)
+ 		return 0;
+ 	}
  
--		if (len == PAGE_SIZE)
-+		if (len == PAGE_SIZE && !(f2fs_is_atomic_file(inode)))
- 			goto repeat;
++	if (is_migration_disabled(next_task))
++		return 0;
++
++	if (WARN_ON(next_task == rq->curr))
++		return 0;
++
+ 	/* We might release rq lock */
+ 	get_task_struct(next_task);
  
- 		ret = f2fs_prepare_compress_overwrite(inode, pagep,
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 7ed44752c758..0e14dc41ed4e 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -2002,7 +2002,10 @@ static int f2fs_ioc_start_atomic_write(struct file *filp)
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 54f9bb3f1560..2758cf5f7987 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -1900,6 +1900,16 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 		return 0;
  
- 	inode_lock(inode);
- 
--	f2fs_disable_compressed_file(inode);
-+	if (!f2fs_disable_compressed_file(inode)) {
-+		ret = -EINVAL;
-+		goto out;
+ retry:
++	/*
++	 * It's possible that the next_task slipped in of
++	 * higher priority than current. If that's the case
++	 * just reschedule current.
++	 */
++	if (unlikely(next_task->prio < rq->curr->prio)) {
++		resched_curr(rq);
++		return 0;
 +	}
++
+ 	if (is_migration_disabled(next_task)) {
+ 		struct task_struct *push_task = NULL;
+ 		int cpu;
+@@ -1907,6 +1917,18 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 		if (!pull || rq->push_busy)
+ 			return 0;
  
- 	if (f2fs_is_atomic_file(inode)) {
- 		if (is_inode_flag_set(inode, FI_ATOMIC_REVOKE_REQUEST))
++		/*
++		 * Invoking find_lowest_rq() on anything but an RT task doesn't
++		 * make sense. Per the above priority check, curr has to
++		 * be of higher priority than next_task, so no need to
++		 * reschedule when bailing out.
++		 *
++		 * Note that the stoppers are masqueraded as SCHED_FIFO
++		 * (cf. sched_set_stop_task()), so we can't rely on rt_task().
++		 */
++		if (rq->curr->sched_class != &rt_sched_class)
++			return 0;
++
+ 		cpu = find_lowest_rq(rq->curr);
+ 		if (cpu == -1 || cpu == rq->cpu)
+ 			return 0;
+@@ -1931,16 +1953,6 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 	if (WARN_ON(next_task == rq->curr))
+ 		return 0;
+ 
+-	/*
+-	 * It's possible that the next_task slipped in of
+-	 * higher priority than current. If that's the case
+-	 * just reschedule current.
+-	 */
+-	if (unlikely(next_task->prio < rq->curr->prio)) {
+-		resched_curr(rq);
+-		return 0;
+-	}
+-
+ 	/* We might release rq lock */
+ 	get_task_struct(next_task);
+ 
 -- 
 2.34.1
 
