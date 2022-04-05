@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 021EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B887AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448336AbiDEW6p (ORCPT
+        id S1573453AbiDEW74 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57496 "EHLO
+        Tue, 5 Apr 2022 18:59:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356126AbiDEKW7 (ORCPT
+        with ESMTP id S1354247AbiDEKMi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:22:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D76EB7140;
-        Tue,  5 Apr 2022 03:06:23 -0700 (PDT)
+        Tue, 5 Apr 2022 06:12:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0875D5E5;
+        Tue,  5 Apr 2022 02:59:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 418D7616E7;
-        Tue,  5 Apr 2022 10:06:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B31C385A2;
-        Tue,  5 Apr 2022 10:06:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1C4A0CE1C9D;
+        Tue,  5 Apr 2022 09:59:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F541C385A3;
+        Tue,  5 Apr 2022 09:59:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153182;
-        bh=4indgIxOVeCiK3xftlvX5TxwsieTy/0NnuibO7kTWwg=;
+        s=korg; t=1649152764;
+        bh=+meF9PkKtpTanUbYRtKk8E3df2KpV2NIkMy3Tats4EA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jC0kKB4rMSdCgs7i/v4ND1qoFOzFnMZEs83ZPYy3fS7SvyrCNkTISaTO/jbD4qWxb
-         SITGnBxZu8OJpi16G4Gubr7B/6IQ2HkEopbsAE7VsWiQapqNSep56kAg2/mK0Sb4s/
-         Ft8hTNdV/i0pLboCHjqVrHQdv+/41o730JPos+C4=
+        b=GZnkvJe5at6W2eecfZfGUhu7xeiky2bwaVMsQctIeLzOEpb/LLI74QbJPtUYRJuVV
+         kxnxMDrk6i2YZGqWJfx5Khh7aivLtgFwNnXLHFxFhMN7iU40xU4nPE3vCK/n4g1S3e
+         +D5qGcYOazFPMrPYD2Hdk2mIPXbfP+o8PeUvHC94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 132/599] crypto: sun8i-ss - really disable hash on A80
-Date:   Tue,  5 Apr 2022 09:27:06 +0200
-Message-Id: <20220405070302.769540814@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>
+Subject: [PATCH 5.15 867/913] arm64: mm: Drop const from conditional arm64_dma_phys_limit definition
+Date:   Tue,  5 Apr 2022 09:32:09 +0200
+Message-Id: <20220405070405.812254309@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Will Deacon <will@kernel.org>
 
-[ Upstream commit 881fc7fba6c3e7d77d608b9a50b01a89d5e0c61b ]
+commit 770093459b9b333380aa71f2c31c60b14895c1df upstream.
 
-When adding hashes support to sun8i-ss, I have added them only on A83T.
-But I forgot that 0 is a valid algorithm ID, so hashes are enabled on A80 but
-with an incorrect ID.
-Anyway, even with correct IDs, hashes do not work on A80 and I cannot
-find why.
-So let's disable all of them on A80.
+Commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+platforms with no DMA memory zones") introduced different definitions
+for 'arm64_dma_phys_limit' depending on CONFIG_ZONE_DMA{,32} based on
+a late suggestion from Pasha. Sadly, this results in a build error when
+passing W=1:
 
-Fixes: d9b45418a917 ("crypto: sun8i-ss - support hash algorithms")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  | arch/arm64/mm/init.c:90:19: error: conflicting type qualifiers for 'arm64_dma_phys_limit'
+
+Drop the 'const' for now and use '__ro_after_init' consistently.
+
+Link: https://lore.kernel.org/r/202203090241.aj7paWeX-lkp@intel.com
+Link: https://lore.kernel.org/r/CA+CK2bDbbx=8R=UthkMesWOST8eJMtOGJdfMRTFSwVmo0Vn0EA@mail.gmail.com
+Fixes: 031495635b46 ("arm64: Do not defer reserve_crashkernel() for platforms with no DMA memory zones")
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/mm/init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
-index 80e89066dbd1..319fe3279a71 100644
---- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
-+++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
-@@ -30,6 +30,8 @@
- static const struct ss_variant ss_a80_variant = {
- 	.alg_cipher = { SS_ALG_AES, SS_ALG_DES, SS_ALG_3DES,
- 	},
-+	.alg_hash = { SS_ID_NOTSUPP, SS_ID_NOTSUPP, SS_ID_NOTSUPP, SS_ID_NOTSUPP,
-+	},
- 	.op_mode = { SS_OP_ECB, SS_OP_CBC,
- 	},
- 	.ss_clks = {
--- 
-2.34.1
-
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -87,7 +87,7 @@ EXPORT_SYMBOL(memstart_addr);
+ #if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
+ phys_addr_t __ro_after_init arm64_dma_phys_limit;
+ #else
+-const phys_addr_t arm64_dma_phys_limit = PHYS_MASK + 1;
++phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+ #endif
+ 
+ #ifdef CONFIG_KEXEC_CORE
 
 
