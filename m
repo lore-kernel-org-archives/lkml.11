@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E409C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A68CC3527B
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386620AbiDEUFa (ORCPT
+        id S1387168AbiDEUFj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:05:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
+        Tue, 5 Apr 2022 16:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243466AbiDEKgr (ORCPT
+        with ESMTP id S1356536AbiDEKX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:36:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBB3546A5;
-        Tue,  5 Apr 2022 03:22:12 -0700 (PDT)
+        Tue, 5 Apr 2022 06:23:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0390DA;
+        Tue,  5 Apr 2022 03:08:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14598B81B96;
-        Tue,  5 Apr 2022 10:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84B3FC385A0;
-        Tue,  5 Apr 2022 10:22:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A86C5B81C8A;
+        Tue,  5 Apr 2022 10:08:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAB82C385A2;
+        Tue,  5 Apr 2022 10:08:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154129;
-        bh=o8wKoUb2M1W9qRi7fF9bUG326XYmoANmb7pml3OIOJs=;
+        s=korg; t=1649153307;
+        bh=phw36U8LfLAByfH2Wv8qk/Z/g2xProxmP4xZfrB1lHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W/upWr6XmbA7LU08offxO3GPhKjJd2kvwKPj8ucgN4l7TWm92H29JAxOrKeVbf8b/
-         uiEJCe+azpCxK5Lo/q3TpLEqmMk1cTLKAxJvBb5S03ZjwjiTvBE/R0wyD8y3VIcgcU
-         z4ArtYb1ah2Nx98YPSooy/bhSngS0KbRt+w6x3wg=
+        b=I8e6HFOeQf1kG2+BZtvFDRMap7anaNGxYPr3Yv9IMEzDiAmrCyjqtxR5foIs8aDSw
+         IKKIGHaMDp6Roh2MsHLW/A0VVdLCXhsg7iRCsCORNf7lIHTsoFxJXbzgqOaZV9/xYn
+         yHDgSEWDB79sU7+LX+rtb9Ss5XuNmBSwi2FzFYtQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Leech <cleech@redhat.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 468/599] nvme-tcp: lockdep: annotate in-kernel sockets
-Date:   Tue,  5 Apr 2022 09:32:42 +0200
-Message-Id: <20220405070312.754073685@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 177/599] perf/core: Fix address filter parser for multiple filters
+Date:   Tue,  5 Apr 2022 09:27:51 +0200
+Message-Id: <20220405070304.109432125@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,124 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Leech <cleech@redhat.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit 841aee4d75f18fdfb53935080b03de0c65e9b92c ]
+[ Upstream commit d680ff24e9e14444c63945b43a37ede7cd6958f9 ]
 
-Put NVMe/TCP sockets in their own class to avoid some lockdep warnings.
-Sockets created by nvme-tcp are not exposed to user-space, and will not
-trigger certain code paths that the general socket API exposes.
+Reset appropriate variables in the parser loop between parsing separate
+filters, so that they do not interfere with parsing the next filter.
 
-Lockdep complains about a circular dependency between the socket and
-filesystem locks, because setsockopt can trigger a page fault with a
-socket lock held, but nvme-tcp sends requests on the socket while file
-system locks are held.
-
-  ======================================================
-  WARNING: possible circular locking dependency detected
-  5.15.0-rc3 #1 Not tainted
-  ------------------------------------------------------
-  fio/1496 is trying to acquire lock:
-  (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_sendpage+0x23/0x80
-
-  but task is already holding lock:
-  (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
-
-  which lock already depends on the new lock.
-
-  other info that might help us debug this:
-
-  chain exists of:
-   sk_lock-AF_INET --> sb_internal --> &xfs_dir_ilock_class/5
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&xfs_dir_ilock_class/5);
-                                lock(sb_internal);
-                                lock(&xfs_dir_ilock_class/5);
-   lock(sk_lock-AF_INET);
-
-  *** DEADLOCK ***
-
-  6 locks held by fio/1496:
-   #0: (sb_writers#13){.+.+}-{0:0}, at: path_openat+0x9fc/0xa20
-   #1: (&inode->i_sb->s_type->i_mutex_dir_key){++++}-{3:3}, at: path_openat+0x296/0xa20
-   #2: (sb_internal){.+.+}-{0:0}, at: xfs_trans_alloc_icreate+0x41/0xd0 [xfs]
-   #3: (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
-   #4: (hctx->srcu){....}-{0:0}, at: hctx_lock+0x51/0xd0
-   #5: (&queue->send_mutex){+.+.}-{3:3}, at: nvme_tcp_queue_rq+0x33e/0x380 [nvme_tcp]
-
-This annotation lets lockdep analyze nvme-tcp controlled sockets
-independently of what the user-space sockets API does.
-
-Link: https://lore.kernel.org/linux-nvme/CAHj4cs9MDYLJ+q+2_GXUK9HxFizv2pxUryUR0toX974M040z7g@mail.gmail.com/
-
-Signed-off-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Fixes: 375637bc524952 ("perf/core: Introduce address range filtering")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220131072453.2839535-4-adrian.hunter@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c | 40 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+ kernel/events/core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 6105894a218a..7e3932033707 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -30,6 +30,44 @@ static int so_priority;
- module_param(so_priority, int, 0644);
- MODULE_PARM_DESC(so_priority, "nvme tcp socket optimize priority");
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index c8b3f94f0dbb..79d8b27cf2fc 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -10265,8 +10265,11 @@ perf_event_parse_addr_filter(struct perf_event *event, char *fstr,
+ 			}
  
-+#ifdef CONFIG_DEBUG_LOCK_ALLOC
-+/* lockdep can detect a circular dependency of the form
-+ *   sk_lock -> mmap_lock (page fault) -> fs locks -> sk_lock
-+ * because dependencies are tracked for both nvme-tcp and user contexts. Using
-+ * a separate class prevents lockdep from conflating nvme-tcp socket use with
-+ * user-space socket API use.
-+ */
-+static struct lock_class_key nvme_tcp_sk_key[2];
-+static struct lock_class_key nvme_tcp_slock_key[2];
-+
-+static void nvme_tcp_reclassify_socket(struct socket *sock)
-+{
-+	struct sock *sk = sock->sk;
-+
-+	if (WARN_ON_ONCE(!sock_allow_reclassification(sk)))
-+		return;
-+
-+	switch (sk->sk_family) {
-+	case AF_INET:
-+		sock_lock_init_class_and_name(sk, "slock-AF_INET-NVME",
-+					      &nvme_tcp_slock_key[0],
-+					      "sk_lock-AF_INET-NVME",
-+					      &nvme_tcp_sk_key[0]);
-+		break;
-+	case AF_INET6:
-+		sock_lock_init_class_and_name(sk, "slock-AF_INET6-NVME",
-+					      &nvme_tcp_slock_key[1],
-+					      "sk_lock-AF_INET6-NVME",
-+					      &nvme_tcp_sk_key[1]);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+	}
-+}
-+#else
-+static void nvme_tcp_reclassify_socket(struct socket *sock) { }
-+#endif
-+
- enum nvme_tcp_send_state {
- 	NVME_TCP_SEND_CMD_PDU = 0,
- 	NVME_TCP_SEND_H2C_PDU,
-@@ -1422,6 +1460,8 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
- 		goto err_destroy_mutex;
+ 			/* ready to consume more filters */
++			kfree(filename);
++			filename = NULL;
+ 			state = IF_STATE_ACTION;
+ 			filter = NULL;
++			kernel = 0;
+ 		}
  	}
- 
-+	nvme_tcp_reclassify_socket(queue->sock);
-+
- 	/* Single syn retry */
- 	tcp_sock_set_syncnt(queue->sock->sk, 1);
  
 -- 
 2.34.1
