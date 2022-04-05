@@ -2,73 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3910BC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390935AbiDEWE3 (ORCPT
+        id S1391045AbiDEWEo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35868 "EHLO
+        Tue, 5 Apr 2022 18:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456849AbiDEQCZ (ORCPT
+        with ESMTP id S1356428AbiDEKXx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:02:25 -0400
-Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E814915D3AA;
-        Tue,  5 Apr 2022 08:25:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1649172298;
-        bh=ySu+WdbLhJy7RbHw1+FFBWYzYY6iBwBvKC8kGG4udH8=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=Qn7HJhLc1YnnJeD1uH+YD8JszCg3jcUfDll4fIeNiJETSxOeOCF7GwBes4YO9K6Ck
-         FYTGOyt8SIUswtDPGr4Jv7xDnWcVtExfP2ixKeP+CpFNeks7V33teQzcKPqkGY30rj
-         Wlasc6tpicOp/LYhi/VFAnoF35SVwEzgbIjx/CAY=
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 0C7C612878FE;
-        Tue,  5 Apr 2022 11:24:58 -0400 (EDT)
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id GiwgNUSrnlUz; Tue,  5 Apr 2022 11:24:57 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1649172297;
-        bh=ySu+WdbLhJy7RbHw1+FFBWYzYY6iBwBvKC8kGG4udH8=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=AE5O0qlUuh4PfAJRZm3mQXR58Jv3mXkovnqsVGx8PD23lYOV7eLg1L/JOBhVddg+8
-         Yhkji33jf1xqka1UL8d+M+WeQBN2goZetlmA7wK9/u8sZFW2DgRPRp9/RXhTOYweNV
-         lAlOAFpVSaEGWclbnyGVT8I1C5DzkNd6CrG4csxQ=
-Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::3774])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 5 Apr 2022 06:23:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F71CBBE30;
+        Tue,  5 Apr 2022 03:08:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 5B9CB12878FB;
-        Tue,  5 Apr 2022 11:24:57 -0400 (EDT)
-Message-ID: <175195a9b7840e883677c6f351ee186089ab2b6d.camel@HansenPartnership.com>
-Subject: Re: RIP: 0010:ahd_init.cold+0x96/0x98 [aic79xx] - 5.17.0
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Bruno Goncalves <bgoncalv@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-scsi@vger.kernel.org
-Cc:     CKI Project <cki-project@redhat.com>
-Date:   Tue, 05 Apr 2022 11:24:56 -0400
-In-Reply-To: <CA+QYu4qTtXgVegAd7S5bjJQye+kmtPaFau4dg3YPU2tH9faBjg@mail.gmail.com>
-References: <CA+QYu4qTtXgVegAd7S5bjJQye+kmtPaFau4dg3YPU2tH9faBjg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E000B81C99;
+        Tue,  5 Apr 2022 10:08:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF58DC385A1;
+        Tue,  5 Apr 2022 10:08:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153296;
+        bh=vgh0HeVqx1RYjNBeKuXJoeHPe9JnT28UwU6MtMY10/U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=n7WUXNgCtuFSJy+05o7IWt+/4+xmBl8ByslJxeKt8vQeaT8AX+Zb7iPQFSjnXg3Jm
+         nd48wV4n71tJ3Qgj9zdSCWMu5ia49agKvgS0bv8TXnEYoTPBXYaMO22ODGTNLgg4p/
+         /JcwFd8dd21GjDCQkYuywQVnICfky1KWaYIp29rg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Bharata B Rao <bharata@amd.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Mel Gorman <mgorman@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 173/599] sched/debug: Remove mpol_get/put and task_lock/unlock from sched_show_numa
+Date:   Tue,  5 Apr 2022 09:27:47 +0200
+Message-Id: <20220405070303.990856766@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-05 at 09:14 +0200, Bruno Goncalves wrote:
-> Hello,
-> 
-> We've been hitting the panic below when testing mainline kernel. More
-> logs can be found on [1] and CKI tracker [2].
+From: Bharata B Rao <bharata@amd.com>
 
-When was the last time this driver passed the test?  I'm asking because
-nothing significant has changed in this driver for a while and the
-trivial changes all seem to check out.
+[ Upstream commit 28c988c3ec29db74a1dda631b18785958d57df4f ]
 
-James
+The older format of /proc/pid/sched printed home node info which
+required the mempolicy and task lock around mpol_get(). However
+the format has changed since then and there is no need for
+sched_show_numa() any more to have mempolicy argument,
+asssociated mpol_get/put and task_lock/unlock. Remove them.
+
+Fixes: 397f2378f1361 ("sched/numa: Fix numa balancing stats in /proc/pid/sched")
+Signed-off-by: Bharata B Rao <bharata@amd.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+Acked-by: Mel Gorman <mgorman@suse.de>
+Link: https://lore.kernel.org/r/20220118050515.2973-1-bharata@amd.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/sched/debug.c | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
+index 70a578272436..e7df4f293587 100644
+--- a/kernel/sched/debug.c
++++ b/kernel/sched/debug.c
+@@ -908,25 +908,15 @@ void print_numa_stats(struct seq_file *m, int node, unsigned long tsf,
+ static void sched_show_numa(struct task_struct *p, struct seq_file *m)
+ {
+ #ifdef CONFIG_NUMA_BALANCING
+-	struct mempolicy *pol;
+-
+ 	if (p->mm)
+ 		P(mm->numa_scan_seq);
+ 
+-	task_lock(p);
+-	pol = p->mempolicy;
+-	if (pol && !(pol->flags & MPOL_F_MORON))
+-		pol = NULL;
+-	mpol_get(pol);
+-	task_unlock(p);
+-
+ 	P(numa_pages_migrated);
+ 	P(numa_preferred_nid);
+ 	P(total_numa_faults);
+ 	SEQ_printf(m, "current_node=%d, numa_group_id=%d\n",
+ 			task_node(p), task_numa_group_id(p));
+ 	show_numa_stats(p, m);
+-	mpol_put(pol);
+ #endif
+ }
+ 
+-- 
+2.34.1
+
 
 
