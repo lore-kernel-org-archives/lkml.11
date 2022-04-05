@@ -2,127 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0DBC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9AAC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452622AbiDEWcH (ORCPT
+        id S1452553AbiDEWcB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
+        Tue, 5 Apr 2022 18:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442147AbiDEPhC (ORCPT
+        with ESMTP id S1349374AbiDEJtp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:37:02 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067CAECB23;
-        Tue,  5 Apr 2022 06:51:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649166677; x=1680702677;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=/SGY5EudjaGdSXrVzfUtedVft2d5wnuxaMlMNW2aRB0=;
-  b=bDib/z5acJoDX72Rq0ubmgNBrtCtrPuMLTklQhg7YnPgddIYXswV85Xq
-   CWoEAISiZ/elzyyctQbrk4GPkwZV/EK3EMOacBkZ4oEH7HE+bgUr2Tiet
-   1b2jcOSDbyzGrayNYeIwn5gnIu4bwHcOrD3zhtGc6W3PRWaljzt2owj3M
-   g=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 05 Apr 2022 06:51:15 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:51:15 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:14 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 5 Apr 2022 06:51:10 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V9 1/6] dt-bindings: mfd: pm8008: Add reset-gpios
-Date:   Tue, 5 Apr 2022 19:20:28 +0530
-Message-ID: <1649166633-25872-2-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 5 Apr 2022 05:49:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A690F13FBF;
+        Tue,  5 Apr 2022 02:44:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 157E0CE1C90;
+        Tue,  5 Apr 2022 09:44:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF51C385A3;
+        Tue,  5 Apr 2022 09:44:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151873;
+        bh=pfUa9LayJvonNRTRyNr0npSc/ylo332Q3BdAw9/BZgY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QnjkRZdXKlV6cIVJ8aq52Ra+uu3a2eFN62g5bsznocGKjo6qMwjWu8lrUC5HOcQ+H
+         mUFYsP/dCcwSkXOM22N7RG5Xw5l2O866MLyIX6W6XMNTEjLIRhT3KYAeGVxcQg8BwB
+         XvCNgunEgtur2WZUqHa7oCi5PI7NwRwoVknCsfYE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ying Xue <ying.xue@windriver.com>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 571/913] tipc: fix the timer expires after interval 100ms
+Date:   Tue,  5 Apr 2022 09:27:13 +0200
+Message-Id: <20220405070356.959803260@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset-gpios property for pm8008.
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+[ Upstream commit 6a7d8cff4a3301087dd139293e9bddcf63827282 ]
+
+In the timer callback function tipc_sk_timeout(), we're trying to
+reschedule another timeout to retransmit a setup request if destination
+link is congested. But we use the incorrect timeout value
+(msecs_to_jiffies(100)) instead of (jiffies + msecs_to_jiffies(100)),
+so that the timer expires immediately, it's irrelevant for original
+description.
+
+In this commit we correct the timeout value in sk_reset_timer()
+
+Fixes: 6787927475e5 ("tipc: buffer overflow handling in listener socket")
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Link: https://lore.kernel.org/r/20220321042229.314288-1-hoang.h.le@dektech.com.au
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Changes in V7:
- - Removed the intermediate regulators node and added ldos
-   directly under mfd node.
+ net/tipc/socket.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Changes in V8:
- - Change the compatible as per driver, remove interrupts from required
-   properties, add reset-gpios and move regulators to separate binding.
-
-Changes in V9:
- - Undo the changes from V8 and only add reset-gpios. Leave interrupts
-   as required properties and do not change compatible.
-   
- Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
-index ec3138c..3312784 100644
---- a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
-+++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
-@@ -44,6 +44,9 @@ properties:
-   "#size-cells":
-     const: 0
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 7545321c3440..17f8c523e33b 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -2852,7 +2852,8 @@ static void tipc_sk_retry_connect(struct sock *sk, struct sk_buff_head *list)
  
-+  reset-gpios:
-+    maxItems: 1
-+
- patternProperties:
-   "^gpio@[0-9a-f]+$":
-     type: object
-@@ -92,6 +95,7 @@ required:
-   - "#address-cells"
-   - "#size-cells"
-   - "#interrupt-cells"
-+  - reset-gpios
- 
- additionalProperties: false
- 
-@@ -99,6 +103,7 @@ examples:
-   - |
-     #include <dt-bindings/mfd/qcom-pm8008.h>
-     #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-     qupv3_se13_i2c {
-       #address-cells = <1>;
-       #size-cells = <0>;
-@@ -113,6 +118,8 @@ examples:
-         interrupt-parent = <&tlmm>;
-         interrupts = <32 IRQ_TYPE_EDGE_RISING>;
- 
-+        reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>;
-+
-         pm8008_gpios: gpio@c000 {
-           compatible = "qcom,pm8008-gpio", "qcom,spmi-gpio";
-           reg = <0xc000>;
+ 	/* Try again later if dest link is congested */
+ 	if (tsk->cong_link_cnt) {
+-		sk_reset_timer(sk, &sk->sk_timer, msecs_to_jiffies(100));
++		sk_reset_timer(sk, &sk->sk_timer,
++			       jiffies + msecs_to_jiffies(100));
+ 		return;
+ 	}
+ 	/* Prepare SYN for retransmit */
 -- 
-2.7.4
+2.34.1
+
+
 
