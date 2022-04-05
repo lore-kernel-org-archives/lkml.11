@@ -2,91 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C86B3C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BD8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379569AbiDEOH5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        id S238010AbiDEOFL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236321AbiDEJbT (ORCPT
+        with ESMTP id S236078AbiDEJbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:31:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614AB4B436;
-        Tue,  5 Apr 2022 02:19:02 -0700 (PDT)
+        Tue, 5 Apr 2022 05:31:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D0922528;
+        Tue,  5 Apr 2022 02:18:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1944AB81B75;
-        Tue,  5 Apr 2022 09:19:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD88C385A2;
-        Tue,  5 Apr 2022 09:18:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150339;
-        bh=iwUeLQxCDC7OEVPT2rElS4J+zZ+Rdy4pMjpsoROH3zg=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5558A61577;
+        Tue,  5 Apr 2022 09:18:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C17DEC385A7;
+        Tue,  5 Apr 2022 09:18:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649150296;
+        bh=Wo392uEawl61tpBst45l5+t1WaSNVll46ELOkHU90ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eL68g9kj/hWuP7j6cVcxvl4j7xxo7Db+aeiflqzdSMmqWrk1qI1Pgqct6xN6LWtgy
-         wYiy3sik+YU7pkKjgFtCiN1E5Le6TruSekSMlk8HL8pjGV6f+ekWnCXqjeV+P5AqHZ
-         /458QdM82wghuCgi3r/bh9Fensa3rfN5lFivcEnA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
-        Haimin Zhang <tcs_kernel@tencent.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 022/913] af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-Date:   Tue,  5 Apr 2022 09:18:04 +0200
-Message-Id: <20220405070340.479818507@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=jwT5G0+JvjM2OoUCGaf7dYjAeelIXoF2JQyLEDTgg7eL7brW0igNcD8hgCb2+AW/J
+         4tB/4rEj+j3WEKLmckBuSbMUCBHVOx9o+7W0p60kim0EtQLwBJiZSYfvpqvKQJEmc3
+         9tLXDeU2SuIb587y/0UMTLL17i0Sc44upoLNM3s7HAgf1q4h/4tejh5e9aE4UI0SeF
+         C6QSoTcFXYsc/DVQcO0/D7hCJNWWPi6Iv4sUe/g3trQRnePL1vh8UizJTelrDYLrKA
+         VStP18jigA5M4KUgLuDYG9G75F/IELARplzLiX5uAY14Yi8cmfH8rrZNtcq0pdJg0A
+         ZI0Dbpvsr0s+g==
+From:   Arnd Bergmann <arnd@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Hubert Feurstein <hubert.feurstein@contec.at>,
+        Lukasz Majewski <lukma@denx.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, patches@opensource.cirrus.com
+Subject: [PATCH 02/12] ARM: ep93xx: renumber interrupts
+Date:   Tue,  5 Apr 2022 11:17:40 +0200
+Message-Id: <20220405091750.3076973-3-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220405091750.3076973-1-arnd@kernel.org>
+References: <20220405091750.3076973-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 9a564bccb78a76740ea9d75a259942df8143d02c ]
+With the move to irq domains, no irqchip must start at number 0,
+so shift all the hardwired IRQ numbers by one.
 
-Add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-to initialize the buffer of supp_skb to fix a kernel-info-leak issue.
-1) Function pfkey_register calls compose_sadb_supported to request
-a sk_buff. 2) compose_sadb_supported calls alloc_sbk to allocate
-a sk_buff, but it doesn't zero it. 3) If auth_len is greater 0, then
-compose_sadb_supported treats the memory as a struct sadb_supported and
-begins to initialize. But it just initializes the field sadb_supported_len
-and field sadb_supported_exttype without field sadb_supported_reserved.
-
-Reported-by: TCS Robot <tcs_robot@tencent.com>
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Tested-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- net/key/af_key.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-ep93xx/core.c              |   4 +-
+ arch/arm/mach-ep93xx/include/mach/irqs.h | 122 ++++++++++++-----------
+ 2 files changed, 65 insertions(+), 61 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 9bf52a09b5ff..fd51db3be91c 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1699,7 +1699,7 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
+diff --git a/arch/arm/mach-ep93xx/core.c b/arch/arm/mach-ep93xx/core.c
+index a3b4e843456a..e4569a5acc3f 100644
+--- a/arch/arm/mach-ep93xx/core.c
++++ b/arch/arm/mach-ep93xx/core.c
+@@ -75,8 +75,8 @@ void __init ep93xx_map_io(void)
+  *************************************************************************/
+ void __init ep93xx_init_irq(void)
+ {
+-	vic_init(EP93XX_VIC1_BASE, 0, EP93XX_VIC1_VALID_IRQ_MASK, 0);
+-	vic_init(EP93XX_VIC2_BASE, 32, EP93XX_VIC2_VALID_IRQ_MASK, 0);
++	vic_init(EP93XX_VIC1_BASE, IRQ_EP93XX_VIC0, EP93XX_VIC1_VALID_IRQ_MASK, 0);
++	vic_init(EP93XX_VIC2_BASE, IRQ_EP93XX_VIC1, EP93XX_VIC2_VALID_IRQ_MASK, 0);
+ }
  
- 	xfrm_probe_algs();
  
--	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL);
-+	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
- 	if (!supp_skb) {
- 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
- 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+diff --git a/arch/arm/mach-ep93xx/include/mach/irqs.h b/arch/arm/mach-ep93xx/include/mach/irqs.h
+index 244daf83ce6d..60c69c4ed7e1 100644
+--- a/arch/arm/mach-ep93xx/include/mach/irqs.h
++++ b/arch/arm/mach-ep93xx/include/mach/irqs.h
+@@ -6,69 +6,73 @@
+ #ifndef __ASM_ARCH_IRQS_H
+ #define __ASM_ARCH_IRQS_H
+ 
+-#define IRQ_EP93XX_COMMRX		2
+-#define IRQ_EP93XX_COMMTX		3
+-#define IRQ_EP93XX_TIMER1		4
+-#define IRQ_EP93XX_TIMER2		5
+-#define IRQ_EP93XX_AACINTR		6
+-#define IRQ_EP93XX_DMAM2P0		7
+-#define IRQ_EP93XX_DMAM2P1		8
+-#define IRQ_EP93XX_DMAM2P2		9
+-#define IRQ_EP93XX_DMAM2P3		10
+-#define IRQ_EP93XX_DMAM2P4		11
+-#define IRQ_EP93XX_DMAM2P5		12
+-#define IRQ_EP93XX_DMAM2P6		13
+-#define IRQ_EP93XX_DMAM2P7		14
+-#define IRQ_EP93XX_DMAM2P8		15
+-#define IRQ_EP93XX_DMAM2P9		16
+-#define IRQ_EP93XX_DMAM2M0		17
+-#define IRQ_EP93XX_DMAM2M1		18
+-#define IRQ_EP93XX_GPIO0MUX		19
+-#define IRQ_EP93XX_GPIO1MUX		20
+-#define IRQ_EP93XX_GPIO2MUX		21
+-#define IRQ_EP93XX_GPIO3MUX		22
+-#define IRQ_EP93XX_UART1RX		23
+-#define IRQ_EP93XX_UART1TX		24
+-#define IRQ_EP93XX_UART2RX		25
+-#define IRQ_EP93XX_UART2TX		26
+-#define IRQ_EP93XX_UART3RX		27
+-#define IRQ_EP93XX_UART3TX		28
+-#define IRQ_EP93XX_KEY			29
+-#define IRQ_EP93XX_TOUCH		30
++#define IRQ_EP93XX_VIC0			1
++
++#define IRQ_EP93XX_COMMRX		(IRQ_EP93XX_VIC0 + 2)
++#define IRQ_EP93XX_COMMTX		(IRQ_EP93XX_VIC0 + 3)
++#define IRQ_EP93XX_TIMER1		(IRQ_EP93XX_VIC0 + 4)
++#define IRQ_EP93XX_TIMER2		(IRQ_EP93XX_VIC0 + 5)
++#define IRQ_EP93XX_AACINTR		(IRQ_EP93XX_VIC0 + 6)
++#define IRQ_EP93XX_DMAM2P0		(IRQ_EP93XX_VIC0 + 7)
++#define IRQ_EP93XX_DMAM2P1		(IRQ_EP93XX_VIC0 + 8)
++#define IRQ_EP93XX_DMAM2P2		(IRQ_EP93XX_VIC0 + 9)
++#define IRQ_EP93XX_DMAM2P3		(IRQ_EP93XX_VIC0 + 10)
++#define IRQ_EP93XX_DMAM2P4		(IRQ_EP93XX_VIC0 + 11)
++#define IRQ_EP93XX_DMAM2P5		(IRQ_EP93XX_VIC0 + 12)
++#define IRQ_EP93XX_DMAM2P6		(IRQ_EP93XX_VIC0 + 13)
++#define IRQ_EP93XX_DMAM2P7		(IRQ_EP93XX_VIC0 + 14)
++#define IRQ_EP93XX_DMAM2P8		(IRQ_EP93XX_VIC0 + 15)
++#define IRQ_EP93XX_DMAM2P9		(IRQ_EP93XX_VIC0 + 16)
++#define IRQ_EP93XX_DMAM2M0		(IRQ_EP93XX_VIC0 + 17)
++#define IRQ_EP93XX_DMAM2M1		(IRQ_EP93XX_VIC0 + 18)
++#define IRQ_EP93XX_GPIO0MUX		(IRQ_EP93XX_VIC0 + 19)
++#define IRQ_EP93XX_GPIO1MUX		(IRQ_EP93XX_VIC0 + 20)
++#define IRQ_EP93XX_GPIO2MUX		(IRQ_EP93XX_VIC0 + 21)
++#define IRQ_EP93XX_GPIO3MUX		(IRQ_EP93XX_VIC0 + 22)
++#define IRQ_EP93XX_UART1RX		(IRQ_EP93XX_VIC0 + 23)
++#define IRQ_EP93XX_UART1TX		(IRQ_EP93XX_VIC0 + 24)
++#define IRQ_EP93XX_UART2RX		(IRQ_EP93XX_VIC0 + 25)
++#define IRQ_EP93XX_UART2TX		(IRQ_EP93XX_VIC0 + 26)
++#define IRQ_EP93XX_UART3RX		(IRQ_EP93XX_VIC0 + 27)
++#define IRQ_EP93XX_UART3TX		(IRQ_EP93XX_VIC0 + 28)
++#define IRQ_EP93XX_KEY			(IRQ_EP93XX_VIC0 + 29)
++#define IRQ_EP93XX_TOUCH		(IRQ_EP93XX_VIC0 + 30)
+ #define EP93XX_VIC1_VALID_IRQ_MASK	0x7ffffffc
+ 
+-#define IRQ_EP93XX_EXT0			32
+-#define IRQ_EP93XX_EXT1			33
+-#define IRQ_EP93XX_EXT2			34
+-#define IRQ_EP93XX_64HZ			35
+-#define IRQ_EP93XX_WATCHDOG		36
+-#define IRQ_EP93XX_RTC			37
+-#define IRQ_EP93XX_IRDA			38
+-#define IRQ_EP93XX_ETHERNET		39
+-#define IRQ_EP93XX_EXT3			40
+-#define IRQ_EP93XX_PROG			41
+-#define IRQ_EP93XX_1HZ			42
+-#define IRQ_EP93XX_VSYNC		43
+-#define IRQ_EP93XX_VIDEO_FIFO		44
+-#define IRQ_EP93XX_SSP1RX		45
+-#define IRQ_EP93XX_SSP1TX		46
+-#define IRQ_EP93XX_GPIO4MUX		47
+-#define IRQ_EP93XX_GPIO5MUX		48
+-#define IRQ_EP93XX_GPIO6MUX		49
+-#define IRQ_EP93XX_GPIO7MUX		50
+-#define IRQ_EP93XX_TIMER3		51
+-#define IRQ_EP93XX_UART1		52
+-#define IRQ_EP93XX_SSP			53
+-#define IRQ_EP93XX_UART2		54
+-#define IRQ_EP93XX_UART3		55
+-#define IRQ_EP93XX_USB			56
+-#define IRQ_EP93XX_ETHERNET_PME		57
+-#define IRQ_EP93XX_DSP			58
+-#define IRQ_EP93XX_GPIO_AB		59
+-#define IRQ_EP93XX_SAI			60
++#define IRQ_EP93XX_VIC1			(IRQ_EP93XX_VIC0 + 32)
++
++#define IRQ_EP93XX_EXT0			(IRQ_EP93XX_VIC1 + 0)
++#define IRQ_EP93XX_EXT1			(IRQ_EP93XX_VIC1 + 1)
++#define IRQ_EP93XX_EXT2			(IRQ_EP93XX_VIC1 + 2)
++#define IRQ_EP93XX_64HZ			(IRQ_EP93XX_VIC1 + 3)
++#define IRQ_EP93XX_WATCHDOG		(IRQ_EP93XX_VIC1 + 4)
++#define IRQ_EP93XX_RTC			(IRQ_EP93XX_VIC1 + 5)
++#define IRQ_EP93XX_IRDA			(IRQ_EP93XX_VIC1 + 6)
++#define IRQ_EP93XX_ETHERNET		(IRQ_EP93XX_VIC1 + 7)
++#define IRQ_EP93XX_EXT3			(IRQ_EP93XX_VIC1 + 8)
++#define IRQ_EP93XX_PROG			(IRQ_EP93XX_VIC1 + 9)
++#define IRQ_EP93XX_1HZ			(IRQ_EP93XX_VIC1 + 10)
++#define IRQ_EP93XX_VSYNC		(IRQ_EP93XX_VIC1 + 11)
++#define IRQ_EP93XX_VIDEO_FIFO		(IRQ_EP93XX_VIC1 + 12)
++#define IRQ_EP93XX_SSP1RX		(IRQ_EP93XX_VIC1 + 13)
++#define IRQ_EP93XX_SSP1TX		(IRQ_EP93XX_VIC1 + 14)
++#define IRQ_EP93XX_GPIO4MUX		(IRQ_EP93XX_VIC1 + 15)
++#define IRQ_EP93XX_GPIO5MUX		(IRQ_EP93XX_VIC1 + 16)
++#define IRQ_EP93XX_GPIO6MUX		(IRQ_EP93XX_VIC1 + 17)
++#define IRQ_EP93XX_GPIO7MUX		(IRQ_EP93XX_VIC1 + 18)
++#define IRQ_EP93XX_TIMER3		(IRQ_EP93XX_VIC1 + 19)
++#define IRQ_EP93XX_UART1		(IRQ_EP93XX_VIC1 + 20)
++#define IRQ_EP93XX_SSP			(IRQ_EP93XX_VIC1 + 21)
++#define IRQ_EP93XX_UART2		(IRQ_EP93XX_VIC1 + 22)
++#define IRQ_EP93XX_UART3		(IRQ_EP93XX_VIC1 + 23)
++#define IRQ_EP93XX_USB			(IRQ_EP93XX_VIC1 + 24)
++#define IRQ_EP93XX_ETHERNET_PME		(IRQ_EP93XX_VIC1 + 25)
++#define IRQ_EP93XX_DSP			(IRQ_EP93XX_VIC1 + 26)
++#define IRQ_EP93XX_GPIO_AB		(IRQ_EP93XX_VIC1 + 27)
++#define IRQ_EP93XX_SAI			(IRQ_EP93XX_VIC1 + 28)
+ #define EP93XX_VIC2_VALID_IRQ_MASK	0x1fffffff
+ 
+-#define NR_EP93XX_IRQS			(64 + 24)
++#define NR_EP93XX_IRQS			(IRQ_EP93XX_VIC1 + 32 + 24)
+ 
+ #define EP93XX_BOARD_IRQ(x)		(NR_EP93XX_IRQS + (x))
+ #define EP93XX_BOARD_IRQS		32
 -- 
-2.34.1
-
-
+2.29.2
 
