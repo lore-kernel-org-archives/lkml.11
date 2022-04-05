@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620DDC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73582C3527A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236392AbiDEI1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57600 "EHLO
+        id S236513AbiDEI17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235130AbiDEH7Z (ORCPT
+        with ESMTP id S235853AbiDEIAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FB55717D;
-        Tue,  5 Apr 2022 00:53:53 -0700 (PDT)
+        Tue, 5 Apr 2022 04:00:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8111EACB;
+        Tue,  5 Apr 2022 00:58:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDAD5B81B90;
-        Tue,  5 Apr 2022 07:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E75BC3410F;
-        Tue,  5 Apr 2022 07:53:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D532F6173E;
+        Tue,  5 Apr 2022 07:58:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2511C3410F;
+        Tue,  5 Apr 2022 07:58:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145230;
-        bh=SY5CrdqZiViwSqGKTiO8sCEsREGcjWYPSLn1jzZgA8A=;
+        s=korg; t=1649145515;
+        bh=+vB/c5TYSJXJNmD9pjNpxLmLtUsmHAcZ/hjWBUHuL58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2uf/Dy9RoBVPVnKXiT4ub2OHNyuotPLr3VIZhi/RZmTLYnolrMmaxjOM6Yb2L24/C
-         ocN/X6bHdBLH1TVwba7Aer2IXfz52u2hxQ6CX29kW6HJdG7u/Dny7eHgaDYBENmP2S
-         V9mVwTaph5RPwgTow5S5BnBdONuzzOVtL6nBGFvg=
+        b=ZpCaPxj9Q9DTsI4tU2y1fajozQF5k9nKcOOt6A+N2XjmlTo2vxO9Er9lm1dWcAj74
+         NtlqSpibzOLO0i+ZC+PpqIC6erROPWfkCs2THDDjLyOIgjpwM+VmSUjBN7dwmDeWJg
+         T5bLkHmPYvjaoS1bJlJjVFhxwntRYiyHsoIUUSe0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
-        Steev Klimaszewski <steev@kali.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Steven Price <steven.price@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0331/1126] arm64: dts: qcom: sdm845: fix microphone bias properties and values
-Date:   Tue,  5 Apr 2022 09:17:58 +0200
-Message-Id: <20220405070417.332971045@linuxfoundation.org>
+Subject: [PATCH 5.17 0434/1126] drm/panfrost: Check for error num after setting mask
+Date:   Tue,  5 Apr 2022 09:19:41 +0200
+Message-Id: <20220405070420.363666105@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,56 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Heidelberg <david@ixit.cz>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 625c24460dbbc3b6c9a148c0a30f0830893fc909 ]
+[ Upstream commit 44ab30b056149bd59dd7989a593dd25ead6007fd ]
 
-replace millivolt with correct microvolt and adjust value to
-the minimal value allowed by documentation.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
 
-Found with `make qcom/sdm845-oneplus-fajita.dtb`.
-
-Fixes:
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias1-microvolt' is a required property
-        From schema: Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias2-microvolt' is a required property
-        From schema: Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias3-microvolt' is a required property
-        From schema: Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias4-microvolt' is a required property
-        From schema: Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: codec@1: 'qcom,micbias1-millivolt', 'qcom,micbias2-millivolt', 'qcom,micbias3-millivolt', 'qcom,micbias4-millivolt' do not match any of the regexes: '^.*@[0-9a-f]+$', 'pinctrl-[0-9]+'
-
-Fixes: 27ca1de07dc3 ("arm64: dts: qcom: sdm845: add slimbus nodes")
-
-Signed-off-by: David Heidelberg <david@ixit.cz>
-Tested-by: Steev Klimaszewski <steev@kali.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211213195105.114596-1-david@ixit.cz
+Fixes: f3ba91228e8e ("drm/panfrost: Add initial panfrost driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+[Steve: fix Fixes: line]
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220106030326.2620942-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/panfrost/panfrost_gpu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index cfdeaa81f1bb..1bb4d98db96f 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -3613,10 +3613,10 @@
- 					#clock-cells = <0>;
- 					clock-frequency = <9600000>;
- 					clock-output-names = "mclk";
--					qcom,micbias1-millivolt = <1800>;
--					qcom,micbias2-millivolt = <1800>;
--					qcom,micbias3-millivolt = <1800>;
--					qcom,micbias4-millivolt = <1800>;
-+					qcom,micbias1-microvolt = <1800000>;
-+					qcom,micbias2-microvolt = <1800000>;
-+					qcom,micbias3-microvolt = <1800000>;
-+					qcom,micbias4-microvolt = <1800000>;
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gpu.c b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+index bbe628b306ee..f8355de6e335 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gpu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gpu.c
+@@ -360,8 +360,11 @@ int panfrost_gpu_init(struct panfrost_device *pfdev)
  
- 					#address-cells = <1>;
- 					#size-cells = <1>;
+ 	panfrost_gpu_init_features(pfdev);
+ 
+-	dma_set_mask_and_coherent(pfdev->dev,
++	err = dma_set_mask_and_coherent(pfdev->dev,
+ 		DMA_BIT_MASK(FIELD_GET(0xff00, pfdev->features.mmu_features)));
++	if (err)
++		return err;
++
+ 	dma_set_max_seg_size(pfdev->dev, UINT_MAX);
+ 
+ 	irq = platform_get_irq_byname(to_platform_device(pfdev->dev), "gpu");
 -- 
 2.34.1
 
