@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 896B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349987AbiDELyL (ORCPT
+        id S1352350AbiDELyh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
+        Tue, 5 Apr 2022 07:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244912AbiDEIwr (ORCPT
+        with ESMTP id S244922AbiDEIwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:52:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7642495B;
-        Tue,  5 Apr 2022 01:46:13 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D4524961;
+        Tue,  5 Apr 2022 01:46:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BDD43CE1C6B;
-        Tue,  5 Apr 2022 08:46:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD881C385A1;
-        Tue,  5 Apr 2022 08:46:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1769B81A32;
+        Tue,  5 Apr 2022 08:46:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F321C385A0;
+        Tue,  5 Apr 2022 08:46:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148370;
-        bh=1svdJ2AKn28hyj1/xHu6DgEkXapWfzQJ39MN6QrfE6k=;
+        s=korg; t=1649148386;
+        bh=FNWouC3CoH6+dXI5kygOzexAVVRXN9qg89YVmFU1Dbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iEuqv41BEivql8IjFbh0TAUS1NGX61iGbTBzGJ3upyDgpV/nEAgOWc9L9HoEjdVtK
-         n0D5EbdIokWH7FMvaWE4aSp8GMMKjSm0XMXEsoV9PtYYk4aETKLMD21gdOXk0GyeHb
-         G6PW4dtdpQTtxnvsOKWWAfeX/vemEZclqtn2IYac=
+        b=lt6xTsDPt6zL5n7a9mjQQ3KaL0hdBxHk3hSAnlBCiajgnRAYTW7PMLOs0xyApNhyL
+         vwwe+iwG2Im7aw5l3vDfRLCjrUgdbrDfeTLJCEhHbzhb/Hw9Do6Lyo2bXhW8GCaK5a
+         +plnJiLUsHikNIN1LsOKosTPuz3+QknjZQWN3Yd4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0331/1017] media: mexon-ge2d: fixup frames size in registers
-Date:   Tue,  5 Apr 2022 09:20:44 +0200
-Message-Id: <20220405070404.106880475@linuxfoundation.org>
+Subject: [PATCH 5.16 0337/1017] media: cedrus: h264: Fix neighbour info buffer size
+Date:   Tue,  5 Apr 2022 09:20:50 +0200
+Message-Id: <20220405070404.286121619@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,77 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neil Armstrong <narmstrong@baylibre.com>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit 79e8c421a099bfbcebe59740153e55aa0442ced6 ]
+[ Upstream commit fecd363ae2d5042553370b0adf60c47e35c34a83 ]
 
-The CLIP, SRC & DST registers are coded to take the pixel/line start & end,
-starting from 0. Thus the end should be the width/height minus 1.
+According to BSP library source, H264 neighbour info buffer size needs
+to be 32 kiB for H6. This is similar to H265 decoding, which also needs
+double buffer size in comparison to older Cedrus core generations.
 
-It can be an issue with clipping and rotation, where it will add spurious
-lines from uninitialized or unwanted data with a shift in the result.
+Increase buffer size to cover H6 needs. Since increase is not that big
+in absolute numbers, it doesn't make sense to complicate logic for older
+generations.
 
-Fixes: 59a635327ca7 ("media: meson: Add M2M driver for the Amlogic GE2D Accelerator Unit")
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Issue was discovered using iommu and cross checked with BSP library
+source.
+
+Fixes: 6eb9b758e307 ("media: cedrus: Add H264 decoding support")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/meson/ge2d/ge2d.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/meson/ge2d/ge2d.c b/drivers/media/platform/meson/ge2d/ge2d.c
-index ccda18e5a377..5e7b319f300d 100644
---- a/drivers/media/platform/meson/ge2d/ge2d.c
-+++ b/drivers/media/platform/meson/ge2d/ge2d.c
-@@ -215,35 +215,35 @@ static void ge2d_hw_start(struct meson_ge2d *ge2d)
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+index b4173a8926d6..d8fb93035470 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+@@ -38,7 +38,7 @@ struct cedrus_h264_sram_ref_pic {
  
- 	regmap_write(ge2d->map, GE2D_SRC1_CLIPY_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->in.crop.top) |
--		     FIELD_PREP(GE2D_END, ctx->in.crop.top + ctx->in.crop.height));
-+		     FIELD_PREP(GE2D_END, ctx->in.crop.top + ctx->in.crop.height - 1));
- 	regmap_write(ge2d->map, GE2D_SRC1_CLIPX_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->in.crop.left) |
--		     FIELD_PREP(GE2D_END, ctx->in.crop.left + ctx->in.crop.width));
-+		     FIELD_PREP(GE2D_END, ctx->in.crop.left + ctx->in.crop.width - 1));
- 	regmap_write(ge2d->map, GE2D_SRC2_CLIPY_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->out.crop.top) |
--		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height));
-+		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height - 1));
- 	regmap_write(ge2d->map, GE2D_SRC2_CLIPX_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->out.crop.left) |
--		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width));
-+		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width - 1));
- 	regmap_write(ge2d->map, GE2D_DST_CLIPY_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->out.crop.top) |
--		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height));
-+		     FIELD_PREP(GE2D_END, ctx->out.crop.top + ctx->out.crop.height - 1));
- 	regmap_write(ge2d->map, GE2D_DST_CLIPX_START_END,
- 		     FIELD_PREP(GE2D_START, ctx->out.crop.left) |
--		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width));
-+		     FIELD_PREP(GE2D_END, ctx->out.crop.left + ctx->out.crop.width - 1));
+ #define CEDRUS_H264_FRAME_NUM		18
  
- 	regmap_write(ge2d->map, GE2D_SRC1_Y_START_END,
--		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.height));
-+		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.height - 1));
- 	regmap_write(ge2d->map, GE2D_SRC1_X_START_END,
--		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.width));
-+		     FIELD_PREP(GE2D_END, ctx->in.pix_fmt.width - 1));
- 	regmap_write(ge2d->map, GE2D_SRC2_Y_START_END,
--		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height));
-+		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height - 1));
- 	regmap_write(ge2d->map, GE2D_SRC2_X_START_END,
--		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width));
-+		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width - 1));
- 	regmap_write(ge2d->map, GE2D_DST_Y_START_END,
--		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height));
-+		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.height - 1));
- 	regmap_write(ge2d->map, GE2D_DST_X_START_END,
--		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width));
-+		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width - 1));
+-#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(16 * SZ_1K)
++#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(32 * SZ_1K)
+ #define CEDRUS_MIN_PIC_INFO_BUF_SIZE       (130 * SZ_1K)
  
- 	/* Color, no blend, use source color */
- 	reg = GE2D_ALU_DO_COLOR_OPERATION_LOGIC(LOGIC_OPERATION_COPY,
+ static void cedrus_h264_write_sram(struct cedrus_dev *dev,
 -- 
 2.34.1
 
