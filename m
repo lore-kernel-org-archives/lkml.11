@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 232C4C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC218C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235914AbiDEIAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
+        id S236320AbiDEICD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232174AbiDEHtl (ORCPT
+        with ESMTP id S233085AbiDEHwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:49:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3079C92D01;
-        Tue,  5 Apr 2022 00:46:57 -0700 (PDT)
+        Tue, 5 Apr 2022 03:52:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2CC91577;
+        Tue,  5 Apr 2022 00:48:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FDDD616DE;
-        Tue,  5 Apr 2022 07:46:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C60C340EE;
-        Tue,  5 Apr 2022 07:46:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9289B81BA4;
+        Tue,  5 Apr 2022 07:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 215FCC340EE;
+        Tue,  5 Apr 2022 07:48:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144816;
-        bh=lYuDuCZyM1/21wlsDLWnPTHlGYhxcYDWK3hJXAIaYcs=;
+        s=korg; t=1649144896;
+        bh=o2hdrjC/PgYjbZe3JzicMJHQaxwlPlqG/ztutGUT8Go=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a+OqbXVBAoZi68VT8KNGkETKWT9izAB6YbFN9AgHp6xrzXs+ZQuM9nmI1/vXpln0N
-         HphzXu9G1apX0sd4p+dbE+OFe9x4nz2YhNtSgZT6SWGpRu4pLobwNyd/RznIHGve6T
-         emXcDS0yOwBboEiWoZbuVzC1SCxRn45dZr1kcsxM=
+        b=yER7SwIvmiZzscpNqeg9QpGZe+8gbMZCfp4pft8Pqy7756ESUZzWmP9lfH+ks4lR9
+         VWBCrvWA30cmEFJrAvlkmhjiuMtd/Is7zYA95Cl5XdvmGYSqbevKFhVguwU2OwogfT
+         iw7ix6+6WzhSUX2yyRlNgGHvpxt39lrymgbJDh/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Josef Bacik <jbacik@fb.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 0143/1126] block: dont merge across cgroup boundaries if blkcg is enabled
-Date:   Tue,  5 Apr 2022 09:14:50 +0200
-Message-Id: <20220405070411.778775549@linuxfoundation.org>
+        stable@vger.kernel.org, Tomas Paukrt <tomaspaukrt@email.cz>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0209/1126] crypto: mxs-dcp - Fix scatterlist processing
+Date:   Tue,  5 Apr 2022 09:15:56 +0200
+Message-Id: <20220405070413.743612165@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,112 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Tomas Paukrt <tomaspaukrt@email.cz>
 
-commit 6b2b04590b51aa4cf395fcd185ce439cab5961dc upstream.
+[ Upstream commit 28e9b6d8199a3f124682b143800c2dacdc3d70dd ]
 
-blk-iocost and iolatency are cgroup aware rq-qos policies but they didn't
-disable merges across different cgroups. This obviously can lead to
-accounting and control errors but more importantly to priority inversions -
-e.g. an IO which belongs to a higher priority cgroup or IO class may end up
-getting throttled incorrectly because it gets merged to an IO issued from a
-low priority cgroup.
+This patch fixes a bug in scatterlist processing that may cause incorrect AES block encryption/decryption.
 
-Fix it by adding blk_cgroup_mergeable() which is called from merge paths and
-rejects cross-cgroup and cross-issue_as_root merges.
-
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Fixes: d70675121546 ("block: introduce blk-iolatency io controller")
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Josef Bacik <jbacik@fb.com>
-Link: https://lore.kernel.org/r/Yi/eE/6zFNyWJ+qd@slm.duckdns.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2e6d793e1bf0 ("crypto: mxs-dcp - Use sg_mapping_iter to copy data")
+Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-merge.c          |   11 +++++++++++
- include/linux/blk-cgroup.h |   17 +++++++++++++++++
- 2 files changed, 28 insertions(+)
+ drivers/crypto/mxs-dcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/block/blk-merge.c
-+++ b/block/blk-merge.c
-@@ -9,6 +9,7 @@
- #include <linux/blk-integrity.h>
- #include <linux/scatterlist.h>
- #include <linux/part_stat.h>
-+#include <linux/blk-cgroup.h>
+diff --git a/drivers/crypto/mxs-dcp.c b/drivers/crypto/mxs-dcp.c
+index d19e5ffb5104..d6f9e2fe863d 100644
+--- a/drivers/crypto/mxs-dcp.c
++++ b/drivers/crypto/mxs-dcp.c
+@@ -331,7 +331,7 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
+ 		memset(key + AES_KEYSIZE_128, 0, AES_KEYSIZE_128);
+ 	}
  
- #include <trace/events/block.h>
- 
-@@ -600,6 +601,9 @@ static inline unsigned int blk_rq_get_ma
- static inline int ll_new_hw_segment(struct request *req, struct bio *bio,
- 		unsigned int nr_phys_segs)
- {
-+	if (!blk_cgroup_mergeable(req, bio))
-+		goto no_merge;
-+
- 	if (blk_integrity_merge_bio(req->q, req, bio) == false)
- 		goto no_merge;
- 
-@@ -696,6 +700,9 @@ static int ll_merge_requests_fn(struct r
- 	if (total_phys_segments > blk_rq_get_max_segments(req))
- 		return 0;
- 
-+	if (!blk_cgroup_mergeable(req, next->bio))
-+		return 0;
-+
- 	if (blk_integrity_merge_rq(q, req, next) == false)
- 		return 0;
- 
-@@ -904,6 +911,10 @@ bool blk_rq_merge_ok(struct request *rq,
- 	if (bio_data_dir(bio) != rq_data_dir(rq))
- 		return false;
- 
-+	/* don't merge across cgroup boundaries */
-+	if (!blk_cgroup_mergeable(rq, bio))
-+		return false;
-+
- 	/* only merge integrity protected bio into ditto rq */
- 	if (blk_integrity_merge_bio(rq->q, rq, bio) == false)
- 		return false;
---- a/include/linux/blk-cgroup.h
-+++ b/include/linux/blk-cgroup.h
-@@ -24,6 +24,7 @@
- #include <linux/atomic.h>
- #include <linux/kthread.h>
- #include <linux/fs.h>
-+#include <linux/blk-mq.h>
- 
- /* percpu_counter batch for blkg_[rw]stats, per-cpu drift doesn't matter */
- #define BLKG_STAT_CPU_BATCH	(INT_MAX / 2)
-@@ -604,6 +605,21 @@ static inline void blkcg_clear_delay(str
- 		atomic_dec(&blkg->blkcg->css.cgroup->congestion_count);
- }
- 
-+/**
-+ * blk_cgroup_mergeable - Determine whether to allow or disallow merges
-+ * @rq: request to merge into
-+ * @bio: bio to merge
-+ *
-+ * @bio and @rq should belong to the same cgroup and their issue_as_root should
-+ * match. The latter is necessary as we don't want to throttle e.g. a metadata
-+ * update because it happens to be next to a regular IO.
-+ */
-+static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio)
-+{
-+	return rq->bio->bi_blkg == bio->bi_blkg &&
-+		bio_issue_as_root_blkg(rq->bio) == bio_issue_as_root_blkg(bio);
-+}
-+
- void blk_cgroup_bio_start(struct bio *bio);
- void blkcg_add_delay(struct blkcg_gq *blkg, u64 now, u64 delta);
- void blkcg_schedule_throttle(struct request_queue *q, bool use_memdelay);
-@@ -659,6 +675,7 @@ static inline void blkg_put(struct blkcg
- static inline bool blkcg_punt_bio_submit(struct bio *bio) { return false; }
- static inline void blkcg_bio_issue_init(struct bio *bio) { }
- static inline void blk_cgroup_bio_start(struct bio *bio) { }
-+static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio) { return true; }
- 
- #define blk_queue_for_each_rl(rl, q)	\
- 	for ((rl) = &(q)->root_rl; (rl); (rl) = NULL)
+-	for_each_sg(req->src, src, sg_nents(src), i) {
++	for_each_sg(req->src, src, sg_nents(req->src), i) {
+ 		src_buf = sg_virt(src);
+ 		len = sg_dma_len(src);
+ 		tlen += len;
+-- 
+2.34.1
+
 
 
