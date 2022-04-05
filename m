@@ -2,141 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EA2C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF040C3527D
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842939AbiDFBf3 (ORCPT
+        id S1842963AbiDFBfh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47462 "EHLO
+        Tue, 5 Apr 2022 21:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349434AbiDEJtw (ORCPT
+        with ESMTP id S1390678AbiDENmz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C1325E97;
-        Tue,  5 Apr 2022 02:45:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BF39B817D3;
-        Tue,  5 Apr 2022 09:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5DC3C385A1;
-        Tue,  5 Apr 2022 09:45:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151951;
-        bh=KoGQ+0vWP49KzgTOCU/ifdDn7F7KOjvEzSHR2vQTS+U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x1MuDJkYW2q1tpPdxP80e5zm+yMzAGsnLMqxHyCWRBgCiKeIxkabFV2mPxeSI4quT
-         wyM8AoZ3KnetI3YQJpsgyCjZYlg/Pr2Q5Sl1Eb+hI1QbSfqanODojO1aKcIYeXxyGy
-         x7tYMH7o5EM0htBmYQVbHoJP1LLj2L7/tV5UoNRM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 600/913] serial: 8250_mid: Balance reference count for PCI DMA device
-Date:   Tue,  5 Apr 2022 09:27:42 +0200
-Message-Id: <20220405070357.827072214@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 09:42:55 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE3527B1F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:43:35 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id q142so9154717pgq.9
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 05:43:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pFy1qZhdMdbp63fvqatp60F+TUWmD+XE3qD2we3Q3/E=;
+        b=ICHmkjwoT02evQPvLG67fwtfT+/HO34QaDa64NIblo3dX6mBddVU4pztRQ3PiNWgV8
+         Q0atQj4u8oNo9+UKieBwV9ZSUi0gX8g6YmUUkG7ROH5NlrwVNyJUy05Ht6G+QDTCaeyG
+         Mv1OIFqk98ytWz415A3HlO64EKjnlwpok1u+MnoORc3QBmzBC4YJTJ5NIokC0Q0f3LUX
+         7IqjjjiDnbWIhf0fAe1OZR1bG6XlOr3YwqYmO5nDUKhnpyec1xesRMYWb7wyDJ8ABL/u
+         NMsJKvTA5/JDa4gpiHwmq8dVoyh7mO1SIZaipTf6SJlAqGh/cHjXNFPmpUQCsL/U//Yu
+         YOzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pFy1qZhdMdbp63fvqatp60F+TUWmD+XE3qD2we3Q3/E=;
+        b=trFrTzYpBkLKaG9sAHAA5w6tuk+lVxqgsK+vq4jxTgSh4BT3075gcojYV33Aq9eF5S
+         G2vc6/kkBC5qvlZZ8kfY7X5TVXRXs5KNGiys49vVz84SHOB0bPpBLuNJ0CVHH1OrJKCc
+         GjI5Qun6pNzOCGnkGF1cjF3LUmwAGkUuEs1cKhsAC7S+kiwtkgkUJVt//MlSKoaOdAWn
+         E8ms32WcuTx+AtwuGQUiRR1+hxF/V5cXIsS5qCO2v8EKUN3iba424QGLVlqx+ilrqRsj
+         SlQLq9FDQKoyWJHhOUesNq/UD4dKm0dwaX8n7v+Lbu6y+5ub3MhSf7oMKupyKtQzQWm2
+         R7dA==
+X-Gm-Message-State: AOAM531YYSpUimag/tN3Z440gzX2mEErJc7N12TT9aorbN4eogDwZt98
+        XarAk4Z82pgV8AviCvu9Nts=
+X-Google-Smtp-Source: ABdhPJyDfpN+1H4PfHUqp+rp8XEL538Oc78MuEILvTB/wjQSaNjaqZgkugyg7zTaw6Hwc9tuD+WpFA==
+X-Received: by 2002:a63:3756:0:b0:398:4086:16 with SMTP id g22-20020a633756000000b0039840860016mr2741728pgn.55.1649162615312;
+        Tue, 05 Apr 2022 05:43:35 -0700 (PDT)
+Received: from vihas.localhost.com ([103.85.9.59])
+        by smtp.gmail.com with ESMTPSA id nl17-20020a17090b385100b001c70883f6ccsm2760014pjb.36.2022.04.05.05.43.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 05:43:34 -0700 (PDT)
+From:   Vihas Makwana <makvihas@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Skripkin <paskripkin@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Vihas Makwana <makvihas@gmail.com>
+Subject: [PATCH 0/3] staging: r8188eu: some refactoring and cleanup
+Date:   Tue,  5 Apr 2022 18:12:37 +0530
+Message-Id: <20220405124239.3372-1-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Drop some redundant checks and cleanup the unused functions.
 
-[ Upstream commit 67ec6dd0b257bd81b4e9fcac89b29da72f6265e5 ]
+Vihas Makwana (3):
+  staging: r8188eu: drop redundant if check in IS_MCAST
+  staging: r8188eu: drop redundant if check in check_fwstate
+  staging: r8188eu: simplify rtw_inc_and_chk_continual_urb_error
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+ drivers/staging/r8188eu/include/rtw_mlme.h | 43 +---------------------
+ drivers/staging/r8188eu/include/usb_ops.h  |  7 +---
+ drivers/staging/r8188eu/include/wifi.h     |  5 +--
+ 3 files changed, 3 insertions(+), 52 deletions(-)
 
-Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
-Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
-Reported-by: Qing Wang <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
-Link: https://lore.kernel.org/r/20220215100920.41984-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index efa0515139f8..e6c1791609dd 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
- 
-+static void pnw_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
-+
- static int tng_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
- 
-+static void tng_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
-+
- static int dnv_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	pci_set_drvdata(pdev, mid);
- 	return 0;
-+
- err:
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
- 	return ret;
- }
- 
-@@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
- 
- 	serial8250_unregister_port(mid->line);
- 
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
- }
- 
- static const struct mid8250_board pnw_board = {
-@@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
- 	.freq = 50000000,
- 	.base_baud = 115200,
- 	.setup = pnw_setup,
-+	.exit = pnw_exit,
- };
- 
- static const struct mid8250_board tng_board = {
-@@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
- 	.freq = 38400000,
- 	.base_baud = 1843200,
- 	.setup = tng_setup,
-+	.exit = tng_exit,
- };
- 
- static const struct mid8250_board dnv_board = {
 -- 
-2.34.1
-
-
+2.30.2
 
