@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A316C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 693CFC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846645AbiDFCID (ORCPT
+        id S1846685AbiDFCII (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
+        Tue, 5 Apr 2022 22:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235821AbiDEKy2 (ORCPT
+        with ESMTP id S244404AbiDEKip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:54:28 -0400
+        Tue, 5 Apr 2022 06:38:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246BFAA03F;
-        Tue,  5 Apr 2022 03:28:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7AB26D6;
+        Tue,  5 Apr 2022 03:23:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABC536141D;
-        Tue,  5 Apr 2022 10:28:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6B3C385A1;
-        Tue,  5 Apr 2022 10:28:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9C03617CF;
+        Tue,  5 Apr 2022 10:23:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A17C385A0;
+        Tue,  5 Apr 2022 10:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154499;
-        bh=6lXdB4F7ajIpIWXEskNb8htx+7+Kuya9o2cEDiIKpvg=;
+        s=korg; t=1649154217;
+        bh=j5DNVbHhhgeUBhVKqHFSMBKCusOoOp6pyUIt94ylPpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o5zM2Y6jfYNN7mTY4vhQb9wiIoEtGt7aQTrSUxKyw+kr7gBJUAAYefNV+9LH6ktK0
-         fw4+1cOdS2MAuSA0CZuQD5mvqnmrqfOv+HHonI9yS9lqA8l0bVDL3fmj4ItQIdHDJF
-         DhcY05sWfkJywMwWiIaMMYrqhF2IfvbXpK1ktfWA=
+        b=B0exhO7Vl6gFA8i3+0C8YcQopT5I1ZLUgbLNzEE/OwcX8bSsegEXMkj/Xpum+twl4
+         YZMRt/Y9Ya9CRn7t6B0thMD/3rQV9T6ZrjR4OqPQAPa4wMESImjRBWwTwQKWS3m1Is
+         MHPOz7Vvph1JnaKkTA2Jwy97Tzg0IJ0DdTrpnuvw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vijay Balakrishna <vijayb@linux.microsoft.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH 5.10 599/599] arm64: Do not defer reserve_crashkernel() for platforms with no DMA memory zones
-Date:   Tue,  5 Apr 2022 09:34:53 +0200
-Message-Id: <20220405070316.664535016@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 501/599] uaccess: fix type mismatch warnings from access_ok()
+Date:   Tue,  5 Apr 2022 09:33:15 +0200
+Message-Id: <20220405070313.737263228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,164 +51,232 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijay Balakrishna <vijayb@linux.microsoft.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-commit 031495635b4668f94e964e037ca93d0d38bfde58 upstream.
+[ Upstream commit 23fc539e81295b14b50c6ccc5baeb4f3d59d822d ]
 
-The following patches resulted in deferring crash kernel reservation to
-mem_init(), mainly aimed at platforms with DMA memory zones (no IOMMU),
-in particular Raspberry Pi 4.
+On some architectures, access_ok() does not do any argument type
+checking, so replacing the definition with a generic one causes
+a few warnings for harmless issues that were never caught before.
 
-commit 1a8e1cef7603 ("arm64: use both ZONE_DMA and ZONE_DMA32")
-commit 8424ecdde7df ("arm64: mm: Set ZONE_DMA size based on devicetree's dma-ranges")
-commit 0a30c53573b0 ("arm64: mm: Move reserve_crashkernel() into mem_init()")
-commit 2687275a5843 ("arm64: Force NO_BLOCK_MAPPINGS if crashkernel reservation is required")
+Fix the ones that I found either through my own test builds or
+that were reported by the 0-day bot.
 
-Above changes introduced boot slowdown due to linear map creation for
-all the memory banks with NO_BLOCK_MAPPINGS, see discussion[1].  The proposed
-changes restore crash kernel reservation to earlier behavior thus avoids
-slow boot, particularly for platforms with IOMMU (no DMA memory zones).
-
-Tested changes to confirm no ~150ms boot slowdown on our SoC with IOMMU
-and 8GB memory.  Also tested with ZONE_DMA and/or ZONE_DMA32 configs to confirm
-no regression to deferring scheme of crash kernel memory reservation.
-In both cases successfully collected kernel crash dump.
-
-[1] https://lore.kernel.org/all/9436d033-579b-55fa-9b00-6f4b661c2dd7@linux.microsoft.com/
-
-Signed-off-by: Vijay Balakrishna <vijayb@linux.microsoft.com>
-Cc: stable@vger.kernel.org
-Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-Link: https://lore.kernel.org/r/1646242689-20744-1-git-send-email-vijayb@linux.microsoft.com
-[will: Add #ifdef CONFIG_KEXEC_CORE guards to fix 'crashk_res' references in allnoconfig build]
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/mm/init.c |   36 ++++++++++++++++++++++++++++++++----
- arch/arm64/mm/mmu.c  |   32 +++++++++++++++++++++++++++++++-
- 2 files changed, 63 insertions(+), 5 deletions(-)
+ arch/arc/kernel/process.c          |  2 +-
+ arch/arm/kernel/swp_emulate.c      |  2 +-
+ arch/arm/kernel/traps.c            |  2 +-
+ arch/csky/kernel/perf_callchain.c  |  2 +-
+ arch/csky/kernel/signal.c          |  2 +-
+ arch/nios2/kernel/signal.c         | 20 +++++++++++---------
+ arch/powerpc/lib/sstep.c           |  4 ++--
+ arch/riscv/kernel/perf_callchain.c |  4 ++--
+ arch/sparc/kernel/signal_32.c      |  2 +-
+ lib/test_lockup.c                  |  4 ++--
+ 10 files changed, 23 insertions(+), 21 deletions(-)
 
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -58,8 +58,34 @@ EXPORT_SYMBOL(memstart_addr);
-  * unless restricted on specific platforms (e.g. 30-bit on Raspberry Pi 4).
-  * In such case, ZONE_DMA32 covers the rest of the 32-bit addressable memory,
-  * otherwise it is empty.
-+ *
-+ * Memory reservation for crash kernel either done early or deferred
-+ * depending on DMA memory zones configs (ZONE_DMA) --
-+ *
-+ * In absence of ZONE_DMA configs arm64_dma_phys_limit initialized
-+ * here instead of max_zone_phys().  This lets early reservation of
-+ * crash kernel memory which has a dependency on arm64_dma_phys_limit.
-+ * Reserving memory early for crash kernel allows linear creation of block
-+ * mappings (greater than page-granularity) for all the memory bank rangs.
-+ * In this scheme a comparatively quicker boot is observed.
-+ *
-+ * If ZONE_DMA configs are defined, crash kernel memory reservation
-+ * is delayed until DMA zone memory range size initilazation performed in
-+ * zone_sizes_init().  The defer is necessary to steer clear of DMA zone
-+ * memory range to avoid overlap allocation.  So crash kernel memory boundaries
-+ * are not known when mapping all bank memory ranges, which otherwise means
-+ * not possible to exclude crash kernel range from creating block mappings
-+ * so page-granularity mappings are created for the entire memory range.
-+ * Hence a slightly slower boot is observed.
-+ *
-+ * Note: Page-granularity mapppings are necessary for crash kernel memory
-+ * range for shrinking its size via /sys/kernel/kexec_crash_size interface.
+diff --git a/arch/arc/kernel/process.c b/arch/arc/kernel/process.c
+index 37f724ad5e39..a85e9c625ab5 100644
+--- a/arch/arc/kernel/process.c
++++ b/arch/arc/kernel/process.c
+@@ -43,7 +43,7 @@ SYSCALL_DEFINE0(arc_gettls)
+ 	return task_thread_info(current)->thr_ptr;
+ }
+ 
+-SYSCALL_DEFINE3(arc_usr_cmpxchg, int *, uaddr, int, expected, int, new)
++SYSCALL_DEFINE3(arc_usr_cmpxchg, int __user *, uaddr, int, expected, int, new)
+ {
+ 	struct pt_regs *regs = current_pt_regs();
+ 	u32 uval;
+diff --git a/arch/arm/kernel/swp_emulate.c b/arch/arm/kernel/swp_emulate.c
+index 6166ba38bf99..b74bfcf94fb1 100644
+--- a/arch/arm/kernel/swp_emulate.c
++++ b/arch/arm/kernel/swp_emulate.c
+@@ -195,7 +195,7 @@ static int swp_handler(struct pt_regs *regs, unsigned int instr)
+ 		 destreg, EXTRACT_REG_NUM(instr, RT2_OFFSET), data);
+ 
+ 	/* Check access in reasonable access range for both SWP and SWPB */
+-	if (!access_ok((address & ~3), 4)) {
++	if (!access_ok((void __user *)(address & ~3), 4)) {
+ 		pr_debug("SWP{B} emulation: access to %p not allowed!\n",
+ 			 (void *)address);
+ 		res = -EFAULT;
+diff --git a/arch/arm/kernel/traps.c b/arch/arm/kernel/traps.c
+index 2d9e72ad1b0f..a531afad87fd 100644
+--- a/arch/arm/kernel/traps.c
++++ b/arch/arm/kernel/traps.c
+@@ -589,7 +589,7 @@ do_cache_op(unsigned long start, unsigned long end, int flags)
+ 	if (end < start || flags)
+ 		return -EINVAL;
+ 
+-	if (!access_ok(start, end - start))
++	if (!access_ok((void __user *)start, end - start))
+ 		return -EFAULT;
+ 
+ 	return __do_cache_op(start, end);
+diff --git a/arch/csky/kernel/perf_callchain.c b/arch/csky/kernel/perf_callchain.c
+index 35318a635a5f..75e1f9df5f60 100644
+--- a/arch/csky/kernel/perf_callchain.c
++++ b/arch/csky/kernel/perf_callchain.c
+@@ -49,7 +49,7 @@ static unsigned long user_backtrace(struct perf_callchain_entry_ctx *entry,
+ {
+ 	struct stackframe buftail;
+ 	unsigned long lr = 0;
+-	unsigned long *user_frame_tail = (unsigned long *)fp;
++	unsigned long __user *user_frame_tail = (unsigned long __user *)fp;
+ 
+ 	/* Check accessibility of one struct frame_tail beyond */
+ 	if (!access_ok(user_frame_tail, sizeof(buftail)))
+diff --git a/arch/csky/kernel/signal.c b/arch/csky/kernel/signal.c
+index 0ca49b5e3dd3..243228b0aa07 100644
+--- a/arch/csky/kernel/signal.c
++++ b/arch/csky/kernel/signal.c
+@@ -136,7 +136,7 @@ static inline void __user *get_sigframe(struct ksignal *ksig,
+ static int
+ setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
+ {
+-	struct rt_sigframe *frame;
++	struct rt_sigframe __user *frame;
+ 	int err = 0;
+ 	struct csky_vdso *vdso = current->mm->context.vdso;
+ 
+diff --git a/arch/nios2/kernel/signal.c b/arch/nios2/kernel/signal.c
+index cf2dca2ac7c3..e45491d1d3e4 100644
+--- a/arch/nios2/kernel/signal.c
++++ b/arch/nios2/kernel/signal.c
+@@ -36,10 +36,10 @@ struct rt_sigframe {
+ 
+ static inline int rt_restore_ucontext(struct pt_regs *regs,
+ 					struct switch_stack *sw,
+-					struct ucontext *uc, int *pr2)
++					struct ucontext __user *uc, int *pr2)
+ {
+ 	int temp;
+-	unsigned long *gregs = uc->uc_mcontext.gregs;
++	unsigned long __user *gregs = uc->uc_mcontext.gregs;
+ 	int err;
+ 
+ 	/* Always make any pending restarted system calls return -EINTR */
+@@ -102,10 +102,11 @@ asmlinkage int do_rt_sigreturn(struct switch_stack *sw)
+ {
+ 	struct pt_regs *regs = (struct pt_regs *)(sw + 1);
+ 	/* Verify, can we follow the stack back */
+-	struct rt_sigframe *frame = (struct rt_sigframe *) regs->sp;
++	struct rt_sigframe __user *frame;
+ 	sigset_t set;
+ 	int rval;
+ 
++	frame = (struct rt_sigframe __user *) regs->sp;
+ 	if (!access_ok(frame, sizeof(*frame)))
+ 		goto badframe;
+ 
+@@ -124,10 +125,10 @@ asmlinkage int do_rt_sigreturn(struct switch_stack *sw)
+ 	return 0;
+ }
+ 
+-static inline int rt_setup_ucontext(struct ucontext *uc, struct pt_regs *regs)
++static inline int rt_setup_ucontext(struct ucontext __user *uc, struct pt_regs *regs)
+ {
+ 	struct switch_stack *sw = (struct switch_stack *)regs - 1;
+-	unsigned long *gregs = uc->uc_mcontext.gregs;
++	unsigned long __user *gregs = uc->uc_mcontext.gregs;
+ 	int err = 0;
+ 
+ 	err |= __put_user(MCONTEXT_VERSION, &uc->uc_mcontext.version);
+@@ -162,8 +163,9 @@ static inline int rt_setup_ucontext(struct ucontext *uc, struct pt_regs *regs)
+ 	return err;
+ }
+ 
+-static inline void *get_sigframe(struct ksignal *ksig, struct pt_regs *regs,
+-				 size_t frame_size)
++static inline void __user *get_sigframe(struct ksignal *ksig,
++					struct pt_regs *regs,
++					size_t frame_size)
+ {
+ 	unsigned long usp;
+ 
+@@ -174,13 +176,13 @@ static inline void *get_sigframe(struct ksignal *ksig, struct pt_regs *regs,
+ 	usp = sigsp(usp, ksig);
+ 
+ 	/* Verify, is it 32 or 64 bit aligned */
+-	return (void *)((usp - frame_size) & -8UL);
++	return (void __user *)((usp - frame_size) & -8UL);
+ }
+ 
+ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+ 			  struct pt_regs *regs)
+ {
+-	struct rt_sigframe *frame;
++	struct rt_sigframe __user *frame;
+ 	int err = 0;
+ 
+ 	frame = get_sigframe(ksig, regs, sizeof(*frame));
+diff --git a/arch/powerpc/lib/sstep.c b/arch/powerpc/lib/sstep.c
+index 0edebbbffcdc..42701b2f2474 100644
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -108,9 +108,9 @@ static nokprobe_inline long address_ok(struct pt_regs *regs,
+ {
+ 	if (!user_mode(regs))
+ 		return 1;
+-	if (__access_ok(ea, nb))
++	if (access_ok((void __user *)ea, nb))
+ 		return 1;
+-	if (__access_ok(ea, 1))
++	if (access_ok((void __user *)ea, 1))
+ 		/* Access overlaps the end of the user region */
+ 		regs->dar = TASK_SIZE_MAX - 1;
+ 	else
+diff --git a/arch/riscv/kernel/perf_callchain.c b/arch/riscv/kernel/perf_callchain.c
+index 20af8ecbb7e4..fb02811df714 100644
+--- a/arch/riscv/kernel/perf_callchain.c
++++ b/arch/riscv/kernel/perf_callchain.c
+@@ -19,8 +19,8 @@ static unsigned long user_backtrace(struct perf_callchain_entry_ctx *entry,
+ {
+ 	struct stackframe buftail;
+ 	unsigned long ra = 0;
+-	unsigned long *user_frame_tail =
+-			(unsigned long *)(fp - sizeof(struct stackframe));
++	unsigned long __user *user_frame_tail =
++		(unsigned long __user *)(fp - sizeof(struct stackframe));
+ 
+ 	/* Check accessibility of one struct frame_tail beyond */
+ 	if (!access_ok(user_frame_tail, sizeof(buftail)))
+diff --git a/arch/sparc/kernel/signal_32.c b/arch/sparc/kernel/signal_32.c
+index 741d0701003a..1da36dd34990 100644
+--- a/arch/sparc/kernel/signal_32.c
++++ b/arch/sparc/kernel/signal_32.c
+@@ -65,7 +65,7 @@ struct rt_signal_frame {
   */
--phys_addr_t arm64_dma_phys_limit __ro_after_init;
-+#if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
-+phys_addr_t __ro_after_init arm64_dma_phys_limit;
-+#else
-+phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
-+#endif
+ static inline bool invalid_frame_pointer(void __user *fp, int fplen)
+ {
+-	if ((((unsigned long) fp) & 15) || !__access_ok((unsigned long)fp, fplen))
++	if ((((unsigned long) fp) & 15) || !access_ok(fp, fplen))
+ 		return true;
  
- #ifdef CONFIG_KEXEC_CORE
- /*
-@@ -210,8 +236,6 @@ static void __init zone_sizes_init(unsig
- 	if (!arm64_dma_phys_limit)
- 		arm64_dma_phys_limit = dma32_phys_limit;
- #endif
--	if (!arm64_dma_phys_limit)
--		arm64_dma_phys_limit = PHYS_MASK + 1;
- 	max_zone_pfns[ZONE_NORMAL] = max;
+ 	return false;
+diff --git a/lib/test_lockup.c b/lib/test_lockup.c
+index f1a020bcc763..07f476317187 100644
+--- a/lib/test_lockup.c
++++ b/lib/test_lockup.c
+@@ -417,8 +417,8 @@ static bool test_kernel_ptr(unsigned long addr, int size)
+ 		return false;
  
- 	free_area_init(max_zone_pfns);
-@@ -407,6 +431,9 @@ void __init arm64_memblock_init(void)
- 
- 	reserve_elfcorehdr();
- 
-+	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
-+		reserve_crashkernel();
-+
- 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
- }
- 
-@@ -451,7 +478,8 @@ void __init bootmem_init(void)
- 	 * request_standard_resources() depends on crashkernel's memory being
- 	 * reserved, so do it here.
- 	 */
--	reserve_crashkernel();
-+	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
-+		reserve_crashkernel();
- 
- 	memblock_dump_all();
- }
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -501,7 +501,7 @@ static void __init map_mem(pgd_t *pgdp)
- 	int flags = 0;
- 	u64 i;
- 
--	if (rodata_full || crash_mem_map || debug_pagealloc_enabled())
-+	if (rodata_full || debug_pagealloc_enabled())
- 		flags = NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
- 
- 	/*
-@@ -512,6 +512,17 @@ static void __init map_mem(pgd_t *pgdp)
- 	 */
- 	memblock_mark_nomap(kernel_start, kernel_end - kernel_start);
- 
-+#ifdef CONFIG_KEXEC_CORE
-+	if (crash_mem_map) {
-+		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
-+		    IS_ENABLED(CONFIG_ZONE_DMA32))
-+			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
-+		else if (crashk_res.end)
-+			memblock_mark_nomap(crashk_res.start,
-+					    resource_size(&crashk_res));
-+	}
-+#endif
-+
- 	/* map all the memory banks */
- 	for_each_mem_range(i, &start, &end) {
- 		if (start >= end)
-@@ -538,6 +549,25 @@ static void __init map_mem(pgd_t *pgdp)
- 	__map_memblock(pgdp, kernel_start, kernel_end,
- 		       PAGE_KERNEL, NO_CONT_MAPPINGS);
- 	memblock_clear_nomap(kernel_start, kernel_end - kernel_start);
-+
-+	/*
-+	 * Use page-level mappings here so that we can shrink the region
-+	 * in page granularity and put back unused memory to buddy system
-+	 * through /sys/kernel/kexec_crash_size interface.
-+	 */
-+#ifdef CONFIG_KEXEC_CORE
-+	if (crash_mem_map &&
-+	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
-+		if (crashk_res.end) {
-+			__map_memblock(pgdp, crashk_res.start,
-+				       crashk_res.end + 1,
-+				       PAGE_KERNEL,
-+				       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
-+			memblock_clear_nomap(crashk_res.start,
-+					     resource_size(&crashk_res));
-+		}
-+	}
-+#endif
- }
- 
- void mark_rodata_ro(void)
+ 	/* should be at least readable kernel address */
+-	if (access_ok(ptr, 1) ||
+-	    access_ok(ptr + size - 1, 1) ||
++	if (access_ok((void __user *)ptr, 1) ||
++	    access_ok((void __user *)ptr + size - 1, 1) ||
+ 	    get_kernel_nofault(buf, ptr) ||
+ 	    get_kernel_nofault(buf, ptr + size - 1)) {
+ 		pr_err("invalid kernel ptr: %#lx\n", addr);
+-- 
+2.34.1
+
 
 
