@@ -2,95 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5D6C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D625C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838190AbiDFAue (ORCPT
+        id S1838168AbiDFAu3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
+        Tue, 5 Apr 2022 20:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355739AbiDELz0 (ORCPT
+        with ESMTP id S1349348AbiDEJtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:55:26 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388BDB879;
-        Tue,  5 Apr 2022 04:13:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649157199; x=1680693199;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=32517Peu1iHVDouFzkQPCx+iZWRftDCxZE0lexD+4Kg=;
-  b=e1sl0XgvQrGgf/5wwHcW4wxu4KCf4fKar37EyzYccc3x+KOqERdrsT2J
-   buLBow4+RwJeOfhXMOPD0Bl6JNtrEyUuQn2D+dCQ89PxbMtnxkh5q0f4f
-   jO5/N/U/5SyFalo2hVZr0EBvBdy8nmMccmRjqkhG/vbp8j0SRwT+VVtGy
-   Ka6byebBayaTRpLH4XwoSvEzE8ZpsLB4Kf43zcyrfEAh6TWuK8nQqWCr+
-   40uLj0Qmn5wqKEu3w2szIEcpkEvXfoWDwkOQJLaWsdTmf56+HHGDwgUjb
-   lQc71z28QR+Ua1pCXcTmkb8HX9p69UBTIu0O1cyLYwxKCmn1sgVKm7i1l
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="321417246"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="321417246"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:13:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="523952439"
-Received: from chang-linux-3.sc.intel.com ([172.25.112.114])
-  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 04:13:18 -0700
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
-To:     stable@vger.kernel.org, gregkh@linuxfoundation.org
-Cc:     yang.zhong@intel.com, bonzini@gnu.org, tglx@linutronix.de,
-        linux-kernel@vger.kernel.org, chang.seok.bae@intel.com
-Subject: [PATCH][Rebased for 5.16] x86/fpu/xstate: Fix the ARCH_REQ_XCOMP_PERM implementation
-Date:   Tue,  5 Apr 2022 04:04:56 -0700
-Message-Id: <20220405110456.24877-1-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <164905801910825@kroah.com>
-References: <164905801910825@kroah.com>
+        Tue, 5 Apr 2022 05:49:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2A7645F;
+        Tue,  5 Apr 2022 02:44:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14A396164D;
+        Tue,  5 Apr 2022 09:44:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CE36C385A2;
+        Tue,  5 Apr 2022 09:44:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649151859;
+        bh=IUboqo4iJ3n7otCQXs7prFXc0z51J73FM0eOCExijfM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=d3qnT3qQZCZishpst/TqlzrOvkXA63bi2d79PnAvM2qMQ3y10ImW+vuv8p2fGaDPi
+         YsNskDCSM0TfnN60aLv4ro3unhBSvWdAfGPFF2/++W7AvZTww+qtKvLon3yMRgW2hY
+         k0ICwtwhjxTLeNQ4Og2nhpUyl5q0rQRPgzpHVsCI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mick Lorain <micklorain@protonmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 566/913] PCI: Avoid broken MSI on SB600 USB devices
+Date:   Tue,  5 Apr 2022 09:27:08 +0200
+Message-Id: <20220405070356.810084675@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Zhong <yang.zhong@intel.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-This is backport for 5.16
+[ Upstream commit 63cd736f449445edcd7f0bcc7d84453e9beec0aa ]
 
-Upstream commit 063452fd94d153d4eb38ad58f210f3d37a09cca4
+Some ATI SB600 USB adapters advertise MSI, but if INTx is disabled by
+setting PCI_COMMAND_INTX_DISABLE, MSI doesn't work either.  The PCI/PCIe
+specs do not require software to set PCI_COMMAND_INTX_DISABLE when enabling
+MSI, but Linux has done that for many years.
 
-ARCH_REQ_XCOMP_PERM is supposed to add the requested feature to the
-permission bitmap of thread_group_leader()->fpu. But the code overwrites
-the bitmap with the requested feature bit only rather than adding it.
+Mick reported that 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI
+devices") broke these devices.  Prior to 306c54d0edb6, they used INTx.
+Starting with 306c54d0edb6, they use MSI, and and the fact that Linux sets
+PCI_COMMAND_INTX_DISABLE means both INTx and MSI are disabled on these
+devices.
 
-Fix the code to add the requested feature bit to the master bitmask.
+Avoid this SB600 defect by disabling MSI so we use INTx as before.
 
-Fixes: db8268df0983 ("x86/arch_prctl: Add controls for dynamic XSTATE components")
-Signed-off-by: Yang Zhong <yang.zhong@intel.com>
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Paolo Bonzini <bonzini@gnu.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220129173647.27981-2-chang.seok.bae@intel.com
-[chang: Backport for 5.16]
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI devices")
+Link: https://lore.kernel.org/r/20220321183446.1108325-1-helgaas@kernel.org
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215690
+Link: https://lore.kernel.org/all/PxIByDyBRcsbpcmVhGSNDFAoUcMmb78ctXCkw6fbpx25TGlCHvA6SJjjFkNr1FfQZMntYPTNyvEnblxzAZ8a6jP9ddLpKeCN6Chi_2FuexU=@protonmail.com/
+Link: https://lore.kernel.org/r/20220314101448.90074-1-andriy.shevchenko@linux.intel.com
+BugLink: https://lore.kernel.org/all/20200702143045.23429-1-andriy.shevchenko@linux.intel.com/
+Reported-by: Mick Lorain <micklorain@protonmail.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/fpu/xstate.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/quirks.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
-index d28829403ed0..fc1ab0116f4e 100644
---- a/arch/x86/kernel/fpu/xstate.c
-+++ b/arch/x86/kernel/fpu/xstate.c
-@@ -1626,7 +1626,7 @@ static int __xstate_request_perm(u64 permitted, u64 requested)
- 		return ret;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index e7cd8b504535..4893b1e82403 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -1811,6 +1811,18 @@ static void quirk_alder_ioapic(struct pci_dev *pdev)
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_EESSC,	quirk_alder_ioapic);
+ #endif
  
- 	/* Pairs with the READ_ONCE() in xstate_get_group_perm() */
--	WRITE_ONCE(fpu->perm.__state_perm, requested);
-+	WRITE_ONCE(fpu->perm.__state_perm, mask);
- 	/* Protected by sighand lock */
- 	fpu->perm.__state_size = ksize;
- 	fpu->perm.__user_state_size = usize;
++static void quirk_no_msi(struct pci_dev *dev)
++{
++	pci_info(dev, "avoiding MSI to work around a hardware defect\n");
++	dev->no_msi = 1;
++}
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4386, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4387, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4388, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4389, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438a, quirk_no_msi);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438b, quirk_no_msi);
++
+ static void quirk_pcie_mch(struct pci_dev *pdev)
+ {
+ 	pdev->no_msi = 1;
 -- 
-2.17.1
+2.34.1
+
+
 
