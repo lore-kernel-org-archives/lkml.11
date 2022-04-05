@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24937C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD81C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351042AbiDEMIS (ORCPT
+        id S1352387AbiDEMIg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        Tue, 5 Apr 2022 08:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244444AbiDEIwG (ORCPT
+        with ESMTP id S244466AbiDEIwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4582D5EAB;
-        Tue,  5 Apr 2022 01:41:03 -0700 (PDT)
+        Tue, 5 Apr 2022 04:52:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BB8D64C2;
+        Tue,  5 Apr 2022 01:41:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBA6361003;
-        Tue,  5 Apr 2022 08:41:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C43CEC385A0;
-        Tue,  5 Apr 2022 08:41:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18838B81B92;
+        Tue,  5 Apr 2022 08:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 843D7C385A0;
+        Tue,  5 Apr 2022 08:40:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148061;
-        bh=XQzzdibhL0otRHSkdbIMNyKyXU70t8rbk4JAHgEy2QE=;
+        s=korg; t=1649148049;
+        bh=nK806L/HXQjI0JbXIYqotYrEiT9JChqTmGRmHJKNS4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BWkArbK+yfYpQKkODEzTd86MzG3Bpl5PPFpAY95G5DokSkiHSZosArYmkL8pMvcnq
-         cLEUsdxbtcyNi51Cz1pjDpqn6e9KrxeTUgJB0iNLt+kTSPemU1HZ+aIAaEK1j9KTJc
-         BuwUoqJoYS3GnT5dduYJG3lX64GeXwnHJ+rJ17Q4=
+        b=jKdu1ir8SB/e0ciR+/XAH/4DD8U+kMiG3SOA6nj+dGD/EuWtUtCn3AY0fW99y+21/
+         qqk6IDiuuqgEVLvsPg+dEFE7Bo3bAW9p6fNjcmILOZGDwEVwXGsPsQ4Is8ROBAPUjr
+         qu3NnEFvJt4nKPvrKIktYHO0YY/wGL9QoDU1cZwk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>
-Subject: [PATCH 5.16 0187/1017] drm/nouveau/backlight: Fix LVDS backlight detection on some laptops
-Date:   Tue,  5 Apr 2022 09:18:20 +0200
-Message-Id: <20220405070359.790951126@linuxfoundation.org>
+        stable@vger.kernel.org, Jianyong Wu <jianyong.wu@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0215/1017] arm64/mm: avoid fixmap race condition when create pud mapping
+Date:   Tue,  5 Apr 2022 09:18:48 +0200
+Message-Id: <20220405070400.633299036@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,41 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: Jianyong Wu <jianyong.wu@arm.com>
 
-commit 6b0076540faffd47f5a899bf12f3528c4f0e726b upstream.
+[ Upstream commit ee017ee353506fcec58e481673e4331ff198a80e ]
 
-It seems that some laptops will report having both an eDP and LVDS
-connector, even though only the LVDS connector is actually hooked up. This
-can lead to issues with backlight registration if the eDP connector ends up
-getting registered before the LVDS connector, as the backlight device will
-then be registered to the eDP connector instead of the LVDS connector.
+The 'fixmap' is a global resource and is used recursively by
+create pud mapping(), leading to a potential race condition in the
+presence of a concurrent call to alloc_init_pud():
 
-So, fix this by only registering the backlight on connectors that are
-reported as being connected.
+kernel_init thread                          virtio-mem workqueue thread
+==================                          ===========================
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Fixes: 6eca310e8924 ("drm/nouveau/kms/nv50-: Add basic DPCD backlight support for nouveau")
-Bugzilla: https://gitlab.freedesktop.org/drm/nouveau/-/issues/137
-Cc: <stable@vger.kernel.org> # v5.15+
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220204180504.328999-1-lyude@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  alloc_init_pud(...)                       alloc_init_pud(...)
+  pudp = pud_set_fixmap_offset(...)         pudp = pud_set_fixmap_offset(...)
+  READ_ONCE(*pudp)
+  pud_clear_fixmap(...)
+                                            READ_ONCE(*pudp) // CRASH!
+
+As kernel may sleep during creating pud mapping, introduce a mutex lock to
+serialise use of the fixmap entries by alloc_init_pud(). However, there is
+no need for locking in early boot stage and it doesn't work well with
+KASLR enabled when early boot. So, enable lock when system_state doesn't
+equal to "SYSTEM_BOOTING".
+
+Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: f4710445458c ("arm64: mm: use fixmap when creating page tables")
+Link: https://lore.kernel.org/r/20220201114400.56885-1-jianyong.wu@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_backlight.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/mm/mmu.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
-@@ -294,7 +294,8 @@ nv50_backlight_init(struct nouveau_backl
- 	struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
- 	struct nvif_object *device = &drm->client.device.object;
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index 044d2021c20c..37b8230cda6a 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -63,6 +63,7 @@ static pmd_t bm_pmd[PTRS_PER_PMD] __page_aligned_bss __maybe_unused;
+ static pud_t bm_pud[PTRS_PER_PUD] __page_aligned_bss __maybe_unused;
  
--	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)))
-+	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
-+	    nv_conn->base.status != connector_status_connected)
- 		return -ENODEV;
+ static DEFINE_SPINLOCK(swapper_pgdir_lock);
++static DEFINE_MUTEX(fixmap_lock);
  
- 	if (nv_conn->type == DCB_CONNECTOR_eDP) {
+ void set_swapper_pgd(pgd_t *pgdp, pgd_t pgd)
+ {
+@@ -329,6 +330,12 @@ static void alloc_init_pud(pgd_t *pgdp, unsigned long addr, unsigned long end,
+ 	}
+ 	BUG_ON(p4d_bad(p4d));
+ 
++	/*
++	 * No need for locking during early boot. And it doesn't work as
++	 * expected with KASLR enabled.
++	 */
++	if (system_state != SYSTEM_BOOTING)
++		mutex_lock(&fixmap_lock);
+ 	pudp = pud_set_fixmap_offset(p4dp, addr);
+ 	do {
+ 		pud_t old_pud = READ_ONCE(*pudp);
+@@ -359,6 +366,8 @@ static void alloc_init_pud(pgd_t *pgdp, unsigned long addr, unsigned long end,
+ 	} while (pudp++, addr = next, addr != end);
+ 
+ 	pud_clear_fixmap();
++	if (system_state != SYSTEM_BOOTING)
++		mutex_unlock(&fixmap_lock);
+ }
+ 
+ static void __create_pgd_mapping(pgd_t *pgdir, phys_addr_t phys,
+-- 
+2.34.1
+
 
 
