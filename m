@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2BFC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC80C35295
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357394AbiDEK0R (ORCPT
+        id S1357688AbiDEK0v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45932 "EHLO
+        Tue, 5 Apr 2022 06:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241123AbiDEIcv (ORCPT
+        with ESMTP id S241122AbiDEIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B358216584;
-        Tue,  5 Apr 2022 01:28:17 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A898115FC2;
+        Tue,  5 Apr 2022 01:28:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EF97609D0;
-        Tue,  5 Apr 2022 08:28:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E334C385A1;
-        Tue,  5 Apr 2022 08:28:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B913B81BB1;
+        Tue,  5 Apr 2022 08:28:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5706C385A2;
+        Tue,  5 Apr 2022 08:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147296;
-        bh=FjlwNEak2Y5XHLiuM71zpUltWSfxCrU7knvshYNWE0c=;
+        s=korg; t=1649147280;
+        bh=k5faAOJ40OTa0COWongLuNACNXMXAEZdrOZeJQ1+P5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f+zkipLGwWcfop8jTB2itFaVq6jPS2HukyvxjPIrbhhG6ry0t6UCKjyxm3DZI5MeM
-         I9INxh17hcRPtxftGNZuDMPouaPkOuTy1JbtABa6NEjjECBcI2a2ViWibsvZFlMCkk
-         pdI9lpbDuAphT1pr/qCRz7eFuiAtLdwJ9q3qufh4=
+        b=aUhlxnDO1kIaVt4G2YVsKsCV3YITfLhnkX3MtncRP8OEH34+kqKmxcseRAntLSwYS
+         NieMckk7RUqEA5uvP/5nLILdo9XRuhtVOtvJwG3DNFbAcAonJXBJOJGG2JhwlSCYzt
+         GYrvuRYZKxP8Lw+frlqdb4+EpnP+4ArdLcoIMjzs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiaxin Yu <jiaxin.yu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 1046/1126] ASoC: mediatek: mt6358: add missing EXPORT_SYMBOLs
-Date:   Tue,  5 Apr 2022 09:29:53 +0200
-Message-Id: <20220405070438.174765036@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Simon Ser <contact@emersion.fr>
+Subject: [PATCH 5.17 1067/1126] drm/connector: Fix typo in documentation
+Date:   Tue,  5 Apr 2022 09:30:14 +0200
+Message-Id: <20220405070438.775851380@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,60 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiaxin Yu <jiaxin.yu@mediatek.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit a7663c89f4193dbf717572e46e5a3251940dbdc8 upstream.
+commit dca384a3bf5af1c781cfa6aec63904bdb5018c36 upstream.
 
-Fixes the following build errors when mt6358 is configured as module:
+Commit 4adc33f36d80 ("drm/edid: Split deep color modes between RGB and
+YUV444") introduced two new variables in struct drm_display_info and
+their documentation, but the documentation part had a typo resulting in
+a doc build warning.
 
->> ERROR: modpost: "mt6358_set_mtkaif_protocol"
->> [sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.ko] undefined!
->> ERROR: modpost: "mt6358_set_mtkaif_protocol"
->> [sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.ko] undefined!
-
-Fixes: 6a8d4198ca80 ("ASoC: mediatek: mt6358: add codec driver")
-Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220319120325.11882-1-jiaxin.yu@mediatek.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 4adc33f36d80 ("drm/edid: Split deep color modes between RGB and YUV444")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Simon Ser <contact@emersion.fr>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220202094340.875190-1-maxime@cerno.tech
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/mt6358.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ include/drm/drm_connector.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/soc/codecs/mt6358.c
-+++ b/sound/soc/codecs/mt6358.c
-@@ -107,6 +107,7 @@ int mt6358_set_mtkaif_protocol(struct sn
- 	priv->mtkaif_protocol = mtkaif_protocol;
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_protocol);
+--- a/include/drm/drm_connector.h
++++ b/include/drm/drm_connector.h
+@@ -592,13 +592,13 @@ struct drm_display_info {
+ 	bool rgb_quant_range_selectable;
  
- static void playback_gpio_set(struct mt6358_priv *priv)
- {
-@@ -273,6 +274,7 @@ int mt6358_mtkaif_calibration_enable(str
- 			   1 << RG_AUD_PAD_TOP_DAT_MISO_LOOPBACK_SFT);
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_enable);
+ 	/**
+-	 * @edid_hdmi_dc_rgb444_modes: Mask of supported hdmi deep color modes
++	 * @edid_hdmi_rgb444_dc_modes: Mask of supported hdmi deep color modes
+ 	 * in RGB 4:4:4. Even more stuff redundant with @bus_formats.
+ 	 */
+ 	u8 edid_hdmi_rgb444_dc_modes;
  
- int mt6358_mtkaif_calibration_disable(struct snd_soc_component *cmpnt)
- {
-@@ -296,6 +298,7 @@ int mt6358_mtkaif_calibration_disable(st
- 	capture_gpio_reset(priv);
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_disable);
- 
- int mt6358_set_mtkaif_calibration_phase(struct snd_soc_component *cmpnt,
- 					int phase_1, int phase_2)
-@@ -310,6 +313,7 @@ int mt6358_set_mtkaif_calibration_phase(
- 			   phase_2 << RG_AUD_PAD_TOP_PHASE_MODE2_SFT);
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_calibration_phase);
- 
- /* dl pga gain */
- enum {
+ 	/**
+-	 * @edid_hdmi_dc_ycbcr444_modes: Mask of supported hdmi deep color
++	 * @edid_hdmi_ycbcr444_dc_modes: Mask of supported hdmi deep color
+ 	 * modes in YCbCr 4:4:4. Even more stuff redundant with @bus_formats.
+ 	 */
+ 	u8 edid_hdmi_ycbcr444_dc_modes;
 
 
