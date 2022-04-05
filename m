@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D24A5C47081
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF97EC47085
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235819AbiDEIAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
+        id S236062AbiDEIBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232086AbiDEHso (ORCPT
+        with ESMTP id S232653AbiDEHvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:48:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B302B7;
-        Tue,  5 Apr 2022 00:46:42 -0700 (PDT)
+        Tue, 5 Apr 2022 03:51:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0121B972D2;
+        Tue,  5 Apr 2022 00:47:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAA88B81B98;
-        Tue,  5 Apr 2022 07:46:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40EA1C34110;
-        Tue,  5 Apr 2022 07:46:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BE19B81B16;
+        Tue,  5 Apr 2022 07:47:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF8D5C340EE;
+        Tue,  5 Apr 2022 07:47:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144799;
-        bh=4ZYE+YnlX6ZXr0Mpn8C8QagEhJ13qfYl0HC5aYEyi4k=;
+        s=korg; t=1649144850;
+        bh=hN/rGyzhfDpcvGlyX2idBWqqBph1Ocw036xlbGQBJeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sKx8oF5RDBqyyuJUF6BiF472rjxZeoae35hnvcTc5T4c8n9Nu2KPRx8BX9W/2pZpj
-         PU4joH3jhZlP+bQOVK4p7Dx5T6E6ANTOuoYg1jOGGmDaL7NfNFTVJKxJeD0N4JDY1e
-         gSMkbPGh8fzeYzefQjonSVs2SoFg81YxcEWrFXkg=
+        b=co6FGGny31rStHov04SobgCirSuozAVpDduwgfoVsvD1zfdiZxiO8nTxDGzot+Ft8
+         nDAangUs+qU1RgiMimCm710h2eTn9qh8YBnwzXVy7FPE/rzg/W4GN6AKLnfy2g4/JD
+         JRu/37CdqSPHSEp+iqIU191ds/bgVlQuxEkUqmHk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-        Johan Hovold <johan@kernel.org>,
-        Lad Prabhakar <prabhakar.csengg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.17 0174/1126] media: davinci: vpif: fix use-after-free on driver unbind
-Date:   Tue,  5 Apr 2022 09:15:21 +0200
-Message-Id: <20220405070412.708721579@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Richard Zhu <hongxing.zhu@nxp.com>
+Subject: [PATCH 5.17 0194/1126] PCI: imx6: Allow to probe when dw_pcie_wait_for_link() fails
+Date:   Tue,  5 Apr 2022 09:15:41 +0200
+Message-Id: <20220405070413.301698431@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,183 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Fabio Estevam <festevam@gmail.com>
 
-commit 43acb728bbc40169d2e2425e84a80068270974be upstream.
+commit f81f095e87715e198471f4653952fe5e3f824874 upstream.
 
-The driver allocates and registers two platform device structures during
-probe, but the devices were never deregistered on driver unbind.
+The intention of commit 886a9c134755 ("PCI: dwc: Move link handling into
+common code") was to standardize the behavior of link down as explained
+in its commit log:
 
-This results in a use-after-free on driver unbind as the device
-structures were allocated using devres and would be freed by driver
-core when remove() returns.
+"The behavior for a link down was inconsistent as some drivers would fail
+probe in that case while others succeed. Let's standardize this to
+succeed as there are usecases where devices (and the link) appear later
+even without hotplug. For example, a reconfigured FPGA device."
 
-Fix this by adding the missing deregistration calls to the remove()
-callback and failing probe on registration errors.
+The pci-imx6 still fails to probe when the link is not present, which
+causes the following warning:
 
-Note that the platform device structures must be freed using a proper
-release callback to avoid leaking associated resources like device
-names.
+imx6q-pcie 8ffc000.pcie: Phy link never came up
+imx6q-pcie: probe of 8ffc000.pcie failed with error -110
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 30 at drivers/regulator/core.c:2257 _regulator_put.part.0+0x1b8/0x1dc
+Modules linked in:
+CPU: 0 PID: 30 Comm: kworker/u2:2 Not tainted 5.15.0-next-20211103 #1
+Hardware name: Freescale i.MX6 SoloX (Device Tree)
+Workqueue: events_unbound async_run_entry_fn
+[<c0111730>] (unwind_backtrace) from [<c010bb74>] (show_stack+0x10/0x14)
+[<c010bb74>] (show_stack) from [<c0f90290>] (dump_stack_lvl+0x58/0x70)
+[<c0f90290>] (dump_stack_lvl) from [<c012631c>] (__warn+0xd4/0x154)
+[<c012631c>] (__warn) from [<c0f87b00>] (warn_slowpath_fmt+0x74/0xa8)
+[<c0f87b00>] (warn_slowpath_fmt) from [<c076b4bc>] (_regulator_put.part.0+0x1b8/0x1dc)
+[<c076b4bc>] (_regulator_put.part.0) from [<c076b574>] (regulator_put+0x2c/0x3c)
+[<c076b574>] (regulator_put) from [<c08c3740>] (release_nodes+0x50/0x178)
 
-Fixes: 479f7a118105 ("[media] davinci: vpif: adaptions for DT support")
-Cc: stable@vger.kernel.org      # 4.12
-Cc: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Reviewed-by: Lad Prabhakar <prabhakar.csengg@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fix this problem by ignoring the dw_pcie_wait_for_link() error like
+it is done on the other dwc drivers.
+
+Tested on imx6sx-sdb and imx6q-sabresd boards.
+
+Link: https://lore.kernel.org/r/20220106103645.2790803-1-festevam@gmail.com
+Fixes: 886a9c134755 ("PCI: dwc: Move link handling into common code")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Richard Zhu <hongxing.zhu@nxp.com>
+Cc: <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/davinci/vpif.c |   97 ++++++++++++++++++++++++----------
- 1 file changed, 71 insertions(+), 26 deletions(-)
+ drivers/pci/controller/dwc/pci-imx6.c |   10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
---- a/drivers/media/platform/davinci/vpif.c
-+++ b/drivers/media/platform/davinci/vpif.c
-@@ -41,6 +41,11 @@ MODULE_ALIAS("platform:" VPIF_DRIVER_NAM
- #define VPIF_CH2_MAX_MODES	15
- #define VPIF_CH3_MAX_MODES	2
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -809,9 +809,7 @@ static int imx6_pcie_start_link(struct d
+ 	/* Start LTSSM. */
+ 	imx6_pcie_ltssm_enable(dev);
  
-+struct vpif_data {
-+	struct platform_device *capture;
-+	struct platform_device *display;
-+};
-+
- DEFINE_SPINLOCK(vpif_lock);
- EXPORT_SYMBOL_GPL(vpif_lock);
+-	ret = dw_pcie_wait_for_link(pci);
+-	if (ret)
+-		goto err_reset_phy;
++	dw_pcie_wait_for_link(pci);
  
-@@ -423,17 +428,31 @@ int vpif_channel_getfid(u8 channel_id)
- }
- EXPORT_SYMBOL(vpif_channel_getfid);
+ 	if (pci->link_gen == 2) {
+ 		/* Allow Gen2 mode after the link is up. */
+@@ -847,11 +845,7 @@ static int imx6_pcie_start_link(struct d
+ 		}
  
-+static void vpif_pdev_release(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+
-+	kfree(pdev);
-+}
-+
- static int vpif_probe(struct platform_device *pdev)
- {
- 	static struct resource *res_irq;
- 	struct platform_device *pdev_capture, *pdev_display;
- 	struct device_node *endpoint = NULL;
-+	struct vpif_data *data;
- 	int ret;
- 
- 	vpif_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(vpif_base))
- 		return PTR_ERR(vpif_base);
- 
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, data);
-+
- 	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_get(&pdev->dev);
- 
-@@ -461,49 +480,75 @@ static int vpif_probe(struct platform_de
- 		goto err_put_rpm;
+ 		/* Make sure link training is finished as well! */
+-		ret = dw_pcie_wait_for_link(pci);
+-		if (ret) {
+-			dev_err(dev, "Failed to bring link up!\n");
+-			goto err_reset_phy;
+-		}
++		dw_pcie_wait_for_link(pci);
+ 	} else {
+ 		dev_info(dev, "Link: Gen2 disabled\n");
  	}
- 
--	pdev_capture = devm_kzalloc(&pdev->dev, sizeof(*pdev_capture),
--				    GFP_KERNEL);
--	if (pdev_capture) {
--		pdev_capture->name = "vpif_capture";
--		pdev_capture->id = -1;
--		pdev_capture->resource = res_irq;
--		pdev_capture->num_resources = 1;
--		pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
--		pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
--		pdev_capture->dev.parent = &pdev->dev;
--		platform_device_register(pdev_capture);
--	} else {
--		dev_warn(&pdev->dev, "Unable to allocate memory for pdev_capture.\n");
-+	pdev_capture = kzalloc(sizeof(*pdev_capture), GFP_KERNEL);
-+	if (!pdev_capture) {
-+		ret = -ENOMEM;
-+		goto err_put_rpm;
- 	}
- 
--	pdev_display = devm_kzalloc(&pdev->dev, sizeof(*pdev_display),
--				    GFP_KERNEL);
--	if (pdev_display) {
--		pdev_display->name = "vpif_display";
--		pdev_display->id = -1;
--		pdev_display->resource = res_irq;
--		pdev_display->num_resources = 1;
--		pdev_display->dev.dma_mask = pdev->dev.dma_mask;
--		pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
--		pdev_display->dev.parent = &pdev->dev;
--		platform_device_register(pdev_display);
--	} else {
--		dev_warn(&pdev->dev, "Unable to allocate memory for pdev_display.\n");
-+	pdev_capture->name = "vpif_capture";
-+	pdev_capture->id = -1;
-+	pdev_capture->resource = res_irq;
-+	pdev_capture->num_resources = 1;
-+	pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
-+	pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
-+	pdev_capture->dev.parent = &pdev->dev;
-+	pdev_capture->dev.release = vpif_pdev_release;
-+
-+	ret = platform_device_register(pdev_capture);
-+	if (ret)
-+		goto err_put_pdev_capture;
-+
-+	pdev_display = kzalloc(sizeof(*pdev_display), GFP_KERNEL);
-+	if (!pdev_display) {
-+		ret = -ENOMEM;
-+		goto err_put_pdev_capture;
- 	}
- 
-+	pdev_display->name = "vpif_display";
-+	pdev_display->id = -1;
-+	pdev_display->resource = res_irq;
-+	pdev_display->num_resources = 1;
-+	pdev_display->dev.dma_mask = pdev->dev.dma_mask;
-+	pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
-+	pdev_display->dev.parent = &pdev->dev;
-+	pdev_display->dev.release = vpif_pdev_release;
-+
-+	ret = platform_device_register(pdev_display);
-+	if (ret)
-+		goto err_put_pdev_display;
-+
-+	data->capture = pdev_capture;
-+	data->display = pdev_display;
-+
- 	return 0;
- 
-+err_put_pdev_display:
-+	platform_device_put(pdev_display);
-+err_put_pdev_capture:
-+	platform_device_put(pdev_capture);
- err_put_rpm:
- 	pm_runtime_put(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-+	kfree(data);
- 
- 	return ret;
- }
- 
- static int vpif_remove(struct platform_device *pdev)
- {
-+	struct vpif_data *data = platform_get_drvdata(pdev);
-+
-+	if (data->capture)
-+		platform_device_unregister(data->capture);
-+	if (data->display)
-+		platform_device_unregister(data->display);
-+
- 	pm_runtime_put(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-+
-+	kfree(data);
-+
- 	return 0;
- }
- 
 
 
