@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DBAC3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355865AbiDEOCs (ORCPT
+        id S1356873AbiDEODI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:02:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        Tue, 5 Apr 2022 10:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235427AbiDEJah (ORCPT
+        with ESMTP id S234872AbiDEJah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:30:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0338E5414;
-        Tue,  5 Apr 2022 02:17:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80150E41F8;
+        Tue,  5 Apr 2022 02:17:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E7A1615E4;
-        Tue,  5 Apr 2022 09:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A9BDC385A3;
-        Tue,  5 Apr 2022 09:17:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3E6D615E4;
+        Tue,  5 Apr 2022 09:17:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E60BEC385A0;
+        Tue,  5 Apr 2022 09:17:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150259;
-        bh=6bkja0LTQHSZqPVobeIryLZm/EoL6/GJ5Tl85AYkTlQ=;
+        s=korg; t=1649150251;
+        bh=lAtKoaS9HUgr0Lm7QE70qsSO+vReFYiIsn0xRlig5Ig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1mj3XuvF2/w29lPKccFcuHDwIEovtmFb1znAKobbCw11kL/YlnahWPJcaUmII9gXJ
-         k6uKbnMBmdmcXEtj60yWv+f8wXUWZpVteU3MHgAGZjhHnTH5RBmBD5gJCjG4wwk6+a
-         tSmb32LSCRNIDARieQaSrwDddgtiq9mYLyqVXxIA=
+        b=ZUQK+g6nxsc1PlUZIKu5d64SXG7zgCdH62akODO6q+LULZsvOXtP1GbLsG4UsmNgd
+         IwmFymvBBcsi0BNGSFQ+lmXzZI/Yt5OmFe0MYiLkVgyAwVP78IJHEpNtYN16zRBbVo
+         eEcdyZZRPBkfQEtSnesSN4LYNQhizOz+MUhdlH70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        kernel test robot <lkp@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.16 1012/1017] mmc: rtsx: Fix build errors/warnings for unused variable
-Date:   Tue,  5 Apr 2022 09:32:05 +0200
-Message-Id: <20220405070424.236537241@linuxfoundation.org>
+        stable@vger.kernel.org, k2ci <kernel-bot@kylinos.cn>,
+        Jackie Liu <liuyun01@kylinos.cn>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 1009/1017] n64cart: convert bi_disk to bi_bdev->bd_disk fix build
+Date:   Tue,  5 Apr 2022 09:32:02 +0200
+Message-Id: <20220405070424.149130175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,72 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Jackie Liu <liuyun01@kylinos.cn>
 
-commit 3dd9a926ec2308e49445f22abef149fc64e9332e upstream.
+commit b2479de38d8fc7ef13d5c78ff5ded6e5a1a4eac0 upstream.
 
-The struct device *dev, is no longer needed at various functions, let's
-therefore drop it to fix the build errors/warnings.
+My kernel robot report below:
 
-Fixes: 7570fb41e450 ("mmc: rtsx: Let MMC core handle runtime PM")
-Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220301115300.64332-1-ulf.hansson@linaro.org
+  drivers/block/n64cart.c: In function ‘n64cart_submit_bio’:
+  drivers/block/n64cart.c:91:26: error: ‘struct bio’ has no member named ‘bi_disk’
+     91 |  struct device *dev = bio->bi_disk->private_data;
+        |                          ^~
+    CC      drivers/slimbus/qcom-ctrl.o
+    CC      drivers/auxdisplay/hd44780.o
+    CC      drivers/watchdog/watchdog_core.o
+    CC      drivers/nvme/host/fault_inject.o
+    AR      drivers/accessibility/braille/built-in.a
+  make[2]: *** [scripts/Makefile.build:288: drivers/block/n64cart.o] Error 1
+
+Fixes: 309dca309fc3 ("block: store a block_device pointer in struct bio");
+Reported-by: k2ci <kernel-bot@kylinos.cn>
+Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Link: https://lore.kernel.org/r/20220321071216.1549596-1-liu.yun@linux.dev
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/rtsx_pci_sdmmc.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/block/n64cart.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/mmc/host/rtsx_pci_sdmmc.c
-+++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
-@@ -806,7 +806,6 @@ static void sd_request(struct work_struc
- 	struct mmc_request *mrq = host->mrq;
- 	struct mmc_command *cmd = mrq->cmd;
- 	struct mmc_data *data = mrq->data;
--	struct device *dev = &host->pdev->dev;
- 
- 	unsigned int data_size = 0;
- 	int err;
-@@ -1081,7 +1080,6 @@ static void sdmmc_set_ios(struct mmc_hos
+--- a/drivers/block/n64cart.c
++++ b/drivers/block/n64cart.c
+@@ -88,7 +88,7 @@ static void n64cart_submit_bio(struct bi
  {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
+ 	struct bio_vec bvec;
+ 	struct bvec_iter iter;
+-	struct device *dev = bio->bi_disk->private_data;
++	struct device *dev = bio->bi_bdev->bd_disk->private_data;
+ 	u32 pos = bio->bi_iter.bi_sector << SECTOR_SHIFT;
  
- 	if (host->eject)
- 		return;
-@@ -1130,7 +1128,6 @@ static int sdmmc_get_ro(struct mmc_host
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
- 	int ro = 0;
- 	u32 val;
- 
-@@ -1156,7 +1153,6 @@ static int sdmmc_get_cd(struct mmc_host
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
- 	int cd = 0;
- 	u32 val;
- 
-@@ -1255,7 +1251,6 @@ static int sdmmc_switch_voltage(struct m
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
- 	int err = 0;
- 	u8 voltage;
- 
-@@ -1308,7 +1303,6 @@ static int sdmmc_execute_tuning(struct m
- {
- 	struct realtek_pci_sdmmc *host = mmc_priv(mmc);
- 	struct rtsx_pcr *pcr = host->pcr;
--	struct device *dev = &host->pdev->dev;
- 	int err = 0;
- 
- 	if (host->eject)
+ 	bio_for_each_segment(bvec, bio, iter) {
 
 
