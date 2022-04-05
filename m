@@ -2,89 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9221FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 737E5C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846453AbiDFCEJ (ORCPT
+        id S1846404AbiDFCEE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
+        Tue, 5 Apr 2022 22:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443051AbiDEPiw (ORCPT
+        with ESMTP id S1573554AbiDETWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:38:52 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA4E144B5C;
-        Tue,  5 Apr 2022 06:54:15 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id h4so19385760wrc.13;
-        Tue, 05 Apr 2022 06:54:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DtW73tEE2+XFkT3bPsX/7iGbHd2vWpPYT/i50JAUgmI=;
-        b=KRuBEqeehUWFQiE6Qb6pz2CZtRUAXww/24GIyCnvwpdbtfIKvDXbMg/G7g3DnY42x6
-         /iZbgKc5kKf24N8Ac4Mpu156t4HMYzU7Nm+RM3S3BnmbpSHNkHbZn/OOn478oWoEpF8E
-         De5/l0DXrm9uA/jpBI0/y5L4nLSqe4IWXKqb4B9WfjbhMRIsV28Dz8F/Eb2URXYcNzQM
-         AtiZNEnvnfUmIdfza2vc32Mep19NqVFUKjYP78+D97mljq2ztcdx3TyvTolE+C9Klo0g
-         A++9eTEGSW/RNdTwnTzk/7OBaYYwNf3nClqpPAgFLubykoDzWaSzpo9QnkjU9VSqUVjI
-         FKYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DtW73tEE2+XFkT3bPsX/7iGbHd2vWpPYT/i50JAUgmI=;
-        b=wg2+xuN2p/2bH9p0ysDY0PM6PYQ8n/7R/ZS4VFjHDTpKvINogCpTWx/9WCBTAuVo7j
-         PinirXoGTmofj2Ln5Gan1Gip4C4OocGgxWo9ob4Hebzu3IWGVWAYomgkiDu5ndSHpCJG
-         QFAJ0oW6NBPzGaWiTVhc5iXnMjD1+YO6NIaNpTn1gq3pgWIPuDudm9J/EU/9+FtU1sIu
-         xrpdDGHoP0pQg07hQI4Eqbw7zJ1eVlpNL2JkUzBA7Ge3jdsFYByX2WdTDB5XkDS3o5Mm
-         XQiZWc98z48LaZGT5nYfjLgplX4JvuwyDyHWNPGAvQqdBhwsCSAooD3JxOe2UnROC4Q/
-         mkDg==
-X-Gm-Message-State: AOAM530w4awfk3c2ymPRlPpwMmmXnYDUIurCvkyZUeqlNaQuxi3UlFmy
-        0sqjcuoEVA10yEhRf1DKOkA=
-X-Google-Smtp-Source: ABdhPJx7uWLB6seAta51fiSK0+njz9yI+4yOg/CEwF3nvoU2EuPI0t4kkYbH392xPZ7JN2jShsBA+w==
-X-Received: by 2002:a05:6000:156d:b0:204:c24:895f with SMTP id 13-20020a056000156d00b002040c24895fmr3015212wrz.339.1649166854425;
-        Tue, 05 Apr 2022 06:54:14 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id k12-20020a5d628c000000b00203e2fbb2absm12132822wru.113.2022.04.05.06.54.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:54:13 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        alsa-devel@alsa-project.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ALSA: echoaudio: remove redundant assignment to variable i
-Date:   Tue,  5 Apr 2022 14:54:12 +0100
-Message-Id: <20220405135412.199251-1-colin.i.king@gmail.com>
+        Tue, 5 Apr 2022 15:22:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632473E0DB;
+        Tue,  5 Apr 2022 12:20:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0AB56B81F6B;
+        Tue,  5 Apr 2022 19:20:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0503FC385A1;
+        Tue,  5 Apr 2022 19:20:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186437;
+        bh=gFp0s2+yOcXsxdx+8FwxESNn106vn66cOvnAIMvKYsk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VsI1yGO5xbYAMRP+i5E4Cubrv3Faw4rfQwY+423rZ6IyILXWi/UVtF9IXBaZ74/cY
+         YZEUqMyQk4EMV9V3S3jSi2IAM7DqaPSbNcDfW0Ejr/z/0dJdfQAQ0ixi+kvNt514kE
+         bgAahZ/++1hP+6TyivNQ8X4bEpOxYz4r8ptcfSeE+kHI56pwrnkiLWYe1MXkJcO6Xu
+         VSlJPqyYzNm+VMd+4EQX7NUfEiruPnZ+46ahMdmpGqjGjqmaCijz55i2ea1VlGKnjF
+         jyTCJPP6/RZac+VTbaqI8Kv149wFgV6jpJ8trlqdSOYGunrAt5aD4ANDjKiu8jyDVw
+         Q3NtEK2o+UCZg==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 06/59] libceph: add sparse read support to msgr1
+Date:   Tue,  5 Apr 2022 15:19:37 -0400
+Message-Id: <20220405192030.178326-7-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable i is being assigned a value that is never read, it
-is being re-assigned in the following for-loop. The assignment is
-redundant and can be removed.
+Add 2 new fields to ceph_connection_v1_info to track the necessary info
+in sparse reads. Skip initializing the cursor for a sparse read.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Break out read_partial_message_section into a wrapper around a new
+read_partial_message_chunk function that doesn't zero out the crc first.
+
+Add new helper functions to drive receiving into the destinations
+provided by the sparse_read state machine.
+
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- sound/pci/echoaudio/midi.c | 1 -
- 1 file changed, 1 deletion(-)
+ include/linux/ceph/messenger.h |  4 ++
+ net/ceph/messenger_v1.c        | 98 +++++++++++++++++++++++++++++++---
+ 2 files changed, 94 insertions(+), 8 deletions(-)
 
-diff --git a/sound/pci/echoaudio/midi.c b/sound/pci/echoaudio/midi.c
-index 7be5c3327b16..47b2c023ee3d 100644
---- a/sound/pci/echoaudio/midi.c
-+++ b/sound/pci/echoaudio/midi.c
-@@ -124,7 +124,6 @@ static int midi_service_irq(struct echoaudio *chip)
- 		return 0;
+diff --git a/include/linux/ceph/messenger.h b/include/linux/ceph/messenger.h
+index 7f09a4213834..f4adbfee56d5 100644
+--- a/include/linux/ceph/messenger.h
++++ b/include/linux/ceph/messenger.h
+@@ -337,6 +337,10 @@ struct ceph_connection_v1_info {
  
- 	/* Get the MIDI data from the comm page */
--	i = 1;
- 	received = 0;
- 	for (i = 1; i <= count; i++) {
- 		/* Get the MIDI byte */
+ 	int in_base_pos;     /* bytes read */
+ 
++	/* sparse reads */
++	struct kvec in_sr_kvec; /* current location to receive into */
++	u64 in_sr_len;		/* amount of data in this extent */
++
+ 	/* message in temps */
+ 	u8 in_tag;           /* protocol control byte */
+ 	struct ceph_msg_header in_hdr;
+diff --git a/net/ceph/messenger_v1.c b/net/ceph/messenger_v1.c
+index 6b014eca3a13..bf385e458a01 100644
+--- a/net/ceph/messenger_v1.c
++++ b/net/ceph/messenger_v1.c
+@@ -160,9 +160,9 @@ static size_t sizeof_footer(struct ceph_connection *con)
+ 
+ static void prepare_message_data(struct ceph_msg *msg, u32 data_len)
+ {
+-	/* Initialize data cursor */
+-
+-	ceph_msg_data_cursor_init(&msg->cursor, msg, data_len);
++	/* Initialize data cursor if it's not a sparse read */
++	if (!msg->sparse_read)
++		ceph_msg_data_cursor_init(&msg->cursor, msg, data_len);
+ }
+ 
+ /*
+@@ -967,9 +967,9 @@ static void process_ack(struct ceph_connection *con)
+ 	prepare_read_tag(con);
+ }
+ 
+-static int read_partial_message_section(struct ceph_connection *con,
+-					struct kvec *section,
+-					unsigned int sec_len, u32 *crc)
++static int read_partial_message_chunk(struct ceph_connection *con,
++				      struct kvec *section,
++				      unsigned int sec_len, u32 *crc)
+ {
+ 	int ret, left;
+ 
+@@ -985,11 +985,91 @@ static int read_partial_message_section(struct ceph_connection *con,
+ 		section->iov_len += ret;
+ 	}
+ 	if (section->iov_len == sec_len)
+-		*crc = crc32c(0, section->iov_base, section->iov_len);
++		*crc = crc32c(*crc, section->iov_base, section->iov_len);
+ 
+ 	return 1;
+ }
+ 
++static inline int read_partial_message_section(struct ceph_connection *con,
++					       struct kvec *section,
++					       unsigned int sec_len, u32 *crc)
++{
++	*crc = 0;
++	return read_partial_message_chunk(con, section, sec_len, crc);
++}
++
++static int read_sparse_msg_extent(struct ceph_connection *con, u32 *crc)
++{
++	struct ceph_msg_data_cursor *cursor = &con->in_msg->cursor;
++	bool do_bounce = ceph_test_opt(from_msgr(con->msgr), RXBOUNCE);
++
++	if (do_bounce && unlikely(!con->bounce_page)) {
++		con->bounce_page = alloc_page(GFP_NOIO);
++		if (!con->bounce_page) {
++			pr_err("failed to allocate bounce page\n");
++			return -ENOMEM;
++		}
++	}
++
++	while (cursor->sr_resid > 0) {
++		struct page *page, *rpage;
++		size_t off, len;
++		int ret;
++
++		page = ceph_msg_data_next(cursor, &off, &len, NULL);
++		rpage = do_bounce ? con->bounce_page : page;
++
++		/* clamp to what remains in extent */
++		len = min_t(int, len, cursor->sr_resid);
++		ret = ceph_tcp_recvpage(con->sock, rpage, (int)off, len);
++		if (ret <= 0)
++			return ret;
++		*crc = ceph_crc32c_page(*crc, rpage, off, ret);
++		ceph_msg_data_advance(cursor, (size_t)ret);
++		cursor->sr_resid -= ret;
++		if (do_bounce)
++			memcpy_page(page, off, rpage, off, ret);
++	}
++	return 1;
++}
++
++static int read_sparse_msg_data(struct ceph_connection *con)
++{
++	struct ceph_msg_data_cursor *cursor = &con->in_msg->cursor;
++	bool do_datacrc = !ceph_test_opt(from_msgr(con->msgr), NOCRC);
++	u32 crc = 0;
++	int ret = 1;
++
++	if (do_datacrc)
++		crc = con->in_data_crc;
++
++	do {
++		if (con->v1.in_sr_kvec.iov_base)
++			ret = read_partial_message_chunk(con,
++							 &con->v1.in_sr_kvec,
++							 con->v1.in_sr_len,
++							 &crc);
++		else if (cursor->sr_resid > 0)
++			ret = read_sparse_msg_extent(con, &crc);
++
++		if (ret <= 0) {
++			if (do_datacrc)
++				con->in_data_crc = crc;
++			return ret;
++		}
++
++		memset(&con->v1.in_sr_kvec, 0, sizeof(con->v1.in_sr_kvec));
++		ret = con->ops->sparse_read(con, cursor,
++				(char **)&con->v1.in_sr_kvec.iov_base);
++		con->v1.in_sr_len = ret;
++	} while (ret > 0);
++
++	if (do_datacrc)
++		con->in_data_crc = crc;
++
++	return ret < 0 ? ret : 1;	/* must return > 0 to indicate success */
++}
++
+ static int read_partial_msg_data(struct ceph_connection *con)
+ {
+ 	struct ceph_msg_data_cursor *cursor = &con->in_msg->cursor;
+@@ -1180,7 +1260,9 @@ static int read_partial_message(struct ceph_connection *con)
+ 		if (!m->num_data_items)
+ 			return -EIO;
+ 
+-		if (ceph_test_opt(from_msgr(con->msgr), RXBOUNCE))
++		if (m->sparse_read)
++			ret = read_sparse_msg_data(con);
++		else if (ceph_test_opt(from_msgr(con->msgr), RXBOUNCE))
+ 			ret = read_partial_msg_data_bounce(con);
+ 		else
+ 			ret = read_partial_msg_data(con);
 -- 
 2.35.1
 
