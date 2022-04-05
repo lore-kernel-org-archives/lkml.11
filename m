@@ -2,85 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A26E0C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB15EC3527E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391601AbiDEWH1 (ORCPT
+        id S1391685AbiDEWHt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
+        Tue, 5 Apr 2022 18:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377826AbiDELap (ORCPT
+        with ESMTP id S1354132AbiDEKLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 07:30:45 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576C3104A70;
-        Tue,  5 Apr 2022 03:53:12 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id C6CB91F447BD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649155990;
-        bh=vbpJujH4YJwR8KBxqqHpYpR3xjSW2I3+dKENzMhmXpo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=bQgisYcudgfxXVLV96zJHCYHmmfrOLvV61ygGV9/Id5oj1HIMKiMolrGD7QiXlr2I
-         1JbjfvjB7eFW0kt2Zz3zuF08/KywQlzbF56SqgyfmuwVaA+UAJ4tCbzzyR2uSUsaKv
-         pv+2iDrUpBwgxBo1xxrmf5ZkRjRiEWaD2VQiAhH6EMEI6s6SJHMyKLXoL8SZl9P+W3
-         BPbwDERjNXU2OjAVBoraV3ETk8Elk4b2oUz3x32Bcr6i6ynrdKtlklxAw+8w6qZPkC
-         H4vMOt585NWWGN5hqp7q7XZI4h0PzKBxYwggt5UDYVHGLvutWdHDrU+CWygNlRydB7
-         HvpY8alUliJiw==
-Message-ID: <c67bd1e5-19c9-55b3-5b79-e2e6ca0257f5@collabora.com>
-Date:   Tue, 5 Apr 2022 12:53:07 +0200
+        Tue, 5 Apr 2022 06:11:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2186C49925;
+        Tue,  5 Apr 2022 02:57:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB0336167E;
+        Tue,  5 Apr 2022 09:57:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEC7AC385A2;
+        Tue,  5 Apr 2022 09:57:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152655;
+        bh=LuZ72yR3zA8xYuhPdNlrC+HdmP3HwSUgVvw+BOohrac=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WUDYOzl6RVYpb9q5PNx5N1ETw+o3tq2K/erJwsN56fepq/zqAlGnIY8aOvWg0ghza
+         7jOr1UO8j90LE357XTxbdBAHhQalGvg3kb7qD5xaZB2Kmrpa+Gt/JG2NeJUGDP+aCC
+         ztOrzJEljUp0NpxitkjqmfHCQsiDODi4l1qHkeeI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH 5.15 854/913] ARM: iop32x: offset IRQ numbers by 1
+Date:   Tue,  5 Apr 2022 09:31:56 +0200
+Message-Id: <20220405070405.426878489@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 2/3] thermal: mediatek: Add LVTS drivers for SoC
- theraml zones
-Content-Language: en-US
-To:     Ben Tseng <ben.tseng@mediatek.com>,
-        Fan Chen <fan.chen@mediatek.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-pm@vger.kernel.org, srv_heupstream@mediatek.com
-Cc:     Eduardo Valentin <edubezval@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>, hsinyi@chromium.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Michael Kao <michael.kao@mediatek.com>,
-        Yu-Chia Chang <ethan.chang@mediatek.com>
-References: <20210617114707.10618-1-ben.tseng@mediatek.com>
- <20210617114707.10618-3-ben.tseng@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20210617114707.10618-3-ben.tseng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 17/06/21 13:47, Ben Tseng ha scritto:
-> From: Michael Kao <michael.kao@mediatek.com>
-> 
-> Add a LVTS (Low voltage thermal sensor) driver to report junction
-> temperatures in Mediatek SoC and register the maximum temperature
-> of sensors and each sensor as a thermal zone.
-> 
-> Signed-off-by: Yu-Chia Chang <ethan.chang@mediatek.com>
-> Signed-off-by: Michael Kao <michael.kao@mediatek.com>
-> Signed-off-by: Ben Tseng <ben.tseng@mediatek.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-Hello Ben,
+commit 9d67412f24cc3a2c05f35f7c856addb07a2960ce upstream.
 
-are you still interested in upstreaming this driver?
+iop32x is one of the last platforms to use IRQ 0, and this has apparently
+stopped working in a 2014 cleanup without anyone noticing. This interrupt
+is used for the DMA engine, so most likely this has not actually worked
+in the past 7 years, but it's also not essential for using this board.
 
-Having thermal sensors is pretty much important to avoid damaging
-the hardware, and MT8195 is being actively upstreamed right now.
-Reading thermals is a must.
+I'm splitting out this change from my GENERIC_IRQ_MULTI_HANDLER
+conversion so it can be backported if anyone cares.
 
-Regards,
-Angelo
+Fixes: a71b092a9c68 ("ARM: Convert handle_IRQ to use __handle_domain_irq")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+[ardb: take +1 offset into account in mask/unmask and init as well]
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Marc Zyngier <maz@kernel.org>
+Tested-by: Vladimir Murzin <vladimir.murzin@arm.com> # ARMv7M
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm/mach-iop32x/include/mach/entry-macro.S |    2 
+ arch/arm/mach-iop32x/include/mach/irqs.h        |    2 
+ arch/arm/mach-iop32x/irq.c                      |    6 +-
+ arch/arm/mach-iop32x/irqs.h                     |   60 ++++++++++++------------
+ 4 files changed, 37 insertions(+), 33 deletions(-)
+
+--- a/arch/arm/mach-iop32x/include/mach/entry-macro.S
++++ b/arch/arm/mach-iop32x/include/mach/entry-macro.S
+@@ -20,7 +20,7 @@
+ 	mrc     p6, 0, \irqstat, c8, c0, 0	@ Read IINTSRC
+ 	cmp     \irqstat, #0
+ 	clzne   \irqnr, \irqstat
+-	rsbne   \irqnr, \irqnr, #31
++	rsbne   \irqnr, \irqnr, #32
+ 	.endm
+ 
+ 	.macro arch_ret_to_user, tmp1, tmp2
+--- a/arch/arm/mach-iop32x/include/mach/irqs.h
++++ b/arch/arm/mach-iop32x/include/mach/irqs.h
+@@ -9,6 +9,6 @@
+ #ifndef __IRQS_H
+ #define __IRQS_H
+ 
+-#define NR_IRQS			32
++#define NR_IRQS			33
+ 
+ #endif
+--- a/arch/arm/mach-iop32x/irq.c
++++ b/arch/arm/mach-iop32x/irq.c
+@@ -32,14 +32,14 @@ static void intstr_write(u32 val)
+ static void
+ iop32x_irq_mask(struct irq_data *d)
+ {
+-	iop32x_mask &= ~(1 << d->irq);
++	iop32x_mask &= ~(1 << (d->irq - 1));
+ 	intctl_write(iop32x_mask);
+ }
+ 
+ static void
+ iop32x_irq_unmask(struct irq_data *d)
+ {
+-	iop32x_mask |= 1 << d->irq;
++	iop32x_mask |= 1 << (d->irq - 1);
+ 	intctl_write(iop32x_mask);
+ }
+ 
+@@ -65,7 +65,7 @@ void __init iop32x_init_irq(void)
+ 	    machine_is_em7210())
+ 		*IOP3XX_PCIIRSR = 0x0f;
+ 
+-	for (i = 0; i < NR_IRQS; i++) {
++	for (i = 1; i < NR_IRQS; i++) {
+ 		irq_set_chip_and_handler(i, &ext_chip, handle_level_irq);
+ 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+ 	}
+--- a/arch/arm/mach-iop32x/irqs.h
++++ b/arch/arm/mach-iop32x/irqs.h
+@@ -7,36 +7,40 @@
+ #ifndef __IOP32X_IRQS_H
+ #define __IOP32X_IRQS_H
+ 
++/* Interrupts in Linux start at 1, hardware starts at 0 */
++
++#define IOP_IRQ(x) ((x) + 1)
++
+ /*
+  * IOP80321 chipset interrupts
+  */
+-#define IRQ_IOP32X_DMA0_EOT	0
+-#define IRQ_IOP32X_DMA0_EOC	1
+-#define IRQ_IOP32X_DMA1_EOT	2
+-#define IRQ_IOP32X_DMA1_EOC	3
+-#define IRQ_IOP32X_AA_EOT	6
+-#define IRQ_IOP32X_AA_EOC	7
+-#define IRQ_IOP32X_CORE_PMON	8
+-#define IRQ_IOP32X_TIMER0	9
+-#define IRQ_IOP32X_TIMER1	10
+-#define IRQ_IOP32X_I2C_0	11
+-#define IRQ_IOP32X_I2C_1	12
+-#define IRQ_IOP32X_MESSAGING	13
+-#define IRQ_IOP32X_ATU_BIST	14
+-#define IRQ_IOP32X_PERFMON	15
+-#define IRQ_IOP32X_CORE_PMU	16
+-#define IRQ_IOP32X_BIU_ERR	17
+-#define IRQ_IOP32X_ATU_ERR	18
+-#define IRQ_IOP32X_MCU_ERR	19
+-#define IRQ_IOP32X_DMA0_ERR	20
+-#define IRQ_IOP32X_DMA1_ERR	21
+-#define IRQ_IOP32X_AA_ERR	23
+-#define IRQ_IOP32X_MSG_ERR	24
+-#define IRQ_IOP32X_SSP		25
+-#define IRQ_IOP32X_XINT0	27
+-#define IRQ_IOP32X_XINT1	28
+-#define IRQ_IOP32X_XINT2	29
+-#define IRQ_IOP32X_XINT3	30
+-#define IRQ_IOP32X_HPI		31
++#define IRQ_IOP32X_DMA0_EOT	IOP_IRQ(0)
++#define IRQ_IOP32X_DMA0_EOC	IOP_IRQ(1)
++#define IRQ_IOP32X_DMA1_EOT	IOP_IRQ(2)
++#define IRQ_IOP32X_DMA1_EOC	IOP_IRQ(3)
++#define IRQ_IOP32X_AA_EOT	IOP_IRQ(6)
++#define IRQ_IOP32X_AA_EOC	IOP_IRQ(7)
++#define IRQ_IOP32X_CORE_PMON	IOP_IRQ(8)
++#define IRQ_IOP32X_TIMER0	IOP_IRQ(9)
++#define IRQ_IOP32X_TIMER1	IOP_IRQ(10)
++#define IRQ_IOP32X_I2C_0	IOP_IRQ(11)
++#define IRQ_IOP32X_I2C_1	IOP_IRQ(12)
++#define IRQ_IOP32X_MESSAGING	IOP_IRQ(13)
++#define IRQ_IOP32X_ATU_BIST	IOP_IRQ(14)
++#define IRQ_IOP32X_PERFMON	IOP_IRQ(15)
++#define IRQ_IOP32X_CORE_PMU	IOP_IRQ(16)
++#define IRQ_IOP32X_BIU_ERR	IOP_IRQ(17)
++#define IRQ_IOP32X_ATU_ERR	IOP_IRQ(18)
++#define IRQ_IOP32X_MCU_ERR	IOP_IRQ(19)
++#define IRQ_IOP32X_DMA0_ERR	IOP_IRQ(20)
++#define IRQ_IOP32X_DMA1_ERR	IOP_IRQ(21)
++#define IRQ_IOP32X_AA_ERR	IOP_IRQ(23)
++#define IRQ_IOP32X_MSG_ERR	IOP_IRQ(24)
++#define IRQ_IOP32X_SSP		IOP_IRQ(25)
++#define IRQ_IOP32X_XINT0	IOP_IRQ(27)
++#define IRQ_IOP32X_XINT1	IOP_IRQ(28)
++#define IRQ_IOP32X_XINT2	IOP_IRQ(29)
++#define IRQ_IOP32X_XINT3	IOP_IRQ(30)
++#define IRQ_IOP32X_HPI		IOP_IRQ(31)
+ 
+ #endif
+
+
