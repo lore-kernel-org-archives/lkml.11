@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65189C352A8
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8767CC35280
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357984AbiDEK1j (ORCPT
+        id S1357492AbiDEK0a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
+        Tue, 5 Apr 2022 06:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241083AbiDEIcs (ORCPT
+        with ESMTP id S241117AbiDEIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:48 -0400
+        Tue, 5 Apr 2022 04:32:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843BA13E0E;
-        Tue,  5 Apr 2022 01:27:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EA61582B;
+        Tue,  5 Apr 2022 01:27:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B80BB81BAF;
-        Tue,  5 Apr 2022 08:27:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84378C385A1;
-        Tue,  5 Apr 2022 08:27:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D58FAB81B13;
+        Tue,  5 Apr 2022 08:27:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE09C385A2;
+        Tue,  5 Apr 2022 08:27:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147220;
-        bh=a+MHGXrE9l2xWYFXD1289kkTt6Go+YOma3QrXK/HrhQ=;
+        s=korg; t=1649147274;
+        bh=5kDp6e7Af4lDs7gh7RHYJ0kx3NY8l0227+nMc47kasA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LvWz8lhIzwWDibMB/5UZGram6pDjs9ty1dEGKbQPrpCGK/2Z7ud+kVkJC6BiLQTdE
-         AKZntRAsY+4x5468KydUAEEiJlNz6llisr/PM+uxW9ntXbitSVbsi6HrksYVQnJEZ1
-         0KoWZl9EDTiaejxCu11rak7DRUER7Ko3HQtRvgsI=
+        b=Mk/Zc0hSGJDkmcJ871VaP2Q2gyiAH3JqyxbSnYdh+qtJs32DUa6hVp2Yh8Y0BWIF3
+         pg7kgkM9nAhVW25oVNQoR7Jpd53f0Q0DSsytSP96TLODf1QLsD3SzVffSRf0h+X3XS
+         /zXWRTfuchVvktUNDdKaQWXxiHSfcuJDlkxNZkzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.17 1006/1126] ubifs: Add missing iput if do_tmpfile() failed in rename whiteout
-Date:   Tue,  5 Apr 2022 09:29:13 +0200
-Message-Id: <20220405070437.019195110@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Zhong <yang.zhong@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Paolo Bonzini <bonzini@gnu.org>
+Subject: [PATCH 5.17 1065/1126] x86/fpu/xstate: Fix the ARCH_REQ_XCOMP_PERM implementation
+Date:   Tue,  5 Apr 2022 09:30:12 +0200
+Message-Id: <20220405070438.719098440@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,35 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Yang Zhong <yang.zhong@intel.com>
 
-commit 716b4573026bcbfa7b58ed19fe15554bac66b082 upstream.
+commit 063452fd94d153d4eb38ad58f210f3d37a09cca4 upstream.
 
-whiteout inode should be put when do_tmpfile() failed if inode has been
-initialized. Otherwise we will get following warning during umount:
-  UBIFS error (ubi0:0 pid 1494): ubifs_assert_failed [ubifs]: UBIFS
-  assert failed: c->bi.dd_growth == 0, in fs/ubifs/super.c:1930
-  VFS: Busy inodes after unmount of ubifs. Self-destruct in 5 seconds.
+ARCH_REQ_XCOMP_PERM is supposed to add the requested feature to the
+permission bitmap of thread_group_leader()->fpu. But the code overwrites
+the bitmap with the requested feature bit only rather than adding it.
 
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Suggested-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fix the code to add the requested feature bit to the master bitmask.
+
+Fixes: db8268df0983 ("x86/arch_prctl: Add controls for dynamic XSTATE components")
+Signed-off-by: Yang Zhong <yang.zhong@intel.com>
+Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Paolo Bonzini <bonzini@gnu.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220129173647.27981-2-chang.seok.bae@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/dir.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kernel/fpu/xstate.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -432,6 +432,8 @@ out_inode:
- 	make_bad_inode(inode);
- 	if (!instantiated)
- 		iput(inode);
-+	else if (whiteout)
-+		iput(*whiteout);
- out_budg:
- 	ubifs_release_budget(c, &req);
- 	if (!instantiated)
+--- a/arch/x86/kernel/fpu/xstate.c
++++ b/arch/x86/kernel/fpu/xstate.c
+@@ -1639,7 +1639,7 @@ static int __xstate_request_perm(u64 per
+ 
+ 	perm = guest ? &fpu->guest_perm : &fpu->perm;
+ 	/* Pairs with the READ_ONCE() in xstate_get_group_perm() */
+-	WRITE_ONCE(perm->__state_perm, requested);
++	WRITE_ONCE(perm->__state_perm, mask);
+ 	/* Protected by sighand lock */
+ 	perm->__state_size = ksize;
+ 	perm->__user_state_size = usize;
 
 
