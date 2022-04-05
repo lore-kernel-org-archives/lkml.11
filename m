@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2432CC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AD5C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233015AbiDEHwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        id S233269AbiDEHwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232916AbiDEHrO (ORCPT
+        with ESMTP id S233067AbiDEHrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:47:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E291B9D053;
-        Tue,  5 Apr 2022 00:43:15 -0700 (PDT)
+        Tue, 5 Apr 2022 03:47:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424AB9E9E8;
+        Tue,  5 Apr 2022 00:43:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62DDDB81B92;
-        Tue,  5 Apr 2022 07:43:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCF8C3410F;
-        Tue,  5 Apr 2022 07:43:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5257616D7;
+        Tue,  5 Apr 2022 07:43:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAB90C340EE;
+        Tue,  5 Apr 2022 07:43:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144593;
-        bh=k04tRHaCCcaSw16B5b4zqxD/SIoqsMzrPWW5b4SpaUY=;
+        s=korg; t=1649144615;
+        bh=aX9aeIuXYr50nURfh1LmmIau+LRWouTMztlGYS+gtMg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sDkCJ0OhczFfMnt0OSiXEKL3UwI0birB6bn8sYARH72zAyT5hiAT+5qCumL7AqUSA
-         Si484HyimwnLz5ZNMk5mGLFw1Xi5SBTOCiQBO2/k/9N0SuwySP5gsSXLUMqODMBkeS
-         lj6CzjxuZcc8B/NB1c8uOZL7NAKY/KUf1ktIZXWA=
+        b=yWLzw84XaLcrHMziX1hIWhxEAH50vTlXCB3xqGA4EnMUas/IQNzK0c6B0rHi3MP8U
+         N0VOcuXjnjePjzC7ik45sE9VJho8ckFH2KMPtnMfn0uf/oAMSjqTbLHiEyvw0u2ZDL
+         OO05ldh6Fya+23whetyIuPzV0tzlEUN5MOfyhKHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Delva <adelva@google.com>,
-        Rishabh Bhatnagar <rishabhb@codeaurora.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        linux-remoteproc@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH 5.17 0062/1126] remoteproc: Fix count check in rproc_coredump_write()
-Date:   Tue,  5 Apr 2022 09:13:29 +0200
-Message-Id: <20220405070409.390759506@linuxfoundation.org>
+        stable@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Abhishek Goel <huntbag@linux.vnet.ibm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Huang, Ying" <ying.huang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 0109/1126] mm: only re-generate demotion targets when a numa node changes its N_CPU state
+Date:   Tue,  5 Apr 2022 09:14:16 +0200
+Message-Id: <20220405070410.770232844@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,41 +53,183 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Delva <adelva@google.com>
+From: Oscar Salvador <osalvador@suse.de>
 
-commit f89672cc3681952f2d06314981a6b45f8b0045d1 upstream.
+commit 734c15700cdf9062ae98d8b131c6fe873dfad26d upstream.
 
-Check count for 0, to avoid a potential underflow. Make the check the
-same as the one in rproc_recovery_write().
+Abhishek reported that after patch [1], hotplug operations are taking
+roughly double the expected time.  [2]
 
-Fixes: 3afdc59e4390 ("remoteproc: Add coredump debugfs entry")
-Signed-off-by: Alistair Delva <adelva@google.com>
-Cc: Rishabh Bhatnagar <rishabhb@codeaurora.org>
-Cc: stable@vger.kernel.org
-Cc: Ohad Ben-Cohen <ohad@wizery.com>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Sibi Sankar <sibis@codeaurora.org>
-Cc: linux-remoteproc@vger.kernel.org
-Cc: kernel-team@android.com
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220119232139.1125908-1-adelva@google.com
+The reason behind is that the CPU callbacks that
+migrate_on_reclaim_init() sets always call set_migration_target_nodes()
+whenever a CPU is brought up/down.
+
+But we only care about numa nodes going from having cpus to become
+cpuless, and vice versa, as that influences the demotion_target order.
+
+We do already have two CPU callbacks (vmstat_cpu_online() and
+vmstat_cpu_dead()) that check exactly that, so get rid of the CPU
+callbacks in migrate_on_reclaim_init() and only call
+set_migration_target_nodes() from vmstat_cpu_{dead,online}() whenever a
+numa node change its N_CPU state.
+
+[1] https://lore.kernel.org/linux-mm/20210721063926.3024591-2-ying.huang@intel.com/
+[2] https://lore.kernel.org/linux-mm/eb438ddd-2919-73d4-bd9f-b7eecdd9577a@linux.vnet.ibm.com/
+
+[osalvador@suse.de: add feedback from Huang Ying]
+  Link: https://lkml.kernel.org/r/20220314150945.12694-1-osalvador@suse.de
+
+Link: https://lkml.kernel.org/r/20220310120749.23077-1-osalvador@suse.de
+Fixes: 884a6e5d1f93b ("mm/migrate: update node demotion order on hotplug events")
+Signed-off-by: Oscar Salvador <osalvador@suse.de>
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Reported-by: Abhishek Goel <huntbag@linux.vnet.ibm.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "Huang, Ying" <ying.huang@intel.com>
+Cc: Abhishek Goel <huntbag@linux.vnet.ibm.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/remoteproc/remoteproc_debugfs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/migrate.h |    8 ++++++++
+ mm/migrate.c            |   47 ++++++++++-------------------------------------
+ mm/vmstat.c             |   13 ++++++++++++-
+ 3 files changed, 30 insertions(+), 38 deletions(-)
 
---- a/drivers/remoteproc/remoteproc_debugfs.c
-+++ b/drivers/remoteproc/remoteproc_debugfs.c
-@@ -76,7 +76,7 @@ static ssize_t rproc_coredump_write(stru
- 	int ret, err = 0;
- 	char buf[20];
+--- a/include/linux/migrate.h
++++ b/include/linux/migrate.h
+@@ -48,7 +48,15 @@ int folio_migrate_mapping(struct address
+ 		struct folio *newfolio, struct folio *folio, int extra_count);
  
--	if (count > sizeof(buf))
-+	if (count < 1 || count > sizeof(buf))
- 		return -EINVAL;
+ extern bool numa_demotion_enabled;
++extern void migrate_on_reclaim_init(void);
++#ifdef CONFIG_HOTPLUG_CPU
++extern void set_migration_target_nodes(void);
+ #else
++static inline void set_migration_target_nodes(void) {}
++#endif
++#else
++
++static inline void set_migration_target_nodes(void) {}
  
- 	ret = copy_from_user(buf, user_buf, count);
+ static inline void putback_movable_pages(struct list_head *l) {}
+ static inline int migrate_pages(struct list_head *l, new_page_t new,
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -3190,7 +3190,7 @@ again:
+ /*
+  * For callers that do not hold get_online_mems() already.
+  */
+-static void set_migration_target_nodes(void)
++void set_migration_target_nodes(void)
+ {
+ 	get_online_mems();
+ 	__set_migration_target_nodes();
+@@ -3254,51 +3254,24 @@ static int __meminit migrate_on_reclaim_
+ 	return notifier_from_errno(0);
+ }
+ 
+-/*
+- * React to hotplug events that might affect the migration targets
+- * like events that online or offline NUMA nodes.
+- *
+- * The ordering is also currently dependent on which nodes have
+- * CPUs.  That means we need CPU on/offline notification too.
+- */
+-static int migration_online_cpu(unsigned int cpu)
+-{
+-	set_migration_target_nodes();
+-	return 0;
+-}
+-
+-static int migration_offline_cpu(unsigned int cpu)
+-{
+-	set_migration_target_nodes();
+-	return 0;
+-}
+-
+-static int __init migrate_on_reclaim_init(void)
++void __init migrate_on_reclaim_init(void)
+ {
+-	int ret;
+-
+ 	node_demotion = kmalloc_array(nr_node_ids,
+ 				      sizeof(struct demotion_nodes),
+ 				      GFP_KERNEL);
+ 	WARN_ON(!node_demotion);
+ 
+-	ret = cpuhp_setup_state_nocalls(CPUHP_MM_DEMOTION_DEAD, "mm/demotion:offline",
+-					NULL, migration_offline_cpu);
++	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
+ 	/*
+-	 * In the unlikely case that this fails, the automatic
+-	 * migration targets may become suboptimal for nodes
+-	 * where N_CPU changes.  With such a small impact in a
+-	 * rare case, do not bother trying to do anything special.
++	 * At this point, all numa nodes with memory/CPus have their state
++	 * properly set, so we can build the demotion order now.
++	 * Let us hold the cpu_hotplug lock just, as we could possibily have
++	 * CPU hotplug events during boot.
+ 	 */
+-	WARN_ON(ret < 0);
+-	ret = cpuhp_setup_state(CPUHP_AP_MM_DEMOTION_ONLINE, "mm/demotion:online",
+-				migration_online_cpu, NULL);
+-	WARN_ON(ret < 0);
+-
+-	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
+-	return 0;
++	cpus_read_lock();
++	set_migration_target_nodes();
++	cpus_read_unlock();
+ }
+-late_initcall(migrate_on_reclaim_init);
+ #endif /* CONFIG_HOTPLUG_CPU */
+ 
+ bool numa_demotion_enabled = false;
+--- a/mm/vmstat.c
++++ b/mm/vmstat.c
+@@ -28,6 +28,7 @@
+ #include <linux/mm_inline.h>
+ #include <linux/page_ext.h>
+ #include <linux/page_owner.h>
++#include <linux/migrate.h>
+ 
+ #include "internal.h"
+ 
+@@ -2043,7 +2044,12 @@ static void __init init_cpu_node_state(v
+ static int vmstat_cpu_online(unsigned int cpu)
+ {
+ 	refresh_zone_stat_thresholds();
+-	node_set_state(cpu_to_node(cpu), N_CPU);
++
++	if (!node_state(cpu_to_node(cpu), N_CPU)) {
++		node_set_state(cpu_to_node(cpu), N_CPU);
++		set_migration_target_nodes();
++	}
++
+ 	return 0;
+ }
+ 
+@@ -2066,6 +2072,8 @@ static int vmstat_cpu_dead(unsigned int
+ 		return 0;
+ 
+ 	node_clear_state(node, N_CPU);
++	set_migration_target_nodes();
++
+ 	return 0;
+ }
+ 
+@@ -2097,6 +2105,9 @@ void __init init_mm_internals(void)
+ 
+ 	start_shepherd_timer();
+ #endif
++#if defined(CONFIG_MIGRATION) && defined(CONFIG_HOTPLUG_CPU)
++	migrate_on_reclaim_init();
++#endif
+ #ifdef CONFIG_PROC_FS
+ 	proc_create_seq("buddyinfo", 0444, NULL, &fragmentation_op);
+ 	proc_create_seq("pagetypeinfo", 0400, NULL, &pagetypeinfo_op);
 
 
