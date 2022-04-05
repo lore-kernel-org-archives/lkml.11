@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABE4C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD119C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456549AbiDEWqN (ORCPT
+        id S1456619AbiDEWq1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
+        Tue, 5 Apr 2022 18:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344418AbiDEKjq (ORCPT
+        with ESMTP id S1356137AbiDEKW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:46 -0400
+        Tue, 5 Apr 2022 06:22:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C64926AFB;
-        Tue,  5 Apr 2022 03:25:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD59B7C6C;
+        Tue,  5 Apr 2022 03:06:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAD156141D;
-        Tue,  5 Apr 2022 10:25:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D15C385A0;
-        Tue,  5 Apr 2022 10:25:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C9F96176C;
+        Tue,  5 Apr 2022 10:06:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67FFCC385A2;
+        Tue,  5 Apr 2022 10:06:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154306;
-        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
+        s=korg; t=1649153193;
+        bh=+wLlyC9LKuDGwI7yL9rGWrb0r1NuK/aUtCI4Q8IbSAs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bWtP/X5h8zjMQagFoUKseIiNvCaEuX6rUADjTZn8i2VJcE99e26JB3mMAOKDm+XaG
-         LS0DzGQAk/TDXhO1ABDtVubx99QtP388J8DoDul8G0S6IagQdPGm9RS7gFWiaU2aL0
-         YFHGF+Takub6w0LIeSNrR+i6652tXuOAsU+yLwkw=
+        b=ykdVknljmILF+45ZJKLWCHaKTsWUFt8Jzyu0jSBtNhw3XbAxQBemHIv6a4Rj7+b3T
+         U6TOXx5c+OZM09Zl20vMlxxEDT41azJa0P7g3ffAcB28zTUR6sgMnb8wLbLrMedeCe
+         iWbfQuZgcYKTLMNw+zxjjjloD7uc5t5Y98q+HJ0w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 495/599] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
-Date:   Tue,  5 Apr 2022 09:33:09 +0200
-Message-Id: <20220405070313.559022323@linuxfoundation.org>
+Subject: [PATCH 5.10 136/599] spi: tegra114: Add missing IRQ check in tegra_spi_probe
+Date:   Tue,  5 Apr 2022 09:27:10 +0200
+Message-Id: <20220405070302.888146683@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -50,60 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
+[ Upstream commit 4f92724d4b92c024e721063f520d66e11ca4b54b ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+This func misses checking for platform_get_irq()'s call and may passes the
+negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
+causing it to fail with -EINVAL, overriding an original error code.
+Stop calling request_threaded_irq() with invalid IRQ #s.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: f333a331adfa ("spi/tegra114: add spi driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220128165238.25615-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/spi/spi-tegra114.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-index 4b0793abdd84..a2c7c5cb1523 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
- 	if (r)
- 		return r;
+diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
+index a2e5907276e7..ed42665b1224 100644
+--- a/drivers/spi/spi-tegra114.c
++++ b/drivers/spi/spi-tegra114.c
+@@ -1353,6 +1353,10 @@ static int tegra_spi_probe(struct platform_device *pdev)
+ 	tspi->phys = r->start;
  
--	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
-+	return sysfs_emit(buf, "%d\n", errors);
- }
+ 	spi_irq = platform_get_irq(pdev, 0);
++	if (spi_irq < 0) {
++		ret = spi_irq;
++		goto exit_free_master;
++	}
+ 	tspi->irq = spi_irq;
  
- static ssize_t dsicm_hw_revision_show(struct device *dev,
-@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
- 	if (r)
- 		return r;
- 
--	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
-+	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
- }
- 
- static ssize_t dsicm_store_ulps(struct device *dev,
-@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
- 	t = ddata->ulps_enabled;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static ssize_t dsicm_store_ulps_timeout(struct device *dev,
-@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
- 	t = ddata->ulps_timeout;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
+ 	tspi->clk = devm_clk_get(&pdev->dev, "spi");
 -- 
 2.34.1
 
