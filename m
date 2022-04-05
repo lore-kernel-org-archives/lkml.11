@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C979FC47089
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F90C38A05
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236302AbiDEICA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55640 "EHLO
+        id S233267AbiDEH5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233023AbiDEHwD (ORCPT
+        with ESMTP id S233616AbiDEHsM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:52:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A3F99EF2;
-        Tue,  5 Apr 2022 00:48:10 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01956BB;
+        Tue,  5 Apr 2022 00:46:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 521CDB81BAD;
-        Tue,  5 Apr 2022 07:48:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC649C36AEB;
-        Tue,  5 Apr 2022 07:48:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 919FC616BF;
+        Tue,  5 Apr 2022 07:46:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 967BBC340EE;
+        Tue,  5 Apr 2022 07:46:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144888;
-        bh=EIqZGIC3MEY6zK++/3lavNvUv7djR+iZn/Z4aFTomR0=;
+        s=korg; t=1649144774;
+        bh=CRkojIeG8hfsFSBTHg4oYYawOOdZgescy1u4wNygcPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f6icmoYM4d2ofkNqaF2HuBQUNNqRFqReGcjUNEhnW2hm32Fk9gaEHoCoW2gtHUy55
-         BbvTr4l2Z7Hv/4krcvadaang9BYQ24d104ncStT/mLn5e8HhauMVCdj8AqDJi6w9Cy
-         M/hTtu47Lgg2Mf4AAbKdjzSoj9+9FrblHeARRKsI=
+        b=hvh3vdij0ASwQpbR5uMz2JS/nVhbTOXYfVbz64Qo3bbWncwqLVLY8XHtVmCPM017J
+         HnU5tB20iZraw3D6psIRB0Recn7f2dTzjsi7nccB7N+Vkp7DxEXGOIPfi/+hThxMPH
+         ulT1vH+HWQhqj6/PZrTy2sqNxUHK5wXXNFHm2mZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0207/1126] crypto: authenc - Fix sleep in atomic context in decrypt_tail
-Date:   Tue,  5 Apr 2022 09:15:54 +0200
-Message-Id: <20220405070413.685069675@linuxfoundation.org>
+        stable@vger.kernel.org, Jan-Benedict Glaw <jbglaw@lug-owl.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.17 0166/1126] DEC: Limit PMAX memory probing to R3k systems
+Date:   Tue,  5 Apr 2022 09:15:13 +0200
+Message-Id: <20220405070412.470033081@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,42 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
+commit 244eae91a94c6dab82b3232967d10eeb9dfa21c6 upstream.
 
-The function crypto_authenc_decrypt_tail discards its flags
-argument and always relies on the flags from the original request
-when starting its sub-request.
+Recent tightening of the opcode table in binutils so as to consistently
+disallow the assembly or disassembly of CP0 instructions not supported
+by the processor architecture chosen has caused a regression like below:
 
-This is clearly wrong as it may cause the SLEEPABLE flag to be
-set when it shouldn't.
+arch/mips/dec/prom/locore.S: Assembler messages:
+arch/mips/dec/prom/locore.S:29: Error: opcode not supported on this processor: r4600 (mips3) `rfe'
 
-Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+in a piece of code used to probe for memory with PMAX DECstation models,
+which have non-REX firmware.  Those computers always have an R2000 CPU
+and consequently the exception handler used in memory probing uses the
+RFE instruction, which those processors use.
+
+While adding 64-bit support this code was correctly excluded for 64-bit
+configurations, however it should have also been excluded for irrelevant
+32-bit configurations.  Do this now then, and only enable PMAX memory
+probing for R3k systems.
+
+Reported-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: stable@vger.kernel.org # v2.6.12+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/authenc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/dec/prom/Makefile      |    2 +-
+ arch/mips/include/asm/dec/prom.h |   15 +++++----------
+ 2 files changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/crypto/authenc.c b/crypto/authenc.c
-index 670bf1a01d00..17f674a7cdff 100644
---- a/crypto/authenc.c
-+++ b/crypto/authenc.c
-@@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
- 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+--- a/arch/mips/dec/prom/Makefile
++++ b/arch/mips/dec/prom/Makefile
+@@ -6,4 +6,4 @@
  
- 	skcipher_request_set_tfm(skreq, ctx->enc);
--	skcipher_request_set_callback(skreq, aead_request_flags(req),
-+	skcipher_request_set_callback(skreq, flags,
- 				      req->base.complete, req->base.data);
- 	skcipher_request_set_crypt(skreq, src, dst,
- 				   req->cryptlen - authsize, req->iv);
--- 
-2.34.1
-
+ lib-y			+= init.o memory.o cmdline.o identify.o console.o
+ 
+-lib-$(CONFIG_32BIT)	+= locore.o
++lib-$(CONFIG_CPU_R3000)	+= locore.o
+--- a/arch/mips/include/asm/dec/prom.h
++++ b/arch/mips/include/asm/dec/prom.h
+@@ -43,16 +43,11 @@
+  */
+ #define REX_PROM_MAGIC		0x30464354
+ 
+-#ifdef CONFIG_64BIT
+-
+-#define prom_is_rex(magic)	1	/* KN04 and KN05 are REX PROMs.  */
+-
+-#else /* !CONFIG_64BIT */
+-
+-#define prom_is_rex(magic)	((magic) == REX_PROM_MAGIC)
+-
+-#endif /* !CONFIG_64BIT */
+-
++/* KN04 and KN05 are REX PROMs, so only do the check for R3k systems.  */
++static inline bool prom_is_rex(u32 magic)
++{
++	return !IS_ENABLED(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC;
++}
+ 
+ /*
+  * 3MIN/MAXINE PROM entry points for DS5000/1xx's, DS5000/xx's and
 
 
