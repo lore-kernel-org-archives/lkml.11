@@ -2,125 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E749EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2337DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443679AbiDFBWG (ORCPT
+        id S1444482AbiDFBWO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
+        Tue, 5 Apr 2022 21:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446290AbiDEPo0 (ORCPT
+        with ESMTP id S1443784AbiDEPkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:44:26 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6873EF4E;
-        Tue,  5 Apr 2022 07:13:36 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id k124-20020a1ca182000000b0038c9cf6e2a6so1758569wme.0;
-        Tue, 05 Apr 2022 07:13:36 -0700 (PDT)
+        Tue, 5 Apr 2022 11:40:17 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAB27F229
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:59:37 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id gt4so6100758pjb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 06:59:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+obo3dTEvSnGwmrHTDGj7IsutLaAztXJd9lK133Uuvo=;
-        b=VfYxeW309B7qGu5esco2QMkFCu6G6mGgJZ/7v8UJu4M3oqeTqLdCKy+aQe2MCk7aMO
-         kMEbJrfpFmDIoqqmXEHM59o6bABYuWObSqmDEae2x33PnucQV4FLMP4dzti02kwmj16w
-         Mi+f22V0Fo38phqCCyN1uib5VBjnpc4qiJHd7UpVqU2QJqWCF+MzPB53V6j7v3K4PgDS
-         jEhde1If7rpH2oZQ4zWvTsFrR7kMoiXns+bzZ7Ir5ppm+1rBWQVEQznuQWv4Y3EesLHW
-         TxVy/QJsb/wO9Xc+h3lcNoySiXAg7iH6z834ZpXcL2pGo5mzQyyhDmciuc6dJvXNEEV2
-         GU5g==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4shTZ7PU5hramHKN4NECwmFPWcXFMMpb2aPfmy33HgE=;
+        b=DBngnlgrKnnIqGtxBXRFwa2pOrKGDqz9XBeZwnXfWodXDNrPRvHiHSWuHtqsN/GBPL
+         rNnfcI9ueN7+p+IdLJQBho+rOUKDL6qDsSkuyO/OrtGqfiAAmpR/AoRTORibwOwTby+V
+         MxIbbh2TQon5UytrGUKWxaRlszy5VCndkvq+c2F4CRZeE0PVOPS5SUo5aTJaQL1KnLcr
+         xycx5Y6xGIDoqKSXWkCY2YF/O67J7VFHLV9EsLroc/0jMpFhMG/Tk2djb9xP2frOgPiu
+         QhIHoUk8NvQ9u31nq/QcZj6fpvateKRackzCZ9EAVzT7JQs8rtvrnUcsB8kP/QxUf7eM
+         Rmig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+obo3dTEvSnGwmrHTDGj7IsutLaAztXJd9lK133Uuvo=;
-        b=2SRcwYRL20JefCtUvoxJ5wH6USX9NQcVU/6I2U3SBR7RqOxJoFI5sB2VQQmKTRU4n0
-         s4+dUNviplt6pun83JzNWPHJlpHWu8oIDYfROqziJJuT1nZc/MC/H0FyG9hqQgdyh3up
-         /LI63tz0F2Hp6JqU/2C2BgIvr5euAP4rnUlz+Ca4JOw5QYSd1AyPpkTe46wIYmHLgFJ3
-         HD6ozh9rXS6jN05kMZhp03NzBKM3ZnOc0N6r/1UjhexYSLOzIxiyKbxG0LMpK+wDiEC2
-         CeT/BVAbcPH4LDweTWmuxCqnMd+80UI+/07Quz0h7AAj1jzRPUbNaDYlnUijY9pYVQ1E
-         w0YQ==
-X-Gm-Message-State: AOAM5307FeNzsOsgV6fbrZ67YKmceo5vLP1qq/JdN+6cFzrYtzRbURaM
-        ejy+AQl6155uXun0MI+M8UY=
-X-Google-Smtp-Source: ABdhPJx9lAFWKFLwVX4uuRpIb/oQ+eh5zJKhmje6V6snh6ssBRmVU4vm5p55cuHnRNjRe+OFr82cSw==
-X-Received: by 2002:a05:600c:3c9b:b0:38e:4c59:68b9 with SMTP id bg27-20020a05600c3c9b00b0038e4c5968b9mr3333948wmb.105.1649168014583;
-        Tue, 05 Apr 2022 07:13:34 -0700 (PDT)
-Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.googlemail.com with ESMTPSA id p18-20020a1c5452000000b0038e70261309sm2347702wmi.1.2022.04.05.07.13.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 07:13:34 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <9dfc44d6-6b20-e864-8d4f-09ab7d489b97@redhat.com>
-Date:   Tue, 5 Apr 2022 16:13:33 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4shTZ7PU5hramHKN4NECwmFPWcXFMMpb2aPfmy33HgE=;
+        b=EQaAyOLDvWINu4/s1GhuyhxcsDndCcDkp4RHE4Jbd1zzqMA5i8dOucDk2UJXfxkOuc
+         YSx94dvyJ0AQyFtvavHSRODM/31utToocfwOCnG1LhOczrMnDZgvWxosy+4po/F50yj9
+         7rHRb+SqkLX3G/wHMwQTyKh4v8Qb1CNrmiRmbfgmDdpIIUrZulicGScO5h5mU55/DjCu
+         gfbnY9FFL2ACEatrwYFs3ZurxG8C8N9fDlj+QqY8RLRh8no7dTBdFUhBjzClIufFMjf2
+         A498I/ZXfEfV6pEHA6ROLLvXynxafOtsdTOfdTMP/aElD4/ahQ07gUMhS4zGSmyfo4zv
+         2GrA==
+X-Gm-Message-State: AOAM531Yk2Vh84gK+iiJkN1k162LV2ADDMkhj3buAhgI+71tEh/s3gsj
+        K8bF8STLoxIokkaNLZv3jR36I2sCI4aW
+X-Google-Smtp-Source: ABdhPJzw7quCHFDDc4DPZq4sEUm4pWI0FejBk2vFIMRckx5DZbeqgonEYwGkd2Ezr2v8MX1AcwT2mA==
+X-Received: by 2002:a17:90b:1994:b0:1ca:9b45:405e with SMTP id mv20-20020a17090b199400b001ca9b45405emr4238607pjb.22.1649167176659;
+        Tue, 05 Apr 2022 06:59:36 -0700 (PDT)
+Received: from localhost.localdomain ([59.92.98.98])
+        by smtp.gmail.com with ESMTPSA id u14-20020a056a00124e00b004fab8f3245fsm16785402pfi.149.2022.04.05.06.59.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 06:59:36 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        elder@linaro.org, mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 18/18] bus: mhi: ep: Add uevent support for module autoloading
+Date:   Tue,  5 Apr 2022 19:27:54 +0530
+Message-Id: <20220405135754.6622-19-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
+References: <20220405135754.6622-1-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 037/104] KVM: x86/mmu: Allow non-zero init value
- for shadow PTE
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <b74b3660f9d16deafe83f2670539a8287bef988f.1646422845.git.isaku.yamahata@intel.com>
- <968de4765e63d8255ae1b3ac7062ffdca64706e4.camel@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <968de4765e63d8255ae1b3ac7062ffdca64706e4.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/1/22 07:13, Kai Huang wrote:
->> @@ -617,9 +617,9 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm, u64 *sptep)
->>   	int level = sptep_to_sp(sptep)->role.level;
->>   
->>   	if (!spte_has_volatile_bits(old_spte))
->> -		__update_clear_spte_fast(sptep, 0ull);
->> +		__update_clear_spte_fast(sptep, shadow_init_value);
->>   	else
->> -		old_spte = __update_clear_spte_slow(sptep, 0ull);
->> +		old_spte = __update_clear_spte_slow(sptep, shadow_init_value);
+Add uevent support to MHI endpoint bus so that the client drivers can be
+autoloaded by udev when the MHI endpoint devices gets created. The client
+drivers are expected to provide MODULE_DEVICE_TABLE with the MHI id_table
+struct so that the alias can be exported.
 
-(FWIW this one should also assume that the init_value is zero, and WARN 
-if not).
+The MHI endpoint reused the mhi_device_id structure of the MHI bus.
 
-> I guess it's better to have some comment here.  Allow non-zero init value for
-> shadow PTE doesn't necessarily mean the initial value should be used when one
-> PTE is zapped.  I think mmu_spte_clear_track_bits() is only called for mapping
-> of normal (shared) memory but not MMIO? Then perhaps it's better to have a
-> comment to explain we want "suppress #VE" set to get a real EPT violation for
-> normal memory access from guest?
-> 
->>   
->>   	if (!is_shadow_present_pte(old_spte))
->>   		return old_spte;
->> @@ -651,7 +651,7 @@ static int mmu_spte_clear_track_bits(struct kvm *kvm, u64 *sptep)
->>    */
->>   static void mmu_spte_clear_no_track(u64 *sptep)
->>   {
->> -	__update_clear_spte_fast(sptep, 0ull);
->> +	__update_clear_spte_fast(sptep, shadow_init_value);
->>   }
-> Similar here.  Seems mmu_spte_clear_no_track() is used to zap non-leaf PTE which
-> doesn't require state tracking, so theoretically it can be set to 0.  But this
-> seems is also called to zap MMIO PTE so looks need to set to shadow_init_value.
-> Anyway looks deserve a comment?
-> 
-> Btw, Above two changes to mmu_spte_clear_track_bits() and
-> mmu_spte_clear_track_bits() seems a little bit out-of-scope of what this patch
-> claims to do.  Allow non-zero init value for shadow PTE doesn't necessarily mean
-> the initial value should be used when one PTE is zapped. Maybe we can further
-> improve the patch title and commit message a little bit.  Such as: Allow non-
-> zero value for empty (or invalid?) PTE? Non-present seems doesn't fit here.
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/ep/main.c       |  9 +++++++++
+ include/linux/mod_devicetable.h |  2 ++
+ scripts/mod/file2alias.c        | 10 ++++++++++
+ 3 files changed, 21 insertions(+)
 
-I think shadow_init_value is not named well.  Let's rename it to 
-shadow_nonpresent_value, and the commit to "Allow non-zero value for 
-non-present SPTE".  That explains why it's used for zapping.
+diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+index bae5f40ec15e..40109a79017a 100644
+--- a/drivers/bus/mhi/ep/main.c
++++ b/drivers/bus/mhi/ep/main.c
+@@ -1536,6 +1536,14 @@ void mhi_ep_driver_unregister(struct mhi_ep_driver *mhi_drv)
+ }
+ EXPORT_SYMBOL_GPL(mhi_ep_driver_unregister);
+ 
++static int mhi_ep_uevent(struct device *dev, struct kobj_uevent_env *env)
++{
++	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
++
++	return add_uevent_var(env, "MODALIAS=" MHI_EP_DEVICE_MODALIAS_FMT,
++					mhi_dev->name);
++}
++
+ static int mhi_ep_match(struct device *dev, struct device_driver *drv)
+ {
+ 	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
+@@ -1562,6 +1570,7 @@ struct bus_type mhi_ep_bus_type = {
+ 	.name = "mhi_ep",
+ 	.dev_name = "mhi_ep",
+ 	.match = mhi_ep_match,
++	.uevent = mhi_ep_uevent,
+ };
+ 
+ static int __init mhi_ep_init(void)
+diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+index 5da5d990ff58..549590e9c644 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -835,6 +835,8 @@ struct wmi_device_id {
+ #define MHI_DEVICE_MODALIAS_FMT "mhi:%s"
+ #define MHI_NAME_SIZE 32
+ 
++#define MHI_EP_DEVICE_MODALIAS_FMT "mhi_ep:%s"
++
+ /**
+  * struct mhi_device_id - MHI device identification
+  * @chan: MHI channel name
+diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
+index 5258247d78ac..d9d6a31446ea 100644
+--- a/scripts/mod/file2alias.c
++++ b/scripts/mod/file2alias.c
+@@ -1391,6 +1391,15 @@ static int do_mhi_entry(const char *filename, void *symval, char *alias)
+ 	return 1;
+ }
+ 
++/* Looks like: mhi_ep:S */
++static int do_mhi_ep_entry(const char *filename, void *symval, char *alias)
++{
++	DEF_FIELD_ADDR(symval, mhi_device_id, chan);
++	sprintf(alias, MHI_EP_DEVICE_MODALIAS_FMT, *chan);
++
++	return 1;
++}
++
+ /* Looks like: ishtp:{guid} */
+ static int do_ishtp_entry(const char *filename, void *symval, char *alias)
+ {
+@@ -1519,6 +1528,7 @@ static const struct devtable devtable[] = {
+ 	{"tee", SIZE_tee_client_device_id, do_tee_entry},
+ 	{"wmi", SIZE_wmi_device_id, do_wmi_entry},
+ 	{"mhi", SIZE_mhi_device_id, do_mhi_entry},
++	{"mhi_ep", SIZE_mhi_device_id, do_mhi_ep_entry},
+ 	{"auxiliary", SIZE_auxiliary_device_id, do_auxiliary_entry},
+ 	{"ssam", SIZE_ssam_device_id, do_ssam_entry},
+ 	{"dfl", SIZE_dfl_device_id, do_dfl_entry},
+-- 
+2.25.1
 
-Paolo
