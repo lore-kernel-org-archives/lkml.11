@@ -2,110 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDC4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F868C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456419AbiDFAnd (ORCPT
+        id S1837128AbiDFAoz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56052 "EHLO
+        Tue, 5 Apr 2022 20:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354195AbiDEKMP (ORCPT
+        with ESMTP id S1572944AbiDERWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:12:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AF452E7C;
-        Tue,  5 Apr 2022 02:58:24 -0700 (PDT)
+        Tue, 5 Apr 2022 13:22:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716BA14012;
+        Tue,  5 Apr 2022 10:20:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A097B81B18;
-        Tue,  5 Apr 2022 09:58:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92BE2C385A1;
-        Tue,  5 Apr 2022 09:58:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152701;
-        bh=n6zyPSIkFvCLdD5kBxfGwkFctlLJmjTygZHO/L9jPmc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MZPPJBgI9AIlOcBs/rK/flSSH3mO4pmSTfyfUjR0r6P/UOnveedrYERVu5V2RJpPQ
-         EaSsFmNC3xv5WylzvHaF1cf+sUbT1Bb0qvtKWXUqxwP+hzyt3qUjAnZAhf+QoXesfO
-         i4rCA+YSr6d1CwSlWwyW+o6rpZcV+bvRb1rVokd0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ewan Milne <emilne@redhat.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 865/913] scsi: qla2xxx: Add qla2x00_async_done() for async routines
-Date:   Tue,  5 Apr 2022 09:32:07 +0200
-Message-Id: <20220405070405.752209504@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 060AE618AC;
+        Tue,  5 Apr 2022 17:20:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41A8EC385A0;
+        Tue,  5 Apr 2022 17:20:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649179250;
+        bh=YZsDubBk95nu3x04zmH9B6wkAN+uWc38CMrzjI/URwo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KLe5zgl1jn3/c4ZIruCMaO136A64eBcLm5MtWPZC5gKsaFML8XL5Qi/qHPHGunbPu
+         Cn8MAg+bYIIerAENAO5CthwJdbxgxY+JcPPv4dVyDz+8Gg7Lq8nJ8U2qhQJckYp5/I
+         8LVvPIeKrguyAUUzrF2cs0KvpoJRHxAnHmVLSP+dK4TTgnuRG+2y8vms+tDW2akJeY
+         MyB0qBwaj662d6Ir3juQcKyHhkbEKASlApUUa2Qp5cQfBpFjfZIBOpwotaaMeLoacP
+         F1Zyd4PQllzcMItH1uB2cRecYBbnUYYrNrqW9PY+Dw2KKmenqYfIQIBME36MLFZ1aq
+         5xVovTJYeXidQ==
+Date:   Tue, 5 Apr 2022 10:20:49 -0700
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Remove tls vs. ktls separation
+ as it is the same
+Message-ID: <20220405172049.slomqla4pmnyczbj@sx1>
+References: <cover.1649073691.git.leonro@nvidia.com>
+ <67e596599edcffb0de43f26551208dfd34ac777e.1649073691.git.leonro@nvidia.com>
+ <20220405003322.afko7uo527w5j3zu@sx1>
+ <YkvW9SNJeb5VPmeg@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YkvW9SNJeb5VPmeg@unreal>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurav Kashyap <skashyap@marvell.com>
+On 05 Apr 08:43, Leon Romanovsky wrote:
+>On Mon, Apr 04, 2022 at 05:33:22PM -0700, Saeed Mahameed wrote:
+>> On 04 Apr 15:08, Leon Romanovsky wrote:
+>> > From: Leon Romanovsky <leonro@nvidia.com>
+>> >
+>> > After removal FPGA TLS, we can remove tls->ktls indirection too,
+>> > as it is the same thing.
 
-commit 49b729f58e7a98a006a8a0c1dcca8a1a4f58d2a8 upstream.
+[...]
 
-This done routine will delete the timer and check for its return value and
-decrease the reference count accordingly. This prevents boot hangs reported
-after commit 31e6cdbe0eae ("scsi: qla2xxx: Implement ref count for SRB")
-was merged.
+> > rename drivers/net/ethernet/mellanox/mlx5/core/en_accel/{tls_stats.c => ktls_stats.c} (76%)
+>>
+>> Why not ktls_*.c => tls_*.c ?
+>
+>Mostly because other drivers use _ktls_ name for this type of functionality.
+>Plus internally, Tariq suggested to squash everything into ktls.
+>
+>>
+>> Since we now have one TLS implementation, it would've been easier to maybe
+>> repurpose TLS to be KTLS only and avoid renaming every TLS to KTLS in all
+>> functions and files.
+>>
+>> So just keep tls.c and all mlx5_tls_xyz functions and implement ktls
+>> directly in them, the renaming will be done only on the ktls implementation
+>> part of the code rather than in every caller.
+>
+>Should I do it or keep this patch as is?
+>
 
-Link: https://lore.kernel.org/r/20220208093946.4471-1-njavali@marvell.com
-Fixes: 31e6cdbe0eae ("scsi: qla2xxx: Implement ref count for SRB")
-Reported-by: Ewan Milne <emilne@redhat.com>
-Tested-by: Ewan D. Milne <emilne@redhat.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/scsi/qla2xxx/qla_iocb.c |   17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
-
---- a/drivers/scsi/qla2xxx/qla_iocb.c
-+++ b/drivers/scsi/qla2xxx/qla_iocb.c
-@@ -2560,6 +2560,20 @@ qla24xx_tm_iocb(srb_t *sp, struct tsk_mg
- 	}
- }
- 
-+static void
-+qla2x00_async_done(struct srb *sp, int res)
-+{
-+	if (del_timer(&sp->u.iocb_cmd.timer)) {
-+		/*
-+		 * Successfully cancelled the timeout handler
-+		 * ref: TMR
-+		 */
-+		if (kref_put(&sp->cmd_kref, qla2x00_sp_release))
-+			return;
-+	}
-+	sp->async_done(sp, res);
-+}
-+
- void
- qla2x00_sp_release(struct kref *kref)
- {
-@@ -2573,7 +2587,8 @@ qla2x00_init_async_sp(srb_t *sp, unsigne
- 		     void (*done)(struct srb *sp, int res))
- {
- 	timer_setup(&sp->u.iocb_cmd.timer, qla2x00_sp_timeout, 0);
--	sp->done = done;
-+	sp->done = qla2x00_async_done;
-+	sp->async_done = done;
- 	sp->free = qla2x00_sp_free;
- 	sp->u.iocb_cmd.timeout = qla2x00_async_iocb_timeout;
- 	sp->u.iocb_cmd.timer.expires = jiffies + tmo * HZ;
-
+Keep it, i don't have any strong feeling about this,
+I just wanted to reduce the patch size.
 
