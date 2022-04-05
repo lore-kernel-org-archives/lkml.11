@@ -2,111 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A02BC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F82C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846389AbiDFCEC (ORCPT
+        id S1846316AbiDFCDt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
+        Tue, 5 Apr 2022 22:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354936AbiDEKQg (ORCPT
+        with ESMTP id S1382383AbiDEMPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3848622C;
-        Tue,  5 Apr 2022 03:04:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4087B81C86;
-        Tue,  5 Apr 2022 10:04:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD30C385A1;
-        Tue,  5 Apr 2022 10:04:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153048;
-        bh=3z3jzRHy3464weK3HR2VtlPoQjepKQ2VowKCdolR2nc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N1Bn+W02k0eBNlR9xJNshEzU3y4tFwqi3R9IF9hpWsxtXbXRv6eYXzloebkLUAxOh
-         Y6cECJzjcklrkCTv+zD28xd5mHRgBzWNUKHuBsOOL0ZflGt/9I7tK19JTurw0dFXC7
-         OomQ+FRLUjD/vduDBeDS6LgKkm1dcH1fovbHm1O0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Rientjes <rientjes@google.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 076/599] Revert "mm: madvise: skip unmapped vma holes passed to process_madvise"
-Date:   Tue,  5 Apr 2022 09:26:10 +0200
-Message-Id: <20220405070301.087589272@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:15:04 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39A4ADD50;
+        Tue,  5 Apr 2022 04:25:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649157928; x=1680693928;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tOaUSriU1H57ESN51UJOQjh5HKEr6uJn/O7752Nx9Qo=;
+  b=M6SmSHtyOvJgVcen46RLQwrN2+7RxhgBkdWmj3EJcbyuT8srFPD2jpNx
+   epJoOP0mZp+MThRbEtcuuq0lpOvM15z9EYqrOZkk98QWg3hioj5E0n+G4
+   LcSMnViZkDXRAAIj8eeoo1vvRhcuufVSKJ0JPt2ehz0EGAojtbfJ6woU2
+   HI38I6H2Re4alqgW3e0QfFnpjgnDYFYTQyDYZBpIbuy1tjsdD/PzYzqqL
+   uALj/3rd7NS6Km/Cai6tZ67AOGeEBFZgBZsDYXb+5NmeEEAqWSUXYeTFx
+   Ne6JvjxUxTDq2W8wkPLClgX3JzHSS1QuutjQdLaaTIa9sDags8bq/D/N/
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
+   d="scan'208";a="168400151"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Apr 2022 04:25:27 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 5 Apr 2022 04:25:27 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 5 Apr 2022 04:25:25 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
+        <sre@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 2/8] dt-bindings: reset: convert Atmel/Microchip reset controller to YAML
+Date:   Tue, 5 Apr 2022 14:27:18 +0300
+Message-ID: <20220405112724.2760905-3-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+Convert Atmel/Microchip reset controller to YAML.
 
-commit e6b0a7b357659c332231621e4315658d062c23ee upstream.
-
-This reverts commit 08095d6310a7 ("mm: madvise: skip unmapped vma holes
-passed to process_madvise") as process_madvise() fails to return the
-exact processed bytes in other cases too.
-
-As an example: if process_madvise() hits mlocked pages after processing
-some initial bytes passed in [start, end), it just returns EINVAL
-although some bytes are processed.  Thus making an exception only for
-ENOMEM is partially fixing the problem of returning the proper advised
-bytes.
-
-Thus revert this patch and return proper bytes advised.
-
-Link: https://lkml.kernel.org/r/e73da1304a88b6a8a11907045117cccf4c2b8374.1648046642.git.quic_charante@quicinc.com
-Fixes: 08095d6310a7ce ("mm: madvise: skip unmapped vma holes passed to process_madvise")
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- mm/madvise.c |    9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ .../devicetree/bindings/arm/atmel-sysregs.txt | 15 ------
+ .../reset/atmel,at91sam9260-reset.yaml        | 49 +++++++++++++++++++
+ 2 files changed, 49 insertions(+), 15 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
 
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1222,16 +1222,9 @@ SYSCALL_DEFINE5(process_madvise, int, pi
+diff --git a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
+index 16eef600d599..ab1b352344ae 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
++++ b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
+@@ -25,21 +25,6 @@ System Timer (ST) required properties:
+ Its subnodes can be:
+ - watchdog: compatible should be "atmel,at91rm9200-wdt"
  
- 	while (iov_iter_count(&iter)) {
- 		iovec = iov_iter_iovec(&iter);
--		/*
--		 * do_madvise returns ENOMEM if unmapped holes are present
--		 * in the passed VMA. process_madvise() is expected to skip
--		 * unmapped holes passed to it in the 'struct iovec' list
--		 * and not fail because of them. Thus treat -ENOMEM return
--		 * from do_madvise as valid and continue processing.
--		 */
- 		ret = do_madvise(mm, (unsigned long)iovec.iov_base,
- 					iovec.iov_len, behavior);
--		if (ret < 0 && ret != -ENOMEM)
-+		if (ret < 0)
- 			break;
- 		iov_iter_advance(&iter, iovec.iov_len);
- 	}
-
+-RSTC Reset Controller required properties:
+-- compatible: Should be "atmel,<chip>-rstc".
+-  <chip> can be "at91sam9260", "at91sam9g45", "sama5d3" or "samx7"
+-  it also can be "microchip,sam9x60-rstc"
+-- reg: Should contain registers location and length
+-- clocks: phandle to input clock.
+-
+-Example:
+-
+-	rstc@fffffd00 {
+-		compatible = "atmel,at91sam9260-rstc";
+-		reg = <0xfffffd00 0x10>;
+-		clocks = <&clk32k>;
+-	};
+-
+ RAMC SDRAM/DDR Controller required properties:
+ - compatible: Should be "atmel,at91rm9200-sdramc", "syscon"
+ 			"atmel,at91sam9260-sdramc",
+diff --git a/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml b/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
+new file mode 100644
+index 000000000000..92936c987c9a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
+@@ -0,0 +1,49 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/reset/atmel,at91sam9260-reset.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Atmel/Microchip System Reset Controller
++
++maintainers:
++  - Claudiu Beznea <claudiu.beznea@gmail.com>
++
++description: |
++  The system reset controller can be used to reset the CPU.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - atmel,at91sam9260-rstc
++              - atmel,at91sam9g45-rstc
++              - atmel,sama5d3-rstc
++              - microchip,sam9x60-rstc
++      - items:
++          - const: atmel,sama5d3-rstc
++          - const: atmel,at91sam9g45-rstc
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/at91.h>
++
++    reset-controller@fffffd00 {
++        compatible = "atmel,at91sam9260-rstc";
++        reg = <0xfffffd00 0x10>;
++        clocks = <&pmc PMC_TYPE_CORE PMC_SLOW>;
++    };
+-- 
+2.32.0
 
