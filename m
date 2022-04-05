@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42236C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9A8C35274
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385105AbiDEMbV (ORCPT
+        id S1385211AbiDEMbw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
+        Tue, 5 Apr 2022 08:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343504AbiDEI44 (ORCPT
+        with ESMTP id S236741AbiDEI5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:56:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE70C1CFF2;
-        Tue,  5 Apr 2022 01:52:51 -0700 (PDT)
+        Tue, 5 Apr 2022 04:57:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C453322BCE;
+        Tue,  5 Apr 2022 01:53:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 735ED6117A;
-        Tue,  5 Apr 2022 08:52:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 854B8C385A0;
-        Tue,  5 Apr 2022 08:52:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37416B81BC5;
+        Tue,  5 Apr 2022 08:53:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7778EC385A1;
+        Tue,  5 Apr 2022 08:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148770;
-        bh=N+zWu7AI5IWaUS3GUluxulWeUVNUFJ71l/5vn5pCO2g=;
+        s=korg; t=1649148784;
+        bh=otEFXiGvC1E/tcTu5TxydBsjeGhkNXXcQ5nD1iAGmUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kV/hm8tJiGkaHbKELaJfUwwlbmW+h/ffuyu2ib1gXXwRImoo6CV0gSpBjZjxukfVQ
-         IjFEu7C5HCyGjOu0Qh1OOftCh9q4ZPhu2iAYNEdkaszt4YfA7Cm9Pnq5XKE9Usnlpk
-         YsmbvEe7lVrJZ1YvIjrhskO8bD7MQ0pUX/3tIR+A=
+        b=RVqF4MA81Vk7ttfytVWTgqImgjwkeXOU6D/FZRvo6eW1jN6I+HkpyhrqwcXkgZv3n
+         AUbnCfvxLpkrGc3jr+URlKk3Xg2R4xHfIiH9KqPYxrA3rW9ClMDk/ySYqnUqwou3YH
+         KkyrMB9kikRRFrv3hpg+CEFaorFbDQr7U8JrAApI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0468/1017] ptp: unregister virtual clocks when unregistering physical clock.
-Date:   Tue,  5 Apr 2022 09:23:01 +0200
-Message-Id: <20220405070408.190498306@linuxfoundation.org>
+Subject: [PATCH 5.16 0481/1017] selftests/bpf: Use "__se_" prefix on architectures without syscall wrapper
+Date:   Tue,  5 Apr 2022 09:23:14 +0200
+Message-Id: <20220405070408.576924998@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -53,66 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miroslav Lichvar <mlichvar@redhat.com>
+From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-[ Upstream commit bfcbb76b0f595ea9ede9f7a218086fef85242f10 ]
+[ Upstream commit 046b841ea7c528931e7d2e74d5e668aa6c94c1fc ]
 
-When unregistering a physical clock which has some virtual clocks,
-unregister the virtual clocks with it.
+On architectures that don't use a syscall wrapper, sys_* function names
+are set as an alias of __se_sys_* functions. Due to this, there is no
+BTF associated with sys_* function names. This results in some of the
+test progs failing to load. Set the SYS_PREFIX to "__se_" to fix this
+issue.
 
-This fixes the following oops, which can be triggered by unloading
-a driver providing a PTP clock when it has enabled virtual clocks:
-
-BUG: unable to handle page fault for address: ffffffffc04fc4d8
-Oops: 0000 [#1] PREEMPT SMP NOPTI
-RIP: 0010:ptp_vclock_read+0x31/0xb0
-Call Trace:
- timecounter_read+0xf/0x50
- ptp_vclock_refresh+0x2c/0x50
- ? ptp_clock_release+0x40/0x40
- ptp_aux_kworker+0x17/0x30
- kthread_worker_fn+0x9b/0x240
- ? kthread_should_park+0x30/0x30
- kthread+0xe2/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
-
-Fixes: 73f37068d540 ("ptp: support ptp physical/virtual clocks conversion")
-Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Cc: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 38261f369fb905 ("selftests/bpf: Fix probe_user test failure with clang build kernel")
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/013d632aacd3e41290445c0025db6a7055ec6e18.1643973917.git.naveen.n.rao@linux.vnet.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ptp/ptp_clock.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/progs/bpf_misc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-index 0e4bc8b9329d..b6f2cfd15dd2 100644
---- a/drivers/ptp/ptp_clock.c
-+++ b/drivers/ptp/ptp_clock.c
-@@ -317,11 +317,18 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
- }
- EXPORT_SYMBOL(ptp_clock_register);
+diff --git a/tools/testing/selftests/bpf/progs/bpf_misc.h b/tools/testing/selftests/bpf/progs/bpf_misc.h
+index 0b78bc9b1b4c..5bb11fe595a4 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_misc.h
++++ b/tools/testing/selftests/bpf/progs/bpf_misc.h
+@@ -13,7 +13,7 @@
+ #define SYS_PREFIX "__arm64_"
+ #else
+ #define SYSCALL_WRAPPER 0
+-#define SYS_PREFIX ""
++#define SYS_PREFIX "__se_"
+ #endif
  
-+static int unregister_vclock(struct device *dev, void *data)
-+{
-+	struct ptp_clock *ptp = dev_get_drvdata(dev);
-+
-+	ptp_vclock_unregister(info_to_vclock(ptp->info));
-+	return 0;
-+}
-+
- int ptp_clock_unregister(struct ptp_clock *ptp)
- {
- 	if (ptp_vclock_in_use(ptp)) {
--		pr_err("ptp: virtual clock in use\n");
--		return -EBUSY;
-+		device_for_each_child(&ptp->dev, NULL, unregister_vclock);
- 	}
- 
- 	ptp->defunct = 1;
+ #endif
 -- 
 2.34.1
 
