@@ -2,75 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 127DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 06:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbiDEGPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55800 "EHLO
+        id S230115AbiDEGQt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:16:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbiDEGPI (ORCPT
+        with ESMTP id S229454AbiDEGQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:15:08 -0400
-X-Greylist: delayed 50931 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Apr 2022 23:13:06 PDT
-Received: from mail-4317.proton.ch (mail-4317.proton.ch [185.70.43.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC705DA7F
-        for <linux-kernel@vger.kernel.org>; Mon,  4 Apr 2022 23:13:06 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 06:12:54 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
-        s=protonmail2; t=1649139184;
-        bh=CNTzLZuK92HrqxpWUU87ns76MKGf89jrViurLrFSuHw=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=Ne9h1Kqba7jhD0DmJRpXFYLdfnhbpGzFHheFZs/Enp/e9nvT3rOz+irlib3JeRiM2
-         WccjYrWAMSrKGmQdSX8hnV/kSMQdPKeLe5Aor0ehlL3YVVCAdVv2Py6HRtL6LpyLt6
-         JH2q8kLtOrxBAEahohZLsFIo8awWDP5RtW79xYOieLPEBklUr0/eoXPaT8ufJieAxN
-         UzDguh6M2cd0MFi3l8OwiTVHyXHngbUa9Za/kzihe6kxSQkcNIWnReh33DunsSUDs+
-         HaRte1+xbdKWZEJgP/+X90sOIkELtbNlaUCQ6Dv6q4DJYhPoRm6JGUxGe19f0xA/vU
-         L+vVqD+9UV0bg==
-To:     Randy Dunlap <rdunlap@infradead.org>
-From:   Simon Ser <contact@emersion.fr>
-Cc:     linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        dri-devel@lists.freedesktop.org
-Reply-To: Simon Ser <contact@emersion.fr>
-Subject: Re: [PATCH] drm/format_helper: fix a kernel-doc typo
-Message-ID: <BzpH4s8ZYn84kTlJQ3BHVMQzZlESb2Fk6v-uO5KBaaeBNMvRvC98lpuBLUNLE3a5bdoYTb5JRvo6EU__5AGJ79LUirSppO39I1t1xlwx-fI=@emersion.fr>
-In-Reply-To: <b20bbd22-895c-9e74-e579-d2f3561a2fe1@infradead.org>
-References: <20220403232902.1753-1-rdunlap@infradead.org> <ttcrpLw9HkdhAH5SkXylXDBi9SBf7LWgOeW09ZvTF4U4_zKJAOXBQZlFxfw6NKY0Hip6dXBFape6zkX09cstuOno72c-c00wmZ_VbNDg6xs=@emersion.fr> <b20bbd22-895c-9e74-e579-d2f3561a2fe1@infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Tue, 5 Apr 2022 02:16:40 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4B1015A38;
+        Mon,  4 Apr 2022 23:14:39 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.48:37024.1692704233
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id AEF5A2800A2;
+        Tue,  5 Apr 2022 14:14:27 +0800 (CST)
+X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id 9a99a4d8a49d41fc9d9701316cefc90a for keescook@chromium.org;
+        Tue, 05 Apr 2022 14:14:37 CST
+X-Transaction-ID: 9a99a4d8a49d41fc9d9701316cefc90a
+X-Real-From: liuxp11@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: liuxp11@chinatelecom.cn
+From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
+To:     keescook@chromium.org, anton@enomsg.org, ccross@android.com,
+        robert.moore@intel.com, tony.luck@intel.com, lenb@kernel.org,
+        james.morse@arm.com, bp@alien8.de, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Cc:     Liu Xinpeng <liuxp11@chinatelecom.cn>
+Subject: [PATCH v2] ACPI: APEI: fix missing erst record id
+Date:   Tue,  5 Apr 2022 14:14:13 +0800
+Message-Id: <1649139253-26656-1-git-send-email-liuxp11@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Monday, April 4th, 2022 at 23:35, Randy Dunlap <rdunlap@infradead.org> w=
-rote:
+record_id is in the erst_record_id_cache but not in storage,so
+erst_read will return -ENOENT, and then goto retry_next,
+erst_get_record_id_next skip a record_id. This can result in
+printing the records just in the cache.
 
-> On 4/4/22 09:04, Simon Ser wrote:
->
-> > Both doc patches pushed, thanks. I had to manually edit them because th=
-ey
-> > wouldn't apply cleanly. Next time, please use git-send-email (see
-> > https://git-send-email.io/ for setup instructions).
->
-> That's odd. I did use 'git send-email' and I don't usually have any
-> problems (AFAIK). I'll check those setup instructions.
+A reproducer of the problem(retry many times):
 
-Hm, maybe the issue isn't git-send-email, but the way the patch was
-generated? I had to manually edit these lines for the first patch to work:
+[root@localhost erst-inject]# ./erst-inject -c 0xaaaaa00011
+[root@localhost erst-inject]# ./erst-inject -p
+rc: 273
+rcd sig: CPER
+rcd id: 0xaaaaa00012
+rc: 273
+rcd sig: CPER
+rcd id: 0xaaaaa00013
+rc: 273
+rcd sig: CPER
+rcd id: 0xaaaaa00014
+[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000006
+[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000007
+[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000008
+[root@localhost erst-inject]# ./erst-inject -p
+rc: 273
+rcd sig: CPER
+rcd id: 0xaaaaa00012
+rc: 273
+rcd sig: CPER
+rcd id: 0xaaaaa00013
+rc: 273
+rcd sig: CPER
+rcd id: 0xaaaaa00014
+[root@localhost erst-inject]# ./erst-inject -n
+total error record count: 6
 
-    --- linux-next-20211217.orig/include/drm/drm_file.h
-    +++ linux-next-20211217/include/drm/drm_file.h
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+---
+ drivers/acpi/apei/erst-dbg.c |  4 +++-
+ drivers/acpi/apei/erst.c     | 34 +++++++++++++++++++++++++++++++---
+ include/acpi/apei.h          |  1 +
+ 3 files changed, 35 insertions(+), 4 deletions(-)
 
-I changed these to:
+diff --git a/drivers/acpi/apei/erst-dbg.c b/drivers/acpi/apei/erst-dbg.c
+index c740f0faad39..5b8164280a17 100644
+--- a/drivers/acpi/apei/erst-dbg.c
++++ b/drivers/acpi/apei/erst-dbg.c
+@@ -113,8 +113,10 @@ static ssize_t erst_dbg_read(struct file *filp, char __user *ubuf,
+ retry:
+ 	rc = len = erst_read(id, erst_dbg_buf, erst_dbg_buf_len);
+ 	/* The record may be cleared by others, try read next record */
+-	if (rc == -ENOENT)
++	if (rc == -ENOENT) {
++		erst_clear_cache(id);
+ 		goto retry_next;
++	}
+ 	if (rc < 0)
+ 		goto out;
+ 	if (len > ERST_DBG_RECORD_LEN_MAX) {
+diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
+index 698d67cee052..07d69dc7fd62 100644
+--- a/drivers/acpi/apei/erst.c
++++ b/drivers/acpi/apei/erst.c
+@@ -856,6 +856,31 @@ ssize_t erst_read(u64 record_id, struct cper_record_header *record,
+ }
+ EXPORT_SYMBOL_GPL(erst_read);
+ 
++int erst_clear_cache(u64 record_id)
++{
++	int rc, i;
++	u64 *entries;
++
++	if (erst_disable)
++		return -ENODEV;
++
++	rc = mutex_lock_interruptible(&erst_record_id_cache.lock);
++	if (rc)
++		return rc;
++
++	entries = erst_record_id_cache.entries;
++	for (i = 0; i < erst_record_id_cache.len; i++) {
++		if (entries[i] == record_id)
++			entries[i] = APEI_ERST_INVALID_RECORD_ID;
++	}
++	__erst_record_id_cache_compact();
++
++	mutex_unlock(&erst_record_id_cache.lock);
++
++	return rc;
++}
++EXPORT_SYMBOL_GPL(erst_clear_cache);
++
+ int erst_clear(u64 record_id)
+ {
+ 	int rc, i;
+@@ -998,14 +1023,17 @@ static ssize_t erst_reader(struct pstore_record *record)
+ 
+ 	len = erst_read(record_id, &rcd->hdr, rcd_len);
+ 	/* The record may be cleared by others, try read next record */
+-	if (len == -ENOENT)
++	if (len == -ENOENT) {
++		erst_clear_cache(record_id);
+ 		goto skip;
+-	else if (len < 0 || len < sizeof(*rcd)) {
++	} else if (len < 0 || len < sizeof(*rcd)) {
+ 		rc = -EIO;
+ 		goto out;
+ 	}
+-	if (!guid_equal(&rcd->hdr.creator_id, &CPER_CREATOR_PSTORE))
++	if (!guid_equal(&rcd->hdr.creator_id, &CPER_CREATOR_PSTORE)) {
++		erst_clear_cache(record_id);
+ 		goto skip;
++	}
+ 
+ 	record->buf = kmalloc(len, GFP_KERNEL);
+ 	if (record->buf == NULL) {
+diff --git a/include/acpi/apei.h b/include/acpi/apei.h
+index afaca3a075e8..f8c11ff4115a 100644
+--- a/include/acpi/apei.h
++++ b/include/acpi/apei.h
+@@ -47,6 +47,7 @@ void erst_get_record_id_end(void);
+ ssize_t erst_read(u64 record_id, struct cper_record_header *record,
+ 		  size_t buflen);
+ int erst_clear(u64 record_id);
++int erst_clear_cache(u64 record_id);
+ 
+ int arch_apei_enable_cmcff(struct acpi_hest_header *hest_hdr, void *data);
+ void arch_apei_report_mem_error(int sev, struct cper_sec_mem_err *mem_err);
+-- 
+2.23.0
 
-    --- a/include/drm/drm_file.h
-    +++ b/include/drm/drm_file.h
-
-This wasn't enough for the second patch, I had to re-do the changes by hand
-from scratch.
