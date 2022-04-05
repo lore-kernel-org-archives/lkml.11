@@ -2,87 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 790A2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8561C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582612AbiDEXsw (ORCPT
+        id S1582641AbiDEXtC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59542 "EHLO
+        Tue, 5 Apr 2022 19:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443899AbiDEPk0 (ORCPT
+        with ESMTP id S1457759AbiDEQll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBD214DFC5;
-        Tue,  5 Apr 2022 07:02:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2E30B81BA9;
-        Tue,  5 Apr 2022 14:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BBD4C385A0;
-        Tue,  5 Apr 2022 14:02:02 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 10:02:00 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Ben Young Tae Kim <ytkim@qca.qualcomm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-Subject: [PATCH v2] Bluetooth: hci_qca: Use del_timer_sync() before freeing
-Message-ID: <20220405100200.64f56e50@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 5 Apr 2022 12:41:41 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D340BDB48B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:39:42 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id h4so20148395wrc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:39:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RaKfLsrc3XZWQqIO8eaNOg8ge8Ji7+/v6181V2TTNcc=;
+        b=JraWzk1dVN/s3YPWE6AvnD8A2YawUca/c3wTpCGfOdGLOT8iR2qjz4I+fhRoLWBgX2
+         K7oMk4HbYHpaYL9fuNNWTai6d7Pj42JbBJlt2Gz+PD0fE9oqprY7L8ttYme+mU7z9Jy1
+         +lhTImI4F6qLi8PjuAJ/1obQWkx8AOn7vjMigrVpE/AN+8lDNchnUtVhW0Tck6xQmMfh
+         iy0SNQ+ihW/IAfNCg1Nto4R8eELJSwOc9qtml31BHz5imNVjYjwvhOgHic2iVy40TQ5F
+         CvQdLyDvYta1IFqW/lHpkZtgW694UNC7mEt+89LMaoBBneC9UnOYt1wfhoy+o1Zyo8zA
+         w+3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RaKfLsrc3XZWQqIO8eaNOg8ge8Ji7+/v6181V2TTNcc=;
+        b=fJ8uIS+yY0L48c13Btu8fr8FH9spXtrwGARzPG43kicbFQTtpZ8i+cXOO+JsPQQPsp
+         7F/P09NlM9ei8fDVFbYql+m4HD+1EF4/b/aDReqqYyeo3Ud187yNvYTjE+zqdN1GIb7o
+         83/dtCUbV9Z15BVdKxEDnG1viYrUqNknrEA419w809LSRJHx2E7XzVZFEsjpDE/GyI/Y
+         Kw6wi2K4V6pA84JqNKJLCnQtwA36IPulTNdYasYQ9QSI3tvkEXCbqqNavVEwORef8I+m
+         sa9GtoOoU3L0giMU/zFiEjc9UQCd1GJHNy9X3hL13eA7ZbvKASQBJOAhbCL8AKJxdSaS
+         RzdA==
+X-Gm-Message-State: AOAM531CwhVI4EQIFq0Ii4HzCwVjPjQpaTVEHW+1VY7PyS8cyqxcYWPm
+        2QZrhyuSqdr9dJfmwrrFjUmhUw==
+X-Google-Smtp-Source: ABdhPJzRwIFnGuM3S2npgVv4565/6c5hTUeCqw3z/u/h3ykqBZowMeUDAykTZGUr3Ql4am57RL0yCA==
+X-Received: by 2002:a05:6000:1a8d:b0:204:8cdb:279b with SMTP id f13-20020a0560001a8d00b002048cdb279bmr3365958wry.296.1649176781233;
+        Tue, 05 Apr 2022 09:39:41 -0700 (PDT)
+Received: from localhost ([2a02:168:96c5:1:55ed:514f:6ad7:5bcc])
+        by smtp.gmail.com with ESMTPSA id k11-20020a5d6d4b000000b0020599079f68sm12454249wri.106.2022.04.05.09.39.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 09:39:40 -0700 (PDT)
+From:   Jann Horn <jannh@google.com>
+To:     "Theodore Ts'o" <tytso@mit.edu>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, Jann Horn <jannh@google.com>
+Subject: [PATCH] random: Fix signal_pending() usage
+Date:   Tue,  5 Apr 2022 18:39:31 +0200
+Message-Id: <20220405163931.1108442-1-jannh@google.com>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt <rostedt@goodmis.org>
+signal_pending() checks TIF_NOTIFY_SIGNAL and TIF_SIGPENDING, which signal
+that the task should bail out of the syscall when possible.
+This is a separate concept from need_resched(), which checks
+TIF_NEED_RESCHED, signalling that the task should preempt.
 
-While looking at a crash report on a timer list being corrupted, which
-usually happens when a timer is freed while still active. This is
-commonly triggered by code calling del_timer() instead of
-del_timer_sync() just before freeing.
+In particular, with the current code, the signal_pending() bailout probably
+won't work reliably.
 
-One possible culprit is the hci_qca driver, which does exactly that.
+Change this to look like other functions that read lots of data, such as
+read_zero().
 
-Eric mentioned that wake_retrans_timer could be rearmed via the work
-queue, so also move the destruction of the work queue before
-del_timer_sync().
-
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: stable@vger.kernel.org
-Fixes: 0ff252c1976da ("Bluetooth: hciuart: Add support QCA chipset for UART")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jann Horn <jannh@google.com>
 ---
-Changes since v1: https://lkml.kernel.org/r/20220404182236.1caa174e@rorschach.local.home
- - Moved destroy_workqueue() before del_timer_sync() calls (Eric Dumazet).
-
- drivers/bluetooth/hci_qca.c | 4 ++--
+ drivers/char/random.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index f6e91fb432a3..eab34e24d944 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -696,9 +696,9 @@ static int qca_close(struct hci_uart *hu)
- 	skb_queue_purge(&qca->tx_wait_q);
- 	skb_queue_purge(&qca->txq);
- 	skb_queue_purge(&qca->rx_memdump_q);
--	del_timer(&qca->tx_idle_timer);
--	del_timer(&qca->wake_retrans_timer);
- 	destroy_workqueue(qca->workqueue);
-+	del_timer_sync(&qca->tx_idle_timer);
-+	del_timer_sync(&qca->wake_retrans_timer);
- 	qca->hu = NULL;
- 
- 	kfree_skb(qca->rx_skb);
--- 
-2.35.1
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 1eb220a5f44f..7f0253455d4e 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -540,13 +540,13 @@ static ssize_t get_random_bytes_user(void __user *buf=
+, size_t nbytes)
+ 	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
+=20
+ 	do {
+-		if (large_request && need_resched()) {
++		if (large_request) {
+ 			if (signal_pending(current)) {
+ 				if (!ret)
+ 					ret =3D -ERESTARTSYS;
+ 				break;
+ 			}
+-			schedule();
++			cond_resched();
+ 		}
+=20
+ 		chacha20_block(chacha_state, output);
+
+base-commit: 0c3e7b36d92681bba4c73c198a35e5a806d6f3ff
+--=20
+2.35.1.1094.g7c7d902a7c-goog
 
