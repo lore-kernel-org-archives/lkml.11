@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB61BC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2328FC41535
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357501AbiDEV42 (ORCPT
+        id S1388790AbiDEV4z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
+        Tue, 5 Apr 2022 17:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356458AbiDEKXy (ORCPT
+        with ESMTP id S1354209AbiDEKMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:23:54 -0400
+        Tue, 5 Apr 2022 06:12:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF84BC85F;
-        Tue,  5 Apr 2022 03:08:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC0155493;
+        Tue,  5 Apr 2022 02:58:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E566B81C88;
-        Tue,  5 Apr 2022 10:08:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B880C385A1;
-        Tue,  5 Apr 2022 10:08:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6852B817D3;
+        Tue,  5 Apr 2022 09:58:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1559DC385A2;
+        Tue,  5 Apr 2022 09:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153298;
-        bh=5+j3fHuHA0QdDHXF5DiOjJr3Ypuo/vjZboS4vptQG24=;
+        s=korg; t=1649152730;
+        bh=sJSheh81ofmzuFi2QYxChCQ6v4L0lE96fuuZkjzo0JM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SVoSqoWyv9jQwMddRR422mS89ayc5Pi2xAjgNa1ZkqLK4oHCJaNO08i24HB0xMed2
-         3vFz6jAUTN6FdcT//M3G3SiS3XOPwgQaXrbj2Yj00sJtdMrSV65sPGriZKA2+KlJPx
-         CRQpGM7aCbrRe2DoRadyO7xs+U8p44nIxsDmUzxM=
+        b=iXTgWPJMU1KvMnF8pO5cQ1hQRu1EeFLs94mEF5dIxQbfEvvhd+YC92mL+P1yzT1NV
+         EuUcMH8RMSw6nbHjX02zEjRslQjWSGZxX3g1Pnu2NCEgSJXibYXm5snsHdxAKVrcLc
+         KwLA7qGDNAiPrLRwO8IQ5Nz4PrRWkr9HS0feV9Ls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 174/599] sched/core: Export pelt_thermal_tp
-Date:   Tue,  5 Apr 2022 09:27:48 +0200
-Message-Id: <20220405070304.020965093@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Rob Herring <robh@kernel.org>, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 883/913] dt-bindings: spi: mxic: The interrupt property is not mandatory
+Date:   Tue,  5 Apr 2022 09:32:25 +0200
+Message-Id: <20220405070406.290170525@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qais Yousef <qais.yousef@arm.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit 77cf151b7bbdfa3577b3c3f3a5e267a6c60a263b ]
+commit 90c204d3195a795f77f5bce767e311dd1c59ca17 upstream.
 
-We can't use this tracepoint in modules without having the symbol
-exported first, fix that.
+The interrupt property is not mandatory at all, this property should not
+be part of the required properties list, so move it into the optional
+properties list.
 
-Fixes: 765047932f15 ("sched/pelt: Add support to track thermal pressure")
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20211028115005.873539-1-qais.yousef@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 326e5c8d4a87 ("dt-binding: spi: Document Macronix controller bindings")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-8-miquel.raynal@bootlin.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/spi/spi-mxic.txt |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 0a5f9fad45e4..e437d946b27b 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -36,6 +36,7 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_rt_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_dl_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_irq_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_se_tp);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(pelt_thermal_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_cpu_capacity_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_overutilized_tp);
- EXPORT_TRACEPOINT_SYMBOL_GPL(sched_util_est_cfs_tp);
--- 
-2.34.1
-
+--- a/Documentation/devicetree/bindings/spi/spi-mxic.txt
++++ b/Documentation/devicetree/bindings/spi/spi-mxic.txt
+@@ -8,11 +8,13 @@ Required properties:
+ - reg: should contain 2 entries, one for the registers and one for the direct
+        mapping area
+ - reg-names: should contain "regs" and "dirmap"
+-- interrupts: interrupt line connected to the SPI controller
+ - clock-names: should contain "ps_clk", "send_clk" and "send_dly_clk"
+ - clocks: should contain 3 entries for the "ps_clk", "send_clk" and
+ 	  "send_dly_clk" clocks
+ 
++Optional properties:
++- interrupts: interrupt line connected to the SPI controller
++
+ Example:
+ 
+ 	spi@43c30000 {
 
 
