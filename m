@@ -2,119 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C59C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:22:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6707C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347858AbiDFAMV (ORCPT
+        id S1353857AbiDFAM5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
+        Tue, 5 Apr 2022 20:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348953AbiDEJst (ORCPT
+        with ESMTP id S1457608AbiDEQQA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F38EA66C0;
-        Tue,  5 Apr 2022 02:38:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0838561577;
-        Tue,  5 Apr 2022 09:38:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17ED5C385A0;
-        Tue,  5 Apr 2022 09:38:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151488;
-        bh=I6VMpa5qO10NI83gO4a4CfkLjhd4lXYlFeykmMzwh50=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rXm0ifKP2DSsgbnWZEj0KwTM7sm+eBYnKmIJN4Yud9y4s53GKGj63MPWDDM0N3u5G
-         MswFhJSci6IhPRIE5bhgbFCUX5MxXUsZ9+mLS2SWo3R7wnwy6iLgOZG5mONAyWN59d
-         Iha2AcFvn/8kePaQ5CIJuO0jeCgnJNTw66gDOTMU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 433/913] livepatch: Fix build failure on 32 bits processors
-Date:   Tue,  5 Apr 2022 09:24:55 +0200
-Message-Id: <20220405070352.824515747@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:16:00 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA8719018;
+        Tue,  5 Apr 2022 09:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649175241; x=1680711241;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ur19xDOlDI9/rWRs+TqnfwNVLI1D8qVYS/itVUtgTbs=;
+  b=jFvFqMmaNz/WWa5pevdVc4G5pOvCnX2Jah2FBst1sLrf6l3hiAOWyoao
+   ww6Ee/J+I5WNy43gmffTR9dIq4CFtI6fRU5wkZ5bOA+/LN23tJVMhMAAj
+   eAgOVhLDZtP7GWk8CYp8kTdtLxElFoRVzm4Ea1d3FMoNPASw3boETImk6
+   kthX6k06Bzl5Ye5sw8bDD+cxEyEVVhIgTsCA3/ZEorZIhH4ixBykOJXoe
+   YeduQ3TNPJPxrvpIJFJBQ1H+q67O7kUSTn87ZdnhkNLmVaWA2XgzPdN42
+   ot5udIAxb/pve3xN+aFbArqRF1S9dTdedP+e3eTFvbrDtJuDNZsegMKUd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258375370"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="258375370"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:11:37 -0700
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="524055940"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:11:34 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nbllo-00DSdK-94;
+        Tue, 05 Apr 2022 19:11:04 +0300
+Date:   Tue, 5 Apr 2022 19:11:04 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 2/2] tty: Implement lookahead to process XON/XOFF timely
+Message-ID: <YkxqGDsURPpkDM5W@smile.fi.intel.com>
+References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
+ <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+On Tue, Apr 05, 2022 at 01:24:37PM +0300, Ilpo Järvinen wrote:
+> When tty is not read from, XON/XOFF may get stuck into an
+> intermediate buffer. As those characters are there to do software
+> flow-control, it is not very useful. In the case where neither end
+> reads from ttys, the receiving ends might not be able receive the
+> XOFF characters and just keep sending more data to the opposite
+> direction. This problem is almost guaranteed to occur with DMA
+> which sends data in large chunks.
+> 
+> If TTY is slow to process characters, that is, eats less than given
+> amount in receive_buf, invoke lookahead for the rest of the chars
+> to process potential XON/XOFF characters.
+> 
+> The guards necessary for ensuring the XON/XOFF character are
+> processed only once were added by the previous patch. All this patch
+> needs to do on that front is to pass the lookahead count (that can
+> now be non-zero) into port->client_ops->receive_buf().
 
-[ Upstream commit 2f293651eca3eacaeb56747dede31edace7329d2 ]
+...
 
-Trying to build livepatch on powerpc/32 results in:
+> +static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
+> +					 bool lookahead_done)
+> +{
+> +	if (!I_IXON(tty))
+> +		return false;
+> +
+> +	if (c == START_CHAR(tty)) {
+> +		if (!lookahead_done) {
+> +			start_tty(tty);
+> +			process_echoes(tty);
+> +		}
+> +		return true;
+> +	}
+> +	if (c == STOP_CHAR(tty)) {
+> +		if (!lookahead_done)
+> +			stop_tty(tty);
+> +		return true;
+> +	}
+> +	return false;
+> +}
 
-	kernel/livepatch/core.c: In function 'klp_resolve_symbols':
-	kernel/livepatch/core.c:221:23: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
-	      |                       ^
-	kernel/livepatch/core.c:221:21: error: assignment to 'Elf32_Sym *' {aka 'struct elf32_sym *'} from incompatible pointer type 'Elf64_Sym *' {aka 'struct elf64_sym *'} [-Werror=incompatible-pointer-types]
-	  221 |                 sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
-	      |                     ^
-	kernel/livepatch/core.c: In function 'klp_apply_section_relocs':
-	kernel/livepatch/core.c:312:35: error: passing argument 1 of 'klp_resolve_symbols' from incompatible pointer type [-Werror=incompatible-pointer-types]
-	  312 |         ret = klp_resolve_symbols(sechdrs, strtab, symndx, sec, sec_objname);
-	      |                                   ^~~~~~~
-	      |                                   |
-	      |                                   Elf32_Shdr * {aka struct elf32_shdr *}
-	kernel/livepatch/core.c:193:44: note: expected 'Elf64_Shdr *' {aka 'struct elf64_shdr *'} but argument is of type 'Elf32_Shdr *' {aka 'struct elf32_shdr *'}
-	  193 | static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
-	      |                                ~~~~~~~~~~~~^~~~~~~
+Looking into this I would first make a preparatory patch that splits out
+current code into something like
 
-Fix it by using the right types instead of forcing 64 bits types.
+static bool __n_tty_receive_char_special_no_lookahead(struct tty_struct *tty, unsigned char c)
+{
+	...current code...
+}
 
-Fixes: 7c8e2bdd5f0d ("livepatch: Apply vmlinux-specific KLP relocations early")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Acked-by: Petr Mladek <pmladek@suse.com>
-Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
-Acked-by: Miroslav Benes <mbenes@suse.cz>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/5288e11b018a762ea3351cc8fb2d4f15093a4457.1640017960.git.christophe.leroy@csgroup.eu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/livepatch/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Then in the patch 1 you add
 
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 335d988bd811..c0789383807b 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -190,7 +190,7 @@ static int klp_find_object_symbol(const char *objname, const char *name,
- 	return -EINVAL;
- }
- 
--static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
-+static int klp_resolve_symbols(Elf_Shdr *sechdrs, const char *strtab,
- 			       unsigned int symndx, Elf_Shdr *relasec,
- 			       const char *sec_objname)
- {
-@@ -218,7 +218,7 @@ static int klp_resolve_symbols(Elf64_Shdr *sechdrs, const char *strtab,
- 	relas = (Elf_Rela *) relasec->sh_addr;
- 	/* For each rela in this klp relocation section */
- 	for (i = 0; i < relasec->sh_size / sizeof(Elf_Rela); i++) {
--		sym = (Elf64_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
-+		sym = (Elf_Sym *)sechdrs[symndx].sh_addr + ELF_R_SYM(relas[i].r_info);
- 		if (sym->st_shndx != SHN_LIVEPATCH) {
- 			pr_err("symbol %s is not marked as a livepatch symbol\n",
- 			       strtab + sym->st_name);
+static bool __n_tty_receive_char_special_lookahead(struct tty_struct *tty, unsigned char c)
+{
+	...
+}
+
+static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
+					 bool lookahead_done)
+{
+	if (!I_IXON(tty))
+		return false;
+
+	if (lookahead_done)
+		return _lookahead();
+
+	return _no_lookahead();
+}
+
+?
+
+...
+
+/*
+ * Also start multi-line comments with
+ * capital letter and finish with
+ * grammar period.
+ */
+
 -- 
-2.34.1
-
+With Best Regards,
+Andy Shevchenko
 
 
