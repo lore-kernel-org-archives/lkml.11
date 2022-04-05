@@ -2,91 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66069C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 807B6C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445650AbiDFAVn (ORCPT
+        id S1453307AbiDFAWD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47462 "EHLO
+        Tue, 5 Apr 2022 20:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348781AbiDEJsf (ORCPT
+        with ESMTP id S1573627AbiDET0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC7370073;
-        Tue,  5 Apr 2022 02:35:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6814B81B93;
-        Tue,  5 Apr 2022 09:35:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52BFDC385A3;
-        Tue,  5 Apr 2022 09:35:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151308;
-        bh=5xwjSXGcSyCL53TkO5UFu25SunMdXeXVvL0B5LJR5IY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IbiE9Rjd4YmMVqDbLIf8KSl+9Ifyu9aKdgFzgbd4h9buydjqG+T6BHxBDm2tkPox6
-         rLc7DfwXMA/ROs4yQaPdXjM184lq4Tm7EnmVrk8ACduKyAH3vIFUWlFwj0LkRTqSYv
-         p637+by1cuWTj/5cBSJxQBjFL8P2wdJ231cv8oTI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 331/913] soc: mediatek: pm-domains: Add wakeup capacity support in power domain
-Date:   Tue,  5 Apr 2022 09:23:13 +0200
-Message-Id: <20220405070349.770943782@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 15:26:04 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF532A724
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 12:24:05 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649186643;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PBpB8VyxqrML+VkIgBACu3iDqkhROgmwY7tjmIL4eEE=;
+        b=0YmWQ54GkWT2NyXGn63FPu1pDnwVGzslkscg3ZFExIQ8m2BaT52W5VRmmFm6Jo912toFTf
+        X1OEXx87VodFjGDyTmiHx1DvSOdlVcAl0GGIWPAms8941lMbULhzTHxmbCQWN3DGQdigxs
+        L3IxfFvVyj6LTuVtR5vn3kGGlEHVaygjtThf/A/4IfIOlggVPigp5uIhEZa2RFY+Dgss61
+        91M9Z4H4Kvx/vT1d52k3eagql13WZLcdzVzp9NYWbQhR6ow7ALfiUtrK2EKh2Ak6zkEJc+
+        /hWejh+vKveLC+yyzAFKE8HiAKM8qZ4FM/NAThEbUejeXneaQ2VJ52nKQzjT4A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649186643;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PBpB8VyxqrML+VkIgBACu3iDqkhROgmwY7tjmIL4eEE=;
+        b=WclwfULHFh8wlhXABkAJLoc04RlSlmfsy2db9G/uVbLQm27G9toMbYtAdwMQ+WHfCWRaX6
+        WWuYxxTGDwCY/yDQ==
+To:     Alexey Dobriyan <adobriyan@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] x86/alternative: record .altinstructions section
+ entity size
+In-Reply-To: <Yi4ybwog/H4gk5Ts@localhost.localdomain>
+References: <20220311144312.88466-1-adobriyan@gmail.com>
+ <20220311144312.88466-3-adobriyan@gmail.com>
+ <20220312211740.GG28057@worktop.programming.kicks-ass.net>
+ <Yi4ybwog/H4gk5Ts@localhost.localdomain>
+Date:   Tue, 05 Apr 2022 21:24:02 +0200
+Message-ID: <87o81f1gh9.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+On Sun, Mar 13 2022 at 21:05, Alexey Dobriyan wrote:
+> On Sat, Mar 12, 2022 at 10:17:40PM +0100, Peter Zijlstra wrote:
+>> On Fri, Mar 11, 2022 at 05:43:10PM +0300, Alexey Dobriyan wrote:
+>> > +	".pushsection .altinstructions,\"aM\",@progbits," __stringify(sizeof=
+_struct_alt_instr) "\n"\
+>> > +	".pushsection .altinstructions,\"aM\",@progbits," __stringify(sizeof=
+_struct_alt_instr) "\n"\
+>> > +	".pushsection .altinstructions,\"aM\",@progbits," __stringify(sizeof=
+_struct_alt_instr) "\n"\
+>>=20
+>> > +	.pushsection .altinstructions,"aM",@progbits,sizeof_struct_alt_instr
+>> > +	.pushsection .altinstructions,"aM",@progbits,sizeof_struct_alt_instr
+>>=20
+>> Aside of adding entsize, you're also adding the M(ergable) bit. Also,
+>> those lines are on the unwieldy side of things.
+>
+> binutils doc says
+>
+> 	https://sourceware.org/binutils/docs/as/Section.html
+>
+> 	If flags contains the M symbol then the type argument must be specified =
+as well as an extra argument=E2=80=94entsize=E2=80=94like this:
+>
+> 	.section name , "flags"M, @type, entsize
+>
+> 	Sections with the M flag but not S flag must contain fixed size constant=
+s,
+> 	each entsize octets long. Sections with both M and S must contain zero
+> 	terminated strings where each character is entsize bytes long. The linker
+> 	may remove duplicates within sections with the same name, same entity si=
+ze
+> 	and same flags. entsize must be an absolute expression. For sections with
+> 	both M and S, a string which is a suffix of a larger string is considered
+> 	a duplicate. Thus "def" will be merged with "abcdef"; A reference to the
+> 	first "def" will be changed to a reference to "abcdef"+3.
+>
+> "a"M doesn't work, but "aM" does.
+>
+> I don't know if merging is the issue, it is not like alt replacements hav=
+e names.
 
-[ Upstream commit ac0ca395543af061f7ad77afcda0afb323d82468 ]
+That does not matter. M merges any duplications in sections with the
+same [section] name, entity size and flags.
 
-Due to some power domain needs to keep on for wakeup in system suspend,
-so add GENPD_FLAG_ACTIVE_WAKEUP support in Mediatek power domain driver.
+     .pushsection .bar "aM" @progbits, 4
+     .byte 0x01, 0x02, 0x03, 0x04
+     .popsection
 
-Fixes: 59b644b01cf4 ("soc: mediatek: Add MediaTek SCPSYS power domains")
-Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220130012104.5292-3-chun-jie.chen@mediatek.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/soc/mediatek/mtk-pm-domains.c | 3 +++
- 1 file changed, 3 insertions(+)
+     .pushsection .bar "aM" @progbits, 4
+     .byte 0x01, 0x02, 0x03, 0x04
+     .popsection
 
-diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
-index b762bc40f56b..afd2fd74802d 100644
---- a/drivers/soc/mediatek/mtk-pm-domains.c
-+++ b/drivers/soc/mediatek/mtk-pm-domains.c
-@@ -443,6 +443,9 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
- 	pd->genpd.power_off = scpsys_power_off;
- 	pd->genpd.power_on = scpsys_power_on;
- 
-+	if (MTK_SCPD_CAPS(pd, MTK_SCPD_ACTIVE_WAKEUP))
-+		pd->genpd.flags |= GENPD_FLAG_ACTIVE_WAKEUP;
-+
- 	if (MTK_SCPD_CAPS(pd, MTK_SCPD_KEEP_DEFAULT_OFF))
- 		pm_genpd_init(&pd->genpd, NULL, true);
- 	else
--- 
-2.34.1
+Will create a section .bar with lenght 4 and the content:
+     0x1,0x2,0x3,0x4
 
+What saves you here is the fact that the altinstruction entries are
+guaranteed to be unique, but that wants a big fat comment.
 
+Thanks,
 
+        tglx
