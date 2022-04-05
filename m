@@ -2,95 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8506EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A248BC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390368AbiDEUGL (ORCPT
+        id S1390554AbiDEUGO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33770 "EHLO
+        Tue, 5 Apr 2022 16:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243565AbiDEKhC (ORCPT
+        with ESMTP id S1355876AbiDELz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:37:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE9C55221;
-        Tue,  5 Apr 2022 03:22:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACE3C617CF;
-        Tue,  5 Apr 2022 10:22:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9FC6C385A0;
-        Tue,  5 Apr 2022 10:22:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154157;
-        bh=JDgnhN3MSlCM+3tBS3nKBXEXX80jRKTZVSXwNmSC/NM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LjEPDvXPS84AUs/bAOTvZT3ctRNMzW5rd6gYowsbtAnGy3Q9U7br3OxdGE9BSj7Nr
-         amkHRswC236Pr1NI32JvZ6Q2QyykEY8U4ff4WPSiyQ7Tr4LJ04ITwQ9w8YaBCxVjLs
-         tz+HeS/s+JpEGKmASZ7sKujVqjRfaMqWF/RvNBOM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 477/599] ntfs: add sanity check on allocation size
-Date:   Tue,  5 Apr 2022 09:32:51 +0200
-Message-Id: <20220405070313.020279407@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 07:55:26 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0358813D0C;
+        Tue,  5 Apr 2022 04:13:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649157237; x=1680693237;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=bMF1K45Roo2ThIZC9UZTK48uojQEdXw0mlwouRg3AFE=;
+  b=N7+pe+0i8r7oyr/zjoLLnTmZUPQjMpKmxEOvYld7Hj50XQF/dKuVWqm9
+   aQd5XyiKGgKoi2lR8uOY9YH80Fbdx2Ja620fX6J+J0Z18tv9zQ/KXwMRk
+   W61WXz3ss4hCEL3ZGld0ytzdTlnL2vT75AfidJrxbmLJ9E1juxkaNU5nL
+   Q=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 05 Apr 2022 04:13:56 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:13:56 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 04:13:56 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 5 Apr 2022 04:13:52 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohitkr@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v6 0/3] Add soundcard support for sc7280 based platforms.
+Date:   Tue, 5 Apr 2022 16:43:37 +0530
+Message-ID: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+This patch set is to add bolero digital macros, WCD and maxim codecs nodes
+for audio on sc7280 based platforms.
 
-[ Upstream commit 714fbf2647b1a33d914edd695d4da92029c7e7c0 ]
+This patch set depends on:
+    -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=625134
+    -- https://patchwork.kernel.org/project/alsa-devel/list/?series=625078
+    -- https://patchwork.kernel.org/project/linux-arm-msm/patch/20220202053207.14256-1-tdas@codeaurora.org/.
+    -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=601249
+    -- Clock reset control patches
 
-ntfs_read_inode_mount invokes ntfs_malloc_nofs with zero allocation
-size.  It triggers one BUG in the __ntfs_malloc function.
+Changes Since V5:
+    -- Move soc specific bolero digital codec nodes to soc specific file.
+    -- Bring wcd938x codec reset pin control and US/EURO HS selection nodes from other series.
+    -- Change node name and remove redundant status property in sound node.
+Changes Since V4:
+    -- Update nodes in sorting order.
+    -- Update DTS node names as per dt-bindings.
+    -- Update Node properties in proper order.
+    -- Update missing pinctrl properties like US/EURO HS selection, wcd reset control.
+    -- Remove redundant labels.
+    -- Remove unused size cells and address cells in tx macro node.
+    -- Keep all same nodes at one place, which are defined in same file.
+    -- Add max98360a codec node to herobrine board specific targets.
+Changes Since V3:
+    -- Move digital codec macro nodes to board specific dtsi file.
+    -- Update pin controls in lpass cpu node.
+    -- Update dependency patch list.
+    -- Create patches on latest kernel.
+Changes Since V2:
+    -- Add power domains to digital codec macro nodes.
+    -- Change clock node usage in lpass cpu node.
+    -- Add codec mem clock to lpass cpu node.
+    -- Modify the node names to be generic.
+    -- Move sound and codec nodes to root node.
+    -- sort dai links as per reg.
+    -- Fix typo errors.
+Changes Since V1:
+    -- Update the commit message of cpu node patch.
+    -- Add gpio control property to support Euro headset in wcd938x node.
+    -- Fix clock properties in lpass cpu and digital codec macro node.
 
-Fix this by adding sanity check on ni->attr_list_size.
+Srinivasa Rao Mandadapu (3):
+  arm64: dts: qcom: sc7280: Add nodes for va tx and rx macros and
+    external codecs
+  arm64: dts: qcom: sc7280: Add lpass cpu node
+  arm64: dts: qcom: sc7280: Add dt nodes for sound card
 
-Link: https://lkml.kernel.org/r/20220120094914.47736-1-dzm91@hust.edu.cn
-Reported-by: syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Acked-by: Anton Altaparmakov <anton@tuxera.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ntfs/inode.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/boot/dts/qcom/sc7280-crd.dts        |  14 ++
+ arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi |   8 +
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       | 209 +++++++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi           | 184 ++++++++++++++++++++++
+ 4 files changed, 415 insertions(+)
 
-diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
-index ea18e4a2a691..cf222c9225d6 100644
---- a/fs/ntfs/inode.c
-+++ b/fs/ntfs/inode.c
-@@ -1881,6 +1881,10 @@ int ntfs_read_inode_mount(struct inode *vi)
- 		}
- 		/* Now allocate memory for the attribute list. */
- 		ni->attr_list_size = (u32)ntfs_attr_size(a);
-+		if (!ni->attr_list_size) {
-+			ntfs_error(sb, "Attr_list_size is zero");
-+			goto put_err_out;
-+		}
- 		ni->attr_list = ntfs_malloc_nofs(ni->attr_list_size);
- 		if (!ni->attr_list) {
- 			ntfs_error(sb, "Not enough memory to allocate buffer "
 -- 
-2.34.1
-
-
+2.7.4
 
