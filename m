@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A77C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED32DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377750AbiDELaa (ORCPT
+        id S1377803AbiDELan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
+        Tue, 5 Apr 2022 07:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243820AbiDEIvH (ORCPT
+        with ESMTP id S243819AbiDEIvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:51:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC06C6ECD;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219BEBD8B6;
         Tue,  5 Apr 2022 01:39:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED7F0B81C69;
-        Tue,  5 Apr 2022 08:38:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50258C385A2;
-        Tue,  5 Apr 2022 08:38:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 816D6B81BC5;
+        Tue,  5 Apr 2022 08:38:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB044C385A1;
+        Tue,  5 Apr 2022 08:38:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147900;
-        bh=uFktpmXq//VwMEg/Xye+cAieCQG7ieCXEqG53n4shp0=;
+        s=korg; t=1649147925;
+        bh=yIPD0dnG9IGtDa+wcV5FbJVoIR2IvUDSf0tyeeE9PUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x4OeW+ZWYL1RdHHueL9SJsyndCaew5dEDZQ+TMToEgHv3NOOzfsElKEaUdV5MJUgW
-         JEms1dEMiWx6z8yIv7EowzbAdkWttyXy2yjJWWtVjHcrc6dOuX9PSRSKfRzPkD45LI
-         EaLg8FlVucRVrYx2YZ1JOOM+H50PfJKkiUWc3MX8=
+        b=Sl22sN9WyGTHs7e74U7+0tWkOxOlPGrxRH/HTJ9IuM/VenH8jqB8jxOPDMBe8fyje
+         UoAL1KD58zjsYBbC8I4VdxEu0jd9fCGrR+zA/EcPGEArOnMaFeLR1HTcWIUPH67LY+
+         DDg9TLcxfDxqrV7o6JgHE8tHCMOW6HWbPc1pH+tE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Dirk=20M=C3=BCller?= <dmueller@suse.de>,
-        Paul Menzel <pmenzel@molgen.mpg.de>, Song Liu <song@kernel.org>
-Subject: [PATCH 5.16 0163/1017] lib/raid6/test: fix multiple definition linking error
-Date:   Tue,  5 Apr 2022 09:17:56 +0200
-Message-Id: <20220405070359.059456052@linuxfoundation.org>
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: [PATCH 5.16 0154/1017] ARM: dts: at91: sama7g5: Remove unused properties in i2c nodes
+Date:   Tue,  5 Apr 2022 09:17:47 +0200
+Message-Id: <20220405070358.783240527@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,38 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dirk Müller <dmueller@suse.de>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit a5359ddd052860bacf957e65fe819c63e974b3a6 upstream.
+commit cbb92a7717d2e1c512b7e81c6b22c7298b58a881 upstream.
 
-GCC 10+ defaults to -fno-common, which enforces proper declaration of
-external references using "extern". without this change a link would
-fail with:
+The "atmel,use-dma-rx", "atmel,use-dma-rx" dt properties are not used by
+the i2c-at91 driver, nor they are defined in the bindings file, thus remove
+them.
 
-  lib/raid6/test/algos.c:28: multiple definition of `raid6_call';
-  lib/raid6/test/test.c:22: first defined here
-
-the pq.h header that is included already includes an extern declaration
-so we can just remove the redundant one here.
-
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Dirk Müller <dmueller@suse.de>
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Song Liu <song@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 7540629e2fc7 ("ARM: dts: at91: add sama7g5 SoC DT and sama7g5-ek")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Reviewed-by: Eugen Hristev <eugen.hristev@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220302161854.32177-1-tudor.ambarus@microchip.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/raid6/test/test.c |    1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/boot/dts/sama7g5.dtsi |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/lib/raid6/test/test.c
-+++ b/lib/raid6/test/test.c
-@@ -19,7 +19,6 @@
- #define NDISKS		16	/* Including P and Q */
- 
- const char raid6_empty_zero_page[PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
--struct raid6_calls raid6_call;
- 
- char *dataptrs[NDISKS];
- char data[NDISKS][PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
+--- a/arch/arm/boot/dts/sama7g5.dtsi
++++ b/arch/arm/boot/dts/sama7g5.dtsi
+@@ -352,8 +352,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(7)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(8)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -528,8 +526,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(21)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(22)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -554,8 +550,6 @@
+ 				dmas = <&dma0 AT91_XDMAC_DT_PERID(23)>,
+ 					<&dma0 AT91_XDMAC_DT_PERID(24)>;
+ 				dma-names = "rx", "tx";
+-				atmel,use-dma-rx;
+-				atmel,use-dma-tx;
+ 				status = "disabled";
+ 			};
+ 		};
 
 
