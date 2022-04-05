@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C77C47089
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A4BC4708A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354043AbiDEKLJ (ORCPT
+        id S1354077AbiDEKL3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
+        Tue, 5 Apr 2022 06:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241127AbiDEIcv (ORCPT
+        with ESMTP id S241145AbiDEIcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4B915FED;
-        Tue,  5 Apr 2022 01:28:12 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E98F19;
+        Tue,  5 Apr 2022 01:28:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA58C60AFB;
-        Tue,  5 Apr 2022 08:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C217EC385A1;
-        Tue,  5 Apr 2022 08:28:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1C70B81B18;
+        Tue,  5 Apr 2022 08:28:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F11EEC385A4;
+        Tue,  5 Apr 2022 08:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147291;
-        bh=+meF9PkKtpTanUbYRtKk8E3df2KpV2NIkMy3Tats4EA=;
+        s=korg; t=1649147318;
+        bh=pXlaA9OMGP8WJ/kSu8kwlLxWk28p/wkhn0VdUYvIH2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l8RIlkMyiO469LebPtnXtGKiIcPFrXNrRl+qe2vkZuxIWu9Vjhm+upkk2jiL9+QNg
-         NDCZ0eCa1vHMLTKqi0J4i/mMO5CsfvefEBzsbBPIhKb2FyJQkyZDX+RW+hKHoT1y2T
-         hOnrZ/tSgUmwQh6G+SjeWfEUlLVnyn5ytSyWeM74=
+        b=l2nYcSEz7aPrpWgUfyGzIYdWsVGBZ69HoKUG26M2Zh48PfFh0HwJbF84VM4kmtXbS
+         5iaYvFfJbizoFztZkJjY8uCe55clYyqmEPbb4MxI0HdcTRhxT/BoKHYX1uC/9boR6P
+         C2X8ZGRTXLLF2acYUBXcxFMAvSl6ZAiJ3MZPCAGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>
-Subject: [PATCH 5.17 1071/1126] arm64: mm: Drop const from conditional arm64_dma_phys_limit definition
-Date:   Tue,  5 Apr 2022 09:30:18 +0200
-Message-Id: <20220405070438.891963315@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Ben Dooks <ben-linux@fluff.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, patches@armlinux.org.uk,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH 5.17 1080/1126] ARM: 9187/1: JIVE: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:30:27 +0200
+Message-Id: <20220405070439.154726853@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -48,39 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Will Deacon <will@kernel.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 770093459b9b333380aa71f2c31c60b14895c1df upstream.
+commit 8b2360c7157b462c4870d447d1e65d30ef31f9aa upstream.
 
-Commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
-platforms with no DMA memory zones") introduced different definitions
-for 'arm64_dma_phys_limit' depending on CONFIG_ZONE_DMA{,32} based on
-a late suggestion from Pasha. Sadly, this results in a build error when
-passing W=1:
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings. Also, error return codes don't mean anything to
+obsolete_checksetup() -- only non-zero (usually 1) or zero.
+So return 1 from jive_mtdset().
 
-  | arch/arm64/mm/init.c:90:19: error: conflicting type qualifiers for 'arm64_dma_phys_limit'
-
-Drop the 'const' for now and use '__ro_after_init' consistently.
-
-Link: https://lore.kernel.org/r/202203090241.aj7paWeX-lkp@intel.com
-Link: https://lore.kernel.org/r/CA+CK2bDbbx=8R=UthkMesWOST8eJMtOGJdfMRTFSwVmo0Vn0EA@mail.gmail.com
-Fixes: 031495635b46 ("arm64: Do not defer reserve_crashkernel() for platforms with no DMA memory zones")
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 9db829f485c5 ("[ARM] JIVE: Initial machine support for Logitech Jive")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Ben Dooks <ben-linux@fluff.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Alim Akhtar <alim.akhtar@samsung.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-samsung-soc@vger.kernel.org
+Cc: patches@armlinux.org.uk
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/mm/init.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-s3c/mach-jive.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -87,7 +87,7 @@ EXPORT_SYMBOL(memstart_addr);
- #if IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)
- phys_addr_t __ro_after_init arm64_dma_phys_limit;
- #else
--const phys_addr_t arm64_dma_phys_limit = PHYS_MASK + 1;
-+phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
- #endif
+--- a/arch/arm/mach-s3c/mach-jive.c
++++ b/arch/arm/mach-s3c/mach-jive.c
+@@ -236,11 +236,11 @@ static int __init jive_mtdset(char *opti
+ 	unsigned long set;
  
- #ifdef CONFIG_KEXEC_CORE
+ 	if (options == NULL || options[0] == '\0')
+-		return 0;
++		return 1;
+ 
+ 	if (kstrtoul(options, 10, &set)) {
+ 		printk(KERN_ERR "failed to parse mtdset=%s\n", options);
+-		return 0;
++		return 1;
+ 	}
+ 
+ 	switch (set) {
+@@ -256,7 +256,7 @@ static int __init jive_mtdset(char *opti
+ 		       "using default.", set);
+ 	}
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ /* parse the mtdset= option given to the kernel command line */
 
 
