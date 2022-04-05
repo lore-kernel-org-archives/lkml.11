@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87070C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5536C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387182AbiDENOv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
+        id S243746AbiDENDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 09:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344241AbiDEJSz (ORCPT
+        with ESMTP id S242685AbiDEJIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E47F496AA;
-        Tue,  5 Apr 2022 02:06:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:08:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D4D6F4B7;
+        Tue,  5 Apr 2022 01:57:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4D3FB81BAE;
-        Tue,  5 Apr 2022 09:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44CD8C385A0;
-        Tue,  5 Apr 2022 09:06:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A0BC6117A;
+        Tue,  5 Apr 2022 08:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77F75C385A0;
+        Tue,  5 Apr 2022 08:57:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149571;
-        bh=vb2rgtgo3AKuSL5FE0QmtfS6g/HFe+78n9tRIvZUl7Q=;
+        s=korg; t=1649149023;
+        bh=+JEE0Ko2epQOw9p8Y1HZu2AvWRrrxNXwTXSbRl53Sw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=foT4cA70KKJs80GrqR7ro2ky7IIgJwYm0xZinRd4E4uJNDkyFJ5hL3jSFm90G2aQU
-         dkFxQuW7HcYHbYKs1R9tcyp1Sr9ozU47C5ZuJxSlzamDXx6mXXwEyFIKwDnImAz8NV
-         3X3vYSzUhzx+OaQgIcKzzk3RIRnXk0Wf8YHO2yeg=
+        b=tMa6NvIhwZEhb9+MRURppIqj+4EqBT0aZr0WxTZUMEyX27rMEmD9Of1lXyWVXlkaA
+         f0KRi3LWwZuUpgDDmf8/ag1trPWuf00ThOYhUI4ymEwQvQ/eEuUIOazNo7BsCsvWqs
+         t144bNbgwVUMHC0D/YXduq0jWIsBemAzX5G6yGyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0764/1017] selinux: use correct type for context length
-Date:   Tue,  5 Apr 2022 09:27:57 +0200
-Message-Id: <20220405070416.940249234@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0567/1017] KVM: arm64: Enable Cortex-A510 erratum 2077057 by default
+Date:   Tue,  5 Apr 2022 09:24:40 +0200
+Message-Id: <20220405070411.110755242@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,42 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Göttsche <cgzones@googlemail.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
+[ Upstream commit 4c11113c1a3d10f5b617e5d2b9acd8d1d715450f ]
 
-security_sid_to_context() expects a pointer to an u32 as the address
-where to store the length of the computed context.
+The recently added configuration option for Cortex A510 erratum 2077057 does
+not have a "default y" unlike other errata fixes. This appears to simply be
+an oversight since the help text suggests enabling the option if unsure and
+there's nothing in the commit log to suggest it is intentional.
 
-Reported by sparse:
-
-    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
-                                    (different signedness)
-    security/selinux/xfrm.c:359:39:    expected unsigned int
-                                       [usertype] *scontext_len
-    security/selinux/xfrm.c:359:39:    got int *
-
-Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-[PM: wrapped commit description]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Fixes: 1dd498e5e26ad ("KVM: arm64: Workaround Cortex-A510's single-step and PAC trap errata")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220225184658.172527-1-broonie@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/xfrm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
-index be83e5ce4469..debe15207d2b 100644
---- a/security/selinux/xfrm.c
-+++ b/security/selinux/xfrm.c
-@@ -347,7 +347,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
- 	int rc;
- 	struct xfrm_sec_ctx *ctx;
- 	char *ctx_str = NULL;
--	int str_len;
-+	u32 str_len;
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index d05d94d2b28b..0a83e1728f7e 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -683,6 +683,7 @@ config ARM64_ERRATUM_2051678
  
- 	if (!polsec)
- 		return 0;
+ config ARM64_ERRATUM_2077057
+ 	bool "Cortex-A510: 2077057: workaround software-step corrupting SPSR_EL2"
++	default y
+ 	help
+ 	  This option adds the workaround for ARM Cortex-A510 erratum 2077057.
+ 	  Affected Cortex-A510 may corrupt SPSR_EL2 when the a step exception is
 -- 
 2.34.1
 
