@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73333C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3241C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383946AbiDEORj (ORCPT
+        id S1384351AbiDEOSB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38506 "EHLO
+        Tue, 5 Apr 2022 10:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239485AbiDEJdj (ORCPT
+        with ESMTP id S239046AbiDEJdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B95D4B1F0;
-        Tue,  5 Apr 2022 02:22:07 -0700 (PDT)
+        Tue, 5 Apr 2022 05:33:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4824E240AD;
+        Tue,  5 Apr 2022 02:21:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DAC97CE1C75;
-        Tue,  5 Apr 2022 09:22:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1E1DC385A2;
-        Tue,  5 Apr 2022 09:22:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D98C061574;
+        Tue,  5 Apr 2022 09:21:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2EABC385A2;
+        Tue,  5 Apr 2022 09:21:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150523;
-        bh=2C3A1eQ6if+uET8hbiuap7T2nhNv5yT8rH9N60eA7j0=;
+        s=korg; t=1649150504;
+        bh=fGvT3tGIHLpDdwH/2c4w009hCnw9IdZ34aVTsfYVZjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cE6YFRefU8rhyU17MqEkFlB62B3xugkxTJ/ABOMyQFn7BbJrMjROM2edZtL4vmtYK
-         GXPHIrSZfu6ov85grqq8wZC6QDf2mJf/VMCo8fKFPovN4WiUhKpFW4diibya6YsdHb
-         1r+6G+Bz9t9Mxex0Ts9c/OwZQqgiHsj+VSq+8crU=
+        b=BBZ33/xbvpsFl03zWA8RhcEPYYbedXxljSUpBpFGgUQWPLHQHDQyuw21tOwwZ6oBh
+         r4+4lasODEwgsfSgnR8+KPPKQHGyXZmLaxvddJRJvjQuceYBQnDjhyZwBiUCS8IAOI
+         2wNjPvicfSJuruzLzczryjPS5qik+sRJiQI/drpI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
-        Peter Rosin <peda@axentia.se>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 047/913] iio: inkern: apply consumer scale when no channel scale is available
-Date:   Tue,  5 Apr 2022 09:18:29 +0200
-Message-Id: <20220405070341.229447245@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 078/913] can: m_can: m_can_tx_handler(): fix use after free of skb
+Date:   Tue,  5 Apr 2022 09:19:00 +0200
+Message-Id: <20220405070342.161958767@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -52,47 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Beguin <liambeguin@gmail.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 14b457fdde38de594a4bc4bd9075019319d978da upstream.
+commit 2e8e79c416aae1de224c0f1860f2e3350fa171f8 upstream.
 
-When a consumer calls iio_read_channel_processed() and no channel scale
-is available, it's assumed that the scale is one and the raw value is
-returned as expected.
+can_put_echo_skb() will clone skb then free the skb. Move the
+can_put_echo_skb() for the m_can version 3.0.x directly before the
+start of the xmit in hardware, similar to the 3.1.x branch.
 
-On the other hand, if the consumer calls iio_convert_raw_to_processed()
-the scaling factor requested by the consumer is not applied.
-
-This for example causes the consumer to process mV when expecting uV.
-Make sure to always apply the scaling factor requested by the consumer.
-
-Fixes: adc8ec5ff183 ("iio: inkern: pass through raw values if no scaling")
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220108205319.2046348-3-liambeguin@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 80646733f11c ("can: m_can: update to support CAN FD features")
+Link: https://lore.kernel.org/all/20220317081305.739554-1-mkl@pengutronix.de
+Cc: stable@vger.kernel.org
+Reported-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/inkern.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/can/m_can/m_can.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -590,10 +590,10 @@ static int iio_convert_raw_to_processed_
- 					IIO_CHAN_INFO_SCALE);
- 	if (scale_type < 0) {
- 		/*
--		 * Just pass raw values as processed if no scaling is
--		 * available.
-+		 * If no channel scaling is available apply consumer scale to
-+		 * raw value and return.
- 		 */
--		*processed = raw;
-+		*processed = raw * scale;
- 		return 0;
- 	}
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1640,8 +1640,6 @@ static netdev_tx_t m_can_tx_handler(stru
+ 		if (err)
+ 			goto out_fail;
  
+-		can_put_echo_skb(skb, dev, 0, 0);
+-
+ 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD) {
+ 			cccr = m_can_read(cdev, M_CAN_CCCR);
+ 			cccr &= ~CCCR_CMR_MASK;
+@@ -1658,6 +1656,9 @@ static netdev_tx_t m_can_tx_handler(stru
+ 			m_can_write(cdev, M_CAN_CCCR, cccr);
+ 		}
+ 		m_can_write(cdev, M_CAN_TXBTIE, 0x1);
++
++		can_put_echo_skb(skb, dev, 0, 0);
++
+ 		m_can_write(cdev, M_CAN_TXBAR, 0x1);
+ 		/* End of xmit function for version 3.0.x */
+ 	} else {
 
 
