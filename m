@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B0CC35294
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9680DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 03:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2359722AbiDFDRy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 23:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        id S229742AbiDFDKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 23:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447718AbiDFCOx (ORCPT
+        with ESMTP id S1847127AbiDFCNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 22:14:53 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA67F1B0BD6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:20 -0700 (PDT)
+        Tue, 5 Apr 2022 22:13:07 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F611AF7C9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 16:35:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649201720; x=1680737720;
+  t=1649201713; x=1680737713;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=NMBjF6uwmzeNao30BpVrAix1QyUVF8lfuLCrba2E85A=;
-  b=bdXj9w1ZEeZzoGUNUGa4wx8DOgpnldugpahed96P1LffNJUAZHFfdcf6
-   QhObqUcROS3ZGaELNcGc2Y9+PAVb9VJcrouBoGzIJY42Xsnbgw76y4pvT
-   PdjnD8QBEgMzYuJitZ8OP/mmrAK6fVO8MCi1ZWJHWs1ehJx9/t5nmxF0r
-   A7oyFPcGtNryu0ggKUfWJsBqiaKk7UhtIZd7fNO2KVSMXuHc8YC638WHn
-   o58I3oJNrRWWJRMbC9/CeaENcWWAb38ASNmo/Se6qr563PdbsdhIyYG+S
-   LpwczAl8LR0TEScsGHZWDgivRvGjxc1CqXZwSvtvvFdwzdoCdUo7JcVOX
+  bh=LiEB38jGM5YS7hvDp4/Df3hvveP4t2e15On5tJYc3LM=;
+  b=bi82APc5WDrDNt9SVWIIRZEvyEk7QqUxaHnAZmpH3ZZY22O4XASAmlpS
+   0FleYfT/FByJu1xkx6oLC7scl8xo3Tv2c8KYD8Y8r9WSTgIQ9qWo3OOAz
+   JDeHLs54xhtoZS5qHc4SrkKQP1zzEuKdZZkoq5tTNAv/L1bBppncybYtC
+   PL6LqxPKcayMwGMmc1FxPZZSO0gHBStuRq/VSIFeU3Vl6jjIZOJmO6rf3
+   aifdzlErZRBrhyCz64fgwn3y4P1E3XoQV2lqPLYPkmEztYnAI3j84zaum
+   Ss/nTOLp7Izzzal8H1bryOy2v8CcJdZameN0SEDngab6qV2HTwTHDH23J
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260884431"
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="285854438"
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="260884431"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:41 -0700
+   d="scan'208";a="285854438"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:34:55 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="549273439"
+   d="scan'208";a="697135351"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2022 16:34:33 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 05 Apr 2022 16:34:48 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 7DA655C; Wed,  6 Apr 2022 02:29:45 +0300 (EEST)
+        id 879ABC4C; Wed,  6 Apr 2022 02:29:46 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,12 +51,11 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCHv8 01/30] x86/tdx: Detect running as a TDX guest in early boot
-Date:   Wed,  6 Apr 2022 02:29:10 +0300
-Message-Id: <20220405232939.73860-2-kirill.shutemov@linux.intel.com>
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv8 20/30] x86/boot: Add a trampoline for booting APs via firmware handoff
+Date:   Wed,  6 Apr 2022 02:29:29 +0300
+Message-Id: <20220405232939.73860-21-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
 References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
@@ -67,194 +65,199 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-In preparation of extending cc_platform_has() API to support TDX guest,
-use CPUID instruction to detect support for TDX guests in the early
-boot code (via tdx_early_init()). Since copy_bootdata() is the first
-user of cc_platform_has() API, detect the TDX guest status before it.
+Historically, x86 platforms have booted secondary processors (APs)
+using INIT followed by the start up IPI (SIPI) messages. In regular
+VMs, this boot sequence is supported by the VMM emulation. But such a
+wakeup model is fatal for secure VMs like TDX in which VMM is an
+untrusted entity. To address this issue, a new wakeup model was added
+in ACPI v6.4, in which firmware (like TDX virtual BIOS) will help boot
+the APs. More details about this wakeup model can be found in ACPI
+specification v6.4, the section titled "Multiprocessor Wakeup Structure".
 
-Define a synthetic feature flag (X86_FEATURE_TDX_GUEST) and set this
-bit in a valid TDX guest platform.
+Since the existing trampoline code requires processors to boot in real
+mode with 16-bit addressing, it will not work for this wakeup model
+(because it boots the AP in 64-bit mode). To handle it, extend the
+trampoline code to support 64-bit mode firmware handoff. Also, extend
+IDT and GDT pointers to support 64-bit mode hand off.
 
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+There is no TDX-specific detection for this new boot method. The kernel
+will rely on it as the sole boot method whenever the new ACPI structure
+is present.
+
+The ACPI table parser for the MADT multiprocessor wake up structure and
+the wakeup method that uses this structure will be added by the following
+patch in this series.
+
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/Kconfig                         | 12 ++++++++++++
- arch/x86/coco/Makefile                   |  2 ++
- arch/x86/coco/tdx/Makefile               |  3 +++
- arch/x86/coco/tdx/tdx.c                  | 22 ++++++++++++++++++++++
- arch/x86/include/asm/cpufeatures.h       |  1 +
- arch/x86/include/asm/disabled-features.h |  8 +++++++-
- arch/x86/include/asm/tdx.h               | 21 +++++++++++++++++++++
- arch/x86/kernel/head64.c                 |  4 ++++
- 8 files changed, 72 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/coco/tdx/Makefile
- create mode 100644 arch/x86/coco/tdx/tdx.c
- create mode 100644 arch/x86/include/asm/tdx.h
+ arch/x86/include/asm/apic.h              |  2 ++
+ arch/x86/include/asm/realmode.h          |  1 +
+ arch/x86/kernel/smpboot.c                | 12 ++++++--
+ arch/x86/realmode/rm/header.S            |  1 +
+ arch/x86/realmode/rm/trampoline_64.S     | 38 ++++++++++++++++++++++++
+ arch/x86/realmode/rm/trampoline_common.S | 12 +++++++-
+ 6 files changed, 63 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index b0142e01002e..4ae27322869d 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -878,6 +878,18 @@ config ACRN_GUEST
- 	  IOT with small footprint and real-time features. More details can be
- 	  found in https://projectacrn.org/.
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index 48067af94678..35006e151774 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -328,6 +328,8 @@ struct apic {
  
-+config INTEL_TDX_GUEST
-+	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
-+	depends on X86_64 && CPU_SUP_INTEL
-+	depends on X86_X2APIC
-+	help
-+	  Support running as a guest under Intel TDX.  Without this support,
-+	  the guest kernel can not boot or run under TDX.
-+	  TDX includes memory encryption and integrity capabilities
-+	  which protect the confidentiality and integrity of guest
-+	  memory contents and CPU state. TDX guests are protected from
-+	  some attacks from the VMM.
-+
- endif #HYPERVISOR_GUEST
+ 	/* wakeup_secondary_cpu */
+ 	int	(*wakeup_secondary_cpu)(int apicid, unsigned long start_eip);
++	/* wakeup secondary CPU using 64-bit wakeup point */
++	int	(*wakeup_secondary_cpu_64)(int apicid, unsigned long start_eip);
  
- source "arch/x86/Kconfig.cpu"
-diff --git a/arch/x86/coco/Makefile b/arch/x86/coco/Makefile
-index c1ead00017a7..c816acf78b6a 100644
---- a/arch/x86/coco/Makefile
-+++ b/arch/x86/coco/Makefile
-@@ -4,3 +4,5 @@ KASAN_SANITIZE_core.o	:= n
- CFLAGS_core.o		+= -fno-stack-protector
+ 	void	(*inquire_remote_apic)(int apicid);
  
- obj-y += core.o
-+
-+obj-$(CONFIG_INTEL_TDX_GUEST)	+= tdx/
-diff --git a/arch/x86/coco/tdx/Makefile b/arch/x86/coco/tdx/Makefile
-new file mode 100644
-index 000000000000..c929d53ee059
---- /dev/null
-+++ b/arch/x86/coco/tdx/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+obj-y += tdx.o
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-new file mode 100644
-index 000000000000..97674471fd1e
---- /dev/null
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -0,0 +1,22 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2021-2022 Intel Corporation */
-+
-+#undef pr_fmt
-+#define pr_fmt(fmt)     "tdx: " fmt
-+
-+#include <linux/cpufeature.h>
-+#include <asm/tdx.h>
-+
-+void __init tdx_early_init(void)
-+{
-+	u32 eax, sig[3];
-+
-+	cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);
-+
-+	if (memcmp(TDX_IDENT, sig, sizeof(sig)))
-+		return;
-+
-+	setup_force_cpu_cap(X86_FEATURE_TDX_GUEST);
-+
-+	pr_info("Guest detected\n");
-+}
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 73e643ae94b6..20df73b51025 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -238,6 +238,7 @@
- #define X86_FEATURE_VMW_VMMCALL		( 8*32+19) /* "" VMware prefers VMMCALL hypercall instruction */
- #define X86_FEATURE_PVUNLOCK		( 8*32+20) /* "" PV unlock function */
- #define X86_FEATURE_VCPUPREEMPT		( 8*32+21) /* "" PV vcpu_is_preempted function */
-+#define X86_FEATURE_TDX_GUEST		( 8*32+22) /* Intel Trust Domain Extensions Guest */
- 
- /* Intel-defined CPU features, CPUID level 0x00000007:0 (EBX), word 9 */
- #define X86_FEATURE_FSGSBASE		( 9*32+ 0) /* RDFSBASE, WRFSBASE, RDGSBASE, WRGSBASE instructions*/
-diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
-index 1231d63f836d..b37de8268c9a 100644
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -68,6 +68,12 @@
- # define DISABLE_SGX	(1 << (X86_FEATURE_SGX & 31))
+diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+index 331474b150f1..fd6f6e5b755a 100644
+--- a/arch/x86/include/asm/realmode.h
++++ b/arch/x86/include/asm/realmode.h
+@@ -25,6 +25,7 @@ struct real_mode_header {
+ 	u32	sev_es_trampoline_start;
  #endif
+ #ifdef CONFIG_X86_64
++	u32	trampoline_start64;
+ 	u32	trampoline_pgd;
+ #endif
+ 	/* ACPI S3 wakeup */
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index 2ef14772dc04..870cc5d203b1 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -1082,6 +1082,11 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
+ 	unsigned long boot_error = 0;
+ 	unsigned long timeout;
  
-+#ifdef CONFIG_INTEL_TDX_GUEST
-+# define DISABLE_TDX_GUEST	0
-+#else
-+# define DISABLE_TDX_GUEST	(1 << (X86_FEATURE_TDX_GUEST & 31))
++#ifdef CONFIG_X86_64
++	/* If 64-bit wakeup method exists, use the 64-bit mode trampoline IP */
++	if (apic->wakeup_secondary_cpu_64)
++		start_ip = real_mode_header->trampoline_start64;
 +#endif
-+
- /*
-  * Make sure to add features to the correct mask
-  */
-@@ -79,7 +85,7 @@
- #define DISABLED_MASK5	0
- #define DISABLED_MASK6	0
- #define DISABLED_MASK7	(DISABLE_PTI)
--#define DISABLED_MASK8	0
-+#define DISABLED_MASK8	(DISABLE_TDX_GUEST)
- #define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
- #define DISABLED_MASK10	0
- #define DISABLED_MASK11	0
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-new file mode 100644
-index 000000000000..ba8042ce61c2
---- /dev/null
-+++ b/arch/x86/include/asm/tdx.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2021-2022 Intel Corporation */
-+#ifndef _ASM_X86_TDX_H
-+#define _ASM_X86_TDX_H
-+
-+#include <linux/init.h>
-+
-+#define TDX_CPUID_LEAF_ID	0x21
-+#define TDX_IDENT		"IntelTDX    "
-+
-+#ifdef CONFIG_INTEL_TDX_GUEST
-+
-+void __init tdx_early_init(void);
-+
-+#else
-+
-+static inline void tdx_early_init(void) { };
-+
-+#endif /* CONFIG_INTEL_TDX_GUEST */
-+
-+#endif /* _ASM_X86_TDX_H */
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index 4f5ecbbaae77..6dff50c3edd6 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -40,6 +40,7 @@
- #include <asm/extable.h>
- #include <asm/trapnr.h>
- #include <asm/sev.h>
-+#include <asm/tdx.h>
- 
- /*
-  * Manage page tables very early on.
-@@ -514,6 +515,9 @@ asmlinkage __visible void __init x86_64_start_kernel(char * real_mode_data)
- 
- 	idt_setup_early_handler();
- 
-+	/* Needed before cc_platform_has() can be used for TDX */
-+	tdx_early_init();
-+
- 	copy_bootdata(__va(real_mode_data));
+ 	idle->thread.sp = (unsigned long)task_pt_regs(idle);
+ 	early_gdt_descr.address = (unsigned long)get_cpu_gdt_rw(cpu);
+ 	initial_code = (unsigned long)start_secondary;
+@@ -1123,11 +1128,14 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
  
  	/*
+ 	 * Wake up a CPU in difference cases:
+-	 * - Use the method in the APIC driver if it's defined
++	 * - Use a method from the APIC driver if one defined, with wakeup
++	 *   straight to 64-bit mode preferred over wakeup to RM.
+ 	 * Otherwise,
+ 	 * - Use an INIT boot APIC message for APs or NMI for BSP.
+ 	 */
+-	if (apic->wakeup_secondary_cpu)
++	if (apic->wakeup_secondary_cpu_64)
++		boot_error = apic->wakeup_secondary_cpu_64(apicid, start_ip);
++	else if (apic->wakeup_secondary_cpu)
+ 		boot_error = apic->wakeup_secondary_cpu(apicid, start_ip);
+ 	else
+ 		boot_error = wakeup_cpu_via_init_nmi(cpu, start_ip, apicid,
+diff --git a/arch/x86/realmode/rm/header.S b/arch/x86/realmode/rm/header.S
+index 8c1db5bf5d78..2eb62be6d256 100644
+--- a/arch/x86/realmode/rm/header.S
++++ b/arch/x86/realmode/rm/header.S
+@@ -24,6 +24,7 @@ SYM_DATA_START(real_mode_header)
+ 	.long	pa_sev_es_trampoline_start
+ #endif
+ #ifdef CONFIG_X86_64
++	.long	pa_trampoline_start64
+ 	.long	pa_trampoline_pgd;
+ #endif
+ 	/* ACPI S3 wakeup */
+diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
+index cc8391f86cdb..ae112a91592f 100644
+--- a/arch/x86/realmode/rm/trampoline_64.S
++++ b/arch/x86/realmode/rm/trampoline_64.S
+@@ -161,6 +161,19 @@ SYM_CODE_START(startup_32)
+ 	ljmpl	$__KERNEL_CS, $pa_startup_64
+ SYM_CODE_END(startup_32)
+ 
++SYM_CODE_START(pa_trampoline_compat)
++	/*
++	 * In compatibility mode.  Prep ESP and DX for startup_32, then disable
++	 * paging and complete the switch to legacy 32-bit mode.
++	 */
++	movl	$rm_stack_end, %esp
++	movw	$__KERNEL_DS, %dx
++
++	movl	$X86_CR0_PE, %eax
++	movl	%eax, %cr0
++	ljmpl   $__KERNEL32_CS, $pa_startup_32
++SYM_CODE_END(pa_trampoline_compat)
++
+ 	.section ".text64","ax"
+ 	.code64
+ 	.balign 4
+@@ -169,6 +182,20 @@ SYM_CODE_START(startup_64)
+ 	jmpq	*tr_start(%rip)
+ SYM_CODE_END(startup_64)
+ 
++SYM_CODE_START(trampoline_start64)
++	/*
++	 * APs start here on a direct transfer from 64-bit BIOS with identity
++	 * mapped page tables.  Load the kernel's GDT in order to gear down to
++	 * 32-bit mode (to handle 4-level vs. 5-level paging), and to (re)load
++	 * segment registers.  Load the zero IDT so any fault triggers a
++	 * shutdown instead of jumping back into BIOS.
++	 */
++	lidt	tr_idt(%rip)
++	lgdt	tr_gdt64(%rip)
++
++	ljmpl	*tr_compat(%rip)
++SYM_CODE_END(trampoline_start64)
++
+ 	.section ".rodata","a"
+ 	# Duplicate the global descriptor table
+ 	# so the kernel can live anywhere
+@@ -182,6 +209,17 @@ SYM_DATA_START(tr_gdt)
+ 	.quad	0x00cf93000000ffff	# __KERNEL_DS
+ SYM_DATA_END_LABEL(tr_gdt, SYM_L_LOCAL, tr_gdt_end)
+ 
++SYM_DATA_START(tr_gdt64)
++	.short	tr_gdt_end - tr_gdt - 1	# gdt limit
++	.long	pa_tr_gdt
++	.long	0
++SYM_DATA_END(tr_gdt64)
++
++SYM_DATA_START(tr_compat)
++	.long	pa_trampoline_compat
++	.short	__KERNEL32_CS
++SYM_DATA_END(tr_compat)
++
+ 	.bss
+ 	.balign	PAGE_SIZE
+ SYM_DATA(trampoline_pgd, .space PAGE_SIZE)
+diff --git a/arch/x86/realmode/rm/trampoline_common.S b/arch/x86/realmode/rm/trampoline_common.S
+index 5033e640f957..4331c32c47f8 100644
+--- a/arch/x86/realmode/rm/trampoline_common.S
++++ b/arch/x86/realmode/rm/trampoline_common.S
+@@ -1,4 +1,14 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ 	.section ".rodata","a"
+ 	.balign	16
+-SYM_DATA_LOCAL(tr_idt, .fill 1, 6, 0)
++
++/*
++ * When a bootloader hands off to the kernel in 32-bit mode an
++ * IDT with a 2-byte limit and 4-byte base is needed. When a boot
++ * loader hands off to a kernel 64-bit mode the base address
++ * extends to 8-bytes. Reserve enough space for either scenario.
++ */
++SYM_DATA_START_LOCAL(tr_idt)
++	.short  0
++	.quad   0
++SYM_DATA_END(tr_idt)
 -- 
 2.35.1
 
