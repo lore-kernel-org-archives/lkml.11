@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92347C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34231C46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382769AbiDEMQx (ORCPT
+        id S1382790AbiDEMQ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
+        Tue, 5 Apr 2022 08:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244928AbiDEIws (ORCPT
+        with ESMTP id S244967AbiDEIww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:48 -0400
+        Tue, 5 Apr 2022 04:52:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5B82496D;
-        Tue,  5 Apr 2022 01:46:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447691CB2B;
+        Tue,  5 Apr 2022 01:48:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B9B4614EB;
-        Tue,  5 Apr 2022 08:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E69DC385A1;
-        Tue,  5 Apr 2022 08:46:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D43BC61511;
+        Tue,  5 Apr 2022 08:48:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1589C385A1;
+        Tue,  5 Apr 2022 08:48:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148405;
-        bh=zEeKefMZYRslSx40JLS5O+6+t08QoeqPa7ZuL/Iyqg4=;
+        s=korg; t=1649148490;
+        bh=G96Dh5WtfTKppnov59BIh9FH3+pya1x2zXt3Qam/+VU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dYX/11UFk3JDIw6U86VukWm0sX/m7VCz57y4r1gfM2erNge18sv18p/qDty0HOHqf
-         fXIouyizrgDQXLFJNpv5esy4KCDUSlMd/NIb4+rQyVEoxO4P5rsJ2AfRMDvlW0AR2D
-         V8BkUfbdLPpb4mUjR2ine/MM0ZeEOzm2KWCJzNsE=
+        b=pmvpv8NCc4kCeNcsrxybV1hHUeK88fpxdQrUUDKgSVaJ6DrYXvJ6LEe+nM6GCwWxD
+         3cUFICWB2nkoN/P8Ush2iBIOj7xivZoil/WndQrDtCkfUCEJJ8MRnioWsmw8S+W70g
+         cu2LUb9MofxCoe00xd0+6OfeNZjTx/mvb4ipNh34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0306/1017] video: fbdev: fbcvt.c: fix printing in fb_cvt_print_name()
-Date:   Tue,  5 Apr 2022 09:20:19 +0200
-Message-Id: <20220405070403.359309944@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0373/1017] ASoC: wm8350: Handle error for wm8350_register_irq
+Date:   Tue,  5 Apr 2022 09:21:26 +0200
+Message-Id: <20220405070405.357775848@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,109 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 78482af095abd9f4f29f1aa3fe575d25c6ae3028 ]
+[ Upstream commit db0350da8084ad549bca16cc0486c11cc70a1f9b ]
 
-This code has two bugs:
-1) "cnt" is 255 but the size of the buffer is 256 so the last byte is
-   not used.
-2) If we try to print more than 255 characters then "cnt" will be
-   negative and that will trigger a WARN() in snprintf(). The fix for
-   this is to use scnprintf() instead of snprintf().
+As the potential failure of the wm8350_register_irq(),
+it should be better to check it and return error if fails.
+Also, use 'free_' in order to avoid the same code.
 
-We can re-write this code to be cleaner:
-1) Rename "offset" to "off" because that's shorter.
-2) Get rid of the "cnt" variable and just use "size - off" directly.
-3) Get rid of the "read" variable and just increment "off" directly.
-
-Fixes: 96fe6a2109db ("fbdev: Add VESA Coordinated Video Timings (CVT) support")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: a6ba2b2dabb5 ("ASoC: Implement WM8350 headphone jack detection")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220304023821.391936-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbcvt.c | 53 +++++++++++++-------------------
- 1 file changed, 21 insertions(+), 32 deletions(-)
+ sound/soc/codecs/wm8350.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/video/fbdev/core/fbcvt.c b/drivers/video/fbdev/core/fbcvt.c
-index 55d2bd0ce5c0..64843464c661 100644
---- a/drivers/video/fbdev/core/fbcvt.c
-+++ b/drivers/video/fbdev/core/fbcvt.c
-@@ -214,9 +214,11 @@ static u32 fb_cvt_aspect_ratio(struct fb_cvt_data *cvt)
- static void fb_cvt_print_name(struct fb_cvt_data *cvt)
- {
- 	u32 pixcount, pixcount_mod;
--	int cnt = 255, offset = 0, read = 0;
--	u8 *buf = kzalloc(256, GFP_KERNEL);
-+	int size = 256;
-+	int off = 0;
-+	u8 *buf;
+diff --git a/sound/soc/codecs/wm8350.c b/sound/soc/codecs/wm8350.c
+index 15d42ce3b21d..41504ce2a682 100644
+--- a/sound/soc/codecs/wm8350.c
++++ b/sound/soc/codecs/wm8350.c
+@@ -1537,18 +1537,38 @@ static  int wm8350_component_probe(struct snd_soc_component *component)
+ 	wm8350_clear_bits(wm8350, WM8350_JACK_DETECT,
+ 			  WM8350_JDL_ENA | WM8350_JDR_ENA);
  
-+	buf = kzalloc(size, GFP_KERNEL);
- 	if (!buf)
- 		return;
- 
-@@ -224,43 +226,30 @@ static void fb_cvt_print_name(struct fb_cvt_data *cvt)
- 	pixcount_mod = (cvt->xres * (cvt->yres/cvt->interlace)) % 1000000;
- 	pixcount_mod /= 1000;
- 
--	read = snprintf(buf+offset, cnt, "fbcvt: %dx%d@%d: CVT Name - ",
--			cvt->xres, cvt->yres, cvt->refresh);
--	offset += read;
--	cnt -= read;
-+	off += scnprintf(buf + off, size - off, "fbcvt: %dx%d@%d: CVT Name - ",
-+			    cvt->xres, cvt->yres, cvt->refresh);
- 
--	if (cvt->status)
--		snprintf(buf+offset, cnt, "Not a CVT standard - %d.%03d Mega "
--			 "Pixel Image\n", pixcount, pixcount_mod);
--	else {
--		if (pixcount) {
--			read = snprintf(buf+offset, cnt, "%d", pixcount);
--			cnt -= read;
--			offset += read;
--		}
-+	if (cvt->status) {
-+		off += scnprintf(buf + off, size - off,
-+				 "Not a CVT standard - %d.%03d Mega Pixel Image\n",
-+				 pixcount, pixcount_mod);
-+	} else {
-+		if (pixcount)
-+			off += scnprintf(buf + off, size - off, "%d", pixcount);
- 
--		read = snprintf(buf+offset, cnt, ".%03dM", pixcount_mod);
--		cnt -= read;
--		offset += read;
-+		off += scnprintf(buf + off, size - off, ".%03dM", pixcount_mod);
- 
- 		if (cvt->aspect_ratio == 0)
--			read = snprintf(buf+offset, cnt, "3");
-+			off += scnprintf(buf + off, size - off, "3");
- 		else if (cvt->aspect_ratio == 3)
--			read = snprintf(buf+offset, cnt, "4");
-+			off += scnprintf(buf + off, size - off, "4");
- 		else if (cvt->aspect_ratio == 1 || cvt->aspect_ratio == 4)
--			read = snprintf(buf+offset, cnt, "9");
-+			off += scnprintf(buf + off, size - off, "9");
- 		else if (cvt->aspect_ratio == 2)
--			read = snprintf(buf+offset, cnt, "A");
--		else
--			read = 0;
--		cnt -= read;
--		offset += read;
--
--		if (cvt->flags & FB_CVT_FLAG_REDUCED_BLANK) {
--			read = snprintf(buf+offset, cnt, "-R");
--			cnt -= read;
--			offset += read;
--		}
-+			off += scnprintf(buf + off, size - off, "A");
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
+ 			    wm8350_hpl_jack_handler, 0, "Left jack detect",
+ 			    priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
++	if (ret != 0)
++		goto err;
 +
-+		if (cvt->flags & FB_CVT_FLAG_REDUCED_BLANK)
-+			off += scnprintf(buf + off, size - off, "-R");
- 	}
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
+ 			    wm8350_hpr_jack_handler, 0, "Right jack detect",
+ 			    priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
++	if (ret != 0)
++		goto free_jck_det_l;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
+ 			    wm8350_mic_handler, 0, "Microphone short", priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
++	if (ret != 0)
++		goto free_jck_det_r;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
+ 			    wm8350_mic_handler, 0, "Microphone detect", priv);
++	if (ret != 0)
++		goto free_micscd;
  
- 	printk(KERN_INFO "%s\n", buf);
+ 	return 0;
++
++free_micscd:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_MICSCD, priv);
++free_jck_det_r:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R, priv);
++free_jck_det_l:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L, priv);
++err:
++	return ret;
+ }
+ 
+ static void wm8350_component_remove(struct snd_soc_component *component)
 -- 
 2.34.1
 
