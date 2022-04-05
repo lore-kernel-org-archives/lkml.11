@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A84C35273
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42068C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583321AbiDEXwR (ORCPT
+        id S1583230AbiDEXvs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44880 "EHLO
+        Tue, 5 Apr 2022 19:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348215AbiDEKqE (ORCPT
+        with ESMTP id S243677AbiDEKh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:46:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D6436163;
-        Tue,  5 Apr 2022 03:26:59 -0700 (PDT)
+        Tue, 5 Apr 2022 06:37:28 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E120554A2;
+        Tue,  5 Apr 2022 03:22:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E08456142E;
-        Tue,  5 Apr 2022 10:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED22DC385A0;
-        Tue,  5 Apr 2022 10:26:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B111DCE1CA2;
+        Tue,  5 Apr 2022 10:22:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAD38C385A2;
+        Tue,  5 Apr 2022 10:22:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154418;
-        bh=y84qgXsxoEUAikPwoR4Mbefb/6Lca7pkYMZB4UujyCQ=;
+        s=korg; t=1649154165;
+        bh=yYJRqvEcw9EcoaSG48LiLiHcl2d33GJG0wOTuWcSzBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vL9ZEHV+hMWsLeRsr+yzJtY3SrfZlmF7HO9cEkPNEwdsqzilRQsmVTDmg6a2xA++z
-         O+fNFjdkRmYJjuISgRMgnpFK8m+HfcrvIPkDzcRZubdy/2CJZXhZca43DkrIJ2sAZF
-         JxtqPUzWSPsu7EF6pClsXlZqTIMukocu4ighCwXU=
+        b=IlHgFTHmXWs63iGaNq3e3+QrJ90PtmtUlGEcVkayYZl+zovPhnCLR3F9a68U8q+RO
+         oyvR1mqhtZhmBBXSy8qnDad4pLXcAg/DsHyHHtDt6ApCJVRG4DmZIbELMCj+oAGI25
+         ng8FDLZLdAgTTduGXDX6mTi7cb77bB/5F+hy7bA4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.10 533/599] KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasnt activated
-Date:   Tue,  5 Apr 2022 09:33:47 +0200
-Message-Id: <20220405070314.702100323@linuxfoundation.org>
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 480/599] media: staging: media: zoran: fix various V4L2 compliance errors
+Date:   Tue,  5 Apr 2022 09:32:54 +0200
+Message-Id: <20220405070313.110351676@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -49,66 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-commit b1e34d325397a33d97d845e312d7cf2a8b646b44 upstream.
+[ Upstream commit 914941827aad5ecddf9bf3a6dee67fbec1af1fff ]
 
-Setting non-zero values to SYNIC/STIMER MSRs activates certain features,
-this should not happen when KVM_CAP_HYPERV_SYNIC{,2} was not activated.
+This fixes several issues found with 'v4l2-compliance -s':
 
-Note, it would've been better to forbid writing anything to SYNIC/STIMER
-MSRs, including zeroes, however, at least QEMU tries clearing
-HV_X64_MSR_STIMER0_CONFIG without SynIC. HV_X64_MSR_EOM MSR is somewhat
-'special' as writing zero there triggers an action, this also should not
-happen when SynIC wasn't activated.
+1) read()/write() is supported, but not reported in the capabilities
+2) S_STD(G_STD()) failed: setting the same standard should just return 0.
+3) G_PARM failed to set readbuffers.
+4) different field values in the format vs. what v4l2_buffer reported.
+5) zero the sequence number when starting streaming.
+6) drop VB_USERPTR: makes no sense with dma_contig streaming.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220325132140.25650-4-vkuznets@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/hyperv.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/staging/media/zoran/zoran_card.c   |  2 +-
+ drivers/staging/media/zoran/zoran_driver.c | 13 ++++++++++---
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -207,7 +207,7 @@ static int synic_set_msr(struct kvm_vcpu
- 	struct kvm_vcpu *vcpu = synic_to_vcpu(synic);
- 	int ret;
+diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
+index 782bb4443fc1..fe0cca12119c 100644
+--- a/drivers/staging/media/zoran/zoran_card.c
++++ b/drivers/staging/media/zoran/zoran_card.c
+@@ -810,7 +810,7 @@ static int zoran_init_video_device(struct zoran *zr, struct video_device *video_
+ 	*video_dev = zoran_template;
+ 	video_dev->v4l2_dev = &zr->v4l2_dev;
+ 	video_dev->lock = &zr->lock;
+-	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
++	video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_READWRITE | dir;
  
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || data))
- 		return 1;
+ 	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
+ 	/*
+diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
+index 7f22596cc630..ea04f6c732b2 100644
+--- a/drivers/staging/media/zoran/zoran_driver.c
++++ b/drivers/staging/media/zoran/zoran_driver.c
+@@ -255,8 +255,6 @@ static int zoran_querycap(struct file *file, void *__fh, struct v4l2_capability
+ 	strscpy(cap->card, ZR_DEVNAME(zr), sizeof(cap->card));
+ 	strscpy(cap->driver, "zoran", sizeof(cap->driver));
+ 	snprintf(cap->bus_info, sizeof(cap->bus_info), "PCI:%s", pci_name(zr->pci_dev));
+-	cap->device_caps = zr->video_dev->device_caps;
+-	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
+ 	return 0;
+ }
  
- 	trace_kvm_hv_synic_set_msr(vcpu->vcpu_id, msr, data, host);
-@@ -253,6 +253,9 @@ static int synic_set_msr(struct kvm_vcpu
- 	case HV_X64_MSR_EOM: {
- 		int i;
+@@ -582,6 +580,9 @@ static int zoran_s_std(struct file *file, void *__fh, v4l2_std_id std)
+ 	struct zoran *zr = video_drvdata(file);
+ 	int res = 0;
  
-+		if (!synic->active)
-+			break;
++	if (zr->norm == std)
++		return 0;
 +
- 		for (i = 0; i < ARRAY_SIZE(synic->sint); i++)
- 			kvm_hv_notify_acked_sint(vcpu, i);
- 		break;
-@@ -636,7 +639,7 @@ static int stimer_set_config(struct kvm_
- 	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
- 	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
+ 	if (zr->running != ZORAN_MAP_MODE_NONE)
+ 		return -EBUSY;
  
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || config))
- 		return 1;
+@@ -737,6 +738,7 @@ static int zoran_g_parm(struct file *file, void *priv, struct v4l2_streamparm *p
+ 	if (parm->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
+ 		return -EINVAL;
  
- 	trace_kvm_hv_stimer_set_config(stimer_to_vcpu(stimer)->vcpu_id,
-@@ -660,7 +663,7 @@ static int stimer_set_count(struct kvm_v
- 	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
- 	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
++	parm->parm.capture.readbuffers = 9;
+ 	return 0;
+ }
  
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || count))
- 		return 1;
+@@ -867,6 +869,10 @@ int zr_set_buf(struct zoran *zr)
+ 		vbuf = &buf->vbuf;
  
- 	trace_kvm_hv_stimer_set_count(stimer_to_vcpu(stimer)->vcpu_id,
+ 		buf->vbuf.field = V4L2_FIELD_INTERLACED;
++		if (BUZ_MAX_HEIGHT < (zr->v4l_settings.height * 2))
++			buf->vbuf.field = V4L2_FIELD_INTERLACED;
++		else
++			buf->vbuf.field = V4L2_FIELD_TOP;
+ 		vb2_set_plane_payload(&buf->vbuf.vb2_buf, 0, zr->buffer_size);
+ 		vb2_buffer_done(&buf->vbuf.vb2_buf, VB2_BUF_STATE_DONE);
+ 		zr->inuse[0] = NULL;
+@@ -926,6 +932,7 @@ static int zr_vb2_start_streaming(struct vb2_queue *vq, unsigned int count)
+ 		zr->stat_com[j] = cpu_to_le32(1);
+ 		zr->inuse[j] = NULL;
+ 	}
++	zr->vbseq = 0;
+ 
+ 	if (zr->map_mode != ZORAN_MAP_MODE_RAW) {
+ 		pci_info(zr->pci_dev, "START JPG\n");
+@@ -1016,7 +1023,7 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
+ 	vq->dev = &zr->pci_dev->dev;
+ 	vq->type = dir;
+ 
+-	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
++	vq->io_modes = VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
+ 	vq->drv_priv = zr;
+ 	vq->buf_struct_size = sizeof(struct zr_buffer);
+ 	vq->ops = &zr_video_qops;
+-- 
+2.34.1
+
 
 
