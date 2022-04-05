@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 059E9C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A90C2C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578069AbiDEXSP (ORCPT
+        id S1578086AbiDEXS0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56332 "EHLO
+        Tue, 5 Apr 2022 19:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349711AbiDEJvD (ORCPT
+        with ESMTP id S241752AbiDEKfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:51:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9389DEF2;
-        Tue,  5 Apr 2022 02:49:04 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBEADFD49;
+        Tue,  5 Apr 2022 03:19:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60FBFB81B14;
-        Tue,  5 Apr 2022 09:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE497C385A2;
-        Tue,  5 Apr 2022 09:49:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE55DB81B18;
+        Tue,  5 Apr 2022 10:19:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DDC8C385A1;
+        Tue,  5 Apr 2022 10:19:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152142;
-        bh=eI/tG81nC1saJgPatTgG7icD/lGlD5gWAo+K+jBtukE=;
+        s=korg; t=1649153968;
+        bh=KkqvdNudypKbbtIijKOGeT0cNlIeNDr+yKjHsjcNilc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JfSQ7Jfx4ipHTDL8+TTham6Ez6K53Rroj7o1hXoPk1rBkZmzc7OX8uXzo0fFeLDRf
-         Aqz/YxtvroeS5KWOM6bLL6Yhmo2pm5FsSXPxYJ9UatrvwJ8oHRLrDuXUskOvjyUrRr
-         3rXvYmDi+2kb/zDatA+BbQdqJry5XW/ImL+lebKc=
+        b=th9Mt93vdWpV2mTVYa2J4McMMQj6oj+xKRaum4fX2Ozx5F/uqfoxF/kOm9vs34HS6
+         HAK19zOCXzRzjnCujjac1OxyWvhLys9ZAQOh0xbvkZ9e1AagQ+vx6txP1QheToL3z0
+         oZCO0AJ2iP5zIiEnoQXnFokbuS0BQpjYxX89lGak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 671/913] qlcnic: dcb: default to returning -EOPNOTSUPP
-Date:   Tue,  5 Apr 2022 09:28:53 +0200
-Message-Id: <20220405070359.949755467@linuxfoundation.org>
+Subject: [PATCH 5.10 364/599] selftests/bpf: Fix error reporting from sock_fields programs
+Date:   Tue,  5 Apr 2022 09:30:58 +0200
+Message-Id: <20220405070309.663018774@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,79 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-[ Upstream commit 1521db37f0d42334a88e8ff28198a27d1ed5cd7b ]
+[ Upstream commit a4c9fe0ed4a13e25e43fcd44d9f89bc19ba8fbb7 ]
 
-Clang static analysis reports this issue
-qlcnic_dcb.c:382:10: warning: Assigned value is
-  garbage or undefined
-  mbx_out = *val;
-          ^ ~~~~
+The helper macro that records an error in BPF programs that exercise sock
+fields access has been inadvertently broken by adaptation work that
+happened in commit b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to
+use skel and global variables").
 
-val is set in the qlcnic_dcb_query_hw_capability() wrapper.
-If there is no query_hw_capability op in dcp, success is
-returned without setting the val.
+BPF_NOEXIST flag cannot be used to update BPF_MAP_TYPE_ARRAY. The operation
+always fails with -EEXIST, which in turn means the error never gets
+recorded, and the checks for errors always pass.
 
-For this and similar wrappers, return -EOPNOTSUPP.
+Revert the change in update flags.
 
-Fixes: 14d385b99059 ("qlcnic: dcb: Query adapter DCB capabilities.")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to use skel and global variables")
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/20220317113920.1068535-2-jakub@cloudflare.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ tools/testing/selftests/bpf/progs/test_sock_fields.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-index 5d79ee4370bc..7519773eaca6 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-@@ -51,7 +51,7 @@ static inline int qlcnic_dcb_get_hw_capability(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->get_hw_capability)
- 		return dcb->ops->get_hw_capability(dcb);
+diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
+index 81b57b9aaaea..7967348b11af 100644
+--- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
++++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
+@@ -113,7 +113,7 @@ static void tpcpy(struct bpf_tcp_sock *dst,
  
--	return 0;
-+	return -EOPNOTSUPP;
- }
+ #define RET_LOG() ({						\
+ 	linum = __LINE__;					\
+-	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_NOEXIST);	\
++	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_ANY);	\
+ 	return CG_OK;						\
+ })
  
- static inline void qlcnic_dcb_free(struct qlcnic_dcb *dcb)
-@@ -65,7 +65,7 @@ static inline int qlcnic_dcb_attach(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->attach)
- 		return dcb->ops->attach(dcb);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline int
-@@ -74,7 +74,7 @@ qlcnic_dcb_query_hw_capability(struct qlcnic_dcb *dcb, char *buf)
- 	if (dcb && dcb->ops->query_hw_capability)
- 		return dcb->ops->query_hw_capability(dcb, buf);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline void qlcnic_dcb_get_info(struct qlcnic_dcb *dcb)
-@@ -89,7 +89,7 @@ qlcnic_dcb_query_cee_param(struct qlcnic_dcb *dcb, char *buf, u8 type)
- 	if (dcb && dcb->ops->query_cee_param)
- 		return dcb->ops->query_cee_param(dcb, buf, type);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
-@@ -97,7 +97,7 @@ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->get_cee_cfg)
- 		return dcb->ops->get_cee_cfg(dcb);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline void qlcnic_dcb_aen_handler(struct qlcnic_dcb *dcb, void *msg)
 -- 
 2.34.1
 
