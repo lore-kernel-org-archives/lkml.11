@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C13AC3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 668C6C38161
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351886AbiDEKD3 (ORCPT
+        id S1351183AbiDEKBg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
+        Tue, 5 Apr 2022 06:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235667AbiDEI1E (ORCPT
+        with ESMTP id S234465AbiDEIZW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:27:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD808140E3;
-        Tue,  5 Apr 2022 01:21:00 -0700 (PDT)
+        Tue, 5 Apr 2022 04:25:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379B4640E;
+        Tue,  5 Apr 2022 01:20:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7010EB81BB1;
-        Tue,  5 Apr 2022 08:20:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2289C385A0;
-        Tue,  5 Apr 2022 08:20:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9BB12CE1BFD;
+        Tue,  5 Apr 2022 08:20:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE50BC385A0;
+        Tue,  5 Apr 2022 08:20:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146858;
-        bh=TtGlKKB6pKoNSVQoJPN+1EWbLvNggYKF1ltPuI0juXo=;
+        s=korg; t=1649146839;
+        bh=/o9fNK5bqR6kftZu/EOWCZug70FUBtUshjvzfQYlfQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k8LWdGMNDc5vWaekf/Bz1DyAVgMrHhHeK5hrX3APHcFplL7++bXrKFxltT0DZGZFz
-         KVZKrbAN8fx3S9mxF1sNvtxaDEJwhWtnfJhvsqlk7JYDuJIsZBLQeH2uj+sJhAKzq/
-         6VeC0nT2J1ygSCezMQ7F4jHrN/0WDT1xkCCgJf/o=
+        b=SdQMgXma0xOYGFdk6akLh3eXFckUSsBE3Op1FYvVRba7Pyonh4X/TiNNlim1V3NiD
+         SqOknx/K5YzhS9t1cUjIQ4z7K+11vuOsBHWnMpxQlV1rUTNgELvWMmIMYtrXS9BPtd
+         BuACIraGmkejl9BF6JaCrksbuEKb1clVpgC1lofA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abel Vesa <abel.vesa@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        Anand Jain <anand.jain@oracle.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0913/1126] ARM: dts: imx7: Use audio_mclk_post_div instead audio_mclk_root_clk
-Date:   Tue,  5 Apr 2022 09:27:40 +0200
-Message-Id: <20220405070434.322151083@linuxfoundation.org>
+Subject: [PATCH 5.17 0880/1126] btrfs: harden identification of a stale device
+Date:   Tue,  5 Apr 2022 09:27:07 +0200
+Message-Id: <20220405070433.360745294@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,164 +51,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+From: Anand Jain <anand.jain@oracle.com>
 
-[ Upstream commit 4cb7df64c732b2b9918424095c11660c2a8c4a33 ]
+[ Upstream commit 770c79fb65506fc7c16459855c3839429f46cb32 ]
 
-The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
-but according to the reference manual, there is no such gate. Moreover,
-the consumer driver of the mentioned clock might gate it and leave
-the ECSPI2 (the true owner of that gate) hanging. So lets use the
-audio_mclk_post_div, which is the parent.
+Identifying and removing the stale device from the fs_uuids list is done
+by btrfs_free_stale_devices().  btrfs_free_stale_devices() in turn
+depends on device_path_matched() to check if the device appears in more
+than one btrfs_device structure.
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+The matching of the device happens by its path, the device path. However,
+when device mapper is in use, the dm device paths are nothing but a link
+to the actual block device, which leads to the device_path_matched()
+failing to match.
+
+Fix this by matching the dev_t as provided by lookup_bdev() instead of
+plain string compare of the device paths.
+
+Reported-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7-colibri.dtsi     | 4 ++--
- arch/arm/boot/dts/imx7-mba7.dtsi        | 2 +-
- arch/arm/boot/dts/imx7d-nitrogen7.dts   | 2 +-
- arch/arm/boot/dts/imx7d-pico-hobbit.dts | 4 ++--
- arch/arm/boot/dts/imx7d-pico-pi.dts     | 4 ++--
- arch/arm/boot/dts/imx7d-sdb.dts         | 4 ++--
- arch/arm/boot/dts/imx7s-warp.dts        | 4 ++--
- 7 files changed, 12 insertions(+), 12 deletions(-)
+ fs/btrfs/volumes.c | 45 ++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 38 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index 62b771c1d5a9..f1c60b0cb143 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -40,7 +40,7 @@
+diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+index b07d382d53a8..24e559d90b6a 100644
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -534,15 +534,48 @@ btrfs_get_bdev_and_sb(const char *device_path, fmode_t flags, void *holder,
+ 	return ret;
+ }
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -293,7 +293,7 @@
- 		compatible = "fsl,sgtl5000";
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&reg_module_3v3_avdd>;
-diff --git a/arch/arm/boot/dts/imx7-mba7.dtsi b/arch/arm/boot/dts/imx7-mba7.dtsi
-index 49086c6b6a0a..3df6dff7734a 100644
---- a/arch/arm/boot/dts/imx7-mba7.dtsi
-+++ b/arch/arm/boot/dts/imx7-mba7.dtsi
-@@ -302,7 +302,7 @@
- 	tlv320aic32x4: audio-codec@18 {
- 		compatible = "ti,tlv320aic32x4";
- 		reg = <0x18>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		ldoin-supply = <&reg_audio_3v3>;
- 		iov-supply = <&reg_audio_3v3>;
-diff --git a/arch/arm/boot/dts/imx7d-nitrogen7.dts b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-index e0751e6ba3c0..a31de900139d 100644
---- a/arch/arm/boot/dts/imx7d-nitrogen7.dts
-+++ b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-@@ -288,7 +288,7 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-pico-hobbit.dts b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-index 7b2198a9372c..d917dc4f2f22 100644
---- a/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-@@ -31,7 +31,7 @@
+-static bool device_path_matched(const char *path, struct btrfs_device *device)
++/*
++ * Check if the device in the path matches the device in the given struct device.
++ *
++ * Returns:
++ *   true  If it is the same device.
++ *   false If it is not the same device or on error.
++ */
++static bool device_matched(const struct btrfs_device *device, const char *path)
+ {
+-	int found;
++	char *device_name;
++	dev_t dev_old;
++	dev_t dev_new;
++	int ret;
++
++	/*
++	 * If we are looking for a device with the matching dev_t, then skip
++	 * device without a name (a missing device).
++	 */
++	if (!device->name)
++		return false;
++
++	device_name = kzalloc(BTRFS_PATH_NAME_MAX, GFP_KERNEL);
++	if (!device_name)
++		return false;
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-pico-pi.dts b/arch/arm/boot/dts/imx7d-pico-pi.dts
-index 70bea95c06d8..f263e391e24c 100644
---- a/arch/arm/boot/dts/imx7d-pico-pi.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-pi.dts
-@@ -31,7 +31,7 @@
+ 	rcu_read_lock();
+-	found = strcmp(rcu_str_deref(device->name), path);
++	scnprintf(device_name, BTRFS_PATH_NAME_MAX, "%s", rcu_str_deref(device->name));
+ 	rcu_read_unlock();
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-sdb.dts b/arch/arm/boot/dts/imx7d-sdb.dts
-index 7813ef960f6e..f053f5122741 100644
---- a/arch/arm/boot/dts/imx7d-sdb.dts
-+++ b/arch/arm/boot/dts/imx7d-sdb.dts
-@@ -385,14 +385,14 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 		wlf,hp-cfg = <2 2 3>;
- 		wlf,gpio-cfg = <1 3>;
- 		assigned-clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_SRC>,
- 				  <&clks IMX7D_PLL_AUDIO_POST_DIV>,
--				  <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+				  <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		assigned-clock-parents = <&clks IMX7D_PLL_AUDIO_POST_DIV>;
- 		assigned-clock-rates = <0>, <884736000>, <12288000>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7s-warp.dts b/arch/arm/boot/dts/imx7s-warp.dts
-index 4f1edef06c92..e8734d218b9d 100644
---- a/arch/arm/boot/dts/imx7s-warp.dts
-+++ b/arch/arm/boot/dts/imx7s-warp.dts
-@@ -75,7 +75,7 @@
+-	return found == 0;
++	ret = lookup_bdev(device_name, &dev_old);
++	kfree(device_name);
++	if (ret)
++		return false;
++
++	ret = lookup_bdev(path, &dev_new);
++	if (ret)
++		return false;
++
++	if (dev_old == dev_new)
++		return true;
++
++	return false;
+ }
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -232,7 +232,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&vgen4_reg>;
+ /*
+@@ -575,9 +608,7 @@ static int btrfs_free_stale_devices(const char *path,
+ 					 &fs_devices->devices, dev_list) {
+ 			if (skip_device && skip_device == device)
+ 				continue;
+-			if (path && !device->name)
+-				continue;
+-			if (path && !device_path_matched(path, device))
++			if (path && !device_matched(device, path))
+ 				continue;
+ 			if (fs_devices->opened) {
+ 				/* for an already deleted device return 0 */
 -- 
 2.34.1
 
