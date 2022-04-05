@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE565C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3F8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233619AbiDEIJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
+        id S233737AbiDEIJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232702AbiDEHyI (ORCPT
+        with ESMTP id S232315AbiDEHyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:54:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A672B1A5;
-        Tue,  5 Apr 2022 00:49:58 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C9B2E68F;
+        Tue,  5 Apr 2022 00:50:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A36F4615C3;
-        Tue,  5 Apr 2022 07:49:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1545C340EE;
-        Tue,  5 Apr 2022 07:49:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A09A1B81BAD;
+        Tue,  5 Apr 2022 07:50:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1B6BC340EE;
+        Tue,  5 Apr 2022 07:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144997;
-        bh=PCrH6URjmuB5guwZhaskUFJLccnRisVbZQOv3UYszQI=;
+        s=korg; t=1649145005;
+        bh=cDOHcd6ONfY3Vz+ceAFwv+xN7bIZgszIs24tb7wI428=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ph7mBD/rq/vkNh9ff9e550Nc9kqOrQYxKqtZKDSLAhnMlVBH3l66uonI5myWeYEcc
-         GkQhfHem5PHlAkc8YWznYc1jDrXOtAnEccgVAOHEXtSN+8M7XHFe3WH04nzqsUDtX/
-         OwTPNExpQSDAyPQlD4qul1fZozEed+985j3WfQaM=
+        b=m6zvFnUYmTsRXCJ7U1+BBrQjJ4R5U4lvCQ8rOkgkCuAAvwtbHzYg0U/cbdbCjFJXb
+         qoNixGwy6FOk/36CLo8dMe90nmbDS/08OfFAe2r9u9TGpu0u2tpVi41qVQhPOqnLgu
+         cSClUaWxwQ61e91jJhms3bbAlkz7HBnB2vM0hFS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        Petr Vorel <pvorel@suse.cz>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0246/1126] crypto: vmx - add missing dependencies
-Date:   Tue,  5 Apr 2022 09:16:33 +0200
-Message-Id: <20220405070414.828801647@linuxfoundation.org>
+Subject: [PATCH 5.17 0249/1126] clocksource/drivers/timer-microchip-pit64b: Use notrace
+Date:   Tue,  5 Apr 2022 09:16:36 +0200
+Message-Id: <20220405070414.918376141@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,60 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Vorel <pvorel@suse.cz>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit 647d41d3952d726d4ae49e853a9eff68ebad3b3f ]
+[ Upstream commit ff10ee97cb203262e88d9c8bc87369cbd4004a0c ]
 
-vmx-crypto module depends on CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or
-CRYPTO_XTS, thus add them.
+Use notrace for mchp_pit64b_sched_read_clk() to avoid recursive call of
+prepare_ftrace_return() when issuing:
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
 
-These dependencies are likely to be enabled, but if
-CRYPTO_DEV_VMX=y && !CRYPTO_MANAGER_DISABLE_TESTS
-and either of CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or CRYPTO_XTS is built
-as module or disabled, alg_test() from crypto/testmgr.c complains during
-boot about failing to allocate the generic fallback implementations
-(2 == ENOENT):
-
-[    0.540953] Failed to allocate xts(aes) fallback: -2
-[    0.541014] alg: skcipher: failed to allocate transform for p8_aes_xts: -2
-[    0.541120] alg: self-tests for p8_aes_xts (xts(aes)) failed (rc=-2)
-[    0.544440] Failed to allocate ctr(aes) fallback: -2
-[    0.544497] alg: skcipher: failed to allocate transform for p8_aes_ctr: -2
-[    0.544603] alg: self-tests for p8_aes_ctr (ctr(aes)) failed (rc=-2)
-[    0.547992] Failed to allocate cbc(aes) fallback: -2
-[    0.548052] alg: skcipher: failed to allocate transform for p8_aes_cbc: -2
-[    0.548156] alg: self-tests for p8_aes_cbc (cbc(aes)) failed (rc=-2)
-[    0.550745] Failed to allocate transformation for 'aes': -2
-[    0.550801] alg: cipher: Failed to load transform for p8_aes: -2
-[    0.550892] alg: self-tests for p8_aes (aes) failed (rc=-2)
-
-Fixes: c07f5d3da643 ("crypto: vmx - Adding support for XTS")
-Fixes: d2e3ae6f3aba ("crypto: vmx - Enabling VMX module for PPC64")
-
-Suggested-by: Nicolai Stange <nstange@suse.de>
-Signed-off-by: Petr Vorel <pvorel@suse.cz>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 625022a5f160 ("clocksource/drivers/timer-microchip-pit64b: Add Microchip PIT64B support")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220304133601.2404086-3-claudiu.beznea@microchip.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/vmx/Kconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/clocksource/timer-microchip-pit64b.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/vmx/Kconfig b/drivers/crypto/vmx/Kconfig
-index c85fab7ef0bd..b2c28b87f14b 100644
---- a/drivers/crypto/vmx/Kconfig
-+++ b/drivers/crypto/vmx/Kconfig
-@@ -2,7 +2,11 @@
- config CRYPTO_DEV_VMX_ENCRYPT
- 	tristate "Encryption acceleration support on P8 CPU"
- 	depends on CRYPTO_DEV_VMX
-+	select CRYPTO_AES
-+	select CRYPTO_CBC
-+	select CRYPTO_CTR
- 	select CRYPTO_GHASH
-+	select CRYPTO_XTS
- 	default m
- 	help
- 	  Support for VMX cryptographic acceleration instructions on Power8 CPU.
+diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
+index cfa4ec7ef396..790d2c9b42a7 100644
+--- a/drivers/clocksource/timer-microchip-pit64b.c
++++ b/drivers/clocksource/timer-microchip-pit64b.c
+@@ -165,7 +165,7 @@ static u64 mchp_pit64b_clksrc_read(struct clocksource *cs)
+ 	return mchp_pit64b_cnt_read(mchp_pit64b_cs_base);
+ }
+ 
+-static u64 mchp_pit64b_sched_read_clk(void)
++static u64 notrace mchp_pit64b_sched_read_clk(void)
+ {
+ 	return mchp_pit64b_cnt_read(mchp_pit64b_cs_base);
+ }
 -- 
 2.34.1
 
