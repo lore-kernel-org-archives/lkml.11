@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AFD2C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E39C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384579AbiDENcY (ORCPT
+        id S1384471AbiDENcV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
+        Tue, 5 Apr 2022 09:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345872AbiDEJXH (ORCPT
+        with ESMTP id S1345815AbiDEJXD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:23:07 -0400
+        Tue, 5 Apr 2022 05:23:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34744A5E8D;
-        Tue,  5 Apr 2022 02:12:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139E19F6C8;
+        Tue,  5 Apr 2022 02:12:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C647561527;
-        Tue,  5 Apr 2022 09:12:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBF47C385A2;
-        Tue,  5 Apr 2022 09:12:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FFF3615E5;
+        Tue,  5 Apr 2022 09:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FEADC385A0;
+        Tue,  5 Apr 2022 09:12:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149943;
-        bh=m7G20AubjvcX73uuvdxB1UoNXmtJuvwEgYN+98yPEXM=;
+        s=korg; t=1649149934;
+        bh=BBrYdWG++MCLrSKzmXHsgOOi+WKZDpUEzM+K/Ckpuzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JbmDxpelTCX1Ok1gIedzMdHZM6VIHrP1gnNEGXyysLQmouGs1RS4wqgxewtKRedio
-         3oWm9jxuou6r+jCdEKKjLwl6VkPpgSM8ZRPInLunhBel28XMLXCBu/U5HdAyqbhUBt
-         KXRTmPYyU9uDe5K5L48Tuk6p0TGK0Pc1suxRaKpk=
+        b=O3AZt9CfWXCFATLnR2WXKGi6oFmlV3LKR/H/VGoJgQBf0Ak4mCFWyp7rVrwS1kGp9
+         iF3ebIKS29AGvUaJCtN8S4J4eJzquUI79eC7LqPMjcTcQPhoWi/GXyHWA7kVM7H9FX
+         oZ0o4Ha90E3UBwcprNEufJbbFlgtsP0IDD5Am+68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Quinn Tran <qutran@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 0897/1017] scsi: qla2xxx: Reduce false trigger to login
-Date:   Tue,  5 Apr 2022 09:30:10 +0200
-Message-Id: <20220405070420.852885310@linuxfoundation.org>
+Subject: [PATCH 5.16 0877/1017] scsi: qla2xxx: Fix stuck session in gpdb
+Date:   Tue,  5 Apr 2022 09:29:50 +0200
+Message-Id: <20220405070420.267537180@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -54,15 +54,14 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Quinn Tran <qutran@marvell.com>
 
-commit d2646eed7b19a206912f49101178cbbaa507256c upstream.
+commit 725d3a0d31a51c0debf970011e05f585e805165b upstream.
 
-While a session is in the middle of a relogin, a late RSCN can be delivered
-from switch. RSCN trigger fabric scan where the scan logic can trigger
-another session login while a login is in progress.  Reduce the extra
-trigger to prevent multiple logins to the same session.
+Fix stuck sessions in get port database. When a thread is in the process of
+re-establishing a session, a flag is set to prevent multiple threads /
+triggers from doing the same task. This flag was left on, where any attempt
+to relogin was locked out. Clear this flag, if the attempt has failed.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-10-njavali@marvell.com
-Fixes: bee8b84686c4 ("scsi: qla2xxx: Reduce redundant ADISC command for RSCNs")
+Link: https://lore.kernel.org/r/20220110050218.3958-4-njavali@marvell.com
 Cc: stable@vger.kernel.org
 Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
 Signed-off-by: Quinn Tran <qutran@marvell.com>
@@ -70,29 +69,23 @@ Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 --- a/drivers/scsi/qla2xxx/qla_init.c
 +++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -1644,7 +1644,8 @@ int qla24xx_fcport_handle_login(struct s
- 	    fcport->login_gen, fcport->loop_id, fcport->scan_state,
- 	    fcport->fc4_type);
- 
--	if (fcport->scan_state != QLA_FCPORT_FOUND)
-+	if (fcport->scan_state != QLA_FCPORT_FOUND ||
-+	    fcport->disc_state == DSC_DELETE_PEND)
- 		return 0;
- 
- 	if ((fcport->loop_id != FC_NO_LOOP_ID) &&
-@@ -1665,7 +1666,7 @@ int qla24xx_fcport_handle_login(struct s
- 	if (vha->host->active_mode == MODE_TARGET && !N2N_TOPO(vha->hw))
- 		return 0;
- 
--	if (fcport->flags & FCF_ASYNC_SENT) {
-+	if (fcport->flags & (FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE)) {
- 		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
- 		return 0;
+@@ -1332,9 +1332,9 @@ int qla24xx_async_gpdb(struct scsi_qla_h
+ 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
+ 	    fcport->loop_id == FC_NO_LOOP_ID) {
+ 		ql_log(ql_log_warn, vha, 0xffff,
+-		    "%s: %8phC - not sending command.\n",
+-		    __func__, fcport->port_name);
+-		return rval;
++		    "%s: %8phC online %d flags %x - not sending command.\n",
++		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
++		goto done;
  	}
+ 
+ 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 
 
