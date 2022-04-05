@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3D3C388F3
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97938C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234583AbiDEINh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
+        id S234662AbiDEINu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234282AbiDEH6G (ORCPT
+        with ESMTP id S234525AbiDEH6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:58:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8569BAE3;
-        Tue,  5 Apr 2022 00:52:10 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028DCA206F;
+        Tue,  5 Apr 2022 00:52:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E5B3B81BAF;
-        Tue,  5 Apr 2022 07:52:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E570BC34111;
-        Tue,  5 Apr 2022 07:52:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D79E3615CD;
+        Tue,  5 Apr 2022 07:52:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1F4CC340EE;
+        Tue,  5 Apr 2022 07:52:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145127;
-        bh=1xsjRKMqP5RqWtFVtYhBnlBrA69egcb28RKZGj3GV+Q=;
+        s=korg; t=1649145160;
+        bh=GOCjvPSffRKuugb0uITMfSMEobaooJl1sG41hMr87RY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hXtxCz2k8Tr1clITNe8EkEyJOqa2R1t2H04wbPn6WqApsbBIofDkGbtUtiDLdQjVU
-         2DRL6Y7OGyZV+LfBCZ/1hhnLRyQhR5GF2DvZsQyHNMO+bgZU84EvjogISYR4Higw8d
-         PSLHhDqfCpJ364UEORKjDplpJqWe6VEUzGMLBFUQ=
+        b=DFjhrFndNTtwnk9KW9LX0ih3vi6b+agwKBbRi4jbCrthXkvHpDUpIn24CAj0HuxIJ
+         f+dUn8PXaCnG4uQrYxQTWsTcfpeeP0CVl5p8D04bpeDlnZ4QBzzTwMUH0hKtH6fT3Z
+         nB2VzQktOazP7NKJgsR0Iur/LbePWCrYddS9rnGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
-        Robert Foss <robert.foss@linaro.org>,
-        Julian Grahsl <jgrahsl@snap.com>,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Tzung-Bi Shih <tzungbi@google.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0293/1126] media: camss: csid-170: fix non-10bit formats
-Date:   Tue,  5 Apr 2022 09:17:20 +0200
-Message-Id: <20220405070416.214607472@linuxfoundation.org>
+Subject: [PATCH 5.17 0299/1126] media: mtk-vcodec: potential dereference of null pointer
+Date:   Tue,  5 Apr 2022 09:17:26 +0200
+Message-Id: <20220405070416.391840149@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,50 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Marek <jonathan@marek.ca>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 14d510e040f85ff05734fd6db8bae44b47886464 ]
+[ Upstream commit e25a89f743b18c029bfbe5e1663ae0c7190912b0 ]
 
-Use the decode_format/data_type from the "format" struct instead of a
-hardcoded 10-bit format.
+The return value of devm_kzalloc() needs to be checked.
+To avoid use of null pointer in case of thefailure of alloc.
 
-Fixes: eebe6d00e9bf ("media: camss: Add support for CSID hardware version Titan 170")
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Tested-by: Julian Grahsl <jgrahsl@snap.com>
-Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Fixes: 46233e91fa24 ("media: mtk-vcodec: move firmware implementations into their own files")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/camss/camss-csid-170.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/media/platform/qcom/camss/camss-csid-170.c b/drivers/media/platform/qcom/camss/camss-csid-170.c
-index ac22ff29d2a9..aa65043c3303 100644
---- a/drivers/media/platform/qcom/camss/camss-csid-170.c
-+++ b/drivers/media/platform/qcom/camss/camss-csid-170.c
-@@ -366,7 +366,7 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
- 			val |= input_format->width & 0x1fff << TPG_DT_n_CFG_0_FRAME_WIDTH;
- 			writel_relaxed(val, csid->base + CSID_TPG_DT_n_CFG_0(0));
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
+index cd27f637dbe7..cfc7ebed8fb7 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
+@@ -102,6 +102,8 @@ struct mtk_vcodec_fw *mtk_vcodec_fw_vpu_init(struct mtk_vcodec_dev *dev,
+ 	vpu_wdt_reg_handler(fw_pdev, mtk_vcodec_vpu_reset_handler, dev, rst_id);
  
--			val = DATA_TYPE_RAW_10BIT << TPG_DT_n_CFG_1_DATA_TYPE;
-+			val = format->data_type << TPG_DT_n_CFG_1_DATA_TYPE;
- 			writel_relaxed(val, csid->base + CSID_TPG_DT_n_CFG_1(0));
- 
- 			val = tg->mode << TPG_DT_n_CFG_2_PAYLOAD_MODE;
-@@ -382,8 +382,9 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
- 		val = 1 << RDI_CFG0_BYTE_CNTR_EN;
- 		val |= 1 << RDI_CFG0_FORMAT_MEASURE_EN;
- 		val |= 1 << RDI_CFG0_TIMESTAMP_EN;
-+		/* note: for non-RDI path, this should be format->decode_format */
- 		val |= DECODE_FORMAT_PAYLOAD_ONLY << RDI_CFG0_DECODE_FORMAT;
--		val |= DATA_TYPE_RAW_10BIT << RDI_CFG0_DATA_TYPE;
-+		val |= format->data_type << RDI_CFG0_DATA_TYPE;
- 		val |= vc << RDI_CFG0_VIRTUAL_CHANNEL;
- 		val |= dt_id << RDI_CFG0_DT_ID;
- 		writel_relaxed(val, csid->base + CSID_RDI_CFG0(0));
+ 	fw = devm_kzalloc(&dev->plat_dev->dev, sizeof(*fw), GFP_KERNEL);
++	if (!fw)
++		return ERR_PTR(-ENOMEM);
+ 	fw->type = VPU;
+ 	fw->ops = &mtk_vcodec_vpu_msg;
+ 	fw->pdev = fw_pdev;
 -- 
 2.34.1
 
