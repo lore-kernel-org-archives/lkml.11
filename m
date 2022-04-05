@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03944C3A5A7
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD977C47082
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239202AbiDEITy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44078 "EHLO
+        id S239650AbiDEIUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235672AbiDEH77 (ORCPT
+        with ESMTP id S235667AbiDEH77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:59:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD3DBBB;
-        Tue,  5 Apr 2022 00:57:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4AB193E7;
+        Tue,  5 Apr 2022 00:57:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03029B81B16;
-        Tue,  5 Apr 2022 07:57:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 645F9C340EE;
-        Tue,  5 Apr 2022 07:57:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0420CB81B18;
+        Tue,  5 Apr 2022 07:57:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D223C340EE;
+        Tue,  5 Apr 2022 07:57:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145446;
-        bh=Liju10TvGCS1yQDNFGGcvBTeSq06ruBprmwSCYMZRYQ=;
+        s=korg; t=1649145435;
+        bh=UllYA1hnWzezOeqKYUWGdMOxSYfqVAhtIAwVfrMDH2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=od4rZ8OTCKHcswH2e0FwXSHVdt6rrGYCM5Lv4Qgp0W1xCGuXJSG+2fbofk6I0h857
-         18pEtW+u4pBynCx9y+S0PgxwSUcdtt+J1+dnPBmmpVfCORyK0h6j6H+9Rdz/WWBi75
-         l1z2Ho1E283sGWxR3GroC8WvY8X7TRYZVuyoZ3RA=
+        b=bKGuh8yaGspr8YkcWpLz2yZO6m7CZ+s/J4ILYrM8pEYhflKDjvagKPlVM/HML1cE1
+         uE0kp7ragO7RDEty9tTgScP/VFsqibrycLeJrWpiCehQJ6xeuX//b/Wo4cFBkoIIZ+
+         DREFzNz+30exLwcFWsszUYcF6kluH8k/2whlMbgg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0408/1126] ASoC: fsl_spdif: Disable TX clock when stop
-Date:   Tue,  5 Apr 2022 09:19:15 +0200
-Message-Id: <20220405070419.601632543@linuxfoundation.org>
+Subject: [PATCH 5.17 0404/1126] ASoC: mediatek: mt8192-mt6359: Fix error handling in mt8192_mt6359_dev_probe
+Date:   Tue,  5 Apr 2022 09:19:11 +0200
+Message-Id: <20220405070419.484746920@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,39 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6ddf611219ba8f7c8fa0d26b39710a641e7d37a5 ]
+[ Upstream commit e45ac7831ff3e2934d58cce319c17c8ec763c95c ]
 
-The TX clock source may be changed in next case, need to
-disable it when stop, otherwise the TX may not work after
-changing the clock source, error log is:
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-aplay: pcm_write:2058: write error: Input/output error
+This function only calls of_node_put() in the regular path.
+And it will cause refcount leak in error paths.
+Fix this by calling of_node_put() in error handling too.
 
-Fixes: a2388a498ad2 ("ASoC: fsl: Add S/PDIF CPU DAI driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Link: https://lore.kernel.org/r/1646879863-27711-1-git-send-email-shengjiu.wang@nxp.com
+Fixes: 4e28491a7a19 ("ASoC: mediatek: mt8192-mt6359: fix device_node leak")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Link: https://lore.kernel.org/r/20220308015224.23585-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_spdif.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../mt8192/mt8192-mt6359-rt1015-rt5682.c       | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/fsl/fsl_spdif.c b/sound/soc/fsl/fsl_spdif.c
-index d178b479c8bd..06d4a014f296 100644
---- a/sound/soc/fsl/fsl_spdif.c
-+++ b/sound/soc/fsl/fsl_spdif.c
-@@ -610,6 +610,8 @@ static void fsl_spdif_shutdown(struct snd_pcm_substream *substream,
- 		mask = SCR_TXFIFO_AUTOSYNC_MASK | SCR_TXFIFO_CTRL_MASK |
- 			SCR_TXSEL_MASK | SCR_USRC_SEL_MASK |
- 			SCR_TXFIFO_FSEL_MASK;
-+		/* Disable TX clock */
-+		regmap_update_bits(regmap, REG_SPDIF_STC, STC_TXCLK_ALL_EN_MASK, 0);
- 	} else {
- 		scr = SCR_RXFIFO_OFF | SCR_RXFIFO_CTL_ZERO;
- 		mask = SCR_RXFIFO_FSEL_MASK | SCR_RXFIFO_AUTOSYNC_MASK|
+diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+index f7daad1bfe1e..ee91569c0911 100644
+--- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
++++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+@@ -1116,8 +1116,10 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	card = (struct snd_soc_card *)of_device_get_match_data(&pdev->dev);
+-	if (!card)
+-		return -EINVAL;
++	if (!card) {
++		ret = -EINVAL;
++		goto put_platform_node;
++	}
+ 	card->dev = &pdev->dev;
+ 
+ 	hdmi_codec = of_parse_phandle(pdev->dev.of_node,
+@@ -1159,20 +1161,24 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
+-		return -ENOMEM;
++	if (!priv) {
++		ret = -ENOMEM;
++		goto put_hdmi_codec;
++	}
+ 	snd_soc_card_set_drvdata(card, priv);
+ 
+ 	ret = mt8192_afe_gpio_init(&pdev->dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "init gpio error %d\n", ret);
+-		return ret;
++		goto put_hdmi_codec;
+ 	}
+ 
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ 
+-	of_node_put(platform_node);
++put_hdmi_codec:
+ 	of_node_put(hdmi_codec);
++put_platform_node:
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
