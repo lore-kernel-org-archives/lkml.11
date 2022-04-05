@@ -2,125 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C60C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC9FC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578699AbiDEXYi (ORCPT
+        id S1578732AbiDEXYp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60306 "EHLO
+        Tue, 5 Apr 2022 19:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444229AbiDEPlD (ORCPT
+        with ESMTP id S243867AbiDEKhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:03 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC5B211;
-        Tue,  5 Apr 2022 07:03:32 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 235E2k8O021295;
-        Tue, 5 Apr 2022 23:02:50 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8O021295
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649167370;
-        bh=jQYNKCFxuPQP3ZPrlr5taAXi8gXxcKaNemFjBDbWpQI=;
+        Tue, 5 Apr 2022 06:37:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A837091F;
+        Tue,  5 Apr 2022 03:23:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F878617CC;
+        Tue,  5 Apr 2022 10:23:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72853C385A0;
+        Tue,  5 Apr 2022 10:23:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649154200;
+        bh=4YhYlmlgU5yF/qSl658v/68xrg7u+cOGYTE7Fjs+AWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cZXvD0LoQRIt7Gp7lffANaJ3BkZAHSOlpP3Qdy+vuzcdxgsJwNBPXfvnXsfZyIUx/
-         6OdqlpweIGKTjd/tEbO2BLiuxrGnowo7PqKDio2vWxKqt1ihZOTLGkzi9vPCMX3TOC
-         ijdF7e0hBdr7/BYuMxFp6tIrwKRTveiqQ73T6Q/HAbXeZmsZbMHsRf/Vdvyg9Ppz73
-         ZTq41rV82tt9OTsB4kkCuUadvv5cCkKynrvA07S53tWOm+D/qPX27tM8PsMQ9D7ydt
-         d34nuy8qNYctN5QRdFSqS10it5qmIey4sEDfKuinLKoA36FeSWUVlAc5FxAtYnm07b
-         0dZMrGz8Atw9Q==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 06/10] modpost: remove annoying namespace_from_kstrtabns()
-Date:   Tue,  5 Apr 2022 23:02:25 +0900
-Message-Id: <20220405140229.2895394-7-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
-References: <20220405140229.2895394-1-masahiroy@kernel.org>
+        b=qZ7j1dnmtdcirO+oN5uyaCuHY1LnoxsVnmWTPdvq2Fx9PuKfp72LQ26lJfvFclWp4
+         70wJDX3nNqL6vp4Eec47AQ3MVYD/u9KxsYfdXHu8w6T3BWyQlVRA+2ksKRFzytHbqj
+         V8BkTn+J67WNkoC9vaueEYyOaOBm9CebxoThPCXg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>,
+        LogicalErzor <logicalerzor@gmail.com>
+Subject: [PATCH 5.10 487/599] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
+Date:   Tue,  5 Apr 2022 09:33:01 +0200
+Message-Id: <20220405070313.319915107@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two call sites for sym_update_namespace().
+From: David Heidelberg <david@ixit.cz>
 
-When the symbol has no namespace, s->namespace is set to NULL,
-but the conversion from "" to NULL is done in two different places.
+[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
 
-[1] read_symbols()
+IRQ types blindly copied from very similar APQ8064.
 
-  This gets the namespace from __kstrtabns_<symbol>. If the symbol has
-  no namespace, sym_get_data(info, sym) returns the empty string "".
-  namespace_from_kstrtabns() converts it to NULL before it is passed to
-  sym_update_namespace().
+Fixes warnings as:
+WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
+...
 
-[2] read_dump()
-
-  This gets the namespace from the dump file, *.symvers. If the symbol
-  has no namespace, the 'namespace' is the empty string "", which is
-  directly passed into sym_update_namespace(). The conversion from
-  "" to NULL is done in sym_update_namespace().
-
-namespace_from_kstrtabns() exists only for creating this inconsistency.
-
-By removing it, sym_update_namespace() is consistently passed with ""
-when the symbol has no namespace.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Changes in v2:
-  - new
-
- scripts/mod/modpost.c | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
-
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 2a202764ff48..522d5249d196 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -369,13 +369,6 @@ static enum export export_from_secname(struct elf_info *elf, unsigned int sec)
- 		return export_unknown;
- }
+diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+index 172ea3c70eac..c197927e7435 100644
+--- a/arch/arm/boot/dts/qcom-msm8960.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+@@ -146,7 +146,9 @@
+ 			reg		= <0x108000 0x1000>;
+ 			qcom,ipc	= <&l2cc 0x8 2>;
  
--static const char *namespace_from_kstrtabns(const struct elf_info *info,
--					    const Elf_Sym *sym)
--{
--	const char *value = sym_get_data(info, sym);
--	return value[0] ? value : NULL;
--}
--
- static void sym_update_namespace(const char *symname, const char *namespace)
- {
- 	struct symbol *s = find_symbol(symname);
-@@ -391,8 +384,7 @@ static void sym_update_namespace(const char *symname, const char *namespace)
- 	}
+-			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
++			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
+ 			interrupt-names	= "ack", "err", "wakeup";
  
- 	free(s->namespace);
--	s->namespace =
--		namespace && namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
-+	s->namespace = namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
- }
+ 			regulators {
+@@ -192,7 +194,7 @@
+ 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 				reg = <0x16440000 0x1000>,
+ 				      <0x16400000 0x1000>;
+-				interrupts = <0 154 0x0>;
++				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
+ 				clock-names = "core", "iface";
+ 				status = "disabled";
+@@ -318,7 +320,7 @@
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+ 				reg = <0x16080000 0x1000>;
+-				interrupts = <0 147 0>;
++				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
+ 				spi-max-frequency = <24000000>;
+ 				cs-gpios = <&msmgpio 8 0>;
  
- /**
-@@ -2049,9 +2041,7 @@ static void read_symbols(const char *modname)
- 		/* Apply symbol namespaces from __kstrtabns_<symbol> entries. */
- 		if (strstarts(symname, "__kstrtabns_"))
- 			sym_update_namespace(symname + strlen("__kstrtabns_"),
--					     namespace_from_kstrtabns(&info,
--								      sym));
--
-+					     sym_get_data(&info, sym));
- 		if (strstarts(symname, "__crc_"))
- 			handle_modversion(mod, &info, sym,
- 					  symname + strlen("__crc_"));
 -- 
-2.32.0
+2.34.1
+
+
 
