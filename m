@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFB1C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32ED4C46467
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448204AbiDFAE5 (ORCPT
+        id S1449955AbiDFAFP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
+        Tue, 5 Apr 2022 20:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348817AbiDEJsj (ORCPT
+        with ESMTP id S1349479AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFC0AC938;
-        Tue,  5 Apr 2022 02:36:11 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D5210BA;
+        Tue,  5 Apr 2022 02:47:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D22BB81B75;
-        Tue,  5 Apr 2022 09:36:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923A9C385A0;
-        Tue,  5 Apr 2022 09:36:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8BFC9CE1BE5;
+        Tue,  5 Apr 2022 09:47:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5FDDC385A1;
+        Tue,  5 Apr 2022 09:47:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151368;
-        bh=K6geJeEW5QaOD+aLW/HKf6IJ3et2Chj97ahJ/fcGf9U=;
+        s=korg; t=1649152030;
+        bh=Z6OySrSX32Hkx5sPKsLlBhXghDamj+OXKiODTtxYEdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KDuPES/2QE5aL6JRMbKTCG28nac+T6vQmZ/Z/ye4VvB/gjb2+JK16kg53k9Bu29dr
-         DphVKwG4SvBeuS68qiBlkMQ3JBU1Q8AyGRfq8kOlAEQ2Y6g+f8PKxyUup042OEYTSo
-         P5vUb+Uip+CQSq75LK7GJ5BFbIG6l8uii+2U2H88=
+        b=M0um/HIXRXXFT6JJr7/KhJzlWSfueUvTLTzHo2553Egjkh2BeojZPn/8rj89ehWKd
+         wjjYpXrhs9EtiD0oevHdvkQFIlY4gVw/aSuXDHys5NH7Rzg5AWWSSKNqzmUoslsPPr
+         caI//vfSLkTADBOkxnpShsYIDtFBect3e/KCR9ZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
+        stable@vger.kernel.org,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 390/913] selftests: bpf: Fix bind on used port
-Date:   Tue,  5 Apr 2022 09:24:12 +0200
-Message-Id: <20220405070351.537975626@linuxfoundation.org>
+Subject: [PATCH 5.15 630/913] staging: mt7621-dts: fix GB-PC2 devicetree
+Date:   Tue,  5 Apr 2022 09:28:12 +0200
+Message-Id: <20220405070358.722848056@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -51,71 +51,166 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Maurer <fmaurer@redhat.com>
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-[ Upstream commit 8c0be0631d81e48f77d0ebf0534c86e32bef5f89 ]
+[ Upstream commit 5bc148649cf358d0cccf525452a4efbd4bc89a0f ]
 
-The bind_perm BPF selftest failed when port 111/tcp was already in use
-during the test. To fix this, the test now runs in its own network name
-space.
+Fix the GB-PC2 devicetree. Refer to the schematics of the device for more
+information.
 
-To use unshare, it is necessary to reorder the includes. The style of
-the includes is adapted to be consistent with the other prog_tests.
+GB-PC2 devicetree fixes:
+- Include mt7621.dtsi instead of gbpc1.dts. Add the missing definitions.
+- Remove gpio-leds node as the system LED is not wired to anywhere on
+the board and the power LED is directly wired to GND.
+- Remove uart3 pin group from gpio-pinmux node as it's not used as GPIO.
+- Use reg 7 for the external phy to be on par with
+Documentation/devicetree/bindings/net/dsa/mt7530.txt.
+- Use the status value "okay".
 
-v2: Replace deprecated CHECK macro with ASSERT_OK
-
-Fixes: 8259fdeb30326 ("selftests/bpf: Verify that rebinding to port < 1024 from BPF works")
-Signed-off-by: Felix Maurer <fmaurer@redhat.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-Link: https://lore.kernel.org/bpf/551ee65533bb987a43f93d88eaf2368b416ccd32.1642518457.git.fmaurer@redhat.com
+Link: https://github.com/ngiger/GnuBee_Docs/blob/master/GB-PCx/Documents/GB-PC2_V1.1_schematic.pdf
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Link: https://lore.kernel.org/r/20220311090320.3068-2-arinc.unal@arinc9.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/bpf/prog_tests/bind_perm.c      | 20 ++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ drivers/staging/mt7621-dts/gbpc2.dts | 110 +++++++++++++++++++++++++--
+ 1 file changed, 102 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-index d0f06e40c16d..eac71fbb24ce 100644
---- a/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-@@ -1,13 +1,24 @@
- // SPDX-License-Identifier: GPL-2.0
--#include <test_progs.h>
--#include "bind_perm.skel.h"
--
-+#define _GNU_SOURCE
-+#include <sched.h>
-+#include <stdlib.h>
- #include <sys/types.h>
- #include <sys/socket.h>
- #include <sys/capability.h>
+diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/drivers/staging/mt7621-dts/gbpc2.dts
+index f9b69091bfc0..6f6fed071dda 100644
+--- a/drivers/staging/mt7621-dts/gbpc2.dts
++++ b/drivers/staging/mt7621-dts/gbpc2.dts
+@@ -1,27 +1,121 @@
+ /dts-v1/;
  
-+#include "test_progs.h"
-+#include "bind_perm.skel.h"
+-#include "gbpc1.dts"
++#include "mt7621.dtsi"
 +
- static int duration;
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
  
-+static int create_netns(void)
-+{
-+	if (!ASSERT_OK(unshare(CLONE_NEWNET), "create netns"))
-+		return -1;
+ / {
+ 	compatible = "gnubee,gb-pc2", "mediatek,mt7621-soc";
+ 	model = "GB-PC2";
 +
-+	return 0;
-+}
++	memory@0 {
++		device_type = "memory";
++		reg = <0x00000000 0x1c000000>,
++		      <0x20000000 0x04000000>;
++	};
 +
- void try_bind(int family, int port, int expected_errno)
- {
- 	struct sockaddr_storage addr = {};
-@@ -75,6 +86,9 @@ void test_bind_perm(void)
- 	struct bind_perm *skel;
- 	int cgroup_fd;
++	chosen {
++		bootargs = "console=ttyS0,57600";
++	};
++
++	palmbus: palmbus@1e000000 {
++		i2c@900 {
++			status = "okay";
++		};
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++
++		reset {
++			label = "reset";
++			gpios = <&gpio 18 GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_RESTART>;
++		};
++	};
+ };
  
-+	if (create_netns())
-+		return;
+-&default_gpio {
+-	groups = "wdt", "uart3";
+-	function = "gpio";
++&sdhci {
++	status = "okay";
++};
 +
- 	cgroup_fd = test__join_cgroup("/bind_perm");
- 	if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
- 		return;
++&spi0 {
++	status = "okay";
++
++	m25p80@0 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <50000000>;
++		broken-flash-reset;
++
++		partition@0 {
++			label = "u-boot";
++			reg = <0x0 0x30000>;
++			read-only;
++		};
++
++		partition@30000 {
++			label = "u-boot-env";
++			reg = <0x30000 0x10000>;
++			read-only;
++		};
++
++		factory: partition@40000 {
++			label = "factory";
++			reg = <0x40000 0x10000>;
++			read-only;
++		};
++
++		partition@50000 {
++			label = "firmware";
++			reg = <0x50000 0x1fb0000>;
++		};
++	};
++};
++
++&pcie {
++	status = "okay";
++};
++
++&pinctrl {
++	pinctrl-names = "default";
++	pinctrl-0 = <&state_default>;
++
++	state_default: state-default {
++		gpio-pinmux {
++			groups = "wdt";
++			function = "gpio";
++		};
++	};
+ };
+ 
+ &ethernet {
+ 	gmac1: mac@1 {
+-		status = "ok";
+-		phy-handle = <&phy_external>;
++		status = "okay";
++		phy-handle = <&ethphy7>;
+ 	};
+ 
+ 	mdio-bus {
+-		phy_external: ethernet-phy@5 {
+-			reg = <5>;
++		ethphy7: ethernet-phy@7 {
++			reg = <7>;
+ 			phy-mode = "rgmii-rxid";
+ 		};
+ 	};
+ };
++
++&switch0 {
++	ports {
++		port@0 {
++			status = "okay";
++			label = "ethblack";
++		};
++
++		port@4 {
++			status = "okay";
++			label = "ethblue";
++		};
++	};
++};
 -- 
 2.34.1
 
