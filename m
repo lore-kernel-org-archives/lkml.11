@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97588C3527D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4015C4167E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583415AbiDEXwj (ORCPT
+        id S1583259AbiDEXv7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33984 "EHLO
+        Tue, 5 Apr 2022 19:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350088AbiDEJwt (ORCPT
+        with ESMTP id S1354627AbiDEKO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EC048893;
-        Tue,  5 Apr 2022 02:50:50 -0700 (PDT)
+        Tue, 5 Apr 2022 06:14:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A019149258;
+        Tue,  5 Apr 2022 03:01:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12AEA61577;
-        Tue,  5 Apr 2022 09:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 259F2C385A1;
-        Tue,  5 Apr 2022 09:50:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50DBAB818F6;
+        Tue,  5 Apr 2022 10:01:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F8ADC385A1;
+        Tue,  5 Apr 2022 10:01:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152249;
-        bh=VF/FtbB4PAuEWmGGoG5wMxCM4fWEQ+vsuKx2wLK7av8=;
+        s=korg; t=1649152896;
+        bh=ITFT4xuUt8InQXuT17eiq6zZtHoY6F2hARdYffH9X9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZnL0TMKRDxGs/FwGe8tMkOV5koubYxkYmK+cyzmvColbl6dOis16fF6Hkem95YuF
-         P7ay4pXtlQ4/aj5WEbiA8BrI6M9AFm7VQYIt4HjrCxmmQVlSZTvFN1dcw6GSXnCvrI
-         q3YdE6xdPiA8WUvn1qM4O0/M1zS/55uprBRrUkKs=
+        b=fj4DpUyQGef0WIm/3SpG0bpKyI0sAekNxkuTJV3dE65yQsj1NDpKm2UVi9gCSl/ZW
+         BcR92HQSCduvIpNAeqR7kI0xa5oPnm7kWMuE7hN3szAhB9PyDd88ZsO3c2aS217EEr
+         CwBG3z9spmPnXLnfAukySqN1sNnrtky26poNJe/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 710/913] locking/lockdep: Iterate lock_classes directly when reading lockdep files
-Date:   Tue,  5 Apr 2022 09:29:32 +0200
-Message-Id: <20220405070401.117369649@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Pavan Kondeti <quic_pkondeti@quicinc.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.10 028/599] xhci: make xhci_handshake timeout for xhci_reset() adjustable
+Date:   Tue,  5 Apr 2022 09:25:22 +0200
+Message-Id: <20220405070259.660319009@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,254 +50,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-[ Upstream commit fb7275acd6fb988313dddd8d3d19efa70d9015ad ]
+commit 14073ce951b5919da450022c050772902f24f054 upstream.
 
-When dumping lock_classes information via /proc/lockdep, we can't take
-the lockdep lock as the lock hold time is indeterminate. Iterating
-over all_lock_classes without holding lock can be dangerous as there
-is a slight chance that it may branch off to other lists leading to
-infinite loop or even access invalid memory if changes are made to
-all_lock_classes list in parallel.
+xhci_reset() timeout was increased from 250ms to 10 seconds in order to
+give Renesas 720201 xHC enough time to get ready in probe.
 
-To avoid this problem, iteration of lock classes is now done directly
-on the lock_classes array itself. The lock_classes_in_use bitmap is
-checked to see if the lock class is being used. To avoid iterating
-the full array all the times, a new max_lock_class_idx value is added
-to track the maximum lock_class index that is currently being used.
+xhci_reset() is called with interrupts disabled in other places, and
+waiting for 10 seconds there is not acceptable.
 
-We can theoretically take the lockdep lock for iterating all_lock_classes
-when other lockdep files (lockdep_stats and lock_stat) are accessed as
-the lock hold time will be shorter for them. For consistency, they are
-also modified to iterate the lock_classes array directly.
+Add a timeout parameter to xhci_reset(), and adjust it back to 250ms
+when called from xhci_stop() or xhci_shutdown() where interrupts are
+disabled, and successful reset isn't that critical.
+This solves issues when deactivating host mode on platforms like SM8450.
 
-Signed-off-by: Waiman Long <longman@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220211035526.1329503-2-longman@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+For now don't change the timeout if xHC is reset in xhci_resume().
+No issues are reported for it, and we need the reset to succeed.
+Locking around that reset needs to be revisited later.
+
+Additionally change the signed integer timeout parameter in
+xhci_handshake() to a u64 to match the timeout value we pass to
+readl_poll_timeout_atomic()
+
+Fixes: 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
+Cc: stable@vger.kernel.org
+Reported-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reported-by: Pavan Kondeti <quic_pkondeti@quicinc.com>
+Tested-by: Pavan Kondeti <quic_pkondeti@quicinc.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220303110903.1662404-2-mathias.nyman@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/locking/lockdep.c           | 14 +++++---
- kernel/locking/lockdep_internals.h |  6 ++--
- kernel/locking/lockdep_proc.c      | 51 +++++++++++++++++++++++++-----
- 3 files changed, 56 insertions(+), 15 deletions(-)
+ drivers/usb/host/xhci-hub.c |    2 +-
+ drivers/usb/host/xhci-mem.c |    2 +-
+ drivers/usb/host/xhci.c     |   20 +++++++++-----------
+ drivers/usb/host/xhci.h     |    7 +++++--
+ 4 files changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index 57907bdb85ff..a30702b847ba 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -183,11 +183,9 @@ static DECLARE_BITMAP(list_entries_in_use, MAX_LOCKDEP_ENTRIES);
- static struct hlist_head lock_keys_hash[KEYHASH_SIZE];
- unsigned long nr_lock_classes;
- unsigned long nr_zapped_classes;
--#ifndef CONFIG_DEBUG_LOCKDEP
--static
--#endif
-+unsigned long max_lock_class_idx;
- struct lock_class lock_classes[MAX_LOCKDEP_KEYS];
--static DECLARE_BITMAP(lock_classes_in_use, MAX_LOCKDEP_KEYS);
-+DECLARE_BITMAP(lock_classes_in_use, MAX_LOCKDEP_KEYS);
+--- a/drivers/usb/host/xhci-hub.c
++++ b/drivers/usb/host/xhci-hub.c
+@@ -676,7 +676,7 @@ static int xhci_exit_test_mode(struct xh
+ 	}
+ 	pm_runtime_allow(xhci_to_hcd(xhci)->self.controller);
+ 	xhci->test_mode = 0;
+-	return xhci_reset(xhci);
++	return xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ }
  
- static inline struct lock_class *hlock_class(struct held_lock *hlock)
- {
-@@ -338,7 +336,7 @@ static inline void lock_release_holdtime(struct held_lock *hlock)
-  * elements. These elements are linked together by the lock_entry member in
-  * struct lock_class.
+ void xhci_set_link_state(struct xhci_hcd *xhci, struct xhci_port *port,
+--- a/drivers/usb/host/xhci-mem.c
++++ b/drivers/usb/host/xhci-mem.c
+@@ -2595,7 +2595,7 @@ int xhci_mem_init(struct xhci_hcd *xhci,
+ 
+ fail:
+ 	xhci_halt(xhci);
+-	xhci_reset(xhci);
++	xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	xhci_mem_cleanup(xhci);
+ 	return -ENOMEM;
+ }
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -66,7 +66,7 @@ static bool td_on_ring(struct xhci_td *t
+  * handshake done).  There are two failure modes:  "usec" have passed (major
+  * hardware flakeout), or the register reads as all-ones (hardware removed).
   */
--LIST_HEAD(all_lock_classes);
-+static LIST_HEAD(all_lock_classes);
- static LIST_HEAD(free_lock_classes);
+-int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, int usec)
++int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, u64 timeout_us)
+ {
+ 	u32	result;
+ 	int	ret;
+@@ -74,7 +74,7 @@ int xhci_handshake(void __iomem *ptr, u3
+ 	ret = readl_poll_timeout_atomic(ptr, result,
+ 					(result & mask) == done ||
+ 					result == U32_MAX,
+-					1, usec);
++					1, timeout_us);
+ 	if (result == U32_MAX)		/* card removed */
+ 		return -ENODEV;
  
- /**
-@@ -1240,6 +1238,7 @@ register_lock_class(struct lockdep_map *lock, unsigned int subclass, int force)
- 	struct lockdep_subclass_key *key;
- 	struct hlist_head *hash_head;
- 	struct lock_class *class;
-+	int idx;
+@@ -163,7 +163,7 @@ int xhci_start(struct xhci_hcd *xhci)
+  * Transactions will be terminated immediately, and operational registers
+  * will be set to their defaults.
+  */
+-int xhci_reset(struct xhci_hcd *xhci)
++int xhci_reset(struct xhci_hcd *xhci, u64 timeout_us)
+ {
+ 	u32 command;
+ 	u32 state;
+@@ -196,8 +196,7 @@ int xhci_reset(struct xhci_hcd *xhci)
+ 	if (xhci->quirks & XHCI_INTEL_HOST)
+ 		udelay(1000);
  
- 	DEBUG_LOCKS_WARN_ON(!irqs_disabled());
+-	ret = xhci_handshake(&xhci->op_regs->command,
+-			CMD_RESET, 0, 10 * 1000 * 1000);
++	ret = xhci_handshake(&xhci->op_regs->command, CMD_RESET, 0, timeout_us);
+ 	if (ret)
+ 		return ret;
  
-@@ -1305,6 +1304,9 @@ register_lock_class(struct lockdep_map *lock, unsigned int subclass, int force)
- 	 * of classes.
+@@ -210,8 +209,7 @@ int xhci_reset(struct xhci_hcd *xhci)
+ 	 * xHCI cannot write to any doorbells or operational registers other
+ 	 * than status until the "Controller Not Ready" flag is cleared.
  	 */
- 	list_move_tail(&class->lock_entry, &all_lock_classes);
-+	idx = class - lock_classes;
-+	if (idx > max_lock_class_idx)
-+		max_lock_class_idx = idx;
+-	ret = xhci_handshake(&xhci->op_regs->status,
+-			STS_CNR, 0, 10 * 1000 * 1000);
++	ret = xhci_handshake(&xhci->op_regs->status, STS_CNR, 0, timeout_us);
  
- 	if (verbose(class)) {
- 		graph_unlock();
-@@ -5986,6 +5988,8 @@ static void zap_class(struct pending_free *pf, struct lock_class *class)
- 		WRITE_ONCE(class->name, NULL);
- 		nr_lock_classes--;
- 		__clear_bit(class - lock_classes, lock_classes_in_use);
-+		if (class - lock_classes == max_lock_class_idx)
-+			max_lock_class_idx--;
- 	} else {
- 		WARN_ONCE(true, "%s() failed for class %s\n", __func__,
- 			  class->name);
-diff --git a/kernel/locking/lockdep_internals.h b/kernel/locking/lockdep_internals.h
-index ecb8662e7a4e..bbe9000260d0 100644
---- a/kernel/locking/lockdep_internals.h
-+++ b/kernel/locking/lockdep_internals.h
-@@ -121,7 +121,6 @@ static const unsigned long LOCKF_USED_IN_IRQ_READ =
+ 	xhci->usb2_rhub.bus_state.port_c_suspend = 0;
+ 	xhci->usb2_rhub.bus_state.suspended_ports = 0;
+@@ -732,7 +730,7 @@ static void xhci_stop(struct usb_hcd *hc
+ 	xhci->xhc_state |= XHCI_STATE_HALTED;
+ 	xhci->cmd_ring_state = CMD_RING_STATE_STOPPED;
+ 	xhci_halt(xhci);
+-	xhci_reset(xhci);
++	xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	spin_unlock_irq(&xhci->lock);
  
- #define MAX_LOCKDEP_CHAIN_HLOCKS (MAX_LOCKDEP_CHAINS*5)
+ 	xhci_cleanup_msix(xhci);
+@@ -785,7 +783,7 @@ void xhci_shutdown(struct usb_hcd *hcd)
+ 	xhci_halt(xhci);
+ 	/* Workaround for spurious wakeups at shutdown with HSW */
+ 	if (xhci->quirks & XHCI_SPURIOUS_WAKEUP)
+-		xhci_reset(xhci);
++		xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	spin_unlock_irq(&xhci->lock);
  
--extern struct list_head all_lock_classes;
- extern struct lock_chain lock_chains[];
+ 	xhci_cleanup_msix(xhci);
+@@ -1170,7 +1168,7 @@ int xhci_resume(struct xhci_hcd *xhci, b
+ 		xhci_dbg(xhci, "Stop HCD\n");
+ 		xhci_halt(xhci);
+ 		xhci_zero_64b_regs(xhci);
+-		retval = xhci_reset(xhci);
++		retval = xhci_reset(xhci, XHCI_RESET_LONG_USEC);
+ 		spin_unlock_irq(&xhci->lock);
+ 		if (retval)
+ 			return retval;
+@@ -5276,7 +5274,7 @@ int xhci_gen_setup(struct usb_hcd *hcd,
  
- #define LOCK_USAGE_CHARS (2*XXX_LOCK_USAGE_STATES + 1)
-@@ -151,6 +150,10 @@ extern unsigned int nr_large_chain_blocks;
+ 	xhci_dbg(xhci, "Resetting HCD\n");
+ 	/* Reset the internal HC memory state and registers. */
+-	retval = xhci_reset(xhci);
++	retval = xhci_reset(xhci, XHCI_RESET_LONG_USEC);
+ 	if (retval)
+ 		return retval;
+ 	xhci_dbg(xhci, "Reset complete\n");
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -229,6 +229,9 @@ struct xhci_op_regs {
+ #define CMD_ETE		(1 << 14)
+ /* bits 15:31 are reserved (and should be preserved on writes). */
  
- extern unsigned int max_lockdep_depth;
- extern unsigned int max_bfs_queue_depth;
-+extern unsigned long max_lock_class_idx;
++#define XHCI_RESET_LONG_USEC		(10 * 1000 * 1000)
++#define XHCI_RESET_SHORT_USEC		(250 * 1000)
 +
-+extern struct lock_class lock_classes[MAX_LOCKDEP_KEYS];
-+extern unsigned long lock_classes_in_use[];
+ /* IMAN - Interrupt Management Register */
+ #define IMAN_IE		(1 << 1)
+ #define IMAN_IP		(1 << 0)
+@@ -2068,11 +2071,11 @@ void xhci_free_container_ctx(struct xhci
  
- #ifdef CONFIG_PROVE_LOCKING
- extern unsigned long lockdep_count_forward_deps(struct lock_class *);
-@@ -205,7 +208,6 @@ struct lockdep_stats {
- };
- 
- DECLARE_PER_CPU(struct lockdep_stats, lockdep_stats);
--extern struct lock_class lock_classes[MAX_LOCKDEP_KEYS];
- 
- #define __debug_atomic_inc(ptr)					\
- 	this_cpu_inc(lockdep_stats.ptr);
-diff --git a/kernel/locking/lockdep_proc.c b/kernel/locking/lockdep_proc.c
-index b8d9a050c337..15fdc7fa5c68 100644
---- a/kernel/locking/lockdep_proc.c
-+++ b/kernel/locking/lockdep_proc.c
-@@ -24,14 +24,33 @@
- 
- #include "lockdep_internals.h"
- 
-+/*
-+ * Since iteration of lock_classes is done without holding the lockdep lock,
-+ * it is not safe to iterate all_lock_classes list directly as the iteration
-+ * may branch off to free_lock_classes or the zapped list. Iteration is done
-+ * directly on the lock_classes array by checking the lock_classes_in_use
-+ * bitmap and max_lock_class_idx.
-+ */
-+#define iterate_lock_classes(idx, class)				\
-+	for (idx = 0, class = lock_classes; idx <= max_lock_class_idx;	\
-+	     idx++, class++)
-+
- static void *l_next(struct seq_file *m, void *v, loff_t *pos)
- {
--	return seq_list_next(v, &all_lock_classes, pos);
-+	struct lock_class *class = v;
-+
-+	++class;
-+	*pos = class - lock_classes;
-+	return (*pos > max_lock_class_idx) ? NULL : class;
- }
- 
- static void *l_start(struct seq_file *m, loff_t *pos)
- {
--	return seq_list_start_head(&all_lock_classes, *pos);
-+	unsigned long idx = *pos;
-+
-+	if (idx > max_lock_class_idx)
-+		return NULL;
-+	return lock_classes + idx;
- }
- 
- static void l_stop(struct seq_file *m, void *v)
-@@ -57,14 +76,16 @@ static void print_name(struct seq_file *m, struct lock_class *class)
- 
- static int l_show(struct seq_file *m, void *v)
- {
--	struct lock_class *class = list_entry(v, struct lock_class, lock_entry);
-+	struct lock_class *class = v;
- 	struct lock_list *entry;
- 	char usage[LOCK_USAGE_CHARS];
-+	int idx = class - lock_classes;
- 
--	if (v == &all_lock_classes) {
-+	if (v == lock_classes)
- 		seq_printf(m, "all lock classes:\n");
-+
-+	if (!test_bit(idx, lock_classes_in_use))
- 		return 0;
--	}
- 
- 	seq_printf(m, "%p", class->key);
- #ifdef CONFIG_DEBUG_LOCKDEP
-@@ -220,8 +241,11 @@ static int lockdep_stats_show(struct seq_file *m, void *v)
- 
- #ifdef CONFIG_PROVE_LOCKING
- 	struct lock_class *class;
-+	unsigned long idx;
- 
--	list_for_each_entry(class, &all_lock_classes, lock_entry) {
-+	iterate_lock_classes(idx, class) {
-+		if (!test_bit(idx, lock_classes_in_use))
-+			continue;
- 
- 		if (class->usage_mask == 0)
- 			nr_unused++;
-@@ -254,6 +278,7 @@ static int lockdep_stats_show(struct seq_file *m, void *v)
- 
- 		sum_forward_deps += lockdep_count_forward_deps(class);
- 	}
-+
- #ifdef CONFIG_DEBUG_LOCKDEP
- 	DEBUG_LOCKS_WARN_ON(debug_atomic_read(nr_unused_locks) != nr_unused);
- #endif
-@@ -345,6 +370,8 @@ static int lockdep_stats_show(struct seq_file *m, void *v)
- 	seq_printf(m, " max bfs queue depth:           %11u\n",
- 			max_bfs_queue_depth);
- #endif
-+	seq_printf(m, " max lock class index:          %11lu\n",
-+			max_lock_class_idx);
- 	lockdep_stats_debug_show(m);
- 	seq_printf(m, " debug_locks:                   %11u\n",
- 			debug_locks);
-@@ -622,12 +649,16 @@ static int lock_stat_open(struct inode *inode, struct file *file)
- 	if (!res) {
- 		struct lock_stat_data *iter = data->stats;
- 		struct seq_file *m = file->private_data;
-+		unsigned long idx;
- 
--		list_for_each_entry(class, &all_lock_classes, lock_entry) {
-+		iterate_lock_classes(idx, class) {
-+			if (!test_bit(idx, lock_classes_in_use))
-+				continue;
- 			iter->class = class;
- 			iter->stats = lock_stats(class);
- 			iter++;
- 		}
-+
- 		data->iter_end = iter;
- 
- 		sort(data->stats, data->iter_end - data->stats,
-@@ -645,6 +676,7 @@ static ssize_t lock_stat_write(struct file *file, const char __user *buf,
- 			       size_t count, loff_t *ppos)
- {
- 	struct lock_class *class;
-+	unsigned long idx;
- 	char c;
- 
- 	if (count) {
-@@ -654,8 +686,11 @@ static ssize_t lock_stat_write(struct file *file, const char __user *buf,
- 		if (c != '0')
- 			return count;
- 
--		list_for_each_entry(class, &all_lock_classes, lock_entry)
-+		iterate_lock_classes(idx, class) {
-+			if (!test_bit(idx, lock_classes_in_use))
-+				continue;
- 			clear_lock_stats(class);
-+		}
- 	}
- 	return count;
- }
--- 
-2.34.1
-
+ /* xHCI host controller glue */
+ typedef void (*xhci_get_quirks_t)(struct device *, struct xhci_hcd *);
+-int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, int usec);
++int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, u64 timeout_us);
+ void xhci_quiesce(struct xhci_hcd *xhci);
+ int xhci_halt(struct xhci_hcd *xhci);
+ int xhci_start(struct xhci_hcd *xhci);
+-int xhci_reset(struct xhci_hcd *xhci);
++int xhci_reset(struct xhci_hcd *xhci, u64 timeout_us);
+ int xhci_run(struct usb_hcd *hcd);
+ int xhci_gen_setup(struct usb_hcd *hcd, xhci_get_quirks_t get_quirks);
+ void xhci_shutdown(struct usb_hcd *hcd);
 
 
