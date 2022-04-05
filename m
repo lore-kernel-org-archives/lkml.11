@@ -2,102 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAB1C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44528C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353450AbiDEUfa (ORCPT
+        id S1353981AbiDEUff (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56096 "EHLO
+        Tue, 5 Apr 2022 16:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455108AbiDEP7h (ORCPT
+        with ESMTP id S1349689AbiDEJu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:59:37 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDFE1ED06E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:10:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649171406; x=1680707406;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=/45Z/WQFK49fcRPdO9Lci/uCd9R237Qw3oA4Y1Yi1pY=;
-  b=V9lc2tWhUrt3btom40TFhdcL9KaUHhlD6gDmsIGXnT4fiEMMtIbUqdgc
-   7SFp5QldGn+Q5doEXrSKRlKj+BUHlixe9/CJ2u3riDw+5GXBCtZAPPdc9
-   Y6QBMV0CZpec8gn0CUEABNc28xXdLiVZaOGXoY7Kf6ay4bq3m4d6dniUd
-   27PqZSu078bjeHkBTYOaDcrCBNcVLPmskJRSsYzrozr5wDwYHuc8OELNI
-   Yhb2MbCUzI98F6nkniZeUTeGc9D8ufLP4eBkiMpVsYk9J+hMTntj4st1E
-   ifzmJEUTvoIAmF9KvLJfL7nzVf26s0gHl7op/0oj2nnmjof3S31hTmtWX
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="258355540"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="258355540"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:10:03 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="549089860"
-Received: from nldesimo-desk1.amr.corp.intel.com (HELO [10.212.148.3]) ([10.212.148.3])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 08:10:03 -0700
-Message-ID: <7cdc2103-c6d4-e1b6-9804-6739112eee4d@intel.com>
-Date:   Tue, 5 Apr 2022 08:10:05 -0700
+        Tue, 5 Apr 2022 05:50:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524DB65FE;
+        Tue,  5 Apr 2022 02:48:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3599B81B14;
+        Tue,  5 Apr 2022 09:48:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237B9C385A1;
+        Tue,  5 Apr 2022 09:48:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649152136;
+        bh=YFLWhlvaxkN3JCCmjrtSuSMn+hhy7ajEtuGDlu5781w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=peWvktd75S2gyARyvuFOHPB4X11yScsWOS+DOU/lEEsumdT8zCYKq7f5xLH0NcqjH
+         rGbQq0E1KO1oP3l3uGDDlzJryukLlS0Vaav34MDN5YL3jr9pg6l6KzSZ8bNel6v2sM
+         ZZC2PeFMZ/CzP41h002k/iT1hl9f84GNDtcAHh8Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Peng Li <lipeng321@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 669/913] net: hns3: clean residual vf config after disable sriov
+Date:   Tue,  5 Apr 2022 09:28:51 +0200
+Message-Id: <20220405070359.889198837@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Wyes Karny <wyes.karny@amd.com>
-Cc:     linux-kernel@vger.kernel.org, Lewis.Carroll@amd.com,
-        Mario.Limonciello@amd.com, gautham.shenoy@amd.com,
-        Ananth.Narayan@amd.com, bharata@amd.com, len.brown@intel.com,
-        x86@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        chang.seok.bae@intel.com, keescook@chromium.org, metze@samba.org,
-        zhengqi.arch@bytedance.com, mark.rutland@arm.com
-References: <20220405130021.557880-1-wyes.karny@amd.com>
- <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
-In-Reply-To: <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 07:07, Peter Zijlstra wrote:
-> On Tue, Apr 05, 2022 at 06:30:21PM +0530, Wyes Karny wrote:
->> +static inline bool early_mwait_supported(const struct cpuinfo_x86 *c)
->> +{
->> +	if (c->x86_vendor == X86_VENDOR_INTEL)
->> +		return true;
->> +
->> +	if (c->x86_vendor == X86_VENDOR_AMD && cpu_has(c, X86_FEATURE_ZEN))
-> What about Hygon? For some reason you guys don't co-ordinate and we end
-> up getting endless 'make-same' patches, sometimes separated by years :/
+From: Peng Li <lipeng321@huawei.com>
 
-Believe it or not Hygon seems to work OK with this because:
+[ Upstream commit 671cb8cbb9c9e24b681d21b1bfae991e2386ac73 ]
 
-> static void init_hygon(struct cpuinfo_x86 *c)
-> {
-...
->         set_cpu_cap(c, X86_FEATURE_ZEN);
+After disable sriov, VF still has some config and info need to be
+cleaned, which configured by PF. This patch clean the HW config
+and SW struct vport->vf_info.
 
-I do worry a bit though that using X86_FEATURE_ZEN is going to bite us
-long-term.  It currently claims to be set for "family 0x17 or above":
+Fixes: fa8d82e853e8 ("net: hns3: Add support of .sriov_configure in HNS3 driver")
+Signed-off-by: Peng Li<lipeng321@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  3 ++
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 18 +++++++
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 50 +++++++++++++++++++
+ 3 files changed, 71 insertions(+)
 
-> #define X86_FEATURE_ZEN                 ( 7*32+28) /* "" CPU is AMD family 0x17 or above (Zen) */
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 4aa6d21f2fd8..8b7f059c49e6 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -527,6 +527,8 @@ struct hnae3_ae_dev {
+  *   Get 1588 rx hwstamp
+  * get_ts_info
+  *   Get phc info
++ * clean_vf_config
++ *   Clean residual vf info after disable sriov
+  */
+ struct hnae3_ae_ops {
+ 	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
+@@ -720,6 +722,7 @@ struct hnae3_ae_ops {
+ 			   struct ethtool_ts_info *info);
+ 	int (*get_link_diagnosis_info)(struct hnae3_handle *handle,
+ 				       u32 *status_code);
++	void (*clean_vf_config)(struct hnae3_ae_dev *ae_dev, int num_vfs);
+ };
+ 
+ struct hnae3_dcb_ops {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index e4f6b5a8537c..16cbd146ad06 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -2954,6 +2954,21 @@ static int hns3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return ret;
+ }
+ 
++/**
++ * hns3_clean_vf_config
++ * @pdev: pointer to a pci_dev structure
++ * @num_vfs: number of VFs allocated
++ *
++ * Clean residual vf config after disable sriov
++ **/
++static void hns3_clean_vf_config(struct pci_dev *pdev, int num_vfs)
++{
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(pdev);
++
++	if (ae_dev->ops->clean_vf_config)
++		ae_dev->ops->clean_vf_config(ae_dev, num_vfs);
++}
++
+ /* hns3_remove - Device removal routine
+  * @pdev: PCI device information struct
+  */
+@@ -2992,7 +3007,10 @@ static int hns3_pci_sriov_configure(struct pci_dev *pdev, int num_vfs)
+ 		else
+ 			return num_vfs;
+ 	} else if (!pci_vfs_assigned(pdev)) {
++		int num_vfs_pre = pci_num_vf(pdev);
++
+ 		pci_disable_sriov(pdev);
++		hns3_clean_vf_config(pdev, num_vfs_pre);
+ 	} else {
+ 		dev_warn(&pdev->dev,
+ 			 "Unable to free VFs because some are assigned to VMs.\n");
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index d3a259ad8ce1..c1708ad32b88 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -12987,6 +12987,55 @@ static int hclge_get_link_diagnosis_info(struct hnae3_handle *handle,
+ 	return 0;
+ }
+ 
++/* After disable sriov, VF still has some config and info need clean,
++ * which configed by PF.
++ */
++static void hclge_clear_vport_vf_info(struct hclge_vport *vport, int vfid)
++{
++	struct hclge_dev *hdev = vport->back;
++	struct hclge_vlan_info vlan_info;
++	int ret;
++
++	/* after disable sriov, clean VF rate configured by PF */
++	ret = hclge_tm_qs_shaper_cfg(vport, 0);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d rate config, ret = %d\n",
++			vfid, ret);
++
++	vlan_info.vlan_tag = 0;
++	vlan_info.qos = 0;
++	vlan_info.vlan_proto = ETH_P_8021Q;
++	ret = hclge_update_port_base_vlan_cfg(vport,
++					      HNAE3_PORT_BASE_VLAN_DISABLE,
++					      &vlan_info);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d port base vlan, ret = %d\n",
++			vfid, ret);
++
++	ret = hclge_set_vf_spoofchk_hw(hdev, vport->vport_id, false);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d spoof config, ret = %d\n",
++			vfid, ret);
++
++	memset(&vport->vf_info, 0, sizeof(vport->vf_info));
++}
++
++static void hclge_clean_vport_config(struct hnae3_ae_dev *ae_dev, int num_vfs)
++{
++	struct hclge_dev *hdev = ae_dev->priv;
++	struct hclge_vport *vport;
++	int i;
++
++	for (i = 0; i < num_vfs; i++) {
++		vport = &hdev->vport[i + HCLGE_VF_VPORT_START_NUM];
++
++		hclge_clear_vport_vf_info(vport, i);
++	}
++}
++
+ static const struct hnae3_ae_ops hclge_ops = {
+ 	.init_ae_dev = hclge_init_ae_dev,
+ 	.uninit_ae_dev = hclge_uninit_ae_dev,
+@@ -13088,6 +13137,7 @@ static const struct hnae3_ae_ops hclge_ops = {
+ 	.get_rx_hwts = hclge_ptp_get_rx_hwts,
+ 	.get_ts_info = hclge_ptp_get_ts_info,
+ 	.get_link_diagnosis_info = hclge_get_link_diagnosis_info,
++	.clean_vf_config = hclge_clean_vport_config,
+ };
+ 
+ static struct hnae3_ae_algo ae_algo = {
+-- 
+2.34.1
 
-But then it goes and gets used in side-channel defense:
 
->         if (!static_cpu_has(X86_FEATURE_ZEN)) {
->                 msr |= ssbd_tif_to_amd_ls_cfg(tifn);
->                 wrmsrl(MSR_AMD64_LS_CFG, msr);
->                 return;
->         }
 
-This seem _bit_ at odds with the commit message (and the AMD SSBD
-whitepaper):
-
->     Add the necessary synchronization logic for AMD family 17H. 
-
-So, is X86_FEATURE_ZEN for family==0x17, or family>=0x17?
