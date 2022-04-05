@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE7FC3527E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C95EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574423AbiDEW4D (ORCPT
+        id S1574467AbiDEW4P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
+        Tue, 5 Apr 2022 18:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiDEJsp (ORCPT
+        with ESMTP id S1356106AbiDEKW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC64D9D0E8;
-        Tue,  5 Apr 2022 02:36:55 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80B9B53DE;
+        Tue,  5 Apr 2022 03:06:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A08FCB81C6F;
-        Tue,  5 Apr 2022 09:36:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE59C385A2;
-        Tue,  5 Apr 2022 09:36:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 748B1616E7;
+        Tue,  5 Apr 2022 10:06:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83049C385A2;
+        Tue,  5 Apr 2022 10:06:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151413;
-        bh=zm6JjuvnyZuylzaFd5qdpfTbBniT0d81g3XjdXWjT/U=;
+        s=korg; t=1649153171;
+        bh=p0x3iE9iHU+TnN1lV2HCUqC+rnmu1M2H6SPMk7b2q7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C+IVQnkmy+evwdcyGdVkl2yuzRnp2vOCZO9F2VfwqzteJv4uFavPvJxNfsSiTaVIQ
-         i5mraHwB5XDkJKwNE1OIG1TRkhubygEZHk3a/P0p9yRBtxLPiqyWqDoAXhRjQAZDLb
-         IF9wWVDE2wD9HJFTFs4U1x+C2iINcoicb7FM40rA=
+        b=O88VJVvnzrD9M17JdnfPlAxoQ11yqBfwgZ3qlaRjjh2HlH/Ay3vJuwJXgASBT+hFv
+         UkgnPCVH1oB/svjDpmTfIdmhTqa/7prgF6jJXvtplCrrRnADCHPgdqFm3Bq6DS6kBb
+         SbZNaFLnKZ7H9UOJl5rHRGGxIbz/rn9k3YDiNYAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
-        William Tu <u9012063@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        kernel test robot <lkp@intel.com>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 405/913] selftests/bpf/test_xdp_redirect_multi: use temp netns for testing
-Date:   Tue,  5 Apr 2022 09:24:27 +0200
-Message-Id: <20220405070351.987166604@linuxfoundation.org>
+Subject: [PATCH 5.10 128/599] regulator: qcom_smd: fix for_each_child.cocci warnings
+Date:   Tue,  5 Apr 2022 09:27:02 +0200
+Message-Id: <20220405070302.650785657@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,157 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: kernel test robot <lkp@intel.com>
 
-[ Upstream commit cec74489a8dee93053340ec88ea938ff4008c3c0 ]
+[ Upstream commit 6390d42c21efff0b4c10956a38e341f4e84ecd3d ]
 
-Use temp netns instead of hard code name for testing in case the netns
-already exists.
+drivers/regulator/qcom_smd-regulator.c:1318:1-33: WARNING: Function "for_each_available_child_of_node" should have of_node_put() before return around line 1321.
 
-Remove the hard code interface index when creating the veth interfaces.
-Because when the system loads some virtual interface modules, e.g. tunnels.
-the ifindex of 2 will be used and the cmd will fail.
+Semantic patch information:
+ False positives can be due to function calls within the for_each
+ loop that may encapsulate an of_node_put.
 
-As the netns has not created if checking environment failed. Trap the
-clean up function after checking env.
+Generated by: scripts/coccinelle/iterators/for_each_child.cocci
 
-Fixes: 8955c1a32987 ("selftests/bpf/xdp_redirect_multi: Limit the tests in netns")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Acked-by: William Tu <u9012063@gmail.com>
-Link: https://lore.kernel.org/r/20220125081717.1260849-2-liuhangbin@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: 14e2976fbabd ("regulator: qcom_smd: Align probe function with rpmh-regulator")
+CC: Konrad Dybcio <konrad.dybcio@somainline.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
+Link: https://lore.kernel.org/r/alpine.DEB.2.22.394.2201151210170.3051@hadrien
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/bpf/test_xdp_redirect_multi.sh  | 60 ++++++++++---------
- 1 file changed, 31 insertions(+), 29 deletions(-)
+ drivers/regulator/qcom_smd-regulator.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh b/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
-index 05f872740999..cc57cb87e65f 100755
---- a/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
-+++ b/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
-@@ -32,6 +32,11 @@ DRV_MODE="xdpgeneric xdpdrv xdpegress"
- PASS=0
- FAIL=0
- LOG_DIR=$(mktemp -d)
-+declare -a NS
-+NS[0]="ns0-$(mktemp -u XXXXXX)"
-+NS[1]="ns1-$(mktemp -u XXXXXX)"
-+NS[2]="ns2-$(mktemp -u XXXXXX)"
-+NS[3]="ns3-$(mktemp -u XXXXXX)"
+diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
+index 03e146e98abd..8d784a2a09d8 100644
+--- a/drivers/regulator/qcom_smd-regulator.c
++++ b/drivers/regulator/qcom_smd-regulator.c
+@@ -1185,8 +1185,10 @@ static int rpm_reg_probe(struct platform_device *pdev)
  
- test_pass()
- {
-@@ -47,11 +52,9 @@ test_fail()
+ 	for_each_available_child_of_node(dev->of_node, node) {
+ 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
+-		if (!vreg)
++		if (!vreg) {
++			of_node_put(node);
+ 			return -ENOMEM;
++		}
  
- clean_up()
- {
--	for i in $(seq $NUM); do
--		ip link del veth$i 2> /dev/null
--		ip netns del ns$i 2> /dev/null
-+	for i in $(seq 0 $NUM); do
-+		ip netns del ${NS[$i]} 2> /dev/null
- 	done
--	ip netns del ns0 2> /dev/null
- }
+ 		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
  
- # Kselftest framework requirement - SKIP code is 4.
-@@ -79,23 +82,22 @@ setup_ns()
- 		mode="xdpdrv"
- 	fi
- 
--	ip netns add ns0
-+	ip netns add ${NS[0]}
- 	for i in $(seq $NUM); do
--	        ip netns add ns$i
--		ip -n ns$i link add veth0 index 2 type veth \
--			peer name veth$i netns ns0 index $((1 + $i))
--		ip -n ns0 link set veth$i up
--		ip -n ns$i link set veth0 up
--
--		ip -n ns$i addr add 192.0.2.$i/24 dev veth0
--		ip -n ns$i addr add 2001:db8::$i/64 dev veth0
-+	        ip netns add ${NS[$i]}
-+		ip -n ${NS[$i]} link add veth0 type veth peer name veth$i netns ${NS[0]}
-+		ip -n ${NS[$i]} link set veth0 up
-+		ip -n ${NS[0]} link set veth$i up
-+
-+		ip -n ${NS[$i]} addr add 192.0.2.$i/24 dev veth0
-+		ip -n ${NS[$i]} addr add 2001:db8::$i/64 dev veth0
- 		# Add a neigh entry for IPv4 ping test
--		ip -n ns$i neigh add 192.0.2.253 lladdr 00:00:00:00:00:01 dev veth0
--		ip -n ns$i link set veth0 $mode obj \
-+		ip -n ${NS[$i]} neigh add 192.0.2.253 lladdr 00:00:00:00:00:01 dev veth0
-+		ip -n ${NS[$i]} link set veth0 $mode obj \
- 			xdp_dummy.o sec xdp &> /dev/null || \
- 			{ test_fail "Unable to load dummy xdp" && exit 1; }
- 		IFACES="$IFACES veth$i"
--		veth_mac[$i]=$(ip -n ns0 link show veth$i | awk '/link\/ether/ {print $2}')
-+		veth_mac[$i]=$(ip -n ${NS[0]} link show veth$i | awk '/link\/ether/ {print $2}')
- 	done
- }
- 
-@@ -104,10 +106,10 @@ do_egress_tests()
- 	local mode=$1
- 
- 	# mac test
--	ip netns exec ns2 tcpdump -e -i veth0 -nn -l -e &> ${LOG_DIR}/mac_ns1-2_${mode}.log &
--	ip netns exec ns3 tcpdump -e -i veth0 -nn -l -e &> ${LOG_DIR}/mac_ns1-3_${mode}.log &
-+	ip netns exec ${NS[2]} tcpdump -e -i veth0 -nn -l -e &> ${LOG_DIR}/mac_ns1-2_${mode}.log &
-+	ip netns exec ${NS[3]} tcpdump -e -i veth0 -nn -l -e &> ${LOG_DIR}/mac_ns1-3_${mode}.log &
- 	sleep 0.5
--	ip netns exec ns1 ping 192.0.2.254 -i 0.1 -c 4 &> /dev/null
-+	ip netns exec ${NS[1]} ping 192.0.2.254 -i 0.1 -c 4 &> /dev/null
- 	sleep 0.5
- 	pkill tcpdump
- 
-@@ -123,18 +125,18 @@ do_ping_tests()
- 	local mode=$1
- 
- 	# ping6 test: echo request should be redirect back to itself, not others
--	ip netns exec ns1 ip neigh add 2001:db8::2 dev veth0 lladdr 00:00:00:00:00:02
-+	ip netns exec ${NS[1]} ip neigh add 2001:db8::2 dev veth0 lladdr 00:00:00:00:00:02
- 
--	ip netns exec ns1 tcpdump -i veth0 -nn -l -e &> ${LOG_DIR}/ns1-1_${mode}.log &
--	ip netns exec ns2 tcpdump -i veth0 -nn -l -e &> ${LOG_DIR}/ns1-2_${mode}.log &
--	ip netns exec ns3 tcpdump -i veth0 -nn -l -e &> ${LOG_DIR}/ns1-3_${mode}.log &
-+	ip netns exec ${NS[1]} tcpdump -i veth0 -nn -l -e &> ${LOG_DIR}/ns1-1_${mode}.log &
-+	ip netns exec ${NS[2]} tcpdump -i veth0 -nn -l -e &> ${LOG_DIR}/ns1-2_${mode}.log &
-+	ip netns exec ${NS[3]} tcpdump -i veth0 -nn -l -e &> ${LOG_DIR}/ns1-3_${mode}.log &
- 	sleep 0.5
- 	# ARP test
--	ip netns exec ns1 arping -q -c 2 -I veth0 192.0.2.254
-+	ip netns exec ${NS[1]} arping -q -c 2 -I veth0 192.0.2.254
- 	# IPv4 test
--	ip netns exec ns1 ping 192.0.2.253 -i 0.1 -c 4 &> /dev/null
-+	ip netns exec ${NS[1]} ping 192.0.2.253 -i 0.1 -c 4 &> /dev/null
- 	# IPv6 test
--	ip netns exec ns1 ping6 2001:db8::2 -i 0.1 -c 2 &> /dev/null
-+	ip netns exec ${NS[1]} ping6 2001:db8::2 -i 0.1 -c 2 &> /dev/null
- 	sleep 0.5
- 	pkill tcpdump
- 
-@@ -180,7 +182,7 @@ do_tests()
- 		xdpgeneric) drv_p="-S";;
- 	esac
- 
--	ip netns exec ns0 ./xdp_redirect_multi $drv_p $IFACES &> ${LOG_DIR}/xdp_redirect_${mode}.log &
-+	ip netns exec ${NS[0]} ./xdp_redirect_multi $drv_p $IFACES &> ${LOG_DIR}/xdp_redirect_${mode}.log &
- 	xdp_pid=$!
- 	sleep 1
- 	if ! ps -p $xdp_pid > /dev/null; then
-@@ -197,10 +199,10 @@ do_tests()
- 	kill $xdp_pid
- }
- 
--trap clean_up EXIT
--
- check_env
- 
-+trap clean_up EXIT
-+
- for mode in ${DRV_MODE}; do
- 	setup_ns $mode
- 	do_tests $mode
 -- 
 2.34.1
 
