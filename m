@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1342CC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65935C4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588669AbiDFAQy (ORCPT
+        id S1588744AbiDFARN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
+        Tue, 5 Apr 2022 20:17:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242983AbiDEKfX (ORCPT
+        with ESMTP id S1351807AbiDEKDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:35:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552015159C;
-        Tue,  5 Apr 2022 03:21:14 -0700 (PDT)
+        Tue, 5 Apr 2022 06:03:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D118C75E78;
+        Tue,  5 Apr 2022 02:52:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C1D0DCE1C9D;
-        Tue,  5 Apr 2022 10:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE301C385A1;
-        Tue,  5 Apr 2022 10:21:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0EC91CE1C9C;
+        Tue,  5 Apr 2022 09:52:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23823C385A1;
+        Tue,  5 Apr 2022 09:52:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154071;
-        bh=GJWTx2va9kVPJ+UsHarwUFYycQHMaT1jG3zkI1xGkhM=;
+        s=korg; t=1649152337;
+        bh=ys19H8MNgs4LVTR3UqKljfxYa7ypfGSPYdnDYEHmRaA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q55aI/fAz+Fx406NumGvvgsXOg9L4mTrGSdLnUHK5xs9/8pFzFR6HH8g8b7+PEb5z
-         Sgle4GO3KJBTknA3/FOCg2WO1RWgZuQGbbmR2sl5DbZswBhQfW7b5bK13ZAWUaGEN0
-         PBz0DJobBFjeAFgFX0/e7kE8ymE3FDfEufo5Br6w=
+        b=c8HJb/mMztprkI5RsfrfX3QGi1bEj2odBwqp/YDPTm2jrOVGTPxoVWs7/chwmfcyR
+         VJRsrjxNTXDgr/i4cQj50X98mdSOzBjMM9wgFMIB/+s+iYpI/wyMeSoiFX3Xa5UYBs
+         AIhdjitrxHo8Yhk+YnRR+Hu5EXbzpwk1fAFPhstQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 410/599] clk: loongson1: Terminate clk_div_table with sentinel element
-Date:   Tue,  5 Apr 2022 09:31:44 +0200
-Message-Id: <20220405070311.033626747@linuxfoundation.org>
+        =?UTF-8?q?Holger=20Hoffst=C3=A4tte?= 
+        <holger@applied-asynchrony.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 703/913] Revert "Revert "block, bfq: honor already-setup queue merges""
+Date:   Tue,  5 Apr 2022 09:29:25 +0200
+Message-Id: <20220405070400.907356001@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,35 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Paolo Valente <paolo.valente@linaro.org>
 
-[ Upstream commit 3eb00f89162e80083dfcaa842468b510462cfeaa ]
+[ Upstream commit 15729ff8143f8135b03988a100a19e66d7cb7ecd ]
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div = 0).
+A crash [1] happened to be triggered in conjunction with commit
+2d52c58b9c9b ("block, bfq: honor already-setup queue merges"). The
+latter was then reverted by commit ebc69e897e17 ("Revert "block, bfq:
+honor already-setup queue merges""). Yet, the reverted commit was not
+the one introducing the bug. In fact, it actually triggered a UAF
+introduced by a different commit, and now fixed by commit d29bd41428cf
+("block, bfq: reset last_bfqq_created on group change").
 
-Fixes: b4626a7f4892 ("CLK: Add Loongson1C clock support")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
-Link: https://lore.kernel.org/r/20220218000922.134857-3-j.neuschaefer@gmx.net
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+So, there is no point in keeping commit 2d52c58b9c9b ("block, bfq:
+honor already-setup queue merges") out. This commit restores it.
+
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=214503
+
+Reported-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Link: https://lore.kernel.org/r/20211125181510.15004-1-paolo.valente@linaro.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/loongson1/clk-loongson1c.c | 1 +
- 1 file changed, 1 insertion(+)
+ block/bfq-iosched.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/clk/loongson1/clk-loongson1c.c b/drivers/clk/loongson1/clk-loongson1c.c
-index 703f87622cf5..1ebf740380ef 100644
---- a/drivers/clk/loongson1/clk-loongson1c.c
-+++ b/drivers/clk/loongson1/clk-loongson1c.c
-@@ -37,6 +37,7 @@ static const struct clk_div_table ahb_div_table[] = {
- 	[1] = { .val = 1, .div = 4 },
- 	[2] = { .val = 2, .div = 3 },
- 	[3] = { .val = 3, .div = 3 },
-+	[4] = { /* sentinel */ }
- };
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index 9843085cc2c3..63d2d66dece5 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2662,6 +2662,15 @@ bfq_setup_merge(struct bfq_queue *bfqq, struct bfq_queue *new_bfqq)
+ 	 * are likely to increase the throughput.
+ 	 */
+ 	bfqq->new_bfqq = new_bfqq;
++	/*
++	 * The above assignment schedules the following redirections:
++	 * each time some I/O for bfqq arrives, the process that
++	 * generated that I/O is disassociated from bfqq and
++	 * associated with new_bfqq. Here we increases new_bfqq->ref
++	 * in advance, adding the number of processes that are
++	 * expected to be associated with new_bfqq as they happen to
++	 * issue I/O.
++	 */
+ 	new_bfqq->ref += process_refs;
+ 	return new_bfqq;
+ }
+@@ -2724,6 +2733,10 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ {
+ 	struct bfq_queue *in_service_bfqq, *new_bfqq;
  
- void __init ls1x_clk_init(void)
++	/* if a merge has already been setup, then proceed with that first */
++	if (bfqq->new_bfqq)
++		return bfqq->new_bfqq;
++
+ 	/*
+ 	 * Check delayed stable merge for rotational or non-queueing
+ 	 * devs. For this branch to be executed, bfqq must not be
+@@ -2825,9 +2838,6 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 	if (bfq_too_late_for_merging(bfqq))
+ 		return NULL;
+ 
+-	if (bfqq->new_bfqq)
+-		return bfqq->new_bfqq;
+-
+ 	if (!io_struct || unlikely(bfqq == &bfqd->oom_bfqq))
+ 		return NULL;
+ 
 -- 
 2.34.1
 
