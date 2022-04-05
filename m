@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2610BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC42C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:50:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233874AbiDEJer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
+        id S239415AbiDEJfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 05:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239474AbiDEIUG (ORCPT
+        with ESMTP id S239457AbiDEIUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:20:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CB6B0A68;
-        Tue,  5 Apr 2022 01:14:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98E76A43C;
+        Tue,  5 Apr 2022 01:13:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F14BFB81B90;
-        Tue,  5 Apr 2022 08:13:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5B3C385A1;
-        Tue,  5 Apr 2022 08:13:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77D7AB81A37;
+        Tue,  5 Apr 2022 08:13:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC66DC385A0;
+        Tue,  5 Apr 2022 08:13:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146438;
-        bh=wjPoZQY+vmub6bVsFMKqg4hLD1/RtMQB/ubel5/jwuU=;
+        s=korg; t=1649146416;
+        bh=MgDDT8VuQWca49TghJ4tLzY7YNfYN4Yv/TzRySXi/dQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uJY8tUkyDVNyTTrClP63Dbl4dckiPvOTu5RkQxU3hJTtiskD+nVpz3sOeaPMAfQ0a
-         fuVju72FWe769wtS/PI1rerNgTyWKJJAzixlV/xjb6P38Yjn+jm6lXUOvUZcxohHlD
-         mN3MADv+Ok2tKTcAGQoApUUaRZzVpUi5/WwMyRYU=
+        b=azuykinysNGxWi1fY1clezDdzjHz7ckJrLM38Z7dNGdo2Vn3bLK4n/HoREYpecomY
+         f2IIDBw5t2v8RzYE4d+6WUMfg4eltGeG9v8XMTwJs//MBDPjWkm5NVfXp8mNVZ+CUx
+         Fqg8hw+bgCWcE1sLhobXllJPEAHxK02gtNuo9JIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0765/1126] staging: mt7621-dts: fix pinctrl properties for ethernet
-Date:   Tue,  5 Apr 2022 09:25:12 +0200
-Message-Id: <20220405070430.037299631@linuxfoundation.org>
+Subject: [PATCH 5.17 0718/1126] fsi: Aspeed: Fix a potential double free
+Date:   Tue,  5 Apr 2022 09:24:25 +0200
+Message-Id: <20220405070428.669582485@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,91 +49,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 0a93c0d75809582893e82039143591b9265b520e ]
+[ Upstream commit 83ba7e895debc529803a7a258653f2fe9bf3bf40 ]
 
-Add pinctrl properties with rgmii1 & mdio pins under ethernet node which
-was wrongfully put under an external phy node.
-GMAC1 will start working with this fix.
+A struct device can never be devm_alloc()'ed.
+Here, it is embedded in "struct fsi_master", and "struct fsi_master" is
+embedded in "struct fsi_master_aspeed".
 
-Link: https://lore.kernel.org/netdev/02ecce91-7aad-4392-c9d7-f45ca1b31e0b@arinc9.com/T/
+Since "struct device" is embedded, the data structure embedding it must be
+released with the release function, as is already done here.
 
-Move GB-PC2 specific phy_external node to its own device tree.
+So use kzalloc() instead of devm_kzalloc() when allocating "aspeed" and
+update all error handling branches accordingly.
 
-Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220125153903.1469-5-arinc.unal@arinc9.com
+This prevent a potential double free().
+
+This also fix another issue if opb_readl() fails. Instead of a direct
+return, it now jumps in the error handling path.
+
+Fixes: 606397d67f41 ("fsi: Add ast2600 master driver")
+Suggested-by: Greg KH <gregkh@linuxfoundation.org>
+Suggested-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/2c123f8b0a40dc1a061fae982169fe030b4f47e6.1641765339.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/mt7621-dts/gbpc2.dts   | 16 +++++++++++-----
- drivers/staging/mt7621-dts/mt7621.dtsi | 13 +++----------
- 2 files changed, 14 insertions(+), 15 deletions(-)
+ drivers/fsi/fsi-master-aspeed.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/drivers/staging/mt7621-dts/gbpc2.dts
-index 6fe603c7711d..03d6bb6735ac 100644
---- a/drivers/staging/mt7621-dts/gbpc2.dts
-+++ b/drivers/staging/mt7621-dts/gbpc2.dts
-@@ -13,10 +13,16 @@
- 	function = "gpio";
- };
+diff --git a/drivers/fsi/fsi-master-aspeed.c b/drivers/fsi/fsi-master-aspeed.c
+index 8606e55c1721..0bed2fab8055 100644
+--- a/drivers/fsi/fsi-master-aspeed.c
++++ b/drivers/fsi/fsi-master-aspeed.c
+@@ -542,25 +542,28 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 		return rc;
+ 	}
  
--&gmac1 {
--	status = "ok";
--};
-+&ethernet {
-+	gmac1: mac@1 {
-+		status = "ok";
-+		phy-handle = <&phy_external>;
-+	};
+-	aspeed = devm_kzalloc(&pdev->dev, sizeof(*aspeed), GFP_KERNEL);
++	aspeed = kzalloc(sizeof(*aspeed), GFP_KERNEL);
+ 	if (!aspeed)
+ 		return -ENOMEM;
  
--&phy_external {
--	status = "ok";
-+	mdio-bus {
-+		phy_external: ethernet-phy@5 {
-+			reg = <5>;
-+			phy-mode = "rgmii-rxid";
-+		};
-+	};
- };
-diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
-index d120e5872165..de2b130569bb 100644
---- a/drivers/staging/mt7621-dts/mt7621.dtsi
-+++ b/drivers/staging/mt7621-dts/mt7621.dtsi
-@@ -325,6 +325,9 @@
+ 	aspeed->dev = &pdev->dev;
  
- 		mediatek,ethsys = <&sysc>;
+ 	aspeed->base = devm_platform_ioremap_resource(pdev, 0);
+-	if (IS_ERR(aspeed->base))
+-		return PTR_ERR(aspeed->base);
++	if (IS_ERR(aspeed->base)) {
++		rc = PTR_ERR(aspeed->base);
++		goto err_free_aspeed;
++	}
  
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
-+
- 		gmac0: mac@0 {
- 			compatible = "mediatek,eth-mac";
- 			reg = <0>;
-@@ -342,22 +345,12 @@
- 			reg = <1>;
- 			status = "off";
- 			phy-mode = "rgmii-rxid";
--			phy-handle = <&phy_external>;
- 		};
+ 	aspeed->clk = devm_clk_get(aspeed->dev, NULL);
+ 	if (IS_ERR(aspeed->clk)) {
+ 		dev_err(aspeed->dev, "couldn't get clock\n");
+-		return PTR_ERR(aspeed->clk);
++		rc = PTR_ERR(aspeed->clk);
++		goto err_free_aspeed;
+ 	}
+ 	rc = clk_prepare_enable(aspeed->clk);
+ 	if (rc) {
+ 		dev_err(aspeed->dev, "couldn't enable clock\n");
+-		return rc;
++		goto err_free_aspeed;
+ 	}
  
- 		mdio-bus {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+ 	rc = setup_cfam_reset(aspeed);
+@@ -595,7 +598,7 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 	rc = opb_readl(aspeed, ctrl_base + FSI_MVER, &raw);
+ 	if (rc) {
+ 		dev_err(&pdev->dev, "failed to read hub version\n");
+-		return rc;
++		goto err_release;
+ 	}
  
--			phy_external: ethernet-phy@5 {
--				status = "off";
--				reg = <5>;
--				phy-mode = "rgmii-rxid";
--
--				pinctrl-names = "default";
--				pinctrl-0 = <&rgmii2_pins>;
--			};
--
- 			switch0: switch0@0 {
- 				compatible = "mediatek,mt7621";
- 				#address-cells = <1>;
+ 	reg = be32_to_cpu(raw);
+@@ -634,6 +637,8 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 
+ err_release:
+ 	clk_disable_unprepare(aspeed->clk);
++err_free_aspeed:
++	kfree(aspeed);
+ 	return rc;
+ }
+ 
 -- 
 2.34.1
 
