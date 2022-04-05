@@ -2,68 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADECAC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0687C4167E
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849270AbiDFCeV (ORCPT
+        id S1849305AbiDFCe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        Tue, 5 Apr 2022 22:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449532AbiDEWYn (ORCPT
+        with ESMTP id S1444238AbiDEWVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:24:43 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F68917584C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:22:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Vfnds4uZwOUw8zPinp55S3drsKWUUrjkD5pxZmDfQ3o=; b=UE9salMD8CEHOMHRKgSqk1ysa4
-        +Zb8ubeM4QI2ErLIm70Y4BRN2nXRdyL+r/3EWfgaNkAjGzYvbec7vhKYE2uod+I9xbucnfeb4m0HU
-        lRTNfmvRPN5IzMdnPags8ZPe7zz/KKEQ+N6TLon1FgZEO2tYuIWqSDIC5BYVl90nu3zUQpvI+dMFS
-        HGCtYR/g0Y1c+8XmM8EkbAinT1rcrVVrPO2x2jy7n07PnzjcJ/cinP7k0C8R9w6f7Nczk1v9TsVcL
-        KEy3AsIypYKS8H0evy+GXwixPEX+lSfwm/hlmJlrY4fj6qjfgGeiqSVjg3zxtDgtvKZwsaSFrTk6l
-        +V2RFV7A==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbqcb-0074AY-PZ; Tue, 05 Apr 2022 21:21:53 +0000
-Date:   Tue, 5 Apr 2022 22:21:53 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Yang Shi <shy828301@gmail.com>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Dave Chinner <david@fromorbit.com>,
-        Hillf Danton <hdanton@sina.com>, MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Yu Zhao <yuzhao@google.com>,
-        David Hildenbrand <david@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC] mm/vmscan: add periodic slab shrinker
-Message-ID: <Ykyy8RfJgWDOGylv@casper.infradead.org>
-References: <20220402072103.5140-1-hdanton@sina.com>
- <20220403005618.5263-1-hdanton@sina.com>
- <20220404010948.GV1609613@dread.disaster.area>
- <YktCKVbChtC+YjOk@carbon.dhcp.thefacebook.com>
- <20220405051710.GW1609613@dread.disaster.area>
- <Ykxv1j9dxlz1BS5N@carbon.dhcp.thefacebook.com>
- <CAHbLzko=bjLhhJXjcs0Uh-g3x9vV1gQZjEU2JqxVehqSb1UGkQ@mail.gmail.com>
+        Tue, 5 Apr 2022 18:21:01 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1505199692;
+        Tue,  5 Apr 2022 13:45:17 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id D871B1F448CB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649191516;
+        bh=MTyE9QSy2RUy2J+DqczMQkzQ2U7CksfjNGFIrOd9SV8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MTXu3z2Sz1/ihUk9LZChVIPAu71KKvYLI63WUFsq4V+t+dI6Wag5rJC/4VfrlWEAt
+         SHCFbLtM0ElNJ6q/LTy8Fka4/R7QxDjtFb5b2ys/ylpAgiNd09Dthhs3i6RlAzF2+8
+         KkrLLA3Vc5wQaRElF9X6hTJ3mZagl5aRNxB+Pse30ELEthfHEuCEyA6Vtb81yvHYcB
+         KDLbKeGdvxSwFIel+bibpclOtNwo47xv/L+eLMFcyCiaBxeUMKoYJUzLRZdnZQg2l2
+         QE35nAKfteTRgyw5P75CyRJkYNcCG2otWffSBriRi2X6QkJrsNNUQDZnl8v22Q8s6z
+         aQ2K4uCfvjT+A==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev
+Subject: [PATCH v3 20/24] media: rkvdec: Enable capture buffer holding for H264
+Date:   Tue,  5 Apr 2022 16:44:21 -0400
+Message-Id: <20220405204426.259074-21-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHbLzko=bjLhhJXjcs0Uh-g3x9vV1gQZjEU2JqxVehqSb1UGkQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:58:59PM -0700, Yang Shi wrote:
-> Yeah, I agree it actually doesn't make too much sense to return the
-> number of reclaimed objects. Other part of vmscan returns the number
-> of base pages, the sizes of slab objects are varied, it may be much
-> smaller than a page, for example, dentry may be 192 bytes.
+In order to support interlaced video decoding, the driver must
+allow holding the capture buffer so that the second field can
+be decoded into it.
 
-From the point of view of vmscan, it only cares about the number of pages
-freed because it's trying to free pages.  But from the point of view of
-trying to keep the number of non-useful objects in check, the number of
-objects freed is more important, and it doesn't matter whether we ended
-up freeing any pages because we made memory available for this slab cache.
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+---
+ drivers/staging/media/rkvdec/rkvdec.c | 4 ++++
+ drivers/staging/media/rkvdec/rkvdec.h | 1 +
+ 2 files changed, 5 insertions(+)
+
+diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
+index 2bc4b1a40989..7bab7586918c 100644
+--- a/drivers/staging/media/rkvdec/rkvdec.c
++++ b/drivers/staging/media/rkvdec/rkvdec.c
+@@ -127,6 +127,7 @@ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
+ 		.ops = &rkvdec_h264_fmt_ops,
+ 		.num_decoded_fmts = ARRAY_SIZE(rkvdec_h264_vp9_decoded_fmts),
+ 		.decoded_fmts = rkvdec_h264_vp9_decoded_fmts,
++		.subsystem_flags = VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF,
+ 	},
+ 	{
+ 		.fourcc = V4L2_PIX_FMT_VP9_FRAME,
+@@ -385,6 +386,9 @@ static int rkvdec_s_output_fmt(struct file *file, void *priv,
+ 	cap_fmt->fmt.pix_mp.ycbcr_enc = f->fmt.pix_mp.ycbcr_enc;
+ 	cap_fmt->fmt.pix_mp.quantization = f->fmt.pix_mp.quantization;
+ 
++	/* Enable format specific queue features */
++	vq->subsystem_flags |= desc->subsystem_flags;
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
+index 9df0fba799a4..633335ebb9c4 100644
+--- a/drivers/staging/media/rkvdec/rkvdec.h
++++ b/drivers/staging/media/rkvdec/rkvdec.h
+@@ -82,6 +82,7 @@ struct rkvdec_coded_fmt_desc {
+ 	const struct rkvdec_coded_fmt_ops *ops;
+ 	unsigned int num_decoded_fmts;
+ 	const u32 *decoded_fmts;
++	u32 subsystem_flags;
+ };
+ 
+ struct rkvdec_dev {
+-- 
+2.34.1
+
