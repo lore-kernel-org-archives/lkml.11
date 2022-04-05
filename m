@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA9DC43219
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B62C43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385864AbiDEMjJ (ORCPT
+        id S1385882AbiDEMjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
+        Tue, 5 Apr 2022 08:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236740AbiDEJDe (ORCPT
+        with ESMTP id S236742AbiDEJDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:03:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1090103A;
-        Tue,  5 Apr 2022 01:55:13 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C12D1088;
+        Tue,  5 Apr 2022 01:55:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CD65614E4;
-        Tue,  5 Apr 2022 08:55:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A025C385A0;
-        Tue,  5 Apr 2022 08:55:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB163B81BAE;
+        Tue,  5 Apr 2022 08:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40090C385A1;
+        Tue,  5 Apr 2022 08:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148912;
-        bh=VqGjegZfHHnvDHqgx50NeDfYYPQ+7pDQWp2m+VwfD28=;
+        s=korg; t=1649148915;
+        bh=H3ecDX8pEltqiGL2hkKufhyYiHFUlZgmKssDWrOOcHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1JaOi3JNHeeiSKpq1LQQYU11Ty7aTHfm0vQqIlig3slvrWqN2VBT3JNZwBB4V2tkJ
-         GQQYZVlKjlFizV7pnOZ9JRYoSJNTC0kcP5HVlHO0NL9beLturRjjqy7HfAXixag7wb
-         pUzgljF2RqdMrx2RHyOOg7WEu6VzGHW2Dib1pkOg=
+        b=kTps8JSKf0zlICE5+PXhKUzI9VPAFDycNZ1j3ZIAqORTpWVr6V2rJ+lADolggfV7m
+         /gAs4+Iljr6ULT1MSdbKq662sfSd837ERYrP8PDWQECiU7tACa4Sxo641J2OkxFlf/
+         BytBPRg1xWIigXZX48XF6Lqd/n9RWat8SNtR0EQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhishek Sahu <abhsahu@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0527/1017] vfio/pci: fix memory leak during D3hot to D0 transition
-Date:   Tue,  5 Apr 2022 09:24:00 +0200
-Message-Id: <20220405070409.938685198@linuxfoundation.org>
+Subject: [PATCH 5.16 0510/1017] iwlwifi: mvm: align locking in D3 test debugfs
+Date:   Tue,  5 Apr 2022 09:23:43 +0200
+Message-Id: <20220405070409.438251687@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,64 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhishek Sahu <abhsahu@nvidia.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit eadf88ecf6ac7d6a9f47a76c6055d9a1987a8991 ]
+[ Upstream commit 59e1221f470c2e5d2f2d4c95153edd577a7071c5 ]
 
-If 'vfio_pci_core_device::needs_pm_restore' is set (PCI device does
-not have No_Soft_Reset bit set in its PMCSR config register), then
-the current PCI state will be saved locally in
-'vfio_pci_core_device::pm_save' during D0->D3hot transition and same
-will be restored back during D3hot->D0 transition.
-For saving the PCI state locally, pci_store_saved_state() is being
-used and the pci_load_and_free_saved_state() will free the allocated
-memory.
+Since commit a05829a7222e ("cfg80211: avoid holding the RTNL when
+calling the driver") we're not only holding the RTNL when going
+in and out of suspend, but also the wiphy->mtx. Add that to the
+D3 test debugfs in iwlwifi since it's required for various calls
+to mac80211.
 
-But for reset related IOCTLs, vfio driver calls PCI reset-related
-API's which will internally change the PCI power state back to D0. So,
-when the guest resumes, then it will get the current state as D0 and it
-will skip the call to vfio_pci_set_power_state() for changing the
-power state to D0 explicitly. In this case, the memory pointed by
-'pm_save' will never be freed. In a malicious sequence, the state changing
-to D3hot followed by VFIO_DEVICE_RESET/VFIO_DEVICE_PCI_HOT_RESET can be
-run in a loop and it can cause an OOM situation.
-
-This patch frees the earlier allocated memory first before overwriting
-'pm_save' to prevent the mentioned memory leak.
-
-Fixes: 51ef3a004b1e ("vfio/pci: Restore device state on PM transition")
-Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
-Link: https://lore.kernel.org/r/20220217122107.22434-2-abhsahu@nvidia.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Fixes: a05829a7222e ("cfg80211: avoid holding the RTNL when calling the driver")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: a05829a7222e ("cfg80211: avoid holding the RTNL when calling the driver")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220129105618.fcec0204e162.Ib73bf787ab4d83581de20eb89b1f8dbfcaaad0e3@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/pci/vfio_pci_core.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/d3.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-index f948e6cd2993..87b288affc13 100644
---- a/drivers/vfio/pci/vfio_pci_core.c
-+++ b/drivers/vfio/pci/vfio_pci_core.c
-@@ -228,6 +228,19 @@ int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev, pci_power_t stat
- 	if (!ret) {
- 		/* D3 might be unsupported via quirk, skip unless in D3 */
- 		if (needs_save && pdev->current_state >= PCI_D3hot) {
-+			/*
-+			 * The current PCI state will be saved locally in
-+			 * 'pm_save' during the D3hot transition. When the
-+			 * device state is changed to D0 again with the current
-+			 * function, then pci_store_saved_state() will restore
-+			 * the state and will free the memory pointed by
-+			 * 'pm_save'. There are few cases where the PCI power
-+			 * state can be changed to D0 without the involvement
-+			 * of the driver. For these cases, free the earlier
-+			 * allocated memory first before overwriting 'pm_save'
-+			 * to prevent the memory leak.
-+			 */
-+			kfree(vdev->pm_save);
- 			vdev->pm_save = pci_store_saved_state(pdev);
- 		} else if (needs_restore) {
- 			pci_load_and_free_saved_state(pdev, &vdev->pm_save);
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+index a19f646a324f..75e9776001b8 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+@@ -2566,7 +2566,9 @@ static int iwl_mvm_d3_test_open(struct inode *inode, struct file *file)
+ 
+ 	/* start pseudo D3 */
+ 	rtnl_lock();
++	wiphy_lock(mvm->hw->wiphy);
+ 	err = __iwl_mvm_suspend(mvm->hw, mvm->hw->wiphy->wowlan_config, true);
++	wiphy_unlock(mvm->hw->wiphy);
+ 	rtnl_unlock();
+ 	if (err > 0)
+ 		err = -EINVAL;
+@@ -2622,7 +2624,9 @@ static int iwl_mvm_d3_test_release(struct inode *inode, struct file *file)
+ 	iwl_fw_dbg_read_d3_debug_data(&mvm->fwrt);
+ 
+ 	rtnl_lock();
++	wiphy_lock(mvm->hw->wiphy);
+ 	__iwl_mvm_resume(mvm, true);
++	wiphy_unlock(mvm->hw->wiphy);
+ 	rtnl_unlock();
+ 
+ 	iwl_mvm_resume_tcm(mvm);
 -- 
 2.34.1
 
