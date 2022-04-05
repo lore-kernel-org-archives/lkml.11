@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E600C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389678AbiDENeH (ORCPT
+        id S1389882AbiDENe1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
+        Tue, 5 Apr 2022 09:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346563AbiDEJY1 (ORCPT
+        with ESMTP id S1346901AbiDEJYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:24:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88ECCDA6F7;
-        Tue,  5 Apr 2022 02:13:38 -0700 (PDT)
+        Tue, 5 Apr 2022 05:24:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E179D067;
+        Tue,  5 Apr 2022 02:14:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0C6A6164D;
-        Tue,  5 Apr 2022 09:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7471C385A0;
-        Tue,  5 Apr 2022 09:13:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4571B80DA1;
+        Tue,  5 Apr 2022 09:14:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1377FC385A0;
+        Tue,  5 Apr 2022 09:14:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150017;
-        bh=L/KLRxBS/6cGYACuSzdQzMUxD28ReaSOYnDVgXhsFBY=;
+        s=korg; t=1649150041;
+        bh=rwN+Uw9DRFGE3r3d8XutSYXOFXNC3RR9BUH5opKorFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UmbGSUBKS/b6G32jozlxuDJdhichdJGumSTVPqfE15Qtf9mK03Q96X942zrV5HXcJ
-         UUvQ7F2YHLfjNqKmSO/Iw63RlP5f1durrNPm8LNBLPhbSJi9obWL4XqOYQaQEXzh27
-         am0U8lRebRIw8h7PMdK/ksDbtTn7OrzYoCorBABY=
+        b=aIkuujX99CmN4J3QoO87I3WGKxGM8lgBmaULEgO1q954FY6LnizSCt442JAEcBLnp
+         cbrVy7kbkw8M6f41pU0mh/GHpUxAKJK/5tSC0DOph6Ht4i+mAvV9lUak/l5xACd3xV
+         S/lWZeNShqEIpTv97RB0GL4W16dpi86tC3QrblsU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sungup Moon <sungup.moon@samsung.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>
-Subject: [PATCH 5.16 0917/1017] nvme: allow duplicate NSIDs for private namespaces
-Date:   Tue,  5 Apr 2022 09:30:30 +0200
-Message-Id: <20220405070421.439945004@linuxfoundation.org>
+        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.16 0934/1017] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
+Date:   Tue,  5 Apr 2022 09:30:47 +0200
+Message-Id: <20220405070421.938599493@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,127 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sungup Moon <sungup.moon@samsung.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-commit 5974ea7ce0f9a5987fc8cf5e08ad6e3e70bb542e upstream.
+commit 7ed258f12ec5ce855f15cdfb5710361dc82fe899 upstream.
 
-A NVMe subsystem with multiple controller can have private namespaces
-that use the same NSID under some conditions:
+When user delete vlan 0, as driver will not delete vlan 0 for hardware in
+function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
+not be deleted.
 
- "If Namespace Management, ANA Reporting, or NVM Sets are supported, the
-  NSIDs shall be unique within the NVM subsystem. If the Namespace
-  Management, ANA Reporting, and NVM Sets are not supported, then NSIDs:
-   a) for shared namespace shall be unique; and
-   b) for private namespace are not required to be unique."
-
-Reference: Section 6.1.6 NSID and Namespace Usage; NVM Express 1.4c spec.
-
-Make sure this specific setup is supported in Linux.
-
-Fixes: 9ad1927a3bc2 ("nvme: always search for namespace head")
-Signed-off-by: Sungup Moon <sungup.moon@samsung.com>
-[hch: refactored and fixed the controller vs subsystem based naming
-      conflict]
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/core.c      |   15 ++++++++++-----
- drivers/nvme/host/multipath.c |    7 ++++---
- drivers/nvme/host/nvme.h      |   19 +++++++++++++++++++
- include/linux/nvme.h          |    1 +
- 4 files changed, 34 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3581,15 +3581,20 @@ static const struct attribute_group *nvm
- 	NULL,
- };
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -10754,11 +10754,11 @@ int hclge_set_vlan_filter(struct hnae3_h
+ 	}
  
--static struct nvme_ns_head *nvme_find_ns_head(struct nvme_subsystem *subsys,
-+static struct nvme_ns_head *nvme_find_ns_head(struct nvme_ctrl *ctrl,
- 		unsigned nsid)
- {
- 	struct nvme_ns_head *h;
- 
--	lockdep_assert_held(&subsys->lock);
-+	lockdep_assert_held(&ctrl->subsys->lock);
- 
--	list_for_each_entry(h, &subsys->nsheads, entry) {
--		if (h->ns_id != nsid)
-+	list_for_each_entry(h, &ctrl->subsys->nsheads, entry) {
-+		/*
-+		 * Private namespaces can share NSIDs under some conditions.
-+		 * In that case we can't use the same ns_head for namespaces
-+		 * with the same NSID.
-+		 */
-+		if (h->ns_id != nsid || !nvme_is_unique_nsid(ctrl, h))
- 			continue;
- 		if (!list_empty(&h->list) && nvme_tryget_ns_head(h))
- 			return h;
-@@ -3757,7 +3762,7 @@ static int nvme_init_ns_head(struct nvme
- 	int ret = 0;
- 
- 	mutex_lock(&ctrl->subsys->lock);
--	head = nvme_find_ns_head(ctrl->subsys, nsid);
-+	head = nvme_find_ns_head(ctrl, nsid);
- 	if (!head) {
- 		head = nvme_alloc_ns_head(ctrl, nsid, ids);
- 		if (IS_ERR(head)) {
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -468,10 +468,11 @@ int nvme_mpath_alloc_disk(struct nvme_ct
- 
- 	/*
- 	 * Add a multipath node if the subsystems supports multiple controllers.
--	 * We also do this for private namespaces as the namespace sharing data could
--	 * change after a rescan.
-+	 * We also do this for private namespaces as the namespace sharing flag
-+	 * could change after a rescan.
- 	 */
--	if (!(ctrl->subsys->cmic & NVME_CTRL_CMIC_MULTI_CTRL) || !multipath)
-+	if (!(ctrl->subsys->cmic & NVME_CTRL_CMIC_MULTI_CTRL) ||
-+	    !nvme_is_unique_nsid(ctrl, head) || !multipath)
- 		return 0;
- 
- 	head->disk = blk_alloc_disk(ctrl->numa_node);
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -712,6 +712,25 @@ static inline bool nvme_check_ready(stru
- 		return queue_live;
- 	return __nvme_check_ready(ctrl, rq, queue_live);
- }
-+
-+/*
-+ * NSID shall be unique for all shared namespaces, or if at least one of the
-+ * following conditions is met:
-+ *   1. Namespace Management is supported by the controller
-+ *   2. ANA is supported by the controller
-+ *   3. NVM Set are supported by the controller
-+ *
-+ * In other case, private namespace are not required to report a unique NSID.
-+ */
-+static inline bool nvme_is_unique_nsid(struct nvme_ctrl *ctrl,
-+		struct nvme_ns_head *head)
-+{
-+	return head->shared ||
-+		(ctrl->oacs & NVME_CTRL_OACS_NS_MNGT_SUPP) ||
-+		(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA) ||
-+		(ctrl->ctratt & NVME_CTRL_CTRATT_NVM_SETS);
-+}
-+
- int nvme_submit_sync_cmd(struct request_queue *q, struct nvme_command *cmd,
- 		void *buf, unsigned bufflen);
- int __nvme_submit_sync_cmd(struct request_queue *q, struct nvme_command *cmd,
---- a/include/linux/nvme.h
-+++ b/include/linux/nvme.h
-@@ -337,6 +337,7 @@ enum {
- 	NVME_CTRL_ONCS_TIMESTAMP		= 1 << 6,
- 	NVME_CTRL_VWC_PRESENT			= 1 << 0,
- 	NVME_CTRL_OACS_SEC_SUPP                 = 1 << 0,
-+	NVME_CTRL_OACS_NS_MNGT_SUPP		= 1 << 3,
- 	NVME_CTRL_OACS_DIRECTIVES		= 1 << 5,
- 	NVME_CTRL_OACS_DBBUF_SUPP		= 1 << 8,
- 	NVME_CTRL_LPA_CMD_EFFECTS_LOG		= 1 << 1,
+ 	if (!ret) {
+-		if (is_kill)
+-			hclge_rm_vport_vlan_table(vport, vlan_id, false);
+-		else
++		if (!is_kill)
+ 			hclge_add_vport_vlan_table(vport, vlan_id,
+ 						   writen_to_tbl);
++		else if (is_kill && vlan_id != 0)
++			hclge_rm_vport_vlan_table(vport, vlan_id, false);
+ 	} else if (is_kill) {
+ 		/* when remove hw vlan filter failed, record the vlan id,
+ 		 * and try to remove it from hw later, to be consistence
 
 
