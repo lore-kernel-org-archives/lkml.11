@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F268CC4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0363AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385293AbiDEMcX (ORCPT
+        id S1385401AbiDEMc5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
+        Tue, 5 Apr 2022 08:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235998AbiDEI7d (ORCPT
+        with ESMTP id S236233AbiDEJAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:59:33 -0400
+        Tue, 5 Apr 2022 05:00:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1A725C5C;
-        Tue,  5 Apr 2022 01:53:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8802275C4;
+        Tue,  5 Apr 2022 01:53:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6791EB81A0C;
-        Tue,  5 Apr 2022 08:53:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C03B3C385A1;
-        Tue,  5 Apr 2022 08:53:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87711B81A0C;
+        Tue,  5 Apr 2022 08:53:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3046C385A0;
+        Tue,  5 Apr 2022 08:53:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148802;
-        bh=xCGPaq+OXXruSqTjQgRB96hX6CpIZcfq1kPbzUB9W3M=;
+        s=korg; t=1649148813;
+        bh=4GVNTj2YOOxt86du6z4LnhR8s7JceT8i+SaFiQdlXpA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYI2ZWE0S+HB6NV8A1tBch/E5Ls0sTeBwHcxK3s0Ru7kPo1ZqIIOSZDceW7HejFqf
-         YnF4zvykEPJNUu+OIZr8OJ9018sQwObE36L2S/DG/wklQNEveELEKkrQf22upBedpo
-         RmZdat7QdaPk3fQ22RWtvRedipiWSPMo32Y58YOE=
+        b=s0GuW3v2QaRwBWJ9JEQ/SKueWhWsBxUbQUdYuH0aNcDF/5YLgzfs2Z0Bhinfuqc2b
+         s6CNylSOlETRwvP32CPlP3M8Gpdd/EciXEh0ECUSpH145RZv4lH8+jMdZqThZj+Kmn
+         twW6fAQCsK4dJoIhaRxJHDFtldqLdBXIX+bVKwpg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0469/1017] net: dsa: mv88e6xxx: Enable port policy support on 6097
-Date:   Tue,  5 Apr 2022 09:23:02 +0200
-Message-Id: <20220405070408.220067623@linuxfoundation.org>
+Subject: [PATCH 5.16 0490/1017] cxl/regs: Fix size of CXL Capability Header Register
+Date:   Tue,  5 Apr 2022 09:23:23 +0200
+Message-Id: <20220405070408.843606996@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,33 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 585d42bb57bb358d48906660a8de273b078810b1 ]
+[ Upstream commit 74b0fe80409733055971bbfaf33c80a33fddeeb3 ]
 
-This chip has support for the same per-port policy actions found in
-later versions of LinkStreet devices.
+In CXL 2.0, 8.2.5.1 CXL Capability Header Register: this register
+is given as 32 bits.
 
-Fixes: f3a2cd326e44 ("net: dsa: mv88e6xxx: introduce .port_set_policy")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+8.2.3 which covers the CXL 2.0 Component registers, including the
+CXL Capability Header Register states that access restrictions
+specified in Section 8.2.2 apply.
+
+8.2.2 includes:
+* A 32 bit register shall be accessed as a 4 Byte quantity.
+...
+If these rules are not followed, the behavior is undefined.
+
+Discovered during review of CXL QEMU emulation. Alex Bennée pointed
+out there was a comment saying that 4 byte registers must be read
+with a 4 byte read, but 8 byte reads were being emulated.
+
+https://lore.kernel.org/qemu-devel/87bkzyd3c7.fsf@linaro.org/
+
+Fixing that, led to this code failing. Whilst a given hardware
+implementation 'might' work with an 8 byte read, it should not be relied
+upon. The QEMU emulation v5 will return 0 and log the wrong access width.
+
+The code moved, so one fixes tag for where this will directly apply and
+also a reference to the earlier introduction of the code for backports.
+
+Fixes: 0f06157e0135 ("cxl/core: Move register mapping infrastructure")
+Fixes: 08422378c4ad ("cxl/pci: Add HDM decoder capabilities")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Alex Bennée <alex.bennee@linaro.org>
+Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
+Link: https://lore.kernel.org/r/20220201153437.2873-1-Jonathan.Cameron@huawei.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/cxl/core/regs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index ec8b02f5459d..b420e0ef46e3 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3655,6 +3655,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
- 	.port_sync_link = mv88e6185_port_sync_link,
- 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
- 	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+diff --git a/drivers/cxl/core/regs.c b/drivers/cxl/core/regs.c
+index b8aa583a7642..2e7027a3fef3 100644
+--- a/drivers/cxl/core/regs.c
++++ b/drivers/cxl/core/regs.c
+@@ -35,7 +35,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
+ 			      struct cxl_component_reg_map *map)
+ {
+ 	int cap, cap_count;
+-	u64 cap_array;
++	u32 cap_array;
+ 
+ 	*map = (struct cxl_component_reg_map) { 0 };
+ 
+@@ -45,7 +45,7 @@ void cxl_probe_component_regs(struct device *dev, void __iomem *base,
+ 	 */
+ 	base += CXL_CM_OFFSET;
+ 
+-	cap_array = readq(base + CXL_CM_CAP_HDR_OFFSET);
++	cap_array = readl(base + CXL_CM_CAP_HDR_OFFSET);
+ 
+ 	if (FIELD_GET(CXL_CM_CAP_HDR_ID_MASK, cap_array) != CM_CAP_HDR_CAP_ID) {
+ 		dev_err(dev,
 -- 
 2.34.1
 
