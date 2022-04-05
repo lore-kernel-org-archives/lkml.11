@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB3CC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1754DC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351538AbiDEOBm (ORCPT
+        id S1352348AbiDEOBz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
+        Tue, 5 Apr 2022 10:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348015AbiDEJ3E (ORCPT
+        with ESMTP id S1347989AbiDEJ3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:29:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB9CDFFBD;
-        Tue,  5 Apr 2022 02:16:08 -0700 (PDT)
+        Tue, 5 Apr 2022 05:29:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4E6DFFB1;
+        Tue,  5 Apr 2022 02:16:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF6A161645;
-        Tue,  5 Apr 2022 09:16:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6F28C385A2;
-        Tue,  5 Apr 2022 09:16:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3BA73B81B14;
+        Tue,  5 Apr 2022 09:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84A48C385A2;
+        Tue,  5 Apr 2022 09:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150167;
-        bh=sVc2u10qNzQAooyfoz6GeB4XaZSXFApolBXBzf8kePY=;
+        s=korg; t=1649150158;
+        bh=YyaqKt4emR4QrHkLMVt4S1mW679qGg2lM39pkxvrAYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X7zh1sNw8GnfEY3iqI0LRmLfewWjkmcKobRikpzTgaa3NqZ5CMFQ+Ej6jRr6k1qgZ
-         kMrNOEwb5tAeYaeEuO2hHcXG3F0PQlpphMCD0YgqgEVliIyYewlqrtD3xrWhBBeIvc
-         bBVTdIk7Cd3+Llh+ANMPkHwRUZHeip9hCHBvxlac=
+        b=n0CMHKrPpyjVeD2FLMXVjvr89shnEb5OMWXfohD+xpCTnlw6au8qSDZIIW/13WsHC
+         XGG2w5ggrApZIh9NQv8gs5QwolJ0CfUsUosx5F0P/XU7OtnpvO92k5nTbF01kYzpMh
+         2XomJjLnx4+EKQRcEkzm4Xj1w/bM4NfqRWhUY67Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hengqi Chen <hengqi.chen@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>
-Subject: [PATCH 5.16 0978/1017] bpf: Fix comment for helper bpf_current_task_under_cgroup()
-Date:   Tue,  5 Apr 2022 09:31:31 +0200
-Message-Id: <20220405070423.234308395@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.16 0976/1017] libbpf: Define BTF_KIND_* constants in btf.h to avoid compilation errors
+Date:   Tue,  5 Apr 2022 09:31:29 +0200
+Message-Id: <20220405070423.175749554@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,48 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hengqi Chen <hengqi.chen@gmail.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-commit 58617014405ad5c9f94f464444f4972dabb71ca7 upstream.
+commit eaa266d83a3730a15de2ceebcc89e8f6290e8cf6 upstream.
 
-Fix the descriptions of the return values of helper bpf_current_task_under_cgroup().
+The btf.h header included with libbpf contains inline helper functions to
+check for various BTF kinds. These helpers directly reference the
+BTF_KIND_* constants defined in the kernel header, and because the header
+file is included in user applications, this happens in the user application
+compile units.
 
-Fixes: c6b5fb8690fa ("bpf: add documentation for eBPF helpers (42-50)")
-Signed-off-by: Hengqi Chen <hengqi.chen@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220310155335.1278783-1-hengqi.chen@gmail.com
+This presents a problem if a user application is compiled on a system with
+older kernel headers because the constants are not available. To avoid
+this, add #defines of the constants directly in btf.h before using them.
+
+Since the kernel header moved to an enum for BTF_KIND_*, the #defines can
+shadow the enum values without any errors, so we only need #ifndef guards
+for the constants that predates the conversion to enum. We group these so
+there's only one guard for groups of values that were added together.
+
+  [0] Closes: https://github.com/libbpf/libbpf/issues/436
+
+Fixes: 223f903e9c83 ("bpf: Rename BTF_KIND_TAG to BTF_KIND_DECL_TAG")
+Fixes: 5b84bd10363e ("libbpf: Add support for BTF_KIND_TAG")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Link: https://lore.kernel.org/bpf/20220118141327.34231-1-toke@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/bpf.h       |    4 ++--
- tools/include/uapi/linux/bpf.h |    4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ tools/lib/bpf/btf.h |   22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2284,8 +2284,8 @@ union bpf_attr {
-  * 	Return
-  * 		The return value depends on the result of the test, and can be:
-  *
-- *		* 0, if current task belongs to the cgroup2.
-- *		* 1, if current task does not belong to the cgroup2.
-+ *		* 1, if current task belongs to the cgroup2.
-+ *		* 0, if current task does not belong to the cgroup2.
-  * 		* A negative error code, if an error occurred.
-  *
-  * long bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2284,8 +2284,8 @@ union bpf_attr {
-  * 	Return
-  * 		The return value depends on the result of the test, and can be:
-  *
-- *		* 0, if current task belongs to the cgroup2.
-- *		* 1, if current task does not belong to the cgroup2.
-+ *		* 1, if current task belongs to the cgroup2.
-+ *		* 0, if current task does not belong to the cgroup2.
-  * 		* A negative error code, if an error occurred.
-  *
-  * long bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
+--- a/tools/lib/bpf/btf.h
++++ b/tools/lib/bpf/btf.h
+@@ -313,8 +313,28 @@ btf_dump__dump_type_data(struct btf_dump
+ 			 const struct btf_dump_type_data_opts *opts);
+ 
+ /*
+- * A set of helpers for easier BTF types handling
++ * A set of helpers for easier BTF types handling.
++ *
++ * The inline functions below rely on constants from the kernel headers which
++ * may not be available for applications including this header file. To avoid
++ * compilation errors, we define all the constants here that were added after
++ * the initial introduction of the BTF_KIND* constants.
+  */
++#ifndef BTF_KIND_FUNC
++#define BTF_KIND_FUNC		12	/* Function	*/
++#define BTF_KIND_FUNC_PROTO	13	/* Function Proto	*/
++#endif
++#ifndef BTF_KIND_VAR
++#define BTF_KIND_VAR		14	/* Variable	*/
++#define BTF_KIND_DATASEC	15	/* Section	*/
++#endif
++#ifndef BTF_KIND_FLOAT
++#define BTF_KIND_FLOAT		16	/* Floating point	*/
++#endif
++/* The kernel header switched to enums, so these two were never #defined */
++#define BTF_KIND_DECL_TAG	17	/* Decl Tag */
++#define BTF_KIND_TYPE_TAG	18	/* Type Tag */
++
+ static inline __u16 btf_kind(const struct btf_type *t)
+ {
+ 	return BTF_INFO_KIND(t->info);
 
 
