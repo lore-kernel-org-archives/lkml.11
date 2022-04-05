@@ -2,101 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECABFC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B96C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588233AbiDFAPC (ORCPT
+        id S1588318AbiDFAPX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
+        Tue, 5 Apr 2022 20:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572956AbiDER1N (ORCPT
+        with ESMTP id S1445553AbiDEPnN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 13:27:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377A318378;
-        Tue,  5 Apr 2022 10:25:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649179515; x=1680715515;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=tby6oKK3JVUxlZzYdf5ed1y/wZs9gYYk5yFKCDN1HZg=;
-  b=Gt5QqY71asenE8KEihaKWCkItV1rvRRg1/1D95jskDMRPSd693UBpuA2
-   6EeVKnqBeJruLKYP3T0+fn4F7HZOdfL0XNI1n2xN0Y/9z9peNXK4vYF+A
-   ccIkAG0aaxyuk2JapMDhbBZ4oh+iuVsasutj3B96F9MSegOj+VvQ7k17K
-   8JDY2ktQx2WQ1+AakrBZuEi+2epWqfsBK8pAZcy5TjyDV65Oln+yXYg++
-   elUpY00wjPsmDQMAOgw8p/y68Jr4AgJAmp/2ZDjLpar2Kpq0UsFdKiCpz
-   O/51nVpcOynjECVITQILcrLRC6/R2c+dhz74LE+rlGfcxlVZGp/S0hkKZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260805737"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="260805737"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:25:14 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="549147373"
-Received: from nldesimo-desk1.amr.corp.intel.com (HELO [10.212.148.3]) ([10.212.148.3])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 10:25:13 -0700
-Message-ID: <f8d92685-27dd-e7ef-ce0d-100a285aec4b@intel.com>
-Date:   Tue, 5 Apr 2022 10:25:15 -0700
+        Tue, 5 Apr 2022 11:43:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2EBDCE24
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:09:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EB09B81DFA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 14:09:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96C8CC385A9;
+        Tue,  5 Apr 2022 14:09:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649167754;
+        bh=Wcg3ZHMdsCB1wYGU2/I4aiT0HZnWfz1uNuRzGLaMoxw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nkZlKhsCTiQ5hiJ8/WlYtPAIIuU2uYjk/UDJhMugG2KAsSYMPU21MYPAqXYBLLcDM
+         YW2lzXc2oMbNzFJfxZsk/byWUQrgHDAmtxUnpWVDy3NaltKniRopGYfhy2m2pe3xIm
+         1HVxT/9DX6a36erzCur5luxmyDq/ffGLzWwb/g6w=
+Date:   Tue, 5 Apr 2022 16:09:12 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>
+Cc:     Forest Bond <forest@alittletooquiet.net>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/6] staging: vt6655: Rename macro arguments with
+ CamelCase
+Message-ID: <YkxNiGT+kzYnbU69@kroah.com>
+References: <cover.1649103348.git.philipp.g.hortmann@gmail.com>
+ <70cce6671976e454830c12d6d7977a5fe816a287.1649103348.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Reinette Chatre <reinette.chatre@intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
-        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
-        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
-        cathy.zhang@intel.com, cedric.xing@intel.com,
-        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-References: <cover.1648847675.git.reinette.chatre@intel.com>
- <b3a17e1ce7bcd14db3c28903e8a97f094998ae74.1648847675.git.reinette.chatre@intel.com>
- <Ykvrk4hYvBEnNOOl@kernel.org>
- <e118f4c6-7216-15f3-2bda-3a5851b0bcb1@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH V3 19/30] x86/sgx: Free up EPC pages directly to support
- large page ranges
-In-Reply-To: <e118f4c6-7216-15f3-2bda-3a5851b0bcb1@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <70cce6671976e454830c12d6d7977a5fe816a287.1649103348.git.philipp.g.hortmann@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 10:13, Reinette Chatre wrote:
->>> +void sgx_direct_reclaim(void)
->>> +{
->>> +	if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
->>> +		sgx_reclaim_pages();
->>> +}
->> Please, instead open code this to both locations - not enough redundancy
->> to be worth of new function. Causes only unnecessary cross-referencing
->> when maintaining. Otherwise, I agree with the idea.
->>
-> hmmm, that means the heart of the reclaimer (sgx_reclaim_pages()) would be
-> made available for direct use from everywhere in the driver. I will look into this.
+On Mon, Apr 04, 2022 at 10:48:47PM +0200, Philipp Hortmann wrote:
+> Rename macro arguments with CamelCase in upc.h as
+> they are not accepted by checkpatch.pl
+> Removed datatype in macro arguments.
+> 
+> Since there are more than one checkpatch issue per line,
+> more steps are rquired to fix.
+> 
+> Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
+> ---
+> V1 -> V2: This patch was 4/7 and is now 3/6
+> ---
+>  drivers/staging/vt6655/upc.h | 36 ++++++++++++++++++------------------
+>  1 file changed, 18 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/staging/vt6655/upc.h b/drivers/staging/vt6655/upc.h
+> index b374db5fca81..f080a25e6cdf 100644
+> --- a/drivers/staging/vt6655/upc.h
+> +++ b/drivers/staging/vt6655/upc.h
+> @@ -20,34 +20,34 @@
+>  
+>  /* For memory mapped IO */
+>  
+> -#define VNSvInPortB(dwIOAddress, pbyData) \
+> -	(*(pbyData) = ioread8(dwIOAddress))
+> +#define VNSvInPortB(io_address, data) \
+> +	(*(data) = ioread8(io_address))
 
-I like the change.  It's not about reducing code redundancy, it's about
-*describing* what the code does.  Each location could have:
+These should all just go away, don't spend time cleaning them up.
 
-	/* Enter direct SGX reclaim: */
-	if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
-		sgx_reclaim_pages();
+Replace the callers with the ioread* calls instead.  Should be one patch
+per macro to remove.
 
-Or, it could just be:
+thanks,
 
-	sgx_direct_reclaim();
-
-Which also provides a logical choke point to add comments, like:
-
-/*
- * sgx_direct_reclaim() should be called in locations where SGX
- * memory resources might be low and might be needed in order
- * to make forward progress.
- */
-void sgx_direct_reclaim(void)
-{
-	...
+greg k-h
