@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD912C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A88FC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840291AbiDFBHq (ORCPT
+        id S1840371AbiDFBHx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
+        Tue, 5 Apr 2022 21:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358032AbiDEK14 (ORCPT
+        with ESMTP id S1348805AbiDEJsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBC36949D;
-        Tue,  5 Apr 2022 03:13:12 -0700 (PDT)
+        Tue, 5 Apr 2022 05:48:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BDC8D6A2;
+        Tue,  5 Apr 2022 02:35:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51742B81C6C;
-        Tue,  5 Apr 2022 10:13:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5E3EC385A1;
-        Tue,  5 Apr 2022 10:13:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AE61615E5;
+        Tue,  5 Apr 2022 09:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC8FC385A2;
+        Tue,  5 Apr 2022 09:35:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153590;
-        bh=kFIlUHMIxufTpo1vGa4kaOdlhqgRSAbv8rvJ7WzP51M=;
+        s=korg; t=1649151346;
+        bh=nYh1Ftmu1o81xPko6U0qrJ5484J5I6gNUcZjFQiYf44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XP2hMFS8lPICAQ25VjBM/rOPG3HAqBi1oSfoiLuZg5Sy+gdoMSMOJrd2G8fQmWjsO
-         cHLjdbLC0JUg45ig07h7LnK/pDnHIse+B4NGO3Puqwde+pFrwIcFLXH0a/u6JPhhf4
-         QA8cFZWDbbkvM79ebhHDUDOTFtH+ZkKGwn3nr7a4=
+        b=adcB+UrDX8c9S2MNxb7XlIqDmOF6XmsNJZtDq0mmT4qo8xuYeLSZSMOrATlGkg+QT
+         xnKGwoxtYlsofF/Pqm1wR2qkcIMC25KAym8GXIaaHbnlC8FD/aChMCZlxN4ODijuHQ
+         AHJzy/pioXD/HdJeIBg7tbbKycBy+kx5UuQ6155o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Melissa Wen <mwen@igalia.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 275/599] drm/amd/display: Fix a NULL pointer dereference in amdgpu_dm_connector_add_common_modes()
-Date:   Tue,  5 Apr 2022 09:29:29 +0200
-Message-Id: <20220405070307.020979750@linuxfoundation.org>
+Subject: [PATCH 5.15 383/913] drm/v3d/v3d_drv: Check for error num after setting mask
+Date:   Tue,  5 Apr 2022 09:24:05 +0200
+Message-Id: <20220405070351.327697994@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 588a70177df3b1777484267584ef38ab2ca899a2 ]
+[ Upstream commit 4a39156166b90465da0f9a33b3442d63b5651bec ]
 
-In amdgpu_dm_connector_add_common_modes(), amdgpu_dm_create_common_mode()
-is assigned to mode and is passed to drm_mode_probed_add() directly after
-that. drm_mode_probed_add() passes &mode->head to list_add_tail(), and
-there is a dereference of it in list_add_tail() without recoveries, which
-could lead to NULL pointer dereference on failure of
-amdgpu_dm_create_common_mode().
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
+Also, we can create a variable for the mask to solve the
+alignment issue.
 
-Fix this by adding a NULL check of mode.
-
-This bug was found by a static analyzer.
-
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: e7b07ceef2a6 ("drm/amd/display: Merge amdgpu_dm_types and amdgpu_dm")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 334dd38a3878 ("drm/v3d: Set dma_mask as well as coherent_dma_mask")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
+Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220110013807.4105270-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/v3d/v3d_drv.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 6c8f141103da..b65364695219 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -6396,6 +6396,9 @@ static void amdgpu_dm_connector_add_common_modes(struct drm_encoder *encoder,
- 		mode = amdgpu_dm_create_common_mode(encoder,
- 				common_modes[i].name, common_modes[i].w,
- 				common_modes[i].h);
-+		if (!mode)
-+			continue;
+diff --git a/drivers/gpu/drm/v3d/v3d_drv.c b/drivers/gpu/drm/v3d/v3d_drv.c
+index 9403c3b36aca..6407a006d6ec 100644
+--- a/drivers/gpu/drm/v3d/v3d_drv.c
++++ b/drivers/gpu/drm/v3d/v3d_drv.c
+@@ -221,6 +221,7 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+ 	int ret;
+ 	u32 mmu_debug;
+ 	u32 ident1;
++	u64 mask;
+ 
+ 
+ 	v3d = devm_drm_dev_alloc(dev, &v3d_drm_driver, struct v3d_dev, drm);
+@@ -240,8 +241,11 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	mmu_debug = V3D_READ(V3D_MMU_DEBUG_INFO);
+-	dma_set_mask_and_coherent(dev,
+-		DMA_BIT_MASK(30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_PA_WIDTH)));
++	mask = DMA_BIT_MASK(30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_PA_WIDTH));
++	ret = dma_set_mask_and_coherent(dev, mask);
++	if (ret)
++		return ret;
 +
- 		drm_mode_probed_add(connector, mode);
- 		amdgpu_dm_connector->num_modes++;
- 	}
+ 	v3d->va_width = 30 + V3D_GET_FIELD(mmu_debug, V3D_MMU_VA_WIDTH);
+ 
+ 	ident1 = V3D_READ(V3D_HUB_IDENT1);
 -- 
 2.34.1
 
