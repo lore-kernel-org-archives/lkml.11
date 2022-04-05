@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0BEC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A1AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:05:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232505AbiDEIGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
+        id S233085AbiDEIHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232600AbiDEHyE (ORCPT
+        with ESMTP id S232560AbiDEHyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:54:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A9320184;
-        Tue,  5 Apr 2022 00:49:23 -0700 (PDT)
+        Tue, 5 Apr 2022 03:54:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEB220193;
+        Tue,  5 Apr 2022 00:49:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B28A161725;
-        Tue,  5 Apr 2022 07:49:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C83EEC340EE;
-        Tue,  5 Apr 2022 07:49:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0014EB81BB0;
+        Tue,  5 Apr 2022 07:49:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64825C340EE;
+        Tue,  5 Apr 2022 07:49:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144962;
-        bh=1JZcWH0YBYn6eQesTkcl7qH/m6/S96+irj0tPNNYQS0=;
+        s=korg; t=1649144964;
+        bh=VLK8UolBf8N+MuV7px/3kflvddzrDzTkwreYVck3qbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FrxlExU5QBKN6MY8xlQHjeEPzS3IWbf2y78M/zG0CoZhSlpJuECcYI4lXgXoE+RKA
-         2VMKUhMetBKWtGiT0rI3ZMh2H6eGBUoE9jzdFPYG0MU66woS0KC/hQoTru0pNu0fDb
-         kP0p7di2rMu6r1ObYfGrghiniHsrCdi/fnKQVvB8=
+        b=BwWWeGCWqFHhgL7EAFsr3JFr33TvaxLb1Vgzbuk6QKSqLujRSoqqImSSg+C2kuHDK
+         kVpFgY1uEUjQYgYJyDV934yIipHoi44Yh29d2i6j9nkr9CH5Wh3iFpb2ToWivVoZDx
+         sRwz6xOa8ujCy5hDgBPqFH2IghvIg77bUAmozKKc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0217/1126] selftests/sgx: Do not attempt enclave build without valid enclave
-Date:   Tue,  5 Apr 2022 09:16:04 +0200
-Message-Id: <20220405070413.979360900@linuxfoundation.org>
+Subject: [PATCH 5.17 0235/1126] nvme: cleanup __nvme_check_ids
+Date:   Tue,  5 Apr 2022 09:16:22 +0200
+Message-Id: <20220405070414.505755587@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,39 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reinette Chatre <reinette.chatre@intel.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit fff36bcbfde1126f6b81cb8ee12a58aada17ca29 ]
+[ Upstream commit fd8099e7918cd2df39ef306dd1d1af7178a15b81 ]
 
-It is not possible to build an enclave if it was not possible to load
-the binary from which it should be constructed. Do not attempt
-to make further progress but instead return with failure. A
-"return false" from setup_test_encl() is expected to trip an
-ASSERT_TRUE() and abort the rest of the test.
+Pass the actual nvme_ns_ids used for the comparison instead of the
+ns_head that isn't needed and use a more descriptive function name.
 
-Fixes: 1b35eb719549 ("selftests/sgx: Encpsulate the test enclave creation")
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lkml.kernel.org/r/e3778c77f95e6dca348c732b12f155051d2899b4.1644355600.git.reinette.chatre@intel.com
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/sgx/main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/nvme/host/core.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
-index 370c4995f7c4..a7cd2c3e6f7e 100644
---- a/tools/testing/selftests/sgx/main.c
-+++ b/tools/testing/selftests/sgx/main.c
-@@ -147,6 +147,7 @@ static bool setup_test_encl(unsigned long heap_size, struct encl *encl,
- 	if (!encl_load("test_encl.elf", encl, heap_size)) {
- 		encl_delete(encl);
- 		TH_LOG("Failed to load the test enclave.\n");
-+		return false;
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index fd4720d37cc0..f921c917f4b0 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3598,16 +3598,15 @@ static struct nvme_ns_head *nvme_find_ns_head(struct nvme_subsystem *subsys,
+ 	return NULL;
+ }
+ 
+-static int __nvme_check_ids(struct nvme_subsystem *subsys,
+-		struct nvme_ns_head *new)
++static int nvme_subsys_check_duplicate_ids(struct nvme_subsystem *subsys,
++		struct nvme_ns_ids *ids)
+ {
+ 	struct nvme_ns_head *h;
+ 
+ 	lockdep_assert_held(&subsys->lock);
+ 
+ 	list_for_each_entry(h, &subsys->nsheads, entry) {
+-		if (nvme_ns_ids_valid(&new->ids) &&
+-		    nvme_ns_ids_equal(&new->ids, &h->ids))
++		if (nvme_ns_ids_valid(ids) && nvme_ns_ids_equal(ids, &h->ids))
+ 			return -EINVAL;
  	}
  
- 	if (!encl_measure(encl))
+@@ -3706,7 +3705,7 @@ static struct nvme_ns_head *nvme_alloc_ns_head(struct nvme_ctrl *ctrl,
+ 	head->ids = *ids;
+ 	kref_init(&head->ref);
+ 
+-	ret = __nvme_check_ids(ctrl->subsys, head);
++	ret = nvme_subsys_check_duplicate_ids(ctrl->subsys, &head->ids);
+ 	if (ret) {
+ 		dev_err(ctrl->device,
+ 			"duplicate IDs for nsid %d\n", nsid);
 -- 
 2.34.1
 
