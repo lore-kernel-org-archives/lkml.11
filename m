@@ -2,107 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8561C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 987D9C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582641AbiDEXtC (ORCPT
+        id S1582627AbiDEXs6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
+        Tue, 5 Apr 2022 19:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457759AbiDEQll (ORCPT
+        with ESMTP id S1389781AbiDEP0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:41:41 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D340BDB48B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:39:42 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id h4so20148395wrc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:39:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RaKfLsrc3XZWQqIO8eaNOg8ge8Ji7+/v6181V2TTNcc=;
-        b=JraWzk1dVN/s3YPWE6AvnD8A2YawUca/c3wTpCGfOdGLOT8iR2qjz4I+fhRoLWBgX2
-         K7oMk4HbYHpaYL9fuNNWTai6d7Pj42JbBJlt2Gz+PD0fE9oqprY7L8ttYme+mU7z9Jy1
-         +lhTImI4F6qLi8PjuAJ/1obQWkx8AOn7vjMigrVpE/AN+8lDNchnUtVhW0Tck6xQmMfh
-         iy0SNQ+ihW/IAfNCg1Nto4R8eELJSwOc9qtml31BHz5imNVjYjwvhOgHic2iVy40TQ5F
-         CvQdLyDvYta1IFqW/lHpkZtgW694UNC7mEt+89LMaoBBneC9UnOYt1wfhoy+o1Zyo8zA
-         w+3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RaKfLsrc3XZWQqIO8eaNOg8ge8Ji7+/v6181V2TTNcc=;
-        b=fJ8uIS+yY0L48c13Btu8fr8FH9spXtrwGARzPG43kicbFQTtpZ8i+cXOO+JsPQQPsp
-         7F/P09NlM9ei8fDVFbYql+m4HD+1EF4/b/aDReqqYyeo3Ud187yNvYTjE+zqdN1GIb7o
-         83/dtCUbV9Z15BVdKxEDnG1viYrUqNknrEA419w809LSRJHx2E7XzVZFEsjpDE/GyI/Y
-         Kw6wi2K4V6pA84JqNKJLCnQtwA36IPulTNdYasYQ9QSI3tvkEXCbqqNavVEwORef8I+m
-         sa9GtoOoU3L0giMU/zFiEjc9UQCd1GJHNy9X3hL13eA7ZbvKASQBJOAhbCL8AKJxdSaS
-         RzdA==
-X-Gm-Message-State: AOAM531CwhVI4EQIFq0Ii4HzCwVjPjQpaTVEHW+1VY7PyS8cyqxcYWPm
-        2QZrhyuSqdr9dJfmwrrFjUmhUw==
-X-Google-Smtp-Source: ABdhPJzRwIFnGuM3S2npgVv4565/6c5hTUeCqw3z/u/h3ykqBZowMeUDAykTZGUr3Ql4am57RL0yCA==
-X-Received: by 2002:a05:6000:1a8d:b0:204:8cdb:279b with SMTP id f13-20020a0560001a8d00b002048cdb279bmr3365958wry.296.1649176781233;
-        Tue, 05 Apr 2022 09:39:41 -0700 (PDT)
-Received: from localhost ([2a02:168:96c5:1:55ed:514f:6ad7:5bcc])
-        by smtp.gmail.com with ESMTPSA id k11-20020a5d6d4b000000b0020599079f68sm12454249wri.106.2022.04.05.09.39.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 09:39:40 -0700 (PDT)
-From:   Jann Horn <jannh@google.com>
-To:     "Theodore Ts'o" <tytso@mit.edu>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Jann Horn <jannh@google.com>
-Subject: [PATCH] random: Fix signal_pending() usage
-Date:   Tue,  5 Apr 2022 18:39:31 +0200
-Message-Id: <20220405163931.1108442-1-jannh@google.com>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+        Tue, 5 Apr 2022 11:26:46 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AE1EEA43;
+        Tue,  5 Apr 2022 06:37:32 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id C01181F4512B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649165850;
+        bh=plGTTyi7O6qDtXxCe+h/xQcs9ltHnMhWtxjOqkuVZDA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=c7CbAeTNu93R+wac0xUo8wYt5JHYwVPd64SEqW/SDwK8otS4ZmnyP2OT8Zetat059
+         odFY4s7LLMRKdZx+u9DgJ+6R76/bmNzUrxwpPJMv+KYldaKtX0rVOinXvHBuewmHCd
+         GPiHBfHg9bzOyApLYuAlAGJ54YI1ZvRFGvvu31CzQMNaPh7/FpmEf6WgCoWWVghk0v
+         n7+V4pbW+bbDbiuVhQ74MTamguMKsNtXVYQJBaVZkV4tM1g6haDmp3nJBTJhcq+6me
+         SGNpIoCdUfJATVmysl7Ianu9MVm7k8Y6RobJ0fX1h6SE+SehjaHHxv8XRMMnf90Yif
+         lU13kvmJsV8CA==
+Message-ID: <9999f731-1e95-ef51-4b09-c88222320696@collabora.com>
+Date:   Tue, 5 Apr 2022 15:37:26 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] remoteproc: mtk_scp: Fix a potential double free
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <1d15923b4ffb94531435c48482fef276a11b9a67.1648981531.git.christophe.jaillet@wanadoo.fr>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <1d15923b4ffb94531435c48482fef276a11b9a67.1648981531.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-signal_pending() checks TIF_NOTIFY_SIGNAL and TIF_SIGPENDING, which signal
-that the task should bail out of the syscall when possible.
-This is a separate concept from need_resched(), which checks
-TIF_NEED_RESCHED, signalling that the task should preempt.
+Il 03/04/22 12:25, Christophe JAILLET ha scritto:
+> 'scp->rproc' is allocated using devm_rproc_alloc(), so there is no need
+> to free it explicitly in the remove function.
+> 
+> Fixes: c1407ac1099a ("remoteproc: mtk_scp: Use devm variant of rproc_alloc()")
 
-In particular, with the current code, the signal_pending() bailout probably
-won't work reliably.
+Hello Cristophe,
+thanks for the patch!
 
-Change this to look like other functions that read lots of data, such as
-read_zero().
+I agree with what you're doing here, but you forgot to add your Signed-off-by.
+Please resend it with your signoff, then I will give you my R-b.
+Also, please make sure to add me to the Ccs so that I can see your v2 sooner!
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jann Horn <jannh@google.com>
----
- drivers/char/random.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 1eb220a5f44f..7f0253455d4e 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -540,13 +540,13 @@ static ssize_t get_random_bytes_user(void __user *buf=
-, size_t nbytes)
- 	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
-=20
- 	do {
--		if (large_request && need_resched()) {
-+		if (large_request) {
- 			if (signal_pending(current)) {
- 				if (!ret)
- 					ret =3D -ERESTARTSYS;
- 				break;
- 			}
--			schedule();
-+			cond_resched();
- 		}
-=20
- 		chacha20_block(chacha_state, output);
-
-base-commit: 0c3e7b36d92681bba4c73c198a35e5a806d6f3ff
---=20
-2.35.1.1094.g7c7d902a7c-goog
-
+Thanks,
+Angelo
