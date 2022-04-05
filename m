@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B35C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A569C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381945AbiDEU3X (ORCPT
+        id S1382084AbiDEU30 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33782 "EHLO
+        Tue, 5 Apr 2022 16:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244837AbiDEKjG (ORCPT
+        with ESMTP id S1349469AbiDEJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:39:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF04A56CF;
-        Tue,  5 Apr 2022 03:24:21 -0700 (PDT)
+        Tue, 5 Apr 2022 05:49:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192CDFD25;
+        Tue,  5 Apr 2022 02:46:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A179B81B18;
-        Tue,  5 Apr 2022 10:24:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56967C385A1;
-        Tue,  5 Apr 2022 10:24:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA31A6164D;
+        Tue,  5 Apr 2022 09:46:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD4AC385A2;
+        Tue,  5 Apr 2022 09:46:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649154258;
-        bh=wHyyD1j+rtVNRgjNRVprUD2XKkYLjpE3fRupRb474Sw=;
+        s=korg; t=1649152008;
+        bh=3LxEPkMJu4WUWNwLsa7IzbFHRo3wh5QvDBNDMq0dVUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zRPITcFEjgAkBtyCozfbcVwSHPJ0PCDxb1AuGQ/2NydfgympYzsJxs16M7zcjmSp+
-         dwjSuaXJpVlaVFmRVnVxW130MCOzokwO3vSFAoacdhDWlAulqXKdqi9xZntexX2F5o
-         Lvq/6HW0625217442ViHOZtpIf6XXcGi5vmihsUA=
+        b=EW9avq9Kgl6PHJh15BuKMotpDbcje5S2eLON40R829EQ5+kImCNfUSmv/uGDxtdtr
+         n/wRUc31uZawf+UH1AedZJ46RKIMKGyPDoX1BKF83+e41DWkhyY7iTzjrX5QWFmAUR
+         tQVI4tXLA1obz0EpAfrlRy32YmtdTlhlFi05geIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 515/599] powerpc/lib/sstep: Fix build errors with newer binutils
-Date:   Tue,  5 Apr 2022 09:33:29 +0200
-Message-Id: <20220405070314.164078381@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rodolfo Giometti <giometti@enneenne.com>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 583/913] pps: clients: gpio: Propagate return value from pps_gpio_probe
+Date:   Tue,  5 Apr 2022 09:27:25 +0200
+Message-Id: <20220405070357.320464632@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,61 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit 8219d31effa7be5dbc7ff915d7970672e028c701 upstream.
+[ Upstream commit abaca3179b41d4b3b115f27814ee36f6fb45e897 ]
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+If the pps-gpio driver was probed prior to the GPIO device it uses, the
+devm_gpiod_get call returned an -EPROBE_DEFER error, but pps_gpio_probe
+replaced that error code with -EINVAL, causing the pps-gpio probe to
+fail and not be retried later. Propagate the error return value so that
+deferred probe works properly.
 
-  {standard input}: Assembler messages:
-  {standard input}:10576: Error: unrecognized opcode: `stbcx.'
-  {standard input}:10680: Error: unrecognized opcode: `lharx'
-  {standard input}:10694: Error: unrecognized opcode: `lbarx'
-
-Rework to add assembler directives [1] around the instruction.  The
-problem with this might be that we can trick a power6 into
-single-stepping through an stbcx. for instance, and it will execute that
-in kernel mode.
-
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
-
-Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
-Cc: stable@vger.kernel.org # v4.14+
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-3-anders.roxell@linaro.org
+Fixes: 161520451dfa (pps: new client driver using GPIO)
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Rodolfo Giometti <giometti@enneenne.com>
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: Rodolfo Giometti <giometti@enneenne.com>
+Link: https://lore.kernel.org/r/20220112205214.2060954-1-robert.hancock@calian.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/sstep.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/pps/clients/pps-gpio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -949,7 +949,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
+diff --git a/drivers/pps/clients/pps-gpio.c b/drivers/pps/clients/pps-gpio.c
+index 35799e6401c9..2f4b11b4dfcd 100644
+--- a/drivers/pps/clients/pps-gpio.c
++++ b/drivers/pps/clients/pps-gpio.c
+@@ -169,7 +169,7 @@ static int pps_gpio_probe(struct platform_device *pdev)
+ 	/* GPIO setup */
+ 	ret = pps_gpio_setup(dev);
+ 	if (ret)
+-		return -EINVAL;
++		return ret;
  
- #define __put_user_asmx(x, addr, err, op, cr)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine power8\n"			\
- 		"1:	" op " %2,0,%3\n"		\
-+		".machine pop\n"			\
- 		"	mfcr	%1\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
-@@ -962,7 +965,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
- 
- #define __get_user_asmx(x, addr, err, op)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine power8\n"			\
- 		"1:	"op" %1,0,%2\n"			\
-+		".machine pop\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li	%0,%3\n"		\
+ 	/* IRQ setup */
+ 	ret = gpiod_to_irq(data->gpio_pin);
+-- 
+2.34.1
+
 
 
