@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E51C352A7
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FADC352B6
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235922AbiDEI1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48070 "EHLO
+        id S236095AbiDEI1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235822AbiDEIA0 (ORCPT
+        with ESMTP id S235838AbiDEIA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:00:26 -0400
+        Tue, 5 Apr 2022 04:00:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D91434B4;
-        Tue,  5 Apr 2022 00:58:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B0E3D4A8;
+        Tue,  5 Apr 2022 00:58:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A61CC61748;
-        Tue,  5 Apr 2022 07:58:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F88C340EE;
-        Tue,  5 Apr 2022 07:58:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61CB961725;
+        Tue,  5 Apr 2022 07:58:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7405FC340EE;
+        Tue,  5 Apr 2022 07:58:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145507;
-        bh=2XbkA8Sju1QrQSE2FBej6HGGJ0n/IaEb/D2VDqu6PO0=;
+        s=korg; t=1649145509;
+        bh=vHQjIyodvSNE/8GncM3QAk2FrhwvFw6zUYkbN+IhmRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J0ofGtF8NNzizFqjqcOpeJrc17DfNp9rdHA8WOrnAmz8U8qmx/Uce26FrYsiYzMyD
-         tB4cAZgXRIGyNbyRjd851dW1Y4GHgVdVWTNw3q4x+7x0/L/Qxq7idXnF+98AT3f7DV
-         d3qpY3Cb/jI5ke25imjGhttVz2LJH2Rz5NiHVUjM=
+        b=GhLsoVhN31255E4F6E3NQ3pEoKWJ7X+sQf0dDJ5bV1xCZ2txRZlFy5XiWNiXInf2q
+         378pio1eccd8be2L44vMhHwRZnL8R5MboqCkAhsXk8bp8WpJ0hMHuNiVTdjoFquuIw
+         fzmQK/p+o9ytYDg91mci9NpC+Zr2Je3puhiWtk18=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0423/1126] drm/meson: osd_afbcd: Add an exit callback to struct meson_afbcd_ops
-Date:   Tue,  5 Apr 2022 09:19:30 +0200
-Message-Id: <20220405070420.041722210@linuxfoundation.org>
+Subject: [PATCH 5.17 0432/1126] Bluetooth: hci_sync: unlock on error in hci_inquiry_result_with_rssi_evt()
+Date:   Tue,  5 Apr 2022 09:19:39 +0200
+Message-Id: <20220405070420.304930215@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,142 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 04b8a5d9cfd171f65df75f444b5617a372649edd ]
+[ Upstream commit c07ba878ca199a6089cdb323bf526adbeeb4201f ]
 
-Use this to simplify the driver shutdown. It will also come handy when
-fixing the error handling in meson_drv_bind_master().
+Add unlocks to two error paths in hci_inquiry_result_with_rssi_evt().
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Fixes: d1b5e41e13a7e9 ("drm/meson: Add AFBCD module driver")
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211230235515.1627522-2-martin.blumenstingl@googlemail.com
+Fixes: fee645033e2c ("Bluetooth: hci_event: Use skb_pull_data when processing inquiry results")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/meson/meson_drv.c       |  6 ++--
- drivers/gpu/drm/meson/meson_osd_afbcd.c | 41 ++++++++++++++++---------
- drivers/gpu/drm/meson/meson_osd_afbcd.h |  1 +
- 3 files changed, 30 insertions(+), 18 deletions(-)
+ net/bluetooth/hci_event.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
-index 80f1d439841a..b919271a6e50 100644
---- a/drivers/gpu/drm/meson/meson_drv.c
-+++ b/drivers/gpu/drm/meson/meson_drv.c
-@@ -385,10 +385,8 @@ static void meson_drv_unbind(struct device *dev)
- 	free_irq(priv->vsync_irq, drm);
- 	drm_dev_put(drm);
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index fc30f4c03d29..05997dff5666 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4534,7 +4534,7 @@ static void hci_inquiry_result_with_rssi_evt(struct hci_dev *hdev, void *edata,
+ 			if (!info) {
+ 				bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
+ 					   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
+-				return;
++				goto unlock;
+ 			}
  
--	if (priv->afbcd.ops) {
--		priv->afbcd.ops->reset(priv);
--		meson_rdma_free(priv);
--	}
-+	if (priv->afbcd.ops)
-+		priv->afbcd.ops->exit(priv);
- }
+ 			bacpy(&data.bdaddr, &info->bdaddr);
+@@ -4565,7 +4565,7 @@ static void hci_inquiry_result_with_rssi_evt(struct hci_dev *hdev, void *edata,
+ 			if (!info) {
+ 				bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
+ 					   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
+-				return;
++				goto unlock;
+ 			}
  
- static const struct component_master_ops meson_drv_master_ops = {
-diff --git a/drivers/gpu/drm/meson/meson_osd_afbcd.c b/drivers/gpu/drm/meson/meson_osd_afbcd.c
-index ffc6b584dbf8..0cdbe899402f 100644
---- a/drivers/gpu/drm/meson/meson_osd_afbcd.c
-+++ b/drivers/gpu/drm/meson/meson_osd_afbcd.c
-@@ -79,11 +79,6 @@ static bool meson_gxm_afbcd_supported_fmt(u64 modifier, uint32_t format)
- 	return meson_gxm_afbcd_pixel_fmt(modifier, format) >= 0;
- }
- 
--static int meson_gxm_afbcd_init(struct meson_drm *priv)
--{
--	return 0;
--}
+ 			bacpy(&data.bdaddr, &info->bdaddr);
+@@ -4587,7 +4587,7 @@ static void hci_inquiry_result_with_rssi_evt(struct hci_dev *hdev, void *edata,
+ 		bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
+ 			   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
+ 	}
 -
- static int meson_gxm_afbcd_reset(struct meson_drm *priv)
- {
- 	writel_relaxed(VIU_SW_RESET_OSD1_AFBCD,
-@@ -93,6 +88,16 @@ static int meson_gxm_afbcd_reset(struct meson_drm *priv)
- 	return 0;
++unlock:
+ 	hci_dev_unlock(hdev);
  }
  
-+static int meson_gxm_afbcd_init(struct meson_drm *priv)
-+{
-+	return 0;
-+}
-+
-+static void meson_gxm_afbcd_exit(struct meson_drm *priv)
-+{
-+	meson_gxm_afbcd_reset(priv);
-+}
-+
- static int meson_gxm_afbcd_enable(struct meson_drm *priv)
- {
- 	writel_relaxed(FIELD_PREP(OSD1_AFBCD_ID_FIFO_THRD, 0x40) |
-@@ -172,6 +177,7 @@ static int meson_gxm_afbcd_setup(struct meson_drm *priv)
- 
- struct meson_afbcd_ops meson_afbcd_gxm_ops = {
- 	.init = meson_gxm_afbcd_init,
-+	.exit = meson_gxm_afbcd_exit,
- 	.reset = meson_gxm_afbcd_reset,
- 	.enable = meson_gxm_afbcd_enable,
- 	.disable = meson_gxm_afbcd_disable,
-@@ -269,6 +275,18 @@ static bool meson_g12a_afbcd_supported_fmt(u64 modifier, uint32_t format)
- 	return meson_g12a_afbcd_pixel_fmt(modifier, format) >= 0;
- }
- 
-+static int meson_g12a_afbcd_reset(struct meson_drm *priv)
-+{
-+	meson_rdma_reset(priv);
-+
-+	meson_rdma_writel_sync(priv, VIU_SW_RESET_G12A_AFBC_ARB |
-+			       VIU_SW_RESET_G12A_OSD1_AFBCD,
-+			       VIU_SW_RESET);
-+	meson_rdma_writel_sync(priv, 0, VIU_SW_RESET);
-+
-+	return 0;
-+}
-+
- static int meson_g12a_afbcd_init(struct meson_drm *priv)
- {
- 	int ret;
-@@ -286,16 +304,10 @@ static int meson_g12a_afbcd_init(struct meson_drm *priv)
- 	return 0;
- }
- 
--static int meson_g12a_afbcd_reset(struct meson_drm *priv)
-+static void meson_g12a_afbcd_exit(struct meson_drm *priv)
- {
--	meson_rdma_reset(priv);
--
--	meson_rdma_writel_sync(priv, VIU_SW_RESET_G12A_AFBC_ARB |
--			       VIU_SW_RESET_G12A_OSD1_AFBCD,
--			       VIU_SW_RESET);
--	meson_rdma_writel_sync(priv, 0, VIU_SW_RESET);
--
--	return 0;
-+	meson_g12a_afbcd_reset(priv);
-+	meson_rdma_free(priv);
- }
- 
- static int meson_g12a_afbcd_enable(struct meson_drm *priv)
-@@ -380,6 +392,7 @@ static int meson_g12a_afbcd_setup(struct meson_drm *priv)
- 
- struct meson_afbcd_ops meson_afbcd_g12a_ops = {
- 	.init = meson_g12a_afbcd_init,
-+	.exit = meson_g12a_afbcd_exit,
- 	.reset = meson_g12a_afbcd_reset,
- 	.enable = meson_g12a_afbcd_enable,
- 	.disable = meson_g12a_afbcd_disable,
-diff --git a/drivers/gpu/drm/meson/meson_osd_afbcd.h b/drivers/gpu/drm/meson/meson_osd_afbcd.h
-index 5e5523304f42..e77ddeb6416f 100644
---- a/drivers/gpu/drm/meson/meson_osd_afbcd.h
-+++ b/drivers/gpu/drm/meson/meson_osd_afbcd.h
-@@ -14,6 +14,7 @@
- 
- struct meson_afbcd_ops {
- 	int (*init)(struct meson_drm *priv);
-+	void (*exit)(struct meson_drm *priv);
- 	int (*reset)(struct meson_drm *priv);
- 	int (*enable)(struct meson_drm *priv);
- 	int (*disable)(struct meson_drm *priv);
 -- 
 2.34.1
 
