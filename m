@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C398C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B19AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846171AbiDFCDK (ORCPT
+        id S1846199AbiDFCDR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        Tue, 5 Apr 2022 22:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357986AbiDEK1j (ORCPT
+        with ESMTP id S1349565AbiDEJuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0D7D371F;
-        Tue,  5 Apr 2022 03:12:19 -0700 (PDT)
+        Tue, 5 Apr 2022 05:50:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DC09B;
+        Tue,  5 Apr 2022 02:48:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47C0CB81B7A;
-        Tue,  5 Apr 2022 10:12:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FB20C385A0;
-        Tue,  5 Apr 2022 10:12:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9257F614FB;
+        Tue,  5 Apr 2022 09:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71E18C385A2;
+        Tue,  5 Apr 2022 09:48:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153536;
-        bh=1I7qSMB34Xx+T3Vo/9nIFDfP91VQBnF1UrD3/LwdiwA=;
+        s=korg; t=1649152101;
+        bh=HQpRMrAehDtWeCK0JY9A9/XHa20QiNq1aSYK6C2zu8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rv7OX3Mzj7/KGsW1HA0ZhBWDbYR9/Ys5+jhCL0b2uUlN2cWtFLCn9/uUUB+ZM6Uxd
-         0tGgDzphsJcMe8chuhnFVzvUSR6ThhGrRqTVVIvo5jgxV66RoLguqTDM9XY3axqQ+u
-         6S9LDUqA7jZ16Hwg7eGX2KYp0eqiOXGZ0N0Ee7Gw=
+        b=JH1ymJCiDnyR0Jn0V43TCiPWOnYj0G9gIRDQBTmq0c3O8ae3IMY7rvUj0/7O3tzUp
+         T2eChDJTM0oN+qS4FSzS+2Z/XUKzsNcbZxF3v8llC9g3DtLLuX1f62Mt3r10YK6Zjt
+         uq8FOnQqMDFHNh80wN2a2i6dWaAQZEcYqbxXzilU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Petr Vorel <petr.vorel@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 258/599] ASoC: codecs: wcd934x: Add missing of_node_put() in wcd934x_codec_parse_data
-Date:   Tue,  5 Apr 2022 09:29:12 +0200
-Message-Id: <20220405070306.517125305@linuxfoundation.org>
+Subject: [PATCH 5.15 654/913] clk: qcom: gcc-msm8994: Fix gpll4 width
+Date:   Tue,  5 Apr 2022 09:28:36 +0200
+Message-Id: <20220405070359.442659167@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 9531a631379169d57756b2411178c6238655df88 ]
+[ Upstream commit 71021db1c532c2545ae53b9ee85b37b7154f51d4 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
-This is similar to commit 64b92de9603f
-("ASoC: wcd9335: fix a leaked reference by adding missing of_node_put")
+The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
+this.
 
-Fixes: a61f3b4f476e ("ASoC: wcd934x: add support to wcd9340/wcd9341 codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220316083631.14103-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This fixes the following error messages:
+
+ mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
+ mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
+
+Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20220319174940.341137-1-konrad.dybcio@somainline.org
+Tested-by: Petr Vorel <petr.vorel@gmail.com>
+Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wcd934x.c | 1 +
+ drivers/clk/qcom/gcc-msm8994.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
-index f07dea0bc27e..8540ac230d0e 100644
---- a/sound/soc/codecs/wcd934x.c
-+++ b/sound/soc/codecs/wcd934x.c
-@@ -5047,6 +5047,7 @@ static int wcd934x_codec_parse_data(struct wcd934x_codec *wcd)
- 	}
+diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
+index 144d2ba7a9be..463a444c8a7e 100644
+--- a/drivers/clk/qcom/gcc-msm8994.c
++++ b/drivers/clk/qcom/gcc-msm8994.c
+@@ -108,6 +108,7 @@ static struct clk_alpha_pll gpll4_early = {
  
- 	wcd->sidev = of_slim_get_device(wcd->sdev->ctrl, ifc_dev_np);
-+	of_node_put(ifc_dev_np);
- 	if (!wcd->sidev) {
- 		dev_err(dev, "Unable to get SLIM Interface device\n");
- 		return -EINVAL;
+ static struct clk_alpha_pll_postdiv gpll4 = {
+ 	.offset = 0x1dc0,
++	.width = 4,
+ 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
+ 	.clkr.hw.init = &(struct clk_init_data)
+ 	{
 -- 
 2.34.1
 
