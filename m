@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD77C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B1CC3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245721AbiDEKjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45826 "EHLO
+        id S1344183AbiDEKjp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240683AbiDEIcT (ORCPT
+        with ESMTP id S234478AbiDEIZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63CE13CC3;
-        Tue,  5 Apr 2022 01:24:47 -0700 (PDT)
+        Tue, 5 Apr 2022 04:25:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529F7A18F;
+        Tue,  5 Apr 2022 01:20:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CECDF60FF5;
-        Tue,  5 Apr 2022 08:24:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFBC3C385A0;
-        Tue,  5 Apr 2022 08:24:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F36B1B81BB1;
+        Tue,  5 Apr 2022 08:20:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64A7EC385A1;
+        Tue,  5 Apr 2022 08:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147085;
-        bh=dXdjpfekDNrTTf5v3ALYDHyT1ftBFvjw95HyxuH5594=;
+        s=korg; t=1649146841;
+        bh=Qb/oTH/UWrZXJOhd5uOtZEXXGxt5HFJZw3S+Cihmmxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f1vkLz+1W4v/Cm3k681DJOdA/qw/jm/jWKl4z20SrtJjRxWsh+bVlkurDITHksFUy
-         G6TMyFfNDoB1lKP1zf7miXH9yKFyM7MJ/n5Dksd/AjPrEoLqhsEOLSesbXp6BibI4n
-         TZbfAJkO3za15D94usIWKTAklIjbHPDfLvfyPwtE=
+        b=zh64M1gCyVhYS5CZyMusWQGm2m/zck3dbW9EM46+1ZDHCSKlyMDaBsQaWrnbgxPsm
+         yb4bfCyVgutfr908T8bGFfzBM9n9NrLZxzJgW2s5wUpWmMp59eCok8E095AwCDHwAn
+         TwJmC9vjxuuJENX712gr5vAPFngVqU1+k5k+C9mM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        kernel test robot <lkp@intel.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.17 0995/1126] MIPS: crypto: Fix CRC32 code
-Date:   Tue,  5 Apr 2022 09:29:02 +0200
-Message-Id: <20220405070436.699741744@linuxfoundation.org>
+        stable@vger.kernel.org, Richard Schleich <rs@noreya.tech>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0907/1126] ARM: dts: bcm2837: Add the missing L1/L2 cache information
+Date:   Tue,  5 Apr 2022 09:27:34 +0200
+Message-Id: <20220405070434.150594929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,96 +51,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Richard Schleich <rs@noreya.tech>
 
-commit 41022eff9c2d21e658c7a6fcd31005bf514d28b7 upstream.
+[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
 
-Commit 67512a8cf5a7 ("MIPS: Avoid macro redefinitions") changed how the
-MIPS register macros were defined, in order to allow the code to compile
-under LLVM/Clang.
+This patch fixes the kernel warning
+"cacheinfo: Unable to detect cache hierarchy for CPU 0"
+for the bcm2837 on newer kernel versions.
 
-The MIPS CRC32 code however wasn't updated accordingly, causing a build
-bug when using a MIPS32r6 toolchain without CRC support.
-
-Update the CRC32 code to use the macros correctly, to fix the build
-failures.
-
-Fixes: 67512a8cf5a7 ("MIPS: Avoid macro redefinitions")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Richard Schleich <rs@noreya.tech>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+[florian: Align and remove comments matching property values]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/crypto/crc32-mips.c |   46 +++++++++++++++++++++++-------------------
- 1 file changed, 26 insertions(+), 20 deletions(-)
+ arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
---- a/arch/mips/crypto/crc32-mips.c
-+++ b/arch/mips/crypto/crc32-mips.c
-@@ -28,7 +28,7 @@ enum crc_type {
+diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
+index 0199ec98cd61..5dbdebc46259 100644
+--- a/arch/arm/boot/dts/bcm2837.dtsi
++++ b/arch/arm/boot/dts/bcm2837.dtsi
+@@ -40,12 +40,26 @@
+ 		#size-cells = <0>;
+ 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
+ 
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
++		 * /about-the-l1-memory-system?lang=en
++		 *
++		 * Source for d/i-cache-size
++		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
++		 */
+ 		cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a53";
+ 			reg = <0>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000d8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -54,6 +68,13 @@
+ 			reg = <1>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -62,6 +83,13 @@
+ 			reg = <2>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -70,6 +98,27 @@
+ 			reg = <3>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000f0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
++		};
++
++		/* Source for cache-line-size + cache-sets
++		 * https://developer.arm.com/documentation/ddi0500
++		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
++		 * Source for cache-size
++		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
++		 */
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x80000>;
++			cache-line-size = <64>;
++			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
++			cache-level = <2>;
+ 		};
+ 	};
  };
- 
- #ifndef TOOLCHAIN_SUPPORTS_CRC
--#define _ASM_MACRO_CRC32(OP, SZ, TYPE)					  \
-+#define _ASM_SET_CRC(OP, SZ, TYPE)					  \
- _ASM_MACRO_3R(OP, rt, rs, rt2,						  \
- 	".ifnc	\\rt, \\rt2\n\t"					  \
- 	".error	\"invalid operands \\\"" #OP " \\rt,\\rs,\\rt2\\\"\"\n\t" \
-@@ -37,30 +37,36 @@ _ASM_MACRO_3R(OP, rt, rs, rt2,						  \
- 			  ((SZ) <<  6) | ((TYPE) << 8))			  \
- 	_ASM_INSN32_IF_MM(0x00000030 | (__rs << 16) | (__rt << 21) |	  \
- 			  ((SZ) << 14) | ((TYPE) << 3)))
--_ASM_MACRO_CRC32(crc32b,  0, 0);
--_ASM_MACRO_CRC32(crc32h,  1, 0);
--_ASM_MACRO_CRC32(crc32w,  2, 0);
--_ASM_MACRO_CRC32(crc32d,  3, 0);
--_ASM_MACRO_CRC32(crc32cb, 0, 1);
--_ASM_MACRO_CRC32(crc32ch, 1, 1);
--_ASM_MACRO_CRC32(crc32cw, 2, 1);
--_ASM_MACRO_CRC32(crc32cd, 3, 1);
--#define _ASM_SET_CRC ""
-+#define _ASM_UNSET_CRC(op, SZ, TYPE) ".purgem " #op "\n\t"
- #else /* !TOOLCHAIN_SUPPORTS_CRC */
--#define _ASM_SET_CRC ".set\tcrc\n\t"
-+#define _ASM_SET_CRC(op, SZ, TYPE) ".set\tcrc\n\t"
-+#define _ASM_UNSET_CRC(op, SZ, TYPE)
- #endif
- 
--#define _CRC32(crc, value, size, type)		\
--do {						\
--	__asm__ __volatile__(			\
--		".set	push\n\t"		\
--		_ASM_SET_CRC			\
--		#type #size "	%0, %1, %0\n\t"	\
--		".set	pop"			\
--		: "+r" (crc)			\
--		: "r" (value));			\
-+#define __CRC32(crc, value, op, SZ, TYPE)		\
-+do {							\
-+	__asm__ __volatile__(				\
-+		".set	push\n\t"			\
-+		_ASM_SET_CRC(op, SZ, TYPE)		\
-+		#op "	%0, %1, %0\n\t"			\
-+		_ASM_UNSET_CRC(op, SZ, TYPE)		\
-+		".set	pop"				\
-+		: "+r" (crc)				\
-+		: "r" (value));				\
- } while (0)
- 
-+#define _CRC32_crc32b(crc, value)	__CRC32(crc, value, crc32b, 0, 0)
-+#define _CRC32_crc32h(crc, value)	__CRC32(crc, value, crc32h, 1, 0)
-+#define _CRC32_crc32w(crc, value)	__CRC32(crc, value, crc32w, 2, 0)
-+#define _CRC32_crc32d(crc, value)	__CRC32(crc, value, crc32d, 3, 0)
-+#define _CRC32_crc32cb(crc, value)	__CRC32(crc, value, crc32cb, 0, 1)
-+#define _CRC32_crc32ch(crc, value)	__CRC32(crc, value, crc32ch, 1, 1)
-+#define _CRC32_crc32cw(crc, value)	__CRC32(crc, value, crc32cw, 2, 1)
-+#define _CRC32_crc32cd(crc, value)	__CRC32(crc, value, crc32cd, 3, 1)
-+
-+#define _CRC32(crc, value, size, op) \
-+	_CRC32_##op##size(crc, value)
-+
- #define CRC32(crc, value, size) \
- 	_CRC32(crc, value, size, crc32)
- 
+-- 
+2.34.1
+
 
 
