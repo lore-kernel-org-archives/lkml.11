@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A330C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B2EC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358396AbiDENJM (ORCPT
+        id S1356964AbiDENI0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
+        Tue, 5 Apr 2022 09:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344142AbiDEJSV (ORCPT
+        with ESMTP id S1344063AbiDEJRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04FA41339;
-        Tue,  5 Apr 2022 02:04:35 -0700 (PDT)
+        Tue, 5 Apr 2022 05:17:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03609237C2;
+        Tue,  5 Apr 2022 02:03:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C290B81BAE;
-        Tue,  5 Apr 2022 09:04:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA715C385A1;
-        Tue,  5 Apr 2022 09:04:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E0161571;
+        Tue,  5 Apr 2022 09:03:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D037C385A0;
+        Tue,  5 Apr 2022 09:03:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149473;
-        bh=7YUnPeYxarf7zslWpL73PYpMwLDUnxnQZtWx1wJq5pg=;
+        s=korg; t=1649149437;
+        bh=TYK4B6kjg7vfkpzhpVpnNb+aVZu1hz8gIrRdAKmIiQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ma3JsUKtVRIo/Lo2Etq/se69fKfxMngTMlMER4hoBtpoIPjteEAMWvJqNdr1Vg0Ol
-         sU5fOtlLPI0Lpil4LoxJ+7ip1H2iZJsnNAEbslwrmuG6K2HXSwJzjbYkrZYlHcK+BJ
-         iReGdmkk0SPMoSMiy8EMg6eOOsUKsZFHackGeluQ=
+        b=OAUJo0GY8b0+U7fKmaecLpK8Ml/Q2JJkCz/wXgXS7Sy8CA80G/wc4ct91290/xwgL
+         7Ks2Xc+3JH8xOyaSS0ooIuVj5AFdK65jSJ0tUwDcZH45PdNUoBTEX1+cfIBaixqAYR
+         qkkr3bx1ULmLgn8Pffuw8A3D+UdQmjCnK3B87ces=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0728/1017] net: enetc: report software timestamping via SO_TIMESTAMPING
-Date:   Tue,  5 Apr 2022 09:27:21 +0200
-Message-Id: <20220405070415.875715207@linuxfoundation.org>
+Subject: [PATCH 5.16 0676/1017] clk: at91: sama7g5: fix parents of PDMCs GCLK
+Date:   Tue,  5 Apr 2022 09:26:29 +0200
+Message-Id: <20220405070414.345995610@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,39 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-[ Upstream commit feb13dcb1818b775fbd9191f797be67cd605f03e ]
+[ Upstream commit 1a944729d8635fa59638f24e8727d5ccaa0c8c19 ]
 
-Let user space properly determine that the enetc driver provides
-software timestamps.
+Audio PLL can be used as parent by the GCLKs of PDMCs.
 
-Fixes: 4caefbce06d1 ("enetc: add software timestamping")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Link: https://lore.kernel.org/r/20220324161210.4122281-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cb783bbbcf54 ("clk: at91: sama7g5: add clock support for sama7g5")
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20220304182616.1920392-1-codrin.ciubotariu@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/clk/at91/sama7g5.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index 910b9f722504..d62c188c8748 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -672,7 +672,10 @@ static int enetc_get_ts_info(struct net_device *ndev,
- #ifdef CONFIG_FSL_ENETC_PTP_CLOCK
- 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
- 				SOF_TIMESTAMPING_RX_HARDWARE |
--				SOF_TIMESTAMPING_RAW_HARDWARE;
-+				SOF_TIMESTAMPING_RAW_HARDWARE |
-+				SOF_TIMESTAMPING_TX_SOFTWARE |
-+				SOF_TIMESTAMPING_RX_SOFTWARE |
-+				SOF_TIMESTAMPING_SOFTWARE;
+diff --git a/drivers/clk/at91/sama7g5.c b/drivers/clk/at91/sama7g5.c
+index 369dfafabbca..060e908086a1 100644
+--- a/drivers/clk/at91/sama7g5.c
++++ b/drivers/clk/at91/sama7g5.c
+@@ -696,16 +696,16 @@ static const struct {
+ 	{ .n  = "pdmc0_gclk",
+ 	  .id = 68,
+ 	  .r = { .max = 50000000  },
+-	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
+-	  .pp_mux_table = { 5, 8, },
++	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
++	  .pp_mux_table = { 5, 9, },
+ 	  .pp_count = 2,
+ 	  .pp_chg_id = INT_MIN, },
  
- 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
- 			 (1 << HWTSTAMP_TX_ON) |
+ 	{ .n  = "pdmc1_gclk",
+ 	  .id = 69,
+ 	  .r = { .max = 50000000, },
+-	  .pp = { "syspll_divpmcck", "baudpll_divpmcck", },
+-	  .pp_mux_table = { 5, 8, },
++	  .pp = { "syspll_divpmcck", "audiopll_divpmcck", },
++	  .pp_mux_table = { 5, 9, },
+ 	  .pp_count = 2,
+ 	  .pp_chg_id = INT_MIN, },
+ 
 -- 
 2.34.1
 
