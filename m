@@ -2,130 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3CBC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8A3C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391424AbiDEWF2 (ORCPT
+        id S1391383AbiDEWFY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
+        Tue, 5 Apr 2022 18:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457622AbiDEQSa (ORCPT
+        with ESMTP id S1355857AbiDEKWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:18:30 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3497819C0F
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:16:31 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id t25so24104443lfg.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:16:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Uy8i40RIZFVV64urUf42bHyfQVf4Q/JqjVb+pMMetgg=;
-        b=VEZUGGgcS/bCf+7bs3tHZb8+OMlT5unqdhNUgKPFfUrzmUWPzwkPflleyRfNc9Gszb
-         Zvp51L5ajuECgaMz1MXPXAXCzpd+r7XgMLjc0WwZUqmG6YkOW8zjrrmE+M6NRQcmJWuO
-         Y0fH0pb8byrF6pULERlph+UgHZwh1mkS4uFnJ4VLQVddcyXp54KZF/gQUNfoGi+CLUv5
-         mS5mky+6cLoMPbbvLH9DILjT2TrafcmZcPrfQVcEzGZ47/o/q3O5NsqGbBMbE0V/AgPW
-         oBBJDvv82i/EGVLu1pU55SOGOo1TrCbFYInzxzprvbxO/U2/r7StZYuNCf32nr453634
-         fBJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Uy8i40RIZFVV64urUf42bHyfQVf4Q/JqjVb+pMMetgg=;
-        b=FEpFutEmyDIAtnGJacWSciHZyPMvFaXPKBKFefP05u8fR3C4wTWwoiWfk5ap6ZJGHe
-         zWNuOoRaJ44cyPJilEu2ei0kxqWGQI+Y9hMR5+ugiwxBrD/KjwYVWtD0ZGUzteq2iLVf
-         J/Wx8ihaKTXrM+wJ8cXi0yZW5pYB+REIJwtvESHJ3QDc6tNRG+/8iPJJIwXAC8YEQowg
-         FAjf+MlqqCOM5QoKUomd6n12nLEvyIoecaaOxvsDdFoZNQY6ZpuFLo9/q2sRMjzq+g1W
-         VA8qp5ggIAwucndRrMdE8kqqcOu3HECurz0vU+MkxQr67haZREdPe5OlWpNA16t9NmlY
-         jKQA==
-X-Gm-Message-State: AOAM530WyiEjg0WxeuDwWSSFbeoYZbm10fWlzIo+wgYM4V3GvIM+gXUU
-        Nm/JNjEEfnHgIC79mjZ3Rtkwc+NnNhyJ2+92r6PJ1KdWDZZKxw==
-X-Google-Smtp-Source: ABdhPJyczCamPzZ+WireWxW4CQXH7k2Pos0Q5thRcGyasYMnxW8whHvGnEWwMVjDvTFTyp15EDL3Em9/iSDdkwnlAHg=
-X-Received: by 2002:a05:6512:b9e:b0:44a:10eb:9607 with SMTP id
- b30-20020a0565120b9e00b0044a10eb9607mr3071054lfv.626.1649175385326; Tue, 05
- Apr 2022 09:16:25 -0700 (PDT)
+        Tue, 5 Apr 2022 06:22:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411A7A5EAD;
+        Tue,  5 Apr 2022 03:05:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F3C16167E;
+        Tue,  5 Apr 2022 10:05:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32416C385A1;
+        Tue,  5 Apr 2022 10:05:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153112;
+        bh=ZcVQpwvFrXJtLOsqi3jPXEcTtdIZsDWqBIA96z9gCqY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ePSBlrTNElE/oHLICPC9XdCdNoLK9p1Eqqasiy+Pdb+6KH9vb//bmeV1785Q7G6CM
+         NaMm5Es2xtQM9AC+OqSd/N0293aFVyOxtap0hULlSX+W6Xzc5FFLkepO3aVmTwT30n
+         y8HjL49zx4NR9xiBJ702r2cfl5+TLsOM6ACWBtfM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.10 105/599] pstore: Dont use semaphores in always-atomic-context code
+Date:   Tue,  5 Apr 2022 09:26:39 +0200
+Message-Id: <20220405070301.958868258@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220405113359.2880241-1-masahiroy@kernel.org> <20220405113359.2880241-2-masahiroy@kernel.org>
-In-Reply-To: <20220405113359.2880241-2-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 5 Apr 2022 09:16:13 -0700
-Message-ID: <CAKwvOdnJoAoMbcLo_N=t46SC62yxNDEbj24Y_zRzT4LG-LheXQ@mail.gmail.com>
-Subject: Re: [PATCH v2 01/10] kbuild: factor out genksyms command from cmd_gensymtypes_{c,S}
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 4:34 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> The genksyms command part in cmd_gensymtypes_{c,S} is duplicated.
-> Factor it out into the 'genksyms' macro.
->
-> For the readability, I slightly refactor the arguments to genksyms.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+From: Jann Horn <jannh@google.com>
 
-It looks like you may have sent v2 twice; apologies if I comment on
-BOTH threads rather than 1.
+commit 8126b1c73108bc691f5643df19071a59a69d0bc6 upstream.
 
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+pstore_dump() is *always* invoked in atomic context (nowadays in an RCU
+read-side critical section, before that under a spinlock).
+It doesn't make sense to try to use semaphores here.
 
-> ---
->
-> Changes in v2:
->   - Fix the location of the closing parenthesis
->
->  scripts/Makefile.build | 19 ++++++++-----------
->  1 file changed, 8 insertions(+), 11 deletions(-)
->
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index 9717e6f6fb31..31e0e33dfe5d 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -125,13 +125,14 @@ cmd_cpp_i_c       = $(CPP) $(c_flags) -o $@ $<
->  $(obj)/%.i: $(src)/%.c FORCE
->         $(call if_changed_dep,cpp_i_c)
->
-> +genksyms = scripts/genksyms/genksyms           \
-> +       $(if $(1), -T $(2))                     \
-> +       $(if $(CONFIG_MODULE_REL_CRCS), -R)     \
-> +       $(if $(KBUILD_PRESERVE), -p)            \
-> +       -r $(or $(wildcard $(2:.symtypes=.symref)), /dev/null)
-> +
->  # These mirror gensymtypes_S and co below, keep them in synch.
-> -cmd_gensymtypes_c =                                                         \
-> -    $(CPP) -D__GENKSYMS__ $(c_flags) $< |                                   \
-> -    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
-> -     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
-> -     $(if $(KBUILD_PRESERVE),-p)                                            \
-> -     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-> +cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
->
->  quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
->  cmd_cc_symtypes_c =                                                         \
-> @@ -344,11 +345,7 @@ cmd_gensymtypes_S =                                                         \
->      $(CPP) $(a_flags) $< |                                                  \
->       grep "\<___EXPORT_SYMBOL\>" |                                          \
->       sed 's/.*___EXPORT_SYMBOL[[:space:]]*\([a-zA-Z0-9_]*\)[[:space:]]*,.*/EXPORT_SYMBOL(\1);/' ; } | \
-> -    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - |                                \
-> -    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
-> -     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
-> -     $(if $(KBUILD_PRESERVE),-p)                                            \
-> -     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-> +    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
->
->  quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
->  cmd_cc_symtypes_S =                                                         \
-> --
-> 2.32.0
->
+This is mostly a revert of commit ea84b580b955 ("pstore: Convert buf_lock
+to semaphore"), except that two parts aren't restored back exactly as they
+were:
+
+ - keep the lock initialization in pstore_register
+ - in efi_pstore_write(), always set the "block" flag to false
+ - omit "is_locked", that was unnecessary since
+   commit 959217c84c27 ("pstore: Actually give up during locking failure")
+ - fix the bailout message
+
+The actual problem that the buggy commit was trying to address may have
+been that the use of preemptible() in efi_pstore_write() was wrong - it
+only looks at preempt_count() and the state of IRQs, but __rcu_read_lock()
+doesn't touch either of those under CONFIG_PREEMPT_RCU.
+(Sidenote: CONFIG_PREEMPT_RCU means that the scheduler can preempt tasks in
+RCU read-side critical sections, but you're not allowed to actively
+block/reschedule.)
+
+Lockdep probably never caught the problem because it's very rare that you
+actually hit the contended case, so lockdep always just sees the
+down_trylock(), not the down_interruptible(), and so it can't tell that
+there's a problem.
+
+Fixes: ea84b580b955 ("pstore: Convert buf_lock to semaphore")
+Cc: stable@vger.kernel.org
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220314185953.2068993-1-jannh@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/firmware/efi/efi-pstore.c |    2 +-
+ fs/pstore/platform.c              |   38 ++++++++++++++++++--------------------
+ include/linux/pstore.h            |    6 +++---
+ 3 files changed, 22 insertions(+), 24 deletions(-)
+
+--- a/drivers/firmware/efi/efi-pstore.c
++++ b/drivers/firmware/efi/efi-pstore.c
+@@ -266,7 +266,7 @@ static int efi_pstore_write(struct pstor
+ 		efi_name[i] = name[i];
+ 
+ 	ret = efivar_entry_set_safe(efi_name, vendor, PSTORE_EFI_ATTRIBUTES,
+-			      preemptible(), record->size, record->psi->buf);
++			      false, record->size, record->psi->buf);
+ 
+ 	if (record->reason == KMSG_DUMP_OOPS && try_module_get(THIS_MODULE))
+ 		if (!schedule_work(&efivar_work))
+--- a/fs/pstore/platform.c
++++ b/fs/pstore/platform.c
+@@ -143,21 +143,22 @@ static void pstore_timer_kick(void)
+ 	mod_timer(&pstore_timer, jiffies + msecs_to_jiffies(pstore_update_ms));
+ }
+ 
+-/*
+- * Should pstore_dump() wait for a concurrent pstore_dump()? If
+- * not, the current pstore_dump() will report a failure to dump
+- * and return.
+- */
+-static bool pstore_cannot_wait(enum kmsg_dump_reason reason)
++static bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
+ {
+-	/* In NMI path, pstore shouldn't block regardless of reason. */
++	/*
++	 * In case of NMI path, pstore shouldn't be blocked
++	 * regardless of reason.
++	 */
+ 	if (in_nmi())
+ 		return true;
+ 
+ 	switch (reason) {
+ 	/* In panic case, other cpus are stopped by smp_send_stop(). */
+ 	case KMSG_DUMP_PANIC:
+-	/* Emergency restart shouldn't be blocked. */
++	/*
++	 * Emergency restart shouldn't be blocked by spinning on
++	 * pstore_info::buf_lock.
++	 */
+ 	case KMSG_DUMP_EMERG:
+ 		return true;
+ 	default:
+@@ -388,21 +389,19 @@ static void pstore_dump(struct kmsg_dump
+ 	unsigned long	total = 0;
+ 	const char	*why;
+ 	unsigned int	part = 1;
++	unsigned long	flags = 0;
+ 	int		ret;
+ 
+ 	why = kmsg_dump_reason_str(reason);
+ 
+-	if (down_trylock(&psinfo->buf_lock)) {
+-		/* Failed to acquire lock: give up if we cannot wait. */
+-		if (pstore_cannot_wait(reason)) {
+-			pr_err("dump skipped in %s path: may corrupt error record\n",
+-				in_nmi() ? "NMI" : why);
+-			return;
+-		}
+-		if (down_interruptible(&psinfo->buf_lock)) {
+-			pr_err("could not grab semaphore?!\n");
++	if (pstore_cannot_block_path(reason)) {
++		if (!spin_trylock_irqsave(&psinfo->buf_lock, flags)) {
++			pr_err("dump skipped in %s path because of concurrent dump\n",
++					in_nmi() ? "NMI" : why);
+ 			return;
+ 		}
++	} else {
++		spin_lock_irqsave(&psinfo->buf_lock, flags);
+ 	}
+ 
+ 	oopscount++;
+@@ -464,8 +463,7 @@ static void pstore_dump(struct kmsg_dump
+ 		total += record.size;
+ 		part++;
+ 	}
+-
+-	up(&psinfo->buf_lock);
++	spin_unlock_irqrestore(&psinfo->buf_lock, flags);
+ }
+ 
+ static struct kmsg_dumper pstore_dumper = {
+@@ -591,7 +589,7 @@ int pstore_register(struct pstore_info *
+ 		psi->write_user = pstore_write_user_compat;
+ 	psinfo = psi;
+ 	mutex_init(&psinfo->read_mutex);
+-	sema_init(&psinfo->buf_lock, 1);
++	spin_lock_init(&psinfo->buf_lock);
+ 
+ 	if (psi->flags & PSTORE_FLAGS_DMESG)
+ 		allocate_buf_for_compression();
+--- a/include/linux/pstore.h
++++ b/include/linux/pstore.h
+@@ -14,7 +14,7 @@
+ #include <linux/errno.h>
+ #include <linux/kmsg_dump.h>
+ #include <linux/mutex.h>
+-#include <linux/semaphore.h>
++#include <linux/spinlock.h>
+ #include <linux/time.h>
+ #include <linux/types.h>
+ 
+@@ -87,7 +87,7 @@ struct pstore_record {
+  * @owner:	module which is responsible for this backend driver
+  * @name:	name of the backend driver
+  *
+- * @buf_lock:	semaphore to serialize access to @buf
++ * @buf_lock:	spinlock to serialize access to @buf
+  * @buf:	preallocated crash dump buffer
+  * @bufsize:	size of @buf available for crash dump bytes (must match
+  *		smallest number of bytes available for writing to a
+@@ -178,7 +178,7 @@ struct pstore_info {
+ 	struct module	*owner;
+ 	const char	*name;
+ 
+-	struct semaphore buf_lock;
++	spinlock_t	buf_lock;
+ 	char		*buf;
+ 	size_t		bufsize;
+ 
 
 
--- 
-Thanks,
-~Nick Desaulniers
