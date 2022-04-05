@@ -2,134 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333BEC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 066AFC4707E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235697AbiDEIQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44080 "EHLO
+        id S236822AbiDEIRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235529AbiDEH7u (ORCPT
+        with ESMTP id S235582AbiDEH7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:50 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5025138D9C;
-        Tue,  5 Apr 2022 00:55:07 -0700 (PDT)
-Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 05 Apr 2022 16:55:06 +0900
-Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
-        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 60A392058443;
-        Tue,  5 Apr 2022 16:55:06 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 5 Apr 2022 16:55:06 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 05922B6389;
-        Tue,  5 Apr 2022 16:55:06 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH 1/2] dt-bindings: regulator: uniphier: Clean up clocks, resets, and their names using compatible string
-Date:   Tue,  5 Apr 2022 16:55:02 +0900
-Message-Id: <1649145303-30221-2-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649145303-30221-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1649145303-30221-1-git-send-email-hayashi.kunihiko@socionext.com>
+        Tue, 5 Apr 2022 03:59:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5534A17E19;
+        Tue,  5 Apr 2022 00:55:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E77BB61799;
+        Tue,  5 Apr 2022 07:55:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01EA1C340EE;
+        Tue,  5 Apr 2022 07:55:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649145347;
+        bh=guVlBzD+z8QYs49QmnLxHxL7TQNESW7NlPWrZw/7gKc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wmF7/hGm4m9fdhN4dYFKycmSlOgAlwfvKez/otfEpT7djxkcQQWztVtLLDpmFZOW0
+         3Fw+l/QvJDaLjN8HKiHSjH/9WFw4vm2SwJ6Wjph/ThV68Mhuu6vAfyKrjxLXN98U1I
+         RZdjMt/D/4elrVzKW4M9UPHhSHx6rdW0u8xMKuAQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0371/1126] uaccess: fix nios2 and microblaze get_user_8()
+Date:   Tue,  5 Apr 2022 09:18:38 +0200
+Message-Id: <20220405070418.516783217@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
-resets, and their names that can be taken by the compatible string.
+From: Arnd Bergmann <arnd@arndb.de>
 
-The order of clock-names and reset-names doesn't change here.
+[ Upstream commit a97b693c3712f040c5802f32b2d685352e08cefa ]
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+These two architectures implement 8-byte get_user() through
+a memcpy() into a four-byte variable, which won't fit.
+
+Use a temporary 64-bit variable instead here, and use a double
+cast the way that risc-v and openrisc do to avoid compile-time
+warnings.
+
+Fixes: 6a090e97972d ("arch/microblaze: support get_user() of size 8 bytes")
+Fixes: 5ccc6af5e88e ("nios2: Memory management")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../socionext,uniphier-regulator.yaml         | 55 +++++++++++++------
- 1 file changed, 38 insertions(+), 17 deletions(-)
+ arch/microblaze/include/asm/uaccess.h | 18 +++++++++---------
+ arch/nios2/include/asm/uaccess.h      | 26 ++++++++++++++++----------
+ 2 files changed, 25 insertions(+), 19 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/regulator/socionext,uniphier-regulator.yaml b/Documentation/devicetree/bindings/regulator/socionext,uniphier-regulator.yaml
-index 1218f21ba320..cc40cf72a149 100644
---- a/Documentation/devicetree/bindings/regulator/socionext,uniphier-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/socionext,uniphier-regulator.yaml
-@@ -14,9 +14,6 @@ description: |
- maintainers:
-   - Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
+index 5b6e0e7788f4..3fe96979d2c6 100644
+--- a/arch/microblaze/include/asm/uaccess.h
++++ b/arch/microblaze/include/asm/uaccess.h
+@@ -130,27 +130,27 @@ extern long __user_bad(void);
  
--allOf:
--  - $ref: "regulator.yaml#"
--
- # USB3 Controller
+ #define __get_user(x, ptr)						\
+ ({									\
+-	unsigned long __gu_val = 0;					\
+ 	long __gu_err;							\
+ 	switch (sizeof(*(ptr))) {					\
+ 	case 1:								\
+-		__get_user_asm("lbu", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lbu", (ptr), x, __gu_err);		\
+ 		break;							\
+ 	case 2:								\
+-		__get_user_asm("lhu", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lhu", (ptr), x, __gu_err);		\
+ 		break;							\
+ 	case 4:								\
+-		__get_user_asm("lw", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lw", (ptr), x, __gu_err);		\
+ 		break;							\
+-	case 8:								\
+-		__gu_err = __copy_from_user(&__gu_val, ptr, 8);		\
+-		if (__gu_err)						\
+-			__gu_err = -EFAULT;				\
++	case 8: {							\
++		__u64 __x = 0;						\
++		__gu_err = raw_copy_from_user(&__x, ptr, 8) ?		\
++							-EFAULT : 0;	\
++		(x) = (typeof(x))(typeof((x) - (x)))__x;		\
+ 		break;							\
++	}								\
+ 	default:							\
+ 		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
+ 	}								\
+-	x = (__force __typeof__(*(ptr))) __gu_val;			\
+ 	__gu_err;							\
+ })
  
- properties:
-@@ -36,25 +33,49 @@ properties:
-     minItems: 1
-     maxItems: 2
+diff --git a/arch/nios2/include/asm/uaccess.h b/arch/nios2/include/asm/uaccess.h
+index ba9340e96fd4..ca9285a915ef 100644
+--- a/arch/nios2/include/asm/uaccess.h
++++ b/arch/nios2/include/asm/uaccess.h
+@@ -88,6 +88,7 @@ extern __must_check long strnlen_user(const char __user *s, long n);
+ /* Optimized macros */
+ #define __get_user_asm(val, insn, addr, err)				\
+ {									\
++	unsigned long __gu_val;						\
+ 	__asm__ __volatile__(						\
+ 	"       movi    %0, %3\n"					\
+ 	"1:   " insn " %1, 0(%2)\n"					\
+@@ -96,14 +97,20 @@ extern __must_check long strnlen_user(const char __user *s, long n);
+ 	"       .section __ex_table,\"a\"\n"				\
+ 	"       .word 1b, 2b\n"						\
+ 	"       .previous"						\
+-	: "=&r" (err), "=r" (val)					\
++	: "=&r" (err), "=r" (__gu_val)					\
+ 	: "r" (addr), "i" (-EFAULT));					\
++	val = (__force __typeof__(*(addr)))__gu_val;			\
+ }
  
--  clock-names:
--    oneOf:
--      - items:          # for Pro4, Pro5
--          - const: gio
--          - const: link
--      - items:          # for others
--          - const: link
-+  clock-names: true
- 
-   resets:
-     minItems: 1
-     maxItems: 2
- 
--  reset-names:
--    oneOf:
--      - items:          # for Pro4, Pro5
--          - const: gio
--          - const: link
--      - items:
--          - const: link
-+  reset-names: true
+-#define __get_user_unknown(val, size, ptr, err) do {			\
++extern void __get_user_unknown(void);
 +
-+allOf:
-+  - $ref: "regulator.yaml#"
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - socionext,uniphier-pro4-usb3-regulator
-+              - socionext,uniphier-pro5-usb3-regulator
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 2
-+          maxItems: 2
-+        clock-names:
-+          items:
-+            - const: gio
-+            - const: link
-+        resets:
-+          minItems: 2
-+          maxItems: 2
-+        reset-names:
-+          items:
-+            - const: gio
-+            - const: link
-+    else:
-+      properties:
-+        clocks:
-+          maxItems: 1
-+        clock-names:
-+          const: link
-+        resets:
-+          maxItems: 1
-+        reset-names:
-+          const: link
++#define __get_user_8(val, ptr, err) do {				\
++	u64 __val = 0;							\
+ 	err = 0;							\
+-	if (__copy_from_user(&(val), ptr, size)) {			\
++	if (raw_copy_from_user(&(__val), ptr, sizeof(val))) {		\
+ 		err = -EFAULT;						\
++	} else {							\
++		val = (typeof(val))(typeof((val) - (val)))__val;	\
+ 	}								\
+ 	} while (0)
  
- additionalProperties: false
+@@ -119,8 +126,11 @@ do {									\
+ 	case 4:								\
+ 		__get_user_asm(val, "ldw", ptr, err);			\
+ 		break;							\
++	case 8:								\
++		__get_user_8(val, ptr, err);				\
++		break;							\
+ 	default:							\
+-		__get_user_unknown(val, size, ptr, err);		\
++		__get_user_unknown();					\
+ 		break;							\
+ 	}								\
+ } while (0)
+@@ -129,9 +139,7 @@ do {									\
+ 	({								\
+ 	long __gu_err = -EFAULT;					\
+ 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+-	unsigned long __gu_val = 0;					\
+-	__get_user_common(__gu_val, sizeof(*(ptr)), __gu_ptr, __gu_err);\
+-	(x) = (__force __typeof__(x))__gu_val;				\
++	__get_user_common(x, sizeof(*(ptr)), __gu_ptr, __gu_err);	\
+ 	__gu_err;							\
+ 	})
+ 
+@@ -139,11 +147,9 @@ do {									\
+ ({									\
+ 	long __gu_err = -EFAULT;					\
+ 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+-	unsigned long __gu_val = 0;					\
+ 	if (access_ok( __gu_ptr, sizeof(*__gu_ptr)))	\
+-		__get_user_common(__gu_val, sizeof(*__gu_ptr),		\
++		__get_user_common(x, sizeof(*__gu_ptr),			\
+ 			__gu_ptr, __gu_err);				\
+-	(x) = (__force __typeof__(x))__gu_val;				\
+ 	__gu_err;							\
+ })
  
 -- 
-2.25.1
+2.34.1
+
+
 
