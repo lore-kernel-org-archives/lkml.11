@@ -2,114 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCED3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 148DCC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841903AbiDFB0S (ORCPT
+        id S1841932AbiDFB00 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        Tue, 5 Apr 2022 21:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349076AbiDEJtE (ORCPT
+        with ESMTP id S1382415AbiDEMPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BF5A994E;
-        Tue,  5 Apr 2022 02:40:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2957D61368;
-        Tue,  5 Apr 2022 09:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C3AC385A3;
-        Tue,  5 Apr 2022 09:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151609;
-        bh=FGZclYLihe2uY2gGNy483xxhj8gpzginQPKgkKu7Nd4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EIEhWGJvVnYxaweWiA+OAbNAPcD5fSP3pMDxKRm0vq85s01SAuEH7fBUzaR/adCDy
-         mVNhsDlBkib5MzBewzrtWKSX7nb4XR5bVMdLbJNAnVgd2NPBYghqmzCd/AXQHv+bE9
-         /I1SXG/9yasH2LnFPgOKBT6MSZPdNUdoN35OERmk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhishek Sahu <abhsahu@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 477/913] vfio/pci: fix memory leak during D3hot to D0 transition
-Date:   Tue,  5 Apr 2022 09:25:39 +0200
-Message-Id: <20220405070354.153175102@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 08:15:04 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69EFBAFAFA;
+        Tue,  5 Apr 2022 04:25:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649157934; x=1680693934;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=B3e5nwQfZpposlIlxa12xtU2rD09+R4h9VUHhMbRZHs=;
+  b=S4g8iLAs0kMb193fq9FPnwUL7YXH8BLFyYETy/LB4PUdDRP+oN8Dn+Y0
+   57sW9x2/gwkAuzq0ufKWOisdEZ+ljg39ux5yC6g0kO9FooukiSYYYDVy/
+   S3nNQD5hv7hr3t37FmjLzIMZE/B86GtRfX0cPnN7bxhRIOXUCK1Sn7Gr0
+   gMQjFWj1Z/wvST6Ig+OF/D4SrKxKTQLwVqTXV7k5ICHsVdSG3qTYvERop
+   NWIY5L8NHrY+7qfUz0BQpOVfe6GpkLOu2gYDaa6d67JNsBa1zcier3U5g
+   6gSwwumkI/eOmpCmE2SPZJiJg3yUdyox+4HMdra7a88NG8VhgNbeuwBw3
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
+   d="scan'208";a="158916331"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Apr 2022 04:25:33 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 5 Apr 2022 04:25:32 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 5 Apr 2022 04:25:30 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
+        <sre@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 4/8] dt-bindings: reset: add sama7g5 definitions
+Date:   Tue, 5 Apr 2022 14:27:20 +0300
+Message-ID: <20220405112724.2760905-5-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhishek Sahu <abhsahu@nvidia.com>
+Add reset bindings for SAMA7G5. At the moment only USB PHYs are
+included.
 
-[ Upstream commit eadf88ecf6ac7d6a9f47a76c6055d9a1987a8991 ]
-
-If 'vfio_pci_core_device::needs_pm_restore' is set (PCI device does
-not have No_Soft_Reset bit set in its PMCSR config register), then
-the current PCI state will be saved locally in
-'vfio_pci_core_device::pm_save' during D0->D3hot transition and same
-will be restored back during D3hot->D0 transition.
-For saving the PCI state locally, pci_store_saved_state() is being
-used and the pci_load_and_free_saved_state() will free the allocated
-memory.
-
-But for reset related IOCTLs, vfio driver calls PCI reset-related
-API's which will internally change the PCI power state back to D0. So,
-when the guest resumes, then it will get the current state as D0 and it
-will skip the call to vfio_pci_set_power_state() for changing the
-power state to D0 explicitly. In this case, the memory pointed by
-'pm_save' will never be freed. In a malicious sequence, the state changing
-to D3hot followed by VFIO_DEVICE_RESET/VFIO_DEVICE_PCI_HOT_RESET can be
-run in a loop and it can cause an OOM situation.
-
-This patch frees the earlier allocated memory first before overwriting
-'pm_save' to prevent the mentioned memory leak.
-
-Fixes: 51ef3a004b1e ("vfio/pci: Restore device state on PM transition")
-Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
-Link: https://lore.kernel.org/r/20220217122107.22434-2-abhsahu@nvidia.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/vfio/pci/vfio_pci_core.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ include/dt-bindings/reset/sama7g5-reset.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+ create mode 100644 include/dt-bindings/reset/sama7g5-reset.h
 
-diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-index a03b5a99c2da..0c63091cc848 100644
---- a/drivers/vfio/pci/vfio_pci_core.c
-+++ b/drivers/vfio/pci/vfio_pci_core.c
-@@ -228,6 +228,19 @@ int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev, pci_power_t stat
- 	if (!ret) {
- 		/* D3 might be unsupported via quirk, skip unless in D3 */
- 		if (needs_save && pdev->current_state >= PCI_D3hot) {
-+			/*
-+			 * The current PCI state will be saved locally in
-+			 * 'pm_save' during the D3hot transition. When the
-+			 * device state is changed to D0 again with the current
-+			 * function, then pci_store_saved_state() will restore
-+			 * the state and will free the memory pointed by
-+			 * 'pm_save'. There are few cases where the PCI power
-+			 * state can be changed to D0 without the involvement
-+			 * of the driver. For these cases, free the earlier
-+			 * allocated memory first before overwriting 'pm_save'
-+			 * to prevent the memory leak.
-+			 */
-+			kfree(vdev->pm_save);
- 			vdev->pm_save = pci_store_saved_state(pdev);
- 		} else if (needs_restore) {
- 			pci_load_and_free_saved_state(pdev, &vdev->pm_save);
+diff --git a/include/dt-bindings/reset/sama7g5-reset.h b/include/dt-bindings/reset/sama7g5-reset.h
+new file mode 100644
+index 000000000000..670d8075f463
+--- /dev/null
++++ b/include/dt-bindings/reset/sama7g5-reset.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++
++#ifndef __DT_BINDINGS_RESET_SAMA7G5_H
++#define __DT_BINDINGS_RESET_SAMA7G5_H
++
++#define RESET_USB_PHY1		4
++#define RESET_USB_PHY2		5
++#define RESET_USB_PHY3		6
++
++#endif /* __DT_BINDINGS_RESET_SAMA7G5_H */
 -- 
-2.34.1
-
-
+2.32.0
 
