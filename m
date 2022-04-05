@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AFD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1EA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233408AbiDEPBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50402 "EHLO
+        id S236244AbiDEPB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 11:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345015AbiDEJmy (ORCPT
+        with ESMTP id S1345007AbiDEJmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:42:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A59BF955;
-        Tue,  5 Apr 2022 02:28:20 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99555BF94C;
+        Tue,  5 Apr 2022 02:28:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 834916165C;
-        Tue,  5 Apr 2022 09:28:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C06C385A0;
-        Tue,  5 Apr 2022 09:28:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65D40B81C84;
+        Tue,  5 Apr 2022 09:28:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D112EC385AF;
+        Tue,  5 Apr 2022 09:28:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150899;
-        bh=aR1A0SezXpkQGZdReRE0MJZ9Tozm4kPC8Waf9Ta+wng=;
+        s=korg; t=1649150897;
+        bh=Kz1byvTD0NJ9nT3np/9/Igd+t/G2GR+z4MqYHVKyA7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CF1eeraYthcXV0kKjaKBKQ5FfVpx3Z/c6EcFEmvCRl8u4FyJSrq/n90nAxiOun93g
-         E0LOKJtf/YEnlzSa7yn23vVjSD14oA+Dxa4ksXCas+FekVcB30QWXaI/x6y1QNpQbr
-         E/2umvXhqmDR2ujDleZXZiKQcL3u1k7NxkCaJ6dU=
+        b=i4KNzooy36BixtYiiIVphYudmEx3AsuwPjbBMzHA8/YE5aW/XD78xVOLoGAMVPcb0
+         6wZZbDV7TXp7DxE5R8n8yMGPLzuwVUPxZuNBU6+JR49BmR2LB9ovqWOyTcIx+Er9Jp
+         Ill+Y0BL5rlg7+6PhWDoqicrgg3YdJA2GbmWoj68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 222/913] hwrng: atmel - disable trng on failure path
-Date:   Tue,  5 Apr 2022 09:21:24 +0200
-Message-Id: <20220405070346.512201057@linuxfoundation.org>
+Subject: [PATCH 5.15 221/913] spi: spi-zynqmp-gqspi: Handle error for dma_set_mask
+Date:   Tue,  5 Apr 2022 09:21:23 +0200
+Message-Id: <20220405070346.482361704@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,32 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit a223ea9f89ab960eb254ba78429efd42eaf845eb ]
+[ Upstream commit 13262fc26c1837c51a5131dbbdd67a2387f8bfc7 ]
 
-Call atmel_trng_disable() on failure path of probe.
+As the potential failure of the dma_set_mask(),
+it should be better to check it and return error
+if fails.
 
-Fixes: a1fa98d8116f ("hwrng: atmel - disable TRNG during suspend")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 126bdb606fd2 ("spi: spi-zynqmp-gqspi: return -ENOMEM if dma_map_single fails")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220302092051.121343-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/atmel-rng.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/spi/spi-zynqmp-gqspi.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/char/hw_random/atmel-rng.c b/drivers/char/hw_random/atmel-rng.c
-index ecb71c4317a5..8cf0ef501341 100644
---- a/drivers/char/hw_random/atmel-rng.c
-+++ b/drivers/char/hw_random/atmel-rng.c
-@@ -114,6 +114,7 @@ static int atmel_trng_probe(struct platform_device *pdev)
+diff --git a/drivers/spi/spi-zynqmp-gqspi.c b/drivers/spi/spi-zynqmp-gqspi.c
+index 328b6559bb19..2b5afae8ff7f 100644
+--- a/drivers/spi/spi-zynqmp-gqspi.c
++++ b/drivers/spi/spi-zynqmp-gqspi.c
+@@ -1172,7 +1172,10 @@ static int zynqmp_qspi_probe(struct platform_device *pdev)
+ 		goto clk_dis_all;
+ 	}
  
- err_register:
- 	clk_disable_unprepare(trng->clk);
-+	atmel_trng_disable(trng);
- 	return ret;
- }
- 
+-	dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
++	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
++	if (ret)
++		goto clk_dis_all;
++
+ 	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
+ 	ctlr->num_chipselect = GQSPI_DEFAULT_NUM_CS;
+ 	ctlr->mem_ops = &zynqmp_qspi_mem_ops;
 -- 
 2.34.1
 
