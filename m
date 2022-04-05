@@ -2,487 +2,348 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F219EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389856AbiDFAxA (ORCPT
+        id S1443210AbiDFAxf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
+        Tue, 5 Apr 2022 20:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354338AbiDEPL6 (ORCPT
+        with ESMTP id S1572898AbiDERQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:11:58 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F52109A58
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:25:43 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649165142;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=T9nXW5eDdRswHPPVMdRqznswZ+PeANL457bEvSUO9rY=;
-        b=wbUXP3BlFV9pkCs967YQq/HESNZkYjif3wDfX90/TSqxB1i1Bd2zHCilPmBRYTxuYuVZBA
-        Pr/vcptSi9SJjkyC4u/+3traDQr3GobNt5pF0U+u5b195NqJHmzvgqQ90liMzRSKNg2KZ8
-        6CRUQm8iOLVgmQLcijM8WGt9bmO2poctKB8XRXGWIkGfpZI0VCIV8xdTp7xoTNuu3Ou/On
-        r9g9nVyUYWoaCAfwMwmaM5FOriXMWJFHmlKsH7hjQbKUqKorLKPKAvxPrCGzKG79haSec7
-        riMZMZp6UXvnaJTpOwodOVr9s0HTjpNQFBPT4VzRaoLBKkRAf+C+LoLU1XK9JA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649165142;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=T9nXW5eDdRswHPPVMdRqznswZ+PeANL457bEvSUO9rY=;
-        b=Uvu9ZXlswmTEzarCepu12m1/D6Jy6QGJ+0sfmzmsY7Kb8RePRnW4BHJiFAUdainn6dpt8a
-        VM+zPfqywWgrdFAw==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH printk v2 10/12] printk: add kthread console printers
-Date:   Tue,  5 Apr 2022 15:31:33 +0206
-Message-Id: <20220405132535.649171-11-john.ogness@linutronix.de>
-In-Reply-To: <20220405132535.649171-1-john.ogness@linutronix.de>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
+        Tue, 5 Apr 2022 13:16:21 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B40725C2
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:14:23 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so45829pjk.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:14:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0s66Tr5Fxz2b83SYU1mHaVJqlskQtPLz5vVq+NK22v0=;
+        b=k997fVYIhUwrf3n7zR/PwUUEFagjhi1fLWsA3VodXXYnlAEu1dk8ROS3lIp6Q6HXTe
+         mMbAKhE/sebpwCH8zuiwKNX6NfYo48PWIgZbg4chdCoxSN3Erg5VyxQUVCRRXNhU8/5F
+         iEULqe4Xv8ZJEFyZ9KqeBh8CVw4GRN6c+3HIs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0s66Tr5Fxz2b83SYU1mHaVJqlskQtPLz5vVq+NK22v0=;
+        b=AS4OThH6SJn7owdccB6Uk/wl2OdQY/j8OKYGjigok/w5DC+Abfufkw5SoHXjf35QDJ
+         dq9+KIYsQz9/w1P1T0C92vqyZS5wP9MFA8yAhHqWpTazVzzo0mEouv932MVtSKLAWQh3
+         0AoaZMLNezt1acZ9XXR4jpFzj0Qjm3hmeCiZz7AfwTjgHqCVOWoTSRLinA0E3VPXkj9H
+         S6NlS8948PhMShVC31PXc/thzt4QRkQ/05AiUg8MBG/BA7dBMu0vXk0XVEqt74VvjOe1
+         eRtOlYQ8Z+49wxfsokQs3VO0VcyZRqi5x02lxQOVleD983yOLoFr76e8U+CmVAL/mfaP
+         IWdg==
+X-Gm-Message-State: AOAM532JSZ8CKuH5Nnf+aUO7kVQRiW+RgxRcc/VQ92qkyzcXZIbVXwcI
+        lvlWJR+M5pSa8MdKxUFpSPa1xg==
+X-Google-Smtp-Source: ABdhPJwj4vid1vbB9Yl2j9x5FaTZNaJiwiQ9QqyLaZybPMRgTyUPrEjgwkXJTHjdx8XUqV+zFKBXvQ==
+X-Received: by 2002:a17:903:22cf:b0:154:837c:597 with SMTP id y15-20020a17090322cf00b00154837c0597mr4389570plg.135.1649178862778;
+        Tue, 05 Apr 2022 10:14:22 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:6b63:d403:e31b:da39])
+        by smtp.gmail.com with UTF8SMTPSA id k62-20020a17090a4cc400b001c7ea7f487asm3094710pjh.39.2022.04.05.10.14.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 10:14:22 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 10:14:20 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohitkr@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v6 2/2] arm64: dts: qcom: sc7280: add lpass lpi pin
+ controller node
+Message-ID: <Ykx47AlGYa8s5FTa@google.com>
+References: <1649157167-29106-1-git-send-email-quic_srivasam@quicinc.com>
+ <1649157167-29106-3-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1649157167-29106-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create a kthread for each console to perform console printing. During
-normal operation (@system_state == SYSTEM_RUNNING), the kthread
-printers are responsible for all printing on their respective
-consoles.
+On Tue, Apr 05, 2022 at 04:42:47PM +0530, Srinivasa Rao Mandadapu wrote:
+> Add LPASS LPI pinctrl node required for Audio functionality on sc7280
+> based platforms.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  98 ++++++++++++++++++++++++++++
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi     | 107 +++++++++++++++++++++++++++++++
+>  2 files changed, 205 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index 2afbbe3..f912a89 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -238,6 +238,104 @@
+>  	modem-init;
+>  };
+>  
+> +&lpass_tlmm {
+> +	dmic01_active: dmic01-active {
+> +		clk {
+> +			drive-strength = <8>;
+> +		};
+> +
+> +		data {
+> +			drive-strength = <8>;
 
-During non-normal operation, console printing is done as it has been:
-within the context of the printk caller or within irq work triggered
-by the printk caller.
+The DMIC data pins are input pins, right? Why does an input pin need a drive
+strength? Same for other input pins.
 
-Console printers synchronize against each other and against console
-lockers by taking the console lock for each message that is printed.
+> +		};
+> +	};
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- include/linux/console.h |   2 +
- kernel/printk/printk.c  | 262 ++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 252 insertions(+), 12 deletions(-)
+There's no need to reference 'lpass_tlmm' nor to repeat $label: $node.
+Instead just use phandles:
 
-diff --git a/include/linux/console.h b/include/linux/console.h
-index 8c1686e2c233..9a251e70c090 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -153,6 +153,8 @@ struct console {
- 	uint	ospeed;
- 	u64	seq;
- 	unsigned long dropped;
-+	struct task_struct *thread;
-+
- 	void	*data;
- 	struct	 console *next;
- };
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 258d02cff140..a3b8b984c9aa 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -361,6 +361,13 @@ static int console_msg_format = MSG_FORMAT_DEFAULT;
- /* syslog_lock protects syslog_* variables and write access to clear_seq. */
- static DEFINE_MUTEX(syslog_lock);
- 
-+/*
-+ * A flag to signify if printk_activate_kthreads() has already started the
-+ * kthread printers. If true, any later registered consoles must start their
-+ * own kthread directly. The flag is write protected by the console_lock.
-+ */
-+static bool printk_kthreads_available;
-+
- #ifdef CONFIG_PRINTK
- static atomic_t printk_prefer_direct = ATOMIC_INIT(0);
- 
-@@ -388,6 +395,21 @@ void printk_prefer_direct_enter(void)
- void printk_prefer_direct_exit(void)
- {
- 	WARN_ON(atomic_dec_if_positive(&printk_prefer_direct) < 0);
-+
-+	/*
-+	 * Threaded printers remain asleep while preferred direct printing is
-+	 * active. Explicitly wake them in case any new printk records became
-+	 * visible after preferred direct printing was deactivated.
-+	 */
-+	wake_up_klogd();
-+}
-+
-+static inline bool allow_direct_printing(void)
-+{
-+	return (!printk_kthreads_available ||
-+		system_state > SYSTEM_RUNNING ||
-+		oops_in_progress ||
-+		atomic_read(&printk_prefer_direct));
- }
- 
- DECLARE_WAIT_QUEUE_HEAD(log_wait);
-@@ -2258,10 +2280,10 @@ asmlinkage int vprintk_emit(int facility, int level,
- 	printed_len = vprintk_store(facility, level, dev_info, fmt, args);
- 
- 	/* If called from the scheduler, we can not call up(). */
--	if (!in_sched) {
-+	if (!in_sched && allow_direct_printing()) {
- 		/*
- 		 * The caller may be holding system-critical or
--		 * timing-sensitive locks. Disable preemption during
-+		 * timing-sensitive locks. Disable preemption during direct
- 		 * printing of all remaining records to all consoles so that
- 		 * this context can return as soon as possible. Hopefully
- 		 * another printk() caller will take over the printing.
-@@ -2304,6 +2326,8 @@ EXPORT_SYMBOL(_printk);
- 
- static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress);
- 
-+static void printk_start_kthread(struct console *con);
-+
- #else /* CONFIG_PRINTK */
- 
- #define CONSOLE_LOG_MAX		0
-@@ -2337,6 +2361,8 @@ static void call_console_driver(struct console *con, const char *text, size_t le
- }
- static bool suppress_message_printing(int level) { return false; }
- static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress) { return true; }
-+static void printk_start_kthread(struct console *con) { }
-+static bool allow_direct_printing(void) { return true; }
- 
- #endif /* CONFIG_PRINTK */
- 
-@@ -2537,6 +2563,13 @@ void resume_console(void)
- 	down_console_sem();
- 	console_suspended = 0;
- 	console_unlock();
-+
-+	/*
-+	 * While suspended, new records may have been added to the
-+	 * ringbuffer. Wake up the kthread printers to print them.
-+	 */
-+	wake_up_klogd();
-+
- 	pr_flush(1000, true);
- }
- 
-@@ -2555,6 +2588,9 @@ static int console_cpu_notify(unsigned int cpu)
- 		/* If trylock fails, someone else is doing the printing */
- 		if (console_trylock())
- 			console_unlock();
-+
-+		/* Wake kthread printers. Some may have become usable. */
-+		wake_up_klogd();
- 	}
- 	return 0;
- }
-@@ -2773,6 +2809,10 @@ static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handove
- 	*handover = false;
- 
- 	do {
-+		/* Let the kthread printers do the work if they can. */
-+		if (!allow_direct_printing())
-+			break;
-+
- 		any_progress = false;
- 
- 		for_each_console(con) {
-@@ -2988,6 +3028,10 @@ void console_start(struct console *console)
- 	console_lock();
- 	console->flags |= CON_ENABLED;
- 	console_unlock();
-+
-+	/* Wake the newly enabled kthread printer. */
-+	wake_up_klogd();
-+
- 	__pr_flush(console, 1000, true);
- }
- EXPORT_SYMBOL(console_start);
-@@ -3196,6 +3240,8 @@ void register_console(struct console *newcon)
- 		/* Begin with next message. */
- 		newcon->seq = prb_next_seq(prb);
- 	}
-+	if (printk_kthreads_available)
-+		printk_start_kthread(newcon);
- 	console_unlock();
- 	console_sysfs_notify();
- 
-@@ -3222,6 +3268,7 @@ EXPORT_SYMBOL(register_console);
- 
- int unregister_console(struct console *console)
- {
-+	struct task_struct *thd = console->thread;
- 	struct console *con;
- 	int res;
- 
-@@ -3233,6 +3280,11 @@ int unregister_console(struct console *console)
- 	if (res > 0)
- 		return 0;
- 
-+	if (thd) {
-+		console->thread = NULL;
-+		kthread_stop(thd);
-+	}
-+
- 	res = -ENODEV;
- 	console_lock();
- 	if (console_drivers == console) {
-@@ -3358,6 +3410,20 @@ static int __init printk_late_init(void)
- }
- late_initcall(printk_late_init);
- 
-+static int __init printk_activate_kthreads(void)
-+{
-+	struct console *con;
-+
-+	console_lock();
-+	printk_kthreads_available = true;
-+	for_each_console(con)
-+		printk_start_kthread(con);
-+	console_unlock();
-+
-+	return 0;
-+}
-+early_initcall(printk_activate_kthreads);
-+
- #if defined CONFIG_PRINTK
- /* If @con is specified, only wait for that console. Otherwise wait for all. */
- static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress)
-@@ -3432,6 +3498,154 @@ bool pr_flush(int timeout_ms, bool reset_on_progress)
- }
- EXPORT_SYMBOL(pr_flush);
- 
-+/*
-+ * Enter preferred direct printing, but never exit. Mark console threads as
-+ * unavailable. The system is then forever in preferred direct printing and
-+ * any printing threads will exit.
-+ */
-+static void printk_fallback_preferred_direct(void)
-+{
-+	printk_prefer_direct_enter();
-+	pr_err("falling back to preferred direct printing\n");
-+	printk_kthreads_available = false;
-+}
-+
-+static bool printer_should_wake(struct console *con, u64 seq)
-+{
-+	short flags;
-+
-+	if (kthread_should_stop() || !printk_kthreads_available)
-+		return true;
-+
-+	if (console_suspended)
-+		return false;
-+
-+	if (!con->write)
-+		return false;
-+
-+	/*
-+	 * This is an unsafe read to con->flags, but a false positive is not
-+	 * a problem. Worst case it would allow the printer to wake up even
-+	 * when it is disabled. But the printer will notice that itself when
-+	 * attempting to print and instead go back to sleep.
-+	 */
-+	flags = data_race(READ_ONCE(con->flags));
-+	if (!(flags & CON_ENABLED))
-+		return false;
-+
-+	if (atomic_read(&printk_prefer_direct))
-+		return false;
-+
-+	return prb_read_valid(prb, seq, NULL);
-+}
-+
-+static int printk_kthread_func(void *data)
-+{
-+	struct console *con = data;
-+	char *dropped_text = NULL;
-+	char *ext_text = NULL;
-+	bool handover;
-+	u64 seq = 0;
-+	char *text;
-+	int error;
-+
-+	text = kmalloc(CONSOLE_LOG_MAX, GFP_KERNEL);
-+	if (!text) {
-+		printk_console_msg(con, KERN_ERR, "failed to allocate text buffer");
-+		printk_fallback_preferred_direct();
-+		goto out;
-+	}
-+
-+	if (con->flags & CON_EXTENDED) {
-+		ext_text = kmalloc(CONSOLE_EXT_LOG_MAX, GFP_KERNEL);
-+		if (!ext_text) {
-+			printk_console_msg(con, KERN_ERR, "failed to allocate ext_text buffer");
-+			printk_fallback_preferred_direct();
-+			goto out;
-+		}
-+	} else {
-+		dropped_text = kmalloc(DROPPED_TEXT_MAX, GFP_KERNEL);
-+		if (!dropped_text) {
-+			printk_console_msg(con, KERN_ERR,
-+					   "failed to allocate dropped_text buffer");
-+			printk_fallback_preferred_direct();
-+			goto out;
-+		}
-+	}
-+
-+	printk_console_msg(con, KERN_INFO, "printing thread started");
-+
-+	for (;;) {
-+		/*
-+		 * Guarantee this task is visible on the waitqueue before
-+		 * checking the wake condition.
-+		 *
-+		 * The full memory barrier within set_current_state() of
-+		 * prepare_to_wait_event() pairs with the full memory barrier
-+		 * within wq_has_sleeper().
-+		 *
-+		 * See __wake_up_klogd:A for the pairing memory barrier.
-+		 */
-+		error = wait_event_interruptible(log_wait,
-+				printer_should_wake(con, seq)); /* LMM(printk_kthread_func:A) */
-+
-+		if (kthread_should_stop() || !printk_kthreads_available)
-+			break;
-+
-+		if (error)
-+			continue;
-+
-+		console_lock();
-+
-+		if (console_suspended) {
-+			__console_unlock();
-+			continue;
-+		}
-+
-+		if (!console_is_usable(con)) {
-+			__console_unlock();
-+			continue;
-+		}
-+
-+		/*
-+		 * Even though the printk kthread is always preemptible, it is
-+		 * still not allowed to call cond_resched() from within
-+		 * console drivers. The task may become non-preemptible in the
-+		 * console driver call chain. For example, vt_console_print()
-+		 * takes a spinlock and then can call into fbcon_redraw(),
-+		 * which can conditionally invoke cond_resched().
-+		 */
-+		console_may_schedule = 0;
-+		console_emit_next_record(con, text, ext_text, dropped_text, &handover);
-+		if (handover)
-+			continue;
-+
-+		seq = con->seq;
-+
-+		__console_unlock();
-+	}
-+
-+	printk_console_msg(con, KERN_INFO, "printing thread stopped");
-+out:
-+	kfree(dropped_text);
-+	kfree(ext_text);
-+	kfree(text);
-+	return 0;
-+}
-+
-+/* Must be called within console_lock(). */
-+static void printk_start_kthread(struct console *con)
-+{
-+	con->thread = kthread_run(printk_kthread_func, con,
-+				  "pr/%s%d", con->name, con->index);
-+	if (IS_ERR(con->thread)) {
-+		con->thread = NULL;
-+		printk_console_msg(con, KERN_ERR, "unable to start printing thread");
-+		printk_fallback_preferred_direct();
-+		return;
-+	}
-+}
-+
- /*
-  * Delayed printk version, for scheduler-internal messages:
-  */
-@@ -3445,40 +3659,64 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
- 	int pending = this_cpu_xchg(printk_pending, 0);
- 
- 	if (pending & PRINTK_PENDING_OUTPUT) {
-+		printk_prefer_direct_enter();
-+
- 		/* If trylock fails, someone else is doing the printing */
- 		if (console_trylock())
- 			console_unlock();
-+
-+		printk_prefer_direct_exit();
- 	}
- 
- 	if (pending & PRINTK_PENDING_WAKEUP)
--		wake_up_interruptible(&log_wait);
-+		wake_up_interruptible_all(&log_wait);
- }
- 
- static DEFINE_PER_CPU(struct irq_work, wake_up_klogd_work) =
- 	IRQ_WORK_INIT_LAZY(wake_up_klogd_work_func);
- 
--void wake_up_klogd(void)
-+static void __wake_up_klogd(int val)
- {
- 	if (!printk_percpu_data_ready())
- 		return;
- 
- 	preempt_disable();
--	if (waitqueue_active(&log_wait)) {
--		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
-+	/*
-+	 * Guarantee any new records can be seen by printing threads before
-+	 * checking if the wait queue is empty.
-+	 *
-+	 * The full memory barrier within wq_has_sleeper() pairs with the full
-+	 * memory barrier within set_current_state() of
-+	 * prepare_to_wait_event(), which is called after ___wait_event() adds
-+	 * the waiter but before it has checked the wait condition.
-+	 *
-+	 * See printk_kthread_func:A for the pairing memory barrier.
-+	 */
-+	if (wq_has_sleeper(&log_wait) || /* LMM(__wake_up_klogd:A) */
-+	    (val & PRINTK_PENDING_OUTPUT)) {
-+		this_cpu_or(printk_pending, val);
- 		irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
- 	}
- 	preempt_enable();
- }
- 
-+void wake_up_klogd(void)
-+{
-+	__wake_up_klogd(PRINTK_PENDING_WAKEUP);
-+}
-+
- void defer_console_output(void)
- {
--	if (!printk_percpu_data_ready())
--		return;
-+	int val = PRINTK_PENDING_WAKEUP;
- 
--	preempt_disable();
--	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
--	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
--	preempt_enable();
-+	/*
-+	 * If console deferring was called with preferred direct printing,
-+	 * make the irqwork perform the direct printing.
-+	 */
-+	if (atomic_read(&printk_prefer_direct))
-+		val |= PRINTK_PENDING_OUTPUT;
-+
-+	__wake_up_klogd(val);
- }
- 
- void printk_trigger_flush(void)
--- 
-2.30.2
+&dmic01_active {
+	clk {
+		drive-strength = <8>;
+	};
 
+	data {
+		drive-strength = <8>;
+	};
+};
+
+Rather than replicating the node hierarchy you could also just give each pin a
+label, and then:
+
+&dmic01_clk_active {
+	drive-strength = <8>;
+};
+
+&dmic01_data_active {
+	drive-strength = <8>;
+};
+
+I don't have a strong preference, but wonder if the grouping adds any value.
+
+> +
+> +	dmic01_sleep: dmic01-sleep {
+> +		clk {
+> +			drive-strength = <2>;
+> +			bias-disable;
+> +		};
+> +
+> +		data {
+> +			drive-strength = <2>;
+> +			pull-down;
+> +		};
+> +	};
+> +
+> +	dmic23_active: dmic02-active {
+> +		clk {
+> +			drive-strength = <8>;
+> +		};
+> +
+> +		data {
+> +			drive-strength = <8>;
+> +		};
+> +	};
+> +
+> +	dmic23_sleep: dmic02-sleep {
+> +		clk {
+> +			drive-strength = <2>;
+> +			bias-disable;
+> +		};
+> +
+> +		data {
+> +			drive-strength = <2>;
+> +			pull-down;
+> +		};
+> +	};
+> +
+> +	rx_swr_active: rx-swr-active {
+> +		clk {
+> +			drive-strength = <2>;
+> +			slew-rate = <1>;
+> +			bias-disable;
+> +		};
+> +
+> +		data {
+> +			drive-strength = <2>;
+> +			slew-rate = <1>;
+> +			bias-bus-hold;
+> +		};
+> +	};
+> +
+> +	rx_swr_sleep: rx-swr-sleep {
+> +		clk {
+> +			drive-strength = <2>;
+> +			bias-pull-down;
+> +		};
+> +
+> +		data {
+> +			drive-strength = <2>;
+> +			bias-pull-down;
+> +		};
+> +	};
+> +
+> +	tx_swr_active: tx-swr-active {
+> +		clk {
+> +			drive-strength = <2>;
+> +			slew-rate = <1>;
+> +			bias-disable;
+> +		};
+> +
+> +		data {
+> +			drive-strength = <2>;
+> +			slew-rate = <1>;
+> +			bias-bus-hold;
+> +		};
+> +	};
+> +
+> +	tx_swr_sleep: tx-swr-sleep {
+> +		clk {
+> +			drive-strength = <2>;
+> +			bias-pull-down;
+> +		};
+> +
+> +		data {
+> +			drive-strength = <2>;
+> +			bias-bus-hold;
+> +		};
+> +	};
+> +};
+> +
+>  &pcie1 {
+>  	status = "okay";
+>  	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index 8d8cec5..db74fc3 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -1987,6 +1987,113 @@
+>  			qcom,bcm-voters = <&apps_bcm_voter>;
+>  		};
+>  
+> +		lpass_tlmm: pinctrl@33c0000 {
+> +			compatible = "qcom,sc7280-lpass-lpi-pinctrl";
+> +			reg = <0 0x33c0000 0x0 0x20000>,
+> +				<0 0x3550000 0x0 0x10000>;
+
+Pad addresses to 8 digits.
+
+> +			gpio-controller;
+> +			#gpio-cells = <2>;
+> +			gpio-ranges = <&lpass_tlmm 0 0 15>;
+> +
+> +			#clock-cells = <1>;
+> +
+> +			dmic01_active: dmic01-active {
+> +				clk {
+> +					pins = "gpio6";
+> +					function = "dmic1_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio7";
+> +					function = "dmic1_data";
+> +				};
+> +			};
+> +
+> +			dmic01_sleep: dmic01-sleep {
+> +				clk {
+> +					pins = "gpio6";
+> +					function = "dmic1_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio7";
+> +					function = "dmic1_data";
+> +				};
+> +			};
+> +
+> +			dmic23_active: dmic02-active {
+
+is it intentional that the node name is 'dmic02*', but the label 'dmic23*'?
+
+> +				clk {
+> +					pins = "gpio8";
+> +					function = "dmic2_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio9";
+> +					function = "dmic2_data";
+> +				};
+> +			};
+> +
+> +			dmic23_sleep: dmic02-sleep {
+
+ditto
+
+> +				clk {
+> +					pins = "gpio8";
+> +					function = "dmic2_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio9";
+> +					function = "dmic2_data";
+> +				};
+> +			};
+> +
+> +			rx_swr_active: rx-swr-active {
+> +				clk {
+> +					pins = "gpio3";
+> +					function = "swr_rx_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio4", "gpio5";
+> +					function = "swr_rx_data";
+> +				};
+> +			};
+> +
+> +			rx_swr_sleep: rx-swr-sleep {
+> +				clk {
+> +					pins = "gpio3";
+> +					function = "swr_rx_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio4", "gpio5";
+> +					function = "swr_rx_data";
+> +				};
+> +			};
+> +
+> +			tx_swr_active: tx-swr-active {
+> +				clk {
+> +					pins = "gpio0";
+> +					function = "swr_tx_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio1", "gpio2", "gpio14";
+> +					function = "swr_tx_data";
+> +				};
+> +			};
+> +
+> +			tx_swr_sleep: tx-swr-sleep {
+> +				clk {
+> +					pins = "gpio0";
+> +					function = "swr_tx_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio1", "gpio2", "gpio14";
+> +					function = "swr_tx_data";
+> +				};
+> +			};
+> +		};
+> +
+>  		gpu: gpu@3d00000 {
+>  			compatible = "qcom,adreno-635.0", "qcom,adreno";
+>  			reg = <0 0x03d00000 0 0x40000>,
