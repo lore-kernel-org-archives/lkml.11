@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 161E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D1C8C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 09:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346805AbiDEJpe (ORCPT
+        id S1346960AbiDEJpq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        Tue, 5 Apr 2022 05:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238786AbiDEITY (ORCPT
+        with ESMTP id S238750AbiDEITV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:19:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0350B7246C;
-        Tue,  5 Apr 2022 01:09:30 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1296072479;
+        Tue,  5 Apr 2022 01:09:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 948356062B;
-        Tue,  5 Apr 2022 08:09:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F05CC385A1;
-        Tue,  5 Apr 2022 08:09:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEB4FB81A37;
+        Tue,  5 Apr 2022 08:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 198EFC385A1;
+        Tue,  5 Apr 2022 08:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146169;
-        bh=dGJFby7CwqGK7QRBB72ycYFb+Cqu2SHdBW1KnfW31jI=;
+        s=korg; t=1649146163;
+        bh=VKULRthVlARqIBKJxJT2Bjr2YzjzP/RKQZuE96zqOAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGspAmtSlVo1grdb+3SeLIi2Zm8LcQBA4LYZiCUXkdVc7xW6o7iYi7PNmah3Q0LJ4
-         hcySzGSY4kIChbM5iJu6adsPu8ChlVj3Lu3VgmdGmxdY7oSNptzlS96GwMy7xSzK/m
-         BxD9MRGoU74QphGxEgIoToxXyisZ/ucgOtscRp78=
+        b=N3ixLPA76aNDldICDPNfkPBxrET5DdzIBHzNvDflW0qb06jbjJRAHckArjg/ssq1o
+         u0FNluG7NeGn3C8+pcn/e8N3NdGKIY8xoU56a1O1u5vyOlMrEyyAzFw6Pidqx3Ww79
+         AnrvUoMp3B/Fa5n7gbV9qzb9kq1Xu9m5XssWfIbs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Kizito <Jimmy.Kizito@amd.com>,
-        Alan Liu <HaoPing.Liu@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0666/1126] drm/amd/display: Fix double free during GPU reset on DC streams
-Date:   Tue,  5 Apr 2022 09:23:33 +0200
-Message-Id: <20220405070427.176651643@linuxfoundation.org>
+Subject: [PATCH 5.17 0664/1126] samples/bpf, xdpsock: Fix race when running for fix duration of time
+Date:   Tue,  5 Apr 2022 09:23:31 +0200
+Message-Id: <20220405070427.118455998@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,104 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+From: Niklas Söderlund <niklas.soderlund@corigine.com>
 
-[ Upstream commit 32685b32d825ca08c5dec826477332df886c4743 ]
+[ Upstream commit 8fa42d78f6354bb96ad3a079dcbef528ca9fa9e0 ]
 
-[Why]
-The issue only occurs during the GPU reset code path.
+When running xdpsock for a fix duration of time before terminating
+using --duration=<n>, there is a race condition that may cause xdpsock
+to terminate immediately.
 
-We first backup the current state prior to commiting 0 streams
-internally from DM to DC. This state backup contains valid link
-encoder assignments.
+When running for a fixed duration of time the check to determine when to
+terminate execution is in is_benchmark_done() and is being executed in
+the context of the poller thread,
 
-DC will clear the link encoder assignments as part of current state
-(but not the backup, since it was a copied before the commit) and
-free the extra stream reference it held.
+    if (opt_duration > 0) {
+            unsigned long dt = (get_nsecs() - start_time);
 
-DC requires that the link encoder assignments remain cleared/invalid
-prior to commiting. Since the backup still has valid assignments we
-call the interface post reset to clear them. This routine also
-releases the extra reference that the link encoder interface held -
-resulting in a double free (and eventually a NULL pointer dereference).
+            if (dt >= opt_duration)
+                    benchmark_done = true;
+    }
 
-[How]
-We'll have to do a full DC commit anyway after GPU reset because
-the stream count previously went to 0.
+However start_time is only set after the poller thread have been
+created. This leaves a small window when the poller thread is starting
+and calls is_benchmark_done() for the first time that start_time is not
+yet set. In that case start_time have its initial value of 0 and the
+duration check fails as it do not correlate correctly for the
+applications start time and immediately sets benchmark_done which in
+turn terminates the xdpsock application.
 
-We don't need to retain the assignment that we had backed up, so
-just copy off of the now clean current state assignment after the
-reset has occcurred with the new link_enc_cfg_copy() interface.
+Fix this by setting start_time before creating the poller thread.
 
-Fixes: 6d63fcc2a334 ("drm/amd/display: Reset link encoder assignments for GPU reset")
-
-Reviewed-by: Jimmy Kizito <Jimmy.Kizito@amd.com>
-Acked-by: Alan Liu <HaoPing.Liu@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: d3f11b018f6c ("samples/bpf: xdpsock: Add duration option to specify how long to run")
+Signed-off-by: Niklas Söderlund <niklas.soderlund@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220315102948.466436-1-niklas.soderlund@corigine.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c     | 9 ++++++---
- drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c | 7 +++++++
- drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h     | 5 +++++
- 3 files changed, 18 insertions(+), 3 deletions(-)
+ samples/bpf/xdpsock_user.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index eae9f9e26f0e..b28b5c490860 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -2613,10 +2613,13 @@ static int dm_resume(void *handle)
- 		 * before the 0 streams commit.
- 		 *
- 		 * DC expects that link encoder assignments are *not* valid
--		 * when committing a state, so as a workaround it needs to be
--		 * cleared here.
-+		 * when committing a state, so as a workaround we can copy
-+		 * off of the current state.
-+		 *
-+		 * We lose the previous assignments, but we had already
-+		 * commit 0 streams anyway.
- 		 */
--		link_enc_cfg_init(dm->dc, dc_state);
-+		link_enc_cfg_copy(adev->dm.dc->current_state, dc_state);
+diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+index aa50864e4415..9f3446af50ce 100644
+--- a/samples/bpf/xdpsock_user.c
++++ b/samples/bpf/xdpsock_user.c
+@@ -1984,15 +1984,15 @@ int main(int argc, char **argv)
  
- 		if (dc_enable_dmub_notifications(adev->dm.dc))
- 			amdgpu_dm_outbox_init(adev);
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c
-index 00f72f66a7ef..72a3fded7142 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c
-@@ -272,6 +272,13 @@ void link_enc_cfg_init(
- 	state->res_ctx.link_enc_cfg_ctx.mode = LINK_ENC_CFG_STEADY;
- }
+ 	setlocale(LC_ALL, "");
  
-+void link_enc_cfg_copy(const struct dc_state *src_ctx, struct dc_state *dst_ctx)
-+{
-+	memcpy(&dst_ctx->res_ctx.link_enc_cfg_ctx,
-+	       &src_ctx->res_ctx.link_enc_cfg_ctx,
-+	       sizeof(dst_ctx->res_ctx.link_enc_cfg_ctx));
-+}
++	prev_time = get_nsecs();
++	start_time = prev_time;
 +
- void link_enc_cfg_link_encs_assign(
- 		struct dc *dc,
- 		struct dc_state *state,
-diff --git a/drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h b/drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h
-index a4e43b4826e0..59ceb9ed385d 100644
---- a/drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h
-+++ b/drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h
-@@ -39,6 +39,11 @@ void link_enc_cfg_init(
- 		const struct dc *dc,
- 		struct dc_state *state);
+ 	if (!opt_quiet) {
+ 		ret = pthread_create(&pt, NULL, poller, NULL);
+ 		if (ret)
+ 			exit_with_error(ret);
+ 	}
  
-+/*
-+ * Copies a link encoder assignment from another state.
-+ */
-+void link_enc_cfg_copy(const struct dc_state *src_ctx, struct dc_state *dst_ctx);
-+
- /*
-  * Algorithm for assigning available DIG link encoders to streams.
-  *
+-	prev_time = get_nsecs();
+-	start_time = prev_time;
+-
+ 	/* Configure sched priority for better wake-up accuracy */
+ 	memset(&schparam, 0, sizeof(schparam));
+ 	schparam.sched_priority = opt_schprio;
 -- 
 2.34.1
 
