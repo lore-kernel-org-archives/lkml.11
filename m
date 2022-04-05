@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B026DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE7BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbiDEWNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39324 "EHLO
+        id S239004AbiDEWOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232192AbiDEJtQ (ORCPT
+        with ESMTP id S1356216AbiDEKXa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:16 -0400
+        Tue, 5 Apr 2022 06:23:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4E263B1;
-        Tue,  5 Apr 2022 02:41:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0E3BAB87;
+        Tue,  5 Apr 2022 03:07:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDD89B81C19;
-        Tue,  5 Apr 2022 09:41:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F63C385A1;
-        Tue,  5 Apr 2022 09:41:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6757AB81C88;
+        Tue,  5 Apr 2022 10:07:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1EA2C385A1;
+        Tue,  5 Apr 2022 10:07:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151711;
-        bh=TkRjkbHf35GwvaY8YoQCXT3xu4BK4ElnagkTLzoI8O8=;
+        s=korg; t=1649153268;
+        bh=5SKEbDrLT6+O1PlKgj+zrudt8PadU0+bYVvcmroswKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kThMRwPtZJGQj15fEuBAH5B8gLaTkixYiQWFAkVlh8tMGFGKHqeHUFFl42BCplfqB
-         N0Rumc3GbIWMQY4BByUcZyCUPGqLQLGrbKmC8v9vFxH2z/rTu1luUOZidoijDKwR8v
-         +2hDBqEGxQUWt1Dr0WM7jDDlHWOZgwzjVwNPOGaI=
+        b=wl1HRdf2VkrSjNrSj//IE136964rDpZFCpYYzHMkoO0ykx80IaUPFaIODYSeCzsJF
+         74S/Qkb4c0q5qKJ2TMQSJQnwKybyBRO/DnlowTxOaMG4h8gw8WnFlOUOTyOVEDlmjH
+         JIyhM/hp5nQi+sjiwvpAaiwAvHullvmCGgpVCSQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 514/913] power: supply: wm8350-power: Add missing free in free_charger_irq
-Date:   Tue,  5 Apr 2022 09:26:16 +0200
-Message-Id: <20220405070355.261188313@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>
+Subject: [PATCH 5.10 124/599] drm/i915/opregion: check port number bounds for SWSCI display power state
+Date:   Tue,  5 Apr 2022 09:26:58 +0200
+Message-Id: <20220405070302.527802109@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit 6dee930f6f6776d1e5a7edf542c6863b47d9f078 ]
+commit 24a644ebbfd3b13cda702f98907f9dd123e34bf9 upstream.
 
-In free_charger_irq(), there is no free for 'WM8350_IRQ_CHG_FAST_RDY'.
-Therefore, it should be better to add it in order to avoid the memory leak.
+The mapping from enum port to whatever port numbering scheme is used by
+the SWSCI Display Power State Notification is odd, and the memory of it
+has faded. In any case, the parameter only has space for ports numbered
+[0..4], and UBSAN reports bit shift beyond it when the platform has port
+F or more.
 
-Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Since the SWSCI functionality is supposed to be obsolete for new
+platforms (i.e. ones that might have port F or more), just bail out
+early if the mapped and mangled port number is beyond what the Display
+Power State Notification can support.
+
+Fixes: 9c4b0a683193 ("drm/i915: add opregion function to notify bios of encoder enable/disable")
+Cc: <stable@vger.kernel.org> # v3.13+
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Lucas De Marchi <lucas.demarchi@intel.com>
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4800
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/cc363f42d6b5a5932b6d218fefcc8bdfb15dbbe5.1644489329.git.jani.nikula@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/supply/wm8350_power.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/i915/display/intel_opregion.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
-index 9c46c48dccb1..908cfd45d262 100644
---- a/drivers/power/supply/wm8350_power.c
-+++ b/drivers/power/supply/wm8350_power.c
-@@ -524,6 +524,7 @@ static void free_charger_irq(struct wm8350 *wm8350)
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
--- 
-2.34.1
-
+--- a/drivers/gpu/drm/i915/display/intel_opregion.c
++++ b/drivers/gpu/drm/i915/display/intel_opregion.c
+@@ -376,6 +376,21 @@ int intel_opregion_notify_encoder(struct
+ 		return -EINVAL;
+ 	}
+ 
++	/*
++	 * The port numbering and mapping here is bizarre. The now-obsolete
++	 * swsci spec supports ports numbered [0..4]. Port E is handled as a
++	 * special case, but port F and beyond are not. The functionality is
++	 * supposed to be obsolete for new platforms. Just bail out if the port
++	 * number is out of bounds after mapping.
++	 */
++	if (port > 4) {
++		drm_dbg_kms(&dev_priv->drm,
++			    "[ENCODER:%d:%s] port %c (index %u) out of bounds for display power state notification\n",
++			    intel_encoder->base.base.id, intel_encoder->base.name,
++			    port_name(intel_encoder->port), port);
++		return -EINVAL;
++	}
++
+ 	if (!enable)
+ 		parm |= 4 << 8;
+ 
 
 
