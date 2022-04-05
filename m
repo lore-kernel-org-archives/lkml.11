@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6890C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E5BC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378167AbiDELbs (ORCPT
+        id S1378185AbiDELbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
+        Tue, 5 Apr 2022 07:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244378AbiDEIwB (ORCPT
+        with ESMTP id S244231AbiDEIvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:52:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03567D5566;
-        Tue,  5 Apr 2022 01:40:55 -0700 (PDT)
+        Tue, 5 Apr 2022 04:51:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F7CD3AFB;
+        Tue,  5 Apr 2022 01:40:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D25360FFB;
-        Tue,  5 Apr 2022 08:40:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85956C385A0;
-        Tue,  5 Apr 2022 08:40:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 967ECB81BC0;
+        Tue,  5 Apr 2022 08:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5405C385A1;
+        Tue,  5 Apr 2022 08:40:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148027;
-        bh=o2hdrjC/PgYjbZe3JzicMJHQaxwlPlqG/ztutGUT8Go=;
+        s=korg; t=1649148019;
+        bh=2z/35VQaKfwE4Ga7lWQQm5DUTaQ+l2Wpg+scRG9enwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=caR0yiW2tAkJ2gxiBcA8lmYyZ2Auh8/Quu0V+8qSjWmISCaXNt49g5SHtBnX57whm
-         hSVRE9VVASOtXPcoBdgEugyZ5/romho5LCC4qghp47yERZuhmkm4GDUTelIjjynOV+
-         ixY6Z/syiB9Wk56ORk6sRT9tWAEyGG3ozp0DZrlA=
+        b=dczkMtcqYpMp8DWujeXpR56Vjwb8PNhlMAEFFCgycnmprVw3kEgcTpezaTgxa9zBb
+         sPje/Knunz5TnxtNc0CAWZJicwjNz1UlrxAN5eEq+F2r4N3oHNmgK9zgYz0Owz9Rtc
+         No4irjLCQjWgi56NbKGlOXRrcoSgEN1QIp4PDESI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomas Paukrt <tomaspaukrt@email.cz>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0208/1017] crypto: mxs-dcp - Fix scatterlist processing
-Date:   Tue,  5 Apr 2022 09:18:41 +0200
-Message-Id: <20220405070400.425105561@linuxfoundation.org>
+Subject: [PATCH 5.16 0205/1017] hwrng: cavium - HW_RANDOM_CAVIUM should depend on ARCH_THUNDER
+Date:   Tue,  5 Apr 2022 09:18:38 +0200
+Message-Id: <20220405070400.335890696@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,33 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Paukrt <tomaspaukrt@email.cz>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 28e9b6d8199a3f124682b143800c2dacdc3d70dd ]
+[ Upstream commit ab7d88549e2f7ae116afd303f32e1950cb790a1d ]
 
-This patch fixes a bug in scatterlist processing that may cause incorrect AES block encryption/decryption.
+The Cavium ThunderX Random Number Generator is only present on Cavium
+ThunderX SoCs, and not available as an independent PCIe endpoint.  Hence
+add a dependency on ARCH_THUNDER, to prevent asking the user about this
+driver when configuring a kernel without Cavium Thunder SoC  support.
 
-Fixes: 2e6d793e1bf0 ("crypto: mxs-dcp - Use sg_mapping_iter to copy data")
-Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
+Fixes: cc2f1908c6b8f625 ("hwrng: cavium - Add Cavium HWRNG driver for ThunderX SoC.")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/mxs-dcp.c | 2 +-
+ drivers/char/hw_random/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/mxs-dcp.c b/drivers/crypto/mxs-dcp.c
-index d19e5ffb5104..d6f9e2fe863d 100644
---- a/drivers/crypto/mxs-dcp.c
-+++ b/drivers/crypto/mxs-dcp.c
-@@ -331,7 +331,7 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
- 		memset(key + AES_KEYSIZE_128, 0, AES_KEYSIZE_128);
- 	}
+diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
+index 1da64771ee2e..372859b43f89 100644
+--- a/drivers/char/hw_random/Kconfig
++++ b/drivers/char/hw_random/Kconfig
+@@ -414,7 +414,7 @@ config HW_RANDOM_MESON
  
--	for_each_sg(req->src, src, sg_nents(src), i) {
-+	for_each_sg(req->src, src, sg_nents(req->src), i) {
- 		src_buf = sg_virt(src);
- 		len = sg_dma_len(src);
- 		tlen += len;
+ config HW_RANDOM_CAVIUM
+ 	tristate "Cavium ThunderX Random Number Generator support"
+-	depends on HW_RANDOM && PCI && ARM64
++	depends on HW_RANDOM && PCI && ARCH_THUNDER
+ 	default HW_RANDOM
+ 	help
+ 	  This driver provides kernel-side support for the Random Number
 -- 
 2.34.1
 
