@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA449C3A5A1
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C227C3A5A3
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352181AbiDEKEA (ORCPT
+        id S1352325AbiDEKEZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
+        Tue, 5 Apr 2022 06:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237463AbiDEISC (ORCPT
+        with ESMTP id S237426AbiDEISB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BDC69CD4;
-        Tue,  5 Apr 2022 01:06:22 -0700 (PDT)
+        Tue, 5 Apr 2022 04:18:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E039B6D07;
+        Tue,  5 Apr 2022 01:06:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAC45B81BAF;
-        Tue,  5 Apr 2022 08:06:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E40C385A0;
-        Tue,  5 Apr 2022 08:06:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD381617EF;
+        Tue,  5 Apr 2022 08:06:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7A4C385A1;
+        Tue,  5 Apr 2022 08:06:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145980;
-        bh=7Vx2WvST/3UetrRUM4JsvOUg6Uksvk+kePktchHbQIc=;
+        s=korg; t=1649145975;
+        bh=CsXFAbQiXAE7EdhvgvZvfFnE7JeU66yXTWJIbyY8xH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iIN9zIRFMaAcntWjiWH9mBPqmYzwr253uPFr/XLpQfPVNifZzjQFmkASv8iq7nYHC
-         usxS8JEwVNCCEwBjImUxgt/XXyVOvf+A1DpASG5u59vR3INkDHYACRTtYpyIoP426G
-         nUZ9aUmuH7kcj3wbxq8ySwdnceNVSsIJRKQ/PmT8=
+        b=RptIOb09fclr1OhdaGNDwBvRIf3lEDiVHlu7jIaNRCg8vgjCKBRvAaCFDtqGH/NIi
+         NFMEW3Y2C3s8oP1ky0Jz4A7QPkDnz1vcMbHmE8b0aSvKsv95NIiLv8ZmG2H2RHQ4Wb
+         cWwimsfo//17zs17gAVPYgsLV6UpqXtN+8kyqurU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        James Morris <jmorris@namei.org>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        tomoyo-dev-en@lists.osdn.me, "Serge E. Hallyn" <serge@hallyn.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        stable@vger.kernel.org, Aharon Landau <aharonl@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0600/1126] TOMOYO: fix __setup handlers return values
-Date:   Tue,  5 Apr 2022 09:22:27 +0200
-Message-Id: <20220405070425.245967473@linuxfoundation.org>
+Subject: [PATCH 5.17 0598/1126] RDMA/mlx5: Fix the flow of a miss in the allocation of a cache ODP MR
+Date:   Tue,  5 Apr 2022 09:22:25 +0200
+Message-Id: <20220405070425.187941527@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -54,70 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Aharon Landau <aharonl@nvidia.com>
 
-[ Upstream commit 39844b7e3084baecef52d1498b5fa81afa2cefa9 ]
+[ Upstream commit 2f0e60d5e9f96341a0c8a01be8878cdb3b29ff20 ]
 
-__setup() handlers should return 1 if the parameter is handled.
-Returning 0 causes the entire string to be added to init's
-environment strings (limited to 32 strings), unnecessarily polluting it.
+When an ODP MR cache entry is empty and trying to allocate it, increment
+the ent->miss counter and call to queue_adjust_cache_locked() to verify
+the entry is balanced.
 
-Using the documented strings "TOMOYO_loader=string1" and
-"TOMOYO_trigger=string2" causes an Unknown parameter message:
-  Unknown kernel command line parameters
-    "BOOT_IMAGE=/boot/bzImage-517rc5 TOMOYO_loader=string1 \
-     TOMOYO_trigger=string2", will be passed to user space.
-
-and these strings are added to init's environment string space:
-  Run /sbin/init as init process
-    with arguments:
-     /sbin/init
-    with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     TOMOYO_loader=string1
-     TOMOYO_trigger=string2
-
-With this change, these __setup handlers act as expected,
-and init's environment is not polluted with these strings.
-
-Fixes: 0e4ae0e0dec63 ("TOMOYO: Make several options configurable.")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: James Morris <jmorris@namei.org>
-Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-Cc: tomoyo-dev-en@lists.osdn.me
-Cc: "Serge E. Hallyn" <serge@hallyn.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Fixes: aad719dcf379 ("RDMA/mlx5: Allow MRs to be created in the cache synchronously")
+Link: https://lore.kernel.org/r/09503e295276dcacc92cb1d8aef1ad0961c99dc1.1644947594.git.leonro@nvidia.com
+Signed-off-by: Aharon Landau <aharonl@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/tomoyo/load_policy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/infiniband/hw/mlx5/mr.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/security/tomoyo/load_policy.c b/security/tomoyo/load_policy.c
-index 3445ae6fd479..363b65be87ab 100644
---- a/security/tomoyo/load_policy.c
-+++ b/security/tomoyo/load_policy.c
-@@ -24,7 +24,7 @@ static const char *tomoyo_loader;
- static int __init tomoyo_loader_setup(char *str)
- {
- 	tomoyo_loader = str;
--	return 0;
-+	return 1;
- }
- 
- __setup("TOMOYO_loader=", tomoyo_loader_setup);
-@@ -64,7 +64,7 @@ static const char *tomoyo_trigger;
- static int __init tomoyo_trigger_setup(char *str)
- {
- 	tomoyo_trigger = str;
--	return 0;
-+	return 1;
- }
- 
- __setup("TOMOYO_trigger=", tomoyo_trigger_setup);
+diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
+index 157d862fb864..2910d7833313 100644
+--- a/drivers/infiniband/hw/mlx5/mr.c
++++ b/drivers/infiniband/hw/mlx5/mr.c
+@@ -585,6 +585,8 @@ struct mlx5_ib_mr *mlx5_mr_cache_alloc(struct mlx5_ib_dev *dev,
+ 	ent = &cache->ent[entry];
+ 	spin_lock_irq(&ent->lock);
+ 	if (list_empty(&ent->head)) {
++		queue_adjust_cache_locked(ent);
++		ent->miss++;
+ 		spin_unlock_irq(&ent->lock);
+ 		mr = create_cache_mr(ent);
+ 		if (IS_ERR(mr))
 -- 
 2.34.1
 
