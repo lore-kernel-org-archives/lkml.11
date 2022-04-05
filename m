@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF49C3A5A1
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A816C3A589
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232048AbiDEICk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55640 "EHLO
+        id S235836AbiDEIA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232771AbiDEHvl (ORCPT
+        with ESMTP id S231997AbiDEHsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:51:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487944C422;
-        Tue,  5 Apr 2022 00:47:51 -0700 (PDT)
+        Tue, 5 Apr 2022 03:48:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD7B631F;
+        Tue,  5 Apr 2022 00:46:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2831B81B92;
-        Tue,  5 Apr 2022 07:47:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DC72C340EE;
-        Tue,  5 Apr 2022 07:47:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 161B3615E7;
+        Tue,  5 Apr 2022 07:46:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0B3C34112;
+        Tue,  5 Apr 2022 07:46:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144868;
-        bh=FD6A8Q2VodmlK/aTr23PGmh0+5iHx7dgmOFrv2Xh6ew=;
+        s=korg; t=1649144802;
+        bh=1NernAKoOBfJpA9BgdskRZGyX2V/8ZAUyEvP77Lq5xE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VszKd8laoEkkxzEynK9e6KjAbODnhjou/jmuR66jNouKn6FnYFIz9nN76sZimduAF
-         vPfBTNJjESOkPS/bl0ZeR+4TgSvjnUaah5dF7Cua+LrdTaL4MCPiPT7v064PBDmVfe
-         lb2rulWiBmfJTJ6dKin7aVyWExBRkEAVdMlNE6sU=
+        b=pOuyyO9gHivJpXpeIkelemLariomzfuuf/9iEZcdAbZOsJ+a/AwrTEH0T0GDvfD3P
+         6SfESF5sS4Sa5k4iOCIloJjT3dIYhPm2rfLd2OCVHsPLbfI3UERcckYCFR6syLXqTa
+         rJ9bJvR8cKglBwoGlzmbSyu6sWhWj2EHYJWBbILE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0200/1126] selinux: check return value of sel_make_avc_files
-Date:   Tue,  5 Apr 2022 09:15:47 +0200
-Message-Id: <20220405070413.477480169@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.17 0175/1126] mips: Always permit to build u-boot images
+Date:   Tue,  5 Apr 2022 09:15:22 +0200
+Message-Id: <20220405070412.739084859@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,46 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Göttsche <cgzones@googlemail.com>
+From: Paul Cercueil <paul@crapouillou.net>
 
-[ Upstream commit bcb62828e3e8c813b6613db6eb7fd9657db248fc ]
+commit 34275ac292ae141ebc1296b72f005f71b25998a7 upstream.
 
-sel_make_avc_files() might fail and return a negative errno value on
-memory allocation failures. Re-add the check of the return value,
-dropped in 66f8e2f03c02 ("selinux: sidtab reverse lookup hash table").
+The platforms where the kernel should be loaded above 0x8000.0000 do not
+support loading u-boot images, that doesn't mean that we shouldn't be
+able to generate them.
 
-Reported by clang-analyzer:
+Additionally, since commit 79876cc1d7b8 ("MIPS: new Kconfig option
+ZBOOT_LOAD_ADDRESS"), the $(zload-y) variable was no longer hardcoded,
+which made it impossible to use the uzImage.bin target.
 
-    security/selinux/selinuxfs.c:2129:2: warning: Value stored to
-      'ret' is never read [deadcode.DeadStores]
-            ret = sel_make_avc_files(dentry);
-            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Fixes: 66f8e2f03c02 ("selinux: sidtab reverse lookup hash table")
-Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-[PM: description line wrapping, added proper commit ref]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 79876cc1d7b8 ("MIPS: new Kconfig option ZBOOT_LOAD_ADDRESS")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/selinux/selinuxfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/mips/Makefile |    4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/security/selinux/selinuxfs.c b/security/selinux/selinuxfs.c
-index e4cd7cb856f3..f2f6203e0fff 100644
---- a/security/selinux/selinuxfs.c
-+++ b/security/selinux/selinuxfs.c
-@@ -2127,6 +2127,8 @@ static int sel_fill_super(struct super_block *sb, struct fs_context *fc)
- 	}
+--- a/arch/mips/Makefile
++++ b/arch/mips/Makefile
+@@ -340,14 +340,12 @@ drivers-$(CONFIG_PM)	+= arch/mips/power/
+ boot-y			:= vmlinux.bin
+ boot-y			+= vmlinux.ecoff
+ boot-y			+= vmlinux.srec
+-ifeq ($(shell expr $(load-y) \< 0xffffffff80000000 2> /dev/null), 0)
+ boot-y			+= uImage
+ boot-y			+= uImage.bin
+ boot-y			+= uImage.bz2
+ boot-y			+= uImage.gz
+ boot-y			+= uImage.lzma
+ boot-y			+= uImage.lzo
+-endif
+ boot-y			+= vmlinux.itb
+ boot-y			+= vmlinux.gz.itb
+ boot-y			+= vmlinux.bz2.itb
+@@ -359,9 +357,7 @@ bootz-y			:= vmlinuz
+ bootz-y			+= vmlinuz.bin
+ bootz-y			+= vmlinuz.ecoff
+ bootz-y			+= vmlinuz.srec
+-ifeq ($(shell expr $(zload-y) \< 0xffffffff80000000 2> /dev/null), 0)
+ bootz-y			+= uzImage.bin
+-endif
+ bootz-y			+= vmlinuz.itb
  
- 	ret = sel_make_avc_files(dentry);
-+	if (ret)
-+		goto err;
- 
- 	dentry = sel_make_dir(sb->s_root, "ss", &fsi->last_ino);
- 	if (IS_ERR(dentry)) {
--- 
-2.34.1
-
+ #
 
 
