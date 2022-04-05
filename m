@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE938C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77554C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350352AbiDEJ5h (ORCPT
+        id S1350383AbiDEJ5x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
+        Tue, 5 Apr 2022 05:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239909AbiDEIVx (ORCPT
+        with ESMTP id S238619AbiDEITO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:21:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A90865F2;
-        Tue,  5 Apr 2022 01:19:26 -0700 (PDT)
+        Tue, 5 Apr 2022 04:19:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E6B10FDD;
+        Tue,  5 Apr 2022 01:09:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F8FE609AD;
-        Tue,  5 Apr 2022 08:19:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5097EC385A2;
-        Tue,  5 Apr 2022 08:19:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C893B81B18;
+        Tue,  5 Apr 2022 08:09:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5801C385A1;
+        Tue,  5 Apr 2022 08:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146764;
-        bh=P/lxEK3xXgM2nxhjaAHZNVVhYk11eH/eKFXBmOkQsxo=;
+        s=korg; t=1649146149;
+        bh=HNGI4In+9emjSe41kyPORwvUlyYnDXuBY4KQw+sNLoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xpP1nCveV5RWSzRmUNCPHzci+bkYSzc/lNICGiprsrf0ZEHDncSmik5O4tlZJ4rFk
-         TJVPyewjFxLYST8WM94RDbB31YrY1H/Q+//Ps+bL+VogdWMPl1n2A1fRRiksBvc0Qq
-         UEMgh0Yv5InaQ6DmF32I44oQcT3m4jHTLCwa06Fo=
+        b=i0fjCUAQciEQmHRjGlTyChHrqvQWS+7GpM/uJmq363cigXrRyMYaDMNRLiw0AY4Mx
+         PvxZKOpCzPn1cTdC83Y+H5Aat5aEcinT4UzSeED4tOd86lw78YbbxwY5uPEAFY8TZc
+         6dy5nLdilkY5kOlf5LJszKQUdjXtMuiJMOxi5KhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0842/1126] memstick/mspro_block: fix handling of read-only devices
-Date:   Tue,  5 Apr 2022 09:26:29 +0200
-Message-Id: <20220405070432.267789464@linuxfoundation.org>
+        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0659/1126] RDMA/mlx5: Fix memory leak in error flow for subscribe event routine
+Date:   Tue,  5 Apr 2022 09:23:26 +0200
+Message-Id: <20220405070426.972565560@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,51 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit 6dab421bfe06a59bf8f212a72e34673e8acf2018 ]
+[ Upstream commit 087f9c3f2309ed183f7e4b85ae57121d8663224d ]
 
-Use set_disk_ro to propagate the read-only state to the block layer
-instead of checking for it in ->open and leaking a reference in case
-of a read-only device.
+In case the second xa_insert() fails, the obj_event is not released.  Fix
+the error unwind flow to free that memory to avoid a memory leak.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220215094514.3828912-4-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 759738537142 ("IB/mlx5: Enable subscription for device events over DEVX")
+Link: https://lore.kernel.org/r/1647018361-18266-1-git-send-email-lyz_cs@pku.edu.cn
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memstick/core/mspro_block.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/infiniband/hw/mlx5/devx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/memstick/core/mspro_block.c b/drivers/memstick/core/mspro_block.c
-index c0450397b673..7ea312f0840e 100644
---- a/drivers/memstick/core/mspro_block.c
-+++ b/drivers/memstick/core/mspro_block.c
-@@ -186,13 +186,8 @@ static int mspro_block_bd_open(struct block_device *bdev, fmode_t mode)
+diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
+index 08b7f6bc56c3..15c0884d1f49 100644
+--- a/drivers/infiniband/hw/mlx5/devx.c
++++ b/drivers/infiniband/hw/mlx5/devx.c
+@@ -1886,8 +1886,10 @@ subscribe_event_xa_alloc(struct mlx5_devx_event_table *devx_event_table,
+ 				key_level2,
+ 				obj_event,
+ 				GFP_KERNEL);
+-		if (err)
++		if (err) {
++			kfree(obj_event);
+ 			return err;
++		}
+ 		INIT_LIST_HEAD(&obj_event->obj_sub_list);
+ 	}
  
- 	mutex_lock(&mspro_block_disk_lock);
- 
--	if (msb && msb->card) {
-+	if (msb && msb->card)
- 		msb->usage_count++;
--		if ((mode & FMODE_WRITE) && msb->read_only)
--			rc = -EROFS;
--		else
--			rc = 0;
--	}
- 
- 	mutex_unlock(&mspro_block_disk_lock);
- 
-@@ -1239,6 +1234,9 @@ static int mspro_block_init_disk(struct memstick_dev *card)
- 	set_capacity(msb->disk, capacity);
- 	dev_dbg(&card->dev, "capacity set %ld\n", capacity);
- 
-+	if (msb->read_only)
-+		set_disk_ro(msb->disk, true);
-+
- 	rc = device_add_disk(&card->dev, msb->disk, NULL);
- 	if (rc)
- 		goto out_cleanup_disk;
 -- 
 2.34.1
 
