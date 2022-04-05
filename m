@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8E0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED6EBC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237363AbiDEUaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:30:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        id S237427AbiDEUbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349452AbiDEJtx (ORCPT
+        with ESMTP id S1351969AbiDEKDf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD82827CED;
-        Tue,  5 Apr 2022 02:46:20 -0700 (PDT)
+        Tue, 5 Apr 2022 06:03:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FFBA94C1;
+        Tue,  5 Apr 2022 02:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B9FEB81B14;
-        Tue,  5 Apr 2022 09:46:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF908C385A2;
-        Tue,  5 Apr 2022 09:46:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C89B661743;
+        Tue,  5 Apr 2022 09:52:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D96F6C385A1;
+        Tue,  5 Apr 2022 09:52:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151978;
-        bh=nHOg9kX+MbvlIgN8jRKrk4EKwtzKb7SaZy1WfCamDGo=;
+        s=korg; t=1649152359;
+        bh=4YhYlmlgU5yF/qSl658v/68xrg7u+cOGYTE7Fjs+AWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cpkUe4qWfbRP147wB1OCPAhILWvFUbsIsVClUY1pM0NeG4jtrRBgKpG++Z4o7JWQs
-         iP72NEllfquNejtVB2rA2auZLLwopUjY06HW6+VuTu+2v6fkpizN2phl8FO0zmsh9F
-         MJVw/iqPSZ3J9fZ0ORFOI777xJATJc1Sd4FsdT+Y=
+        b=qWHdpTgxfGGtJlmGpsofnwZB5KwgmxPuNeQCkdYNDRgu4UpxfXy+Ll9xsIUlZeSpM
+         t9KeBMTZ4UpmHsSId/U63iXTBautSLF6Rfk95JVoqMt+/pUJFLNJ0wHKJnYUuHK9ba
+         DZ7kH3XjQVf9kcviG8sG5uVs6ihtUGEwp6mRmRjE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Wolfe <david.wolfe@nxp.com>,
-        Abel Vesa <abel.vesa@nxp.com>, Peng Fan <peng.fan@nxp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 609/913] clk: imx7d: Remove audio_mclk_root_clk
-Date:   Tue,  5 Apr 2022 09:27:51 +0200
-Message-Id: <20220405070358.096312292@linuxfoundation.org>
+        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>,
+        LogicalErzor <logicalerzor@gmail.com>
+Subject: [PATCH 5.15 741/913] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
+Date:   Tue,  5 Apr 2022 09:30:03 +0200
+Message-Id: <20220405070402.046129133@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -49,36 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+From: David Heidelberg <david@ixit.cz>
 
-[ Upstream commit eccac77ede3946c90143447cdc785dc16aec4b24 ]
+[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
 
-The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
-but according to the reference manual, there is no such gate. The
-CCGR121 belongs to ECSPI2 and it is not shared.
+IRQ types blindly copied from very similar APQ8064.
 
-Fixes: 8f6d8094b215b57 ("ARM: imx: add imx7d clk tree support")
-Reported-by: David Wolfe <david.wolfe@nxp.com>
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/20220127141052.1900174-2-abel.vesa@nxp.com
+Fixes warnings as:
+WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
+...
+
+Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/imx/clk-imx7d.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/clk/imx/clk-imx7d.c b/drivers/clk/imx/clk-imx7d.c
-index c4e0f1c07192..3f6fd7ef2a68 100644
---- a/drivers/clk/imx/clk-imx7d.c
-+++ b/drivers/clk/imx/clk-imx7d.c
-@@ -849,7 +849,6 @@ static void __init imx7d_clocks_init(struct device_node *ccm_node)
- 	hws[IMX7D_WDOG4_ROOT_CLK] = imx_clk_hw_gate4("wdog4_root_clk", "wdog_post_div", base + 0x49f0, 0);
- 	hws[IMX7D_KPP_ROOT_CLK] = imx_clk_hw_gate4("kpp_root_clk", "ipg_root_clk", base + 0x4aa0, 0);
- 	hws[IMX7D_CSI_MCLK_ROOT_CLK] = imx_clk_hw_gate4("csi_mclk_root_clk", "csi_mclk_post_div", base + 0x4490, 0);
--	hws[IMX7D_AUDIO_MCLK_ROOT_CLK] = imx_clk_hw_gate4("audio_mclk_root_clk", "audio_mclk_post_div", base + 0x4790, 0);
- 	hws[IMX7D_WRCLK_ROOT_CLK] = imx_clk_hw_gate4("wrclk_root_clk", "wrclk_post_div", base + 0x47a0, 0);
- 	hws[IMX7D_USB_CTRL_CLK] = imx_clk_hw_gate4("usb_ctrl_clk", "ahb_root_clk", base + 0x4680, 0);
- 	hws[IMX7D_USB_PHY1_CLK] = imx_clk_hw_gate4("usb_phy1_clk", "pll_usb1_main_clk", base + 0x46a0, 0);
+diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+index 172ea3c70eac..c197927e7435 100644
+--- a/arch/arm/boot/dts/qcom-msm8960.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+@@ -146,7 +146,9 @@
+ 			reg		= <0x108000 0x1000>;
+ 			qcom,ipc	= <&l2cc 0x8 2>;
+ 
+-			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
++			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
+ 			interrupt-names	= "ack", "err", "wakeup";
+ 
+ 			regulators {
+@@ -192,7 +194,7 @@
+ 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 				reg = <0x16440000 0x1000>,
+ 				      <0x16400000 0x1000>;
+-				interrupts = <0 154 0x0>;
++				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
+ 				clock-names = "core", "iface";
+ 				status = "disabled";
+@@ -318,7 +320,7 @@
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+ 				reg = <0x16080000 0x1000>;
+-				interrupts = <0 147 0>;
++				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
+ 				spi-max-frequency = <24000000>;
+ 				cs-gpios = <&msmgpio 8 0>;
+ 
 -- 
 2.34.1
 
