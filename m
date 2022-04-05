@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4CAC388F3
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11BBFC38A05
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380355AbiDEMxs (ORCPT
+        id S1380761AbiDEMyI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
+        Tue, 5 Apr 2022 08:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240506AbiDEJMm (ORCPT
+        with ESMTP id S1343837AbiDEJOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:12:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECEE3587F;
-        Tue,  5 Apr 2022 02:00:22 -0700 (PDT)
+        Tue, 5 Apr 2022 05:14:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E02647394;
+        Tue,  5 Apr 2022 02:00:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C575EB81A22;
-        Tue,  5 Apr 2022 09:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0587FC385A0;
-        Tue,  5 Apr 2022 09:00:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC9E761003;
+        Tue,  5 Apr 2022 09:00:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C93BFC385A0;
+        Tue,  5 Apr 2022 09:00:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149219;
-        bh=HXRc8gJFHxb99uED7x+dd1tRVteKi449zXLSufnVG5Y=;
+        s=korg; t=1649149247;
+        bh=3LxEPkMJu4WUWNwLsa7IzbFHRo3wh5QvDBNDMq0dVUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HgCl5UVM1Mt/lnqslmKBqRLuDH9voF6etJO06jpx0oQdgMPyNAq/UXrKk4kO+iP6m
-         OGFPbSLOx3l2hBdjgPrleTvm1+Q47/klzWRnxN4yXOAmtPmuvQqPtPcBzMI7lbYCbP
-         a2TcFidNSOcMddYG0M6kKzzBRs9KTqqlzhAQM3Rs=
+        b=gi8JsFgOqiYj0cSmg7JI3vdc7y6fjOu5X3XAWsZsuzPMVQIDaF0x19BGkbDWS1OR5
+         BELJiE/9xpRc6CIrI/ZYF67qV07654baFVNgERT7poXg4F46mmhuiyrruXWNkgjIaB
+         7+aDFnzXWjAOANfr2kHWkpbx52LOstLrKr7upBc4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mick Lorain <micklorain@protonmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rodolfo Giometti <giometti@enneenne.com>,
+        Robert Hancock <robert.hancock@calian.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0630/1017] PCI: Avoid broken MSI on SB600 USB devices
-Date:   Tue,  5 Apr 2022 09:25:43 +0200
-Message-Id: <20220405070412.985216070@linuxfoundation.org>
+Subject: [PATCH 5.16 0648/1017] pps: clients: gpio: Propagate return value from pps_gpio_probe
+Date:   Tue,  5 Apr 2022 09:26:01 +0200
+Message-Id: <20220405070413.518743808@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,59 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 63cd736f449445edcd7f0bcc7d84453e9beec0aa ]
+[ Upstream commit abaca3179b41d4b3b115f27814ee36f6fb45e897 ]
 
-Some ATI SB600 USB adapters advertise MSI, but if INTx is disabled by
-setting PCI_COMMAND_INTX_DISABLE, MSI doesn't work either.  The PCI/PCIe
-specs do not require software to set PCI_COMMAND_INTX_DISABLE when enabling
-MSI, but Linux has done that for many years.
+If the pps-gpio driver was probed prior to the GPIO device it uses, the
+devm_gpiod_get call returned an -EPROBE_DEFER error, but pps_gpio_probe
+replaced that error code with -EINVAL, causing the pps-gpio probe to
+fail and not be retried later. Propagate the error return value so that
+deferred probe works properly.
 
-Mick reported that 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI
-devices") broke these devices.  Prior to 306c54d0edb6, they used INTx.
-Starting with 306c54d0edb6, they use MSI, and and the fact that Linux sets
-PCI_COMMAND_INTX_DISABLE means both INTx and MSI are disabled on these
-devices.
-
-Avoid this SB600 defect by disabling MSI so we use INTx as before.
-
-Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI devices")
-Link: https://lore.kernel.org/r/20220321183446.1108325-1-helgaas@kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215690
-Link: https://lore.kernel.org/all/PxIByDyBRcsbpcmVhGSNDFAoUcMmb78ctXCkw6fbpx25TGlCHvA6SJjjFkNr1FfQZMntYPTNyvEnblxzAZ8a6jP9ddLpKeCN6Chi_2FuexU=@protonmail.com/
-Link: https://lore.kernel.org/r/20220314101448.90074-1-andriy.shevchenko@linux.intel.com
-BugLink: https://lore.kernel.org/all/20200702143045.23429-1-andriy.shevchenko@linux.intel.com/
-Reported-by: Mick Lorain <micklorain@protonmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Fixes: 161520451dfa (pps: new client driver using GPIO)
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Rodolfo Giometti <giometti@enneenne.com>
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: Rodolfo Giometti <giometti@enneenne.com>
+Link: https://lore.kernel.org/r/20220112205214.2060954-1-robert.hancock@calian.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/quirks.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/pps/clients/pps-gpio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index db864bf634a3..6272b122f400 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -1811,6 +1811,18 @@ static void quirk_alder_ioapic(struct pci_dev *pdev)
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_EESSC,	quirk_alder_ioapic);
- #endif
+diff --git a/drivers/pps/clients/pps-gpio.c b/drivers/pps/clients/pps-gpio.c
+index 35799e6401c9..2f4b11b4dfcd 100644
+--- a/drivers/pps/clients/pps-gpio.c
++++ b/drivers/pps/clients/pps-gpio.c
+@@ -169,7 +169,7 @@ static int pps_gpio_probe(struct platform_device *pdev)
+ 	/* GPIO setup */
+ 	ret = pps_gpio_setup(dev);
+ 	if (ret)
+-		return -EINVAL;
++		return ret;
  
-+static void quirk_no_msi(struct pci_dev *dev)
-+{
-+	pci_info(dev, "avoiding MSI to work around a hardware defect\n");
-+	dev->no_msi = 1;
-+}
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4386, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4387, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4388, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x4389, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438a, quirk_no_msi);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x438b, quirk_no_msi);
-+
- static void quirk_pcie_mch(struct pci_dev *pdev)
- {
- 	pdev->no_msi = 1;
+ 	/* IRQ setup */
+ 	ret = gpiod_to_irq(data->gpio_pin);
 -- 
 2.34.1
 
