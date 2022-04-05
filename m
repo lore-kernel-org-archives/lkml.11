@@ -2,104 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAC67C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8860DC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842333AbiDFBas (ORCPT
+        id S1456279AbiDFB3x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
+        Tue, 5 Apr 2022 21:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352582AbiDEKEo (ORCPT
+        with ESMTP id S1384480AbiDEOSH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:04:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7D6BB0AD;
-        Tue,  5 Apr 2022 02:53:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B321461745;
-        Tue,  5 Apr 2022 09:53:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E09C385A2;
-        Tue,  5 Apr 2022 09:53:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152406;
-        bh=eAu7CtqUbejdrEQNt9DreNr/zKSssNpE1NjUjFYTwPA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U5v+EwKmJr9liLSdnbw5x6JNwIlXT8shL3U9m2zc38UN9I3brThRoMg4t8itmnIMU
-         QaQ0VSwJsDSxBaCHiqOhYjC63gykRvT/xoQjUhr0GP3qd6kRXizbsBKl/hY+60XWW+
-         FvFZJIEgJjlVkC+mKqhO0IWkGAbKmb7s2aPEFQUM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rander Wang <rander.wang@intel.com>,
-        Anthony I Gilea <i@cpp.in>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 765/913] ASoC: Intel: sof_sdw: fix quirks for 2022 HP Spectre x360 13"
-Date:   Tue,  5 Apr 2022 09:30:27 +0200
-Message-Id: <20220405070402.763474011@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 10:18:07 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1689F6E7B9;
+        Tue,  5 Apr 2022 06:04:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649163848;
+  x=1680699848;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7cRqrzsYNIRfiAOotHa409y/Hl5ia/NeruEwkXktTvU=;
+  b=lvFF5QW+7lsDkZ3D6AwCQwU1n259IjfBXJKmpbYXegYsg+2HyBzr4W+m
+   qweFLZlhHJqKzzJrXjuFsr/HQ2HAb+12Fl8TCxkDlKKhuzgCMHZn08dXc
+   iA4cBKmNbgwAmgnLdNpYPqTb0H/ih+rsxTJwNBI5iztYJvnYuxM49eDFP
+   bXWQlDfsWBROAsE7T0w74WYcPtPUPXBx7otBu52Qeb14LcVUvGkmWEoj4
+   uiysNqzIb6GEjtCjqNz9/Yied1cVX/1oVvdiKJkvhR8IQEW9EB/CvYV9o
+   h+rsmilshnu2Fier3gFN1oedzS+WvE1uk1fWhBTULCdd/fHMqs7bLZcbS
+   Q==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <vigneshr@ti.com>, <richard@nod.at>, <miquel.raynal@bootlin.com>,
+        <joern@lazybastard.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <linux-mtd@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <frowand.list@gmail.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 1/4] mtd: core: Check devicetree alias for index
+Date:   Tue, 5 Apr 2022 15:03:47 +0200
+Message-ID: <20220405130350.1640985-2-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405130350.1640985-1-vincent.whitchurch@axis.com>
+References: <20220405130350.1640985-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anthony I Gilea <i@cpp.in>
+Allow the MTD index to be specified via a devicetree alias, so that the
+number does not just depend on probe order.  This is useful to allow
+pseudo-devices like phram to be optionally used on systems, without
+having this affect the numbering of the real hardware MTD devices.
 
-[ Upstream commit ce73ef6ec67104d1fcc4c5911d77ce83288a0998 ]
-
-HP changed the DMI identification for 2022 devices:
-Product Name: HP Spectre x360 Conv 13-ap0001na
-Product Name: 8709
-This patch relaxes the DMI_MATCH criterion to work with all versions of this product.
-
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Anthony I Gilea <i@cpp.in>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220304204532.54675-4-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 ---
- drivers/soundwire/dmi-quirks.c   | 2 +-
- sound/soc/intel/boards/sof_sdw.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/mtd/mtdcore.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soundwire/dmi-quirks.c b/drivers/soundwire/dmi-quirks.c
-index 0ca2a3e3a02e..747983743a14 100644
---- a/drivers/soundwire/dmi-quirks.c
-+++ b/drivers/soundwire/dmi-quirks.c
-@@ -59,7 +59,7 @@ static const struct dmi_system_id adr_remap_quirk_table[] = {
- 	{
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
- 		},
- 		.driver_data = (void *)intel_tgl_bios,
- 	},
-diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
-index 76759b209906..0bf3e56e1d58 100644
---- a/sound/soc/intel/boards/sof_sdw.c
-+++ b/sound/soc/intel/boards/sof_sdw.c
-@@ -184,7 +184,7 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
- 		.callback = sof_sdw_quirk_cb,
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Conv"),
- 		},
- 		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
- 					SOF_SDW_PCH_DMIC |
+diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
+index 7731796024e0..9eb0680db312 100644
+--- a/drivers/mtd/mtdcore.c
++++ b/drivers/mtd/mtdcore.c
+@@ -557,9 +557,10 @@ static int mtd_nvmem_add(struct mtd_info *mtd)
+ 
+ int add_mtd_device(struct mtd_info *mtd)
+ {
++	struct device_node *np = mtd_get_of_node(mtd);
+ 	struct mtd_info *master = mtd_get_master(mtd);
+ 	struct mtd_notifier *not;
+-	int i, error;
++	int i, error, ofidx;
+ 
+ 	/*
+ 	 * May occur, for instance, on buggy drivers which call
+@@ -598,7 +599,13 @@ int add_mtd_device(struct mtd_info *mtd)
+ 
+ 	mutex_lock(&mtd_table_mutex);
+ 
+-	i = idr_alloc(&mtd_idr, mtd, 0, 0, GFP_KERNEL);
++	ofidx = -1;
++	if (np)
++		ofidx = of_alias_get_id(np, "mtd");
++	if (ofidx >= 0)
++		i = idr_alloc(&mtd_idr, mtd, ofidx, ofidx + 1, GFP_KERNEL);
++	else
++		i = idr_alloc(&mtd_idr, mtd, 0, 0, GFP_KERNEL);
+ 	if (i < 0) {
+ 		error = i;
+ 		goto fail_locked;
 -- 
 2.34.1
-
-
 
