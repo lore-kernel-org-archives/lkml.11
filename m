@@ -2,93 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D42C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F578C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838694AbiDFA4a (ORCPT
+        id S1838712AbiDFA4e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59578 "EHLO
+        Tue, 5 Apr 2022 20:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349927AbiDEJwF (ORCPT
+        with ESMTP id S1391272AbiDEPeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:52:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56DD31DEE;
-        Tue,  5 Apr 2022 02:50:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6617EB81B97;
-        Tue,  5 Apr 2022 09:50:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDE6C385A1;
-        Tue,  5 Apr 2022 09:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152205;
-        bh=vb2rgtgo3AKuSL5FE0QmtfS6g/HFe+78n9tRIvZUl7Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pRAuGE6JMZD4vFVEj6AjQnMBUqvW/hXutHsQP1jIrdah/WYzdlHj4xEf8qNUySlBB
-         Zzxn3ofMxeaKOGRy08eVeTB2RB7sGwlxGnkyLC4yLP7OMpyRxGGC1wCuOaY2U7qqM/
-         VB7oi4JDahpO94TEEKP3qEBlB6ti9tRENFNK4puE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 692/913] selinux: use correct type for context length
-Date:   Tue,  5 Apr 2022 09:29:14 +0200
-Message-Id: <20220405070400.578773470@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 5 Apr 2022 11:34:14 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2E150B38;
+        Tue,  5 Apr 2022 06:41:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649166111; x=1680702111;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=rwjRuGuepy//YjLHoAmcCpL2t0bvxioBp/CwXdYeLTU=;
+  b=mBzQSv43Hv7ma1PTer/LtXC0F8zl9+OfJAjEjq2Gg+nW/aHM7RRMil6d
+   cIDyr5N9/7m5/U60N4M6k9lQRHS/t6zgnuWlthHMhklcQy/p9yK0V90Lm
+   rnSrdVLMMeSQiNCE7OmdCMXFcaxWcumMHFpoyUoBeFMZTvTCnvHEdeK+t
+   Y=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 05 Apr 2022 06:41:50 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 05 Apr 2022 06:41:50 -0700
+X-QCInternal: smtphost
+Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 05 Apr 2022 19:11:34 +0530
+Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
+        id A7C52521D; Tue,  5 Apr 2022 19:11:33 +0530 (IST)
+From:   Vinod Polimera <quic_vpolimer@quicinc.com>
+To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        linux-kernel@vger.kernel.org, robdclark@gmail.com,
+        dmitry.baryshkov@linaro.org, dianders@chromium.org,
+        quic_kalyant@quicinc.com
+Subject: [PATCH v7 1/2] drm/msm/disp/dpu1: add inline function to validate format support
+Date:   Tue,  5 Apr 2022 19:11:30 +0530
+Message-Id: <1649166091-18032-2-git-send-email-quic_vpolimer@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649166091-18032-1-git-send-email-quic_vpolimer@quicinc.com>
+References: <1649166091-18032-1-git-send-email-quic_vpolimer@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Göttsche <cgzones@googlemail.com>
+Check if the dpu format is supported or not using dpu_find_format.
 
-[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
-
-security_sid_to_context() expects a pointer to an u32 as the address
-where to store the length of the computed context.
-
-Reported by sparse:
-
-    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
-                                    (different signedness)
-    security/selinux/xfrm.c:359:39:    expected unsigned int
-                                       [usertype] *scontext_len
-    security/selinux/xfrm.c:359:39:    got int *
-
-Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-[PM: wrapped commit description]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Co-developed-by: Kalyan Thota <quic_kalyant@quicinc.com>
+Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 ---
- security/selinux/xfrm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h | 22 ++++++++++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c   | 10 +++-------
+ 2 files changed, 25 insertions(+), 7 deletions(-)
 
-diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
-index be83e5ce4469..debe15207d2b 100644
---- a/security/selinux/xfrm.c
-+++ b/security/selinux/xfrm.c
-@@ -347,7 +347,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
- 	int rc;
- 	struct xfrm_sec_ctx *ctx;
- 	char *ctx_str = NULL;
--	int str_len;
-+	u32 str_len;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
+index 418f5ae..84b8b32 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h
+@@ -21,6 +21,28 @@ const struct dpu_format *dpu_get_dpu_format_ext(
+ #define dpu_get_dpu_format(f) dpu_get_dpu_format_ext(f, 0)
  
- 	if (!polsec)
- 		return 0;
+ /**
++ * dpu_find_format - validate if the pixel format is supported
++ * @format:		dpu format
++ * @supported_formats:	supported formats by dpu HW
++ * @num_formatss:	total number of formats
++ *
++ * Return: false if not valid format, true on success
++ */
++static inline bool dpu_find_format(u32 format, const u32 *supported_formats,
++					size_t num_formats)
++{
++	int i;
++
++	for (i = 0; i < num_formats; i++) {
++		/* check for valid formats supported */
++		if (format == supported_formats[i])
++			return true;
++	}
++
++	return false;
++}
++
++/**
+  * dpu_get_msm_format - get an dpu_format by its msm_format base
+  *                     callback function registers with the msm_kms layer
+  * @kms:             kms driver
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
+index 6565682..3216cda 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
+@@ -1411,13 +1411,9 @@ static bool dpu_plane_format_mod_supported(struct drm_plane *plane,
+ 	if (modifier == DRM_FORMAT_MOD_LINEAR)
+ 		return true;
+ 
+-	if (modifier == DRM_FORMAT_MOD_QCOM_COMPRESSED) {
+-		int i;
+-		for (i = 0; i < ARRAY_SIZE(qcom_compressed_supported_formats); i++) {
+-			if (format == qcom_compressed_supported_formats[i])
+-				return true;
+-		}
+-	}
++	if (modifier == DRM_FORMAT_MOD_QCOM_COMPRESSED)
++		return dpu_find_format(format, qcom_compressed_supported_formats,
++				ARRAY_SIZE(qcom_compressed_supported_formats));
+ 
+ 	return false;
+ }
 -- 
-2.34.1
-
-
+2.7.4
 
