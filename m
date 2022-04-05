@@ -2,130 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6616C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 945A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836173AbiDFAfO (ORCPT
+        id S1836230AbiDFAfQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45328 "EHLO
+        Tue, 5 Apr 2022 20:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392097AbiDENtd (ORCPT
+        with ESMTP id S1573600AbiDETXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:49:33 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7307715A19
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:50:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649163014; x=1680699014;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Qxoy9OT5Ut6sbXF8QToZ++jWRIjeGEhQJxFwexjVZxs=;
-  b=h06K7gYCJDvlUb5n7a231PNZjoZEppGxqXBpbWbq5BHiGwY9ZpQ94YOE
-   rli8+dUOI9XD4OvaWCMNWyPqJbgmaLWOhNgtqejdVx5ftLT+K9bWmzaSu
-   rJQa+6ESl9f3QL6HD8LVDi5eHsrqEaZ5UTl04sYZ3u9xKsZWserMag5OI
-   avCRXQATRWPWB5JT+/0D+r10+Iyy8Yyz72RsTBSQjQjPFRkH8J+Uj8ikq
-   ddpAS5YzSkQ7M+T0PMWypRsXoJSqLys47FzngP+8o6czTsZdh0jZHgLSd
-   MBQ7D8vShl1xOd2ftTAu0fCTHlZGkMmRVFIUlh9g0fyCW2O0MtAPQltcR
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="241325672"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="241325672"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 05:50:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="523980426"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 05:50:12 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbidP-0003Hv-Ps;
-        Tue, 05 Apr 2022 12:50:11 +0000
-Date:   Tue, 5 Apr 2022 20:49:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jessica Zhang <quic_jesszhan@quicinc.com>
-Subject: drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse: sparse: incorrect
- type in return expression (different address spaces)
-Message-ID: <202204052038.RxcTSgob-lkp@intel.com>
+        Tue, 5 Apr 2022 15:23:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0ED50E37;
+        Tue,  5 Apr 2022 12:21:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E282B81F6B;
+        Tue,  5 Apr 2022 19:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 215F3C385A3;
+        Tue,  5 Apr 2022 19:21:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186479;
+        bh=+2Vkh7etWPpq3ECuOQUyhhfQFepRWAk8lFgAlse9LJs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PYEUv2DlDfZZodloCX6EfAoA5aOT1NjpSCd8by9nr3AoYfa/qqd2jWJy7MvrgisjA
+         e0iX+toF52FPTgwjRUm6M08XzAL5//L+htGwTBqeEeu4Tgb8i/GxYV4F+32iftBGnk
+         lMLl+5HM7kTcU85qP5jbqIxAmyrefEOiOjfAWWT+/ZW0GKr8lL1SYpbT1Jbr+oRdxN
+         6lUvuaR/gDyfZqQLDgk/0HHlrJv/rYF0OhbAsuCywUnIGGh+TU9Koq3zGzXEUJsH8j
+         o3eBR8LmDhH4rGh7NRhlRfEmXcN1hzVAsjAXHHNIlmc0akk1cHgZGsWBRAoZA2mOFZ
+         NH361eFDpuA9g==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 52/59] ceph: don't use special DIO path for encrypted inodes
+Date:   Tue,  5 Apr 2022 15:20:23 -0400
+Message-Id: <20220405192030.178326-53-jlayton@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   3123109284176b1532874591f7c81f3837bbdc17
-commit: d89e5028346bd80f79c3073d132123e7a17e1177 drm/msm: move utility functions from msm_drv.c
-date:   7 weeks ago
-config: sparc64-randconfig-s031-20220405 (https://download.01.org/0day-ci/archive/20220405/202204052038.RxcTSgob-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d89e5028346bd80f79c3073d132123e7a17e1177
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d89e5028346bd80f79c3073d132123e7a17e1177
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc64 SHELL=/bin/bash drivers/gpu/drm/msm/
+Eventually I want to merge the synchronous and direct read codepaths,
+possibly via new netfs infrastructure. For now, the direct path is not
+crypto-enabled, so use the sync read/write paths instead.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+---
+ fs/ceph/file.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void [noderef] __iomem * @@     got void * @@
-   drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse:     expected void [noderef] __iomem *
-   drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse:     got void *
-   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void [noderef] __iomem * @@     got void * @@
-   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse:     expected void [noderef] __iomem *
-   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse:     got void *
-
-vim +65 drivers/gpu/drm/msm/msm_io_utils.c
-
-    49	
-    50	static void __iomem *_msm_ioremap(struct platform_device *pdev, const char *name,
-    51					  bool quiet, phys_addr_t *psize)
-    52	{
-    53		struct resource *res;
-    54		unsigned long size;
-    55		void __iomem *ptr;
-    56	
-    57		if (name)
-    58			res = platform_get_resource_byname(pdev, IORESOURCE_MEM, name);
-    59		else
-    60			res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-    61	
-    62		if (!res) {
-    63			if (!quiet)
-    64				DRM_DEV_ERROR(&pdev->dev, "failed to get memory resource: %s\n", name);
-  > 65			return ERR_PTR(-EINVAL);
-    66		}
-    67	
-    68		size = resource_size(res);
-    69	
-    70		ptr = devm_ioremap(&pdev->dev, res->start, size);
-    71		if (!ptr) {
-    72			if (!quiet)
-    73				DRM_DEV_ERROR(&pdev->dev, "failed to ioremap: %s\n", name);
-    74			return ERR_PTR(-ENOMEM);
-    75		}
-    76	
-    77		if (psize)
-    78			*psize = size;
-    79	
-    80		return ptr;
-    81	}
-    82	
-
+diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+index f9e775d6cdf0..41b97d32dfcf 100644
+--- a/fs/ceph/file.c
++++ b/fs/ceph/file.c
+@@ -1709,7 +1709,9 @@ static ssize_t ceph_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ 		     ceph_cap_string(got));
+ 
+ 		if (ci->i_inline_version == CEPH_INLINE_NONE) {
+-			if (!retry_op && (iocb->ki_flags & IOCB_DIRECT)) {
++			if (!retry_op &&
++			    (iocb->ki_flags & IOCB_DIRECT) &&
++			    !IS_ENCRYPTED(inode)) {
+ 				ret = ceph_direct_read_write(iocb, to,
+ 							     NULL, NULL);
+ 				if (ret >= 0 && ret < len)
+@@ -1935,7 +1937,7 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
+ 
+ 		/* we might need to revert back to that point */
+ 		data = *from;
+-		if (iocb->ki_flags & IOCB_DIRECT)
++		if ((iocb->ki_flags & IOCB_DIRECT) && !IS_ENCRYPTED(inode))
+ 			written = ceph_direct_read_write(iocb, &data, snapc,
+ 							 &prealloc_cf);
+ 		else
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
