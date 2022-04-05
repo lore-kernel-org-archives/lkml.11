@@ -2,75 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAED0C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC22C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841507AbiDFBV2 (ORCPT
+        id S1456529AbiDFBVE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38178 "EHLO
+        Tue, 5 Apr 2022 21:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573597AbiDETXR (ORCPT
+        with ESMTP id S1357170AbiDEKZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 15:23:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED174EA31;
-        Tue,  5 Apr 2022 12:21:18 -0700 (PDT)
+        Tue, 5 Apr 2022 06:25:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3834D24B;
+        Tue,  5 Apr 2022 03:09:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B3BB616C5;
-        Tue,  5 Apr 2022 19:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4707FC385A5;
-        Tue,  5 Apr 2022 19:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649186478;
-        bh=SRirXv6SjAaxHj9D42MDkbHJyqzjojeWbzUc3GlPdFI=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FCF3B81C8B;
+        Tue,  5 Apr 2022 10:09:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDD99C385A1;
+        Tue,  5 Apr 2022 10:09:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649153378;
+        bh=dmkBpNsmsSzevzQW9+ydYvYdMF/i7OZPFPTzbGQ1ZaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bMJ9UC+uMVUgQ9XDVmV67ithHJZhOUeNimcvXXlRYJv7dSBOr8tDIzQVPFOHSmuQz
-         D9EfAD4BsUZYE9K36AoPR5uE8d8Cr7sFXI1oKvBr2uBGxNij1ICRH/FXWpmvcPDzHZ
-         ZFFJ1gIvj3iZGUZoTcosy9SJpxqgX2LYrbhaclW+I8DuThSkuIJYeFtS6atPBr+CFl
-         uqrVKYolaomVNhdyb7phcSqnKK2i9QxK3DSSKE+3mkhrDoQ3RH+M9+cwrA61JizQ7b
-         2ou149hHAvxKOJUL3cUNtUNog5ROmrLOZfpqjIGcavFIUxXjkKtGLa32zulA/28X/E
-         f3vGHJ2sTEqAg==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     idryomov@gmail.com, xiubli@redhat.com
-Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lhenriques@suse.de
-Subject: [PATCH v13 50/59] ceph: disable fallocate for encrypted inodes
-Date:   Tue,  5 Apr 2022 15:20:21 -0400
-Message-Id: <20220405192030.178326-51-jlayton@kernel.org>
+        b=a+dCaJx38xaNEpOAmkea9jXHAFO30T7PeHqURmrRTN816gtDCWV3iKLZ665nfWtDz
+         eA3P0qlE1dl2IS31WQ7lUZbBhphzdMYnnGa03jNb/JE4bxqSD4+O7kCaRv7S+kS6Of
+         lIKa0cd+iFaM6ePBRTXuY0OcOBOKFu3X/H2DPkZ8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 163/599] crypto: ccree - Fix use after free in cc_cipher_exit()
+Date:   Tue,  5 Apr 2022 09:27:37 +0200
+Message-Id: <20220405070303.691280861@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
-References: <20220405192030.178326-1-jlayton@kernel.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-...hopefully, just for now.
+From: Jianglei Nie <niejianglei2021@163.com>
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
+[ Upstream commit 3d950c34074ed74d2713c3856ba01264523289e6 ]
+
+kfree_sensitive(ctx_p->user.key) will free the ctx_p->user.key. But
+ctx_p->user.key is still used in the next line, which will lead to a
+use after free.
+
+We can call kfree_sensitive() after dev_dbg() to avoid the uaf.
+
+Fixes: 63ee04c8b491 ("crypto: ccree - add skcipher support")
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/file.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/crypto/ccree/cc_cipher.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-index 175a59277726..f74563e11058 100644
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -2207,6 +2207,9 @@ static long ceph_fallocate(struct file *file, int mode,
- 	if (!S_ISREG(inode->i_mode))
- 		return -EOPNOTSUPP;
+diff --git a/drivers/crypto/ccree/cc_cipher.c b/drivers/crypto/ccree/cc_cipher.c
+index dafa6577a845..c289e4d5cbdc 100644
+--- a/drivers/crypto/ccree/cc_cipher.c
++++ b/drivers/crypto/ccree/cc_cipher.c
+@@ -254,8 +254,8 @@ static void cc_cipher_exit(struct crypto_tfm *tfm)
+ 		&ctx_p->user.key_dma_addr);
  
-+	if (IS_ENCRYPTED(inode))
-+		return -EOPNOTSUPP;
-+
- 	prealloc_cf = ceph_alloc_cap_flush();
- 	if (!prealloc_cf)
- 		return -ENOMEM;
+ 	/* Free key buffer in context */
+-	kfree_sensitive(ctx_p->user.key);
+ 	dev_dbg(dev, "Free key buffer in context. key=@%p\n", ctx_p->user.key);
++	kfree_sensitive(ctx_p->user.key);
+ }
+ 
+ struct tdes_keys {
 -- 
-2.35.1
+2.34.1
+
+
 
