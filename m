@@ -2,106 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C3BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DA8C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376591AbiDELWe (ORCPT
+        id S1376617AbiDELWj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
+        Tue, 5 Apr 2022 07:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241722AbiDEIse (ORCPT
+        with ESMTP id S241813AbiDEIsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:48:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A082C11E;
-        Tue,  5 Apr 2022 01:36:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 758B160B0E;
-        Tue,  5 Apr 2022 08:36:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85806C385A4;
-        Tue,  5 Apr 2022 08:36:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147808;
-        bh=ZjjBIg4YY41qaydTp/ZMc/HG2hPLoNVZy/9NtKAzlPs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TLsj4S1l4xiPTXPYYCP16R2EjyhWedyPDCjsemkexo7jIGnIXeVn2Wx9/YXF8lZGM
-         +B5e3TGFzrowNn0Euv3KAwVGzKTSBhV+WXn+jaWU8e05v0SdVlHTwYCnNPE84iMTzD
-         5wxdHiqPI4io37iDMxfdFhY4jp49BXaLDkdMxks0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 5.16 0130/1017] arm64: dts: ti: k3-am65: Fix gic-v3 compatible regs
-Date:   Tue,  5 Apr 2022 09:17:23 +0200
-Message-Id: <20220405070358.058959718@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:48:35 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1372D1F1;
+        Tue,  5 Apr 2022 01:36:56 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:36:43 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147804;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RG9WWXyVhhSOo6kXkWe1gSa4fNQuqFWCIhRD/9ytHPU=;
+        b=BwC9s2QoTENr5bAJFGXWKtEU2lf0FOxoVmcieUTS4HWntOnnPL1r6dYJDEnSKufrUsa6/i
+        g5qRZUz+dp0Rs7HPWwWZ4YMwwFmgXpXQvh2QiVZ0pyhCJUzHTlF3IyyGk1QpZeN1jW1W/0
+        GIUbzth0JHnr7ivpyHsCBIv8o6JhfHEVkjajlC6YFNP0RIr7iv5pjbzQC4e2STXXSmUg3w
+        wlu4VxUh+IxflLwEGfw2PTQIfsfrSoCloBRMyRYvsUx4CHeTTgfULCmk8l+xt3BhLY0DeI
+        7rxeKsGYiMHQ9vV2RcjjMjyHBMuozcu6rjDokS+ZN6tiT2QCVHhAUWr1wBnRPg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147804;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RG9WWXyVhhSOo6kXkWe1gSa4fNQuqFWCIhRD/9ytHPU=;
+        b=K9khM+T9RGZxKNyZkUwY0vi9SjTvStZqfIYhJVKSEV2oolh3Zinzjq2FFXpWXRgjWeRuEV
+        KBwfZonn0/aIRGDw==
+From:   "tip-bot2 for Stephane Eranian" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] x86/cpufeatures: Add AMD Fam19h Branch Sampling feature
+Cc:     Stephane Eranian <eranian@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220322221517.2510440-3-eranian@google.com>
+References: <20220322221517.2510440-3-eranian@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914780346.389.14352309148130614175.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+The following commit has been merged into the perf/core branch of tip:
 
-commit 8cae268b70f387ff9e697ccd62fb2384079124e7 upstream.
+Commit-ID:     a77d41ac3a0f41c80120ec5b8b08ab284fec950a
+Gitweb:        https://git.kernel.org/tip/a77d41ac3a0f41c80120ec5b8b08ab284fec950a
+Author:        Stephane Eranian <eranian@google.com>
+AuthorDate:    Tue, 22 Mar 2022 15:15:06 -07:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 10:24:36 +02:00
 
-Though GIC ARE option is disabled for no GIC-v2 compatibility,
-Cortex-A53 is free to implement the CPU interface as long as it
-communicates with the GIC using the stream protocol. This requires
-that the SoC integration mark out the PERIPHBASE[1] as reserved area
-within the SoC. See longer discussion in [2] for further information.
+x86/cpufeatures: Add AMD Fam19h Branch Sampling feature
 
-Update the GIC register map to indicate offsets from PERIPHBASE based
-on [3]. Without doing this, systems like kvm will not function with
-gic-v2 emulation.
+Add a cpu feature for AMD Fam19h Branch Sampling feature as bit
+31 of EBX on CPUID leaf function 0x80000008.
 
-[1] https://developer.arm.com/documentation/ddi0500/e/system-control/aarch64-register-descriptions/configuration-base-address-register--el1
-[2] https://lore.kernel.org/all/87k0e0tirw.wl-maz@kernel.org/
-[3] https://developer.arm.com/documentation/ddi0500/e/generic-interrupt-controller-cpu-interface/gic-programmers-model/memory-map
-
-Cc: stable@vger.kernel.org # 5.10+
-Fixes: ea47eed33a3f ("arm64: dts: ti: Add Support for AM654 SoC")
-Reported-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220215201008.15235-2-nm@ti.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220322221517.2510440-3-eranian@google.com
 ---
- arch/arm64/boot/dts/ti/k3-am65-main.dtsi |    5 ++++-
- arch/arm64/boot/dts/ti/k3-am65.dtsi      |    1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/cpufeatures.h | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
-@@ -35,7 +35,10 @@
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
- 		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
--		      <0x00 0x01880000 0x00 0x90000>;	/* GICR */
-+		      <0x00 0x01880000 0x00 0x90000>,	/* GICR */
-+		      <0x00 0x6f000000 0x00 0x2000>,	/* GICC */
-+		      <0x00 0x6f010000 0x00 0x1000>,	/* GICH */
-+		      <0x00 0x6f020000 0x00 0x2000>;	/* GICV */
- 		/*
- 		 * vcpumntirq:
- 		 * virtual CPU interface maintenance interrupt
---- a/arch/arm64/boot/dts/ti/k3-am65.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am65.dtsi
-@@ -86,6 +86,7 @@
- 			 <0x00 0x46000000 0x00 0x46000000 0x00 0x00200000>,
- 			 <0x00 0x47000000 0x00 0x47000000 0x00 0x00068400>,
- 			 <0x00 0x50000000 0x00 0x50000000 0x00 0x8000000>,
-+			 <0x00 0x6f000000 0x00 0x6f000000 0x00 0x00310000>, /* A53 PERIPHBASE */
- 			 <0x00 0x70000000 0x00 0x70000000 0x00 0x200000>,
- 			 <0x05 0x00000000 0x05 0x00000000 0x01 0x0000000>,
- 			 <0x07 0x00000000 0x07 0x00000000 0x01 0x0000000>;
-
-
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 73e643a..0d62afd 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -315,6 +315,7 @@
+ #define X86_FEATURE_VIRT_SSBD		(13*32+25) /* Virtualized Speculative Store Bypass Disable */
+ #define X86_FEATURE_AMD_SSB_NO		(13*32+26) /* "" Speculative Store Bypass is fixed in hardware. */
+ #define X86_FEATURE_CPPC		(13*32+27) /* Collaborative Processor Performance Control */
++#define X86_FEATURE_BRS			(13*32+31) /* Branch Sampling available */
+ 
+ /* Thermal and Power Management Leaf, CPUID level 0x00000006 (EAX), word 14 */
+ #define X86_FEATURE_DTHERM		(14*32+ 0) /* Digital Thermal Sensor */
