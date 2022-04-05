@@ -2,167 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7393AC41535
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C29DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 02:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849038AbiDFCcy (ORCPT
+        id S1849084AbiDFCdI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 22:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53838 "EHLO
+        Tue, 5 Apr 2022 22:33:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441972AbiDEWKZ (ORCPT
+        with ESMTP id S1444178AbiDEWVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 18:10:25 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1D614A93A;
-        Tue,  5 Apr 2022 13:56:19 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 20:56:16 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649192178;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bVZNz50m5hLuQdgDd7OhfwNRqA0q9OGnmrTCKGq56TA=;
-        b=GMNxM4ZKIQqboBm5Vu3ycSDfyRnDudvMpc2g63+HDqry/GJ0xJ403Q5+1Q2lz28Weg1np7
-        Rjk2rDPZ3zBEY6rcE1X6f2gGlbz0tF5DBG2VRcv0oTdbsK9PrGEM2sChoQ4hMdCRqp7Miv
-        dXtaeERY+zXcKGsuEn+mHbN2dOE6zEJfSS0x+ywnrpor2sooFOLPFLbSh9YmwsP/Rs7vMl
-        vu9pXXjSqDM2/oldI+nppcfafN3XTj2G3NO0/Hevt4ejKyLULNO3FzOEQw6vZJuI1SIIJ8
-        KpAlmEJz9J0Uz4P1p4S1FeGg4jrYtgrsZrWfPrEYpn5wktubRqoOnd1gmwnC3Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649192178;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bVZNz50m5hLuQdgDd7OhfwNRqA0q9OGnmrTCKGq56TA=;
-        b=b3xdYyspc0pGjEDAnw+4PHgXW7jrO4QBKXK4X7D2b1gr8Np+L3q6ilTjgeuv0M8z6XNcUY
-        tnPXQ+ZeubH6mEBA==
-From:   "tip-bot2 for Ammar Faizi" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: ras/core] x86/MCE/AMD: Fix memory leak when
- threshold_create_bank() fails
-Cc:     Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Yazen Ghannam <yazen.ghannam@amd.com>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Borislav Petkov <bp@suse.de>, <stable@vger.kernel.org>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220329104705.65256-3-ammarfaizi2@gnuweeb.org>
-References: <20220329104705.65256-3-ammarfaizi2@gnuweeb.org>
+        Tue, 5 Apr 2022 18:21:00 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148BB8D693;
+        Tue,  5 Apr 2022 13:45:04 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id 7D5031F44840
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649191502;
+        bh=qqGKTdK+BoJvGXzu5rDFgeoUxEBT3Njqv5q7sTj6RAI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nTBbsEIN+ODGAbyDvj4hk9G4suUl/XG2DaUFATQ6ssrFhqtSjFBWvcK+lJeQsEWXz
+         uovYAnTDm+UVwBIBYJnHOCoD1UxniLw3i8PdiluH0S+NcL1VlDueL5SdFY1xCs1OXL
+         ecWsv+tlLJl11xCmzpZ4Pq0IR2Qp9+8T+osmj8X2FypbyuXa8KLhYhyK9U/If4YpdO
+         9/2k5nQ1o2lPG3bGYXc6itCe2YUV60P85qnAPEl+Qa+DrKrCdg5ox+k68MEVE6+qFh
+         dyVbbxtSOti4xekLHuwv1uWC6CMeDVexz84vAtV6/UTlzH5VJrgtDKqhT6Np1dNUUF
+         l/yl6hvvmi/8g==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Boris Brezillon <boris.brezillon@collabora.com>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev
+Subject: [PATCH v3 13/24] media: rkvdec: h264: Fix dpb_valid implementation
+Date:   Tue,  5 Apr 2022 16:44:14 -0400
+Message-Id: <20220405204426.259074-14-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-Message-ID: <164919217670.389.1735790360584795071.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the ras/core branch of tip:
+The ref builder only provided references that are marked as valid in the
+dpb. Thus the current implementation of dpb_valid would always set the
+flag to 1. This is not representing missing frames (this is called
+'non-existing' pictures in the spec). In some context, these non-existing
+pictures still need to occupy a slot in the reference list according to
+the spec.
 
-Commit-ID:     e5f28623ceb103e13fc3d7bd45edf9818b227fd0
-Gitweb:        https://git.kernel.org/tip/e5f28623ceb103e13fc3d7bd45edf9818b227fd0
-Author:        Ammar Faizi <ammarfaizi2@gnuweeb.org>
-AuthorDate:    Tue, 29 Mar 2022 17:47:05 +07:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 05 Apr 2022 21:24:37 +02:00
-
-x86/MCE/AMD: Fix memory leak when threshold_create_bank() fails
-
-In mce_threshold_create_device(), if threshold_create_bank() fails, the
-previously allocated threshold banks array @bp will be leaked because
-the call to mce_threshold_remove_device() will not free it.
-
-This happens because mce_threshold_remove_device() fetches the pointer
-through the threshold_banks per-CPU variable but bp is written there
-only after the bank creation is successful, and not before, when
-threshold_create_bank() fails.
-
-Add a helper which unwinds all the bank creation work previously done
-and pass into it the previously allocated threshold banks array for
-freeing.
-
-  [ bp: Massage. ]
-
-Fixes: 6458de97fc15 ("x86/mce/amd: Straighten CPU hotplug path")
-Co-developed-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Co-developed-by: Yazen Ghannam <yazen.ghannam@amd.com>
-Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220329104705.65256-3-ammarfaizi2@gnuweeb.org
+Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 ---
- arch/x86/kernel/cpu/mce/amd.c | 32 +++++++++++++++++++-------------
- 1 file changed, 19 insertions(+), 13 deletions(-)
+ drivers/staging/media/rkvdec/rkvdec-h264.c | 33 ++++++++++++++++------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
-index 1940d30..1c87501 100644
---- a/arch/x86/kernel/cpu/mce/amd.c
-+++ b/arch/x86/kernel/cpu/mce/amd.c
-@@ -1294,10 +1294,23 @@ out_free:
- 	kfree(bank);
+diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+index dff89732ddd0..bcde37d72244 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-h264.c
++++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+@@ -112,6 +112,7 @@ struct rkvdec_h264_run {
+ 	const struct v4l2_ctrl_h264_sps *sps;
+ 	const struct v4l2_ctrl_h264_pps *pps;
+ 	const struct v4l2_ctrl_h264_scaling_matrix *scaling_matrix;
++	int ref_buf_idx[V4L2_H264_NUM_DPB_ENTRIES];
+ };
+ 
+ struct rkvdec_h264_ctx {
+@@ -725,6 +726,26 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+ 	}
  }
  
-+static void __threshold_remove_device(struct threshold_bank **bp)
++static void lookup_ref_buf_idx(struct rkvdec_ctx *ctx,
++			       struct rkvdec_h264_run *run)
 +{
-+	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
++	const struct v4l2_ctrl_h264_decode_params *dec_params = run->decode_params;
++	u32 i;
 +
-+	for (bank = 0; bank < numbanks; bank++) {
-+		if (!bp[bank])
-+			continue;
++	for (i = 0; i < ARRAY_SIZE(dec_params->dpb); i++) {
++		struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
++		const struct v4l2_h264_dpb_entry *dpb = run->decode_params->dpb;
++		struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
++		int buf_idx = -1;
 +
-+		threshold_remove_bank(bp[bank]);
-+		bp[bank] = NULL;
++		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
++			buf_idx = vb2_find_timestamp(cap_q,
++						     dpb[i].reference_ts, 0);
++
++		run->ref_buf_idx[i] = buf_idx;
 +	}
-+	kfree(bp);
 +}
 +
- int mce_threshold_remove_device(unsigned int cpu)
+ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 			    struct rkvdec_h264_run *run)
  {
- 	struct threshold_bank **bp = this_cpu_read(threshold_banks);
--	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
+@@ -762,7 +783,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
  
- 	if (!bp)
- 		return 0;
-@@ -1308,13 +1321,7 @@ int mce_threshold_remove_device(unsigned int cpu)
- 	 */
- 	this_cpu_write(threshold_banks, NULL);
+ 	for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
+ 		for (i = 0; i < h264_ctx->reflists.num_valid; i++) {
+-			u8 dpb_valid = 0;
++			bool dpb_valid = run->ref_buf_idx[i] >= 0;
+ 			u8 idx = 0;
  
--	for (bank = 0; bank < numbanks; bank++) {
--		if (bp[bank]) {
--			threshold_remove_bank(bp[bank]);
--			bp[bank] = NULL;
--		}
--	}
--	kfree(bp);
-+	__threshold_remove_device(bp);
- 	return 0;
- }
+ 			switch (j) {
+@@ -779,8 +800,6 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
  
-@@ -1351,15 +1358,14 @@ int mce_threshold_create_device(unsigned int cpu)
- 		if (!(this_cpu_read(bank_map) & (1 << bank)))
- 			continue;
- 		err = threshold_create_bank(bp, cpu, bank);
--		if (err)
--			goto out_err;
-+		if (err) {
-+			__threshold_remove_device(bp);
-+			return err;
-+		}
- 	}
- 	this_cpu_write(threshold_banks, bp);
+ 			if (idx >= ARRAY_SIZE(dec_params->dpb))
+ 				continue;
+-			dpb_valid = !!(dpb[idx].flags &
+-				       V4L2_H264_DPB_ENTRY_FLAG_ACTIVE);
  
- 	if (thresholding_irq_en)
- 		mce_threshold_vector = amd_threshold_interrupt;
- 	return 0;
--out_err:
--	mce_threshold_remove_device(cpu);
--	return err;
- }
+ 			set_ps_field(hw_rps, DPB_INFO(i, j),
+ 				     idx | dpb_valid << 4);
+@@ -859,13 +878,8 @@ get_ref_buf(struct rkvdec_ctx *ctx, struct rkvdec_h264_run *run,
+ 	    unsigned int dpb_idx)
+ {
+ 	struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
+-	const struct v4l2_h264_dpb_entry *dpb = run->decode_params->dpb;
+ 	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
+-	int buf_idx = -1;
+-
+-	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
+-		buf_idx = vb2_find_timestamp(cap_q,
+-					     dpb[dpb_idx].reference_ts, 0);
++	int buf_idx = run->ref_buf_idx[dpb_idx];
+ 
+ 	/*
+ 	 * If a DPB entry is unused or invalid, address of current destination
+@@ -1102,6 +1116,7 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
+ 
+ 	assemble_hw_scaling_list(ctx, &run);
+ 	assemble_hw_pps(ctx, &run);
++	lookup_ref_buf_idx(ctx, &run);
+ 	assemble_hw_rps(ctx, &run);
+ 	config_registers(ctx, &run);
+ 
+-- 
+2.34.1
+
