@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 606ACC352B6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44455C352AA
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390594AbiDENmh (ORCPT
+        id S1390579AbiDENmd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
+        Tue, 5 Apr 2022 09:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345323AbiDEJW0 (ORCPT
+        with ESMTP id S1345133AbiDEJWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:22:26 -0400
+        Tue, 5 Apr 2022 05:22:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B69F443C6;
-        Tue,  5 Apr 2022 02:10:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C981AF33;
+        Tue,  5 Apr 2022 02:09:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE5BD61576;
-        Tue,  5 Apr 2022 09:10:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05BE0C385A0;
-        Tue,  5 Apr 2022 09:10:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCC6261527;
+        Tue,  5 Apr 2022 09:09:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD0B9C385A0;
+        Tue,  5 Apr 2022 09:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149832;
-        bh=H/g05GSqYLVNe7009eSkpVEVcdTs0rLY9M5I/WTcBDs=;
+        s=korg; t=1649149749;
+        bh=SXDpUl53LOcvA7vl1vjJ+tv7O0zHMaTxiH6T79oerk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zZo2WCKK6YexZBxkd6aceRG4LT5N3NIsrRZuzgbKO72rgJ4XlwuHXKA/SQTt60GVr
-         xo0G2h1qt0PIxWuF/6+9yEBWhI/lPCFbV/KHeJCJzF7b6MWoP8PXM94NdgXC/ecPjI
-         a0Of1IrkOTD6Kg9x1ah2735yQu5jl87m/aSHIsUA=
+        b=TNzFMWzTggSyFycs2rGopa3fidi+5BDWAzAnJT3ideUkZn+HpswQdl211kHb7CNw2
+         vAqX9+V2fAWKcPDwlSw4zU5GuKw5vLpXO7O5v0QxuieTkfHE3Rf57DqaVZLbBzpFsr
+         WEL7cz2W53TauL89ol/QzzQvGSVsKW/v+tz/PDHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0857/1017] KVM: x86: Reinitialize context if host userspace toggles EFER.LME
-Date:   Tue,  5 Apr 2022 09:29:30 +0200
-Message-Id: <20220405070419.674290454@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Sergeyev <sergeev917@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0826/1017] ALSA: hda: Fix driver index handling at re-binding
+Date:   Tue,  5 Apr 2022 09:28:59 +0200
+Message-Id: <20220405070418.764497965@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,46 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit d6174299365ddbbf491620c0b8c5ca1a6ef2eea5 upstream.
+[ Upstream commit 69458e2c27800da7697c87ed908b65323ef3f3bd ]
 
-While the guest runs, EFER.LME cannot change unless CR0.PG is clear, and
-therefore EFER.NX is the only bit that can affect the MMU role.  However,
-set_efer accepts a host-initiated change to EFER.LME even with CR0.PG=1.
-In that case, the MMU has to be reset.
+HD-audio driver handles the multiple instances and keeps the static
+index that is incremented at each probe.  This becomes a problem when
+user tries to re-bind the device via sysfs multiple times; as the
+device index isn't cleared unlike rmmod case, it points to the next
+element at re-binding, and eventually later you can't probe any more
+when it reaches to SNDRV_CARDS_MAX (usually 32).
 
-Fixes: 11988499e62b ("KVM: x86: Skip EFER vs. guest CPUID checks for host-initiated writes")
-Cc: stable@vger.kernel.org
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch is an attempt to improve the handling at rebinding.
+Instead of a static device index, now we keep a bitmap and assigns to
+the first zero bit position.  At the driver remove, in return, the
+bitmap slot is cleared again, so that it'll be available for the next
+probe.
+
+Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
+Link: https://lore.kernel.org/r/20220209081912.20687-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu.h |    1 +
- arch/x86/kvm/x86.c |    3 +--
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ sound/pci/hda/hda_intel.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -48,6 +48,7 @@
- 			       X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE)
+diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
+index 3b6f2aacda45..1ffd96fbf230 100644
+--- a/sound/pci/hda/hda_intel.c
++++ b/sound/pci/hda/hda_intel.c
+@@ -2061,14 +2061,16 @@ static const struct hda_controller_ops pci_hda_ops = {
+ 	.position_check = azx_position_check,
+ };
  
- #define KVM_MMU_CR0_ROLE_BITS (X86_CR0_PG | X86_CR0_WP)
-+#define KVM_MMU_EFER_ROLE_BITS (EFER_LME | EFER_NX)
- 
- static __always_inline u64 rsvd_bits(int s, int e)
++static DECLARE_BITMAP(probed_devs, SNDRV_CARDS);
++
+ static int azx_probe(struct pci_dev *pci,
+ 		     const struct pci_device_id *pci_id)
  {
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1614,8 +1614,7 @@ static int set_efer(struct kvm_vcpu *vcp
- 		return r;
+-	static int dev;
+ 	struct snd_card *card;
+ 	struct hda_intel *hda;
+ 	struct azx *chip;
+ 	bool schedule_probe;
++	int dev;
+ 	int err;
+ 
+ 	if (pci_match_id(driver_denylist, pci)) {
+@@ -2076,10 +2078,11 @@ static int azx_probe(struct pci_dev *pci,
+ 		return -ENODEV;
  	}
  
--	/* Update reserved bits */
--	if ((efer ^ old_efer) & EFER_NX)
-+	if ((efer ^ old_efer) & KVM_MMU_EFER_ROLE_BITS)
- 		kvm_mmu_reset_context(vcpu);
++	dev = find_first_zero_bit(probed_devs, SNDRV_CARDS);
+ 	if (dev >= SNDRV_CARDS)
+ 		return -ENODEV;
+ 	if (!enable[dev]) {
+-		dev++;
++		set_bit(dev, probed_devs);
+ 		return -ENOENT;
+ 	}
  
+@@ -2146,7 +2149,7 @@ static int azx_probe(struct pci_dev *pci,
+ 	if (schedule_probe)
+ 		schedule_delayed_work(&hda->probe_work, 0);
+ 
+-	dev++;
++	set_bit(dev, probed_devs);
+ 	if (chip->disabled)
+ 		complete_all(&hda->probe_wait);
  	return 0;
+@@ -2369,6 +2372,7 @@ static void azx_remove(struct pci_dev *pci)
+ 		cancel_delayed_work_sync(&hda->probe_work);
+ 		device_lock(&pci->dev);
+ 
++		clear_bit(chip->dev_index, probed_devs);
+ 		pci_set_drvdata(pci, NULL);
+ 		snd_card_free(card);
+ 	}
+-- 
+2.34.1
+
 
 
