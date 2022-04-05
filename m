@@ -2,207 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E58BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C508CC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 20:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233551AbiDEULb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 16:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46622 "EHLO
+        id S235044AbiDEULs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 16:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358087AbiDEK16 (ORCPT
+        with ESMTP id S1573256AbiDESf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1628A66F93;
-        Tue,  5 Apr 2022 03:15:16 -0700 (PDT)
+        Tue, 5 Apr 2022 14:35:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8AB13F6F;
+        Tue,  5 Apr 2022 11:33:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A72B561777;
-        Tue,  5 Apr 2022 10:15:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC751C385A0;
-        Tue,  5 Apr 2022 10:15:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153715;
-        bh=skmWsrYxd1nFuzuoFoPRzkN5xCHd15UFXWjK8eJ6ccA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SRCJ3vSHldrDxXP97waiHLSdxTS97vGRcE2K2RVR29KT6dQHkcHvA4bauK8qJWCXk
-         z/lguWK7m9UrlNIysLRSIqAedwGknsRV4MzsSo0J/Hwz2iLKL0t5w2C7sgHSWeDFLE
-         KgFx5R64roaHK6HDr/eTm8tkptDEaPdYKSw4yeRU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 320/599] drm/amd/display: Remove vupdate_int_entry definition
-Date:   Tue,  5 Apr 2022 09:30:14 +0200
-Message-Id: <20220405070308.355568513@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47D3CB81F86;
+        Tue,  5 Apr 2022 18:33:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18183C385B1;
+        Tue,  5 Apr 2022 18:33:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649183607;
+        bh=ZUxbSBZ3h5TlMPFt4FZd4UJUlah4Y41D/DcQvCB4HHY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=WBNF0PMEz3S24e5ZmkkSTviC1o6JSDDLnvPKMLuOTbq98ijOb1h1anaD+M0MqBCAX
+         qGMvBVPYhZ/wl8CkEEvXiGUrIDfIAr57JleW+UEM8+xEglqb+SlKZyTnHsVFm5Ycb+
+         4q5KeS/C/5zEqqSjca8c8z+IVGagPpn0u2XWRxZAuChTkv7xI0BM47F1RCopRWn+Qh
+         pTpBPx/oRnv8OYcc34iom/1ocD+j1sfG79lZ2yqOLfI2poDodz6U1N3KScczpCTA3T
+         VFSG63Xz3mEzOIMFyQ5YJd/HtvEtGBSA12D1fWMMRBM6SveTf8TdT50+dTAyRksByi
+         1F+e6Ylz7UJ8w==
+Received: by mail-wr1-f45.google.com with SMTP id m30so20695984wrb.1;
+        Tue, 05 Apr 2022 11:33:27 -0700 (PDT)
+X-Gm-Message-State: AOAM532fuE7J96wWbzwMcHOoosDIDW7JlYNANHegtXZeAoK+JDch5nJN
+        f9oqWtxmgfzUhA+f1YCFMm22gP0wOHXgFsaAaq4=
+X-Google-Smtp-Source: ABdhPJyewe9dKH4iPAQ2ncrwvBN2zM58zMWaVXuQn/R34OzrtcdUCZ1RyKCpcpZjlkdOFdkiAKfJXKGTnyUo5ALgpXU=
+X-Received: by 2002:adf:cd02:0:b0:206:ff2:236 with SMTP id w2-20020adfcd02000000b002060ff20236mr3807678wrm.192.1649183605142;
+ Tue, 05 Apr 2022 11:33:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220405091750.3076973-1-arnd@kernel.org> <20220405091750.3076973-2-arnd@kernel.org>
+ <20220405141500.ixjl6qsy4cczghgt@bogus>
+In-Reply-To: <20220405141500.ixjl6qsy4cczghgt@bogus>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 5 Apr 2022 20:33:09 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1T5w3cJG-4Y2WaWZcUmAtcjP-BKNCC3f0bf8=1CTdV6Q@mail.gmail.com>
+Message-ID: <CAK8P3a1T5w3cJG-4Y2WaWZcUmAtcjP-BKNCC3f0bf8=1CTdV6Q@mail.gmail.com>
+Subject: Re: [PATCH 01/12] ARM: versatile: move integrator/realview/vexpress
+ to versatile
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Hubert Feurstein <hubert.feurstein@contec.at>,
+        Lukasz Majewski <lukma@denx.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>, patches@opensource.cirrus.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maíra Canal <maira.canal@usp.br>
+On Tue, Apr 5, 2022 at 4:15 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+> On Tue, Apr 05, 2022 at 11:17:39AM +0200, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > These are all fairly small platforms by now, and they are
+> > closely related. Just move them all into a single directory.
+> >
+>
+> I had forgotten about this. When do you plan to merge this ? I guess for
+> v5.19. The reason I ask is that one of the branch triggered loads of
+> kernel-doc warning[1] and I was bit confused with the file path. I did post
+> the fix[2] for kernel-doc and was planning to send it as fix for v5.18, but
+> let me know what do you prefer as it conflicts with this patch.
 
-[ Upstream commit 3679b8518cd213c25d555553ef212e233faf698c ]
+I originally wanted to merge this back in 2019, hoping we can do it
+all for 5.19 now. The problem with the warnings is that moving a file
+makes lkp think it's a regression when it otherwise ignores existing
+warnings that seem harmless.
 
-Remove the vupdate_int_entry definition and utilization to avoid the
-following warning by Clang:
+I can probably apply the warning fixes on top here, and I think it would
+also work to have them in a separate branch, since git usually figures
+out the merges across renames.
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:410:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(0),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:404:2:
-note: previous initialization is here
-    vupdate_int_entry(0),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:411:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(1),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:405:2:
-note: previous initialization is here
-    vupdate_int_entry(1),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:412:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(2),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:406:2:
-note: previous initialization is here
-    vupdate_int_entry(2),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:413:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(3),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:407:2:
-note: previous initialization is here
-    vupdate_int_entry(3),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:414:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(4),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:408:2:
-note: previous initialization is here
-    vupdate_int_entry(4),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:415:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(5),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:409:2:
-note: previous initialization is here
-    vupdate_int_entry(5),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-        [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-        ^~
-6 warnings generated.
-
-Fixes: 688f97ed3f5e ("drm/amd/display: Add vupdate_no_lock interrupts for DCN2.1")
-Signed-off-by: Maíra Canal <maira.canal@usp.br>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../amd/display/dc/irq/dcn21/irq_service_dcn21.c   | 14 --------------
- 1 file changed, 14 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
-index 0e0f494fbb5e..b037fd57fd36 100644
---- a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
-+++ b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
-@@ -227,14 +227,6 @@ static const struct irq_source_info_funcs vupdate_no_lock_irq_info_funcs = {
- 		.funcs = &pflip_irq_info_funcs\
- 	}
- 
--#define vupdate_int_entry(reg_num)\
--	[DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
--		IRQ_REG_ENTRY(OTG, reg_num,\
--			OTG_GLOBAL_SYNC_STATUS, VUPDATE_INT_EN,\
--			OTG_GLOBAL_SYNC_STATUS, VUPDATE_EVENT_CLEAR),\
--		.funcs = &vblank_irq_info_funcs\
--	}
--
- /* vupdate_no_lock_int_entry maps to DC_IRQ_SOURCE_VUPDATEx, to match semantic
-  * of DCE's DC_IRQ_SOURCE_VUPDATEx.
-  */
-@@ -348,12 +340,6 @@ irq_source_info_dcn21[DAL_IRQ_SOURCES_NUMBER] = {
- 	dc_underflow_int_entry(6),
- 	[DC_IRQ_SOURCE_DMCU_SCP] = dummy_irq_entry(),
- 	[DC_IRQ_SOURCE_VBIOS_SW] = dummy_irq_entry(),
--	vupdate_int_entry(0),
--	vupdate_int_entry(1),
--	vupdate_int_entry(2),
--	vupdate_int_entry(3),
--	vupdate_int_entry(4),
--	vupdate_int_entry(5),
- 	vupdate_no_lock_int_entry(0),
- 	vupdate_no_lock_int_entry(1),
- 	vupdate_no_lock_int_entry(2),
--- 
-2.34.1
-
-
-
+       Arnd
