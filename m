@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0151DC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724C6C46467
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388389AbiDENWJ (ORCPT
+        id S1380979AbiDENOV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
+        Tue, 5 Apr 2022 09:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344732AbiDEJVI (ORCPT
+        with ESMTP id S1344224AbiDEJSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:21:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A90724BFF;
-        Tue,  5 Apr 2022 02:08:40 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A5948E4E;
+        Tue,  5 Apr 2022 02:05:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FB6561577;
-        Tue,  5 Apr 2022 09:08:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7327EC385A1;
-        Tue,  5 Apr 2022 09:08:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAE04B81C19;
+        Tue,  5 Apr 2022 09:05:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2881EC385A5;
+        Tue,  5 Apr 2022 09:05:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149718;
-        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
+        s=korg; t=1649149549;
+        bh=hVMP6vT6nk2Fvww8pqkV4ggGVroKNxjj41ODBDf1TYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WVftuMhdy1ZG54iKGq4PViKdgdmhkUJcT3WE9Und/3WKdfRAvOZz0D2OiNRy7eHgO
-         +SCVbUh6890huTTQBgfkQ4FXhCKsdU7Q/qLZz5qYk8LJDJhBqEsIn6sgTckNEW4K7g
-         2CR1Yh3f6Oindm6yD676fsqDsCZBoEYYj7P2gc8w=
+        b=yDLQK+rKUguf4TiYw6mi6c0GZXnZZfrwEeTZPXEbOoDxF9uEwe7PXx/HVrvg5P2Gl
+         qqayoV5fHpIAWkG6JleizICq5pUzOXO4jvmNuBGRSDDTa6g7puOf2MF3kcB5uiAYYO
+         oe/mTQ845Sfdm0MhZMzdH0uF1mm6XxEip26fRAKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antonino Daplas <adaplas@gmail.com>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Tim Gardner <tim.gardner@canonical.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0816/1017] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
-Date:   Tue,  5 Apr 2022 09:28:49 +0200
-Message-Id: <20220405070418.471174787@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0718/1017] SUNRPC dont resend a task on an offlined transport
+Date:   Tue,  5 Apr 2022 09:27:11 +0200
+Message-Id: <20220405070415.581082002@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,49 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Gardner <tim.gardner@canonical.com>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
+[ Upstream commit 82ee41b85cef16b4be1f4732650012d9baaedddd ]
 
-Coverity complains of a possible buffer overflow. However,
-given the 'static' scope of nvidia_setup_i2c_bus() it looks
-like that can't happen after examiniing the call sites.
+When a task is being retried, due to an NFS error, if the assigned
+transport has been put offline and the task is relocatable pick a new
+transport.
 
-CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
-1. fixed_size_dest: You might overrun the 48-character fixed-size string
-  chan->adapter.name by copying name without checking the length.
-2. parameter_as_source: Note: This defect has an elevated risk because the
-  source argument is a parameter of the current function.
- 89        strcpy(chan->adapter.name, name);
-
-Fix this warning by using strscpy() which will silence the warning and
-prevent any future buffer overflows should the names used to identify the
-channel become much longer.
-
-Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 6f081693e7b2b ("sunrpc: remove an offlined xprt using sysfs")
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/clnt.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
-index d7994a173245..0b48965a6420 100644
---- a/drivers/video/fbdev/nvidia/nv_i2c.c
-+++ b/drivers/video/fbdev/nvidia/nv_i2c.c
-@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index 5985b78eddf1..b36d235d2d6d 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -1065,7 +1065,9 @@ rpc_task_get_next_xprt(struct rpc_clnt *clnt)
+ static
+ void rpc_task_set_transport(struct rpc_task *task, struct rpc_clnt *clnt)
  {
- 	int rc;
- 
--	strcpy(chan->adapter.name, name);
-+	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
- 	chan->adapter.owner = THIS_MODULE;
- 	chan->adapter.class = i2c_class;
- 	chan->adapter.algo_data = &chan->algo;
+-	if (task->tk_xprt)
++	if (task->tk_xprt &&
++			!(test_bit(XPRT_OFFLINE, &task->tk_xprt->state) &&
++                        (task->tk_flags & RPC_TASK_MOVEABLE)))
+ 		return;
+ 	if (task->tk_flags & RPC_TASK_NO_ROUND_ROBIN)
+ 		task->tk_xprt = rpc_task_get_first_xprt(clnt);
 -- 
 2.34.1
 
