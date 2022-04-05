@@ -2,99 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7695CC46467
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B909C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392278AbiDEWSp (ORCPT
+        id S1442025AbiDEWTG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
+        Tue, 5 Apr 2022 18:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444197AbiDEPlA (ORCPT
+        with ESMTP id S1445129AbiDEPmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:41:00 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CBF19FDD;
-        Tue,  5 Apr 2022 07:03:32 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 235E2k8S021295;
-        Tue, 5 Apr 2022 23:02:53 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8S021295
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649167373;
-        bh=gVdAU8NgX5021NtvHRpFHdYK2UvqDo2vrSD9W1vtAMA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PhOE2ae9fIcn+iE6wmVl+X+52M+ZpGzuuejgzQeNA82FMrm8qcrp8H59yUrXJtbqd
-         rmQ8fFkTz3uqsQMj9/GBq7UcbmhmO61lwTX+13sC4BpufctNk7f2NmgBnUpITcMWvs
-         0XlhF5RMllw7IAnUoFB3Sc1DMw3GOzcMldoBDxc7+E/oTl3b9AZjaDYQjhRTOuKFlo
-         1vj8E5kUu344sGyN2kCeDHq4uQAnNk5DExN9IQzbcK1U+hJB7qH13v4fgawHeCjM24
-         +fi008rk5IzfWEfs6wxshYa9yFonQTn44PvW2Wiads0surwC9BHDA7viAQp+9rXEm4
-         WBrmrSN83ww7w==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 10/10] kbuild: refactor cmd_modversions_S
-Date:   Tue,  5 Apr 2022 23:02:29 +0900
-Message-Id: <20220405140229.2895394-11-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
-References: <20220405140229.2895394-1-masahiroy@kernel.org>
+        Tue, 5 Apr 2022 11:42:33 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41514190B79
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:07:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Y/i7pByZo0Q5olsOgInKdWMXyGn8q2jQ0GfVe7p0oik=; b=ftiz1A9VHWBq7s/mE3EkDzqx7Y
+        9tSf0/IrvUc01zYMZckJXWm86IjPPXDwHdy/3bXBQdTEmJ8IU05MedVPXzc0ERiOX0VdxII5m/OW/
+        FM8ALFPZa+A+tG7yekcxkn+QgWc6+LotRYZHpK3Me0qFCGxSZRUczN592fmHOP4brIuaiS8PM9uJY
+        28BEwhzaS8D0DxIC6SRtfmBJKUbg6X8tV7Az6AD02Es7IJiui2qZ7FFmcY8xlth1oi9J8fpilYx24
+        B7Myvmx0B3qH6Pxrf8GhjWGdePadc4uPuO44eQ0DLqTLmSpq6U4qpuZFP5YiYPWkcg5vLhzyV2ei8
+        EwphxMNg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbjq5-001sDn-0Z; Tue, 05 Apr 2022 14:07:23 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7CD1630031E;
+        Tue,  5 Apr 2022 16:07:19 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5B53F2DC79000; Tue,  5 Apr 2022 16:07:19 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 16:07:19 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Wyes Karny <wyes.karny@amd.com>
+Cc:     linux-kernel@vger.kernel.org, Lewis.Carroll@amd.com,
+        Mario.Limonciello@amd.com, gautham.shenoy@amd.com,
+        Ananth.Narayan@amd.com, bharata@amd.com, len.brown@intel.com,
+        x86@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        chang.seok.bae@intel.com, keescook@chromium.org, metze@samba.org,
+        zhengqi.arch@bytedance.com, mark.rutland@arm.com
+Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+Message-ID: <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
+References: <20220405130021.557880-1-wyes.karny@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405130021.557880-1-wyes.karny@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Split the code into two macros, cmd_gen_symversions_S for running
-genksyms, and cmd_modversions for running $(LD) to update the object
-with CRCs.
+On Tue, Apr 05, 2022 at 06:30:21PM +0530, Wyes Karny wrote:
+> +static inline bool early_mwait_supported(const struct cpuinfo_x86 *c)
+> +{
+> +	if (c->x86_vendor == X86_VENDOR_INTEL)
+> +		return true;
+> +
+> +	if (c->x86_vendor == X86_VENDOR_AMD && cpu_has(c, X86_FEATURE_ZEN))
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+What about Hygon? For some reason you guys don't co-ordinate and we end
+up getting endless 'make-same' patches, sometimes separated by years :/
 
-Changes in v2:
-  - new
-
- scripts/Makefile.build | 15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index ba2be555f942..58be0997c5dd 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -274,7 +274,8 @@ define rule_as_o_S
- 	$(call cmd_and_fixdep,as_o_S)
- 	$(call cmd,gen_ksymdeps)
- 	$(call cmd,gen_objtooldep)
--	$(call cmd,modversions_S)
-+	$(call cmd,gen_symversions_S)
-+	$(call cmd,modversions)
- endef
- 
- # Built-in and composite module parts
-@@ -366,16 +367,8 @@ ifdef CONFIG_ASM_MODVERSIONS
- # versioning matches the C process described above, with difference that
- # we parse asm-prototypes.h C header to get function definitions.
- 
--cmd_modversions_S =								\
--	if $(OBJDUMP) -h $@ | grep -q __ksymtab; then				\
--		$(call cmd_gensymtypes_S,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))	\
--		    > $(@D)/.tmp_$(@F:.o=.ver);					\
--										\
--		$(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@ 		\
--			-T $(@D)/.tmp_$(@F:.o=.ver);				\
--		mv -f $(@D)/.tmp_$(@F) $@;					\
--		rm -f $(@D)/.tmp_$(@F:.o=.ver);					\
--	fi
-+cmd_gen_symversions_S = $(call gen_symversions,S)
-+
- endif
- 
- $(obj)/%.o: $(src)/%.S FORCE
--- 
-2.32.0
-
+> +		return true;
+> +
+> +	return false;
+> +}
