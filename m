@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFC8C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE41AC41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388088AbiDEOdG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58708 "EHLO
+        id S238978AbiDEOde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 10:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238897AbiDEJdC (ORCPT
+        with ESMTP id S238743AbiDEJcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:02 -0400
+        Tue, 5 Apr 2022 05:32:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E433C25;
-        Tue,  5 Apr 2022 02:20:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC7C2709;
+        Tue,  5 Apr 2022 02:19:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF26C6144D;
-        Tue,  5 Apr 2022 09:20:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC3DAC385A2;
-        Tue,  5 Apr 2022 09:20:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2921161654;
+        Tue,  5 Apr 2022 09:19:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E083C385A3;
+        Tue,  5 Apr 2022 09:19:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150432;
-        bh=sbrwT/SUZKgQS5k/o8rRHTPmV5lhx0fWxEXy5URgNCI=;
+        s=korg; t=1649150398;
+        bh=YUCc5UqSEUaFbLJxDPjS3UTbOuylShiOg0+98LUc49c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VLteAsFEGsyLy50FFhnvpnSMPexvACLPPxuhtPfHt7VCJ/nojsZ1GEAuS8qrcYn+H
-         UjO+Llw9mqc0HtvvaaHwgvt8nkcvqpfm7aJn7QxBl7Cgs5CI8OZ7+lg/Oui7HEyl+6
-         fD0yt3gWm769BDE6GQzoDrJlpJ+E0b0XZvgxJIv4=
+        b=B99IpNuDbtcSg8RjORkuJmwcD1vKs3ECnJwn/mxUUMKovGZYuNnxk+loWGhcciYe4
+         wuhG+axQ7fcQNpQuPF5C/XQqKMZ++OVot4lrvGD5+ZKzXeKlfluD2Qt3mFXL5AoYYk
+         MkjeOL/gkdQvItuH5lGwOEw7NMDyhxjpluoXTlB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 054/913] cifs: we do not need a spinlock around the tree access during umount
-Date:   Tue,  5 Apr 2022 09:18:36 +0200
-Message-Id: <20220405070341.440179049@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com,
+        Muchun Song <songmuchun@bytedance.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Marco Elver <elver@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 006/913] mm: kfence: fix missing objcg housekeeping for SLAB
+Date:   Tue,  5 Apr 2022 09:17:48 +0200
+Message-Id: <20220405070340.002225263@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,71 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-commit 9a14b65d590105d393b63f5320e1594edda7c672 upstream.
+commit ae085d7f9365de7da27ab5c0d16b12d51ea7fca9 upstream.
 
-Remove the spinlock around the tree traversal as we are calling possibly
-sleeping functions.
-We do not need a spinlock here as there will be no modifications to this
-tree at this point.
+The objcg is not cleared and put for kfence object when it is freed,
+which could lead to memory leak for struct obj_cgroup and wrong
+statistics of NR_SLAB_RECLAIMABLE_B or NR_SLAB_UNRECLAIMABLE_B.
 
-This prevents warnings like this to occur in dmesg:
-[  653.774996] BUG: sleeping function called from invalid context at kernel/loc\
-king/mutex.c:280
-[  653.775088] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1827, nam\
-e: umount
-[  653.775152] preempt_count: 1, expected: 0
-[  653.775191] CPU: 0 PID: 1827 Comm: umount Tainted: G        W  OE     5.17.0\
--rc7-00006-g4eb628dd74df #135
-[  653.775195] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-\
-1.fc33 04/01/2014
-[  653.775197] Call Trace:
-[  653.775199]  <TASK>
-[  653.775202]  dump_stack_lvl+0x34/0x44
-[  653.775209]  __might_resched.cold+0x13f/0x172
-[  653.775213]  mutex_lock+0x75/0xf0
-[  653.775217]  ? __mutex_lock_slowpath+0x10/0x10
-[  653.775220]  ? _raw_write_lock_irq+0xd0/0xd0
-[  653.775224]  ? dput+0x6b/0x360
-[  653.775228]  cifs_kill_sb+0xff/0x1d0 [cifs]
-[  653.775285]  deactivate_locked_super+0x85/0x130
-[  653.775289]  cleanup_mnt+0x32c/0x4d0
-[  653.775292]  ? path_umount+0x228/0x380
-[  653.775296]  task_work_run+0xd8/0x180
-[  653.775301]  exit_to_user_mode_loop+0x152/0x160
-[  653.775306]  exit_to_user_mode_prepare+0x89/0xd0
-[  653.775315]  syscall_exit_to_user_mode+0x12/0x30
-[  653.775322]  do_syscall_64+0x48/0x90
-[  653.775326]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+Since the last freed object's objcg is not cleared,
+mem_cgroup_from_obj() could return the wrong memcg when this kfence
+object, which is not charged to any objcgs, is reallocated to other
+users.
 
-Fixes: 187af6e98b44e5d8f25e1d41a92db138eb54416f ("cifs: fix handlecache and multiuser")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+A real word issue [1] is caused by this bug.
+
+Link: https://lore.kernel.org/all/000000000000cabcb505dae9e577@google.com/ [1]
+Reported-by: syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com
+Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/cifsfs.c |    2 --
- 1 file changed, 2 deletions(-)
+ mm/slab.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -266,7 +266,6 @@ static void cifs_kill_sb(struct super_bl
- 		dput(cifs_sb->root);
- 		cifs_sb->root = NULL;
- 	}
--	spin_lock(&cifs_sb->tlink_tree_lock);
- 	node = rb_first(root);
- 	while (node != NULL) {
- 		tlink = rb_entry(node, struct tcon_link, tl_rbnode);
-@@ -280,7 +279,6 @@ static void cifs_kill_sb(struct super_bl
- 		mutex_unlock(&cfid->fid_mutex);
- 		node = rb_next(node);
- 	}
--	spin_unlock(&cifs_sb->tlink_tree_lock);
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -3429,6 +3429,7 @@ static __always_inline void __cache_free
  
- 	kill_anon_super(sb);
- 	cifs_umount(cifs_sb);
+ 	if (is_kfence_address(objp)) {
+ 		kmemleak_free_recursive(objp, cachep->flags);
++		memcg_slab_free_hook(cachep, &objp, 1);
+ 		__kfence_free(objp);
+ 		return;
+ 	}
 
 
