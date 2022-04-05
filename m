@@ -2,88 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE25DC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F04C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238484AbiDEIaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48220 "EHLO
+        id S238694AbiDEIax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234474AbiDEH6g (ORCPT
+        with ESMTP id S234466AbiDEH6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 03:58:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05C7A205D;
-        Tue,  5 Apr 2022 00:52:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47940B81B90;
-        Tue,  5 Apr 2022 07:52:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFB7FC340EE;
-        Tue,  5 Apr 2022 07:52:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145149;
-        bh=jnkCMnl/4rUMdPzGe48qoPlC/WeFENB7x3XyNchNE/4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L8DV7l6YsIwSw2HMVO53vDnWu9Z0VBtVxCDKUXRgszn9yLKw8tzhK96umcreyhXU2
-         e12hP+16ImrXefm+3a28mPXGuU3UTAnXy5fxpveCwUsvKt7DxgreV9SONjn1b8cYSj
-         6vdBQW7dsHTcPNC+FcIhg/060BG62ubKlPQdTius=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0264/1126] io_uring: dont check unrelated req->open.how in accept request
-Date:   Tue,  5 Apr 2022 09:16:51 +0200
-Message-Id: <20220405070415.360010671@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E8AA1473;
+        Tue,  5 Apr 2022 00:52:29 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id kw18so4846585pjb.5;
+        Tue, 05 Apr 2022 00:52:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=TgBLJeTUy6jVJ2xafVPcKSUbrGijHeGdKDekFNJpES0=;
+        b=aSMeYscyjfPJ2j6WMIt8esKgLv+cCuEG4DZPmO25jSIgyFHFNthTEgjQWkML+GAsZo
+         sfyoc9olWYN1DoYbUFMZJz/3xOg9AI+pSaG6rQGNVombA5eN5censAMjYkrUnh0N7cp0
+         VasbFqTcDXjOKc4QvMO3qHl8UxazmUpkfUXfedYDhKa3qmj2oviN65D+MClQTzAc8kW5
+         4U7v6v+wpnTFd/6mazsybeib5GY/iM8b1zIvJ63foPySXQKx7b6zaUEFg5Am08pNPbB1
+         zrqvFH1xVq/0iC0tIEaTAq05uIyEJlRGxNCVYCatVgBpvP6VF2IzpeBmxQ8OLcpjjxWD
+         dREw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TgBLJeTUy6jVJ2xafVPcKSUbrGijHeGdKDekFNJpES0=;
+        b=7G606hXRhc0SU/ms8DpFDf6iz06FnZodNfV/u9PlyQI+x1VNoNSZ3sxgvREuTn2QMW
+         /5uiG4qh5HSipvaGEuH+x+f24+VVFTsB+3Ra+RbwmWCtWUrr+nqdwprZWbaISaTnlQdO
+         suP5/Aalgkr7Jl10QyHVBTCJ4pUMbILP6aI+g+Pc7L0FpzGFdoM9lp9WpJeqeKK4QPKy
+         iw3Y4Y6eXAJhYnsqE0UcocYcnV1lgT9qS7M74NA36AIZ4H0dCnbSPkFeMlKO/ug65K9I
+         vrwDvzk/BoN1fYWNf+SXmglrWiQk9yc2+cXhxigqaFW5Jrwp4R0obGULxGy/dTRlpQZC
+         cFqQ==
+X-Gm-Message-State: AOAM530d7mxSrjNR9Pc/fWPP5a/oE/Lweduz/DUHubQtBDtsKj3Ebksi
+        1FedWG0RFmWRdwE9rnEqkis=
+X-Google-Smtp-Source: ABdhPJxwe5VM3sjwzmEQs7uSfq/7UjTSJjpOPqAE2YvqWv6No8h0U9MnptFRrXgdvlyfWFHIJLhlTg==
+X-Received: by 2002:a17:902:bf07:b0:150:9b8a:a14f with SMTP id bi7-20020a170902bf0700b001509b8aa14fmr2206809plb.127.1649145148521;
+        Tue, 05 Apr 2022 00:52:28 -0700 (PDT)
+Received: from [192.168.43.80] (subs28-116-206-12-39.three.co.id. [116.206.12.39])
+        by smtp.gmail.com with ESMTPSA id g3-20020a63ad03000000b003821d0f0ef4sm12821367pgf.71.2022.04.05.00.52.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 00:52:27 -0700 (PDT)
+Message-ID: <1b01580f-f888-5725-e571-816073148303@gmail.com>
+Date:   Tue, 5 Apr 2022 14:52:18 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: unexpected indentation warning in
+ Documentation/ABI/testing/sysfs-*
+Content-Language: en-US
+To:     Hans de Goede <hdegoede@redhat.com>, linux-doc@vger.kernel.org,
+        'Linux Kernel' <linux-kernel@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, Dell.Client.Kernel@dell.com,
+        linux-iio@vger.kernel.org
+Cc:     Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Huang Jianan <huangjianan@oppo.com>, Chao Yu <chao@kernel.org>,
+        Divya Bharathi <divya.bharathi@dell.com>,
+        Mark Pearson <markpearson@lenovo.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "David E. Box" <david.e.box@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>
+References: <564f87a9-dd57-d3a1-d476-d81350baf75d@gmail.com>
+ <4df1fc93-2a2a-3482-085f-3a88970440ff@redhat.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <4df1fc93-2a2a-3482-085f-3a88970440ff@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+On 04/04/22 19.54, Hans de Goede wrote:
+> 
+> These 2 are fixed by this (pending) patch:
+> https://lore.kernel.org/linux-kernel/20220324165918.22005-4-hdegoede@redhat.com/
+> 
+> And I also have this pending patch for a pre-existing warning:
+> https://lore.kernel.org/linux-kernel/20220324165918.22005-3-hdegoede@redhat.com/
+> 
+> I'm not sure who should pick these 2 up ?
+> 
 
-[ Upstream commit adf3a9e9f556613197583a1884f0de40a8bb6fb9 ]
+I think linux-doc can pick them, if no subsystems do it.
 
-Looks like a victim of too much copy/paste, we should not be looking
-at req->open.how in accept. The point is to check CLOEXEC and error
-out, which we don't invalid direct descriptors on exec. Hence any
-attempt to get a direct descriptor with CLOEXEC is invalid.
-
-No harm is done here, as req->open.how.flags overlaps with
-req->accept.flags, but it's very confusing and might change if either of
-those command structs are modified.
-
-Fixes: aaa4db12ef7b ("io_uring: accept directly into fixed file table")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/io_uring.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 1d79e5548de2..5ea7650b74eb 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5264,8 +5264,7 @@ static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	accept->nofile = rlimit(RLIMIT_NOFILE);
- 
- 	accept->file_slot = READ_ONCE(sqe->file_index);
--	if (accept->file_slot && ((req->open.how.flags & O_CLOEXEC) ||
--				  (accept->flags & SOCK_CLOEXEC)))
-+	if (accept->file_slot && (accept->flags & SOCK_CLOEXEC))
- 		return -EINVAL;
- 	if (accept->flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
- 		return -EINVAL;
 -- 
-2.34.1
-
-
-
+An old man doll... just what I always wanted! - Clara
