@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7244CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B37EAC43219
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356416AbiDEKXx (ORCPT
+        id S1356506AbiDEKX5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
+        Tue, 5 Apr 2022 06:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241297AbiDEIdM (ORCPT
+        with ESMTP id S241229AbiDEIc4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:33:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456F1E7;
-        Tue,  5 Apr 2022 01:31:14 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3FFBD8;
+        Tue,  5 Apr 2022 01:29:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D765961001;
-        Tue,  5 Apr 2022 08:31:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2D7DC385A0;
-        Tue,  5 Apr 2022 08:31:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A90E60FF5;
+        Tue,  5 Apr 2022 08:29:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B168C385A2;
+        Tue,  5 Apr 2022 08:29:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147473;
-        bh=9wWJhCGjvW+gmTlJp+TCJdNc4BV7i04JGaPkDNZvWZE=;
+        s=korg; t=1649147395;
+        bh=t5Kjxi8BKChE7cLLOSmUC5fA8BDDzn2f270Eb+wM/pU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lZZIE4OvhHAkP8CKVU2/qAkav+FtthyZzAm/XSviy4QiCjAcNXFtuH2DJr13IoVUA
-         ewYqKTabKUNMUGPxGwywuSj3B/JW0ASDmSz0Mdb2Ms7nCRoJW3dSajbGiZNS1tFAAu
-         4mhrGVeYSV6ZorTFKdGxMFJzMg6MnTiTTsfZe6rw=
+        b=h8yQSIKTicHvInzqS9a1EH+dnG53eKDhAQ3HTxTIJ4dUf2txE1PKc7UILY4TbMkNG
+         +EVG7NR4m7MuUIkk1i1BLitmxVz80rNIscRCxUWHnJjPe6FYEXUOuamLOYrgED7BaU
+         Mn0/FzhJUKoutxVRRM5reiOKBGOQhbomIiog6SgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0011/1017] virtio_console: break out of buf poll on remove
-Date:   Tue,  5 Apr 2022 09:15:24 +0200
-Message-Id: <20220405070354.506955546@linuxfoundation.org>
+        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.17 1109/1126] ARM: dts: spear13xx: Update SPI dma properties
+Date:   Tue,  5 Apr 2022 09:30:56 +0200
+Message-Id: <20220405070439.987966369@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,55 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 
-[ Upstream commit 0e7174b9d5877130fec41fb4a16e0c2ee4958d44 ]
+commit 31d3687d6017c7ce6061695361598d9cda70807a upstream.
 
-A common pattern for device reset is currently:
-vdev->config->reset(vdev);
-.. cleanup ..
+Reorder dmas and dma-names property for spi controller node to make it
+compliant with bindings.
 
-reset prevents new interrupts from arriving and waits for interrupt
-handlers to finish.
-
-However if - as is common - the handler queues a work request which is
-flushed during the cleanup stage, we have code adding buffers / trying
-to get buffers while device is reset. Not good.
-
-This was reproduced by running
-	modprobe virtio_console
-	modprobe -r virtio_console
-in a loop.
-
-Fix this up by calling virtio_break_device + flush before reset.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1786239
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Link: https://lore.kernel.org/r/20220326042313.97862-2-singh.kuldeep87k@gmail.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/virtio_console.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm/boot/dts/spear13xx.dtsi |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index 660c5c388c29..f864b17be7e3 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -1957,6 +1957,13 @@ static void virtcons_remove(struct virtio_device *vdev)
- 	list_del(&portdev->list);
- 	spin_unlock_irq(&pdrvdata_lock);
+--- a/arch/arm/boot/dts/spear13xx.dtsi
++++ b/arch/arm/boot/dts/spear13xx.dtsi
+@@ -284,9 +284,9 @@
+ 				#size-cells = <0>;
+ 				interrupts = <0 31 0x4>;
+ 				status = "disabled";
+-				dmas = <&dwdma0 4 0 0>,
+-					<&dwdma0 5 0 0>;
+-				dma-names = "tx", "rx";
++				dmas = <&dwdma0 5 0 0>,
++					<&dwdma0 4 0 0>;
++				dma-names = "rx", "tx";
+ 			};
  
-+	/* Device is going away, exit any polling for buffers */
-+	virtio_break_device(vdev);
-+	if (use_multiport(portdev))
-+		flush_work(&portdev->control_work);
-+	else
-+		flush_work(&portdev->config_work);
-+
- 	/* Disable interrupts for vqs */
- 	vdev->config->reset(vdev);
- 	/* Finish up work that's lined up */
--- 
-2.34.1
-
+ 			rtc@e0580000 {
 
 
