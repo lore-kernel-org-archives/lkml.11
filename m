@@ -2,90 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD19C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 542A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351236AbiDEVO3 (ORCPT
+        id S1352627AbiDEVOo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48642 "EHLO
+        Tue, 5 Apr 2022 17:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443712AbiDEPkL (ORCPT
+        with ESMTP id S1444188AbiDEPk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:40:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F0E18500D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:58:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 568556190C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:58:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4C5BC385A4;
-        Tue,  5 Apr 2022 13:58:16 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 06/10] drivers/usb: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-Date:   Tue,  5 Apr 2022 14:57:54 +0100
-Message-Id: <20220405135758.774016-7-catalin.marinas@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405135758.774016-1-catalin.marinas@arm.com>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
+        Tue, 5 Apr 2022 11:40:59 -0400
+Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99939117C;
+        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-09.nifty.com with ESMTP id 235E2k8K021295;
+        Tue, 5 Apr 2022 23:02:48 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8K021295
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649167368;
+        bh=8ckilN9UB4blZbcYmDCNzJh4V9ShLvfJ5JTGztZasQY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mY6yJ0bcFyc31gsjkbO/eUW6UNMRDhZ/vih7O5ZT3Se2kpUukdNoJOH6wN0wbISoi
+         2nqN4DVb1p78+JOukCm9A7rA5rLjRnfpOuH3M1DWOFSpLKrcVlJuqTpbon7I78aRMB
+         5A+d9XUeASWwLF17FcaW0blC2VECkPfbzA77FZNeBrVPWOHwZxUHZG/OpVCarbDhj6
+         IYgFvJqdAMs6McqDC8mEYcBtOHMjQyLNZx3Bij+H0p4WtugCNMxPAqKA6DOfkQpEgj
+         VDIoMtXlXCC4J7lwPxJEslobIQjv9vQ0/C8UbMQ06G+RM3tM1/7lxCRNiv7NuaUtY2
+         mzu5opxy01K+A==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH v2 02/10] kbuild: do not remove empty *.symtypes explicitly
+Date:   Tue,  5 Apr 2022 23:02:21 +0900
+Message-Id: <20220405140229.2895394-3-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
+References: <20220405140229.2895394-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
-operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
-alignment.
+Presumably, 'test -s $@ || rm -f $@' intends to remove the output when
+the genksyms command fails.
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+It is unneeded because .DELETE_ON_ERROR automatically removes the output
+on failure.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/usb/core/buffer.c  | 8 ++++----
- drivers/usb/misc/usbtest.c | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/usb/core/buffer.c b/drivers/usb/core/buffer.c
-index fbb087b728dc..e21d8d106977 100644
---- a/drivers/usb/core/buffer.c
-+++ b/drivers/usb/core/buffer.c
-@@ -34,13 +34,13 @@ void __init usb_init_pool_max(void)
- {
- 	/*
- 	 * The pool_max values must never be smaller than
--	 * ARCH_KMALLOC_MINALIGN.
-+	 * ARCH_DMA_MINALIGN.
- 	 */
--	if (ARCH_KMALLOC_MINALIGN <= 32)
-+	if (ARCH_DMA_MINALIGN <= 32)
- 		;			/* Original value is okay */
--	else if (ARCH_KMALLOC_MINALIGN <= 64)
-+	else if (ARCH_DMA_MINALIGN <= 64)
- 		pool_max[0] = 64;
--	else if (ARCH_KMALLOC_MINALIGN <= 128)
-+	else if (ARCH_DMA_MINALIGN <= 128)
- 		pool_max[0] = 0;	/* Don't use this pool */
- 	else
- 		BUILD_BUG();		/* We don't allow this */
-diff --git a/drivers/usb/misc/usbtest.c b/drivers/usb/misc/usbtest.c
-index 150090ee4ec1..e13f7f6904ff 100644
---- a/drivers/usb/misc/usbtest.c
-+++ b/drivers/usb/misc/usbtest.c
-@@ -378,7 +378,7 @@ static void simple_fill_buf(struct urb *urb)
+Changes in v2:
+  - Fix accidental drop of '> /dev/null'
+
+ scripts/Makefile.build | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 31e0e33dfe5d..3ef2373f0a57 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -135,9 +135,7 @@ genksyms = scripts/genksyms/genksyms		\
+ cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
  
- static inline unsigned long buffer_offset(void *buf)
- {
--	return (unsigned long)buf & (ARCH_KMALLOC_MINALIGN - 1);
-+	return (unsigned long)buf & (ARCH_DMA_MINALIGN - 1);
- }
+ quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
+-cmd_cc_symtypes_c =                                                         \
+-    $(call cmd_gensymtypes_c,true,$@) >/dev/null;                           \
+-    test -s $@ || rm -f $@
++      cmd_cc_symtypes_c = $(call cmd_gensymtypes_c,true,$@) >/dev/null
  
- static int check_guard_bytes(struct usbtest_dev *tdev, struct urb *urb)
+ $(obj)/%.symtypes : $(src)/%.c FORCE
+ 	$(call cmd,cc_symtypes_c)
+@@ -348,9 +346,7 @@ cmd_gensymtypes_S =                                                         \
+     $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
+ 
+ quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
+-cmd_cc_symtypes_S =                                                         \
+-    $(call cmd_gensymtypes_S,true,$@) >/dev/null;                           \
+-    test -s $@ || rm -f $@
++      cmd_cc_symtypes_S = $(call cmd_gensymtypes_S,true,$@) >/dev/null
+ 
+ $(obj)/%.symtypes : $(src)/%.S FORCE
+ 	$(call cmd,cc_symtypes_S)
+-- 
+2.32.0
+
