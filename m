@@ -2,66 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 220ECC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E98C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575114AbiDEXCq (ORCPT
+        id S1575134AbiDEXCw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60156 "EHLO
+        Tue, 5 Apr 2022 19:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392156AbiDEPfr (ORCPT
+        with ESMTP id S1444204AbiDEPlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 11:35:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121594833A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 06:46:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA5CBB81BA9
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 13:46:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EDF1C385A0;
-        Tue,  5 Apr 2022 13:46:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649166413;
-        bh=pAirV066m2Mk+Gq9JHNPQKz4ZdQFBmx7aDmrA3JqHZs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Kldms96GddMs7OjzLMMO6ih82ytSwJcXHcStrjbrMsbg8HssmGCTXFRBWa4cgC6+L
-         Tg1OxlJBlSK+FkbKC5Jq5GQBlGRVGA07ftRe+osjG6RILregfrNyTQ0tLhKhfRiJdQ
-         i9XFvXJQGTCC7KSdxso/OGukUuDtHscXAhEADDUI=
-Date:   Tue, 5 Apr 2022 15:46:51 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-Cc:     outreachy@lists.linux.dev, Larry.Finger@lwfinger.net,
-        phil@philpotter.co.uk, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] staging: r8188eu: add space around arithmatic sign
-Message-ID: <YkxIS2H0XX6LzDzu@kroah.com>
-References: <860d8e222e2b695ce5cb4f48aa46a7f66e05d8e4.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
+        Tue, 5 Apr 2022 11:41:01 -0400
+Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F919FF2;
+        Tue,  5 Apr 2022 07:03:31 -0700 (PDT)
+Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-09.nifty.com with ESMTP id 235E2k8R021295;
+        Tue, 5 Apr 2022 23:02:52 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 235E2k8R021295
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649167373;
+        bh=dJWl8ojIyORclruErwON0RrHfXvcLP2fynkVmPN0hbY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0gPpYwVK3J78cPN2gVBns4jH7jWVZYSc3UX75CeziI7H3kVcfTCd8d9UHrS/AdBae
+         ZjdDIG4ThuMP/PenHWe53+DuMJ1vUlJsIzZyQK0jplBYNLwifcPme7ytjhd2VYj96Y
+         HpSQiqEGJA8j1M9xB8pOccIuC8iFKLr1i/mGfJLeHdONBDVjEf6EO6/oY80iIVUgPY
+         b9klvh05rqNnGODj03He6bxOfJRd8UnRFsW32Ce9CKFZhDm22zQfBy6ZXMLxPuaZdc
+         yIv3Drz+jwjir8DnjfWtU3JSiMMqGPZ3jH+medfqTAS7QS8V/SwjK8sGTE2vxJx02K
+         haYbgFw0TtIfA==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        llvm@lists.linux.dev
+Subject: [PATCH v2 09/10] kbuild: refactor cmd_modversions_c
+Date:   Tue,  5 Apr 2022 23:02:28 +0900
+Message-Id: <20220405140229.2895394-10-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220405140229.2895394-1-masahiroy@kernel.org>
+References: <20220405140229.2895394-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <860d8e222e2b695ce5cb4f48aa46a7f66e05d8e4.1649082939.git.eng.alaamohamedsoliman.am@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 04:39:16PM +0200, Alaa Mohamed wrote:
-> Reported by checkpatch:
-> 
-> CHECK: spaces preferred around that '+' , '-' and '*'
-> 
-> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-> ---
->  drivers/staging/r8188eu/core/rtw_br_ext.c | 58 +++++++++++------------
->  1 file changed, 29 insertions(+), 29 deletions(-)
+cmd_modversions_c implements two parts; run genksyms to calculate CRCs
+of exported symbols, run $(LD) to update the object with the CRCs. The
+latter is not executed for CONFIG_LTO_CLANG=y since the object is not
+ELF but LLVM bit code at this point.
 
-This patch does not apply to my tree and branch.  Please rebase and
-resend it against the staging-next branch of staging.git.
+The first part can be unified because we can always use $(NM) instead
+of "$(OBJDUMP) -h" to dump the symbols.
 
-Patch 2/2 did apply.
+Split the code into the two macros, cmd_gen_symversions_c and
+cmd_modversions.
 
-thanks,
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-greg k-h
+Changes in v2:
+ - new
+
+ scripts/Makefile.build | 25 +++++++++++--------------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index d934bdf84de4..ba2be555f942 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -169,29 +169,25 @@ ifdef CONFIG_MODVERSIONS
+ #   the actual value of the checksum generated by genksyms
+ # o remove .tmp_<file>.o to <file>.o
+ 
+-ifdef CONFIG_LTO_CLANG
+ # Generate .o.symversions files for each .o with exported symbols, and link these
+ # to the kernel and/or modules at the end.
+-cmd_modversions_c =								\
++gen_symversions =								\
+ 	if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then			\
+-		$(call cmd_gensymtypes_c,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))	\
++		$(call cmd_gensymtypes_$(1),$(KBUILD_SYMTYPES),$(@:.o=.symtypes)) \
+ 		    > $@.symversions;						\
+ 	else									\
+ 		rm -f $@.symversions;						\
+-	fi;
+-else
+-cmd_modversions_c =								\
+-	if $(OBJDUMP) -h $@ | grep -q __ksymtab; then				\
+-		$(call cmd_gensymtypes_c,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))	\
+-		    > $(@D)/.tmp_$(@F:.o=.ver);					\
+-										\
++	fi
++
++cmd_gen_symversions_c =	$(call gen_symversions,c)
++
++cmd_modversions =								\
++	if [ -r $@.symversions ]; then						\
+ 		$(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@ 		\
+-			-T $(@D)/.tmp_$(@F:.o=.ver);				\
++			-T $@.symversions;					\
+ 		mv -f $(@D)/.tmp_$(@F) $@;					\
+-		rm -f $(@D)/.tmp_$(@F:.o=.ver);					\
+ 	fi
+ endif
+-endif
+ 
+ ifdef CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
+ # compiler will not generate __mcount_loc use recordmcount or recordmcount.pl
+@@ -269,7 +265,8 @@ define rule_cc_o_c
+ 	$(call cmd,checksrc)
+ 	$(call cmd,checkdoc)
+ 	$(call cmd,gen_objtooldep)
+-	$(call cmd,modversions_c)
++	$(call cmd,gen_symversions_c)
++	$(if $(CONFIG_LTO_CLANG),,$(call cmd,modversions))
+ 	$(call cmd,record_mcount)
+ endef
+ 
+-- 
+2.32.0
+
