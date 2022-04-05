@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9455EC3A589
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5D7C47081
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239521AbiDEIUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
+        id S238622AbiDEITP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235646AbiDEH76 (ORCPT
+        with ESMTP id S235715AbiDEIAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1699F17AAE;
-        Tue,  5 Apr 2022 00:56:48 -0700 (PDT)
+        Tue, 5 Apr 2022 04:00:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B28F1B6;
+        Tue,  5 Apr 2022 00:58:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B80E5B81B9C;
-        Tue,  5 Apr 2022 07:56:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E52C340EE;
-        Tue,  5 Apr 2022 07:56:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC016B81B14;
+        Tue,  5 Apr 2022 07:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5466DC340EE;
+        Tue,  5 Apr 2022 07:58:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145405;
-        bh=Y9T7AymKarL8J7ujH1ykvAvM2oVlvHHT+qXyz/qBDV4=;
+        s=korg; t=1649145487;
+        bh=nNs1tse4V7cKeod1E45I722hiSpOa7KRDfLhaBO2H64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wmafl77k8tzqHzimtGHZ/CtUk4vbFLRb1EuqRkCCbp7iYaksAKelEplmfEaID+Q7G
-         Lmg/NQ+wLzmyDMWng0+PQTmSozTCUcxblyVgrAv2YVJpMcaGqUoUAQ9LKSNaM87jHU
-         RoRC6zV/U5heCOeIgSQ+gVXhvuDzvcYin7qCt+44=
+        b=sXvAsWyQkNI21CcW4bwJPQQV31y7iKvOhkuWcMdQv/U5nLR08o62chI/r/19Bj1ai
+         5fTtZ1pWa16egeX1+U6IUvWhETazEekwjAVRbkyTN+hwJiC6+GyciHsK6K1dBweEcr
+         HPJYnunQmjuk1HeTh4bekh87UpkFlOo9+CBqqBL0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0394/1126] ASoC: cs35l41: Fix max number of TX channels
-Date:   Tue,  5 Apr 2022 09:19:01 +0200
-Message-Id: <20220405070419.193018178@linuxfoundation.org>
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0421/1126] ARM: configs: multi_v5_defconfig: re-enable DRM_PANEL and FB_xxx
+Date:   Tue,  5 Apr 2022 09:19:28 +0200
+Message-Id: <20220405070419.982404175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,35 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Tanure <tanureal@opensource.cirrus.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit 16639d39bdf577168d3fe34315917a94365c8d19 ]
+[ Upstream commit 9c44d0805f949c56121b4ae6949fb064537bf198 ]
 
-This device only has 4 TX channels.
+Commit 91185d55b32e ("drm: Remove DRM_KMS_FB_HELPER Kconfig option")
+led to de-selection of CONFIG_FB, which was a prerequisite for
+BACKLIGHT_CLASS_DEVICE, which CONFIG_DRM_PANEL_SIMPLE depended on.
+Explicitly set CONFIG_FB, to bring DRM_PANEL_SIMPLE, DRM_PANEL_EDP,
+FB_IMX and FB_ATMEL back into the generated .config.
+This also adds some new FB related features like fonts and the
+framebuffer console.
 
-Fixes: fe1024d50477b ("ASoC: cs35l41: Combine adjacent register writes")
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220303173059.269657-3-tanureal@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+See also commit 8c1768967e27 ("ARM: config: mutli v7: Reenable FB
+dependency"), which solved the same problem for multi_v7_defconfig.
+
+This relies on [1], to fix a broken Kconfig dependency.
+
+[1] https://lore.kernel.org/dri-devel/20220315084559.23510-1-tzimmermann@suse.de/raw
+
+Fixes: 91185d55b32e ("drm: Remove DRM_KMS_FB_HELPER Kconfig option")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Link: https://lore.kernel.org/r/20220317183043.948432-4-andre.przywara@arm.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs35l41.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/configs/multi_v5_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
-index 90c91b00288b..f3787d77f892 100644
---- a/sound/soc/codecs/cs35l41.c
-+++ b/sound/soc/codecs/cs35l41.c
-@@ -1091,7 +1091,7 @@ static struct snd_soc_dai_driver cs35l41_dai[] = {
- 		.capture = {
- 			.stream_name = "AMP Capture",
- 			.channels_min = 1,
--			.channels_max = 8,
-+			.channels_max = 4,
- 			.rates = SNDRV_PCM_RATE_KNOT,
- 			.formats = CS35L41_TX_FORMATS,
- 		},
+diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
+index dac1db2e181f..3e3beb0cc33d 100644
+--- a/arch/arm/configs/multi_v5_defconfig
++++ b/arch/arm/configs/multi_v5_defconfig
+@@ -197,6 +197,7 @@ CONFIG_DRM_ATMEL_HLCDC=m
+ CONFIG_DRM_PANEL_SIMPLE=y
+ CONFIG_DRM_PANEL_EDP=y
+ CONFIG_DRM_ASPEED_GFX=m
++CONFIG_FB=y
+ CONFIG_FB_IMX=y
+ CONFIG_FB_ATMEL=y
+ CONFIG_BACKLIGHT_ATMEL_LCDC=y
 -- 
 2.34.1
 
