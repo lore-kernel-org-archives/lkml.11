@@ -2,65 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC90C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 143F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354957AbiDEXOl (ORCPT
+        id S1577726AbiDEXQ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
+        Tue, 5 Apr 2022 19:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344192AbiDENKo (ORCPT
+        with ESMTP id S1455602AbiDEQAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 09:10:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA0CAF3A5F
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 05:12:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649160747;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
-        b=IScO/Fg6YYOK0XE4K4uWIMqeiLkMim9RaLeDC5XdVKtXs7fbnTQ80D+J+SROwK6etAcqRD
-        uilnuci9FFe3e2pMR1UdOZGYQayUXlY1OP3nZzkwypNulwud+OEkv7wWOTFpbh5EOR10s0
-        JLmAcXTjI0wKEsBmZy2eEICxrUNhlfQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-610-dTUAcNyXP8m3zdzjVnUzug-1; Tue, 05 Apr 2022 08:12:24 -0400
-X-MC-Unique: dTUAcNyXP8m3zdzjVnUzug-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 5 Apr 2022 12:00:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E67C74613
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 08:17:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 08511100BAA6;
-        Tue,  5 Apr 2022 12:12:24 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C14F74021A6;
-        Tue,  5 Apr 2022 12:12:23 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bruno Goncalves <bgoncalv@redhat.com>,
-        Jan Stancek <jstancek@redhat.com>
-Subject: Re: [PATCH] KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded
-Date:   Tue,  5 Apr 2022 08:12:14 -0400
-Message-Id: <20220405121215.605894-3-pbonzini@redhat.com>
-In-Reply-To: <20220331221359.3912754-1-seanjc@google.com>
-References: 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D6C661762
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 15:17:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB01DC385A0;
+        Tue,  5 Apr 2022 15:17:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649171821;
+        bh=Cich/PHVbJy1g1hE9OTZvkfzNrroc5Eii9MGYzlSdHA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HZbw2bh9MUvLP8PBamL48xqQ7M4cBuV7W4wP62eLOLQscc8DjUWE9F7laPxmuXEC2
+         d4osBx2IPKfWCkjLtwFNEr+5h7TW+Lbi3bajiQd8InKVAYuaf/nHPst2jZRtiWfGFt
+         bJfRaXeg7ye3vzYDPsRmdQ+UTbiOm6PZwy5C1hTc=
+Date:   Tue, 5 Apr 2022 17:16:58 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH v2] staging: rtl8723bs: fix indentation
+Message-ID: <YkxdasBGZ3m2Yu66@kroah.com>
+References: <20220405150912.GA625670@euclid>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405150912.GA625670@euclid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Queued, thanks.
+On Tue, Apr 05, 2022 at 11:09:12AM -0400, Sevinj Aghayeva wrote:
+> Adhere to Linux kernel coding style.
+> 
+> Reported by checkpatch:
+> 
+> WARNING: suspect code indent for conditional statements
 
-Paolo
+You are also removing unneeded comments, right?  Please explain that as
+the documentation link the bot pointed you to showed.
 
+thanks,
+
+greg k-h
