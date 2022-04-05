@@ -2,152 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 951A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9547EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835466AbiDFAbq (ORCPT
+        id S1835601AbiDFAcW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49034 "EHLO
+        Tue, 5 Apr 2022 20:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457763AbiDEQot (ORCPT
+        with ESMTP id S1451872AbiDEPyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:44:49 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857DAE0981
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:42:50 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id b21so13706708lfb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:42:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aVM16YtaCx1dYir94c9sxYwusYmuTqkX1MFty8IIFQk=;
-        b=YtUkRUgQkrt4P9V69iJ32ka9iOIb/+ccGqqjKVsR0c1fQHRSqVXLh76rhQPtxYrQCD
-         5DaXMJOw2MWRhGn1MeMzYEpTNeRWYll4CT4rEwHMH0TxvHSr8B/3jPBrSjhoSQsirJmi
-         5aurdwzxud7rt4lGs2usfaHCr6txQI9A5WPlLs4NQ76cD/Fr9W23PUOTZhnP2omqEYCD
-         XRjiG4ekyp3R1/pKvDVhTm60f8jrwkqmXZkc22HTTUcUCURHBcw5vuNRMd1IWJF8Efn6
-         sUCQOWPkg0lN6dhJ8q06t3ztFR/uwcovxLZMbX5d3v/1PewPUohAn9mFXYCWyoQvXpds
-         YRsg==
+        Tue, 5 Apr 2022 11:54:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 53E6712E76B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:48:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649170136;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gLnQrP3xPWs2TZHtPngsxvbbh35oj514ez2KutsOFxM=;
+        b=QZKbGykioQGSfmLoQR2zcqEqD947GhufDocQ/LqSMmX0Ldwy+lpo6er7LBqM+nU9MfgwOp
+        AJu0jrxjjTMuzGrIGCyKUreePI91y7i8VOnTKa2p//OqAdayu+puFNnn1QW1N78xIYkGJC
+        fS72yGtkM3dVKIoAp2crVD5Bu+NZ8vE=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-594-5FwpdoaeMMuiZrhq_xK_BA-1; Tue, 05 Apr 2022 10:48:50 -0400
+X-MC-Unique: 5FwpdoaeMMuiZrhq_xK_BA-1
+Received: by mail-wm1-f71.google.com with SMTP id o35-20020a05600c512300b0038e83a52c71so170486wms.7
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 07:48:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aVM16YtaCx1dYir94c9sxYwusYmuTqkX1MFty8IIFQk=;
-        b=7SWvZgORcx7sV84Z+802hg2Saa++Mav2eGb+BSlZ5gCK3OTf4iQXAvWXeR3VIO5sLu
-         2CsQvczS8QYtwgZ1t5lntZhF8kCpc3gpp1H/DNWSc8YrUtHrm/TJlZ+Ag5Hfex113ANw
-         B38uRptDEan0fcDXUPz0WR8tOQWqGKWDLCxN3l2jLiXDPnQxQem+zFtXOUibq/7TVm9n
-         R8cKNTUFtJHv28f7JrqxuK/RYhxo1cQ40VDCoP7D0MEcWteB8G6PMsSF/UqY7XxYPdI8
-         3imSKTYLh7NxvHJo03n7X4wjBMcamg0sZym1I6dlbF2Kbc0FGLx3N+RtmMdQ+HWDgz0O
-         EUkA==
-X-Gm-Message-State: AOAM5335WsAZEjSngZB3Dn3e6wA1IUScM8OHMoxhw9Gz4uDRA89eM6Pn
-        ZYA5gme+BorXxK91vhEiNNXYf7OPs3uHKwFfTTD0bg==
-X-Google-Smtp-Source: ABdhPJz3jBIQ7EkEmj+tI9A+lIIYlFEORto6nxVAIbaEAMf4GKZe+IPBCCzl9LE/xhd2lQpRB76SurWFw5kPGx38Ono=
-X-Received: by 2002:a19:651d:0:b0:44a:b88a:b0b1 with SMTP id
- z29-20020a19651d000000b0044ab88ab0b1mr3373569lfb.380.1649176968442; Tue, 05
- Apr 2022 09:42:48 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gLnQrP3xPWs2TZHtPngsxvbbh35oj514ez2KutsOFxM=;
+        b=W9zNSZBJD+e876284/UGkjx8mwndnywNoEdeioibPULHpjN76Wi7IRMtZev9RKCgaX
+         8sL06jNDTWVe+/KaOagFMtELMGYgBH4xfEgK2DO6Yn2gfDfoFmzu0uuGSb28El0/WaOs
+         SEFQ6QSfK9Wfq4/9XbxuLX+e8nxOCWLysJrDD1FWVWAETIztaHqhzCnz/VbN6PUNVUIY
+         VJJc5caiM/44rvpqr+tLBPMobmuMMhCEqpWCoWskN7e5ZcQ1ywE0b7K1ukTf+m5pnY1A
+         3WlcMfdANMWdqdoGEci4P7WxnRz04vDA5GNi4ewV/mE24Uhtvk4OKW9ms2ULTsJnBo4x
+         6dNA==
+X-Gm-Message-State: AOAM530/zrne2Pa/DOiShsb/2+wjL3lsIJhkLgC5odxx+sFLfm1oRbvw
+        UhPY57rYFESM+uquBtJVL52q69sueYMaC/yfdaV+3p0q4mswucc+dlQCh5DtWxi4FS2+BDzvOiz
+        wZgHzYM6qc3zkAB9n+VMz+Az/
+X-Received: by 2002:a05:600c:27d1:b0:38e:72c2:5727 with SMTP id l17-20020a05600c27d100b0038e72c25727mr3474700wmb.123.1649170128820;
+        Tue, 05 Apr 2022 07:48:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwAm12iI6JoUmR7+6Czqj9MkJh71Zisi7Pf7OUy+0V6YUCaihNcSzxM1Dgv8W4AodPjbvVuXg==
+X-Received: by 2002:a05:600c:27d1:b0:38e:72c2:5727 with SMTP id l17-20020a05600c27d100b0038e72c25727mr3474685wmb.123.1649170128568;
+        Tue, 05 Apr 2022 07:48:48 -0700 (PDT)
+Received: from [10.32.181.87] (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.googlemail.com with ESMTPSA id az19-20020a05600c601300b0038cadf3aa69sm3722043wmb.36.2022.04.05.07.48.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 07:48:47 -0700 (PDT)
+Message-ID: <b543e92d-0a98-26f6-105b-5c3bbf74f79f@redhat.com>
+Date:   Tue, 5 Apr 2022 16:48:46 +0200
 MIME-Version: 1.0
-References: <20220405113359.2880241-1-masahiroy@kernel.org> <20220405113359.2880241-10-masahiroy@kernel.org>
-In-Reply-To: <20220405113359.2880241-10-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 5 Apr 2022 09:42:36 -0700
-Message-ID: <CAKwvOd=oCivWGHLFLCuPeH1R-gKGRmsvg=NV5ZbSVhd13cqgSw@mail.gmail.com>
-Subject: Re: [PATCH v2 09/10] kbuild: refactor cmd_modversions_c
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 041/104] KVM: VMX: Move setting of EPT MMU masks to
+ common VT-x code
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <4dbe2defb66835ac414cdb2dc5974fa4a6820101.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <4dbe2defb66835ac414cdb2dc5974fa4a6820101.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 4:34 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> cmd_modversions_c implements two parts; run genksyms to calculate CRCs
-> of exported symbols, run $(LD) to update the object with the CRCs. The
-> latter is not executed for CONFIG_LTO_CLANG=y since the object is not
-> ELF but LLVM bit code at this point.
->
-> The first part can be unified because we can always use $(NM) instead
-> of "$(OBJDUMP) -h" to dump the symbols.
->
-> Split the code into the two macros, cmd_gen_symversions_c and
-> cmd_modversions.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
+On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> From: Sean Christopherson <sean.j.christopherson@intel.com>
+> 
+> EPT MMU masks are used commonly for VMX and TDX.  The value needs to be
+> initialized in common code before both VMX/TDX-specific initialization
+> code.
+> 
+> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 > ---
->
-> Changes in v2:
->  - new
->
->  scripts/Makefile.build | 25 +++++++++++--------------
->  1 file changed, 11 insertions(+), 14 deletions(-)
->
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index d934bdf84de4..ba2be555f942 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -169,29 +169,25 @@ ifdef CONFIG_MODVERSIONS
->  #   the actual value of the checksum generated by genksyms
->  # o remove .tmp_<file>.o to <file>.o
->
-> -ifdef CONFIG_LTO_CLANG
->  # Generate .o.symversions files for each .o with exported symbols, and link these
->  # to the kernel and/or modules at the end.
-> -cmd_modversions_c =                                                            \
-> +gen_symversions =                                                              \
->         if $(NM) $@ 2>/dev/null | grep -q __ksymtab; then                       \
-> -               $(call cmd_gensymtypes_c,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))  \
-> +               $(call cmd_gensymtypes_$(1),$(KBUILD_SYMTYPES),$(@:.o=.symtypes)) \
->                     > $@.symversions;                                           \
->         else                                                                    \
->                 rm -f $@.symversions;                                           \
-> -       fi;
-> -else
-> -cmd_modversions_c =                                                            \
-> -       if $(OBJDUMP) -h $@ | grep -q __ksymtab; then                           \
-> -               $(call cmd_gensymtypes_c,$(KBUILD_SYMTYPES),$(@:.o=.symtypes))  \
-> -                   > $(@D)/.tmp_$(@F:.o=.ver);                                 \
-> -                                                                               \
-> +       fi
+>   arch/x86/kvm/vmx/main.c | 5 +++++
+>   arch/x86/kvm/vmx/vmx.c  | 4 ----
+>   2 files changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+> index 3eb9db6d83ac..51aaafe6b432 100644
+> --- a/arch/x86/kvm/vmx/main.c
+> +++ b/arch/x86/kvm/vmx/main.c
+> @@ -4,6 +4,7 @@
+>   #include "x86_ops.h"
+>   #include "vmx.h"
+>   #include "nested.h"
+> +#include "mmu.h"
+>   #include "pmu.h"
+>   #include "tdx.h"
+>   
+> @@ -22,6 +23,10 @@ static __init int vt_hardware_setup(void)
+>   
+>   	tdx_hardware_setup(&vt_x86_ops);
+>   
+> +	if (enable_ept)
+> +		kvm_mmu_set_ept_masks(enable_ept_ad_bits,
+> +				      cpu_has_vmx_ept_execute_only());
 > +
-> +cmd_gen_symversions_c =        $(call gen_symversions,c)
-> +
-> +cmd_modversions =                                                              \
-> +       if [ -r $@.symversions ]; then                                          \
->                 $(LD) $(KBUILD_LDFLAGS) -r -o $(@D)/.tmp_$(@F) $@               \
-> -                       -T $(@D)/.tmp_$(@F:.o=.ver);                            \
-> +                       -T $@.symversions;                                      \
->                 mv -f $(@D)/.tmp_$(@F) $@;                                      \
-> -               rm -f $(@D)/.tmp_$(@F:.o=.ver);                                 \
->         fi
->  endif
-> -endif
->
->  ifdef CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
->  # compiler will not generate __mcount_loc use recordmcount or recordmcount.pl
-> @@ -269,7 +265,8 @@ define rule_cc_o_c
->         $(call cmd,checksrc)
->         $(call cmd,checkdoc)
->         $(call cmd,gen_objtooldep)
-> -       $(call cmd,modversions_c)
-> +       $(call cmd,gen_symversions_c)
-> +       $(if $(CONFIG_LTO_CLANG),,$(call cmd,modversions))
->         $(call cmd,record_mcount)
->  endef
->
-> --
-> 2.32.0
->
+>   	return 0;
+>   }
+>   
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 0edeeed0b4c8..07fd892768be 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -7817,10 +7817,6 @@ __init int vmx_hardware_setup(void)
+>   
+>   	set_bit(0, vmx_vpid_bitmap); /* 0 is reserved for host */
+>   
+> -	if (enable_ept)
+> -		kvm_mmu_set_ept_masks(enable_ept_ad_bits,
+> -				      cpu_has_vmx_ept_execute_only());
+> -
+>   	kvm_configure_mmu(enable_ept, 0, vmx_get_max_tdp_level(),
+>   			  ept_caps_to_lpage_level(vmx_capability.ept));
+>   
 
+RB
 
--- 
-Thanks,
-~Nick Desaulniers
