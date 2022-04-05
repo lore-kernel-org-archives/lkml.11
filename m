@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BADC35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89662C41535
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 15:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380241AbiDEPNi (ORCPT
+        id S1379657AbiDEPNX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 11:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
+        Tue, 5 Apr 2022 11:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346354AbiDEJov (ORCPT
+        with ESMTP id S1346353AbiDEJov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 05:44:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52BE0D9EA2;
-        Tue,  5 Apr 2022 02:30:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE5DD9E94;
+        Tue,  5 Apr 2022 02:30:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1BB861680;
-        Tue,  5 Apr 2022 09:30:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA612C385A0;
-        Tue,  5 Apr 2022 09:30:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3DC9B81CAE;
+        Tue,  5 Apr 2022 09:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CD9C385A0;
+        Tue,  5 Apr 2022 09:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151026;
-        bh=IQlQgUCjG42fAEaq4U78Y6LFtmOpKk1GRDjB9tZcYGc=;
+        s=korg; t=1649151023;
+        bh=1xsjRKMqP5RqWtFVtYhBnlBrA69egcb28RKZGj3GV+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B1mFe8dX2iqIM8125ET4Wu3LcR3VnVTFMGQKfEZ2XcDm8B/2BqysueAl4rMqJiqDh
-         R0D59DVwGVjxQBQcwOIWD6odsMcHrVQrq9oFfFLLip6jrlvKiMkO3Sk7ET/A1hE2g3
-         CzGgkfR5ZcABWpAP+4QNLN38OO/V1oKSLvJL7I4o=
+        b=Vy6R+J5c28tJE7nYqyWi4aPk2ISYRxha6PYtGSgBj+A6HkvFzM4RdjKYiAqe0lNGj
+         j4/gYls42YlZdHNlUhNeVcBr/Qa/fRLPT1e7XWcoY0vIpYaq4KmvQ9lGfgivYluxs+
+         CVh7FpbMWorSQ0PavSWpu3hvwiVWwsE3eNe+T78k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -40,9 +40,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 267/913] media: camss: csid-170: dont enable unused irqs
-Date:   Tue,  5 Apr 2022 09:22:09 +0200
-Message-Id: <20220405070347.859924298@linuxfoundation.org>
+Subject: [PATCH 5.15 266/913] media: camss: csid-170: fix non-10bit formats
+Date:   Tue,  5 Apr 2022 09:22:08 +0200
+Message-Id: <20220405070347.830005965@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -56,12 +56,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jonathan Marek <jonathan@marek.ca>
 
-[ Upstream commit a6da362491e409de0978d733441e59db6584d69f ]
+[ Upstream commit 14d510e040f85ff05734fd6db8bae44b47886464 ]
 
-csid_isr() only checks for the reset irq, so enabling any other irqs
-doesn't make sense. The "RDI irq" comment is also wrong, the register
-should be CSID_CSI2_RDIN_IRQ_MASK. Without this fix there may be an
-excessive amount of irqs.
+Use the decode_format/data_type from the "format" struct instead of a
+hardcoded 10-bit format.
 
 Fixes: eebe6d00e9bf ("media: camss: Add support for CSID hardware version Titan 170")
 Signed-off-by: Jonathan Marek <jonathan@marek.ca>
@@ -73,26 +71,33 @@ Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/camss/camss-csid-170.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/media/platform/qcom/camss/camss-csid-170.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/media/platform/qcom/camss/camss-csid-170.c b/drivers/media/platform/qcom/camss/camss-csid-170.c
-index aa65043c3303..a006c8dbceb1 100644
+index ac22ff29d2a9..aa65043c3303 100644
 --- a/drivers/media/platform/qcom/camss/camss-csid-170.c
 +++ b/drivers/media/platform/qcom/camss/camss-csid-170.c
-@@ -444,12 +444,6 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
- 	val |= 1 << CSI2_RX_CFG1_MISR_EN;
- 	writel_relaxed(val, csid->base + CSID_CSI2_RX_CFG1); // csi2_vc_mode_shift_val ?
+@@ -366,7 +366,7 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
+ 			val |= input_format->width & 0x1fff << TPG_DT_n_CFG_0_FRAME_WIDTH;
+ 			writel_relaxed(val, csid->base + CSID_TPG_DT_n_CFG_0(0));
  
--	/* error irqs start at BIT(11) */
--	writel_relaxed(~0u, csid->base + CSID_CSI2_RX_IRQ_MASK);
--
--	/* RDI irq */
--	writel_relaxed(~0u, csid->base + CSID_TOP_IRQ_MASK);
--
- 	val = 1 << RDI_CTRL_HALT_CMD;
- 	writel_relaxed(val, csid->base + CSID_RDI_CTRL(0));
- }
+-			val = DATA_TYPE_RAW_10BIT << TPG_DT_n_CFG_1_DATA_TYPE;
++			val = format->data_type << TPG_DT_n_CFG_1_DATA_TYPE;
+ 			writel_relaxed(val, csid->base + CSID_TPG_DT_n_CFG_1(0));
+ 
+ 			val = tg->mode << TPG_DT_n_CFG_2_PAYLOAD_MODE;
+@@ -382,8 +382,9 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
+ 		val = 1 << RDI_CFG0_BYTE_CNTR_EN;
+ 		val |= 1 << RDI_CFG0_FORMAT_MEASURE_EN;
+ 		val |= 1 << RDI_CFG0_TIMESTAMP_EN;
++		/* note: for non-RDI path, this should be format->decode_format */
+ 		val |= DECODE_FORMAT_PAYLOAD_ONLY << RDI_CFG0_DECODE_FORMAT;
+-		val |= DATA_TYPE_RAW_10BIT << RDI_CFG0_DATA_TYPE;
++		val |= format->data_type << RDI_CFG0_DATA_TYPE;
+ 		val |= vc << RDI_CFG0_VIRTUAL_CHANNEL;
+ 		val |= dt_id << RDI_CFG0_DT_ID;
+ 		writel_relaxed(val, csid->base + CSID_RDI_CFG0(0));
 -- 
 2.34.1
 
