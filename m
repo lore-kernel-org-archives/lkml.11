@@ -2,87 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C49CFC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B420CC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575980AbiDEXJs (ORCPT
+        id S1575924AbiDEXJo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        Tue, 5 Apr 2022 19:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354371AbiDEKN7 (ORCPT
+        with ESMTP id S1449262AbiDEPtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:13:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE69694B2;
-        Tue,  5 Apr 2022 02:59:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B49A2B81C83;
-        Tue,  5 Apr 2022 09:59:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08AC9C385A1;
-        Tue,  5 Apr 2022 09:59:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152775;
-        bh=nlm8p+tTQwhGjPD/lcR+yMaGdpDQ15VBJt2fFe08qzk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cItoeJDBIIRuosIIyfg3x3GCZcf3eNS3rD7Kw+TPlQjGrCdUZMUts16yoA2PYy+Vs
-         BxVwViygzkGJ6hnLZcS8pvDBiUsa7YoMvFPPUi22TX7+hZch/B1Lg0SP07M/OZGXEz
-         WOmvcVh+sEulbeN+RVSlEX326AsWG63AlOQ9OfL8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Tue, 5 Apr 2022 11:49:36 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A68D1AEC82
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 07:33:23 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app3 (Coremail) with SMTP id cC_KCgAHWsosU0xidy9rAQ--.61292S2;
+        Tue, 05 Apr 2022 22:33:20 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.15 897/913] um: Fix uml_mconsole stop/go
-Date:   Tue,  5 Apr 2022 09:32:39 +0200
-Message-Id: <20220405070406.708239163@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Cc:     Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH] drivers: net: slip: fix NPD bug in sl_tx_timeout()
+Date:   Tue,  5 Apr 2022 22:33:16 +0800
+Message-Id: <20220405143316.56213-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgAHWsosU0xidy9rAQ--.61292S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7tF15KF1rCr4UZw15WFyUWrg_yoW8Xry5pF
+        4jg3ZYkrWUGry2g3y8Ja1v9r4Fv348JryDGrW3K3ySyr1kJFZYqr1ftayq9FWxtFZFya42
+        vF1rA3y3Cr43AF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jrv_JF1lIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg4IAVZdtZAzNQAjsO
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+When a slip driver is detaching, the slip_close() will act to
+cleanup necessary resources and sl->tty is set to NULL in
+slip_close(). Meanwhile, the packet we transmit is blocked,
+sl_tx_timeout() will be called. Although slip_close() and
+sl_tx_timeout() use sl->lock to synchronize, we don`t judge
+whether sl->tty equals to NULL in sl_tx_timeout() and the
+null pointer dereference bug will happen.
 
-commit 1a3a6a2a035bb6c3a7ef4c788d8fd69a7b2d6284 upstream.
+   (Thread 1)                 |      (Thread 2)
+                              | slip_close()
+                              |   spin_lock_bh(&sl->lock)
+                              |   ...
+...                           |   sl->tty = NULL //(1)
+sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
+  spin_lock(&sl->lock);       |
+  ...                         |   ...
+  tty_chars_in_buffer(sl->tty)|
+    if (tty->ops->..) //(2)   |
+    ...                       |   synchronize_rcu()
 
-Moving to an EPOLL based IRQ controller broke uml_mconsole stop/go
-commands. This fixes it and restores stop/go functionality.
+We set NULL to sl->tty in position (1) and dereference sl->tty
+in position (2).
 
-Fixes: ff6a17989c08 ("Epoll based IRQ controller")
-Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch adds check in sl_tx_timeout(). If sl->tty equals to
+NULL, sl_tx_timeout() will goto out.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
- arch/um/drivers/mconsole_kern.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/slip/slip.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/um/drivers/mconsole_kern.c
-+++ b/arch/um/drivers/mconsole_kern.c
-@@ -224,7 +224,7 @@ void mconsole_go(struct mc_request *req)
+diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
+index 88396ff99f0..6865d32270e 100644
+--- a/drivers/net/slip/slip.c
++++ b/drivers/net/slip/slip.c
+@@ -469,7 +469,7 @@ static void sl_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ 	spin_lock(&sl->lock);
  
- void mconsole_stop(struct mc_request *req)
- {
--	deactivate_fd(req->originating_fd, MCONSOLE_IRQ);
-+	block_signals();
- 	os_set_fd_block(req->originating_fd, 1);
- 	mconsole_reply(req, "stopped", 0, 0);
- 	for (;;) {
-@@ -247,6 +247,7 @@ void mconsole_stop(struct mc_request *re
- 	}
- 	os_set_fd_block(req->originating_fd, 0);
- 	mconsole_reply(req, "", 0, 0);
-+	unblock_signals();
- }
+ 	if (netif_queue_stopped(dev)) {
+-		if (!netif_running(dev))
++		if (!netif_running(dev) || !sl->tty)
+ 			goto out;
  
- static DEFINE_SPINLOCK(mc_devices_lock);
-
+ 		/* May be we must check transmitter timeout here ?
+-- 
+2.17.1
 
