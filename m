@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F89C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 192D0C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351465AbiDENGh (ORCPT
+        id S1358769AbiDENJi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
+        Tue, 5 Apr 2022 09:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343991AbiDEJQo (ORCPT
+        with ESMTP id S1344164AbiDEJS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9EAEB7;
-        Tue,  5 Apr 2022 02:03:14 -0700 (PDT)
+        Tue, 5 Apr 2022 05:18:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4366212F;
+        Tue,  5 Apr 2022 02:04:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CFB261564;
-        Tue,  5 Apr 2022 09:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADC07C385A1;
-        Tue,  5 Apr 2022 09:03:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C274614E4;
+        Tue,  5 Apr 2022 09:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F170C385A0;
+        Tue,  5 Apr 2022 09:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149393;
-        bh=iyz1Yk21oN71kPToOHP+9tfSQ5oWptc3Iu7o1QaJYJc=;
+        s=korg; t=1649149495;
+        bh=pIuTGn7V2ZbvS6rqkuxePpmv09JwUS3+tmCDJx4nrgM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J1l3EbbpN8sjwY17VUejGCf21LkyA6ikG29081q5xVHJmLY06G0lxT9Lu9HGUyAqH
-         j38Mnj1UO70jTrOyESMLBBRcxvWJPPADAoYlNlgFyJOslDxqbWN4LxT+5vK9XGlcI/
-         1CSRmwdEG7J4alVya29jjLJsVfHKrZ0pkH5lIpeI=
+        b=z5SDChZujxyFxqy4Wyj6Kr9eujBFj4Co9ArT0yt73EviNvJmXRdrKysRCFZH3ycnK
+         Ibij+RF9ImlLyHiNsh383kOMGUqvcdTh2hHwXV21JicyfsZaYpzk2QTe4rgp55bDUY
+         V1/TAUNbHcqKl0QK4iFQF+YbNllfSxbGZPI25kPU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0698/1017] pinctrl: mediatek: paris: Fix "argument" argument type for mtk_pinconf_get()
-Date:   Tue,  5 Apr 2022 09:26:51 +0200
-Message-Id: <20220405070414.991737425@linuxfoundation.org>
+Subject: [PATCH 5.16 0735/1017] selftests: test_vxlan_under_vrf: Fix broken test case
+Date:   Tue,  5 Apr 2022 09:27:28 +0200
+Message-Id: <20220405070416.082992146@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,42 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Ido Schimmel <idosch@nvidia.com>
 
-[ Upstream commit 19bce7ce0a593c7024030a0cda9e23facea3c93d ]
+[ Upstream commit b50d3b46f84282d795ae3076111acb75ae1031f3 ]
 
-For mtk_pinconf_get(), the "argument" argument is typically returned by
-pinconf_to_config_argument(), which holds the value for a given pinconf
-parameter. It certainly should not have the type of "enum pin_config_param",
-which describes the type of the pinconf parameter itself.
+The purpose of the last test case is to test VXLAN encapsulation and
+decapsulation when the underlay lookup takes place in a non-default VRF.
+This is achieved by enslaving the physical device of the tunnel to a
+VRF.
 
-Change the type to u32, which matches the return type of
-pinconf_to_config_argument().
+The binding of the VXLAN UDP socket to the VRF happens when the VXLAN
+device itself is opened, not when its physical device is opened. This
+was also mentioned in the cited commit ("tests that moving the underlay
+from a VRF to another works when down/up the VXLAN interface"), but the
+test did something else.
 
-Fixes: 805250982bb5 ("pinctrl: mediatek: add pinctrl-paris that implements the vendor dt-bindings")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308100956.2750295-4-wenst@chromium.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fix it by reopening the VXLAN device instead of its physical device.
+
+Before:
+
+ # ./test_vxlan_under_vrf.sh
+ Checking HV connectivity                                           [ OK ]
+ Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
+ Check VM connectivity through VXLAN (underlay in a VRF)            [FAIL]
+
+After:
+
+ # ./test_vxlan_under_vrf.sh
+ Checking HV connectivity                                           [ OK ]
+ Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
+ Check VM connectivity through VXLAN (underlay in a VRF)            [ OK ]
+
+Fixes: 03f1c26b1c56 ("test/net: Add script for VXLAN underlay in a VRF")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220324200514.1638326-1-idosch@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-paris.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/testing/selftests/net/test_vxlan_under_vrf.sh | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
-index f7644530cee1..cbaad89fbe17 100644
---- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-@@ -184,8 +184,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
- }
+diff --git a/tools/testing/selftests/net/test_vxlan_under_vrf.sh b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
+index ea5a7a808f12..1fd1250ebc66 100755
+--- a/tools/testing/selftests/net/test_vxlan_under_vrf.sh
++++ b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
+@@ -120,11 +120,11 @@ echo "[ OK ]"
  
- static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
--			   enum pin_config_param param,
--			   enum pin_config_param arg)
-+			   enum pin_config_param param, u32 arg)
- {
- 	struct mtk_pinctrl *hw = pinctrl_dev_get_drvdata(pctldev);
- 	const struct mtk_pin_desc *desc;
+ # Move the underlay to a non-default VRF
+ ip -netns hv-1 link set veth0 vrf vrf-underlay
+-ip -netns hv-1 link set veth0 down
+-ip -netns hv-1 link set veth0 up
++ip -netns hv-1 link set vxlan0 down
++ip -netns hv-1 link set vxlan0 up
+ ip -netns hv-2 link set veth0 vrf vrf-underlay
+-ip -netns hv-2 link set veth0 down
+-ip -netns hv-2 link set veth0 up
++ip -netns hv-2 link set vxlan0 down
++ip -netns hv-2 link set vxlan0 up
+ 
+ echo -n "Check VM connectivity through VXLAN (underlay in a VRF)            "
+ ip netns exec vm-1 ping -c 1 -W 1 10.0.0.2 &> /dev/null || (echo "[FAIL]"; false)
 -- 
 2.34.1
 
