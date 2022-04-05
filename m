@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233550AbiDEIIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
+        id S233412AbiDEIIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232688AbiDEHyH (ORCPT
+        with ESMTP id S232602AbiDEHxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:54:07 -0400
+        Tue, 5 Apr 2022 03:53:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61B127CF8;
-        Tue,  5 Apr 2022 00:49:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB221DA5C;
+        Tue,  5 Apr 2022 00:49:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 823CD615C3;
-        Tue,  5 Apr 2022 07:49:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94FD5C340EE;
-        Tue,  5 Apr 2022 07:49:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F24CB616DE;
+        Tue,  5 Apr 2022 07:49:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F32DC34111;
+        Tue,  5 Apr 2022 07:49:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144988;
-        bh=oRLN2IlqOxkWoTJkzS7xdz28eTe0nNxu9oZttJFSR0E=;
+        s=korg; t=1649144948;
+        bh=m9IdsWkhwEHDsIk1mPp3Sw2dqcl6n6tF8/nLt+2Yvdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogbwTK3E30c88yvUXsord9S0iZKpS4oAdeDRPSWXaLKI3gHa7JMp1GIiUpo7zWS8B
-         QkRdKSH1AlWyTJG1Xir2yNPYyOtRbZNNlaIVGKSepsSm4iqY2YLaKP2dMiumbzKfWW
-         BzFu0zb1sQKaLS35AgMqma9AxVSDs28yYu/ZUeRs=
+        b=et5aKI4eY5d9tB+jPylBtP3nugH07hQ/ivzWYHfFAPyLkI1sLjO+bMUEW0mY1QCpn
+         IqU12Y7w6yzlDMcCbkMAMzJjQIuLq25MiOVKEWj1CxyxCdH4CEAGNTs7d3DD1VXR1X
+         vWpuLNtYSaERArgoIQfhnvtMDz+pzqHH6MgRCftE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        stable@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0244/1126] crypto: amlogic - call finalize with bh disabled
-Date:   Tue,  5 Apr 2022 09:16:31 +0200
-Message-Id: <20220405070414.769617463@linuxfoundation.org>
+Subject: [PATCH 5.17 0230/1126] crypto: ccree - dont attempt 0 len DMA mappings
+Date:   Tue,  5 Apr 2022 09:16:17 +0200
+Message-Id: <20220405070414.359472455@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,35 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Gilad Ben-Yossef <gilad@benyossef.com>
 
-[ Upstream commit dba633342994ce47d347bcf5522ba28301247b79 ]
+[ Upstream commit 1fb37b5692c915edcc2448a6b37255738c7c77e0 ]
 
-Doing ipsec produces a spinlock recursion warning.
-This is due to not disabling BH during crypto completion function.
+Refuse to try mapping zero bytes as this may cause a fault
+on some configurations / platforms and it seems the prev.
+attempt is not enough and we need to be more explicit.
 
-Fixes: 48fe583fe541 ("crypto: amlogic - Add crypto accelerator for amlogic GXL")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Fixes: ce0fc6db38de ("crypto: ccree - protect against empty or NULL
+scatterlists")
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/amlogic/amlogic-gxl-cipher.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/crypto/ccree/cc_buffer_mgr.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/crypto/amlogic/amlogic-gxl-cipher.c b/drivers/crypto/amlogic/amlogic-gxl-cipher.c
-index c6865cbd334b..e79514fce731 100644
---- a/drivers/crypto/amlogic/amlogic-gxl-cipher.c
-+++ b/drivers/crypto/amlogic/amlogic-gxl-cipher.c
-@@ -265,7 +265,9 @@ static int meson_handle_cipher_request(struct crypto_engine *engine,
- 	struct skcipher_request *breq = container_of(areq, struct skcipher_request, base);
+diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
+index a5e041d9d2cf..11e0278c8631 100644
+--- a/drivers/crypto/ccree/cc_buffer_mgr.c
++++ b/drivers/crypto/ccree/cc_buffer_mgr.c
+@@ -258,6 +258,13 @@ static int cc_map_sg(struct device *dev, struct scatterlist *sg,
+ {
+ 	int ret = 0;
  
- 	err = meson_cipher(breq);
-+	local_bh_disable();
- 	crypto_finalize_skcipher_request(engine, breq, err);
-+	local_bh_enable();
- 
- 	return 0;
- }
++	if (!nbytes) {
++		*mapped_nents = 0;
++		*lbytes = 0;
++		*nents = 0;
++		return 0;
++	}
++
+ 	*nents = cc_get_sgl_nents(dev, sg, nbytes, lbytes);
+ 	if (*nents > max_sg_nents) {
+ 		*nents = 0;
 -- 
 2.34.1
 
