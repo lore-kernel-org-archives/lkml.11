@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 194CBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A52C0C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238838AbiDEIbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
+        id S240031AbiDEIbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236021AbiDEIBI (ORCPT
+        with ESMTP id S234235AbiDEH6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:01:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A5C49FB3;
-        Tue,  5 Apr 2022 00:59:09 -0700 (PDT)
+        Tue, 5 Apr 2022 03:58:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD741E3F7;
+        Tue,  5 Apr 2022 00:52:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4221361668;
-        Tue,  5 Apr 2022 07:59:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55A16C340EE;
-        Tue,  5 Apr 2022 07:59:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2C02B81BB5;
+        Tue,  5 Apr 2022 07:52:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3942AC3410F;
+        Tue,  5 Apr 2022 07:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145548;
-        bh=cHh6Am89UvKmAAC6DhpJgKI9IPbPSd8DeXy2OH/l794=;
+        s=korg; t=1649145124;
+        bh=Ts1OsI3ZLCMyHQ1eqGV7NkwX+jLelzLpcnalARBhejs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xvmbXZ4Fo2QugKLgEytW6K9ucyOrhEoHihc0t/Cfr869iZx+89OTwhSa/p3XyeAW4
-         m+BTF3lJbFPSkiQDW8YnAdFeav+lXq2D47eQav3FqqpVPqGsARL85L/CSSoEIzPdD9
-         wT+ILDXvh6iXBnyl93nk5JfPPsckx8RpaWOcB1oQ=
+        b=Q4O0aUHkGLZA4jgM0V/3Hh/CQ8kobgJiQHaX+BWzbkxiG9WAAetriUprJhX60RR0K
+         vM1HbcnV/Ze7OEGStJBDu7/ltPaKnQzrG/6Qpp4n5Wx7NYFJriWsN1ys4LU5+HoHSt
+         sGsQClJumVuHPC6IuANphU3mR9fvl2iFvFXpYY/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yiru Xu <xyru1999@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0445/1126] Bluetooth: hci_serdev: call init_rwsem() before p->open()
-Date:   Tue,  5 Apr 2022 09:19:52 +0200
-Message-Id: <20220405070420.686154785@linuxfoundation.org>
+Subject: [PATCH 5.17 0292/1126] media: staging: media: zoran: fix usage of vb2_dma_contig_set_max_seg_size
+Date:   Tue,  5 Apr 2022 09:17:19 +0200
+Message-Id: <20220405070416.185368002@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,69 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit 9d7cbe2b9cf5f650067df4f402fdd799d4bbb4e1 ]
+[ Upstream commit 241f5b67fb48def58643f279dfb8468bdd54b443 ]
 
-kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
-The problem was in wrong place for percpu_init_rwsem() call.
+vb2_dma_contig_set_max_seg_size need to have a size in parameter and not
+a DMA_BIT_MASK().
+While fixing this issue, also fix error handling of all DMA size
+setting.
 
-hci_uart_proto::open() may register a timer whose callback may call
-hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
-thread won't be fast enough to call percpu_init_rwsem().
-
-Fix it my moving percpu_init_rwsem() call before p->open().
-
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
-...
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- assign_lock_key kernel/locking/lockdep.c:951 [inline]
- register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
- __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
- percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
- hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
- h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
-
-Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
-Reported-by: Yiru Xu <xyru1999@gmail.com>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: d4ae3689226e5 ("media: zoran: device support only 32bit DMA address")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_serdev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/staging/media/zoran/zoran_card.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
-index 3b00d82d36cf..4cda890ce647 100644
---- a/drivers/bluetooth/hci_serdev.c
-+++ b/drivers/bluetooth/hci_serdev.c
-@@ -305,6 +305,8 @@ int hci_uart_register_device(struct hci_uart *hu,
+diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
+index f259585b0689..c578ef3c32f5 100644
+--- a/drivers/staging/media/zoran/zoran_card.c
++++ b/drivers/staging/media/zoran/zoran_card.c
+@@ -1069,8 +1069,10 @@ static int zoran_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
  	if (err)
- 		return err;
+-		return -ENODEV;
+-	vb2_dma_contig_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
++		return err;
++	err = vb2_dma_contig_set_max_seg_size(&pdev->dev, U32_MAX);
++	if (err)
++		return err;
  
-+	percpu_init_rwsem(&hu->proto_lock);
-+
- 	err = p->open(hu);
- 	if (err)
- 		goto err_open;
-@@ -327,7 +329,6 @@ int hci_uart_register_device(struct hci_uart *hu,
- 
- 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
- 	INIT_WORK(&hu->write_work, hci_uart_write_work);
--	percpu_init_rwsem(&hu->proto_lock);
- 
- 	/* Only when vendor specific setup callback is provided, consider
- 	 * the manufacturer information valid. This avoids filling in the
+ 	nr = zoran_num++;
+ 	if (nr >= BUZ_MAX) {
 -- 
 2.34.1
 
