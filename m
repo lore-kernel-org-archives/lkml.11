@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BD5C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4386C4707F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377103AbiDEL52 (ORCPT
+        id S1359776AbiDEL5M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 07:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
+        Tue, 5 Apr 2022 07:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245002AbiDEIxA (ORCPT
+        with ESMTP id S244998AbiDEIxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:53:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4657220;
-        Tue,  5 Apr 2022 01:49:13 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4839BE3F;
+        Tue,  5 Apr 2022 01:49:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FEA3B81BAE;
-        Tue,  5 Apr 2022 08:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A62F7C385A1;
-        Tue,  5 Apr 2022 08:49:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0D140CE1C2B;
+        Tue,  5 Apr 2022 08:48:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246FEC385A1;
+        Tue,  5 Apr 2022 08:48:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148551;
-        bh=nNs1tse4V7cKeod1E45I722hiSpOa7KRDfLhaBO2H64=;
+        s=korg; t=1649148537;
+        bh=dUPMWY3No3ZtlmW5feTBsUwdpyUR2ssd5bqEdS1TjXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z8H/7xyf5Aw1umOfJyHBryEwXFOtdNrdhznXEAAYRMDPEqqQJaOdipSwDHf/jo8lp
-         QF8m82L1Az2IZ9nDTBUcIxeSEA45Tlv/xUGQsPq0B6MiY7g0JwhYNcMI+qH7bqtLz1
-         TmyQ2G1pa3TMphbGO8YFowRUrMofC4Ep6xLj3HsY=
+        b=fl0dC/Iy96KmL0TKHoU1eg7Io/rjcAIzPrzy529NxlewwRXP02E9z065klMH6XceV
+         1uQ3D5Acq+tXL6X5zhVsxHgkrrVeW3P5B8BuWLwvoPCbH8YmQp5kfgKTzL8iegs30v
+         H7+Zgo3rPMdevAdzwe2bPckaWtkFOKrC8Lnvvd9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0397/1017] ARM: configs: multi_v5_defconfig: re-enable DRM_PANEL and FB_xxx
-Date:   Tue,  5 Apr 2022 09:21:50 +0200
-Message-Id: <20220405070406.069721620@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0343/1017] ASoC: codecs: wcd934x: fix kcontrol max values
+Date:   Tue,  5 Apr 2022 09:20:56 +0200
+Message-Id: <20220405070404.464710729@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -49,46 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 9c44d0805f949c56121b4ae6949fb064537bf198 ]
+[ Upstream commit 61163c3e7480106804269182e24db05244866493 ]
 
-Commit 91185d55b32e ("drm: Remove DRM_KMS_FB_HELPER Kconfig option")
-led to de-selection of CONFIG_FB, which was a prerequisite for
-BACKLIGHT_CLASS_DEVICE, which CONFIG_DRM_PANEL_SIMPLE depended on.
-Explicitly set CONFIG_FB, to bring DRM_PANEL_SIMPLE, DRM_PANEL_EDP,
-FB_IMX and FB_ATMEL back into the generated .config.
-This also adds some new FB related features like fonts and the
-framebuffer console.
+set "HPH Type" Kcontrol max value of WCD_MBHC_HPH_STEREO instead of UINT_MAX.
+set "HPHL/R Impedance" Kcontrols max value to INT_MAX instead of UINT_MAX as
+max field is integer type.
 
-See also commit 8c1768967e27 ("ARM: config: mutli v7: Reenable FB
-dependency"), which solved the same problem for multi_v7_defconfig.
+Without this patch amixer for these controls will show -1 as max value to userspace.
 
-This relies on [1], to fix a broken Kconfig dependency.
-
-[1] https://lore.kernel.org/dri-devel/20220315084559.23510-1-tzimmermann@suse.de/raw
-
-Fixes: 91185d55b32e ("drm: Remove DRM_KMS_FB_HELPER Kconfig option")
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/20220317183043.948432-4-andre.przywara@arm.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 9fb9b1690f0b ("ASoC: codecs: wcd934x: add mbhc support")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220222183212.11580-9-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/configs/multi_v5_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/wcd934x.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/configs/multi_v5_defconfig b/arch/arm/configs/multi_v5_defconfig
-index dac1db2e181f..3e3beb0cc33d 100644
---- a/arch/arm/configs/multi_v5_defconfig
-+++ b/arch/arm/configs/multi_v5_defconfig
-@@ -197,6 +197,7 @@ CONFIG_DRM_ATMEL_HLCDC=m
- CONFIG_DRM_PANEL_SIMPLE=y
- CONFIG_DRM_PANEL_EDP=y
- CONFIG_DRM_ASPEED_GFX=m
-+CONFIG_FB=y
- CONFIG_FB_IMX=y
- CONFIG_FB_ATMEL=y
- CONFIG_BACKLIGHT_ATMEL_LCDC=y
+diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
+index e63c6b723d76..68c9d694d379 100644
+--- a/sound/soc/codecs/wcd934x.c
++++ b/sound/soc/codecs/wcd934x.c
+@@ -3023,14 +3023,14 @@ static int wcd934x_hph_impedance_get(struct snd_kcontrol *kcontrol,
+ 	return 0;
+ }
+ static const struct snd_kcontrol_new hph_type_detect_controls[] = {
+-	SOC_SINGLE_EXT("HPH Type", 0, 0, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPH Type", 0, 0, WCD_MBHC_HPH_STEREO, 0,
+ 		       wcd934x_get_hph_type, NULL),
+ };
+ 
+ static const struct snd_kcontrol_new impedance_detect_controls[] = {
+-	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, INT_MAX, 0,
+ 		       wcd934x_hph_impedance_get, NULL),
+-	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, UINT_MAX, 0,
++	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, INT_MAX, 0,
+ 		       wcd934x_hph_impedance_get, NULL),
+ };
+ 
 -- 
 2.34.1
 
