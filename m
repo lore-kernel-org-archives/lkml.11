@@ -2,100 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6847CC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C864C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 22:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239184AbiDEWGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 18:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
+        id S1391526AbiDEWHA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 18:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354022AbiDEKKs (ORCPT
+        with ESMTP id S1573582AbiDETXD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:10:48 -0400
+        Tue, 5 Apr 2022 15:23:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE354F9ED;
-        Tue,  5 Apr 2022 02:56:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667794A3E2;
+        Tue,  5 Apr 2022 12:21:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8A056157A;
-        Tue,  5 Apr 2022 09:56:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFB54C385A2;
-        Tue,  5 Apr 2022 09:56:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649152603;
-        bh=BBGt+GgEpJktuRha/6PB6GGM4VbMgSz88KLc5ZHLTZg=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8BDB616C5;
+        Tue,  5 Apr 2022 19:21:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A93FDC385A0;
+        Tue,  5 Apr 2022 19:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649186464;
+        bh=lVmRbo/Yqwtaeh9CAL98bk9QWDa/T4bzwxEXkoS7RR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MzYnBk/7/ZLzjC31R+akUzHNpAUiyrWJPSJSyqrHQEW4+Wrkcd1c9MSx/oL5ECemi
-         d8CdybSWZwsea8A/HDIUJtr+fv6HZGr7xhgtorp6Ie2/nqVd0Ew98ndn1tPsiEbzrV
-         4e8WWiTaq7z3sns460GBvtviCEj2vYItYu5uF4/Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.15 837/913] rtc: check if __rtc_read_time was successful
-Date:   Tue,  5 Apr 2022 09:31:39 +0200
-Message-Id: <20220405070404.919159950@linuxfoundation.org>
+        b=U3k5xKk6McwExr1pInRLBBwT0PSd1ja7gfw4fXGYf3G9rG8Ff0FQihQw5WlIJ6hdh
+         eilnR53Iy/8He6MnHF9HXc/rOlO3CTktZJ96PYQ6+HfKDGEjcv/AwAp0Yib1Wu3UZb
+         oBDt31SstSUj/fbCPYrGAI99ydS05zt19JY8y2t8WwmZ2l72D/zPU/XdeyrRLGEBK7
+         Scljqp3FqosbSdOpfTalLCkMJ6XebyLgJnzAExnhcaPg1E3ho/VALdQ0FwvMS7jIKX
+         Nv6N+eh8OIiISDWvPabMqwvqr3gE674oMCwPh5aQhtiZ/1NVxG/qiQGEYSTpw1ASOf
+         qA6lOUAaTe+IQ==
+From:   Jeff Layton <jlayton@kernel.org>
+To:     idryomov@gmail.com, xiubli@redhat.com
+Cc:     ceph-devel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lhenriques@suse.de
+Subject: [PATCH v13 35/59] ceph: add a new ceph.fscrypt.auth vxattr
+Date:   Tue,  5 Apr 2022 15:20:06 -0400
+Message-Id: <20220405192030.178326-36-jlayton@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220405192030.178326-1-jlayton@kernel.org>
+References: <20220405192030.178326-1-jlayton@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Give the client a way to get at the xattr from userland, mostly for
+future debugging purposes.
 
-commit 915593a7a663b2ad08b895a5f3ba8b19d89d4ebf upstream.
-
-Clang static analysis reports this issue
-interface.c:810:8: warning: Passed-by-value struct
-  argument contains uninitialized data
-  now = rtc_tm_to_ktime(tm);
-      ^~~~~~~~~~~~~~~~~~~
-
-tm is set by a successful call to __rtc_read_time()
-but its return status is not checked.  Check if
-it was successful before setting the enabled flag.
-Move the decl of err to function scope.
-
-Fixes: 2b2f5ff00f63 ("rtc: interface: ignore expired timers when enqueuing new timers")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220326194236.2916310-1-trix@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
 ---
- drivers/rtc/interface.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ fs/ceph/xattr.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
---- a/drivers/rtc/interface.c
-+++ b/drivers/rtc/interface.c
-@@ -793,9 +793,13 @@ static int rtc_timer_enqueue(struct rtc_
- 	struct timerqueue_node *next = timerqueue_getnext(&rtc->timerqueue);
- 	struct rtc_time tm;
- 	ktime_t now;
-+	int err;
+diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+index 58628cef4207..e080116608b2 100644
+--- a/fs/ceph/xattr.c
++++ b/fs/ceph/xattr.c
+@@ -352,6 +352,23 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
+ 	return ret;
+ }
+ 
++#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
++static bool ceph_vxattrcb_fscrypt_auth_exists(struct ceph_inode_info *ci)
++{
++	return ci->fscrypt_auth_len;
++}
 +
-+	err = __rtc_read_time(rtc, &tm);
-+	if (err)
-+		return err;
++static ssize_t ceph_vxattrcb_fscrypt_auth(struct ceph_inode_info *ci, char *val, size_t size)
++{
++	if (size) {
++		if (size < ci->fscrypt_auth_len)
++			return -ERANGE;
++		memcpy(val, ci->fscrypt_auth, ci->fscrypt_auth_len);
++	}
++	return ci->fscrypt_auth_len;
++}
++#endif /* CONFIG_FS_ENCRYPTION */
++
+ #define CEPH_XATTR_NAME(_type, _name)	XATTR_CEPH_PREFIX #_type "." #_name
+ #define CEPH_XATTR_NAME2(_type, _name, _name2)	\
+ 	XATTR_CEPH_PREFIX #_type "." #_name "." #_name2
+@@ -500,6 +517,15 @@ static struct ceph_vxattr ceph_common_vxattrs[] = {
+ 		.exists_cb = NULL,
+ 		.flags = VXATTR_FLAG_READONLY,
+ 	},
++#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
++	{
++		.name = "ceph.fscrypt.auth",
++		.name_size = sizeof("ceph.fscrypt.auth"),
++		.getxattr_cb = ceph_vxattrcb_fscrypt_auth,
++		.exists_cb = ceph_vxattrcb_fscrypt_auth_exists,
++		.flags = VXATTR_FLAG_READONLY,
++	},
++#endif /* CONFIG_FS_ENCRYPTION */
+ 	{ .name = NULL, 0 }	/* Required table terminator */
+ };
  
- 	timer->enabled = 1;
--	__rtc_read_time(rtc, &tm);
- 	now = rtc_tm_to_ktime(tm);
- 
- 	/* Skip over expired timers */
-@@ -809,7 +813,6 @@ static int rtc_timer_enqueue(struct rtc_
- 	trace_rtc_timer_enqueue(timer);
- 	if (!next || ktime_before(timer->node.expires, next->expires)) {
- 		struct rtc_wkalrm alarm;
--		int err;
- 
- 		alarm.time = rtc_ktime_to_tm(timer->node.expires);
- 		alarm.enabled = 1;
-
+-- 
+2.35.1
 
