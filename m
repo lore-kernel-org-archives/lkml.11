@@ -2,87 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BECC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8837FC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345606AbiDEKlp (ORCPT
+        id S1345714AbiDEKl7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        Tue, 5 Apr 2022 06:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241257AbiDEIc6 (ORCPT
+        with ESMTP id S241205AbiDEIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FA462FB;
-        Tue,  5 Apr 2022 01:30:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF81609D0;
-        Tue,  5 Apr 2022 08:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AD9BC385A0;
-        Tue,  5 Apr 2022 08:30:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147454;
-        bh=sJSheh81ofmzuFi2QYxChCQ6v4L0lE96fuuZkjzo0JM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=10DIPGpUf+jBqDeoPQ29tBjO2/QeBQ+pnzQTw+kGfkG6a55MzXOkXS13hMKhRCCZ7
-         y626J6+5Ow2zgRHVb3Ymntz5PqcZamBqTp59fRQUOBf93BnoYJ8X+ih8y3nfppKvcA
-         gm7B0D3utt+5MEUAtGFROfVmjkPmpDuUTMfNifZQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Rob Herring <robh@kernel.org>, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 1091/1126] dt-bindings: spi: mxic: The interrupt property is not mandatory
-Date:   Tue,  5 Apr 2022 09:30:38 +0200
-Message-Id: <20220405070439.470407998@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 04:32:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6A517072;
+        Tue,  5 Apr 2022 01:29:13 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:11 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649147352;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xVssBcL6rymXgzZTC6veDngOKwXKTJKSIcpdjfi2604=;
+        b=vDqsj8ydGq5mP5fsT7WPXhZCNpoUo5W7DjfVDWTFJaWPvg1nmQQ/GTIPuWx7h6VRsA/Wxi
+        161VH2u9zyvpAwAI4vSFC54c3hBUunQh0KOahGJuJijedg07NvKHruUKNapwoPOFD82m5Z
+        uNl69pdPt7IaJuaUBpoDAen8FUkgd3WhXPf/46waRx2hrd5n7S9FUe8hT/PPdiXB6oFcfF
+        lp/obselpup1DhzzoE3DGNKZ2FWtpr1WX+b94pVrhBr43VCY1KhWQKIONQSTyVE7DZOu3u
+        unCWvAsJcdtbgFW0iuQKe2VFLKvQ0qF/JP5e9hMYC0DXuaPQQnsyTGXW5GddxQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649147352;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xVssBcL6rymXgzZTC6veDngOKwXKTJKSIcpdjfi2604=;
+        b=SjfwP9bh2tMXm0dhIKtW5hnpkPz7A4pTqDXXCQjB0umXAw3rdo62jZvaeopDecODeLlgGs
+        Jvp/kwsxfaiF2JAg==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/urgent] perf/x86/cstate: Add Raptor Lake support
+Cc:     Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <1647366360-82824-2-git-send-email-kan.liang@linux.intel.com>
+References: <1647366360-82824-2-git-send-email-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164914735134.389.8966372231911344728.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+The following commit has been merged into the perf/urgent branch of tip:
 
-commit 90c204d3195a795f77f5bce767e311dd1c59ca17 upstream.
+Commit-ID:     2da202aa1c38bfe8841611a3d339892eb5579e2b
+Gitweb:        https://git.kernel.org/tip/2da202aa1c38bfe8841611a3d339892eb5579e2b
+Author:        Kan Liang <kan.liang@linux.intel.com>
+AuthorDate:    Tue, 15 Mar 2022 10:45:58 -07:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 05 Apr 2022 09:59:43 +02:00
 
-The interrupt property is not mandatory at all, this property should not
-be part of the required properties list, so move it into the optional
-properties list.
+perf/x86/cstate: Add Raptor Lake support
 
-Fixes: 326e5c8d4a87 ("dt-binding: spi: Document Macronix controller bindings")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-8-miquel.raynal@bootlin.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Raptor Lake is Intel's successor to Alder lake. From the perspective of
+Intel cstate residency counters, there is nothing changed compared with
+Alder lake.
+
+Share adl_cstates with Alder lake.
+Update the comments for Raptor Lake.
+
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/1647366360-82824-2-git-send-email-kan.liang@linux.intel.com
 ---
- Documentation/devicetree/bindings/spi/spi-mxic.txt |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/events/intel/cstate.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/Documentation/devicetree/bindings/spi/spi-mxic.txt
-+++ b/Documentation/devicetree/bindings/spi/spi-mxic.txt
-@@ -8,11 +8,13 @@ Required properties:
- - reg: should contain 2 entries, one for the registers and one for the direct
-        mapping area
- - reg-names: should contain "regs" and "dirmap"
--- interrupts: interrupt line connected to the SPI controller
- - clock-names: should contain "ps_clk", "send_clk" and "send_dly_clk"
- - clocks: should contain 3 entries for the "ps_clk", "send_clk" and
- 	  "send_dly_clk" clocks
- 
-+Optional properties:
-+- interrupts: interrupt line connected to the SPI controller
-+
- Example:
- 
- 	spi@43c30000 {
-
-
+diff --git a/arch/x86/events/intel/cstate.c b/arch/x86/events/intel/cstate.c
+index c6262b1..5d77622 100644
+--- a/arch/x86/events/intel/cstate.c
++++ b/arch/x86/events/intel/cstate.c
+@@ -40,7 +40,7 @@
+  * Model specific counters:
+  *	MSR_CORE_C1_RES: CORE C1 Residency Counter
+  *			 perf code: 0x00
+- *			 Available model: SLM,AMT,GLM,CNL,ICX,TNT,ADL
++ *			 Available model: SLM,AMT,GLM,CNL,ICX,TNT,ADL,RPL
+  *			 Scope: Core (each processor core has a MSR)
+  *	MSR_CORE_C3_RESIDENCY: CORE C3 Residency Counter
+  *			       perf code: 0x01
+@@ -51,49 +51,50 @@
+  *			       perf code: 0x02
+  *			       Available model: SLM,AMT,NHM,WSM,SNB,IVB,HSW,BDW,
+  *						SKL,KNL,GLM,CNL,KBL,CML,ICL,ICX,
+- *						TGL,TNT,RKL,ADL
++ *						TGL,TNT,RKL,ADL,RPL
+  *			       Scope: Core
+  *	MSR_CORE_C7_RESIDENCY: CORE C7 Residency Counter
+  *			       perf code: 0x03
+  *			       Available model: SNB,IVB,HSW,BDW,SKL,CNL,KBL,CML,
+- *						ICL,TGL,RKL,ADL
++ *						ICL,TGL,RKL,ADL,RPL
+  *			       Scope: Core
+  *	MSR_PKG_C2_RESIDENCY:  Package C2 Residency Counter.
+  *			       perf code: 0x00
+  *			       Available model: SNB,IVB,HSW,BDW,SKL,KNL,GLM,CNL,
+- *						KBL,CML,ICL,ICX,TGL,TNT,RKL,ADL
++ *						KBL,CML,ICL,ICX,TGL,TNT,RKL,ADL,
++ *						RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C3_RESIDENCY:  Package C3 Residency Counter.
+  *			       perf code: 0x01
+  *			       Available model: NHM,WSM,SNB,IVB,HSW,BDW,SKL,KNL,
+  *						GLM,CNL,KBL,CML,ICL,TGL,TNT,RKL,
+- *						ADL
++ *						ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C6_RESIDENCY:  Package C6 Residency Counter.
+  *			       perf code: 0x02
+  *			       Available model: SLM,AMT,NHM,WSM,SNB,IVB,HSW,BDW,
+  *						SKL,KNL,GLM,CNL,KBL,CML,ICL,ICX,
+- *						TGL,TNT,RKL,ADL
++ *						TGL,TNT,RKL,ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C7_RESIDENCY:  Package C7 Residency Counter.
+  *			       perf code: 0x03
+  *			       Available model: NHM,WSM,SNB,IVB,HSW,BDW,SKL,CNL,
+- *						KBL,CML,ICL,TGL,RKL,ADL
++ *						KBL,CML,ICL,TGL,RKL,ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C8_RESIDENCY:  Package C8 Residency Counter.
+  *			       perf code: 0x04
+  *			       Available model: HSW ULT,KBL,CNL,CML,ICL,TGL,RKL,
+- *						ADL
++ *						ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C9_RESIDENCY:  Package C9 Residency Counter.
+  *			       perf code: 0x05
+  *			       Available model: HSW ULT,KBL,CNL,CML,ICL,TGL,RKL,
+- *						ADL
++ *						ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C10_RESIDENCY: Package C10 Residency Counter.
+  *			       perf code: 0x06
+  *			       Available model: HSW ULT,KBL,GLM,CNL,CML,ICL,TGL,
+- *						TNT,RKL,ADL
++ *						TNT,RKL,ADL,RPL
+  *			       Scope: Package (physical package)
+  *
+  */
+@@ -680,6 +681,7 @@ static const struct x86_cpu_id intel_cstates_match[] __initconst = {
+ 	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&icl_cstates),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_cstates),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&adl_cstates),
++	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE,		&adl_cstates),
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(x86cpu, intel_cstates_match);
