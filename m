@@ -2,101 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1E3C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93FCFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581689AbiDEXke (ORCPT
+        id S1581753AbiDEXks (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        Tue, 5 Apr 2022 19:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358233AbiDEK2J (ORCPT
+        with ESMTP id S1573310AbiDESwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D6464C7;
-        Tue,  5 Apr 2022 03:17:18 -0700 (PDT)
+        Tue, 5 Apr 2022 14:52:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047F1B1AA2
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 11:50:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7602CB81C98;
-        Tue,  5 Apr 2022 10:17:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3388C385A1;
-        Tue,  5 Apr 2022 10:17:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153836;
-        bh=UQ3IBDjOIl0fzOsoP3qU9f5UAcqdRV5dtnEeQFMnmxk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=evIqvb/12gjiT2bsmMJosLYZPPBD2xEh4KR1ID9z2N83D8gOZbLNNbjfC00FbnGWU
-         NkqojU4B4JrDI/TQFPHHpfOGQ9gTlLEmZRMNHHVjEhRl9RHZ7tgLaI9N9Ssrx+h846
-         Y7gkt179S9cMbpCCYqAEFXAPRGaE/NDGwrggqtd0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 327/599] bpf, arm64: Call build_prologue() first in first JIT pass
-Date:   Tue,  5 Apr 2022 09:30:21 +0200
-Message-Id: <20220405070308.564074622@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98C0C618DC
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:50:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00DE4C385A1;
+        Tue,  5 Apr 2022 18:50:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649184645;
+        bh=wfdn8JQeJkR1VmLPe/pOEuD35DFwF3moRXVsCAPHYSc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=U0XCcVDv1W/UIY9AS6DYtzLOt4gs8yfdz96UGfn3mVF9k7UQ7U/LXON14mQz5kwZJ
+         miuBobg7fJEM1DaZqAwHIPHJltYW5+01gQi7HLKOrDE4MzEP42W2DaoacF1EvU6Eit
+         8+AC22BHEu6gxrcQD38J4DM4vRy3mgNoz7zHTLG9QPhHYuCzkMTawUkKtTTBvbmkK7
+         HdTQCObrjlUeVDZzBAyH3vYtMQIXjAWo50pVtlXUhYNFyLFFm3qf9b8B6lZ0J8ve3G
+         vflYuku3kQRlosWS3tT0TY2nVIB9bIBirbc55Xf/sODZ3O6LSb/YALR7jOoJKTTvQS
+         BK/CQR6wb7+rw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nboGI-001tpg-Un; Tue, 05 Apr 2022 19:50:43 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel <linux-kernel@vger.kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        John Garry <john.garry@huawei.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        David Decotigny <ddecotig@google.com>
+Subject: [PATCH v3 0/3] genirq: Managed affinity fixes
+Date:   Tue,  5 Apr 2022 19:50:37 +0100
+Message-Id: <20220405185040.206297-1-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, tglx@linutronix.de, john.garry@huawei.com, wangxiongfeng2@huawei.com, ddecotig@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+John (and later on David) reported[1] a while ago that booting with
+maxcpus=1, managed affinity devices would fail to get the interrupts
+that were associated with offlined CPUs.
 
-[ Upstream commit 68e4f238b0e9d3670a1612ad900a6e98b2b3f7dd ]
+Similarly, Xiongfeng reported[2] that the GICv3 ITS would sometime use
+non-housekeeping CPUs instead of the affinity that was passed down as
+a parameter.
 
-BPF line info needs ctx->offset to be the instruction offset in the whole JITed
-image instead of the body itself, so also call build_prologue() first in first
-JIT pass.
+[1] can be fixed by not trying to activate these interrupts if no CPU
+that can satisfy the affinity is present (a patch addressing this was
+already posted[3])
 
-Fixes: 37ab566c178d ("bpf: arm64: Enable arm64 jit to provide bpf_line_info")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220226121906.5709-2-houtao1@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/net/bpf_jit_comp.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+[2] is a consequence of affinities containing non-online CPUs being
+passed down to the interrupt controller driver and the ITS driver
+trying to paper over that by ignoring the affinity parameter and doing
+its own (stupid) thing. It would be better to (a) get the core code to
+remove the offline CPUs from the affinity mask at all times, and (b)
+fix the drivers so that they can trust the core code not to trip them.
 
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index 064577ff9ff5..880f50c53086 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -1040,15 +1040,18 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 		goto out_off;
- 	}
- 
--	/* 1. Initial fake pass to compute ctx->idx. */
--
--	/* Fake pass to fill in ctx->offset. */
--	if (build_body(&ctx, extra_pass)) {
-+	/*
-+	 * 1. Initial fake pass to compute ctx->idx and ctx->offset.
-+	 *
-+	 * BPF line info needs ctx->offset[i] to be the offset of
-+	 * instruction[i] in jited image, so build prologue first.
-+	 */
-+	if (build_prologue(&ctx, was_classic)) {
- 		prog = orig_prog;
- 		goto out_off;
- 	}
- 
--	if (build_prologue(&ctx, was_classic)) {
-+	if (build_body(&ctx, extra_pass)) {
- 		prog = orig_prog;
- 		goto out_off;
- 	}
+This small series, based on 5.18-rc1, addresses the above.
+
+Thanks,
+
+	M.
+
+From v2 [4]:
+  - Rebased on 5.18-rc1
+
+[1] https://lore.kernel.org/r/78615d08-1764-c895-f3b7-bfddfbcbdfb9@huawei.com
+[2] https://lore.kernel.org/r/20220124073440.88598-1-wangxiongfeng2@huawei.com
+[3] https://lore.kernel.org/r/20220307190625.254426-1-maz@kernel.org
+[4] https://lore.kernel.org/r/20220321193608.975495-1-maz@kernel.org
+
+Marc Zyngier (3):
+  genirq/msi: Shutdown managed interrupts with unsatifiable affinities
+  genirq: Always limit the affinity to online CPUs
+  irqchip/gic-v3: Always trust the managed affinity provided by the core
+    code
+
+ drivers/irqchip/irq-gic-v3-its.c |  2 +-
+ kernel/irq/manage.c              | 25 +++++++++++++++++--------
+ kernel/irq/msi.c                 | 15 +++++++++++++++
+ 3 files changed, 33 insertions(+), 9 deletions(-)
+
 -- 
 2.34.1
-
-
 
