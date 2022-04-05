@@ -2,1371 +2,505 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD75C35295
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9ACC352A7
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350570AbiDFAT4 (ORCPT
+        id S1442314AbiDFAVV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
+        Tue, 5 Apr 2022 20:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348962AbiDEJsu (ORCPT
+        with ESMTP id S1452213AbiDEPyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:48:50 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907CDA5EBB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 02:38:08 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so1177802wmb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 02:38:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=d4jB3djPX10WcZTI6rW+C0rQK94UmI79p5ZbxcZQAWw=;
-        b=xd+udpVeXE7Et/uacVYzKho70vyeWGh4Ij0lXsOI/GaVlpFvDfdsc24KOcu8aJmBWF
-         3FuMDLcj/RVGcv44kUnmY6atkjAHTqbpA9UfwTg9gEw6ndkI4FIvFkMDb/vSPVwCIonK
-         KGPci4JC4wcb0L7dXvyf/+HKbBBkr+fOM0s04oGf977g8MydlxKtQ7xZksQqjG/QoSZq
-         9tK+ewTvxM4kRRvUBPy0zwOi8N/dS/bCCx5y59k5oISAheaumxtCB46kgnX1Osz0MvdX
-         oWLsR4CE7qg100mK2IlTrGazcRHwPl8zEWL2CZ8PxHLL0+fkx2srUf6cRmuqUGxhg/i9
-         ZqGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=d4jB3djPX10WcZTI6rW+C0rQK94UmI79p5ZbxcZQAWw=;
-        b=5m04odR9XS4R4n2aXAdiW2Ft/dAqhK3F/UwDtKGxfuTbauj0MmAydl/e71andCF+ve
-         FjDvwukCz9m/x5glYUqngE5v6S6v/FFC4lJkJRRttKmzdxN5aKryCTNYiAAavuKTLjp8
-         rXcPCleF1C1SgQgCyyoQpdkuXgxQUHd2D1A4p5VO97ayFlFJUb6QR0IuZk41JBdPHLtC
-         UnaUrJGX01/HKY9h5/TFLiLsoe5xDiRCPQa2fPz6l3dBRvjE23W2W0UaIezHFc8Q2c0d
-         4h0l4ecnKOgYBp5UXPWHUdBFEgK8vGzC2PMbyIfI4NTpe2SA+/foM9+dvfHU2td1hr1j
-         4uAw==
-X-Gm-Message-State: AOAM532qglz1Hh/qgPPLF1WuEXRUKQ6/FbIYAyrWKvaHEX5vnMsfRMVp
-        L3gsBxvh9CARJce/V8lu8F4DGQ==
-X-Google-Smtp-Source: ABdhPJyfEKkHt/FOyqqqAk5VV5w8J0Eep1ova1ZnbCDT2b7IMjJfkjEjvAVgJbjsbDbQ7Le/0gBsFw==
-X-Received: by 2002:a1c:f717:0:b0:38e:6bed:2aad with SMTP id v23-20020a1cf717000000b0038e6bed2aadmr2272316wmh.45.1649151486917;
-        Tue, 05 Apr 2022 02:38:06 -0700 (PDT)
-Received: from zen.linaroharston ([51.148.130.216])
-        by smtp.gmail.com with ESMTPSA id l3-20020a1ced03000000b0038ce57d28a1sm1564609wmh.26.2022.04.05.02.38.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 02:38:00 -0700 (PDT)
-Received: from zen.lan (localhost [127.0.0.1])
-        by zen.linaroharston (Postfix) with ESMTP id 29DC41FFBC;
-        Tue,  5 Apr 2022 10:38:00 +0100 (BST)
-From:   =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     maxim.uvarov@linaro.org, joakim.bech@linaro.org,
-        ulf.hansson@linaro.org, ilias.apalodimas@linaro.org,
-        arnd@linaro.org, ruchika.gupta@linaro.org, tomas.winkler@intel.com,
-        yang.huang@intel.com, bing.zhu@intel.com,
-        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
-        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        =?UTF-8?q?Alex=20Benn=C3=A9e?= <alex.bennee@linaro.org>,
-        Alexander Usyskin <alexander.usyskin@intel.com>
-Subject: [PATCH  v2 4/4] tools rpmb: add RPBM access tool
-Date:   Tue,  5 Apr 2022 10:37:59 +0100
-Message-Id: <20220405093759.1126835-5-alex.bennee@linaro.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405093759.1126835-1-alex.bennee@linaro.org>
-References: <20220405093759.1126835-1-alex.bennee@linaro.org>
+        Tue, 5 Apr 2022 11:54:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E95FBA322;
+        Tue,  5 Apr 2022 07:50:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95A28616BF;
+        Tue,  5 Apr 2022 14:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B01FC385A0;
+        Tue,  5 Apr 2022 14:50:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649170254;
+        bh=XiRqIftdBRf7P/vLoktW4El3PY2uvvoimjkPXN24bl0=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=q21+PVnl4yC0DcELqEH3xlltbltmvVzP1+DQhJ2rLA2ceENsFXakBpM+PkqXortBa
+         8MOY+zMbWolSImCHAZUeiCYeY/3TiCUukZeH+G/dqnxcys1BfU426J2Ymui4OqN2YP
+         HV/fKE7ElU9Esu6ILP0MqpdsqIUhUxtwiZ4gJ+V3cjSvTHK47z+8ZsNIgtK8PHmKva
+         z/eS2U55tW4zK8cJ7jYexQviCCMSUnw4p/qGjRnYuR6womTZFb/aTE0EU4AhrurJTs
+         b8VpRheja1AqqFlSwuTY4C+/IeQiEZhGaGHCU4A1YMUNMh27cB2dOW6p/W7uN46SOi
+         JE2hLEilupYKA==
+Message-ID: <ca08465b6fa8af4121592c6381023fda5e0ade70.camel@kernel.org>
+Subject: Re: [PATCH V3 14/30] x86/sgx: Support restricting of enclave page
+ permissions
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>,
+        dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org, nathaniel@profian.com
+Date:   Tue, 05 Apr 2022 17:52:03 +0300
+In-Reply-To: <6e0feeadc562b9e3f0a524040469d4f5c3484824.camel@kernel.org>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+         <8ed9ee98ca26c9eefde0fd49062bca6e7b9efe80.1648847675.git.reinette.chatre@intel.com>
+         <c9071aa19076c7c618294f0c9cb830a8be96ae09.camel@kernel.org>
+         <26ab773de8842d03b40caf8645ca86884b195901.camel@kernel.org>
+         <91a02d50b2cba34dfb058fd864ba20ef1e6a5554.camel@kernel.org>
+         <10303ca73ea02a300636580e87446766374f66cb.camel@kernel.org>
+         <6e0feeadc562b9e3f0a524040469d4f5c3484824.camel@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add simple RPMB host testing tool. It can be used to program key,
-write and read data block, and retrieve write counter. It's based on
-Tomas' original tool but only deals with the virtio-rpmb device. I've
-also split the RPMB specific functions (vrpmb_*) from the generic
-hooks (op_rpmb_*) to make it easier to add other RPMB implementations.
-
-A simple test.sh script will exercise the interface (assuming a virgin
-RPMB device awaiting a programmed key).
-
-Signed-off-by: Alex BennÃ©e <alex.bennee@linaro.org>
-Cc: Tomas Winkler <tomas.winkler@intel.com>
-Cc: Alexander Usyskin <alexander.usyskin@intel.com>
-
----
-ajb:
-  - new per op ioctl API
----
- MAINTAINERS           |    1 +
- tools/Makefile        |   16 +-
- tools/rpmb/.gitignore |    2 +
- tools/rpmb/Makefile   |   41 ++
- tools/rpmb/key        |    1 +
- tools/rpmb/rpmb.c     | 1083 +++++++++++++++++++++++++++++++++++++++++
- tools/rpmb/test.sh    |   22 +
- 7 files changed, 1161 insertions(+), 5 deletions(-)
- create mode 100644 tools/rpmb/.gitignore
- create mode 100644 tools/rpmb/Makefile
- create mode 100644 tools/rpmb/key
- create mode 100644 tools/rpmb/rpmb.c
- create mode 100755 tools/rpmb/test.sh
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0a744da21817..70716250aa51 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16751,6 +16751,7 @@ S:	Supported
- F:	drivers/rpmb/*
- F:	include/uapi/linux/rpmb.h
- F:	include/linux/rpmb.h
-+F:	tools/rpmb/
- 
- RPMSG TTY DRIVER
- M:	Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-diff --git a/tools/Makefile b/tools/Makefile
-index db2f7b8ebed5..0cc62dcae581 100644
---- a/tools/Makefile
-+++ b/tools/Makefile
-@@ -27,6 +27,7 @@ help:
- 	@echo '  objtool                - an ELF object analysis tool'
- 	@echo '  pci                    - PCI tools'
- 	@echo '  perf                   - Linux performance measurement and analysis tool'
-+	@echo '  rpmb                   - Replay protected memory block access tool'
- 	@echo '  selftests              - various kernel selftests'
- 	@echo '  bootconfig             - boot config tool'
- 	@echo '  spi                    - spi tools'
-@@ -65,7 +66,9 @@ acpi: FORCE
- cpupower: FORCE
- 	$(call descend,power/$@)
- 
--cgroup counter firewire hv guest bootconfig spi usb virtio vm bpf iio gpio objtool leds wmi pci firmware debugging tracing: FORCE
-+cgroup counter firewire hv guest bootconfig spi usb virtio vm bpf iio \
-+  gpio objtool leds wmi pci firmware debugging tracing rpmb: FORCE
-+
- 	$(call descend,$@)
- 
- bpf/%: FORCE
-@@ -101,7 +104,7 @@ all: acpi cgroup counter cpupower gpio hv firewire \
- 		perf selftests bootconfig spi turbostat usb \
- 		virtio vm bpf x86_energy_perf_policy \
- 		tmon freefall iio objtool kvm_stat wmi \
--		pci debugging tracing
-+		pci debugging tracing rpmb
- 
- acpi_install:
- 	$(call descend,power/$(@:_install=),install)
-@@ -109,7 +112,7 @@ acpi_install:
- cpupower_install:
- 	$(call descend,power/$(@:_install=),install)
- 
--cgroup_install counter_install firewire_install gpio_install hv_install iio_install perf_install bootconfig_install spi_install usb_install virtio_install vm_install bpf_install objtool_install wmi_install pci_install debugging_install tracing_install:
-+cgroup_install counter_install firewire_install gpio_install hv_install iio_install perf_install bootconfig_install spi_install usb_install virtio_install vm_install bpf_install objtool_install wmi_install pci_install debugging_install tracing_install rpmb_install:
- 	$(call descend,$(@:_install=),install)
- 
- selftests_install:
-@@ -129,7 +132,7 @@ kvm_stat_install:
- 
- install: acpi_install cgroup_install counter_install cpupower_install gpio_install \
- 		hv_install firewire_install iio_install \
--		perf_install selftests_install turbostat_install usb_install \
-+		perf_install rpmb_install selftests_install turbostat_install usb_install \
- 		virtio_install vm_install bpf_install x86_energy_perf_policy_install \
- 		tmon_install freefall_install objtool_install kvm_stat_install \
- 		wmi_install pci_install debugging_install intel-speed-select_install \
-@@ -157,6 +160,9 @@ perf_clean:
- 	$(Q)mkdir -p $(PERF_O) .
- 	$(Q)$(MAKE) --no-print-directory -C perf O=$(PERF_O) subdir= clean
- 
-+rpmb_clean:
-+	$(call descend,$(@:_clean=),clean)
-+
- selftests_clean:
- 	$(call descend,testing/$(@:_clean=),clean)
- 
-@@ -173,7 +179,7 @@ build_clean:
- 	$(call descend,build,clean)
- 
- clean: acpi_clean cgroup_clean counter_clean cpupower_clean hv_clean firewire_clean \
--		perf_clean selftests_clean turbostat_clean bootconfig_clean spi_clean usb_clean virtio_clean \
-+		perf_clean rpmb_clean selftests_clean turbostat_clean bootconfig_clean spi_clean usb_clean virtio_clean \
- 		vm_clean bpf_clean iio_clean x86_energy_perf_policy_clean tmon_clean \
- 		freefall_clean build_clean libbpf_clean libsubcmd_clean \
- 		gpio_clean objtool_clean leds_clean wmi_clean pci_clean firmware_clean debugging_clean \
-diff --git a/tools/rpmb/.gitignore b/tools/rpmb/.gitignore
-new file mode 100644
-index 000000000000..218f680548e6
---- /dev/null
-+++ b/tools/rpmb/.gitignore
-@@ -0,0 +1,2 @@
-+*.o
-+rpmb
-diff --git a/tools/rpmb/Makefile b/tools/rpmb/Makefile
-new file mode 100644
-index 000000000000..e9429be4eaba
---- /dev/null
-+++ b/tools/rpmb/Makefile
-@@ -0,0 +1,41 @@
-+# SPDX-License-Identifier: GPL-2.0
-+include ../scripts/Makefile.include
-+
-+CC ?= $(CROSS_COMPILE)gcc
-+LD ?= $(CROSS_COMPILE)ld
-+PKG_CONFIG = $(CROSS_COMPILE)pkg-config
-+
-+ifeq ($(srctree),)
-+srctree := $(patsubst %/,%,$(dir $(shell pwd)))
-+srctree := $(patsubst %/,%,$(dir $(srctree)))
-+#$(info Determined 'srctree' to be $(srctree))
-+endif
-+
-+INSTALL = install
-+prefix ?= /usr/local
-+bindir = $(prefix)/bin
-+
-+
-+CFLAGS += $(HOSTCFLAGS)
-+CFLAGS += -D__EXPORTED_HEADERS__
-+CFLAGS += -Wall -Wextra -ggdb
-+ifdef RPMB_STATIC
-+LDFLAGS += -pthread -static -Wl,-u,pthread_mutex_unlock
-+CFLAGS +=  -pthread -static
-+PKG_STATIC = --static
-+endif
-+CFLAGS += -I$(srctree)/include/uapi -I$(srctree)/include
-+LDLIBS += $(shell $(PKG_CONFIG) --libs $(PKG_STATIC) libcrypto)
-+
-+prog := rpmb
-+
-+all : $(prog)
-+
-+$(prog): rpmb.o
-+
-+clean :
-+	$(RM) $(prog) *.o
-+
-+install: $(prog)
-+	$(INSTALL) -m755 -d $(DESTDIR)$(bindir)
-+	$(INSTALL) $(prog) $(DESTDIR)$(bindir)
-diff --git a/tools/rpmb/key b/tools/rpmb/key
-new file mode 100644
-index 000000000000..2b6bd3bc3fe6
---- /dev/null
-+++ b/tools/rpmb/key
-@@ -0,0 +1 @@
-+˜ƒÆÐh«#×¢ö‹pRTà¿®åô\r|OŠ	¯mo«
-\ No newline at end of file
-diff --git a/tools/rpmb/rpmb.c b/tools/rpmb/rpmb.c
-new file mode 100644
-index 000000000000..ff7ea198eda1
---- /dev/null
-+++ b/tools/rpmb/rpmb.c
-@@ -0,0 +1,1083 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/*
-+ * Copyright (C) 2016-2019 Intel Corp. All rights reserved
-+ * Copyright (C) 2021-2022 Linaro Ltd
-+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/ioctl.h>
-+#include <sys/types.h>
-+#include <sys/stat.h>
-+#include <keyutils.h>
-+#include <dirent.h>
-+#include <sys/stat.h>
-+#include <unistd.h>
-+#include <fcntl.h>
-+#include <libgen.h>
-+#include <limits.h>
-+#include <ctype.h>
-+#include <errno.h>
-+#include <stdint.h>
-+#include <stdbool.h>
-+
-+#include <openssl/engine.h>
-+#include <openssl/hmac.h>
-+#include <openssl/rand.h>
-+
-+/* if uapi header isn't installed, this might not yet exist */
-+#ifndef __packed
-+#define __packed __attribute__((packed))
-+#endif
-+
-+#include "linux/rpmb.h"
-+#include "linux/virtio_rpmb.h"
-+
-+#define RPMB_KEY_SIZE 32
-+#define RPMB_MAC_SIZE 32
-+#define RPMB_NONCE_SIZE 16
-+#define RPMB_BLOCK_SIZE 256
-+
-+#define min(a, b)			\
-+	({ __typeof__ (a) _a = (a);	\
-+	   __typeof__ (b) _b = (b);	\
-+		_a < _b ? _a : _b; })
-+
-+
-+static bool verbose;
-+#define rpmb_dbg(fmt, ARGS...) do {                     \
-+	if (verbose)                                    \
-+		fprintf(stderr, "rpmb: " fmt, ##ARGS);  \
-+} while (0)
-+
-+#define rpmb_msg(fmt, ARGS...) \
-+	fprintf(stderr, "rpmb: " fmt, ##ARGS)
-+
-+#define rpmb_err(fmt, ARGS...) \
-+	fprintf(stderr, "rpmb:%d error: " fmt, __LINE__, ##ARGS)
-+
-+
-+/*
-+ * Utility functions
-+ */
-+static int open_dev_file(const char *devfile, struct rpmb_ioc_cap_cmd *cap)
-+{
-+	struct rpmb_ioc_ver_cmd ver;
-+	int fd;
-+	int ret;
-+
-+	fd = open(devfile, O_RDWR);
-+	if (fd < 0)
-+		rpmb_err("Cannot open: %s: %s.\n", devfile, strerror(errno));
-+
-+	ret = ioctl(fd, RPMB_IOC_VER_CMD, &ver);
-+	if (ret < 0) {
-+		rpmb_err("ioctl failure %d: %s.\n", ret, strerror(errno));
-+		goto err;
-+	}
-+
-+	printf("RPMB API Version %X\n", ver.api_version);
-+
-+	ret = ioctl(fd, RPMB_IOC_CAP_CMD, cap);
-+	if (ret < 0) {
-+		rpmb_err("ioctl failure %d: %s.\n", ret, strerror(errno));
-+		goto err;
-+	}
-+
-+	rpmb_dbg("RPMB rpmb_target = %d\n", cap->target);
-+	rpmb_dbg("RPMB capacity    = %d\n", cap->capacity);
-+	rpmb_dbg("RPMB block_size  = %d\n", cap->block_size);
-+	rpmb_dbg("RPMB wr_cnt_max  = %d\n", cap->wr_cnt_max);
-+	rpmb_dbg("RPMB rd_cnt_max  = %d\n", cap->rd_cnt_max);
-+	rpmb_dbg("RPMB auth_method = %d\n", cap->auth_method);
-+
-+	return fd;
-+err:
-+	close(fd);
-+	return -1;
-+}
-+
-+static int open_rd_file(const char *datafile, const char *type)
-+{
-+	int fd;
-+
-+	if (!strcmp(datafile, "-"))
-+		fd = STDIN_FILENO;
-+	else
-+		fd = open(datafile, O_RDONLY);
-+
-+	if (fd < 0)
-+		rpmb_err("Cannot open %s: %s: %s.\n",
-+			 type, datafile, strerror(errno));
-+
-+	return fd;
-+}
-+
-+static int open_wr_file(const char *datafile, const char *type)
-+{
-+	int fd;
-+
-+	if (!strcmp(datafile, "-"))
-+		fd = STDOUT_FILENO;
-+	else
-+		fd = open(datafile, O_WRONLY | O_CREAT | O_APPEND, 0600);
-+	if (fd < 0)
-+		rpmb_err("Cannot open %s: %s: %s.\n",
-+			 type, datafile, strerror(errno));
-+	return fd;
-+}
-+
-+static void close_fd(int fd)
-+{
-+	if (fd > 0 && fd != STDIN_FILENO && fd != STDOUT_FILENO)
-+		close(fd);
-+}
-+
-+/* need to just cast out 'const' in write(2) */
-+typedef ssize_t (*rwfunc_t)(int fd, void *buf, size_t count);
-+/* blocking rw wrapper */
-+static ssize_t rw(rwfunc_t func, int fd, unsigned char *buf, size_t size)
-+{
-+	ssize_t ntotal = 0, n;
-+	char *_buf = (char *)buf;
-+
-+	do {
-+		n = func(fd, _buf + ntotal, size - ntotal);
-+		if (n == -1 && errno != EINTR) {
-+			ntotal = -1;
-+			break;
-+		} else if (n > 0) {
-+			ntotal += n;
-+		}
-+	} while (n != 0 && (size_t)ntotal != size);
-+
-+	return ntotal;
-+}
-+
-+static ssize_t read_file(int fd, unsigned char *data, size_t size)
-+{
-+	ssize_t ret;
-+
-+	ret = rw(read, fd, data, size);
-+	if (ret < 0) {
-+		rpmb_err("cannot read file: %s\n.", strerror(errno));
-+	} else if ((size_t)ret != size) {
-+		rpmb_err("read %zd but must be %zu bytes length.\n", ret, size);
-+		ret = -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static ssize_t write_file(int fd, unsigned char *data, size_t size)
-+{
-+	ssize_t ret;
-+
-+	ret = rw((rwfunc_t)write, fd, data, size);
-+	if (ret < 0) {
-+		rpmb_err("cannot read file: %s.\n", strerror(errno));
-+	} else if ((size_t)ret != size) {
-+		rpmb_err("data is %zd but must be %zu bytes length.\n",
-+			 ret, size);
-+		ret = -EINVAL;
-+	}
-+	return ret;
-+}
-+
-+static void __dump_buffer(const char *buf)
-+{
-+	fprintf(stderr, "%s\n", buf);
-+}
-+
-+static void
-+dump_hex_buffer(const char *title, const void *buf, size_t len)
-+{
-+#define PBUF_SZ (16 * 3)
-+	const unsigned char *_buf = (const unsigned char *)buf;
-+	char pbuf[PBUF_SZ];
-+	int j = 0;
-+
-+	if (title)
-+		fprintf(stderr, "%s\n", title);
-+	while (len-- > 0) {
-+		snprintf(&pbuf[j], PBUF_SZ - j, "%02X ", *_buf++);
-+		j += 3;
-+		if (j == PBUF_SZ) {
-+			__dump_buffer(pbuf);
-+			j = 0;
-+		}
-+	}
-+	if (j)
-+		__dump_buffer(pbuf);
-+}
-+
-+/*
-+ * MAC bits
-+ */
-+
-+/* The hmac calculation is from data to the end of the frame */
-+#define vrpmb_hmac_data_len \
-+	(sizeof(struct virtio_rpmb_frame) - \
-+	 offsetof(struct virtio_rpmb_frame, data))
-+
-+static int vrpmb_calc_hmac_sha256(struct virtio_rpmb_frame *frames,
-+				  size_t blocks_cnt,
-+				  const unsigned char key[],
-+				  unsigned int key_size,
-+				  unsigned char mac[],
-+				  unsigned int mac_size)
-+{
-+	HMAC_CTX *ctx;
-+	int ret;
-+	unsigned int i;
-+
-+	 /* SSL returns 1 on success 0 on failure */
-+
-+	ctx = HMAC_CTX_new();
-+
-+	ret = HMAC_Init_ex(ctx, key, key_size, EVP_sha256(), NULL);
-+	if (ret == 0)
-+		goto out;
-+	for (i = 0; i < blocks_cnt; i++)
-+		HMAC_Update(ctx, frames[i].data, vrpmb_hmac_data_len);
-+
-+	ret = HMAC_Final(ctx, mac, &mac_size);
-+	if (ret == 0)
-+		goto out;
-+	if (mac_size != RPMB_MAC_SIZE)
-+		ret = 0;
-+
-+	ret = 1;
-+out:
-+	HMAC_CTX_free(ctx);
-+	return ret == 1 ? 0 : -1;
-+}
-+
-+
-+static int vrpmb_check_mac(const unsigned char *key,
-+			   struct virtio_rpmb_frame *frames_out,
-+			   unsigned int cnt_out)
-+{
-+	unsigned char mac[RPMB_MAC_SIZE];
-+
-+	if (cnt_out == 0) {
-+		rpmb_err("RPMB 0 output frames.\n");
-+		return -1;
-+	}
-+
-+	vrpmb_calc_hmac_sha256(frames_out, cnt_out,
-+			       key, RPMB_KEY_SIZE,
-+			       mac, RPMB_MAC_SIZE);
-+
-+	if (memcmp(mac, frames_out[cnt_out - 1].key_mac, RPMB_MAC_SIZE)) {
-+		rpmb_err("RPMB hmac mismatch:\n");
-+		dump_hex_buffer("Result MAC: ",
-+				frames_out[cnt_out - 1].key_mac, RPMB_MAC_SIZE);
-+		dump_hex_buffer("Expected MAC: ", mac, RPMB_MAC_SIZE);
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+/* Compute the frames MAC and insert it */
-+static void vrpmb_compute_mac(const unsigned char *key,
-+			      struct virtio_rpmb_frame *frame)
-+{
-+	vrpmb_calc_hmac_sha256(frame, 1, key, RPMB_KEY_SIZE, &frame->key_mac, RPMB_MAC_SIZE);
-+}
-+
-+/*
-+ * VirtIO RPMB Bits
-+ */
-+
-+static const char *vrpmb_op_str(uint16_t op)
-+{
-+#define RPMB_OP(_op) case VIRTIO_RPMB_REQ_##_op: return #_op
-+
-+	switch (op) {
-+	RPMB_OP(PROGRAM_KEY);
-+	RPMB_OP(GET_WRITE_COUNTER);
-+	RPMB_OP(DATA_WRITE);
-+	RPMB_OP(DATA_READ);
-+	RPMB_OP(RESULT_READ);
-+	break;
-+	default:
-+		return "unknown";
-+	}
-+#undef RPMB_OP
-+}
-+
-+static const char *vrpmb_result_str(uint16_t result)
-+{
-+#define str(x) #x
-+#define RPMB_ERR(_res) case VIRTIO_RPMB_RES_##_res:         \
-+	{ if (result & VIRTIO_RPMB_RES_WRITE_COUNTER_EXPIRED)	\
-+		return "COUNTER_EXPIRE:" str(_res);  \
-+	else                                         \
-+		return str(_res);                    \
-+	}
-+
-+	switch (result & 0x000F) {
-+	RPMB_ERR(OK);
-+	RPMB_ERR(GENERAL_FAILURE);
-+	RPMB_ERR(AUTH_FAILURE);
-+	RPMB_ERR(COUNT_FAILURE);
-+	RPMB_ERR(ADDR_FAILURE);
-+	RPMB_ERR(WRITE_FAILURE);
-+	RPMB_ERR(READ_FAILURE);
-+	RPMB_ERR(NO_AUTH_KEY);
-+	break;
-+	default:
-+		return "unknown";
-+	}
-+#undef RPMB_ERR
-+#undef str
-+};
-+
-+#define RPMB_REQ2RESP(_OP) ((_OP) << 8)
-+#define RPMB_RESP2REQ(_OP) ((_OP) >> 8)
-+
-+static void vrpmb_dump_frame(const char *title, const struct virtio_rpmb_frame *f)
-+{
-+	uint16_t result, req_resp;
-+
-+	if (!verbose)
-+		return;
-+
-+	if (!f)
-+		return;
-+
-+	result = be16toh(f->result);
-+	req_resp = be16toh(f->req_resp);
-+	if (req_resp & 0xf00)
-+		req_resp = RPMB_RESP2REQ(req_resp);
-+
-+	fprintf(stderr, "--------------- %s ---------------\n",
-+		title ? title : "start");
-+	fprintf(stderr, "ptr: %p\n", f);
-+	dump_hex_buffer("key_mac: ", f->key_mac, 32);
-+	dump_hex_buffer("data: ", f->data, 256);
-+	dump_hex_buffer("nonce: ", f->nonce, 16);
-+	fprintf(stderr, "write_counter: %u\n", be32toh(f->write_counter));
-+	fprintf(stderr, "address:  %0X\n", be16toh(f->address));
-+	fprintf(stderr, "block_count: %u\n", be16toh(f->block_count));
-+	fprintf(stderr, "result %s:%d\n", vrpmb_result_str(result), result);
-+	fprintf(stderr, "req_resp %s\n", vrpmb_op_str(req_resp));
-+	fprintf(stderr, "--------------- End ---------------\n");
-+}
-+
-+static bool vrpmb_check_req_resp(uint16_t req, struct virtio_rpmb_frame *f)
-+{
-+	uint16_t req_resp = be16toh(f->req_resp);
-+
-+	if (RPMB_REQ2RESP(req) != req_resp) {
-+		rpmb_err("RPMB response mismatch %04X != %04X\n.",
-+			 RPMB_REQ2RESP(req), req_resp);
-+		return false;
-+	}
-+
-+	rpmb_msg("validated response: 0x%x\n", req_resp);
-+	return true;
-+}
-+
-+
-+
-+static struct virtio_rpmb_frame * vrpmb_alloc_frames(int n)
-+{
-+	struct virtio_rpmb_frame *frames;
-+
-+	frames = calloc(n, sizeof(struct virtio_rpmb_frame));
-+	if (frames)
-+		memset(frames, 0, n *  sizeof(struct virtio_rpmb_frame));
-+	return frames;
-+}
-+
-+static int vrpmb_program_key(int dev_fd, void *key)
-+{
-+	struct rpmb_ioc_reqresp_cmd cmd;
-+	struct virtio_rpmb_frame *out, *in;
-+	int ret;
-+
-+	out = vrpmb_alloc_frames(2);
-+
-+	/* construct outgoing frames */
-+	out[0].req_resp = htobe16(VIRTIO_RPMB_REQ_PROGRAM_KEY);
-+	out[0].block_count = htobe16(1);
-+	memcpy(&out[0].key_mac[0], key, RPMB_MAC_SIZE);
-+	RAND_bytes((void *) &out[0].nonce, RPMB_NONCE_SIZE);
-+	out[1].req_resp = htobe16(VIRTIO_RPMB_REQ_RESULT_READ);
-+	RAND_bytes((void *) &out[1].nonce, RPMB_NONCE_SIZE);
-+
-+	cmd.len = sizeof(struct virtio_rpmb_frame) * 2;
-+	cmd.request = (void *) out;
-+
-+	vrpmb_dump_frame("pkey", &out[0]);
-+	vrpmb_dump_frame("request", &out[1]);
-+
-+	/* space for response */
-+	in = vrpmb_alloc_frames(1);
-+	cmd.rlen = sizeof(struct virtio_rpmb_frame);
-+	cmd.response = (void *) in;
-+
-+	/* do it */
-+	ret = ioctl(dev_fd, RPMB_IOC_PKEY_CMD, &cmd);
-+	if (ret < 0) {
-+		rpmb_err("pkey ioctl failure %d: %s.\n", ret, strerror(errno));
-+		goto out;
-+	}
-+
-+	vrpmb_dump_frame("response", in);
-+
-+	/* validate response */
-+	if (!vrpmb_check_req_resp(VIRTIO_RPMB_REQ_PROGRAM_KEY, in)) {
-+		ret = -1;
-+		goto out;
-+	}
-+
-+	ret = vrpmb_check_mac(key, in, 1);
-+	if (ret) {
-+		rpmb_err("%s: check mac error %d\n", __func__, ret);
-+		goto out;
-+	}
-+
-+out:
-+	if (ret)
-+		rpmb_err("RPMB operation %s failed=%d %s[0x%04x]\n",
-+			 vrpmb_op_str(out->req_resp), ret,
-+			 vrpmb_result_str(in->result), in->result);
-+
-+	free(in);
-+	free(out);
-+	return ret;
-+}
-+
-+static int vrpmb_get_write_counter(int dev_fd, void *key)
-+{
-+	struct rpmb_ioc_reqresp_cmd cmd;
-+	struct virtio_rpmb_frame *out, *in = NULL;
-+	int ret;
-+
-+	out = vrpmb_alloc_frames(1);
-+	in = vrpmb_alloc_frames(1);
-+	if (!out || !in) {
-+		rpmb_err("couldn't allocate frames");
-+		return -ENOMEM;
-+	}
-+
-+	/* Query frame */
-+	out[0].req_resp = htobe16(VIRTIO_RPMB_REQ_GET_WRITE_COUNTER);
-+	out[0].block_count = htobe16(1);
-+	RAND_bytes((void *) &out[0].nonce, RPMB_NONCE_SIZE);
-+
-+	cmd.request = (void *) out;
-+	cmd.len = sizeof(struct virtio_rpmb_frame);
-+	cmd.response = (void *) in;
-+	cmd.rlen = sizeof(struct virtio_rpmb_frame);
-+
-+	ret = ioctl(dev_fd, RPMB_IOC_COUNTER_CMD, &cmd);
-+	if (ret < 0) {
-+		rpmb_err("get wcount ioctl failure %d: %s.\n", ret,
-+			 strerror(errno));
-+		goto out;
-+	}
-+
-+	vrpmb_dump_frame("write_counter", in);
-+
-+	ret = be32toh(in->write_counter);
-+	rpmb_msg("counter 0x%x\n", ret);
-+
-+	/* validate response */
-+	if (!vrpmb_check_req_resp(VIRTIO_RPMB_REQ_GET_WRITE_COUNTER, in)) {
-+		ret = -1;
-+		goto out;
-+	}
-+
-+	if (memcmp(&in->nonce, &out[0].nonce, RPMB_NONCE_SIZE)) {
-+		rpmb_err("RPMB NONCE mismatch\n");
-+		dump_hex_buffer("Result NONCE:",
-+				&in->nonce, RPMB_NONCE_SIZE);
-+		dump_hex_buffer("Expected NONCE: ",
-+				&out[0].nonce, RPMB_NONCE_SIZE);
-+		ret = -1;
-+		goto out;
-+	}
-+
-+	if (key) {
-+		ret = vrpmb_check_mac(key, in, 1);
-+		if (ret)
-+			rpmb_err("%s: check mac error %d\n", __func__, ret);
-+	}
-+
-+	ret = be32toh(in->write_counter);
-+	rpmb_msg("counter 0x%x\n", ret);
-+
-+out:
-+	free(out);
-+	free(in);
-+	return ret;
-+
-+}
-+
-+static int vrpmb_write_blocks(int dev_fd, void *key, void *data, int addr, int len)
-+{
-+	struct rpmb_ioc_reqresp_cmd cmd;
-+	struct virtio_rpmb_frame *out, *in = NULL;
-+	int frames = (len / 256) + 1;
-+	uint8_t *p = (uint8_t *) data;
-+	int i, ret;
-+	int write_count = vrpmb_get_write_counter(dev_fd, key);
-+
-+	out = vrpmb_alloc_frames(frames);
-+	in = vrpmb_alloc_frames(1);
-+	if (!out || !in) {
-+		rpmb_err("couldn't allocate frames");
-+		return -ENOMEM;
-+	}
-+
-+	/* First frame */
-+	out[0].req_resp = htobe16(VIRTIO_RPMB_REQ_DATA_WRITE);
-+	out[0].block_count = htobe16(frames - 1);
-+	out[0].address = htobe16(addr);
-+	out[0].write_counter = htobe32(write_count);
-+
-+	/* Copy data to write and prepare frames */
-+	for (i = 0; i < frames; i++) {
-+		struct virtio_rpmb_frame *f = &out[i];
-+
-+		memcpy(&f->data, &p[i * 256], 256);
-+		RAND_bytes((void *) &f->nonce, RPMB_NONCE_SIZE);
-+		vrpmb_compute_mac(key, f);
-+	}
-+
-+	vrpmb_dump_frame("write_blocks", &out[0]);
-+
-+	/* Response request */
-+	out[frames - 1].req_resp = htobe16(VIRTIO_RPMB_REQ_RESULT_READ);
-+	out[frames - 1].block_count = htobe16(1);
-+	RAND_bytes((void *) &out[frames - 1].nonce, RPMB_NONCE_SIZE);
-+	vrpmb_compute_mac(key, &out[frames - 1]);
-+
-+	vrpmb_dump_frame("result_req", &out[frames - 1]);
-+
-+	cmd.request = (void *) out;
-+	cmd.len = frames * sizeof(struct virtio_rpmb_frame);
-+	cmd.response = (void *) in;
-+	cmd.rlen = sizeof(struct virtio_rpmb_frame);
-+
-+	ret = ioctl(dev_fd, RPMB_IOC_WBLOCKS_CMD, &cmd);
-+	if (ret < 0) {
-+		rpmb_err("wblocks ioctl failure %d: %s.\n", ret,
-+			 strerror(errno));
-+	}
-+
-+	free(out);
-+	free(in);
-+	return ret;
-+}
-+
-+/*
-+ * To read blocks we receive a bunch of frames from the vrpmb device
-+ * which we need to validate and extract the actual data into
-+ * requested buffer.
-+ */
-+static int vrpmb_read_blocks(int dev_fd, void *key, int addr, int count, void *data, int len)
-+{
-+	struct rpmb_ioc_rblocks_cmd cmd;
-+	int frame_length = count * sizeof(struct virtio_rpmb_frame);
-+	struct virtio_rpmb_frame *frames = malloc(frame_length);
-+	int i, ret = -1;
-+
-+	rpmb_dbg("%s: reading %d blocks into %d bytes (%d bytes of frames)\n",
-+		 __func__, count, len, frame_length);
-+
-+	if (!frames) {
-+		rpmb_err("unable to allocate memory for frames");
-+		return -1;
-+	}
-+
-+	cmd.addr = addr;
-+	cmd.count = count;
-+	cmd.len = frame_length;
-+	cmd.data = (__u8 *) frames;
-+
-+	ret = ioctl(dev_fd, RPMB_IOC_RBLOCKS_CMD, &cmd);
-+	if (ret < 0) {
-+		rpmb_err("rblocks ioctl failure %d: %s.\n", ret,
-+			 strerror(errno));
-+		goto out;
-+	}
-+
-+	for (i = 0; i < count; i++) {
-+		struct virtio_rpmb_frame *f = &frames[i];
-+
-+		vrpmb_dump_frame("block data", f);
-+
-+		if (key) {
-+			ret = vrpmb_check_mac(key, f, 1);
-+			if (ret) {
-+				rpmb_err("%s: check mac error frame %d/%d\n", __func__, i, ret);
-+				break;
-+			}
-+		}
-+
-+		memcpy(data, &f->data, RPMB_BLOCK_SIZE);
-+		data += RPMB_BLOCK_SIZE;
-+	}
-+	ret = 0;
-+
-+ out:
-+	free(frames);
-+	return ret;
-+}
-+
-+/*
-+ * Generic RPMB bits
-+ */
-+static int op_get_info(int nargs, char *argv[])
-+{
-+	int dev_fd;
-+	struct rpmb_ioc_cap_cmd cap;
-+
-+	if (nargs != 1)
-+		return -EINVAL;
-+
-+	memset(&cap, 0, sizeof(cap));
-+	dev_fd = open_dev_file(argv[0], &cap);
-+	if (dev_fd < 0)
-+		return -errno;
-+	argv++;
-+
-+	printf("RPMB rpmb_target = %d\n", cap.target);
-+	printf("RPMB capacity    = %d\n", cap.capacity);
-+	printf("RPMB block_size  = %d\n", cap.block_size);
-+	printf("RPMB wr_cnt_max  = %d\n", cap.wr_cnt_max);
-+	printf("RPMB rd_cnt_max  = %d\n", cap.rd_cnt_max);
-+	printf("RPMB auth_method = %d\n", cap.auth_method);
-+
-+	close(dev_fd);
-+
-+	return 0;
-+}
-+
-+static void *read_key(const char *path)
-+{
-+	int key_fd = open_rd_file(path, "key file");
-+	void *key;
-+
-+	if (key_fd < 0)
-+		return NULL;
-+
-+	key = malloc(RPMB_KEY_SIZE);
-+
-+	if (!key) {
-+		rpmb_err("out of memory for key\n");
-+		return NULL;
-+	}
-+
-+	if (read(key_fd, key, RPMB_KEY_SIZE) != RPMB_KEY_SIZE) {
-+		rpmb_err("couldn't read key (%s)\n", strerror(errno));
-+		return NULL;
-+	}
-+
-+	close(key_fd);
-+	return key;
-+}
-+
-+static int op_rpmb_program_key(int nargs, char *argv[])
-+{
-+	int ret = -EINVAL, fd = -1;
-+	struct rpmb_ioc_cap_cmd cap;
-+	void *key;
-+
-+	if (nargs < 1 || nargs > 2)
-+		return ret;
-+
-+	fd = open_dev_file(argv[0], &cap);
-+	if (fd < 0) {
-+		perror("opening RPMB device");
-+		return ret;
-+	}
-+	argv++;
-+
-+	key = read_key(argv[0]);
-+
-+	if (key)
-+		ret = vrpmb_program_key(fd, key);
-+
-+	close_fd(fd);
-+	return ret;
-+}
-+
-+
-+static int op_rpmb_get_write_counter(int nargs, char **argv)
-+{
-+	int ret, fd = -1;
-+	struct rpmb_ioc_cap_cmd cap;
-+	void *key = NULL;
-+
-+	ret = -EINVAL;
-+	if (nargs < 1 || nargs > 2)
-+		return ret;
-+
-+	fd = open_dev_file(argv[0], &cap);
-+	if (fd < 0) {
-+		perror("opening RPMB device");
-+		return ret;
-+	}
-+	argv++;
-+
-+	if (argv[0]) {
-+		key = read_key(argv[0]);
-+		if (!key)
-+			rpmb_err("failed to read key data");
-+	}
-+
-+	ret = vrpmb_get_write_counter(fd, key);
-+	if (ret < 0) {
-+		rpmb_err("counter ioctl failure %d: %s.\n", ret, strerror(errno));
-+	} else {
-+		printf("Counter value is: %d\n", ret);
-+		ret = 0;
-+	}
-+
-+	close_fd(fd);
-+	return ret;
-+}
-+
-+static int op_rpmb_read_blocks(int nargs, char **argv)
-+{
-+	int ret, data_fd, fd = -1;
-+	struct rpmb_ioc_cap_cmd cap;
-+	unsigned long numarg;
-+	uint16_t addr, blocks_cnt;
-+	void *key = NULL;
-+
-+	ret = -EINVAL;
-+	if (nargs < 4 || nargs > 5)
-+		return ret;
-+
-+	fd = open_dev_file(argv[0], &cap);
-+	if (fd < 0) {
-+		perror("opening RPMB device");
-+		return ret;
-+	}
-+	argv++;
-+
-+	errno = 0;
-+	numarg = strtoul(argv[0], NULL, 0);
-+	if (errno || numarg > USHRT_MAX) {
-+		rpmb_err("wrong block address\n");
-+		goto out;
-+	}
-+	addr = (uint16_t)numarg;
-+	argv++;
-+
-+	errno = 0;
-+	numarg = strtoul(argv[0], NULL, 0);
-+	if (errno || numarg > USHRT_MAX) {
-+		rpmb_err("wrong blocks count\n");
-+		goto out;
-+	}
-+	blocks_cnt = (uint16_t)numarg;
-+	argv++;
-+
-+	if (blocks_cnt == 0) {
-+		rpmb_err("wrong blocks count\n");
-+		goto out;
-+	}
-+
-+	data_fd = open_wr_file(argv[0], "output data");
-+	if (data_fd < 0)
-+		goto out;
-+	argv++;
-+
-+	if (argv[0]) {
-+		key = read_key(argv[0]);
-+		if (!key) {
-+			rpmb_err("failed to read key data");
-+			goto out;
-+		}
-+	}
-+
-+	while (blocks_cnt > 0) {
-+		int to_copy = min(blocks_cnt, cap.rd_cnt_max);
-+		int length = to_copy * RPMB_BLOCK_SIZE;
-+		void *data = malloc(length);
-+
-+		if (!data) {
-+			ret = ENOMEM;
-+			goto out;
-+		}
-+
-+		vrpmb_read_blocks(fd, key, addr, to_copy, data, length);
-+
-+		ret = write_file(data_fd, data, length);
-+		if (ret < 0) {
-+			perror("writing data");
-+			goto out;
-+		} else {
-+			rpmb_dbg("wrote %d bytes/%d blocks to file\n", length, to_copy);
-+		}
-+
-+		free(data);
-+		addr += to_copy;
-+		blocks_cnt -= to_copy;
-+	}
-+
-+	ret = 0;
-+out:
-+	close_fd(fd);
-+	close_fd(data_fd);
-+
-+	return ret;
-+}
-+
-+static int op_rpmb_write_blocks(int nargs, char **argv)
-+{
-+	int ret, data_fd, fd = -1;
-+	struct rpmb_ioc_cap_cmd cap;
-+	unsigned long numarg;
-+	uint16_t addr, blocks_cnt;
-+	void *key;
-+
-+	ret = -EINVAL;
-+	if (nargs < 4 || nargs > 5)
-+		return ret;
-+
-+	fd = open_dev_file(argv[0], &cap);
-+	if (fd < 0) {
-+		perror("opening RPMB device");
-+		return ret;
-+	}
-+	argv++;
-+
-+	errno = 0;
-+	numarg = strtoul(argv[0], NULL, 0);
-+	if (errno || numarg > USHRT_MAX) {
-+		rpmb_err("wrong block address\n");
-+		goto out;
-+	}
-+	addr = (uint16_t)numarg;
-+	argv++;
-+
-+	errno = 0;
-+	numarg = strtoul(argv[0], NULL, 0);
-+	if (errno || numarg > USHRT_MAX) {
-+		rpmb_err("wrong blocks count\n");
-+		goto out;
-+	}
-+	blocks_cnt = (uint16_t)numarg;
-+	argv++;
-+
-+	if (blocks_cnt == 0) {
-+		rpmb_err("wrong blocks count\n");
-+		goto out;
-+	}
-+
-+	data_fd = open_rd_file(argv[0], "input data");
-+	if (data_fd < 0)
-+		goto out;
-+	argv++;
-+
-+	key = read_key(nargs == 5 ? argv[0] : NULL);
-+	if (!key) {
-+		rpmb_err("failed to read key data");
-+		goto out;
-+	}
-+
-+	while (blocks_cnt > 0) {
-+		int to_copy = min(blocks_cnt, cap.wr_cnt_max);
-+		int length = to_copy * 256;
-+		void *data = malloc(length);
-+
-+		if (!data) {
-+			ret = ENOMEM;
-+			goto out;
-+		}
-+
-+		ret = read_file(data_fd, data, length);
-+		if (ret < 0) {
-+			perror("reading data");
-+			goto out;
-+		}
-+
-+		ret = vrpmb_write_blocks(fd, key, data, addr, length);
-+		if (ret < 0) {
-+			rpmb_err("wblocks ioctl failure %d: %s.\n", ret,
-+				 strerror(errno));
-+			goto out;
-+		}
-+
-+		free(data);
-+		addr += to_copy;
-+		blocks_cnt -= to_copy;
-+	}
-+
-+	ret = 0;
-+out:
-+	close_fd(fd);
-+	close_fd(data_fd);
-+
-+	return ret;
-+}
-+
-+typedef int (*rpmb_op)(int argc, char *argv[]);
-+
-+struct rpmb_cmd {
-+	const char *op_name;
-+	rpmb_op     op;
-+	const char  *usage; /* usage title */
-+	const char  *help;  /* help */
-+};
-+
-+static const struct rpmb_cmd cmds[] = {
-+	{
-+		"get-info",
-+		op_get_info,
-+		"<RPMB_DEVICE>",
-+		"    Get RPMB device info\n",
-+	},
-+	{
-+		"program-key",
-+		op_rpmb_program_key,
-+		"<RPMB_DEVICE> <KEYFILE>",
-+		"    Program authentication KEYFILE\n"
-+		"    NOTE: This is a one-time programmable irreversible change.\n",
-+	},
-+	{
-+		"write-counter",
-+		op_rpmb_get_write_counter,
-+		"<RPMB_DEVICE>",
-+		"    Rertrive write counter value from the <RPMB_DEVICE> to stdout.\n"
-+	},
-+	{
-+		"write-blocks",
-+		op_rpmb_write_blocks,
-+		"<RPMB_DEVICE> <address> <block_count> <DATA_FILE> <KEYID>",
-+		"    <block count> of 256 bytes will be written from the DATA_FILE\n"
-+		"    to the <RPMB_DEVICE> at block offset <address>.\n"
-+		"    When DATA_FILE is -, read from standard input.\n",
-+	},
-+	{
-+		"read-blocks",
-+		op_rpmb_read_blocks,
-+		"<RPMB_DEVICE> <address> <blocks count> <OUTPUT_FILE>",
-+		"    <block count> of 256 bytes will be read from <RPMB_DEVICE>\n"
-+		"    to the OUTPUT_FILE\n"
-+		"    When OUTPUT_FILE is -, write to standard output\n",
-+	},
-+
-+	{ NULL, NULL, NULL, NULL }
-+};
-+
-+static void help(const char *prog, const struct rpmb_cmd *cmd)
-+{
-+	printf("%s %s %s\n", prog, cmd->op_name, cmd->usage);
-+	printf("%s\n", cmd->help);
-+}
-+
-+static void usage(const char *prog)
-+{
-+	int i;
-+
-+	printf("\n");
-+	printf("Usage: %s [-v] <command> <args>\n\n", prog);
-+	for (i = 0; cmds[i].op_name; i++)
-+		printf("       %s %s %s\n",
-+		       prog, cmds[i].op_name, cmds[i].usage);
-+
-+	printf("\n");
-+	printf("      %s -v/--verbose: runs in verbose mode\n", prog);
-+	printf("      %s help : shows this help\n", prog);
-+	printf("      %s help <command>: shows detailed help\n", prog);
-+}
-+
-+static bool call_for_help(const char *arg)
-+{
-+	return !strcmp(arg, "help") ||
-+	       !strcmp(arg, "-h")   ||
-+	       !strcmp(arg, "--help");
-+}
-+
-+static bool parse_verbose(const char *arg)
-+{
-+	return !strcmp(arg, "-v") ||
-+	       !strcmp(arg, "--verbose");
-+}
-+
-+static const
-+struct rpmb_cmd *parse_args(const char *prog, int *_argc, char **_argv[])
-+{
-+	int i;
-+	int argc = *_argc;
-+	char **argv =  *_argv;
-+	const struct rpmb_cmd *cmd = NULL;
-+	bool need_help = false;
-+
-+	argc--; argv++;
-+
-+	if (argc == 0)
-+		goto out;
-+
-+	if (call_for_help(argv[0])) {
-+		argc--; argv++;
-+		if (argc == 0)
-+			goto out;
-+
-+		need_help = true;
-+	}
-+
-+	if (parse_verbose(argv[0])) {
-+		argc--; argv++;
-+		if (argc == 0)
-+			goto out;
-+
-+		verbose = true;
-+	}
-+
-+	for (i = 0; cmds[i].op_name; i++) {
-+		if (!strncmp(argv[0], cmds[i].op_name,
-+			     strlen(cmds[i].op_name))) {
-+			cmd = &cmds[i];
-+			argc--; argv++;
-+			break;
-+		}
-+	}
-+
-+	if (!cmd)
-+		goto out;
-+
-+	if (need_help || (argc > 0 && call_for_help(argv[0]))) {
-+		help(prog, cmd);
-+		argc--; argv++;
-+		return NULL;
-+	}
-+
-+out:
-+	*_argc = argc;
-+	*_argv = argv;
-+
-+	if (!cmd)
-+		usage(prog);
-+
-+	return cmd;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	const char *prog = basename(argv[0]);
-+	const struct rpmb_cmd *cmd;
-+	int ret;
-+
-+	cmd = parse_args(prog, &argc, &argv);
-+	if (!cmd)
-+		exit(EXIT_SUCCESS);
-+
-+	ret = cmd->op(argc, argv);
-+	if (ret == -EINVAL)
-+		help(prog, cmd);
-+
-+	exit(ret);
-+}
-diff --git a/tools/rpmb/test.sh b/tools/rpmb/test.sh
-new file mode 100755
-index 000000000000..2cbba5529618
---- /dev/null
-+++ b/tools/rpmb/test.sh
-@@ -0,0 +1,22 @@
-+#!/bin/sh -e
-+# SPDX-License-Identifier: GPL-2.0+
-+echo "get info"
-+./rpmb -v get-info /dev/rpmb0
-+echo "program key"
-+./rpmb -v program-key /dev/rpmb0 key
-+echo "get write counter"
-+./rpmb -v write-counter /dev/rpmb0
-+echo "get write counter (and verify)"
-+./rpmb -v write-counter /dev/rpmb0 key
-+echo "generating data"
-+dd if=/dev/urandom of=data.in count=4 bs=256
-+echo "write data"
-+./rpmb -v write-blocks /dev/rpmb0 0 4 data.in key
-+echo "read data back"
-+rm -f data.out
-+./rpmb -v read-blocks /dev/rpmb0 0 4 data.out
-+cmp data.in data.out
-+echo "read data back with key check"
-+truncate -s 0 data.out
-+./rpmb -v read-blocks /dev/rpmb0 0 4 data.out key
-+cmp data.in data.out
--- 
-2.30.2
+biBUdWUsIDIwMjItMDQtMDUgYXQgMTc6MjcgKzAzMDAsIEphcmtrbyBTYWtraW5lbiB3cm90ZToK
+PiBPbiBUdWUsIDIwMjItMDQtMDUgYXQgMTc6MTkgKzAzMDAsIEphcmtrbyBTYWtraW5lbiB3cm90
+ZToKPiA+IE9uIFR1ZSwgMjAyMi0wNC0wNSBhdCAxNjo0MCArMDMwMCwgSmFya2tvIFNha2tpbmVu
+IHdyb3RlOgo+ID4gPiBPbiBUdWUsIDIwMjItMDQtMDUgYXQgMDg6MDcgKzAzMDAsIEphcmtrbyBT
+YWtraW5lbiB3cm90ZToKPiA+ID4gPiBPbiBUdWUsIDIwMjItMDQtMDUgYXQgMDg6MDMgKzAzMDAs
+IEphcmtrbyBTYWtraW5lbiB3cm90ZToKPiA+ID4gPiA+IE9uIE1vbiwgMjAyMi0wNC0wNCBhdCAw
+OTo0OSAtMDcwMCwgUmVpbmV0dGUgQ2hhdHJlIHdyb3RlOgo+ID4gPiA+ID4gPiBJbiB0aGUgaW5p
+dGlhbCAoU0dYMSkgdmVyc2lvbiBvZiBTR1gsIHBhZ2VzIGluIGFuIGVuY2xhdmUgbmVlZCB0byBi
+ZQo+ID4gPiA+ID4gPiBjcmVhdGVkIHdpdGggcGVybWlzc2lvbnMgdGhhdCBzdXBwb3J0IGFsbCB1
+c2FnZXMgb2YgdGhlIHBhZ2VzLCBmcm9tIHRoZQo+ID4gPiA+ID4gPiB0aW1lIHRoZSBlbmNsYXZl
+IGlzIGluaXRpYWxpemVkIHVudGlsIGl0IGlzIHVubG9hZGVkLiBGb3IgZXhhbXBsZSwKPiA+ID4g
+PiA+ID4gcGFnZXMgdXNlZCBieSBhIEpJVCBjb21waWxlciBvciB3aGVuIGNvZGUgbmVlZHMgdG8g
+b3RoZXJ3aXNlIGJlCj4gPiA+ID4gPiA+IHJlbG9jYXRlZCBuZWVkIHRvIGFsd2F5cyBoYXZlIFJX
+WCBwZXJtaXNzaW9ucy4KPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+IFNHWDIgaW5jbHVkZXMgYSBu
+ZXcgZnVuY3Rpb24gRU5DTFNbRU1PRFBSXSB0aGF0IGlzIHJ1biBmcm9tIHRoZSBrZXJuZWwKPiA+
+ID4gPiA+ID4gYW5kIGNhbiBiZSB1c2VkIHRvIHJlc3RyaWN0IHRoZSBFUENNIHBlcm1pc3Npb25z
+IG9mIHJlZ3VsYXIgZW5jbGF2ZQo+ID4gPiA+ID4gPiBwYWdlcyB3aXRoaW4gYW4gaW5pdGlhbGl6
+ZWQgZW5jbGF2ZS4KPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+IEludHJvZHVjZSBpb2N0bCgpIFNH
+WF9JT0NfRU5DTEFWRV9SRVNUUklDVF9QRVJNSVNTSU9OUyB0byBzdXBwb3J0Cj4gPiA+ID4gPiA+
+IHJlc3RyaWN0aW5nIEVQQ00gcGVybWlzc2lvbnMuIFdpdGggdGhpcyBpb2N0bCgpIHRoZSB1c2Vy
+IHNwZWNpZmllcwo+ID4gPiA+ID4gPiBhIHBhZ2UgcmFuZ2UgYW5kIHRoZSBFUENNIHBlcm1pc3Np
+b25zIHRvIGJlIGFwcGxpZWQgdG8gYWxsIHBhZ2VzIGluCj4gPiA+ID4gPiA+IHRoZSBwcm92aWRl
+ZCByYW5nZS4gRU5DTFNbRU1PRFBSXSBpcyBydW4gdG8gcmVzdHJpY3QgdGhlIEVQQ00KPiA+ID4g
+PiA+ID4gcGVybWlzc2lvbnMgZm9sbG93ZWQgYnkgdGhlIEVOQ0xTW0VUUkFDS10gZmxvdyB0aGF0
+IHdpbGwgZW5zdXJlCj4gPiA+ID4gPiA+IG5vIGNhY2hlZCBsaW5lYXItdG8tcGh5c2ljYWwgYWRk
+cmVzcyBtYXBwaW5ncyB0byB0aGUgY2hhbmdlZAo+ID4gPiA+ID4gPiBwYWdlcyByZW1haW4uCj4g
+PiA+ID4gPiA+IAo+ID4gPiA+ID4gPiBJdCBpcyBwb3NzaWJsZSBmb3IgdGhlIHBlcm1pc3Npb24g
+Y2hhbmdlIHJlcXVlc3QgdG8gZmFpbCBvbiBhbnkKPiA+ID4gPiA+ID4gcGFnZSB3aXRoaW4gdGhl
+IHByb3ZpZGVkIHJhbmdlLCBlaXRoZXIgd2l0aCBhbiBlcnJvciBlbmNvdW50ZXJlZAo+ID4gPiA+
+ID4gPiBieSB0aGUga2VybmVsIG9yIGJ5IHRoZSBTR1ggaGFyZHdhcmUgd2hpbGUgcnVubmluZwo+
+ID4gPiA+ID4gPiBFTkNMU1tFTU9EUFJdLiBUbyBzdXBwb3J0IHBhcnRpYWwgc3VjY2VzcyB0aGUg
+aW9jdGwoKSByZXR1cm5zIGFuCj4gPiA+ID4gPiA+IGVycm9yIGNvZGUgYmFzZWQgb24gZmFpbHVy
+ZXMgZW5jb3VudGVyZWQgYnkgdGhlIGtlcm5lbCBhcyB3ZWxsCj4gPiA+ID4gPiA+IGFzIHR3byBy
+ZXN1bHQgb3V0cHV0IHBhcmFtZXRlcnM6IG9uZSBmb3IgdGhlIG51bWJlciBvZiBwYWdlcwo+ID4g
+PiA+ID4gPiB0aGF0IHdlcmUgc3VjY2Vzc2Z1bGx5IGNoYW5nZWQgYW5kIG9uZSBmb3IgdGhlIFNH
+WCByZXR1cm4gY29kZS4KPiA+ID4gPiA+ID4gCj4gPiA+ID4gPiA+IFRoZSBwYWdlIHRhYmxlIGVu
+dHJ5IHBlcm1pc3Npb25zIGFyZSBub3QgaW1wYWN0ZWQgYnkgdGhlIEVQQ00KPiA+ID4gPiA+ID4g
+cGVybWlzc2lvbiBjaGFuZ2VzLiBWTUFzIGFuZCBQVEVzIHdpbGwgY29udGludWUgdG8gYWxsb3cg
+dGhlCj4gPiA+ID4gPiA+IG1heGltdW0gdmV0dGVkIHBlcm1pc3Npb25zIGRldGVybWluZWQgYXQg
+dGhlIHRpbWUgdGhlIHBhZ2VzCj4gPiA+ID4gPiA+IGFyZSBhZGRlZCB0byB0aGUgZW5jbGF2ZS4g
+VGhlIFNHWCBlcnJvciBjb2RlIGluIGEgcGFnZSBmYXVsdAo+ID4gPiA+ID4gPiB3aWxsIGluZGlj
+YXRlIGlmIGl0IHdhcyBhbiBFUENNIHBlcm1pc3Npb24gY2hlY2sgdGhhdCBwcmV2ZW50ZWQKPiA+
+ID4gPiA+ID4gYW4gYWNjZXNzIGF0dGVtcHQuCj4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiBObyBj
+aGVja2luZyBpcyBkb25lIHRvIGVuc3VyZSB0aGF0IHRoZSBwZXJtaXNzaW9ucyBhcmUgYWN0dWFs
+bHkKPiA+ID4gPiA+ID4gYmVpbmcgcmVzdHJpY3RlZC4gVGhpcyBpcyBiZWNhdXNlIHRoZSBlbmNs
+YXZlIG1heSBoYXZlIHJlbGF4ZWQKPiA+ID4gPiA+ID4gdGhlIEVQQ00gcGVybWlzc2lvbnMgZnJv
+bSB3aXRoaW4gdGhlIGVuY2xhdmUgd2l0aG91dCBsZXR0aW5nIHRoZQo+ID4gPiA+ID4gPiBrZXJu
+ZWwga25vdy4gQW4gYXR0ZW1wdCB0byByZWxheCBwZXJtaXNzaW9ucyB1c2luZyB0aGlzIGNhbGwg
+d2lsbAo+ID4gPiA+ID4gPiBiZSBpZ25vcmVkIGJ5IHRoZSBoYXJkd2FyZS4KPiA+ID4gPiA+ID4g
+Cj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IFJlaW5ldHRlIENoYXRyZSA8cmVpbmV0dGUuY2hh
+dHJlQGludGVsLmNvbT4KPiA+ID4gPiA+ID4gLS0tCj4gPiA+ID4gPiA+IENoYW5nZXMgc2luY2Ug
+VjI6Cj4gPiA+ID4gPiA+IC0gSW5jbHVkZSB0aGUgc2d4X2lvY19zZ3gyX3JlYWR5KCkgdXRpbGl0
+eQo+ID4gPiA+ID4gPiDCoCB0aGF0IHByZXZpb3VzbHkgd2FzIGluICJ4ODYvc2d4OiBTdXBwb3J0
+IHJlbGF4aW5nIG9mIGVuY2xhdmUgcGFnZQo+ID4gPiA+ID4gPiDCoCBwZXJtaXNzaW9ucyIgdGhh
+dCBpcyByZW1vdmVkIGZyb20gdGhlIG5leHQgdmVyc2lvbi4KPiA+ID4gPiA+ID4gLSBGZXcgcmVu
+YW1lcyByZXF1ZXN0ZWQgYnkgSmFya2tvOgo+ID4gPiA+ID4gPiDCoCBzdHJ1Y3Qgc2d4X2VuY2xh
+dmVfcmVzdHJpY3RfcGVybSAtPgo+ID4gPiA+ID4gPiDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBz
+Z3hfZW5jbGF2ZV9yZXN0cmljdF9wZXJtaXNzaW9ucwo+ID4gPiA+ID4gPiDCoCBzZ3hfZW5jbGF2
+ZV9yZXN0cmljdF9wZXJtKCnCoMKgwqDCoCAtPgo+ID4gPiA+ID4gPiDCoMKgwqDCoMKgwqDCoMKg
+IHNneF9lbmNsYXZlX3Jlc3RyaWN0X3Blcm1pc3Npb25zKCkKPiA+ID4gPiA+ID4gwqAgc2d4X2lv
+Y19lbmNsYXZlX3Jlc3RyaWN0X3Blcm0oKSAtPgo+ID4gPiA+ID4gPiDCoMKgwqDCoMKgwqDCoMKg
+IHNneF9pb2NfZW5jbGF2ZV9yZXN0cmljdF9wZXJtaXNzaW9ucygpCj4gPiA+ID4gPiA+IC0gTWFr
+ZSBFUENNIHBlcm1pc3Npb25zIGluZGVwZW5kZW50IGZyb20ga2VybmVsIHZpZXcgb2YKPiA+ID4g
+PiA+ID4gwqAgcGVybWlzc2lvbnMuwqAgKEphcmtrbykKPiA+ID4gPiA+ID4gwqAgLSBSZW1vdmUg
+YXR0ZW1wdCBhdCBydW50aW1lIHRyYWNraW5nIG9mIEVQQ00gcGVybWlzc2lvbnMKPiA+ID4gPiA+
+ID4gwqDCoMKgIChzZ3hfZW5jbF9wYWdlLT52bV9ydW5fcHJvdF9iaXRzKS4KPiA+ID4gPiA+ID4g
+wqAgLSBEbyBub3QgZmx1c2ggcGFnZSB0YWJsZSBlbnRyaWVzIC0gdGhleSBhcmUgbm8gbG9uZ2Vy
+IGltcGFjdGVkIGJ5Cj4gPiA+ID4gPiA+IMKgwqDCoCBFUENNIHBlcm1pc3Npb24gY2hhbmdlcy4K
+PiA+ID4gPiA+ID4gwqAgLSBNb2RpZnkgY2hhbmdlbG9nIHRvIHJlZmxlY3QgbmV3IGFyY2hpdGVj
+dHVyZS4KPiA+ID4gPiA+ID4gLSBFbnN1cmUgYXQgbGVhc3QgUFJPVF9SRUFEIGlzIHJlcXVlc3Rl
+ZCAtIGVuY2xhdmUgcmVxdWlyZXMgcmVhZAo+ID4gPiA+ID4gPiDCoCBhY2Nlc3MgdG8gdGhlIHBh
+Z2UgZm9yIGNvbW1hbmRzIGxpa2UgRU1PRFBFIGFuZCBFQUNDRVBULiAoSmFya2tvKQo+ID4gPiA+
+ID4gPiAKPiA+ID4gPiA+ID4gQ2hhbmdlcyBzaW5jZSBWMToKPiA+ID4gPiA+ID4gLSBDaGFuZ2Ug
+dGVybWlub2xvZ3kgdG8gdXNlICJyZWxheCIgaW5zdGVhZCBvZiAiZXh0ZW5kIiB0byByZWZlciB0
+bwo+ID4gPiA+ID4gPiDCoCB0aGUgY2FzZSB3aGVuIGVuY2xhdmUgcGFnZSBwZXJtaXNzaW9ucyBh
+cmUgYWRkZWQgKERhdmUpLgo+ID4gPiA+ID4gPiAtIFVzZSBpb2N0bCgpIGluIGNvbW1pdCBtZXNz
+YWdlIChEYXZlKS4KPiA+ID4gPiA+ID4gLSBBZGQgZXhhbXBsZXMgb24gd2hhdCBwZXJtaXNzaW9u
+cyB3b3VsZCBiZSBhbGxvd2VkIChEYXZlKS4KPiA+ID4gPiA+ID4gLSBTcGxpdCBlbmNsYXZlIHBh
+Z2UgcGVybWlzc2lvbiBjaGFuZ2VzIGludG8gdHdvIGlvY3RsKClzLCBvbmUgZm9yCj4gPiA+ID4g
+PiA+IMKgIHBlcm1pc3Npb24gcmVzdHJpY3RpbmcgKFNHWF9JT0NfRU5DTEFWRV9SRVNUUklDVF9Q
+RVJNSVNTSU9OUykKPiA+ID4gPiA+ID4gwqAgYW5kIG9uZSBmb3IgcGVybWlzc2lvbiByZWxheGlu
+ZyAoU0dYX0lPQ19FTkNMQVZFX1JFTEFYX1BFUk1JU1NJT05TKQo+ID4gPiA+ID4gPiDCoCAoSmFy
+a2tvKS4KPiA+ID4gPiA+ID4gLSBJbiBzdXBwb3J0IG9mIHRoZSBpb2N0bCgpIG5hbWUgY2hhbmdl
+IHRoZSBmb2xsb3dpbmcgbmFtZXMgaGF2ZSBiZWVuCj4gPiA+ID4gPiA+IMKgIGNoYW5nZWQ6Cj4g
+PiA+ID4gPiA+IMKgIHN0cnVjdCBzZ3hfcGFnZV9tb2RwIC0+IHN0cnVjdCBzZ3hfZW5jbGF2ZV9y
+ZXN0cmljdF9wZXJtCj4gPiA+ID4gPiA+IMKgIHNneF9pb2NfcGFnZV9tb2RwKCkgLT4gc2d4X2lv
+Y19lbmNsYXZlX3Jlc3RyaWN0X3Blcm0oKQo+ID4gPiA+ID4gPiDCoCBzZ3hfcGFnZV9tb2RwKCkg
+LT4gc2d4X2VuY2xhdmVfcmVzdHJpY3RfcGVybSgpCj4gPiA+ID4gPiA+IC0gaW9jdGwoKSB0YWtl
+cyBlbnRpcmUgc2VjaW5mbyBhcyBpbnB1dCBpbnN0ZWFkIG9mCj4gPiA+ID4gPiA+IMKgIHBhZ2Ug
+cGVybWlzc2lvbnMgb25seSAoSmFya2tvKS4KPiA+ID4gPiA+ID4gLSBGaXgga2VybmVsLWRvYyB0
+byBpbmNsdWRlICgpIGluIGZ1bmN0aW9uIG5hbWUuCj4gPiA+ID4gPiA+IC0gQ3JlYXRlIGFuZCB1
+c2UgdXRpbGl0eSBmb3IgdGhlIEVUUkFDSyBmbG93Lgo+ID4gPiA+ID4gPiAtIEZpeHVwcyBpbiBj
+b21tZW50cwo+ID4gPiA+ID4gPiAtIE1vdmUga2VybmVsLWRvYyB0byBmdW5jdGlvbiB0aGF0IHBy
+b3ZpZGVzIGRvY3VtZW50YXRpb24gZm9yCj4gPiA+ID4gPiA+IMKgIERvY3VtZW50YXRpb24veDg2
+L3NneC5yc3QuCj4gPiA+ID4gPiA+IC0gUmVtb3ZlIHJlZHVuZGFudCBjb21tZW50Lgo+ID4gPiA+
+ID4gPiAtIE1ha2UgZXhwbGljaXQgd2hpY2ggbWVtYmVycyBvZiBzdHJ1Y3Qgc2d4X2VuY2xhdmVf
+cmVzdHJpY3RfcGVybQo+ID4gPiA+ID4gPiDCoCBhcmUgZm9yIG91dHB1dCAoRGF2ZSkuCj4gPiA+
+ID4gPiA+IAo+ID4gPiA+ID4gPiDCoGFyY2gveDg2L2luY2x1ZGUvdWFwaS9hc20vc2d4LmggfMKg
+IDIxICsrKwo+ID4gPiA+ID4gPiDCoGFyY2gveDg2L2tlcm5lbC9jcHUvc2d4L2lvY3RsLmMgfCAy
+NDIgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysKPiA+ID4gPiA+ID4gwqAyIGZpbGVz
+IGNoYW5nZWQsIDI2MyBpbnNlcnRpb25zKCspCj4gPiA+ID4gPiA+IAo+ID4gPiA+ID4gPiBkaWZm
+IC0tZ2l0IGEvYXJjaC94ODYvaW5jbHVkZS91YXBpL2FzbS9zZ3guaCBiL2FyY2gveDg2L2luY2x1
+ZGUvdWFwaS9hc20vc2d4LmgKPiA+ID4gPiA+ID4gaW5kZXggZjRiODE1ODdlOTBiLi5hMGEyNGU5
+NGZiMjcgMTAwNjQ0Cj4gPiA+ID4gPiA+IC0tLSBhL2FyY2gveDg2L2luY2x1ZGUvdWFwaS9hc20v
+c2d4LmgKPiA+ID4gPiA+ID4gKysrIGIvYXJjaC94ODYvaW5jbHVkZS91YXBpL2FzbS9zZ3guaAo+
+ID4gPiA+ID4gPiBAQCAtMjksNiArMjksOCBAQCBlbnVtIHNneF9wYWdlX2ZsYWdzIHsKPiA+ID4g
+PiA+ID4gwqDCoMKgwqDCoMKgwqDCoF9JT1coU0dYX01BR0lDLCAweDAzLCBzdHJ1Y3Qgc2d4X2Vu
+Y2xhdmVfcHJvdmlzaW9uKQo+ID4gPiA+ID4gPiDCoCNkZWZpbmUgU0dYX0lPQ19WRVBDX1JFTU9W
+RV9BTEwgXAo+ID4gPiA+ID4gPiDCoMKgwqDCoMKgwqDCoMKgX0lPKFNHWF9NQUdJQywgMHgwNCkK
+PiA+ID4gPiA+ID4gKyNkZWZpbmUgU0dYX0lPQ19FTkNMQVZFX1JFU1RSSUNUX1BFUk1JU1NJT05T
+IFwKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgX0lPV1IoU0dYX01BR0lDLCAweDA1LCBzdHJ1
+Y3Qgc2d4X2VuY2xhdmVfcmVzdHJpY3RfcGVybWlzc2lvbnMpCj4gPiA+ID4gPiA+IMKgCj4gPiA+
+ID4gPiA+IMKgLyoqCj4gPiA+ID4gPiA+IMKgICogc3RydWN0IHNneF9lbmNsYXZlX2NyZWF0ZSAt
+IHBhcmFtZXRlciBzdHJ1Y3R1cmUgZm9yIHRoZQo+ID4gPiA+ID4gPiBAQCAtNzYsNiArNzgsMjUg
+QEAgc3RydWN0IHNneF9lbmNsYXZlX3Byb3Zpc2lvbiB7Cj4gPiA+ID4gPiA+IMKgwqDCoMKgwqDC
+oMKgwqBfX3U2NCBmZDsKPiA+ID4gPiA+ID4gwqB9Owo+ID4gPiA+ID4gPiDCoAo+ID4gPiA+ID4g
+PiArLyoqCj4gPiA+ID4gPiA+ICsgKiBzdHJ1Y3Qgc2d4X2VuY2xhdmVfcmVzdHJpY3RfcGVybWlz
+c2lvbnMgLSBwYXJhbWV0ZXJzIGZvciBpb2N0bAo+ID4gPiA+ID4gPiArICrCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgJVNHWF9JT0NfRU5DTEFWRV9SRVNUUklDVF9QRVJNSVNTSU9OUwo+ID4gPiA+ID4g
+PiArICogQG9mZnNldDrCoMKgwqDCoHN0YXJ0aW5nIHBhZ2Ugb2Zmc2V0IChwYWdlIGFsaWduZWQg
+cmVsYXRpdmUgdG8gZW5jbGF2ZSBiYXNlCj4gPiA+ID4gPiA+ICsgKsKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgYWRkcmVzcyBkZWZpbmVkIGluIFNFQ1MpCj4gPiA+ID4gPiA+ICsgKiBAbGVuZ3Ro
+OsKgwqDCoMKgbGVuZ3RoIG9mIG1lbW9yeSAobXVsdGlwbGUgb2YgdGhlIHBhZ2Ugc2l6ZSkKPiA+
+ID4gPiA+ID4gKyAqIEBzZWNpbmZvOsKgwqDCoGFkZHJlc3MgZm9yIHRoZSBTRUNJTkZPIGRhdGEg
+Y29udGFpbmluZyB0aGUgbmV3IHBlcm1pc3Npb24gYml0cwo+ID4gPiA+ID4gPiArICrCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoGZvciBwYWdlcyBpbiByYW5nZSBkZXNjcmliZWQgYnkgQG9mZnNl
+dCBhbmQgQGxlbmd0aAo+ID4gPiA+ID4gPiArICogQHJlc3VsdDrCoMKgwqDCoChvdXRwdXQpIFNH
+WCByZXN1bHQgY29kZSBvZiBFTkNMU1tFTU9EUFJdIGZ1bmN0aW9uCj4gPiA+ID4gPiA+ICsgKiBA
+Y291bnQ6wqDCoMKgwqDCoChvdXRwdXQpIGJ5dGVzIHN1Y2Nlc3NmdWxseSBjaGFuZ2VkIChtdWx0
+aXBsZSBvZiBwYWdlIHNpemUpCj4gPiA+ID4gPiA+ICsgKi8KPiA+ID4gPiA+ID4gK3N0cnVjdCBz
+Z3hfZW5jbGF2ZV9yZXN0cmljdF9wZXJtaXNzaW9ucyB7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKg
+wqDCoF9fdTY0IG9mZnNldDsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgX191NjQgbGVuZ3Ro
+Owo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqBfX3U2NCBzZWNpbmZvOwo+ID4gPiA+ID4gPiAr
+wqDCoMKgwqDCoMKgwqBfX3U2NCByZXN1bHQ7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoF9f
+dTY0IGNvdW50Owo+ID4gPiA+ID4gPiArfTsKPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4gPiDCoHN0
+cnVjdCBzZ3hfZW5jbGF2ZV9ydW47Cj4gPiA+ID4gPiA+IMKgCj4gPiA+ID4gPiA+IMKgLyoqCj4g
+PiA+ID4gPiA+IGRpZmYgLS1naXQgYS9hcmNoL3g4Ni9rZXJuZWwvY3B1L3NneC9pb2N0bC5jIGIv
+YXJjaC94ODYva2VybmVsL2NwdS9zZ3gvaW9jdGwuYwo+ID4gPiA+ID4gPiBpbmRleCAwNDYwZmQy
+MjRhMDUuLjRkODhiZmQxNjNlNyAxMDA2NDQKPiA+ID4gPiA+ID4gLS0tIGEvYXJjaC94ODYva2Vy
+bmVsL2NwdS9zZ3gvaW9jdGwuYwo+ID4gPiA+ID4gPiArKysgYi9hcmNoL3g4Ni9rZXJuZWwvY3B1
+L3NneC9pb2N0bC5jCj4gPiA+ID4gPiA+IEBAIC02NjAsNiArNjYwLDI0NCBAQCBzdGF0aWMgbG9u
+ZyBzZ3hfaW9jX2VuY2xhdmVfcHJvdmlzaW9uKHN0cnVjdCBzZ3hfZW5jbCAqZW5jbCwgdm9pZCBf
+X3VzZXIgKmFyZykKPiA+ID4gPiA+ID4gwqDCoMKgwqDCoMKgwqDCoHJldHVybiBzZ3hfc2V0X2F0
+dHJpYnV0ZSgmZW5jbC0+YXR0cmlidXRlc19tYXNrLCBwYXJhbXMuZmQpOwo+ID4gPiA+ID4gPiDC
+oH0KPiA+ID4gPiA+ID4gwqAKPiA+ID4gPiA+ID4gKy8qCj4gPiA+ID4gPiA+ICsgKiBFbnN1cmUg
+ZW5jbGF2ZSBpcyByZWFkeSBmb3IgU0dYMiBmdW5jdGlvbnMuIFJlYWRpbmVzcyBpcyBjaGVja2Vk
+Cj4gPiA+ID4gPiA+ICsgKiBieSBlbnN1cmluZyB0aGUgaGFyZHdhcmUgc3VwcG9ydHMgU0dYMiBh
+bmQgdGhlIGVuY2xhdmUgaXMgaW5pdGlhbGl6ZWQKPiA+ID4gPiA+ID4gKyAqIGFuZCB0aHVzIGFi
+bGUgdG8gaGFuZGxlIHJlcXVlc3RzIHRvIG1vZGlmeSBwYWdlcyB3aXRoaW4gaXQuCj4gPiA+ID4g
+PiA+ICsgKi8KPiA+ID4gPiA+ID4gK3N0YXRpYyBpbnQgc2d4X2lvY19zZ3gyX3JlYWR5KHN0cnVj
+dCBzZ3hfZW5jbCAqZW5jbCkKPiA+ID4gPiA+ID4gK3sKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDC
+oMKgaWYgKCEoY3B1X2ZlYXR1cmVfZW5hYmxlZChYODZfRkVBVFVSRV9TR1gyKSkpCj4gPiA+ID4g
+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gLUVOT0RFVjsKPiA+ID4g
+PiA+ID4gKwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqBpZiAoIXRlc3RfYml0KFNHWF9FTkNM
+X0lOSVRJQUxJWkVELCAmZW5jbC0+ZmxhZ3MpKQo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgcmV0dXJuIC1FSU5WQUw7Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4g
+K8KgwqDCoMKgwqDCoMKgcmV0dXJuIDA7Cj4gPiA+ID4gPiA+ICt9Cj4gPiA+ID4gPiA+ICsKPiA+
+ID4gPiA+ID4gKy8qCj4gPiA+ID4gPiA+ICsgKiBSZXR1cm4gdmFsaWQgcGVybWlzc2lvbiBmaWVs
+ZHMgZnJvbSBhIHNlY2luZm8gc3RydWN0dXJlIHByb3ZpZGVkIGJ5Cj4gPiA+ID4gPiA+ICsgKiB1
+c2VyIHNwYWNlLiBUaGUgc2VjaW5mbyBzdHJ1Y3R1cmUgaXMgcmVxdWlyZWQgdG8gb25seSBoYXZl
+IGJpdHMgaW4KPiA+ID4gPiA+ID4gKyAqIHRoZSBwZXJtaXNzaW9uIGZpZWxkcyBzZXQuCj4gPiA+
+ID4gPiA+ICsgKi8KPiA+ID4gPiA+ID4gK3N0YXRpYyBpbnQgc2d4X3Blcm1fZnJvbV91c2VyX3Nl
+Y2luZm8odm9pZCBfX3VzZXIgKl9zZWNpbmZvLCB1NjQgKnNlY2luZm9fcGVybSkKPiA+ID4gPiA+
+ID4gK3sKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgc3RydWN0IHNneF9zZWNpbmZvIHNlY2lu
+Zm87Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoHU2NCBwZXJtOwo+ID4gPiA+ID4gPiArCj4g
+PiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoGlmIChjb3B5X2Zyb21fdXNlcigmc2VjaW5mbywgKHZv
+aWQgX191c2VyICopX3NlY2luZm8sCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplb2Yoc2VjaW5mbykpKQo+ID4gPiA+ID4g
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIC1FRkFVTFQ7Cj4gPiA+ID4g
+PiA+ICsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgaWYgKHNlY2luZm8uZmxhZ3MgJiB+U0dY
+X1NFQ0lORk9fUEVSTUlTU0lPTl9NQVNLKQo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgcmV0dXJuIC1FSU5WQUw7Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8Kg
+wqDCoMKgwqDCoMKgaWYgKG1lbWNocl9pbnYoc2VjaW5mby5yZXNlcnZlZCwgMCwgc2l6ZW9mKHNl
+Y2luZm8ucmVzZXJ2ZWQpKSkKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoHJldHVybiAtRUlOVkFMOwo+ID4gPiA+ID4gPiArCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKg
+wqDCoHBlcm0gPSBzZWNpbmZvLmZsYWdzICYgU0dYX1NFQ0lORk9fUEVSTUlTU0lPTl9NQVNLOwo+
+ID4gPiA+ID4gPiArCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoC8qCj4gPiA+ID4gPiA+ICvC
+oMKgwqDCoMKgwqDCoCAqIFJlYWQgYWNjZXNzIGlzIHJlcXVpcmVkIGZvciB0aGUgZW5jbGF2ZSB0
+byBiZSBhYmxlIHRvIHVzZSB0aGUgcGFnZS4KPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgICog
+U0dYIGluc3RydWN0aW9ucyBsaWtlIEVOQ0xVW0VNT0RQRV0gYW5kIEVOQ0xVW0VBQ0NFUFRdIHJl
+cXVpcmUKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgICogcmVhZCBhY2Nlc3MuCj4gPiA+ID4g
+PiA+ICvCoMKgwqDCoMKgwqDCoCAqLwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqBpZiAoIShw
+ZXJtICYgU0dYX1NFQ0lORk9fUikpCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqByZXR1cm4gLUVJTlZBTDsKPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4gPiArwqDCoMKg
+wqDCoMKgwqAqc2VjaW5mb19wZXJtID0gcGVybTsKPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4gPiAr
+wqDCoMKgwqDCoMKgwqByZXR1cm4gMDsKPiA+ID4gPiA+ID4gK30KPiA+ID4gPiA+ID4gKwo+ID4g
+PiA+ID4gPiArLyoKPiA+ID4gPiA+ID4gKyAqIFNvbWUgU0dYIGZ1bmN0aW9ucyByZXF1aXJlIHRo
+YXQgbm8gY2FjaGVkIGxpbmVhci10by1waHlzaWNhbCBhZGRyZXNzCj4gPiA+ID4gPiA+ICsgKiBt
+YXBwaW5ncyBhcmUgcHJlc2VudCBiZWZvcmUgdGhleSBjYW4gc3VjY2VlZC4gQ29sbGFib3JhdGUg
+d2l0aAo+ID4gPiA+ID4gPiArICogaGFyZHdhcmUgdmlhIEVOQ0xTW0VUUkFDS10gdG8gZW5zdXJl
+IHRoYXQgYWxsIGNhY2hlZAo+ID4gPiA+ID4gPiArICogbGluZWFyLXRvLXBoeXNpY2FsIGFkZHJl
+c3MgbWFwcGluZ3MgYmVsb25naW5nIHRvIGFsbCB0aHJlYWRzIG9mCj4gPiA+ID4gPiA+ICsgKiB0
+aGUgZW5jbGF2ZSBhcmUgY2xlYXJlZC4gU2VlIHNneF9lbmNsX2NwdW1hc2soKSBmb3IgZGV0YWls
+cy4KPiA+ID4gPiA+ID4gKyAqLwo+ID4gPiA+ID4gPiArc3RhdGljIGludCBzZ3hfZW5jbGF2ZV9l
+dHJhY2soc3RydWN0IHNneF9lbmNsICplbmNsKQo+ID4gPiA+ID4gPiArewo+ID4gPiA+ID4gPiAr
+wqDCoMKgwqDCoMKgwqB2b2lkICplcGNfdmlydDsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKg
+aW50IHJldDsKPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqBlcGNfdmly
+dCA9IHNneF9nZXRfZXBjX3ZpcnRfYWRkcihlbmNsLT5zZWNzLmVwY19wYWdlKTsKPiA+ID4gPiA+
+ID4gK8KgwqDCoMKgwqDCoMKgcmV0ID0gX19ldHJhY2soZXBjX3ZpcnQpOwo+ID4gPiA+ID4gPiAr
+wqDCoMKgwqDCoMKgwqBpZiAocmV0KSB7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAvKgo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+ICogRVRSQUNLIG9ubHkgZmFpbHMgd2hlbiB0aGVyZSBpcyBhbiBPUyBpc3N1ZS4gRm9yCj4gPiA+
+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBleGFtcGxlLCB0d28gY29u
+c2VjdXRpdmUgRVRSQUNLIHdhcyBzZW50IHdpdGhvdXQKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCAqIGNvbXBsZXRlZCBJUEkgYmV0d2Vlbi4KPiA+ID4gPiA+ID4g
+K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqLwo+ID4gPiA+ID4gPiArwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgcHJfZXJyX29uY2UoIkVUUkFDSyByZXR1cm5lZCAlZCAoMHgl
+eCkiLCByZXQsIHJldCk7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAvKgo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICogU2VuZCBJ
+UElzIHRvIGtpY2sgQ1BVcyBvdXQgb2YgdGhlIGVuY2xhdmUgYW5kCj4gPiA+ID4gPiA+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiB0cnkgRVRSQUNLIGFnYWluLgo+ID4gPiA+ID4g
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICovCj4gPiA+ID4gPiA+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBvbl9lYWNoX2NwdV9tYXNrKHNneF9lbmNsX2NwdW1hc2so
+ZW5jbCksIHNneF9pcGlfY2IsIE5VTEwsIDEpOwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgcmV0ID0gX19ldHJhY2soZXBjX3ZpcnQpOwo+ID4gPiA+ID4gPiArwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKHJldCkgewo+ID4gPiA+ID4gPiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHByX2Vycl9vbmNlKCJFVFJB
+Q0sgcmVwZWF0IHJldHVybmVkICVkICgweCV4KSIsCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBy
+ZXQsIHJldCk7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgcmV0dXJuIC1FRkFVTFQ7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqB9Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoH0KPiA+ID4gPiA+ID4g
+K8KgwqDCoMKgwqDCoMKgb25fZWFjaF9jcHVfbWFzayhzZ3hfZW5jbF9jcHVtYXNrKGVuY2wpLCBz
+Z3hfaXBpX2NiLCBOVUxMLCAxKTsKPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4gPiArwqDCoMKgwqDC
+oMKgwqByZXR1cm4gMDsKPiA+ID4gPiA+ID4gK30KPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4gPiAr
+LyoqCj4gPiA+ID4gPiA+ICsgKiBzZ3hfZW5jbGF2ZV9yZXN0cmljdF9wZXJtaXNzaW9ucygpIC0g
+UmVzdHJpY3QgRVBDTSBwZXJtaXNzaW9ucwo+ID4gPiA+ID4gPiArICogQGVuY2w6wqDCoMKgwqDC
+oMKgRW5jbGF2ZSB0byB3aGljaCB0aGUgcGFnZXMgYmVsb25nLgo+ID4gPiA+ID4gPiArICogQG1v
+ZHA6wqDCoMKgwqDCoMKgQ2hlY2tlZCBwYXJhbWV0ZXJzIGZyb20gdXNlciBvbiB3aGljaCBwYWdl
+cyBuZWVkIG1vZGlmeWluZy4KPiA+ID4gPiA+ID4gKyAqIEBzZWNpbmZvX3Blcm06IE5ldyAodmFs
+aWRhdGVkKSBwZXJtaXNzaW9uIGJpdHMuCj4gPiA+ID4gPiA+ICsgKgo+ID4gPiA+ID4gPiArICog
+UmV0dXJuOgo+ID4gPiA+ID4gPiArICogLSAwOsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgU3VjY2Vzcy4KPiA+ID4gPiA+ID4gKyAqIC0gLWVycm5vOsKgwqDCoE90aGVyd2lzZS4KPiA+
+ID4gPiA+ID4gKyAqLwo+ID4gPiA+ID4gPiArc3RhdGljIGxvbmcKPiA+ID4gPiA+ID4gK3NneF9l
+bmNsYXZlX3Jlc3RyaWN0X3Blcm1pc3Npb25zKHN0cnVjdCBzZ3hfZW5jbCAqZW5jbCwKPiA+ID4g
+PiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIHN0cnVjdCBzZ3hfZW5jbGF2ZV9yZXN0cmljdF9wZXJtaXNzaW9ucyAqbW9k
+cCwKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHU2NCBzZWNpbmZvX3Blcm0pCj4gPiA+ID4gPiA+ICt7Cj4g
+PiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoHN0cnVjdCBzZ3hfZW5jbF9wYWdlICplbnRyeTsKPiA+
+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgc3RydWN0IHNneF9zZWNpbmZvIHNlY2luZm87Cj4gPiA+
+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoHVuc2lnbmVkIGxvbmcgYWRkcjsKPiA+ID4gPiA+ID4gK8Kg
+wqDCoMKgwqDCoMKgdW5zaWduZWQgbG9uZyBjOwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqB2
+b2lkICplcGNfdmlydDsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgaW50IHJldDsKPiA+ID4g
+PiA+ID4gKwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqBtZW1zZXQoJnNlY2luZm8sIDAsIHNp
+emVvZihzZWNpbmZvKSk7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoHNlY2luZm8uZmxhZ3Mg
+PSBzZWNpbmZvX3Blcm07Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKg
+Zm9yIChjID0gMCA7IGMgPCBtb2RwLT5sZW5ndGg7IGMgKz0gUEFHRV9TSVpFKSB7Cj4gPiA+ID4g
+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBhZGRyID0gZW5jbC0+YmFzZSArIG1v
+ZHAtPm9mZnNldCArIGM7Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoG11dGV4X2xvY2soJmVuY2wtPmxvY2spOwo+ID4gPiA+ID4gPiArCj4g
+PiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBlbnRyeSA9IHNneF9lbmNs
+X2xvYWRfcGFnZShlbmNsLCBhZGRyKTsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoGlmIChJU19FUlIoZW50cnkpKSB7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0ID0gUFRSX0VSUihlbnRyeSkgPT0g
+LUVCVVNZID8gLUVBR0FJTiA6IC1FRkFVTFQ7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZ290byBvdXRfdW5sb2NrOwo+ID4gPiA+ID4g
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfQo+ID4gPiA+ID4gPiArCj4gPiA+ID4g
+PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAvKgo+ID4gPiA+ID4gPiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICogQ2hhbmdpbmcgRVBDTSBwZXJtaXNzaW9ucyBpcyBv
+bmx5IHN1cHBvcnRlZCBvbiByZWd1bGFyCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgKiBTR1ggcGFnZXMuIEF0dGVtcHRpbmcgdGhpcyBjaGFuZ2Ugb24gb3RoZXIg
+cGFnZXMgd2lsbAo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICog
+cmVzdWx0IGluICNQRi4KPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCAqLwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKGVudHJ5
+LT50eXBlICE9IFNHWF9QQUdFX1RZUEVfUkVHKSB7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0ID0gLUVJTlZBTDsKPiA+ID4gPiA+
+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBnb3RvIG91
+dF91bmxvY2s7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9Cj4g
+PiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoC8q
+Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBEbyBub3QgdmVy
+aWZ5IHRoZSBwZXJtaXNzaW9uIGJpdHMgcmVxdWVzdGVkLiBLZXJuZWwKPiA+ID4gPiA+ID4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqIGhhcyBubyBjb250cm9sIG92ZXIgaG93IEVQ
+Q00gcGVybWlzc2lvbnMgY2FuIGJlIHJlbGF4ZWQKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCAqIGZyb20gd2l0aGluIHRoZSBlbmNsYXZlLiBFTkNMU1tFTU9EUFJd
+IGNhbiBvbmx5Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBy
+ZW1vdmUgZXhpc3RpbmcgRVBDTSBwZXJtaXNzaW9ucywgYXR0ZW1wdGluZyB0byBzZXQKPiA+ID4g
+PiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqIG5ldyBwZXJtaXNzaW9ucyB3
+aWxsIGJlIGlnbm9yZWQgYnkgdGhlIGhhcmR3YXJlLgo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgICovCj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoC8qIENoYW5nZSBFUENNIHBlcm1pc3Npb25zLiAqLwo+ID4g
+PiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZXBjX3ZpcnQgPSBzZ3hfZ2V0
+X2VwY192aXJ0X2FkZHIoZW50cnktPmVwY19wYWdlKTsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoHJldCA9IF9fZW1vZHByKCZzZWNpbmZvLCBlcGNfdmlydCk7Cj4g
+PiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpZiAoZW5jbHNfZmF1bHRl
+ZChyZXQpKSB7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgLyoKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgKiBBbGwgcG9zc2libGUgZmF1bHRzIHNob3VsZCBiZSBhdm9pZGFi
+bGU6Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgICogcGFyYW1ldGVycyBoYXZlIGJlZW4gY2hlY2tlZCwgd2lsbCBvbmx5IGNoYW5nZQo+
+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCAqIHBlcm1pc3Npb25zIG9mIGEgcmVndWxhciBwYWdlLCBhbmQgbm8gY29uY3VycmVudAo+ID4g
+PiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAq
+IFNHWDEvU0dYMiBFTkNMUyBpbnN0cnVjdGlvbnMgc2luY2UgdGhlc2UKPiA+ID4gPiA+ID4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBhcmUgcHJvdGVj
+dGVkIHdpdGggbXV0ZXguCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgICovCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcHJfZXJyX29uY2UoIkVNT0RQUiBlbmNvdW50ZXJlZCBl
+eGNlcHRpb24gJWRcbiIsCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBFTkNMU19UUkFQTlIocmV0
+KSk7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgcmV0ID0gLUVGQVVMVDsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBnb3RvIG91dF91bmxvY2s7Cj4gPiA+ID4gPiA+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqBpZiAoZW5jbHNfZmFpbGVkKHJldCkpIHsKPiA+ID4gPiA+ID4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBtb2RwLT5yZXN1bHQgPSBy
+ZXQ7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgcmV0ID0gLUVGQVVMVDsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBnb3RvIG91dF91bmxvY2s7Cj4gPiA+ID4gPiA+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldCA9IHNneF9lbmNsYXZlX2V0cmFjayhlbmNs
+KTsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGlmIChyZXQpIHsK
+PiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqByZXQgPSAtRUZBVUxUOwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoGdvdG8gb3V0X3VubG9jazsKPiA+ID4gPiA+ID4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoH0KPiA+ID4gPiA+ID4gKwo+ID4gPiA+ID4gPiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgbXV0ZXhfdW5sb2NrKCZlbmNsLT5sb2NrKTsKPiA+ID4g
+PiA+ID4gK8KgwqDCoMKgwqDCoMKgfQo+ID4gPiA+ID4gPiArCj4gPiA+ID4gPiA+ICvCoMKgwqDC
+oMKgwqDCoHJldCA9IDA7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoGdvdG8gb3V0Owo+ID4g
+PiA+ID4gPiArCj4gPiA+ID4gPiA+ICtvdXRfdW5sb2NrOgo+ID4gPiA+ID4gPiArwqDCoMKgwqDC
+oMKgwqBtdXRleF91bmxvY2soJmVuY2wtPmxvY2spOwo+ID4gPiA+ID4gPiArb3V0Ogo+ID4gPiA+
+ID4gPiArwqDCoMKgwqDCoMKgwqBtb2RwLT5jb3VudCA9IGM7Cj4gPiA+ID4gPiA+ICsKPiA+ID4g
+PiA+ID4gK8KgwqDCoMKgwqDCoMKgcmV0dXJuIHJldDsKPiA+ID4gPiA+ID4gK30KPiA+ID4gPiA+
+ID4gKwo+ID4gPiA+ID4gPiArLyoqCj4gPiA+ID4gPiA+ICsgKiBzZ3hfaW9jX2VuY2xhdmVfcmVz
+dHJpY3RfcGVybWlzc2lvbnMoKSAtIGhhbmRsZXIgZm9yCj4gPiA+ID4gPiA+ICsgKsKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCAlU0dYX0lPQ19FTkNMQVZFX1JFU1RSSUNUX1BFUk1JU1NJT05TCj4gPiA+
+ID4gPiA+ICsgKiBAZW5jbDrCoMKgwqDCoMKgwqBhbiBlbmNsYXZlIHBvaW50ZXIKPiA+ID4gPiA+
+ID4gKyAqIEBhcmc6wqDCoMKgwqDCoMKgwqB1c2Vyc3BhY2UgcG9pbnRlciB0byBhICZzdHJ1Y3Qg
+c2d4X2VuY2xhdmVfcmVzdHJpY3RfcGVybWlzc2lvbnMKPiA+ID4gPiA+ID4gKyAqwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqBpbnN0YW5jZQo+ID4gPiA+ID4gPiArICoKPiA+ID4gPiA+ID4gKyAq
+IFNHWDIgZGlzdGluZ3Vpc2hlcyBiZXR3ZWVuIHJlbGF4aW5nIGFuZCByZXN0cmljdGluZyB0aGUg
+ZW5jbGF2ZSBwYWdlCj4gPiA+ID4gPiA+ICsgKiBwZXJtaXNzaW9ucyBtYWludGFpbmVkIGJ5IHRo
+ZSBoYXJkd2FyZSAoRVBDTSBwZXJtaXNzaW9ucykgb2YgcGFnZXMKPiA+ID4gPiA+ID4gKyAqIGJl
+bG9uZ2luZyB0byBhbiBpbml0aWFsaXplZCBlbmNsYXZlIChhZnRlciBTR1hfSU9DX0VOQ0xBVkVf
+SU5JVCkuCj4gPiA+ID4gPiA+ICsgKgo+ID4gPiA+ID4gPiArICogRVBDTSBwZXJtaXNzaW9ucyBj
+YW5ub3QgYmUgcmVzdHJpY3RlZCBmcm9tIHdpdGhpbiB0aGUgZW5jbGF2ZSwgdGhlIGVuY2xhdmUK
+PiA+ID4gPiA+ID4gKyAqIHJlcXVpcmVzIHRoZSBrZXJuZWwgdG8gcnVuIHRoZSBwcml2aWxlZ2Vk
+IGxldmVsIDAgaW5zdHJ1Y3Rpb25zIEVOQ0xTW0VNT0RQUl0KPiA+ID4gPiA+ID4gKyAqIGFuZCBF
+TkNMU1tFVFJBQ0tdLiBBbiBhdHRlbXB0IHRvIHJlbGF4IEVQQ00gcGVybWlzc2lvbnMgd2l0aCB0
+aGlzIGNhbGwKPiA+ID4gPiA+ID4gKyAqIHdpbGwgYmUgaWdub3JlZCBieSB0aGUgaGFyZHdhcmUu
+Cj4gPiA+ID4gPiA+ICsgKgo+ID4gPiA+ID4gPiArICogUmV0dXJuOgo+ID4gPiA+ID4gPiArICog
+LSAwOsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgU3VjY2Vzcwo+ID4gPiA+ID4gPiAr
+ICogLSAtZXJybm86wqDCoMKgT3RoZXJ3aXNlCj4gPiA+ID4gPiA+ICsgKi8KPiA+ID4gPiA+ID4g
+K3N0YXRpYyBsb25nIHNneF9pb2NfZW5jbGF2ZV9yZXN0cmljdF9wZXJtaXNzaW9ucyhzdHJ1Y3Qg
+c2d4X2VuY2wgKmVuY2wsCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIHZvaWQgX191c2VyICphcmcpCj4gPiA+ID4gPiA+ICt7Cj4gPiA+ID4gPiA+ICvC
+oMKgwqDCoMKgwqDCoHN0cnVjdCBzZ3hfZW5jbGF2ZV9yZXN0cmljdF9wZXJtaXNzaW9ucyBwYXJh
+bXM7Cj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoHU2NCBzZWNpbmZvX3Blcm07Cj4gPiA+ID4g
+PiA+ICvCoMKgwqDCoMKgwqDCoGxvbmcgcmV0Owo+ID4gPiA+ID4gPiArCj4gPiA+ID4gPiA+ICvC
+oMKgwqDCoMKgwqDCoHJldCA9IHNneF9pb2Nfc2d4Ml9yZWFkeShlbmNsKTsKPiA+ID4gPiA+ID4g
+K8KgwqDCoMKgwqDCoMKgaWYgKHJldCkKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoHJldHVybiByZXQ7Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8KgwqDCoMKg
+wqDCoMKgaWYgKGNvcHlfZnJvbV91c2VyKCZwYXJhbXMsIGFyZywgc2l6ZW9mKHBhcmFtcykpKQo+
+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIC1FRkFVTFQ7
+Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgaWYgKHNneF92YWxpZGF0
+ZV9vZmZzZXRfbGVuZ3RoKGVuY2wsIHBhcmFtcy5vZmZzZXQsIHBhcmFtcy5sZW5ndGgpKQo+ID4g
+PiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIC1FSU5WQUw7Cj4g
+PiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgcmV0ID0gc2d4X3Blcm1fZnJv
+bV91c2VyX3NlY2luZm8oKHZvaWQgX191c2VyICopcGFyYW1zLnNlY2luZm8sCj4gPiA+ID4gPiA+
+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgJnNlY2luZm9fcGVybSk7Cj4gPiA+ID4gPiA+ICvCoMKg
+wqDCoMKgwqDCoGlmIChyZXQpCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqByZXR1cm4gcmV0Owo+ID4gPiA+ID4gPiArCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDC
+oGlmIChwYXJhbXMucmVzdWx0IHx8IHBhcmFtcy5jb3VudCkKPiA+ID4gPiA+ID4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAtRUlOVkFMOwo+ID4gPiA+ID4gPiArCj4gPiA+
+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoHJldCA9IHNneF9lbmNsYXZlX3Jlc3RyaWN0X3Blcm1pc3Np
+b25zKGVuY2wsICZwYXJhbXMsIHNlY2luZm9fcGVybSk7Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+
+ID4gK8KgwqDCoMKgwqDCoMKgaWYgKGNvcHlfdG9fdXNlcihhcmcsICZwYXJhbXMsIHNpemVvZihw
+YXJhbXMpKSkKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVy
+biAtRUZBVUxUOwo+ID4gPiA+ID4gPiArCj4gPiA+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoHJldHVy
+biByZXQ7Cj4gPiA+ID4gPiA+ICt9Cj4gPiA+ID4gPiA+ICsKPiA+ID4gPiA+ID4gwqBsb25nIHNn
+eF9pb2N0bChzdHJ1Y3QgZmlsZSAqZmlsZXAsIHVuc2lnbmVkIGludCBjbWQsIHVuc2lnbmVkIGxv
+bmcgYXJnKQo+ID4gPiA+ID4gPiDCoHsKPiA+ID4gPiA+ID4gwqDCoMKgwqDCoMKgwqDCoHN0cnVj
+dCBzZ3hfZW5jbCAqZW5jbCA9IGZpbGVwLT5wcml2YXRlX2RhdGE7Cj4gPiA+ID4gPiA+IEBAIC02
+ODEsNiArOTE5LDEwIEBAIGxvbmcgc2d4X2lvY3RsKHN0cnVjdCBmaWxlICpmaWxlcCwgdW5zaWdu
+ZWQgaW50IGNtZCwgdW5zaWduZWQgbG9uZyBhcmcpCj4gPiA+ID4gPiA+IMKgwqDCoMKgwqDCoMKg
+wqBjYXNlIFNHWF9JT0NfRU5DTEFWRV9QUk9WSVNJT046Cj4gPiA+ID4gPiA+IMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0ID0gc2d4X2lvY19lbmNsYXZlX3Byb3Zpc2lvbihlbmNs
+LCAodm9pZCBfX3VzZXIgKilhcmcpOwo+ID4gPiA+ID4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoGJyZWFrOwo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqBjYXNlIFNHWF9JT0Nf
+RU5DTEFWRV9SRVNUUklDVF9QRVJNSVNTSU9OUzoKPiA+ID4gPiA+ID4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoHJldCA9IHNneF9pb2NfZW5jbGF2ZV9yZXN0cmljdF9wZXJtaXNzaW9u
+cyhlbmNsLAo+ID4gPiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgICh2b2lkIF9fdXNlciAqKWFyZyk7Cj4gPiA+ID4gPiA+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBicmVhazsKPiA+ID4gPiA+ID4gwqDCoMKgwqDC
+oMKgwqDCoGRlZmF1bHQ6Cj4gPiA+ID4gPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgcmV0ID0gLUVOT0lPQ1RMQ01EOwo+ID4gPiA+ID4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoGJyZWFrOwo+ID4gPiA+ID4gCj4gPiA+ID4gPiBJIHRoaW5rIHRoaXMgYSBiaWcg
+aW1wcm92ZW1lbnQgYWxsIHRoaW5ncyBjb25zaWRlcmVkLiBJIGp1c3QgcHV0wqAKPiA+ID4gPiA+
+IGEga2VybmVsIGJ1aWxkaW5nIGFuZCBzZWUgaWYgSSBnZXQgdGhpcyB3aXJlZCB0byBvdXIgY29k
+ZToKPiA+ID4gPiA+IAo+ID4gPiA+ID4gaHR0cHM6Ly9naXRodWIuY29tL2phcmtrb2pzL2F1ci1s
+aW51eC1zZ3gvYWN0aW9ucy9ydW5zLzIwOTQwODQ5NDMKPiA+ID4gPiA+IAo+ID4gPiA+ID4gSSds
+bCByZXBvcnQgbXkgZmluZGluZ3MgbGF0ZXIgb24uCj4gPiA+ID4gCj4gPiA+ID4gSSBwdWxsZWQg
+dGhlIHBhdGNoZXMgZnJvbSBzZ3gyX3N1Ym1pdHRlZF92M19wbHVzX3J3eCBicmFuY2guIEp1c3QK
+PiA+ID4gPiBzYW5pdHkgY2hlY2tpbmcgdGhhdCBpdCBpcyB2MywgY29ycmVjdD8KPiA+ID4gCj4g
+PiA+IEknbSBnZXR0aW5nIEVJTlZBTCB3aXRoIFNFQ0lORk8gdGhhdCBJIHRoaW5rIGlzIGxlZ2l0
+Ogo+ID4gPiAKPiA+ID4gbGV0IG11dCBzZWNpbmZvX2J1ZjogW3U4OyA2NF0gPSBbMDsgNjRdOyAv
+LyBJbml0aWFsaXplIHdpdGggemVyb3MKPiA+ID4gc2VjaW5mb19idWZbMF0gPSAxOyAvLyBSRUFE
+Cj4gPiA+IHNlY2luZm9fYnVmWzFdID0gMjsgLy8gUmVndWxhcgo+ID4gPiAKPiA+ID4gSSBtYWRl
+IGEgc21hbGwgYnBmdHJhY2Ugc2NyaXB0LCBhbmQgaGVyZSdzIHdoYXQgaGFwcGVuczoKPiA+ID4g
+Cj4gPiA+ICQgY2F0IHNneC5idAo+ID4gPiBrcmV0cHJvYmU6c2d4X2lvY3RsIC9yZXR2YWwgIT0g
+MC8KPiA+ID4gewo+ID4gPiDCoMKgwqDCoMKgwqDCoMKgcHJpbnRmKCJzZ3hfaW9jdGw6ICVkXG4i
+LCByZXR2YWwpCj4gPiA+IH0KPiA+ID4gCj4gPiA+IGtyZXRwcm9iZTpzZ3hfcGVybV9mcm9tX3Vz
+ZXJfc2VjaW5mby5jb25zdHByb3AuMCAvcmV0dmFsLwo+ID4gPiB7Cj4gPiA+IMKgwqDCoMKgwqDC
+oMKgwqBwcmludGYoInNneF9wZXJtX2Zyb21fdXNlcl9zZWNpbmZvLmNvbnN0cHJvcC4wICVkXG4i
+LCByZXR2YWwpCj4gPiA+IH0KPiA+ID4gCj4gPiA+IGtyZXRwcm9iZTpzZ3hfZW5jbGF2ZV9yZXN0
+cmljdF9wZXJtaXNzaW9ucyAvcmV0dmFsLwo+ID4gPiB7Cj4gPiA+IMKgwqDCoMKgwqDCoMKgwqBw
+cmludGYoInNneF9lbmNsYXZlX3Jlc3RyaWN0X3Blcm1pc3Npb25zOiAlZFxuIiwgcmV0dmFsKQo+
+ID4gPiB9Cj4gPiA+IAo+ID4gPiAkIHN1ZG8gYnBmdHJhY2Ugc2d4LmJ0Cj4gPiA+IFtzdWRvXSBw
+YXNzd29yZCBmb3IgamFya2tvOiAKPiA+ID4gQXR0YWNoaW5nIDMgcHJvYmVzLi4uCj4gPiA+IHNn
+eF9wZXJtX2Zyb21fdXNlcl9zZWNpbmZvLmNvbnN0cHJvcC4wIC0yMgo+ID4gPiBzZ3hfaW9jdGw6
+IC0yMgo+ID4gPiAKPiA+ID4gQ291bGQgYmUgdGhhdCBJJ20gZG9pbmcgc29tZXRoaW5nIHdyb25n
+IGJ1dCBpbnN0YW50bHkgZG8gbm90IHNlZQo+ID4gPiBhbnl0aGluZyBvYnZpb3VzLi4uCj4gPiAK
+PiA+IEl0IHdhcyBteSBiYWQsIGkuZS4KPiA+IAo+ID4gbGV0IG11dCBzZWNpbmZvX2J1ZjogW3U4
+OyA2NF0gPSBbMDsgNjRdOwo+ID4gc2VjaW5mb19idWZbMF0gPSAxOwo+ID4gc2VjaW5mb19idWZb
+MV0gPSAwOwo+ID4gwqAKPiA+IEJSLCBKYXJra28KPiAKPiBBY2NvcmRpbmcgdG8gU0RNIGhhdmlu
+ZyBwYWdlIHR5cGUgYXMgcmVndWxhciBpcyBmaW5lIGZvciBFTU9EUFIsCj4gaS5lLiB0aGF0J3Mg
+d2h5IEkgZGlkIG5vdCBjYXJlIGFib3V0IGhhdmluZyBpdCBpbiBTRUNJTkZPLgo+IAo+IEdpdmVu
+IHRoYXQgdGhlIG9wY29kZSBpdHNlbGYgY29udGFpbnMgdmFsaWRhdGlvbiwgSSB3b25kZXIKPiB3
+aHkgdGhpcyBuZWVkcyB0byBiZSBkb25lOgo+IAo+IGlmIChzZWNpbmZvLmZsYWdzICYgflNHWF9T
+RUNJTkZPX1BFUk1JU1NJT05fTUFTSykKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oHJldHVybiAtRUlOVkFMOwo+IAo+IGlmIChtZW1jaHJfaW52KHNlY2luZm8ucmVzZXJ2ZWQsIDAs
+IHNpemVvZihzZWNpbmZvLnJlc2VydmVkKSkpCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqByZXR1cm4gLUVJTlZBTDsKPiAKPiBwZXJtID0gc2VjaW5mby5mbGFncyAmIFNHWF9TRUNJ
+TkZPX1BFUk1JU1NJT05fTUFTSzsKPiAKPiBJLmUuIHdoeSBkdXBsaWNhdGUgdmFsaWRhdGlvbiBh
+bmQgd2h5IGRvZXMgaXQgaGF2ZSBkaWZmZXJlbnQKPiBpbnZhcmlhbnQgdGhhbiB0aGUgb3Bjb2Rl
+PwoKUmlnaHQgaXQgaXMgZG9uZSB0byBwcmV2ZW50IGV4Y2VwdGlvbnMgYW5kIGFsc28gcHNldWRv
+LWNvZGUKaGFzIHRoaXMgdmFsaWRhdGlvbjoKCklGIChFUENNKERTOlJDWCkuUFQgaXMgbm90IFBU
+X1JFRykgVEhFTiAjUEYoRFM6UkNYKTsgRkk7IAoKVGhpcyBpcyBjbGVhcmx5IHdyb25nOgoKLyoK
+ICogUmV0dXJuIHZhbGlkIHBlcm1pc3Npb24gZmllbGRzIGZyb20gYSBzZWNpbmZvIHN0cnVjdHVy
+ZSBwcm92aWRlZCBieQogKiB1c2VyIHNwYWNlLiBUaGUgc2VjaW5mbyBzdHJ1Y3R1cmUgaXMgcmVx
+dWlyZWQgdG8gb25seSBoYXZlIGJpdHMgaW4KICogdGhlIHBlcm1pc3Npb24gZmllbGRzIHNldC4K
+ICovCnN0YXRpYyBpbnQgc2d4X3Blcm1fZnJvbV91c2VyX3NlY2luZm8odm9pZCBfX3VzZXIgKl9z
+ZWNpbmZvLCB1NjQgKnNlY2luZm9fcGVybSkKCkl0IG1lYW5zIHRoYXQgdGhlIEFQSSByZXF1aXJl
+cyBhIG1hbGZvcm1lZCBkYXRhIGFzIGlucHV0LgoKTWF5YmUgaXQgd291bGQgYmUgYmV0dGVyIGlk
+ZWEgdGhlbiB0byByZXBsYWNlIHNlY2luZm8gd2l0aCBqdXN0IHRoZQpwZXJtaXNzaW9uIGZpZWxk
+PwoKQlIsIEphcmtrbwo=
 
