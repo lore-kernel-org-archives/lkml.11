@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00B8C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0566C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378494AbiDENNU (ORCPT
+        id S1346959AbiDENF3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
+        Tue, 5 Apr 2022 09:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344205AbiDEJSi (ORCPT
+        with ESMTP id S242450AbiDEJH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:38 -0400
+        Tue, 5 Apr 2022 05:07:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F232A0BCD;
-        Tue,  5 Apr 2022 02:05:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B93A6C1F7;
+        Tue,  5 Apr 2022 01:56:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E6E1614E4;
-        Tue,  5 Apr 2022 09:05:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36FCAC385A1;
-        Tue,  5 Apr 2022 09:05:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EF0661511;
+        Tue,  5 Apr 2022 08:56:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FE10C385A1;
+        Tue,  5 Apr 2022 08:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149527;
-        bh=WDCh1frB76ZgY5mu6uFLH7Bvag6zbMU6kBLWN9Pw2bs=;
+        s=korg; t=1649149012;
+        bh=nhMtr4l/SlfMt6ay/8OmlBNicZH+cp2kjLaRKKfQ2H0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bxEwErh7EdBONUOR+Sb09sytCwAOMLvQh8gC8m5onD+L6MBL8wHYBFCzh3wTlcbo+
-         sdoISKpX3+IwJLq2jiJDEwmb+YUEJw2cRJvDDV9Uft6mYYDLog91tKWYxnDH2G3EV+
-         VDJMnvhcuy3Wn78Uv5eUjAtD2PNgW5SKb7tblS+A=
+        b=eiBpRFp/cmkEZqK8ft3cqOp6XUPNNnhPpOqmVknFLUqKmTYkk18c0aVdwDFxMqe4m
+         jpu4lszkt77U+JMA8dbC/9mvmqDFYehhOXYnyjgsPXKJjPdq8DFiZTkNurCYZO9Vug
+         PcZkEiyF/7o1r62QW5sR1mKzypj013tQK/55m1hY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Zhenzhong Duan <zhenzhong.duan@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0746/1017] NFSv4/pNFS: Fix another issue with a list iterator pointing to the head
-Date:   Tue,  5 Apr 2022 09:27:39 +0200
-Message-Id: <20220405070416.405319305@linuxfoundation.org>
+Subject: [PATCH 5.16 0563/1017] KVM: x86: Fix emulation in writing cr8
+Date:   Tue,  5 Apr 2022 09:24:36 +0200
+Message-Id: <20220405070410.991985077@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,117 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Zhenzhong Duan <zhenzhong.duan@intel.com>
 
-[ Upstream commit 7c9d845f0612e5bcd23456a2ec43be8ac43458f1 ]
+[ Upstream commit f66af9f222f08d5b11ea41c1bd6c07a0f12daa07 ]
 
-In nfs4_callback_devicenotify(), if we don't find a matching entry for
-the deviceid, we're left with a pointer to 'struct nfs_server' that
-actually points to the list of super blocks associated with our struct
-nfs_client.
-Furthermore, even if we have a valid pointer, nothing pins the super
-block, and so the struct nfs_server could end up getting freed while
-we're using it.
+In emulation of writing to cr8, one of the lowest four bits in TPR[3:0]
+is kept.
 
-Since all we want is a pointer to the struct pnfs_layoutdriver_type,
-let's skip all the iteration over super blocks, and just use APIs to
-find the layout driver directly.
+According to Intel SDM 10.8.6.1(baremetal scenario):
+"APIC.TPR[bits 7:4] = CR8[bits 3:0], APIC.TPR[bits 3:0] = 0";
 
-Reported-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Fixes: 1be5683b03a7 ("pnfs: CB_NOTIFY_DEVICEID")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+and SDM 28.3(use TPR shadow):
+"MOV to CR8. The instruction stores bits 3:0 of its source operand into
+bits 7:4 of VTPR; the remainder of VTPR (bits 3:0 and bits 31:8) are
+cleared.";
+
+and AMD's APM 16.6.4:
+"Task Priority Sub-class (TPS)-Bits 3 : 0. The TPS field indicates the
+current sub-priority to be used when arbitrating lowest-priority messages.
+This field is written with zero when TPR is written using the architectural
+CR8 register.";
+
+so in KVM emulated scenario, clear TPR[3:0] to make a consistent behavior
+as in other scenarios.
+
+This doesn't impact evaluation and delivery of pending virtual interrupts
+because processor does not use the processor-priority sub-class to
+determine which interrupts to delivery and which to inhibit.
+
+Sub-class is used by hardware to arbitrate lowest priority interrupts,
+but KVM just does a round-robin style delivery.
+
+Fixes: b93463aa59d6 ("KVM: Accelerated apic support")
+Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220210094506.20181-1-zhenzhong.duan@intel.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/callback_proc.c | 27 +++++++++------------------
- fs/nfs/pnfs.c          | 11 +++++++++++
- fs/nfs/pnfs.h          |  2 ++
- 3 files changed, 22 insertions(+), 18 deletions(-)
+ arch/x86/kvm/lapic.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-index c343666d9a42..6464dde03705 100644
---- a/fs/nfs/callback_proc.c
-+++ b/fs/nfs/callback_proc.c
-@@ -358,12 +358,11 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
- 				  struct cb_process_state *cps)
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index e8e383fbe886..6c87032c928c 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2242,10 +2242,7 @@ void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
+ 
+ void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8)
  {
- 	struct cb_devicenotifyargs *args = argp;
-+	const struct pnfs_layoutdriver_type *ld = NULL;
- 	uint32_t i;
- 	__be32 res = 0;
--	struct nfs_client *clp = cps->clp;
--	struct nfs_server *server = NULL;
- 
--	if (!clp) {
-+	if (!cps->clp) {
- 		res = cpu_to_be32(NFS4ERR_OP_NOT_IN_SESSION);
- 		goto out;
- 	}
-@@ -371,23 +370,15 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
- 	for (i = 0; i < args->ndevs; i++) {
- 		struct cb_devicenotifyitem *dev = &args->devs[i];
- 
--		if (!server ||
--		    server->pnfs_curr_ld->id != dev->cbd_layout_type) {
--			rcu_read_lock();
--			list_for_each_entry_rcu(server, &clp->cl_superblocks, client_link)
--				if (server->pnfs_curr_ld &&
--				    server->pnfs_curr_ld->id == dev->cbd_layout_type) {
--					rcu_read_unlock();
--					goto found;
--				}
--			rcu_read_unlock();
--			continue;
-+		if (!ld || ld->id != dev->cbd_layout_type) {
-+			pnfs_put_layoutdriver(ld);
-+			ld = pnfs_find_layoutdriver(dev->cbd_layout_type);
-+			if (!ld)
-+				continue;
- 		}
+-	struct kvm_lapic *apic = vcpu->arch.apic;
 -
--	found:
--		nfs4_delete_deviceid(server->pnfs_curr_ld, clp, &dev->cbd_dev_id);
-+		nfs4_delete_deviceid(ld, cps->clp, &dev->cbd_dev_id);
- 	}
--
-+	pnfs_put_layoutdriver(ld);
- out:
- 	kfree(args->devs);
- 	return res;
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 7c9090a28e5c..7ddd003ab8b1 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -92,6 +92,17 @@ find_pnfs_driver(u32 id)
- 	return local;
+-	apic_set_tpr(apic, ((cr8 & 0x0f) << 4)
+-		     | (kvm_lapic_get_reg(apic, APIC_TASKPRI) & 4));
++	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
  }
  
-+const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id)
-+{
-+	return find_pnfs_driver(id);
-+}
-+
-+void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld)
-+{
-+	if (ld)
-+		module_put(ld->owner);
-+}
-+
- void
- unset_pnfs_layoutdriver(struct nfs_server *nfss)
- {
-diff --git a/fs/nfs/pnfs.h b/fs/nfs/pnfs.h
-index f4d7548d67b2..07f11489e4e9 100644
---- a/fs/nfs/pnfs.h
-+++ b/fs/nfs/pnfs.h
-@@ -234,6 +234,8 @@ struct pnfs_devicelist {
- 
- extern int pnfs_register_layoutdriver(struct pnfs_layoutdriver_type *);
- extern void pnfs_unregister_layoutdriver(struct pnfs_layoutdriver_type *);
-+extern const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id);
-+extern void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld);
- 
- /* nfs4proc.c */
- extern size_t max_response_pages(struct nfs_server *server);
+ u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu)
 -- 
 2.34.1
 
