@@ -2,116 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9373C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB14C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241356AbiDEVSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
+        id S243195AbiDEVSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 17:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457630AbiDEQUm (ORCPT
+        with ESMTP id S1572985AbiDERkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:20:42 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A004955AB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 09:18:41 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id y32so8864781lfa.6
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 09:18:41 -0700 (PDT)
+        Tue, 5 Apr 2022 13:40:17 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE86CB8202
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 10:38:18 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id n9so6805009plc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 10:38:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wIU2TEaS8WXbUqpi1fM6EfmEmwnBi19lD4NhlLBz3ig=;
-        b=H8/4Lx4V0XygDs2dccjNd7TS7BtZ2fMSdr3xp4cjLVJj1pIAG8E/lefcRKdKOVEcDq
-         0K+DG1Xns7N/k3s/nBe/9wCZfncNH69qMkDM9XvpXMRkvH+bCU2KCXleFNDWKjkqewpk
-         IPy2hfj/pbDYC90dDuVUsKY0KS75145Wb2v/078FGCGX71uwEW/JGKMcMqr+9Cj2bPOp
-         HKSXu5vKjskeXytHF25DvAkVsnlFk15eVE4zcractjvW8tvGzunroHoHyGFtu1iB8E40
-         C7FXx+WgMFYFECMibHGBn5OK/9VMXK53nQXr/V6k+ni5i/+X5vRXaQu+vE2tXjFzGv2x
-         SYWw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Io1IzG6hmJITuaZIDTYDYzvTfnNkY/lRuamDnYEiYog=;
+        b=iz/lmMITgXQh0MqUOEQiFr6dsc0sTdIPypLCCvAym9JOaLdEYvr9t3x/gutfUpMmCz
+         YB+c3zyDyI9Wl9NnnLHeqzzbgLg5x/vuuv3yvbSQZ617dXn+sAi8kVRb4YiSh8/NjB0Q
+         cr2BhhDA/xuNawlnZ0rK+d9gHXVD67lZMQ6rlXU456ABQwE/ClXPwbq7/Cxz6bgfuspc
+         OTehuW8IHfKzC8rrjyVr91xIYR4urF/R+UNHsxqcwR71gfvero52Uj+Em5/icX/Vza7x
+         0sNNcdda6Nt3Wak7MkP7XRlddpBgHPjxen/fJAFVjChFfKpN3jJ4Wj4F5J1N6rdoJS14
+         jQPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wIU2TEaS8WXbUqpi1fM6EfmEmwnBi19lD4NhlLBz3ig=;
-        b=TKGyc4BPJTXm7xJvn3DKYupngiaWUsUtiWfSX0JSrb70yyZAv5OtFach5QiRyn4VKW
-         Q0HPP346lZO44xKptj4lzUA0s3Gm36uZRvYtAWjOb0Ka947n1UqD612lsRkHumPD7tJ+
-         OEgOXQQAfV8JRWA7LNGtXgDDxrsPWFb8CHpTa61axCDGQMAR592MyM87yapgAY3pfyZY
-         YQwlRtt1mFzNk5Uhtmko3a61XnVKkxrCk1WA/XgHpORKvp80BFjSY9ZuB6FlIcetXWy7
-         AmV8ZWcNsEV+4pHiqgWS+N8nxdw6FfqDNlEac2pre2sfSeN7qrpmeamdAWv/zp82g/5a
-         OQUQ==
-X-Gm-Message-State: AOAM532Qb1Uok0ZYrLCZXYBLQzH6JnRcBj8ELdy9Dg+3TtgAkrMshtap
-        FxErSUyWmtp6Azp22+yvs/QlpL2Jym969m3cHDjrgqbhCwN/Nw==
-X-Google-Smtp-Source: ABdhPJzyIXHKLyRxKNDc0gfAZnnCNVmFVcYvD3pwWFNRifi2q7UjxoNx7BuehqH/sa8M5LtAyeh2d+vmVolrtFy4p0A=
-X-Received: by 2002:a05:6512:3da1:b0:44a:2aeb:28e4 with SMTP id
- k33-20020a0565123da100b0044a2aeb28e4mr3016271lfv.579.1649175515578; Tue, 05
- Apr 2022 09:18:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Io1IzG6hmJITuaZIDTYDYzvTfnNkY/lRuamDnYEiYog=;
+        b=JcZ1H9LEkmUgrO0i9tIgm1Ogv1DsAc/H60x7WMyvZNTO5JYBKpnAcc6z+3QnV18BHY
+         XKi3Ltq4SCWvD/r/q0a/FBBJHqEWdk7Yy1/um3gnQ6e/Gh3YOP3CkHUO21Mv5c7n3Py9
+         AP98L+EG1t9fQG+pwUQ2jNkexe0KeC9SyyL5B23l2WDVbZqD/rQYyqG7LMLhNxMr9mJd
+         TP9cKdWi4ZvMww1I7PhvmY2E9O6nmUtX8t3RlcNgDt7baHO5XElBwMLHSVVSIHBsFGqt
+         MIwzlTq2QBWgCpMmQACCoptp5vAfgN7Ef/uoxSBAMQ2FKVx1W9vGZqUyuc3VAAEjO7+0
+         IxGA==
+X-Gm-Message-State: AOAM533rnHMOxfGoUc5jXdDmLPk+HgcakjZCNgC2o6/5QTOIygQQAJNK
+        1EWcpo028IXs1fK2ppPn9bA=
+X-Google-Smtp-Source: ABdhPJz8bWFNWl/yMS3gIRE+9LtjVYBYlTCCD9NPyLbTvdXKCpqIJrQ8mAH5ylinjXsk21ZNuzNM7Q==
+X-Received: by 2002:a17:902:a9c5:b0:156:32bf:b526 with SMTP id b5-20020a170902a9c500b0015632bfb526mr4687173plr.46.1649180298344;
+        Tue, 05 Apr 2022 10:38:18 -0700 (PDT)
+Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
+        by smtp.gmail.com with ESMTPSA id t15-20020a63b70f000000b00381510608e9sm13966302pgf.14.2022.04.05.10.38.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 10:38:17 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     Rob Clark <robdclark@chromium.org>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        virtualization@lists.linux-foundation.org (open list:VIRTIO GPU DRIVER),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/virtio: Add execbuf flag to request no fence-event
+Date:   Tue,  5 Apr 2022 10:39:18 -0700
+Message-Id: <20220405173918.1000846-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220405113359.2880241-1-masahiroy@kernel.org> <20220405113359.2880241-3-masahiroy@kernel.org>
-In-Reply-To: <20220405113359.2880241-3-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 5 Apr 2022 09:18:23 -0700
-Message-ID: <CAKwvOd=13RwpvTQ5O86aQkyrGVSbqJkCWwsvU+DbRsGiKNS71A@mail.gmail.com>
-Subject: Re: [PATCH v2 02/10] kbuild: do not remove empty *.symtypes explicitly
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 4:34 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Presumably, 'test -s $@ || rm -f $@' intends to remove the output when
-> the genksyms command fails.
->
-> It is unneeded because .DELETE_ON_ERROR automatically removes the output
-> on failure.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+From: Rob Clark <robdclark@chromium.org>
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+It would have been cleaner to have a flag to *request* the fence event.
+But that ship has sailed.  So add a flag so that userspace which doesn't
+care about the events can opt-out.
 
-> ---
->
-> Changes in v2:
->   - Fix accidental drop of '> /dev/null'
->
->  scripts/Makefile.build | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
->
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index 31e0e33dfe5d..3ef2373f0a57 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -135,9 +135,7 @@ genksyms = scripts/genksyms/genksyms                \
->  cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
->
->  quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
-> -cmd_cc_symtypes_c =                                                         \
-> -    $(call cmd_gensymtypes_c,true,$@) >/dev/null;                           \
-> -    test -s $@ || rm -f $@
-> +      cmd_cc_symtypes_c = $(call cmd_gensymtypes_c,true,$@) >/dev/null
->
->  $(obj)/%.symtypes : $(src)/%.c FORCE
->         $(call cmd,cc_symtypes_c)
-> @@ -348,9 +346,7 @@ cmd_gensymtypes_S =                                                         \
->      $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
->
->  quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
-> -cmd_cc_symtypes_S =                                                         \
-> -    $(call cmd_gensymtypes_S,true,$@) >/dev/null;                           \
-> -    test -s $@ || rm -f $@
-> +      cmd_cc_symtypes_S = $(call cmd_gensymtypes_S,true,$@) >/dev/null
->
->  $(obj)/%.symtypes : $(src)/%.S FORCE
->         $(call cmd,cc_symtypes_S)
-> --
-> 2.32.0
->
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/virtio/virtgpu_ioctl.c | 8 +++++---
+ include/uapi/drm/virtgpu_drm.h         | 2 ++
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-
+diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+index 3a8078f2ee27..09f1aa263f91 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
++++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+@@ -225,9 +225,11 @@ static int virtio_gpu_execbuffer_ioctl(struct drm_device *dev, void *data,
+ 		goto out_unresv;
+ 	}
+ 
+-	ret = virtio_gpu_fence_event_create(dev, file, out_fence, ring_idx);
+-	if (ret)
+-		goto out_unresv;
++	if (!(exbuf->flags & VIRTGPU_EXECBUF_NO_EVENT)) {
++		ret = virtio_gpu_fence_event_create(dev, file, out_fence, ring_idx);
++		if (ret)
++			goto out_unresv;
++	}
+ 
+ 	if (out_fence_fd >= 0) {
+ 		sync_file = sync_file_create(&out_fence->f);
+diff --git a/include/uapi/drm/virtgpu_drm.h b/include/uapi/drm/virtgpu_drm.h
+index 0512fde5e697..d06cac3407cc 100644
+--- a/include/uapi/drm/virtgpu_drm.h
++++ b/include/uapi/drm/virtgpu_drm.h
+@@ -52,10 +52,12 @@ extern "C" {
+ #define VIRTGPU_EXECBUF_FENCE_FD_IN	0x01
+ #define VIRTGPU_EXECBUF_FENCE_FD_OUT	0x02
+ #define VIRTGPU_EXECBUF_RING_IDX	0x04
++#define VIRTGPU_EXECBUF_NO_EVENT	0x08
+ #define VIRTGPU_EXECBUF_FLAGS  (\
+ 		VIRTGPU_EXECBUF_FENCE_FD_IN |\
+ 		VIRTGPU_EXECBUF_FENCE_FD_OUT |\
+ 		VIRTGPU_EXECBUF_RING_IDX |\
++		VIRTGPU_EXECBUF_NO_EVENT |\
+ 		0)
+ 
+ struct drm_virtgpu_map {
 -- 
-Thanks,
-~Nick Desaulniers
+2.35.1
+
