@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 503B1C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31171C35276
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353421AbiDEKGL (ORCPT
+        id S1353384AbiDEKGE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33840 "EHLO
+        Tue, 5 Apr 2022 06:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240783AbiDEIcb (ORCPT
+        with ESMTP id S240541AbiDEIcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FE4890AC;
-        Tue,  5 Apr 2022 01:24:58 -0700 (PDT)
+        Tue, 5 Apr 2022 04:32:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4387304C;
+        Tue,  5 Apr 2022 01:24:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B91FCB81B92;
-        Tue,  5 Apr 2022 08:24:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05AF2C385A0;
-        Tue,  5 Apr 2022 08:24:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2E35B81BBF;
+        Tue,  5 Apr 2022 08:24:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2504CC385A0;
+        Tue,  5 Apr 2022 08:24:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147096;
-        bh=kU0VvC1uF97kxu9T98KRgufd1L4EUMUVwKbCz6JuJJ8=;
+        s=korg; t=1649147056;
+        bh=xOIsufLeQocMH3kgT/ty/OAH67nEMnuadhiPTuYHCw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xphhm4/xbh1HUGod+STxOXeFw21wY0s10S0oyuquuAa0USD1XFaKslLvFzx5KR1ms
-         Aeh23EuJkBi+S3J5bnQc9LXYeIF+6BsMl8LdeyuwIgAMeI3dJhSQHK/3zsWdt2m/Cw
-         rMyn6wAmXEM/2FWSD+A2X3vZqf6VOdgot2BcJamQ=
+        b=sZyttx8UxaItoYaJ/hJst5YBJes105Yol2KCaeo9Tu8rrAgJ0mJYcsS3qtc0QpHdS
+         HoEnZhjd+9M1i+TUV8abvJCeAMjkp7+Ko0imICij9fkIv0hK8hXu4iF3YKTIVmAbpr
+         0TdEBmRkTXJbo9lm/jMfPRnwhL9yr7QAw9CZB+ok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
-        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
-        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.17 0999/1126] KVM: x86/mmu: do compare-and-exchange of gPTE via the user address
-Date:   Tue,  5 Apr 2022 09:29:06 +0200
-Message-Id: <20220405070436.814643129@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 0986/1126] scsi: qla2xxx: Fix hang due to session stuck
+Date:   Tue,  5 Apr 2022 09:28:53 +0200
+Message-Id: <20220405070436.438085056@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -53,149 +52,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Quinn Tran <qutran@marvell.com>
 
-commit 2a8859f373b0a86f0ece8ec8312607eacf12485d upstream.
+commit c02aada06d19a215c8291bd968a99a270e96f734 upstream.
 
-FNAME(cmpxchg_gpte) is an inefficient mess.  It is at least decent if it
-can go through get_user_pages_fast(), but if it cannot then it tries to
-use memremap(); that is not just terribly slow, it is also wrong because
-it assumes that the VM_PFNMAP VMA is contiguous.
+User experienced device lost. The log shows Get port data base command was
+queued up, failed, and requeued again. Every time it is requeued, it set
+the FCF_ASYNC_ACTIVE. This prevents any recovery code from occurring
+because driver thinks a recovery is in progress for this session. In
+essence, this session is hung.  The reason it gets into this place is the
+session deletion got in front of this call due to link perturbation.
 
-The right way to do it would be to do the same thing as
-hva_to_pfn_remapped() does since commit add6a0cd1c5b ("KVM: MMU: try to
-fix up page faults before giving up", 2016-07-05), using follow_pte()
-and fixup_user_fault() to determine the correct address to use for
-memremap().  To do this, one could for example extract hva_to_pfn()
-for use outside virt/kvm/kvm_main.c.  But really there is no reason to
-do that either, because there is already a perfectly valid address to
-do the cmpxchg() on, only it is a userspace address.  That means doing
-user_access_begin()/user_access_end() and writing the code in assembly
-to handle exceptions correctly.  Worse, the guest PTE can be 8-byte
-even on i686 so there is the extra complication of using cmpxchg8b to
-account for.  But at least it is an efficient mess.
+Break the requeue cycle and exit.  The session deletion code will trigger a
+session relogin.
 
-(Thanks to Linus for suggesting improvement on the inline assembly).
-
-Reported-by: Qiuhao Li <qiuhao@sysec.org>
-Reported-by: Gaoning Pan <pgn@zju.edu.cn>
-Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-Reported-by: syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
-Debugged-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20220310092604.22950-8-njavali@marvell.com
+Fixes: 726b85487067 ("qla2xxx: Add framework for async fabric discovery")
 Cc: stable@vger.kernel.org
-Fixes: bd53cb35a3e9 ("X86/KVM: Handle PFNs outside of kernel reach when touching GPTEs")
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/paging_tmpl.h |   74 ++++++++++++++++++-----------------------
- 1 file changed, 34 insertions(+), 40 deletions(-)
+ drivers/scsi/qla2xxx/qla_def.h  |    4 ++++
+ drivers/scsi/qla2xxx/qla_init.c |   19 +++++++++++++++++--
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -34,9 +34,8 @@
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
- 	#ifdef CONFIG_X86_64
- 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
--	#define CMPXCHG cmpxchg
-+	#define CMPXCHG "cmpxchgq"
- 	#else
--	#define CMPXCHG cmpxchg64
- 	#define PT_MAX_FULL_LEVELS 2
- 	#endif
- #elif PTTYPE == 32
-@@ -52,7 +51,7 @@
- 	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
- 	#define PT_GUEST_ACCESSED_SHIFT PT_ACCESSED_SHIFT
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
--	#define CMPXCHG cmpxchg
-+	#define CMPXCHG "cmpxchgl"
- #elif PTTYPE == PTTYPE_EPT
- 	#define pt_element_t u64
- 	#define guest_walker guest_walkerEPT
-@@ -65,7 +64,9 @@
- 	#define PT_GUEST_DIRTY_SHIFT 9
- 	#define PT_GUEST_ACCESSED_SHIFT 8
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) ((mmu)->ept_ad)
--	#define CMPXCHG cmpxchg64
-+	#ifdef CONFIG_X86_64
-+	#define CMPXCHG "cmpxchgq"
-+	#endif
- 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
- #else
- 	#error Invalid PTTYPE value
-@@ -147,43 +148,36 @@ static int FNAME(cmpxchg_gpte)(struct kv
- 			       pt_element_t __user *ptep_user, unsigned index,
- 			       pt_element_t orig_pte, pt_element_t new_pte)
- {
--	int npages;
--	pt_element_t ret;
--	pt_element_t *table;
--	struct page *page;
--
--	npages = get_user_pages_fast((unsigned long)ptep_user, 1, FOLL_WRITE, &page);
--	if (likely(npages == 1)) {
--		table = kmap_atomic(page);
--		ret = CMPXCHG(&table[index], orig_pte, new_pte);
--		kunmap_atomic(table);
--
--		kvm_release_page_dirty(page);
--	} else {
--		struct vm_area_struct *vma;
--		unsigned long vaddr = (unsigned long)ptep_user & PAGE_MASK;
--		unsigned long pfn;
--		unsigned long paddr;
--
--		mmap_read_lock(current->mm);
--		vma = find_vma_intersection(current->mm, vaddr, vaddr + PAGE_SIZE);
--		if (!vma || !(vma->vm_flags & VM_PFNMAP)) {
--			mmap_read_unlock(current->mm);
--			return -EFAULT;
--		}
--		pfn = ((vaddr - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
--		paddr = pfn << PAGE_SHIFT;
--		table = memremap(paddr, PAGE_SIZE, MEMREMAP_WB);
--		if (!table) {
--			mmap_read_unlock(current->mm);
--			return -EFAULT;
--		}
--		ret = CMPXCHG(&table[index], orig_pte, new_pte);
--		memunmap(table);
--		mmap_read_unlock(current->mm);
--	}
-+	signed char r;
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -5438,4 +5438,8 @@ struct ql_vnd_tgt_stats_resp {
+ #include "qla_gbl.h"
+ #include "qla_dbg.h"
+ #include "qla_inline.h"
 +
-+	if (!user_access_begin(ptep_user, sizeof(pt_element_t)))
-+		return -EFAULT;
++#define IS_SESSION_DELETED(_fcport) (_fcport->disc_state == DSC_DELETE_PEND || \
++				      _fcport->disc_state == DSC_DELETED)
 +
-+#ifdef CMPXCHG
-+	asm volatile("1:" LOCK_PREFIX CMPXCHG " %[new], %[ptr]\n"
-+		     "setnz %b[r]\n"
-+		     "2:"
-+		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %k[r])
-+		     : [ptr] "+m" (*ptep_user),
-+		       [old] "+a" (orig_pte),
-+		       [r] "=q" (r)
-+		     : [new] "r" (new_pte)
-+		     : "memory");
-+#else
-+	asm volatile("1:" LOCK_PREFIX "cmpxchg8b %[ptr]\n"
-+		     "setnz %b[r]\n"
-+		     "2:"
-+		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %k[r])
-+		     : [ptr] "+m" (*ptep_user),
-+		       [old] "+A" (orig_pte),
-+		       [r] "=q" (r)
-+		     : [new_lo] "b" ((u32)new_pte),
-+		       [new_hi] "c" ((u32)(new_pte >> 32))
-+		     : "memory");
-+#endif
+ #endif
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -575,6 +575,14 @@ qla2x00_async_adisc(struct scsi_qla_host
+ 	struct srb_iocb *lio;
+ 	int rval = QLA_FUNCTION_FAILED;
  
--	return (ret != orig_pte);
-+	user_access_end();
-+	return r;
- }
++	if (IS_SESSION_DELETED(fcport)) {
++		ql_log(ql_log_warn, vha, 0xffff,
++		       "%s: %8phC is being delete - not sending command.\n",
++		       __func__, fcport->port_name);
++		fcport->flags &= ~FCF_ASYNC_ACTIVE;
++		return rval;
++	}
++
+ 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT))
+ 		return rval;
  
- static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
+@@ -1338,8 +1346,15 @@ int qla24xx_async_gpdb(struct scsi_qla_h
+ 	struct port_database_24xx *pd;
+ 	struct qla_hw_data *ha = vha->hw;
+ 
+-	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
+-	    fcport->loop_id == FC_NO_LOOP_ID) {
++	if (IS_SESSION_DELETED(fcport)) {
++		ql_log(ql_log_warn, vha, 0xffff,
++		       "%s: %8phC is being delete - not sending command.\n",
++		       __func__, fcport->port_name);
++		fcport->flags &= ~FCF_ASYNC_ACTIVE;
++		return rval;
++	}
++
++	if (!vha->flags.online || fcport->flags & FCF_ASYNC_SENT) {
+ 		ql_log(ql_log_warn, vha, 0xffff,
+ 		    "%s: %8phC online %d flags %x - not sending command.\n",
+ 		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
 
 
