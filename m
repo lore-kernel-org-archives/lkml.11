@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E413C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60939C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 07:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiDEHnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 03:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
+        id S232017AbiDEHnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 03:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiDEHlw (ORCPT
+        with ESMTP id S231818AbiDEHmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:41:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D14791573;
-        Tue,  5 Apr 2022 00:39:50 -0700 (PDT)
+        Tue, 5 Apr 2022 03:42:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082A290FDC;
+        Tue,  5 Apr 2022 00:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CBD461668;
-        Tue,  5 Apr 2022 07:39:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B18AC340EE;
-        Tue,  5 Apr 2022 07:39:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CC2161668;
+        Tue,  5 Apr 2022 07:39:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A86D4C340EE;
+        Tue,  5 Apr 2022 07:39:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649144389;
-        bh=UAOLU6WpY5Znh06Wx/tPkpyuwgUKvr+IDiRcwclCbfY=;
+        s=korg; t=1649144398;
+        bh=y4HzoPUx0g/Wg4u5UKwImFP7XoKjSKux0f3xg0dQGf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Exo/jyQPx5XD5ssaS/AAiOJEYOZvPboITsLR+kvB0awr5/X+L98ulEILkmBnyS+Nj
-         68RxSkVSviO0VW0U0Lk5IAiQ1tRaUptrCuB7utHlAmebEf75Ahn++i7NDTGP8mYV2R
-         hK/TztBSxxgGizxITy7JH7Uk96wqDgtho8jDHI9g=
+        b=v7XlfogBc6W+7QymHx9o7sPty9VR62+r6I9U2kno1RFlkbXNdlxDnzbk0HvQcSHYF
+         a1lfvColACtCHddoVcXOiKUMQNH5n2bAibGFU2T2OV4lI+IKbJQjQESqjEjYEKTcg1
+         tp/F2cdbjdtf4HoHZz9YGzjaZ5dSkcF6GQh0EWOk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>, Stable@vger.kernel.org,
+        stable@vger.kernel.org,
+        Konstantin Klubnichkin <kitsok@yandex-team.ru>,
+        Billy Tsai <billy_tsai@aspeedtech.com>,
+        Joel Stanley <joel@jms.id.au>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.17 0028/1126] dt-bindings: iio: adc: zynqmp_ams: Add clock entry
-Date:   Tue,  5 Apr 2022 09:12:55 +0200
-Message-Id: <20220405070408.378169343@linuxfoundation.org>
+Subject: [PATCH 5.17 0031/1126] iio: adc: aspeed: Add divider flag to fix incorrect voltage reading.
+Date:   Tue,  5 Apr 2022 09:12:58 +0200
+Message-Id: <20220405070408.467175161@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,61 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Billy Tsai <billy_tsai@aspeedtech.com>
 
-commit 5165102efa41c2aedc77441612f4506a8a8671db upstream.
+commit 571426631acf46e2999c7ecd1e9d048172969a43 upstream.
 
-The AMS driver DT binding was missing the clock entry, which is actually
-mandatory according to the driver implementation. Add this in.
+The formula for the ADC sampling period in ast2400/ast2500 is:
+ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0])
+When ADC0C[9:0] is set to 0 the sampling voltage will be lower than
+expected, because the hardware may not have enough time to
+charge/discharge to a stable voltage. This patch use the flag
+CLK_DIVIDER_ONE_BASED which will use the raw value read from the
+register, with the value of zero considered invalid to conform to the
+corrected formula.
 
-Fixes: 39dd2d1e251d ("dt-bindings: iio: adc: Add Xilinx AMS binding documentation")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
-Link: https://lore.kernel.org/r/20220127173450.3684318-2-robert.hancock@calian.com
+Fixes: 573803234e72 ("iio: Aspeed ADC")
+Reported-by: Konstantin Klubnichkin <kitsok@yandex-team.ru>
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+Link: https://lore.kernel.org/r/20220221012705.22008-1-billy_tsai@aspeedtech.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/adc/aspeed_adc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
-@@ -92,6 +92,10 @@ properties:
-     description: AMS Controller register space
-     maxItems: 1
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -539,7 +539,9 @@ static int aspeed_adc_probe(struct platf
+ 	data->clk_scaler = devm_clk_hw_register_divider(
+ 		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
+ 		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
+-		data->model_data->scaler_bit_width, 0, &data->clk_lock);
++		data->model_data->scaler_bit_width,
++		data->model_data->need_prescaler ? CLK_DIVIDER_ONE_BASED : 0,
++		&data->clk_lock);
+ 	if (IS_ERR(data->clk_scaler))
+ 		return PTR_ERR(data->clk_scaler);
  
-+  clocks:
-+    items:
-+      - description: AMS reference clock
-+
-   ranges:
-     description:
-       Maps the child address space for PS and/or PL.
-@@ -181,12 +185,15 @@ properties:
- required:
-   - compatible
-   - reg
-+  - clocks
-   - ranges
- 
- additionalProperties: false
- 
- examples:
-   - |
-+    #include <dt-bindings/clock/xlnx-zynqmp-clk.h>
-+
-     bus {
-         #address-cells = <2>;
-         #size-cells = <2>;
-@@ -196,6 +203,7 @@ examples:
-             interrupt-parent = <&gic>;
-             interrupts = <0 56 4>;
-             reg = <0x0 0xffa50000 0x0 0x800>;
-+            clocks = <&zynqmp_clk AMS_REF>;
-             #address-cells = <1>;
-             #size-cells = <1>;
-             #io-channel-cells = <1>;
 
 
