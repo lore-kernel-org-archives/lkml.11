@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0799CC4707E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC959C3527A
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 01:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839719AbiDFBFa (ORCPT
+        id S1839678AbiDFBFT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 21:05:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
+        Tue, 5 Apr 2022 21:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358237AbiDEK2K (ORCPT
+        with ESMTP id S240392AbiDEKcj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:28:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1BE26F7;
-        Tue,  5 Apr 2022 03:17:19 -0700 (PDT)
+        Tue, 5 Apr 2022 06:32:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7A9DE906;
+        Tue,  5 Apr 2022 03:18:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88D9961777;
-        Tue,  5 Apr 2022 10:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FEACC385A0;
-        Tue,  5 Apr 2022 10:17:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59CDE61777;
+        Tue,  5 Apr 2022 10:18:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4228CC385A1;
+        Tue,  5 Apr 2022 10:18:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153839;
-        bh=4pqGxkskrWE83X7/O4wtvxnLKOLOnMpMjiOgycSXnrY=;
+        s=korg; t=1649153915;
+        bh=9PEFQguw30U1gpsVR7cU8RY0vR6P0NTVaLm1k7N31mQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mjz33JUEOOpXn7e5jTI/4DLfUU+xRvJNkXlJ0LK3GeIh5ro7fAN5rlDyySVEdtoh5
-         DeQtra9AGg/hJUjRlysqTgZcxrTC4I0Xj5nnN46P93dWr/ejRPclDglJkqgNML5vbD
-         ORvvVJ/TbUG/N9PtC7aejJ1FhrleziUaee29MNt0=
+        b=SEPSUYsy+gRZzA7LJ/UWk6NdGeOPsfpe5HAViPJDRgMT47p5vJJeXGtsGnBr7070v
+         aVZXYPGWjC6r0rIhOpb3lhEk59BGAzo4s5S2UTy7sdayFrDss5YvYoq9Ah3HneGZuT
+         6UPNd0N+1C5aTYc70h/Io5hkdBKpUR8Fn8e+JEoM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianlin Shi <jishi@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 363/599] bareudp: use ipv6_mod_enabled to check if IPv6 enabled
-Date:   Tue,  5 Apr 2022 09:30:57 +0200
-Message-Id: <20220405070309.633052193@linuxfoundation.org>
+Subject: [PATCH 5.10 393/599] serial: 8250_lpss: Balance reference count for PCI DMA device
+Date:   Tue,  5 Apr 2022 09:31:27 +0200
+Message-Id: <20220405070310.526505829@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 References: <20220405070258.802373272@linuxfoundation.org>
@@ -51,87 +50,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit e077ed58c243afc197bc2a2ba0e1ff61135e4ec2 ]
+[ Upstream commit 5318f70da7e82649d794fc27d8a127c22aa3566e ]
 
-bareudp_create_sock() use AF_INET6 by default if IPv6 CONFIG enabled.
-But if user start kernel with ipv6.disable=1, the bareudp sock will
-created failed, which cause the interface open failed even with ethertype
-ip. e.g.
+The pci_get_slot() increases its reference count, the caller
+must decrement the reference count by calling pci_dev_put().
 
- # ip link add bareudp1 type bareudp dstport 2 ethertype ip
- # ip link set bareudp1 up
- RTNETLINK answers: Address family not supported by protocol
-
-Fix it by using ipv6_mod_enabled() to check if IPv6 enabled. There is
-no need to check IS_ENABLED(CONFIG_IPV6) as ipv6_mod_enabled() will
-return false when CONFIG_IPV6 no enabled in include/linux/ipv6.h.
-
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Link: https://lore.kernel.org/r/20220315062618.156230-1-liuhangbin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9a1870ce812e ("serial: 8250: don't use slave_id of dma_slave_config")
+Depends-on: a13e19cf3dc1 ("serial: 8250_lpss: split LPSS driver to separate module")
+Reported-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20220223151240.70248-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bareudp.c |   19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/tty/serial/8250/8250_lpss.c | 28 ++++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -140,14 +140,14 @@ static int bareudp_udp_encap_recv(struct
- 	oiph = skb_network_header(skb);
- 	skb_reset_network_header(skb);
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 4dee8a9e0c95..dfb730b7ea2a 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -121,8 +121,7 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ {
+ 	struct dw_dma_slave *param = &lpss->dma_param;
+ 	struct pci_dev *pdev = to_pci_dev(port->dev);
+-	unsigned int dma_devfn = PCI_DEVFN(PCI_SLOT(pdev->devfn), 0);
+-	struct pci_dev *dma_dev = pci_get_slot(pdev->bus, dma_devfn);
++	struct pci_dev *dma_dev;
  
--	if (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
-+	if (!ipv6_mod_enabled() || family == AF_INET)
- 		err = IP_ECN_decapsulate(oiph, skb);
- 	else
- 		err = IP6_ECN_decapsulate(oiph, skb);
- 
- 	if (unlikely(err)) {
- 		if (log_ecn_error) {
--			if  (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
-+			if  (!ipv6_mod_enabled() || family == AF_INET)
- 				net_info_ratelimited("non-ECT from %pI4 "
- 						     "with TOS=%#x\n",
- 						     &((struct iphdr *)oiph)->saddr,
-@@ -213,11 +213,12 @@ static struct socket *bareudp_create_soc
- 	int err;
- 
- 	memset(&udp_conf, 0, sizeof(udp_conf));
--#if IS_ENABLED(CONFIG_IPV6)
--	udp_conf.family = AF_INET6;
--#else
--	udp_conf.family = AF_INET;
--#endif
-+
-+	if (ipv6_mod_enabled())
-+		udp_conf.family = AF_INET6;
-+	else
-+		udp_conf.family = AF_INET;
-+
- 	udp_conf.local_udp_port = port;
- 	/* Open UDP socket */
- 	err = udp_sock_create(net, &udp_conf, &sock);
-@@ -439,7 +440,7 @@ static netdev_tx_t bareudp_xmit(struct s
+ 	switch (pdev->device) {
+ 	case PCI_DEVICE_ID_INTEL_BYT_UART1:
+@@ -141,6 +140,8 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 		return -EINVAL;
  	}
  
- 	rcu_read_lock();
--	if (IS_ENABLED(CONFIG_IPV6) && info->mode & IP_TUNNEL_INFO_IPV6)
-+	if (ipv6_mod_enabled() && info->mode & IP_TUNNEL_INFO_IPV6)
- 		err = bareudp6_xmit_skb(skb, dev, bareudp, info);
- 	else
- 		err = bareudp_xmit_skb(skb, dev, bareudp, info);
-@@ -469,7 +470,7 @@ static int bareudp_fill_metadata_dst(str
++	dma_dev = pci_get_slot(pdev->bus, PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
++
+ 	param->dma_dev = &dma_dev->dev;
+ 	param->m_master = 0;
+ 	param->p_master = 1;
+@@ -156,11 +157,26 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
  
- 	use_cache = ip_tunnel_dst_cache_usable(skb, info);
++static void byt_serial_exit(struct lpss8250 *lpss)
++{
++	struct dw_dma_slave *param = &lpss->dma_param;
++
++	/* Paired with pci_get_slot() in the byt_serial_setup() above */
++	put_device(param->dma_dev);
++}
++
+ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ {
+ 	return 0;
+ }
  
--	if (!IS_ENABLED(CONFIG_IPV6) || ip_tunnel_info_af(info) == AF_INET) {
-+	if (!ipv6_mod_enabled() || ip_tunnel_info_af(info) == AF_INET) {
- 		struct rtable *rt;
- 		__be32 saddr;
++static void ehl_serial_exit(struct lpss8250 *lpss)
++{
++	struct uart_8250_port *up = serial8250_get_port(lpss->data.line);
++
++	up->dma = NULL;
++}
++
+ #ifdef CONFIG_SERIAL_8250_DMA
+ static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
+ 	.nr_channels = 2,
+@@ -335,8 +351,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	return 0;
  
+ err_exit:
+-	if (lpss->board->exit)
+-		lpss->board->exit(lpss);
++	lpss->board->exit(lpss);
+ 	pci_free_irq_vectors(pdev);
+ 	return ret;
+ }
+@@ -347,8 +362,7 @@ static void lpss8250_remove(struct pci_dev *pdev)
+ 
+ 	serial8250_unregister_port(lpss->data.line);
+ 
+-	if (lpss->board->exit)
+-		lpss->board->exit(lpss);
++	lpss->board->exit(lpss);
+ 	pci_free_irq_vectors(pdev);
+ }
+ 
+@@ -356,12 +370,14 @@ static const struct lpss8250_board byt_board = {
+ 	.freq = 100000000,
+ 	.base_baud = 2764800,
+ 	.setup = byt_serial_setup,
++	.exit = byt_serial_exit,
+ };
+ 
+ static const struct lpss8250_board ehl_board = {
+ 	.freq = 200000000,
+ 	.base_baud = 12500000,
+ 	.setup = ehl_serial_setup,
++	.exit = ehl_serial_exit,
+ };
+ 
+ static const struct lpss8250_board qrk_board = {
+-- 
+2.34.1
+
 
 
