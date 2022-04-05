@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBECC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A19AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 11:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343800AbiDEK7i (ORCPT
+        id S1344094AbiDEK7p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
+        Tue, 5 Apr 2022 06:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242291AbiDEIhS (ORCPT
+        with ESMTP id S242271AbiDEIhS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:37:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB151CB13;
-        Tue,  5 Apr 2022 01:32:39 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F8D1C915;
+        Tue,  5 Apr 2022 01:32:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CF7960B0E;
-        Tue,  5 Apr 2022 08:32:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97857C385A0;
-        Tue,  5 Apr 2022 08:32:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B085B81C69;
+        Tue,  5 Apr 2022 08:32:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA976C385A0;
+        Tue,  5 Apr 2022 08:32:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147559;
-        bh=u8cclAT3USm2ckXvRzJKzZhIhuNCejG+lU+PnBp3YA8=;
+        s=korg; t=1649147553;
+        bh=03Ws9qQgvQwf9mtv7tPWt+LryrlarzUFcRPDufIyokE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RuDP2zcUy3V4AmS2EW2CcDXknhjYO0iCcyUw9rP+ucBMZMZZV0z3trIF3ZD4q7cWX
-         TKGdVbnB7R5Zv7lyqI6ajG/nYGGDarYKBR5yzi301jLZD15G5CllpVLd1v4iXGkBNd
-         g9qYzDqJHyAXGUzZfNc3GSlooEq0tfYt1xQcTCVA=
+        b=kGX27FcRvhPjMCW0rtlLb1Mldk8bVzVRr7cU7WpsQAllQV7y030Vd12+pFFmBrTWr
+         nqST0stx204WeMAVPiTWo4ZZkP589dPYJM3kaJKJ5DI/rKmxDH6GddIy7CQqg8BMat
+         pqP6g6gxL8Pikb7LkeATYVqFik6Oz8K+YgV1gb4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Alexander Usyskin <alexander.usyskin@intel.com>,
         Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.16 0040/1017] mei: avoid iterator usage outside of list_for_each_entry
-Date:   Tue,  5 Apr 2022 09:15:53 +0200
-Message-Id: <20220405070355.369810367@linuxfoundation.org>
+Subject: [PATCH 5.16 0038/1017] mei: me: disable driver on the ign firmware
+Date:   Tue,  5 Apr 2022 09:15:51 +0200
+Message-Id: <20220405070355.310457936@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -52,76 +52,100 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexander Usyskin <alexander.usyskin@intel.com>
 
-commit c10187b1c5ebb8681ca467ab7b0ded5ea415d258 upstream.
+commit ccdf6f806fbf559f7c29ed9302a7c1b4da7fd37f upstream.
 
-Usage of the iterator outside of the list_for_each_entry
-is considered harmful. https://lkml.org/lkml/2022/2/17/1032
-
-Do not reference the loop variable outside of the loop,
-by rearranging the orders of execution.
-Instead of performing search loop and checking outside the loop
-if the end of the list was hit and no matching element was found,
-the execution is performed inside the loop upon a successful match
-followed by a goto statement to the next step,
-therefore no condition has to be performed after the loop has ended.
+Add a quirk to disable MEI interface on Intel PCH Ignition (IGN)
+as the IGN firmware doesn't support the protocol.
 
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
 Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220308095926.300412-1-tomas.winkler@intel.com
+Link: https://lore.kernel.org/r/20220215080438.264876-1-tomas.winkler@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/mei/interrupt.c |   35 +++++++++++++++--------------------
- 1 file changed, 15 insertions(+), 20 deletions(-)
+ drivers/misc/mei/hw-me-regs.h |    1 +
+ drivers/misc/mei/hw-me.c      |   23 ++++++++++++-----------
+ 2 files changed, 13 insertions(+), 11 deletions(-)
 
---- a/drivers/misc/mei/interrupt.c
-+++ b/drivers/misc/mei/interrupt.c
-@@ -424,31 +424,26 @@ int mei_irq_read_handler(struct mei_devi
- 	list_for_each_entry(cl, &dev->file_list, link) {
- 		if (mei_cl_hbm_equal(cl, mei_hdr)) {
- 			cl_dbg(dev, cl, "got a message\n");
--			break;
-+			ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
-+			goto reset_slots;
- 		}
- 	}
+--- a/drivers/misc/mei/hw-me-regs.h
++++ b/drivers/misc/mei/hw-me-regs.h
+@@ -120,6 +120,7 @@
+ #define PCI_CFG_HFS_2         0x48
+ #define PCI_CFG_HFS_3         0x60
+ #  define PCI_CFG_HFS_3_FW_SKU_MSK   0x00000070
++#  define PCI_CFG_HFS_3_FW_SKU_IGN   0x00000000
+ #  define PCI_CFG_HFS_3_FW_SKU_SPS   0x00000060
+ #define PCI_CFG_HFS_4         0x64
+ #define PCI_CFG_HFS_5         0x68
+--- a/drivers/misc/mei/hw-me.c
++++ b/drivers/misc/mei/hw-me.c
+@@ -1405,16 +1405,16 @@ static bool mei_me_fw_type_sps_4(const s
+ 	.quirk_probe = mei_me_fw_type_sps_4
  
- 	/* if no recipient cl was found we assume corrupted header */
--	if (&cl->link == &dev->file_list) {
--		/* A message for not connected fixed address clients
--		 * should be silently discarded
--		 * On power down client may be force cleaned,
--		 * silently discard such messages
--		 */
--		if (hdr_is_fixed(mei_hdr) ||
--		    dev->dev_state == MEI_DEV_POWER_DOWN) {
--			mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
--			ret = 0;
--			goto reset_slots;
--		}
--		dev_err(dev->dev, "no destination client found 0x%08X\n",
--				dev->rd_msg_hdr[0]);
--		ret = -EBADMSG;
--		goto end;
-+	/* A message for not connected fixed address clients
-+	 * should be silently discarded
-+	 * On power down client may be force cleaned,
-+	 * silently discard such messages
-+	 */
-+	if (hdr_is_fixed(mei_hdr) ||
-+	    dev->dev_state == MEI_DEV_POWER_DOWN) {
-+		mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
-+		ret = 0;
-+		goto reset_slots;
- 	}
--
--	ret = mei_cl_irq_read_msg(cl, mei_hdr, meta_hdr, cmpl_list);
--
-+	dev_err(dev->dev, "no destination client found 0x%08X\n", dev->rd_msg_hdr[0]);
-+	ret = -EBADMSG;
-+	goto end;
+ /**
+- * mei_me_fw_type_sps() - check for sps sku
++ * mei_me_fw_type_sps_ign() - check for sps or ign sku
+  *
+- * Read ME FW Status register to check for SPS Firmware.
+- * The SPS FW is only signaled in pci function 0
++ * Read ME FW Status register to check for SPS or IGN Firmware.
++ * The SPS/IGN FW is only signaled in pci function 0
+  *
+  * @pdev: pci device
+  *
+- * Return: true in case of SPS firmware
++ * Return: true in case of SPS/IGN firmware
+  */
+-static bool mei_me_fw_type_sps(const struct pci_dev *pdev)
++static bool mei_me_fw_type_sps_ign(const struct pci_dev *pdev)
+ {
+ 	u32 reg;
+ 	u32 fw_type;
+@@ -1427,14 +1427,15 @@ static bool mei_me_fw_type_sps(const str
  
- reset_slots:
- 	/* reset the number of slots and header */
+ 	dev_dbg(&pdev->dev, "fw type is %d\n", fw_type);
+ 
+-	return fw_type == PCI_CFG_HFS_3_FW_SKU_SPS;
++	return fw_type == PCI_CFG_HFS_3_FW_SKU_IGN ||
++	       fw_type == PCI_CFG_HFS_3_FW_SKU_SPS;
+ }
+ 
+ #define MEI_CFG_KIND_ITOUCH                     \
+ 	.kind = "itouch"
+ 
+-#define MEI_CFG_FW_SPS                          \
+-	.quirk_probe = mei_me_fw_type_sps
++#define MEI_CFG_FW_SPS_IGN                      \
++	.quirk_probe = mei_me_fw_type_sps_ign
+ 
+ #define MEI_CFG_FW_VER_SUPP                     \
+ 	.fw_ver_supported = 1
+@@ -1535,7 +1536,7 @@ static const struct mei_cfg mei_me_pch12
+ 	MEI_CFG_PCH8_HFS,
+ 	MEI_CFG_FW_VER_SUPP,
+ 	MEI_CFG_DMA_128,
+-	MEI_CFG_FW_SPS,
++	MEI_CFG_FW_SPS_IGN,
+ };
+ 
+ /* Cannon Lake itouch with quirk for SPS 5.0 and newer Firmware exclusion
+@@ -1545,7 +1546,7 @@ static const struct mei_cfg mei_me_pch12
+ 	MEI_CFG_KIND_ITOUCH,
+ 	MEI_CFG_PCH8_HFS,
+ 	MEI_CFG_FW_VER_SUPP,
+-	MEI_CFG_FW_SPS,
++	MEI_CFG_FW_SPS_IGN,
+ };
+ 
+ /* Tiger Lake and newer devices */
+@@ -1562,7 +1563,7 @@ static const struct mei_cfg mei_me_pch15
+ 	MEI_CFG_FW_VER_SUPP,
+ 	MEI_CFG_DMA_128,
+ 	MEI_CFG_TRC,
+-	MEI_CFG_FW_SPS,
++	MEI_CFG_FW_SPS_IGN,
+ };
+ 
+ /*
 
 
