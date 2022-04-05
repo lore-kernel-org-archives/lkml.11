@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC07C35280
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C36AC47086
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 12:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377283AbiDEMXx (ORCPT
+        id S1379723AbiDEMYN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 08:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46656 "EHLO
+        Tue, 5 Apr 2022 08:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245047AbiDEIxE (ORCPT
+        with ESMTP id S245043AbiDEIxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:53:04 -0400
+        Tue, 5 Apr 2022 04:53:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C351FE70;
-        Tue,  5 Apr 2022 01:50:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D0BE59;
+        Tue,  5 Apr 2022 01:50:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 614E360FFB;
-        Tue,  5 Apr 2022 08:50:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74124C385A0;
-        Tue,  5 Apr 2022 08:50:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5473F60FFC;
+        Tue,  5 Apr 2022 08:50:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 608C1C385A1;
+        Tue,  5 Apr 2022 08:50:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649148637;
-        bh=bSHnxBfTeFa9LiNJveLBByEKIzdv4qri4DryIuhPjVw=;
+        s=korg; t=1649148626;
+        bh=lxhTv+y5LTSOEePsof2zvsKpS5M4FU32apZjfBMdYg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IeZo6hpPHcSB/WXpCy061gMeylVIEif4D3CaAenPDPRU7BFG33V5L2cf06sze5kVl
-         AScADy1OFIuFNshVHsEUFb4NGAGYRklMYr5+B5p0RREZZ98/fSuvY6g3OZBxbX/WOh
-         nPxjmzB/rROOKXsdnBcwOeCw2zFjbY44wnkOBsnI=
+        b=noL7+S1UMIdhCJosdf10xkS04BZ0TpQmSvb5vM/EO/NDnMe5gR0DPsaL7eYR0ZRaL
+         o17chCZ3f5tY0JEXo1kp3rvIWIlPAYz5HqTjad6LWOz7nd74brKWY7cLz9RtQQXXxs
+         PFl+9hDZ3bjBgPNNkdl4RQeVWm+bGciaD+kP0R7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brett Creeley <brett@pensando.io>,
-        Shannon Nelson <snelson@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0425/1017] ionic: Dont send reset commands if FW isnt running
-Date:   Tue,  5 Apr 2022 09:22:18 +0200
-Message-Id: <20220405070406.905976087@linuxfoundation.org>
+Subject: [PATCH 5.16 0422/1017] drm/edid: Split deep color modes between RGB and YUV444
+Date:   Tue,  5 Apr 2022 09:22:15 +0200
+Message-Id: <20220405070406.816548703@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -51,131 +51,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brett Creeley <brett@pensando.io>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit b8fd0271dad00b953caaabe73474788d3d19e252 ]
+[ Upstream commit 4adc33f36d80489339f1b43dfeee96bb9ea8e459 ]
 
-It's possible the FW is already shutting down while the driver is being
-removed and/or when the driver is going through reset. This can cause
-unexpected/unnecessary errors to be printed:
+The current code assumes that the RGB444 and YUV444 formats are the
+same, but the HDMI 2.0 specification states that:
 
-eth0: DEV_CMD IONIC_CMD_PORT_RESET (12) error, IONIC_RC_ERROR (29) failed
-eth1: DEV_CMD IONIC_CMD_RESET (3) error, IONIC_RC_ERROR (29) failed
+   The three DC_XXbit bits above only indicate support for RGB 4:4:4 at
+   that pixel size. Support for YCBCR 4:4:4 in Deep Color modes is
+   indicated with the DC_Y444 bit. If DC_Y444 is set, then YCBCR 4:4:4
+   is supported for all modes indicated by the DC_XXbit flags.
 
-Fix this by checking the FW status register before issuing the reset
-commands.
+So if we have YUV444 support and any DC_XXbit flag set but the DC_Y444
+flag isn't, we'll assume that we support that deep colour mode for
+YUV444 which breaks the specification.
 
-Also, since err may not be assigned in ionic_port_reset(), assign it a
-default value of 0, and remove an unnecessary log message.
+In order to fix this, let's split the edid_hdmi_dc_modes field in struct
+drm_display_info into two fields, one for RGB444 and one for YUV444.
 
-Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-Signed-off-by: Brett Creeley <brett@pensando.io>
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Suggested-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Fixes: d0c94692e0a3 ("drm/edid: Parse and handle HDMI deep color modes.")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220120151625.594595-4-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/pensando/ionic/ionic_dev.c    | 17 ++++++++++++-----
- .../net/ethernet/pensando/ionic/ionic_dev.h    |  1 +
- .../net/ethernet/pensando/ionic/ionic_main.c   | 18 ++++++++++--------
- 3 files changed, 23 insertions(+), 13 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c |    2 +-
+ drivers/gpu/drm/drm_edid.c                     |    7 ++++---
+ drivers/gpu/drm/i915/display/intel_hdmi.c      |    4 ++--
+ drivers/gpu/drm/radeon/radeon_connectors.c     |    2 +-
+ include/drm/drm_connector.h                    |   12 +++++++++---
+ 5 files changed, 17 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index 4044c630f8b4..2c7ce820a1fa 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -129,6 +129,16 @@ int ionic_dev_setup(struct ionic *ionic)
- }
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c
+@@ -175,7 +175,7 @@ int amdgpu_connector_get_monitor_bpc(str
  
- /* Devcmd Interface */
-+bool ionic_is_fw_running(struct ionic_dev *idev)
-+{
-+	u8 fw_status = ioread8(&idev->dev_info_regs->fw_status);
-+
-+	/* firmware is useful only if the running bit is set and
-+	 * fw_status != 0xff (bad PCI read)
-+	 */
-+	return (fw_status != 0xff) && (fw_status & IONIC_FW_STS_F_RUNNING);
-+}
-+
- int ionic_heartbeat_check(struct ionic *ionic)
- {
- 	struct ionic_dev *idev = &ionic->idev;
-@@ -152,13 +162,10 @@ int ionic_heartbeat_check(struct ionic *ionic)
- 		goto do_check_time;
+ 			/* Check if bpc is within clock limit. Try to degrade gracefully otherwise */
+ 			if ((bpc == 12) && (mode_clock * 3/2 > max_tmds_clock)) {
+-				if ((connector->display_info.edid_hdmi_dc_modes & DRM_EDID_HDMI_DC_30) &&
++				if ((connector->display_info.edid_hdmi_rgb444_dc_modes & DRM_EDID_HDMI_DC_30) &&
+ 				    (mode_clock * 5/4 <= max_tmds_clock))
+ 					bpc = 10;
+ 				else
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -5076,21 +5076,21 @@ static void drm_parse_hdmi_deep_color_in
+ 
+ 	if (hdmi[6] & DRM_EDID_HDMI_DC_30) {
+ 		dc_bpc = 10;
+-		info->edid_hdmi_dc_modes |= DRM_EDID_HDMI_DC_30;
++		info->edid_hdmi_rgb444_dc_modes |= DRM_EDID_HDMI_DC_30;
+ 		DRM_DEBUG("%s: HDMI sink does deep color 30.\n",
+ 			  connector->name);
  	}
  
--	/* firmware is useful only if the running bit is set and
--	 * fw_status != 0xff (bad PCI read)
--	 * If fw_status is not ready don't bother with the generation.
--	 */
- 	fw_status = ioread8(&idev->dev_info_regs->fw_status);
+ 	if (hdmi[6] & DRM_EDID_HDMI_DC_36) {
+ 		dc_bpc = 12;
+-		info->edid_hdmi_dc_modes |= DRM_EDID_HDMI_DC_36;
++		info->edid_hdmi_rgb444_dc_modes |= DRM_EDID_HDMI_DC_36;
+ 		DRM_DEBUG("%s: HDMI sink does deep color 36.\n",
+ 			  connector->name);
+ 	}
  
--	if (fw_status == 0xff || !(fw_status & IONIC_FW_STS_F_RUNNING)) {
-+	/* If fw_status is not ready don't bother with the generation */
-+	if (!ionic_is_fw_running(idev)) {
- 		fw_status_ready = false;
- 	} else {
- 		fw_generation = fw_status & IONIC_FW_STS_F_GENERATION;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-index e5acf3bd62b2..73b950ac1272 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-@@ -353,5 +353,6 @@ void ionic_q_rewind(struct ionic_queue *q, struct ionic_desc_info *start);
- void ionic_q_service(struct ionic_queue *q, struct ionic_cq_info *cq_info,
- 		     unsigned int stop_index);
- int ionic_heartbeat_check(struct ionic *ionic);
-+bool ionic_is_fw_running(struct ionic_dev *idev);
+ 	if (hdmi[6] & DRM_EDID_HDMI_DC_48) {
+ 		dc_bpc = 16;
+-		info->edid_hdmi_dc_modes |= DRM_EDID_HDMI_DC_48;
++		info->edid_hdmi_rgb444_dc_modes |= DRM_EDID_HDMI_DC_48;
+ 		DRM_DEBUG("%s: HDMI sink does deep color 48.\n",
+ 			  connector->name);
+ 	}
+@@ -5107,6 +5107,7 @@ static void drm_parse_hdmi_deep_color_in
  
- #endif /* _IONIC_DEV_H_ */
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index a89ad768e4a0..a548f2a01806 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -540,6 +540,9 @@ int ionic_reset(struct ionic *ionic)
- 	struct ionic_dev *idev = &ionic->idev;
- 	int err;
+ 	/* YCRCB444 is optional according to spec. */
+ 	if (hdmi[6] & DRM_EDID_HDMI_DC_Y444) {
++		info->edid_hdmi_ycbcr444_dc_modes = info->edid_hdmi_rgb444_dc_modes;
+ 		DRM_DEBUG("%s: HDMI sink does YCRCB444 in deep color.\n",
+ 			  connector->name);
+ 	}
+--- a/drivers/gpu/drm/i915/display/intel_hdmi.c
++++ b/drivers/gpu/drm/i915/display/intel_hdmi.c
+@@ -1892,7 +1892,7 @@ static bool intel_hdmi_bpc_possible(stru
+ 		if (ycbcr420_output)
+ 			return hdmi->y420_dc_modes & DRM_EDID_YCBCR420_DC_36;
+ 		else
+-			return info->edid_hdmi_dc_modes & DRM_EDID_HDMI_DC_36;
++			return info->edid_hdmi_rgb444_dc_modes & DRM_EDID_HDMI_DC_36;
+ 	case 10:
+ 		if (DISPLAY_VER(i915) < 11)
+ 			return false;
+@@ -1903,7 +1903,7 @@ static bool intel_hdmi_bpc_possible(stru
+ 		if (ycbcr420_output)
+ 			return hdmi->y420_dc_modes & DRM_EDID_YCBCR420_DC_30;
+ 		else
+-			return info->edid_hdmi_dc_modes & DRM_EDID_HDMI_DC_30;
++			return info->edid_hdmi_rgb444_dc_modes & DRM_EDID_HDMI_DC_30;
+ 	case 8:
+ 		return true;
+ 	default:
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -204,7 +204,7 @@ int radeon_get_monitor_bpc(struct drm_co
  
-+	if (!ionic_is_fw_running(idev))
-+		return 0;
+ 			/* Check if bpc is within clock limit. Try to degrade gracefully otherwise */
+ 			if ((bpc == 12) && (mode_clock * 3/2 > max_tmds_clock)) {
+-				if ((connector->display_info.edid_hdmi_dc_modes & DRM_EDID_HDMI_DC_30) &&
++				if ((connector->display_info.edid_hdmi_rgb444_dc_modes & DRM_EDID_HDMI_DC_30) &&
+ 					(mode_clock * 5/4 <= max_tmds_clock))
+ 					bpc = 10;
+ 				else
+--- a/include/drm/drm_connector.h
++++ b/include/drm/drm_connector.h
+@@ -566,10 +566,16 @@ struct drm_display_info {
+ 	bool rgb_quant_range_selectable;
+ 
+ 	/**
+-	 * @edid_hdmi_dc_modes: Mask of supported hdmi deep color modes. Even
+-	 * more stuff redundant with @bus_formats.
++	 * @edid_hdmi_dc_rgb444_modes: Mask of supported hdmi deep color modes
++	 * in RGB 4:4:4. Even more stuff redundant with @bus_formats.
+ 	 */
+-	u8 edid_hdmi_dc_modes;
++	u8 edid_hdmi_rgb444_dc_modes;
 +
- 	mutex_lock(&ionic->dev_cmd_lock);
- 	ionic_dev_cmd_reset(idev);
- 	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-@@ -612,15 +615,17 @@ int ionic_port_init(struct ionic *ionic)
- int ionic_port_reset(struct ionic *ionic)
- {
- 	struct ionic_dev *idev = &ionic->idev;
--	int err;
-+	int err = 0;
++	/**
++	 * @edid_hdmi_dc_ycbcr444_modes: Mask of supported hdmi deep color
++	 * modes in YCbCr 4:4:4. Even more stuff redundant with @bus_formats.
++	 */
++	u8 edid_hdmi_ycbcr444_dc_modes;
  
- 	if (!idev->port_info)
- 		return 0;
- 
--	mutex_lock(&ionic->dev_cmd_lock);
--	ionic_dev_cmd_port_reset(idev);
--	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
--	mutex_unlock(&ionic->dev_cmd_lock);
-+	if (ionic_is_fw_running(idev)) {
-+		mutex_lock(&ionic->dev_cmd_lock);
-+		ionic_dev_cmd_port_reset(idev);
-+		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+		mutex_unlock(&ionic->dev_cmd_lock);
-+	}
- 
- 	dma_free_coherent(ionic->dev, idev->port_info_sz,
- 			  idev->port_info, idev->port_info_pa);
-@@ -628,9 +633,6 @@ int ionic_port_reset(struct ionic *ionic)
- 	idev->port_info = NULL;
- 	idev->port_info_pa = 0;
- 
--	if (err)
--		dev_err(ionic->dev, "Failed to reset port\n");
--
- 	return err;
- }
- 
--- 
-2.34.1
-
+ 	/**
+ 	 * @cea_rev: CEA revision of the HDMI sink.
 
 
