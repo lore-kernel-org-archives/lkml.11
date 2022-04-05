@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F40C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2AFCC47080
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357711AbiDEK1D (ORCPT
+        id S1357659AbiDEK0l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        Tue, 5 Apr 2022 06:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241116AbiDEIcv (ORCPT
+        with ESMTP id S241112AbiDEIct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:32:51 -0400
+        Tue, 5 Apr 2022 04:32:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D13BC08;
-        Tue,  5 Apr 2022 01:27:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD3015A03;
+        Tue,  5 Apr 2022 01:27:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E3C560AFB;
-        Tue,  5 Apr 2022 08:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B539C385A2;
-        Tue,  5 Apr 2022 08:27:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38AA6609D0;
+        Tue,  5 Apr 2022 08:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BABEC385A1;
+        Tue,  5 Apr 2022 08:27:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147271;
-        bh=957SGL9KQznzdENY4XdnryY6MFqclkMVRwcwl8CH+qQ=;
+        s=korg; t=1649147266;
+        bh=EnA4E1E6YC+Ts/nEjs3dxfm5+HpqhwGpXCsmYHQ1Iew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EpQGnyXgqyjfLkxRWC7OxPM8Fn99PXXf3sLId6xk7S/qwYkV/14GGVZZXugZUVmJE
-         DWdHiuwGAxKQk5H3Z4CGRiN/JnY4zKeNCpkjbZ288vb/uMqorz/vE7esM1a4kup+0+
-         yYiWK/fHgD1z6YYa3SKySr1u2eiGw/oimJbw/YqA=
+        b=YKV1F5fsYRU6H1/K6SZdhwv1GxZBiBSjaDfMfyOClbOOgJfm6lbEXOypuqEx0YO4n
+         P9z/6ma/GP5Ba9kywAOkF1FFVnnNip/GEW7crJLB4v8HzLGeoaxtMQGbjtD3K2gioN
+         EiUiostJJZZO+qHC5is1gbbsMcz+BAEoCiMYp90c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        Zeal Robot <zealci@zte.com.cn>, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.17 1064/1126] proc: bootconfig: Add null pointer check
-Date:   Tue,  5 Apr 2022 09:30:11 +0200
-Message-Id: <20220405070438.689996007@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.17 1045/1126] ASoC: rockchip: i2s_tdm: Fixup config for SND_SOC_DAIFMT_DSP_A/B
+Date:   Tue,  5 Apr 2022 09:29:52 +0200
+Message-Id: <20220405070438.145487194@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -50,36 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Meng Tang <tangmeng@uniontech.com>
 
-commit bed5b60bf67ccd8957b8c0558fead30c4a3f5d3f upstream.
+commit 2f45a4e2897793cc6ae25f5fe78b485ce7fd01d0 upstream.
 
-kzalloc is a memory allocation function which can return NULL when some
-internal memory errors happen. It is safer to add null pointer check.
+SND_SOC_DAIFMT_DSP_A: PCM delay 1 bit mode, L data MSB after FRM LRC
+SND_SOC_DAIFMT_DSP_B: PCM no delay mode, L data MSB during FRM LRC
 
-Link: https://lkml.kernel.org/r/20220329104004.2376879-1-lv.ruyi@zte.com.cn
+Fixes: 081068fd64140 (ASoC: rockchip: add support for i2s-tdm controller)
 
-Cc: stable@vger.kernel.org
-Fixes: c1a3c36017d4 ("proc: bootconfig: Add /proc/bootconfig to show boot config list")
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Link: https://lore.kernel.org/r/20220318100146.23991-1-tangmeng@uniontech.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/proc/bootconfig.c |    2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/rockchip/rockchip_i2s_tdm.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/fs/proc/bootconfig.c
-+++ b/fs/proc/bootconfig.c
-@@ -32,6 +32,8 @@ static int __init copy_xbc_key_value_lis
- 	int ret = 0;
- 
- 	key = kzalloc(XBC_KEYLEN_MAX, GFP_KERNEL);
-+	if (!key)
-+		return -ENOMEM;
- 
- 	xbc_for_each_key_value(leaf, val) {
- 		ret = xbc_node_compose_key(leaf, key, XBC_KEYLEN_MAX);
+--- a/sound/soc/rockchip/rockchip_i2s_tdm.c
++++ b/sound/soc/rockchip/rockchip_i2s_tdm.c
+@@ -469,14 +469,14 @@ static int rockchip_i2s_tdm_set_fmt(stru
+ 		txcr_val = I2S_TXCR_IBM_NORMAL;
+ 		rxcr_val = I2S_RXCR_IBM_NORMAL;
+ 		break;
+-	case SND_SOC_DAIFMT_DSP_A: /* PCM no delay mode */
+-		txcr_val = I2S_TXCR_TFS_PCM;
+-		rxcr_val = I2S_RXCR_TFS_PCM;
+-		break;
+-	case SND_SOC_DAIFMT_DSP_B: /* PCM delay 1 mode */
++	case SND_SOC_DAIFMT_DSP_A: /* PCM delay 1 mode */
+ 		txcr_val = I2S_TXCR_TFS_PCM | I2S_TXCR_PBM_MODE(1);
+ 		rxcr_val = I2S_RXCR_TFS_PCM | I2S_RXCR_PBM_MODE(1);
+ 		break;
++	case SND_SOC_DAIFMT_DSP_B: /* PCM no delay mode */
++		txcr_val = I2S_TXCR_TFS_PCM;
++		rxcr_val = I2S_RXCR_TFS_PCM;
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		goto err_pm_put;
 
 
