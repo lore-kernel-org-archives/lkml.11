@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E05C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CEAC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381855AbiDEOQw (ORCPT
+        id S1383619AbiDEORc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:16:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39966 "EHLO
+        Tue, 5 Apr 2022 10:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238876AbiDEJdC (ORCPT
+        with ESMTP id S239523AbiDEJdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:33:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5392669;
-        Tue,  5 Apr 2022 02:20:49 -0700 (PDT)
+        Tue, 5 Apr 2022 05:33:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903C24E39B;
+        Tue,  5 Apr 2022 02:22:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75809615E4;
-        Tue,  5 Apr 2022 09:20:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D307C385A2;
-        Tue,  5 Apr 2022 09:20:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FAEA61574;
+        Tue,  5 Apr 2022 09:22:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38CA9C385A0;
+        Tue,  5 Apr 2022 09:22:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150448;
-        bh=z0MZUq/cr6LSD5n9+SgDZwG8ExGGT+HKRqHuTFk8Ndk=;
+        s=korg; t=1649150539;
+        bh=8QYO2AMThjA538+hdzVx+um+o/IV7h3ewMsPaWlZaLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ovXmFyKf+wDfwKtM2eNhVX6SP78hxxAI3rjIh3XrTJFb26vx7lUQ7oDlmmZk1X8xg
-         RrNi4G7x12gGgiFLCLf+YbmyeJQDV6I84UfqtYMpbALwzsnxD39mxaceWPzvVL10Zr
-         Mv4GvRC4Dp1VMwF+0rBChxlSOTH09dsV7TtdLZxI=
+        b=jSXFWi9jmFSa00VaoRBJjKpTMmidWsZGJqZQuB3DxJq4HiWji1UbLS8GfhqE2odXE
+         vcdruSfBMXxMrQPds/hmjWRkGIElp5LzLKTwBE/ivzOaz/rXNBIcPqkV4uHA+tnnXW
+         f1u5jLel2pUTbWIYyrFQPQxuR9dvX5v4Y0FWz5bA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.15 042/913] docs: sphinx/requirements: Limit jinja2<3.1
-Date:   Tue,  5 Apr 2022 09:18:24 +0200
-Message-Id: <20220405070341.078887203@linuxfoundation.org>
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 093/913] riscv: dts: canaan: Fix SPI3 bus width
+Date:   Tue,  5 Apr 2022 09:19:15 +0200
+Message-Id: <20220405070342.616711474@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -50,33 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Yokosawa <akiyks@gmail.com>
+From: Niklas Cassel <niklas.cassel@wdc.com>
 
-commit be78837ca3c88eebd405103a7a2ce891c466b0db upstream.
+commit 6846d656106add3aeefcd6eda0dc885787deaa6e upstream.
 
-jinja2 release 3.1.0 (March 24, 2022) broke Sphinx<4.0.
-This looks like the result of deprecating Python 3.6.
-It has been tested against Sphinx 4.3.0 and later.
+According to the K210 Standalone SDK Programming guide:
+https://canaan-creative.com/wp-content/uploads/2020/03/kendryte_standalone_programming_guide_20190311144158_en.pdf
 
-Setting an upper limit of <3.1 to junja2 can unbreak Sphinx<4.0
-including Sphinx 2.4.4.
+Section 15.4.3.3:
+SPI0 and SPI1 supports: standard, dual, quad and octal transfers.
+SPI3 supports: standard, dual and quad transfers (octal is not supported).
 
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: stable@vger.kernel.org # v5.15+
-Link: https://lore.kernel.org/r/7dbff8a0-f4ff-34a0-71c7-1987baf471f9@gmail.com
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+In order to support quad transfers (Quad SPI), SPI3 must have four IO wires
+connected to the SPI flash.
+
+Update the device tree to specify the correct bus width.
+
+Tested on maix bit, maix dock and maixduino, which all have the same
+SPI flash (gd25lq128d) connected to SPI3. maix go is untested, but it
+would not make sense for this k210 board to be designed differently.
+
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Fixes: 8f5b0e79f3e5 ("riscv: Add SiPeed MAIXDUINO board device tree")
+Fixes: 8194f08bda18 ("riscv: Add SiPeed MAIX GO board device tree")
+Fixes: a40f920964c4 ("riscv: Add SiPeed MAIX DOCK board device tree")
+Fixes: 97c279bcf813 ("riscv: Add SiPeed MAIX BiT board device tree")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/sphinx/requirements.txt |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts  |    2 ++
+ arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts |    2 ++
+ arch/riscv/boot/dts/canaan/sipeed_maix_go.dts   |    2 ++
+ arch/riscv/boot/dts/canaan/sipeed_maixduino.dts |    2 ++
+ 4 files changed, 8 insertions(+)
 
---- a/Documentation/sphinx/requirements.txt
-+++ b/Documentation/sphinx/requirements.txt
-@@ -1,2 +1,4 @@
-+# jinja2>=3.1 is not compatible with Sphinx<4.0
-+jinja2<3.1
- sphinx_rtd_theme
- Sphinx==2.4.4
+--- a/arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts
++++ b/arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts
+@@ -203,6 +203,8 @@
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0>;
+ 		spi-max-frequency = <50000000>;
++		spi-tx-bus-width = <4>;
++		spi-rx-bus-width = <4>;
+ 		m25p,fast-read;
+ 		broken-flash-reset;
+ 	};
+--- a/arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts
++++ b/arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts
+@@ -205,6 +205,8 @@
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0>;
+ 		spi-max-frequency = <50000000>;
++		spi-tx-bus-width = <4>;
++		spi-rx-bus-width = <4>;
+ 		m25p,fast-read;
+ 		broken-flash-reset;
+ 	};
+--- a/arch/riscv/boot/dts/canaan/sipeed_maix_go.dts
++++ b/arch/riscv/boot/dts/canaan/sipeed_maix_go.dts
+@@ -213,6 +213,8 @@
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0>;
+ 		spi-max-frequency = <50000000>;
++		spi-tx-bus-width = <4>;
++		spi-rx-bus-width = <4>;
+ 		m25p,fast-read;
+ 		broken-flash-reset;
+ 	};
+--- a/arch/riscv/boot/dts/canaan/sipeed_maixduino.dts
++++ b/arch/riscv/boot/dts/canaan/sipeed_maixduino.dts
+@@ -178,6 +178,8 @@
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0>;
+ 		spi-max-frequency = <50000000>;
++		spi-tx-bus-width = <4>;
++		spi-rx-bus-width = <4>;
+ 		m25p,fast-read;
+ 		broken-flash-reset;
+ 	};
 
 
