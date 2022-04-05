@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E6AC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D66C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 13:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358670AbiDENJd (ORCPT
+        id S1379680AbiDENNq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 09:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
+        Tue, 5 Apr 2022 09:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344160AbiDEJS1 (ORCPT
+        with ESMTP id S1344262AbiDEJTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:18:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDC45880F;
-        Tue,  5 Apr 2022 02:04:42 -0700 (PDT)
+        Tue, 5 Apr 2022 05:19:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C28A49F08;
+        Tue,  5 Apr 2022 02:06:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1B0461003;
-        Tue,  5 Apr 2022 09:04:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D23C385A3;
-        Tue,  5 Apr 2022 09:04:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18C4561003;
+        Tue,  5 Apr 2022 09:06:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 254DAC385A0;
+        Tue,  5 Apr 2022 09:06:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149481;
-        bh=V+jffPj/n1B4osgu6LsAk2faz/RWgTBC0PsfbB1yEp8=;
+        s=korg; t=1649149585;
+        bh=7vpSFFkBZ0CepG+smmZf1HzNM6vjnLRDCijDDODvdhE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y886MNh4SIPTYmMn7492ucgrt0yfVPePSHZ6KYphYkCXQo9uHa2ZZP/dbFwKJASA5
-         stnGyo6Hq/XPe7pYcT7kbbY3Q0qdbyVoPqX/R5SEiMxB5tw5VIeixD2Wh0OixrjQrp
-         cF2gssgbGHBYoeOGKduf+NC2u6G2kWug1GpNRlI8=
+        b=WMIjZLVoyuYk5Sf8iMXEwz5VICONRTRl6GMNTvnmLOo1ErhZiGK8zcj0LyiU0MokB
+         gneLsI8k7WkkZH2uuod3RfsSErFyNcZRbtFqFWPhdcJ1zDVdoKlQcHmKDKmZt/3Yx2
+         CdBCiZbA1t8ouKjN2/Uq/I1llLvepowQs4MvThY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0713/1017] SUNRPC/call_alloc: async tasks mustnt block waiting for memory
-Date:   Tue,  5 Apr 2022 09:27:06 +0200
-Message-Id: <20220405070415.433782641@linuxfoundation.org>
+Subject: [PATCH 5.16 0769/1017] Fix incorrect type in assignment of ipv6 port for audit
+Date:   Tue,  5 Apr 2022 09:28:02 +0200
+Message-Id: <20220405070417.086572796@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
 References: <20220405070354.155796697@linuxfoundation.org>
@@ -50,63 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-[ Upstream commit c487216bec83b0c5a8803e5c61433d33ad7b104d ]
+[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
 
-When memory is short, new worker threads cannot be created and we depend
-on the minimum one rpciod thread to be able to handle everything.
-So it must not block waiting for memory.
+Remove inappropriate use of ntohs() and assign the
+port value directly.
 
-mempools are particularly a problem as memory can only be released back
-to the mempool by an async rpc task running.  If all available
-workqueue threads are waiting on the mempool, no thread is available to
-return anything.
-
-rpc_malloc() can block, and this might cause deadlocks.
-So check RPC_IS_ASYNC(), rather than RPC_IS_SWAPPER() to determine if
-blocking is acceptable.
-
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/sched.c              | 4 +++-
- net/sunrpc/xprtrdma/transport.c | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ security/smack/smack_lsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index e2c835482791..d5b6e897f5a5 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -1023,8 +1023,10 @@ int rpc_malloc(struct rpc_task *task)
- 	struct rpc_buffer *buf;
- 	gfp_t gfp = GFP_NOFS;
- 
-+	if (RPC_IS_ASYNC(task))
-+		gfp = GFP_NOWAIT | __GFP_NOWARN;
- 	if (RPC_IS_SWAPPER(task))
--		gfp = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
-+		gfp |= __GFP_MEMALLOC;
- 
- 	size += sizeof(struct rpc_buffer);
- 	if (size <= RPC_BUFFER_MAXSIZE)
-diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
-index 16e5696314a4..a52277115500 100644
---- a/net/sunrpc/xprtrdma/transport.c
-+++ b/net/sunrpc/xprtrdma/transport.c
-@@ -574,8 +574,10 @@ xprt_rdma_allocate(struct rpc_task *task)
- 	gfp_t flags;
- 
- 	flags = RPCRDMA_DEF_GFP;
-+	if (RPC_IS_ASYNC(task))
-+		flags = GFP_NOWAIT | __GFP_NOWARN;
- 	if (RPC_IS_SWAPPER(task))
--		flags = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
-+		flags |= __GFP_MEMALLOC;
- 
- 	if (!rpcrdma_check_regbuf(r_xprt, req->rl_sendbuf, rqst->rq_callsize,
- 				  flags))
+diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
+index efd35b07c7f8..95a15b77f42f 100644
+--- a/security/smack/smack_lsm.c
++++ b/security/smack/smack_lsm.c
+@@ -2511,7 +2511,7 @@ static int smk_ipv6_check(struct smack_known *subject,
+ #ifdef CONFIG_AUDIT
+ 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
+ 	ad.a.u.net->family = PF_INET6;
+-	ad.a.u.net->dport = ntohs(address->sin6_port);
++	ad.a.u.net->dport = address->sin6_port;
+ 	if (act == SMK_RECEIVING)
+ 		ad.a.u.net->v6info.saddr = address->sin6_addr;
+ 	else
 -- 
 2.34.1
 
