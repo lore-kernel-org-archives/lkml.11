@@ -2,130 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9665C35295
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31410C35294
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 21:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356558AbiDEVw0 (ORCPT
+        id S1385242AbiDEVxF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 17:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
+        Tue, 5 Apr 2022 17:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357931AbiDEK12 (ORCPT
+        with ESMTP id S1457599AbiDEQOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:27:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08F17E583;
-        Tue,  5 Apr 2022 03:11:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF148B81C8A;
-        Tue,  5 Apr 2022 10:11:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C03C385A0;
-        Tue,  5 Apr 2022 10:11:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153476;
-        bh=2oZ6o3YYR84xrbyRZvsWvVcONdqA2nZyWHB3WsSIGY8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P+AsENyt31V1Lp6BR5ATFf6dFLpIVfvE3IgBN7iK5iQOnAJSiQhz6FAVlX1IZ3T2h
-         fo9zs3WMQE2O1plV9738EM99B5GmAz5eYnXRF0GbR9sMmhDM7eP5Z+ru/pKAlz9nvk
-         GydyYMM2Eo2vxVkBIPdCtuxD61PgODBf6E+n5XL4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 234/599] ALSA: firewire-lib: fix uninitialized flag for AV/C deferred transaction
-Date:   Tue,  5 Apr 2022 09:28:48 +0200
-Message-Id: <20220405070305.804021520@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 5 Apr 2022 12:14:05 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FF315701;
+        Tue,  5 Apr 2022 09:12:07 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 235Dkb0A024619;
+        Tue, 5 Apr 2022 18:11:52 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=YYuFJUbBGAhIAF7jE0NLyDCpsVggjgUfUTeXHBPg+6w=;
+ b=ED8nOSlV3isg8Qq3bH+Bvfd8Zt5/XefkPF98Txb9noYRKAH3Rze4l63NHwHyqa/6URl/
+ lw9ENLxj1Fi62hSYxf3QHs5jELIVPXwwMl2GvTkMLEswQTUWO8npUP6GWqOpLqqRnBc1
+ j32HrcFyGLFc1j8MVcnl3PaIj56tqvgDb3EorPiUaQ4mie5YPtoxtbSyeBQgHQUfE1rm
+ k51gX6HAfaqEDv2u72GkKrYuRuEBreAllIlID8GwFealdE6fX3x03an97GDAl8IPwfQD
+ PYWJmxCyRZJNZWl1ZLQ6GvEHP7T7U7MEIDVl0iXE7K9fUgbSlrcmN/g3VTD4vOajfvuJ +g== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6dcgu3xw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Apr 2022 18:11:52 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4A0EE10002A;
+        Tue,  5 Apr 2022 18:11:52 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3CE962278AC;
+        Tue,  5 Apr 2022 18:11:52 +0200 (CEST)
+Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 5 Apr 2022 18:11:51
+ +0200
+From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <arnaud.pouliquen@foss.st.com>, <linux-kernel@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>
+Subject: [PATCH v3] arm64: defconfig: Config that had RPMSG_CHAR now gets RPMSG_CTRL
+Date:   Tue, 5 Apr 2022 18:11:14 +0200
+Message-ID: <20220405161114.1107745-1-arnaud.pouliquen@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-05_04,2022-04-05_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
+from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
+By default give everyone who had the old driver enabled the rpmsg_ctrl
+driver too.
 
-[ Upstream commit bf0cd60b7e33cf221fbe1114e4acb2c828b0af0d ]
-
-AV/C deferred transaction was supported at a commit 00a7bb81c20f ("ALSA:
-firewire-lib: Add support for deferred transaction") while 'deferrable'
-flag can be uninitialized for non-control/notify AV/C transactions.
-UBSAN reports it:
-
-kernel: ================================================================================
-kernel: UBSAN: invalid-load in /build/linux-aa0B4d/linux-5.15.0/sound/firewire/fcp.c:363:9
-kernel: load of value 158 is not a valid value for type '_Bool'
-kernel: CPU: 3 PID: 182227 Comm: irq/35-firewire Tainted: P           OE     5.15.0-18-generic #18-Ubuntu
-kernel: Hardware name: Gigabyte Technology Co., Ltd. AX370-Gaming 5/AX370-Gaming 5, BIOS F42b 08/01/2019
-kernel: Call Trace:
-kernel:  <IRQ>
-kernel:  show_stack+0x52/0x58
-kernel:  dump_stack_lvl+0x4a/0x5f
-kernel:  dump_stack+0x10/0x12
-kernel:  ubsan_epilogue+0x9/0x45
-kernel:  __ubsan_handle_load_invalid_value.cold+0x44/0x49
-kernel:  fcp_response.part.0.cold+0x1a/0x2b [snd_firewire_lib]
-kernel:  fcp_response+0x28/0x30 [snd_firewire_lib]
-kernel:  fw_core_handle_request+0x230/0x3d0 [firewire_core]
-kernel:  handle_ar_packet+0x1d9/0x200 [firewire_ohci]
-kernel:  ? handle_ar_packet+0x1d9/0x200 [firewire_ohci]
-kernel:  ? transmit_complete_callback+0x9f/0x120 [firewire_core]
-kernel:  ar_context_tasklet+0xa8/0x2e0 [firewire_ohci]
-kernel:  tasklet_action_common.constprop.0+0xea/0xf0
-kernel:  tasklet_action+0x22/0x30
-kernel:  __do_softirq+0xd9/0x2e3
-kernel:  ? irq_finalize_oneshot.part.0+0xf0/0xf0
-kernel:  do_softirq+0x75/0xa0
-kernel:  </IRQ>
-kernel:  <TASK>
-kernel:  __local_bh_enable_ip+0x50/0x60
-kernel:  irq_forced_thread_fn+0x7e/0x90
-kernel:  irq_thread+0xba/0x190
-kernel:  ? irq_thread_fn+0x60/0x60
-kernel:  kthread+0x11e/0x140
-kernel:  ? irq_thread_check_affinity+0xf0/0xf0
-kernel:  ? set_kthread_struct+0x50/0x50
-kernel:  ret_from_fork+0x22/0x30
-kernel:  </TASK>
-kernel: ================================================================================
-
-This commit fixes the bug. The bug has no disadvantage for the non-
-control/notify AV/C transactions since the flag has an effect for AV/C
-response with INTERIM (0x0f) status which is not used for the transactions
-in AV/C general specification.
-
-Fixes: 00a7bb81c20f ("ALSA: firewire-lib: Add support for deferred transaction")
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220304125647.78430-1-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
 ---
- sound/firewire/fcp.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/sound/firewire/fcp.c b/sound/firewire/fcp.c
-index bbfbebf4affb..df44dd5dc4b2 100644
---- a/sound/firewire/fcp.c
-+++ b/sound/firewire/fcp.c
-@@ -240,9 +240,7 @@ int fcp_avc_transaction(struct fw_unit *unit,
- 	t.response_match_bytes = response_match_bytes;
- 	t.state = STATE_PENDING;
- 	init_waitqueue_head(&t.wait);
--
--	if (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03)
--		t.deferrable = true;
-+	t.deferrable = (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03);
- 
- 	spin_lock_irq(&transactions_lock);
- 	list_add_tail(&t.list, &transactions);
+This patch is extracted from the series [1] that has been partially
+integrated in the Linux Kernel 5.18-rc1.
+
+Update vs previous version:
+- Add missing "---" separation marker after "Signed-off-by".
+
+[1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
+[2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
+---
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 50aa3d75ab4f..3f8906b8a2ca 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -1053,6 +1053,7 @@ CONFIG_QCOM_Q6V5_PAS=m
+ CONFIG_QCOM_SYSMON=m
+ CONFIG_QCOM_WCNSS_PIL=m
+ CONFIG_RPMSG_CHAR=m
++CONFIG_RPMSG_CTRL=m
+ CONFIG_RPMSG_QCOM_GLINK_RPM=y
+ CONFIG_RPMSG_QCOM_GLINK_SMEM=m
+ CONFIG_RPMSG_QCOM_SMD=y
 -- 
-2.34.1
-
-
+2.25.1
 
