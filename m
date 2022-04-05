@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED21C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D998CC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229582AbiDEKxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
+        id S232862AbiDEKyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 06:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240236AbiDEIbs (ORCPT
+        with ESMTP id S241747AbiDEIfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:31:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27988101F7;
-        Tue,  5 Apr 2022 01:23:41 -0700 (PDT)
+        Tue, 5 Apr 2022 04:35:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096AD13CED;
+        Tue,  5 Apr 2022 01:32:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7CB2B81BCE;
-        Tue,  5 Apr 2022 08:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C94CC385C4;
-        Tue,  5 Apr 2022 08:23:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 593FD60B0E;
+        Tue,  5 Apr 2022 08:32:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64EFBC385A1;
+        Tue,  5 Apr 2022 08:32:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649147015;
-        bh=BBrYdWG++MCLrSKzmXHsgOOi+WKZDpUEzM+K/Ckpuzk=;
+        s=korg; t=1649147530;
+        bh=up/dd1x1ze4xIvI4L8PDVed9sHZe0DHRytKUsawlFDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PkCzIuP4sYMtMQmiX2iFqiD7ulVI5KKFuBhnd/qvO7ewpGCFNg2XsXf/e6uS0jBnr
-         hwXb0e5ATk2ntXgVZVuDujj5uhS7qKSJEcmAkZjgdtRoFO0IRp1GvBfDx8zpgtet5u
-         CiBbdfYv1g47UzT3Yf+mB6O8A9+2vlYm0DlY70Qk=
+        b=oHa5cuV/VLcdo9x/ro956uFrDtsP0v9WRo5gbkPYeg9xvl5HhhHc2GfR+JvWaN1ew
+         ssLGysjP4EsmsOv5wnHwGj5OLARpBcVTMHden1v5chCJd7DVKzF4Y2ycZt3BOIDsYK
+         H54dXdOVoF41NNd0LjhSx5bIJIEmTRdRxn2YwDjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 0972/1126] scsi: qla2xxx: Fix stuck session in gpdb
-Date:   Tue,  5 Apr 2022 09:28:39 +0200
-Message-Id: <20220405070436.032980844@linuxfoundation.org>
+        =?UTF-8?q?Maty=C3=A1=C5=A1=20Kroupa?= <kroupa.matyas@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.16 0004/1017] USB: serial: pl2303: fix GS type detection
+Date:   Tue,  5 Apr 2022 09:15:17 +0200
+Message-Id: <20220405070354.298239119@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+References: <20220405070354.155796697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 725d3a0d31a51c0debf970011e05f585e805165b upstream.
+commit 5b6ab28d06780c87320ceade61698bb6719c85db upstream.
 
-Fix stuck sessions in get port database. When a thread is in the process of
-re-establishing a session, a flag is set to prevent multiple threads /
-triggers from doing the same task. This flag was left on, where any attempt
-to relogin was locked out. Clear this flag, if the attempt has failed.
+At least some PL2303GS have a bcdDevice of 0x605 instead of 0x100 as the
+datasheet claims. Add it to the list of known release numbers for the
+HXN (G) type.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-4-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 894758d0571d ("USB: serial: pl2303: tighten type HXN (G) detection")
+Reported-by: Matyáš Kroupa <kroupa.matyas@gmail.com>
+Link: https://lore.kernel.org/r/165de6a0-43e9-092c-2916-66b115c7fbf4@gmail.com
+Cc: stable@vger.kernel.org	# 5.13
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/usb/serial/pl2303.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -1332,9 +1332,9 @@ int qla24xx_async_gpdb(struct scsi_qla_h
- 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
- 	    fcport->loop_id == FC_NO_LOOP_ID) {
- 		ql_log(ql_log_warn, vha, 0xffff,
--		    "%s: %8phC - not sending command.\n",
--		    __func__, fcport->port_name);
--		return rval;
-+		    "%s: %8phC online %d flags %x - not sending command.\n",
-+		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
-+		goto done;
- 	}
- 
- 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -436,6 +436,7 @@ static int pl2303_detect_type(struct usb
+ 		case 0x105:
+ 		case 0x305:
+ 		case 0x405:
++		case 0x605:
+ 			/*
+ 			 * Assume it's an HXN-type if the device doesn't
+ 			 * support the old read request value.
 
 
