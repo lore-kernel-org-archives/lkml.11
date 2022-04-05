@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 884E9C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9237C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354513AbiDEKO0 (ORCPT
+        id S1354576AbiDEKOj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        Tue, 5 Apr 2022 06:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241158AbiDEIcw (ORCPT
+        with ESMTP id S241177AbiDEIcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 5 Apr 2022 04:32:52 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5D8165BE;
-        Tue,  5 Apr 2022 01:28:57 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 08:28:55 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D5810FF2;
+        Tue,  5 Apr 2022 01:29:08 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 08:29:06 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649147336;
+        s=2020; t=1649147347;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Q6pZXD3P7oUaHEte6OjoQBfR3lW/GenPfAq6gmEimD4=;
-        b=FKdeyqSF+ioZdoMYD3IwVUAy9SyCr6OL/SCjhFkNrzVvtl3bpGw5IdS9paQ4q1bO3m9Irv
-        g1V0eVQmU60NKt5DWw2O10h4g9READRBcINXTU13UBq3CSGVP3/CBLT5SoPtz2afVJx1Ut
-        atizriRxleAPRu7QE/Ycqaxh+7HlA8yKJ5dKdvm11sOTB6hjzlLZIwdbsCW7D1FJVM6btZ
-        23GRxZRu00W/CBUY01rEnuYs1lsc4+5NFlNBwQ5lSWMNsOFaCZoBgrvYYTYeeLd7dyKYCY
-        +VJS81E5cHiIcon6wh9qPZJCuoCgeYtYAptZC+Ymv4LYq6VWSTWR06LVDHhzaQ==
+        bh=Fe9mJlC687Zaz7e4JSc1XJLsZV5carty3Du71P+qWIE=;
+        b=x5NlzsVn1/CdfpqvjfOU+FVbbwuTufv3Sg4irPI84QFEf/vpJO00bNk7Yea7Ul6CIwWhDx
+        NfKAWNyiS39tfWeeyexxPke/MdKjdv3Goy4HLt7MsVjWIUrs0J4BR/7N9R5h/LSY37IbmN
+        4fwNokbCtTz+g2KXClgwCULOfJW7/ZbJG09yV+BwAn46o1sIEATAOmcJBIQjovvNoOHrLb
+        qcmau9K2T705rqyKENMCQfLYCoDVqwlY6v+KXc/iWQ0blyMqAwk4i0uGRA+99Y9QD4YtGf
+        8jgb6Jgh39Y5AT54CHjOcFlKA8ghj1kaw0Z4ijVBlRTMeSFsqEsguNXO2d5wgw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649147336;
+        s=2020e; t=1649147347;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Q6pZXD3P7oUaHEte6OjoQBfR3lW/GenPfAq6gmEimD4=;
-        b=WrrOV3pOk7id4nXJyW9oD7TuXDRNJuadjEQGLnB66e7iHeHCcnXHZNFOecrJeQFXpuXWQu
-        MS8wdljH2CQiLsDQ==
-From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
+        bh=Fe9mJlC687Zaz7e4JSc1XJLsZV5carty3Du71P+qWIE=;
+        b=Ab2d/xej9XdJAAwlQUAg7d57HRRchEKTP160WdUlGFIJ3yDiqhX5pzAVigfo1biuVQWRaz
+        gM36oOGzcMLtdhAQ==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: locking/urgent] Revert "locking/local_lock: Make the empty
- local_lock_*() function a macro."
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+Subject: [tip: perf/urgent] perf/x86/intel: Update the FRONTEND MSR mask on
+ Sapphire Rapids
+Cc:     Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220328145810.86783-3-bigeasy@linutronix.de>
-References: <20220328145810.86783-3-bigeasy@linutronix.de>
+In-Reply-To: <1648482543-14923-2-git-send-email-kan.liang@linux.intel.com>
+References: <1648482543-14923-2-git-send-email-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Message-ID: <164914733560.389.4348720137580970504.tip-bot2@tip-bot2>
+Message-ID: <164914734621.389.12529799156249746184.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,42 +62,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the locking/urgent branch of tip:
+The following commit has been merged into the perf/urgent branch of tip:
 
-Commit-ID:     2d2f8f083ef29e9b7adfe5cb421368331543473f
-Gitweb:        https://git.kernel.org/tip/2d2f8f083ef29e9b7adfe5cb421368331543473f
-Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-AuthorDate:    Mon, 28 Mar 2022 16:58:09 +02:00
+Commit-ID:     e590928de7547454469693da9bc7ffd562e54b7e
+Gitweb:        https://git.kernel.org/tip/e590928de7547454469693da9bc7ffd562e54b7e
+Author:        Kan Liang <kan.liang@linux.intel.com>
+AuthorDate:    Mon, 28 Mar 2022 08:49:03 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 05 Apr 2022 09:59:39 +02:00
+CommitterDate: Tue, 05 Apr 2022 09:59:44 +02:00
 
-Revert "locking/local_lock: Make the empty local_lock_*() function a macro."
+perf/x86/intel: Update the FRONTEND MSR mask on Sapphire Rapids
 
-With volatile removed from arch_raw_cpu_ptr() the compiler no longer
-creates the per-CPU reference. The usage of the macro can be reverted
-now.
+On Sapphire Rapids, the FRONTEND_RETIRED.MS_FLOWS event requires the
+FRONTEND MSR value 0x8. However, the current FRONTEND MSR mask doesn't
+support it.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Update intel_spr_extra_regs[] to support it.
+
+Fixes: 61b985e3e775 ("perf/x86/intel: Add perf core PMU support for Sapphire Rapids")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220328145810.86783-3-bigeasy@linutronix.de
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/1648482543-14923-2-git-send-email-kan.liang@linux.intel.com
 ---
- include/linux/local_lock_internal.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/events/intel/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/local_lock_internal.h b/include/linux/local_lock_internal.h
-index 6d635e8..975e33b 100644
---- a/include/linux/local_lock_internal.h
-+++ b/include/linux/local_lock_internal.h
-@@ -44,9 +44,9 @@ static inline void local_lock_debug_init(local_lock_t *l)
- }
- #else /* CONFIG_DEBUG_LOCK_ALLOC */
- # define LOCAL_LOCK_DEBUG_INIT(lockname)
--# define local_lock_acquire(__ll)  do { typecheck(local_lock_t *, __ll); } while (0)
--# define local_lock_release(__ll)  do { typecheck(local_lock_t *, __ll); } while (0)
--# define local_lock_debug_init(__ll)  do { typecheck(local_lock_t *, __ll); } while (0)
-+static inline void local_lock_acquire(local_lock_t *l) { }
-+static inline void local_lock_release(local_lock_t *l) { }
-+static inline void local_lock_debug_init(local_lock_t *l) { }
- #endif /* !CONFIG_DEBUG_LOCK_ALLOC */
- 
- #define INIT_LOCAL_LOCK(lockname)	{ LOCAL_LOCK_DEBUG_INIT(lockname) }
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index eb17b96..fc7f458 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -302,7 +302,7 @@ static struct extra_reg intel_spr_extra_regs[] __read_mostly = {
+ 	INTEL_UEVENT_EXTRA_REG(0x012a, MSR_OFFCORE_RSP_0, 0x3fffffffffull, RSP_0),
+ 	INTEL_UEVENT_EXTRA_REG(0x012b, MSR_OFFCORE_RSP_1, 0x3fffffffffull, RSP_1),
+ 	INTEL_UEVENT_PEBS_LDLAT_EXTRA_REG(0x01cd),
+-	INTEL_UEVENT_EXTRA_REG(0x01c6, MSR_PEBS_FRONTEND, 0x7fff17, FE),
++	INTEL_UEVENT_EXTRA_REG(0x01c6, MSR_PEBS_FRONTEND, 0x7fff1f, FE),
+ 	INTEL_UEVENT_EXTRA_REG(0x40ad, MSR_PEBS_FRONTEND, 0x7, FE),
+ 	INTEL_UEVENT_EXTRA_REG(0x04c2, MSR_PEBS_FRONTEND, 0x8, FE),
+ 	EVENT_EXTRA_END
