@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C2DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6192AC43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 00:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837060AbiDFAnz (ORCPT
+        id S1837078AbiDFAoL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 20:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
+        Tue, 5 Apr 2022 20:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354886AbiDEKQ3 (ORCPT
+        with ESMTP id S1352351AbiDEKE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 06:16:29 -0400
+        Tue, 5 Apr 2022 06:04:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1576CA5F;
-        Tue,  5 Apr 2022 03:03:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FD4BA308;
+        Tue,  5 Apr 2022 02:53:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58E6C61676;
-        Tue,  5 Apr 2022 10:03:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FCA5C385A2;
-        Tue,  5 Apr 2022 10:03:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEED0616E7;
+        Tue,  5 Apr 2022 09:53:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E32B8C385A1;
+        Tue,  5 Apr 2022 09:53:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649153004;
-        bh=U6NPccItde/lV+Aupb+80yWZKd2ruP1llhPD9xnH5U8=;
+        s=korg; t=1649152386;
+        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pT1wAOnJ0uwWI58A2hHL4QQuSrcZ6VBVdvCEd+WHHxxvpS57T8LTHVmldRTLuEhAd
-         OO2bAjiL9lvND75vAJgFDpbc+cEcHo9J/569ei+JVIdBughmyE1kubkwv19Xn1u6a5
-         Gbu8YdzOXaoW5FLkiNGpaGqoeJNzH+h8nEg1hS74=
+        b=QzIsdLajShIMVHAeDiWfgzaW9I9IelxJ91y3AmBtM9vn08Bv7SbvIEGpMVCYxT3GR
+         Cu7IWfstP7UMkPkQyHVYuOutlmfDQiaomxc/TbIWH9t01rfjwvhyqp1tqWvgsZER2L
+         K+kyiEWkUFcvLGDEBOj3vKckVq0UT5hKCrNQrt4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
-        syzbot+0600986d88e2d4d7ebb8@syzkaller.appspotmail.com,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.10 066/599] riscv: Increase stack size under KASAN
-Date:   Tue,  5 Apr 2022 09:26:00 +0200
-Message-Id: <20220405070300.791256999@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 759/913] ARM: mmp: Fix failure to remove sram device
+Date:   Tue,  5 Apr 2022 09:30:21 +0200
+Message-Id: <20220405070402.583684463@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Vyukov <dvyukov@google.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit b81d591386c3a50b96dddcf663628ea0df0bf2b3 upstream.
+[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
 
-KASAN requires more stack space because of compiler instrumentation.
-Increase stack size as other arches do.
+Make sure in .probe() to set driver data before the function is left to
+make it possible in .remove() to undo the actions done.
 
-Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-Reported-by: syzbot+0600986d88e2d4d7ebb8@syzkaller.appspotmail.com
-Fixes: 8ad8b72721d0 ("riscv: Add KASAN support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This fixes a potential memory leak and stops returning an error code in
+.remove() that is ignored by the driver core anyhow.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/include/asm/thread_info.h |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/arch/riscv/include/asm/thread_info.h
-+++ b/arch/riscv/include/asm/thread_info.h
-@@ -11,11 +11,17 @@
- #include <asm/page.h>
- #include <linux/const.h>
+diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
+index 6794e2db1ad5..ecc46c31004f 100644
+--- a/arch/arm/mach-mmp/sram.c
++++ b/arch/arm/mach-mmp/sram.c
+@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
+ 	if (!info)
+ 		return -ENOMEM;
  
-+#ifdef CONFIG_KASAN
-+#define KASAN_STACK_ORDER 1
-+#else
-+#define KASAN_STACK_ORDER 0
-+#endif
++	platform_set_drvdata(pdev, info);
 +
- /* thread information allocation */
- #ifdef CONFIG_64BIT
--#define THREAD_SIZE_ORDER	(2)
-+#define THREAD_SIZE_ORDER	(2 + KASAN_STACK_ORDER)
- #else
--#define THREAD_SIZE_ORDER	(1)
-+#define THREAD_SIZE_ORDER	(1 + KASAN_STACK_ORDER)
- #endif
- #define THREAD_SIZE		(PAGE_SIZE << THREAD_SIZE_ORDER)
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (res == NULL) {
+ 		dev_err(&pdev->dev, "no memory resource defined\n");
+@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
+ 	list_add(&info->node, &sram_bank_list);
+ 	mutex_unlock(&sram_lock);
  
+-	platform_set_drvdata(pdev, info);
+-
+ 	dev_info(&pdev->dev, "initialized\n");
+ 	return 0;
+ 
+@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
+ 	struct sram_bank_info *info;
+ 
+ 	info = platform_get_drvdata(pdev);
+-	if (info == NULL)
+-		return -ENODEV;
+ 
+-	mutex_lock(&sram_lock);
+-	list_del(&info->node);
+-	mutex_unlock(&sram_lock);
++	if (info->sram_size) {
++		mutex_lock(&sram_lock);
++		list_del(&info->node);
++		mutex_unlock(&sram_lock);
++
++		gen_pool_destroy(info->gpool);
++		iounmap(info->sram_virt);
++		kfree(info->pool_name);
++	}
+ 
+-	gen_pool_destroy(info->gpool);
+-	iounmap(info->sram_virt);
+-	kfree(info->pool_name);
+ 	kfree(info);
++
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
+
 
 
