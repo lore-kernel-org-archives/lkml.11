@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EE0C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 14:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387459AbiDEOcN (ORCPT
+        id S1387497AbiDEOcS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 10:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39134 "EHLO
+        Tue, 5 Apr 2022 10:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240394AbiDEJeU (ORCPT
+        with ESMTP id S240310AbiDEJeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:34:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2118301C;
-        Tue,  5 Apr 2022 02:23:50 -0700 (PDT)
+        Tue, 5 Apr 2022 05:34:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B86D81671;
+        Tue,  5 Apr 2022 02:23:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAD0A61659;
-        Tue,  5 Apr 2022 09:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5999C385A4;
-        Tue,  5 Apr 2022 09:23:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE6BC61654;
+        Tue,  5 Apr 2022 09:23:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC01C385A0;
+        Tue,  5 Apr 2022 09:23:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649150629;
-        bh=1DgkdNFO6r6H+hSygsx8JZmtOvDEknQ6vZRdHvFtBQA=;
+        s=korg; t=1649150626;
+        bh=YhiSsJ3TnEyST2jyx9qSBcFa+5qpcWGpbNlsUtKc+X0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EMvHHRE7cxFpc5KPlJGV2jewguDgDAthR0fM13EsZkQ7C873TmMO1Xm3dGdcQuVFg
-         ckH0jeBFNe5Q+24jfl2808RdiVr3lkp1RD5Zx1l0Z7/FzfrqeAqMmzKOd1FppPF7sI
-         1RKu8dlouGmD83/M0DmV3MPwNaN614e1KhYDqh50=
+        b=AUmdYR+kaO+MlucACf7CXlHUw++biXoweDtnCyR7CivE6fQzPYLOjdWIIkTXT2imW
+         g2MqE9A3ISLqEpHRPjBOPFTZD6hjYS35D37EwJrJjJpmm5ss73k+dvOF+ftJy5jmf3
+         jQgo+Qd0fLxRCdkOc5/DIPY/56NSo/G6MZMr5sxA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 086/913] mempolicy: mbind_range() set_policy() after vma_merge()
-Date:   Tue,  5 Apr 2022 09:19:08 +0200
-Message-Id: <20220405070342.400563491@linuxfoundation.org>
+        stable@vger.kernel.org, David Engraf <david.engraf@sysgo.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 121/913] arm64: signal: nofpsimd: Do not allocate fp/simd context when not available
+Date:   Tue,  5 Apr 2022 09:19:43 +0200
+Message-Id: <20220405070343.454672916@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
 References: <20220405070339.801210740@linuxfoundation.org>
@@ -53,79 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugh Dickins <hughd@google.com>
+From: David Engraf <david.engraf@sysgo.com>
 
-commit 4e0906008cdb56381638aa17d9c32734eae6d37a upstream.
+commit 0a32c88ddb9af30e8a16d41d7b9b824c27d29459 upstream.
 
-v2.6.34 commit 9d8cebd4bcd7 ("mm: fix mbind vma merge problem") introduced
-vma_merge() to mbind_range(); but unlike madvise, mlock and mprotect, it
-put a "continue" to next vma where its precedents go to update flags on
-current vma before advancing: that left vma with the wrong setting in the
-infamous vma_merge() case 8.
+Commit 6d502b6ba1b2 ("arm64: signal: nofpsimd: Handle fp/simd context for
+signal frames") introduced saving the fp/simd context for signal handling
+only when support is available. But setup_sigframe_layout() always
+reserves memory for fp/simd context. The additional memory is not touched
+because preserve_fpsimd_context() is not called and thus the magic is
+invalid.
 
-v3.10 commit 1444f92c8498 ("mm: merging memory blocks resets mempolicy")
-tried to fix that in vma_adjust(), without fully understanding the issue.
+This may lead to an error when parse_user_sigframe() checks the fp/simd
+area and does not find a valid magic number.
 
-v3.11 commit 3964acd0dbec ("mm: mempolicy: fix mbind_range() &&
-vma_adjust() interaction") reverted that, and went about the fix in the
-right way, but chose to optimize out an unnecessary mpol_dup() with a
-prior mpol_equal() test.  But on tmpfs, that also pessimized out the vital
-call to its ->set_policy(), leaving the new mbind unenforced.
-
-The user visible effect was that the pages got allocated on the local
-node (happened to be 0), after the mbind() caller had specifically
-asked for them to be allocated on node 1.  There was not any page
-migration involved in the case reported: the pages simply got allocated
-on the wrong node.
-
-Just delete that optimization now (though it could be made conditional on
-vma not having a set_policy).  Also remove the "next" variable: it turned
-out to be blameless, but also pointless.
-
-Link: https://lkml.kernel.org/r/319e4db9-64ae-4bca-92f0-ade85d342ff@google.com
-Fixes: 3964acd0dbec ("mm: mempolicy: fix mbind_range() && vma_adjust() interaction")
-Signed-off-by: Hugh Dickins <hughd@google.com>
-Acked-by: Oleg Nesterov <oleg@redhat.com>
-Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: David Engraf <david.engraf@sysgo.com>
+Reviwed-by: Mark Brown <broonie@kernel.org>
+Fixes: 6d502b6ba1b267b3 ("arm64: signal: nofpsimd: Handle fp/simd context for signal frames")
+Cc: <stable@vger.kernel.org> # 5.6.x
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/20220225104008.820289-1-david.engraf@sysgo.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mempolicy.c |    8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ arch/arm64/kernel/signal.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -783,7 +783,6 @@ static int vma_replace_policy(struct vm_
- static int mbind_range(struct mm_struct *mm, unsigned long start,
- 		       unsigned long end, struct mempolicy *new_pol)
+--- a/arch/arm64/kernel/signal.c
++++ b/arch/arm64/kernel/signal.c
+@@ -577,10 +577,12 @@ static int setup_sigframe_layout(struct
  {
--	struct vm_area_struct *next;
- 	struct vm_area_struct *prev;
- 	struct vm_area_struct *vma;
- 	int err = 0;
-@@ -798,8 +797,7 @@ static int mbind_range(struct mm_struct
- 	if (start > vma->vm_start)
- 		prev = vma;
+ 	int err;
  
--	for (; vma && vma->vm_start < end; prev = vma, vma = next) {
--		next = vma->vm_next;
-+	for (; vma && vma->vm_start < end; prev = vma, vma = vma->vm_next) {
- 		vmstart = max(start, vma->vm_start);
- 		vmend   = min(end, vma->vm_end);
+-	err = sigframe_alloc(user, &user->fpsimd_offset,
+-			     sizeof(struct fpsimd_context));
+-	if (err)
+-		return err;
++	if (system_supports_fpsimd()) {
++		err = sigframe_alloc(user, &user->fpsimd_offset,
++				     sizeof(struct fpsimd_context));
++		if (err)
++			return err;
++	}
  
-@@ -813,10 +811,6 @@ static int mbind_range(struct mm_struct
- 				 new_pol, vma->vm_userfaultfd_ctx);
- 		if (prev) {
- 			vma = prev;
--			next = vma->vm_next;
--			if (mpol_equal(vma_policy(vma), new_pol))
--				continue;
--			/* vma_merge() joined vma && vma->next, case 8 */
- 			goto replace;
- 		}
- 		if (vma->vm_start != vmstart) {
+ 	/* fault information, if valid */
+ 	if (add_all || current->thread.fault_code) {
 
 
