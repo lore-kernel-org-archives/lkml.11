@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A0DC3527A
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C6FC35273
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 08:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239776AbiDEIUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 04:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        id S236988AbiDEIR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235583AbiDEH7w (ORCPT
+        with ESMTP id S235564AbiDEH7v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 03:59:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D064130E;
-        Tue,  5 Apr 2022 00:55:47 -0700 (PDT)
+        Tue, 5 Apr 2022 03:59:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A049740A03;
+        Tue,  5 Apr 2022 00:55:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08309B81B90;
-        Tue,  5 Apr 2022 07:55:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59184C340EE;
-        Tue,  5 Apr 2022 07:55:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E22D615CD;
+        Tue,  5 Apr 2022 07:55:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FE98C340EE;
+        Tue,  5 Apr 2022 07:55:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649145344;
-        bh=3GCCv3bTodWDwZEnREnlZNV5Qi+FtPxKKF+qHajrJmU=;
+        s=korg; t=1649145333;
+        bh=ffree4QTNFS/AnCZEfxj8SDurCR5FE0zgUbDPN8iszM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q8fpvp0KVaZub3w0LeycXD7/wfOcW1SOtFa4fJ5US2AwOb0Vsye/nnCcsCijuO9Qo
-         0dS7m8Y/t5dhh1iPXj8HHs4NZPbf7k9lCEjtfx4QbXbpSaURFyBGL2DZ1XygPKjUGF
-         HLKr4bLC2KAsYB84vEpuFc/GroG/i/O/xBtMnGPk=
+        b=uG2yKJfqX3KtzJReF/SU0PzAO1g3wHoFo18B03LbXl/elEqwaCJQh3IMiE31esZ18
+         ysxsgr8YT2iQM2KT2651wHSsylGLgr+9WIipRAuHD0lOZekznzpgOca8ngoqBkYcie
+         bf7YAJf9EJvPsw5i0kKV3ZZXUVA8Il+ae4xR83xM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0370/1126] vsprintf: Fix %pK with kptr_restrict == 0
-Date:   Tue,  5 Apr 2022 09:18:37 +0200
-Message-Id: <20220405070418.487239809@linuxfoundation.org>
+        stable@vger.kernel.org, Mirela Rabulea <mirela.rabulea@nxp.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        Hugues Fruchet <hugues.fruchet@st.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0367/1126] media: ov5640: Fix set format, v4l2_mbus_pixelcode not updated
+Date:   Tue,  5 Apr 2022 09:18:34 +0200
+Message-Id: <20220405070418.399598456@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -49,133 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Mirela Rabulea <mirela.rabulea@nxp.com>
 
-[ Upstream commit 84842911322fc6a02a03ab9e728a48c691fe3efd ]
+[ Upstream commit e738f5dd67eb8098d75345908a5e73782d0569a5 ]
 
-Although kptr_restrict is set to 0 and the kernel is booted with
-no_hash_pointers parameter, the content of /proc/vmallocinfo is
-lacking the real addresses.
+In ov5640_set_fmt, pending_fmt_change will always be false, because the
+sensor format is saved before comparing it with the previous format:
+	fmt = &sensor->fmt;...
+	*fmt = *mbus_fmt;...
+	if (mbus_fmt->code != sensor->fmt.code)
+		sensor->pending_fmt_change = true;
+This causes the sensor to capture with the previous pixelcode.
 
-  / # cat /proc/vmallocinfo
-  0x(ptrval)-0x(ptrval)    8192 load_module+0xc0c/0x2c0c pages=1 vmalloc
-  0x(ptrval)-0x(ptrval)   12288 start_kernel+0x4e0/0x690 pages=2 vmalloc
-  0x(ptrval)-0x(ptrval)   12288 start_kernel+0x4e0/0x690 pages=2 vmalloc
-  0x(ptrval)-0x(ptrval)    8192 _mpic_map_mmio.constprop.0+0x20/0x44 phys=0x80041000 ioremap
-  0x(ptrval)-0x(ptrval)   12288 _mpic_map_mmio.constprop.0+0x20/0x44 phys=0x80041000 ioremap
-    ...
+Also, changes might happen even for V4L2_SUBDEV_FORMAT_TRY, so fix that.
 
-According to the documentation for /proc/sys/kernel/, %pK is
-equivalent to %p when kptr_restrict is set to 0.
+Basically, revert back to the state before
+commit 071154499193 ("media: ov5640: Fix set format regression")
+as it was more clear, and then update format even when pixelcode does
+not change, as resolution might change.
 
-Fixes: 5ead723a20e0 ("lib/vsprintf: no_hash_pointers prints all addresses as unhashed")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/107476128e59bff11a309b5bf7579a1753a41aca.1645087605.git.christophe.leroy@csgroup.eu
+Fixes: 071154499193 ("media: ov5640: Fix set format regression")
+Fixes: 6949d864776e ("media: ov5640: do not change mode if format or frame interval is unchanged")
+Fixes: fb98e29ff1ea5 ("media: ov5640: fix mode change regression")
+
+Signed-off-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+Acked-by: Hugues Fruchet <hugues.fruchet@st.com>
+Tested-by: Hugues Fruchet <hugues.fruchet@st.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../admin-guide/kernel-parameters.txt         |  3 +-
- lib/vsprintf.c                                | 36 +++++++++++--------
- 2 files changed, 22 insertions(+), 17 deletions(-)
+ drivers/media/i2c/ov5640.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 7123524a86b8..59f881f36779 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3485,8 +3485,7 @@
- 			difficult since unequal pointers can no longer be
- 			compared.  However, if this command-line option is
- 			specified, then all normal pointers will have their true
--			value printed.  Pointers printed via %pK may still be
--			hashed.  This option should only be specified when
-+			value printed. This option should only be specified when
- 			debugging the kernel.  Please do not use on production
- 			kernels.
+diff --git a/drivers/media/i2c/ov5640.c b/drivers/media/i2c/ov5640.c
+index ddbd71394db3..db5a19babe67 100644
+--- a/drivers/media/i2c/ov5640.c
++++ b/drivers/media/i2c/ov5640.c
+@@ -2293,7 +2293,6 @@ static int ov5640_set_fmt(struct v4l2_subdev *sd,
+ 	struct ov5640_dev *sensor = to_ov5640_dev(sd);
+ 	const struct ov5640_mode_info *new_mode;
+ 	struct v4l2_mbus_framefmt *mbus_fmt = &format->format;
+-	struct v4l2_mbus_framefmt *fmt;
+ 	int ret;
  
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 1ff73ac9e820..fbf261bbea95 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -54,6 +54,10 @@
- #include <linux/string_helpers.h>
- #include "kstrtox.h"
+ 	if (format->pad != 0)
+@@ -2311,12 +2310,10 @@ static int ov5640_set_fmt(struct v4l2_subdev *sd,
+ 	if (ret)
+ 		goto out;
  
-+/* Disable pointer hashing if requested */
-+bool no_hash_pointers __ro_after_init;
-+EXPORT_SYMBOL_GPL(no_hash_pointers);
-+
- static noinline unsigned long long simple_strntoull(const char *startp, size_t max_chars, char **endp, unsigned int base)
- {
- 	const char *cp;
-@@ -849,6 +853,19 @@ static char *ptr_to_id(char *buf, char *end, const void *ptr,
- 	return pointer_string(buf, end, (const void *)hashval, spec);
- }
- 
-+static char *default_pointer(char *buf, char *end, const void *ptr,
-+			     struct printf_spec spec)
-+{
-+	/*
-+	 * default is to _not_ leak addresses, so hash before printing,
-+	 * unless no_hash_pointers is specified on the command line.
-+	 */
-+	if (unlikely(no_hash_pointers))
-+		return pointer_string(buf, end, ptr, spec);
-+
-+	return ptr_to_id(buf, end, ptr, spec);
-+}
-+
- int kptr_restrict __read_mostly;
- 
- static noinline_for_stack
-@@ -858,7 +875,7 @@ char *restricted_pointer(char *buf, char *end, const void *ptr,
- 	switch (kptr_restrict) {
- 	case 0:
- 		/* Handle as %p, hash and do _not_ leak addresses. */
--		return ptr_to_id(buf, end, ptr, spec);
-+		return default_pointer(buf, end, ptr, spec);
- 	case 1: {
- 		const struct cred *cred;
- 
-@@ -2225,10 +2242,6 @@ char *fwnode_string(char *buf, char *end, struct fwnode_handle *fwnode,
- 	return widen_string(buf, buf - buf_start, end, spec);
- }
- 
--/* Disable pointer hashing if requested */
--bool no_hash_pointers __ro_after_init;
--EXPORT_SYMBOL_GPL(no_hash_pointers);
--
- int __init no_hash_pointers_enable(char *str)
- {
- 	if (no_hash_pointers)
-@@ -2457,7 +2470,7 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
- 	case 'e':
- 		/* %pe with a non-ERR_PTR gets treated as plain %p */
- 		if (!IS_ERR(ptr))
--			break;
-+			return default_pointer(buf, end, ptr, spec);
- 		return err_ptr(buf, end, ptr, spec);
- 	case 'u':
- 	case 'k':
-@@ -2467,16 +2480,9 @@ char *pointer(const char *fmt, char *buf, char *end, void *ptr,
- 		default:
- 			return error_string(buf, end, "(einval)", spec);
- 		}
-+	default:
-+		return default_pointer(buf, end, ptr, spec);
- 	}
--
--	/*
--	 * default is to _not_ leak addresses, so hash before printing,
--	 * unless no_hash_pointers is specified on the command line.
--	 */
--	if (unlikely(no_hash_pointers))
--		return pointer_string(buf, end, ptr, spec);
+-	if (format->which == V4L2_SUBDEV_FORMAT_TRY)
+-		fmt = v4l2_subdev_get_try_format(sd, sd_state, 0);
 -	else
--		return ptr_to_id(buf, end, ptr, spec);
- }
+-		fmt = &sensor->fmt;
+-
+-	*fmt = *mbus_fmt;
++	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
++		*v4l2_subdev_get_try_format(sd, sd_state, 0) = *mbus_fmt;
++		goto out;
++	}
  
- /*
+ 	if (new_mode != sensor->current_mode) {
+ 		sensor->current_mode = new_mode;
+@@ -2325,6 +2322,9 @@ static int ov5640_set_fmt(struct v4l2_subdev *sd,
+ 	if (mbus_fmt->code != sensor->fmt.code)
+ 		sensor->pending_fmt_change = true;
+ 
++	/* update format even if code is unchanged, resolution might change */
++	sensor->fmt = *mbus_fmt;
++
+ 	__v4l2_ctrl_s_ctrl_int64(sensor->ctrls.pixel_rate,
+ 				 ov5640_calc_pixel_rate(sensor));
+ out:
 -- 
 2.34.1
 
