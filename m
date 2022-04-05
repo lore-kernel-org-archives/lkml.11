@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B51C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C13AC3527E
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 10:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351652AbiDEKDI (ORCPT
+        id S1351886AbiDEKD3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 06:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34820 "EHLO
+        Tue, 5 Apr 2022 06:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237672AbiDEISL (ORCPT
+        with ESMTP id S235667AbiDEI1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 04:18:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702786C1C2;
-        Tue,  5 Apr 2022 01:07:14 -0700 (PDT)
+        Tue, 5 Apr 2022 04:27:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD808140E3;
+        Tue,  5 Apr 2022 01:21:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3AB2617EF;
-        Tue,  5 Apr 2022 08:07:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE7ECC385A0;
-        Tue,  5 Apr 2022 08:07:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7010EB81BB1;
+        Tue,  5 Apr 2022 08:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2289C385A0;
+        Tue,  5 Apr 2022 08:20:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649146033;
-        bh=Kyl7WwVpB8rx6UXPlcwsF5gF1Siff+yJfYsF1gx6lsk=;
+        s=korg; t=1649146858;
+        bh=TtGlKKB6pKoNSVQoJPN+1EWbLvNggYKF1ltPuI0juXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OTt0LoWQdjTyAjp0SyscCPkp4vtEl/ii9X2MtSUsqgFDmFcPb4jqZ50LC/6kh4Hcr
-         oeipDHaSVsMvWvGW/BaM5ew+SHAtVmC7PJCtLwh9ApB+JGAuy3TKgAeNSypG34dV9I
-         usmdfxWPvNwX9/9iZHsJD3Xbg8o+FfgOLoAheAq0=
+        b=k8LWdGMNDc5vWaekf/Bz1DyAVgMrHhHeK5hrX3APHcFplL7++bXrKFxltT0DZGZFz
+         KVZKrbAN8fx3S9mxF1sNvtxaDEJwhWtnfJhvsqlk7JYDuJIsZBLQeH2uj+sJhAKzq/
+         6VeC0nT2J1ygSCezMQ7F4jHrN/0WDT1xkCCgJf/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Abel Vesa <abel.vesa@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 0591/1126] scsi: pm8001: Fix NCQ NON DATA command completion handling
-Date:   Tue,  5 Apr 2022 09:22:18 +0200
-Message-Id: <20220405070424.981457616@linuxfoundation.org>
+Subject: [PATCH 5.17 0913/1126] ARM: dts: imx7: Use audio_mclk_post_div instead audio_mclk_root_clk
+Date:   Tue,  5 Apr 2022 09:27:40 +0200
+Message-Id: <20220405070434.322151083@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 References: <20220405070407.513532867@linuxfoundation.org>
@@ -51,59 +50,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Abel Vesa <abel.vesa@nxp.com>
 
-[ Upstream commit 1d6736c3e162061dc811c76e605f35ef3234bffa ]
+[ Upstream commit 4cb7df64c732b2b9918424095c11660c2a8c4a33 ]
 
-NCQ NON DATA is an NCQ command with the DMA_NONE DMA direction and so a
-register-device-to-host-FIS response is expected for it.
+The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
+but according to the reference manual, there is no such gate. Moreover,
+the consumer driver of the mentioned clock might gate it and leave
+the ECSPI2 (the true owner of that gate) hanging. So lets use the
+audio_mclk_post_div, which is the parent.
 
-However, for an IO_SUCCESS case, mpi_sata_completion() expects a
-set-device-bits-FIS for any ata task with an use_ncq field true, which
-includes NCQ NON DATA commands.
-
-Fix this to correctly treat NCQ NON DATA commands as non-data by also
-testing for the DMA_NONE DMA direction.
-
-Link: https://lore.kernel.org/r/20220220031810.738362-16-damien.lemoal@opensource.wdc.com
-Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 3 ++-
- drivers/scsi/pm8001/pm80xx_hwi.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/imx7-colibri.dtsi     | 4 ++--
+ arch/arm/boot/dts/imx7-mba7.dtsi        | 2 +-
+ arch/arm/boot/dts/imx7d-nitrogen7.dts   | 2 +-
+ arch/arm/boot/dts/imx7d-pico-hobbit.dts | 4 ++--
+ arch/arm/boot/dts/imx7d-pico-pi.dts     | 4 ++--
+ arch/arm/boot/dts/imx7d-sdb.dts         | 4 ++--
+ arch/arm/boot/dts/imx7s-warp.dts        | 4 ++--
+ 7 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 9d982eb970fe..8095eb0b04f7 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -2418,7 +2418,8 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 				len = sizeof(struct pio_setup_fis);
- 				pm8001_dbg(pm8001_ha, IO,
- 					   "PIO read len = %d\n", len);
--			} else if (t->ata_task.use_ncq) {
-+			} else if (t->ata_task.use_ncq &&
-+				   t->data_dir != DMA_NONE) {
- 				len = sizeof(struct set_dev_bits_fis);
- 				pm8001_dbg(pm8001_ha, IO, "FPDMA len = %d\n",
- 					   len);
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 4c19691a2bce..a5a1db6ed463 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -2511,7 +2511,8 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha,
- 				len = sizeof(struct pio_setup_fis);
- 				pm8001_dbg(pm8001_ha, IO,
- 					   "PIO read len = %d\n", len);
--			} else if (t->ata_task.use_ncq) {
-+			} else if (t->ata_task.use_ncq &&
-+				   t->data_dir != DMA_NONE) {
- 				len = sizeof(struct set_dev_bits_fis);
- 				pm8001_dbg(pm8001_ha, IO, "FPDMA len = %d\n",
- 					   len);
+diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
+index 62b771c1d5a9..f1c60b0cb143 100644
+--- a/arch/arm/boot/dts/imx7-colibri.dtsi
++++ b/arch/arm/boot/dts/imx7-colibri.dtsi
+@@ -40,7 +40,7 @@
+ 
+ 		dailink_master: simple-audio-card,codec {
+ 			sound-dai = <&codec>;
+-			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		};
+ 	};
+ };
+@@ -293,7 +293,7 @@
+ 		compatible = "fsl,sgtl5000";
+ 		#sound-dai-cells = <0>;
+ 		reg = <0x0a>;
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_sai1_mclk>;
+ 		VDDA-supply = <&reg_module_3v3_avdd>;
+diff --git a/arch/arm/boot/dts/imx7-mba7.dtsi b/arch/arm/boot/dts/imx7-mba7.dtsi
+index 49086c6b6a0a..3df6dff7734a 100644
+--- a/arch/arm/boot/dts/imx7-mba7.dtsi
++++ b/arch/arm/boot/dts/imx7-mba7.dtsi
+@@ -302,7 +302,7 @@
+ 	tlv320aic32x4: audio-codec@18 {
+ 		compatible = "ti,tlv320aic32x4";
+ 		reg = <0x18>;
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		clock-names = "mclk";
+ 		ldoin-supply = <&reg_audio_3v3>;
+ 		iov-supply = <&reg_audio_3v3>;
+diff --git a/arch/arm/boot/dts/imx7d-nitrogen7.dts b/arch/arm/boot/dts/imx7d-nitrogen7.dts
+index e0751e6ba3c0..a31de900139d 100644
+--- a/arch/arm/boot/dts/imx7d-nitrogen7.dts
++++ b/arch/arm/boot/dts/imx7d-nitrogen7.dts
+@@ -288,7 +288,7 @@
+ 	codec: wm8960@1a {
+ 		compatible = "wlf,wm8960";
+ 		reg = <0x1a>;
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		clock-names = "mclk";
+ 		wlf,shared-lrclk;
+ 	};
+diff --git a/arch/arm/boot/dts/imx7d-pico-hobbit.dts b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
+index 7b2198a9372c..d917dc4f2f22 100644
+--- a/arch/arm/boot/dts/imx7d-pico-hobbit.dts
++++ b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
+@@ -31,7 +31,7 @@
+ 
+ 		dailink_master: simple-audio-card,codec {
+ 			sound-dai = <&sgtl5000>;
+-			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		};
+ 	};
+ };
+@@ -41,7 +41,7 @@
+ 		#sound-dai-cells = <0>;
+ 		reg = <0x0a>;
+ 		compatible = "fsl,sgtl5000";
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		VDDA-supply = <&reg_2p5v>;
+ 		VDDIO-supply = <&reg_vref_1v8>;
+ 	};
+diff --git a/arch/arm/boot/dts/imx7d-pico-pi.dts b/arch/arm/boot/dts/imx7d-pico-pi.dts
+index 70bea95c06d8..f263e391e24c 100644
+--- a/arch/arm/boot/dts/imx7d-pico-pi.dts
++++ b/arch/arm/boot/dts/imx7d-pico-pi.dts
+@@ -31,7 +31,7 @@
+ 
+ 		dailink_master: simple-audio-card,codec {
+ 			sound-dai = <&sgtl5000>;
+-			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		};
+ 	};
+ };
+@@ -41,7 +41,7 @@
+ 		#sound-dai-cells = <0>;
+ 		reg = <0x0a>;
+ 		compatible = "fsl,sgtl5000";
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		VDDA-supply = <&reg_2p5v>;
+ 		VDDIO-supply = <&reg_vref_1v8>;
+ 	};
+diff --git a/arch/arm/boot/dts/imx7d-sdb.dts b/arch/arm/boot/dts/imx7d-sdb.dts
+index 7813ef960f6e..f053f5122741 100644
+--- a/arch/arm/boot/dts/imx7d-sdb.dts
++++ b/arch/arm/boot/dts/imx7d-sdb.dts
+@@ -385,14 +385,14 @@
+ 	codec: wm8960@1a {
+ 		compatible = "wlf,wm8960";
+ 		reg = <0x1a>;
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		clock-names = "mclk";
+ 		wlf,shared-lrclk;
+ 		wlf,hp-cfg = <2 2 3>;
+ 		wlf,gpio-cfg = <1 3>;
+ 		assigned-clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_SRC>,
+ 				  <&clks IMX7D_PLL_AUDIO_POST_DIV>,
+-				  <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++				  <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		assigned-clock-parents = <&clks IMX7D_PLL_AUDIO_POST_DIV>;
+ 		assigned-clock-rates = <0>, <884736000>, <12288000>;
+ 	};
+diff --git a/arch/arm/boot/dts/imx7s-warp.dts b/arch/arm/boot/dts/imx7s-warp.dts
+index 4f1edef06c92..e8734d218b9d 100644
+--- a/arch/arm/boot/dts/imx7s-warp.dts
++++ b/arch/arm/boot/dts/imx7s-warp.dts
+@@ -75,7 +75,7 @@
+ 
+ 		dailink_master: simple-audio-card,codec {
+ 			sound-dai = <&codec>;
+-			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		};
+ 	};
+ };
+@@ -232,7 +232,7 @@
+ 		#sound-dai-cells = <0>;
+ 		reg = <0x0a>;
+ 		compatible = "fsl,sgtl5000";
+-		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
++		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_sai1_mclk>;
+ 		VDDA-supply = <&vgen4_reg>;
 -- 
 2.34.1
 
