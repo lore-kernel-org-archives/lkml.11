@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA83C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 856D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  5 Apr 2022 23:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575147AbiDEXC4 (ORCPT
+        id S1575174AbiDEXDC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
+        Tue, 5 Apr 2022 19:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349401AbiDEJtr (ORCPT
+        with ESMTP id S1357882AbiDEK1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:49:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A701317049;
-        Tue,  5 Apr 2022 02:44:57 -0700 (PDT)
+        Tue, 5 Apr 2022 06:27:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875164A918;
+        Tue,  5 Apr 2022 03:11:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 607A3B818F3;
-        Tue,  5 Apr 2022 09:44:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7E50C385A2;
-        Tue,  5 Apr 2022 09:44:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 235536172B;
+        Tue,  5 Apr 2022 10:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C80EC385A1;
+        Tue,  5 Apr 2022 10:10:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649151895;
-        bh=bMpDvhUZHs/Rk+rEvjrWU1xOX5yG+D1BVOcQTkPZsC8=;
+        s=korg; t=1649153460;
+        bh=/WtJySjaHTwCqUhYX6wURi4WDdrk0AMB8cEEqWIkQZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H2ep/nFeAraz6ENIfxfTImcYtyZd3DK9ee0qfE035j2TskjBkhJTAE6f+y+trXmn0
-         NU1K9xbl59yhwk7SboH+i1IBGMtkKcz6dK1fVxF7OmEfxuwpWn4QjEQpBWSfDaBwkm
-         SvNjUddoWH38QJ3CdgZIbvjGqDF/QS0iBouXQUvQ=
+        b=EgRAvjShBLUgb4cM8nZ8VywLGA93i0/+jm/0NmFn+NtyJda973XF1ZGqgq+j3JgBd
+         Y7aCJjgTdMtK5mebnvSOUp2emuctDHPqKn+x9jSOjmy6NJT38GtMILbOAMjsQkO0eA
+         aCcOowpBOd9ohfIzP38gepITo8L40zYyjLaAc34o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 542/913] bpf, sockmap: Fix more uncharged while msg has more_data
-Date:   Tue,  5 Apr 2022 09:26:44 +0200
-Message-Id: <20220405070356.094747595@linuxfoundation.org>
+Subject: [PATCH 5.10 230/599] ASoC: dwc-i2s: Handle errors for clk_enable
+Date:   Tue,  5 Apr 2022 09:28:44 +0200
+Message-Id: <20220405070305.685303431@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-References: <20220405070339.801210740@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,98 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 84472b436e760ba439e1969a9e3c5ae7c86de39d ]
+[ Upstream commit 45ea97d74313bae681328b0c36fa348036777644 ]
 
-In tcp_bpf_send_verdict(), if msg has more data after
-tcp_bpf_sendmsg_redir():
+As the potential failure of the clk_enable(),
+it should be better to check it, as same as clk_prepare_enable().
 
-tcp_bpf_send_verdict()
- tosend = msg->sg.size  //msg->sg.size = 22220
- case __SK_REDIRECT:
-  sk_msg_return()  //uncharged msg->sg.size(22220) sk->sk_forward_alloc
-  tcp_bpf_sendmsg_redir() //after tcp_bpf_sendmsg_redir, msg->sg.size=11000
- goto more_data;
- tosend = msg->sg.size  //msg->sg.size = 11000
- case __SK_REDIRECT:
-  sk_msg_return()  //uncharged msg->sg.size(11000) to sk->sk_forward_alloc
-
-The msg->sg.size(11000) has been uncharged twice, to fix we can charge the
-remaining msg->sg.size before goto more data.
-
-This issue can cause the following info:
-WARNING: CPU: 0 PID: 9860 at net/core/stream.c:208 sk_stream_kill_queues+0xd4/0x1a0
-Call Trace:
- <TASK>
- inet_csk_destroy_sock+0x55/0x110
- __tcp_close+0x279/0x470
- tcp_close+0x1f/0x60
- inet_release+0x3f/0x80
- __sock_release+0x3d/0xb0
- sock_close+0x11/0x20
- __fput+0x92/0x250
- task_work_run+0x6a/0xa0
- do_exit+0x33b/0xb60
- do_group_exit+0x2f/0xa0
- get_signal+0xb6/0x950
- arch_do_signal_or_restart+0xac/0x2a0
- ? vfs_write+0x237/0x290
- exit_to_user_mode_prepare+0xa9/0x200
- syscall_exit_to_user_mode+0x12/0x30
- do_syscall_64+0x46/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
- </TASK>
-
-WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
-Call Trace:
- <TASK>
- __sk_destruct+0x24/0x1f0
- sk_psock_destroy+0x19b/0x1c0
- process_one_work+0x1b3/0x3c0
- worker_thread+0x30/0x350
- ? process_one_work+0x3c0/0x3c0
- kthread+0xe6/0x110
- ? kthread_complete_and_exit+0x20/0x20
- ret_from_fork+0x22/0x30
- </TASK>
-
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220304081145.2037182-4-wangyufen@huawei.com
+Fixes: c9afc1834e81 ("ASoC: dwc: Disallow building designware_pcm as a module")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301084742.3751939-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_bpf.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ sound/soc/dwc/dwc-i2s.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 9b9b02052fd3..304800c60427 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -335,7 +335,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
- 			cork = true;
- 			psock->cork = NULL;
- 		}
--		sk_msg_return(sk, msg, tosend);
-+		sk_msg_return(sk, msg, msg->sg.size);
- 		release_sock(sk);
+diff --git a/sound/soc/dwc/dwc-i2s.c b/sound/soc/dwc/dwc-i2s.c
+index fd4160289fac..36da0f01571a 100644
+--- a/sound/soc/dwc/dwc-i2s.c
++++ b/sound/soc/dwc/dwc-i2s.c
+@@ -403,9 +403,13 @@ static int dw_i2s_runtime_suspend(struct device *dev)
+ static int dw_i2s_runtime_resume(struct device *dev)
+ {
+ 	struct dw_i2s_dev *dw_dev = dev_get_drvdata(dev);
++	int ret;
  
- 		ret = tcp_bpf_sendmsg_redir(sk_redir, msg, tosend, flags);
-@@ -375,8 +375,11 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
- 		}
- 		if (msg &&
- 		    msg->sg.data[msg->sg.start].page_link &&
--		    msg->sg.data[msg->sg.start].length)
-+		    msg->sg.data[msg->sg.start].length) {
-+			if (eval == __SK_REDIRECT)
-+				sk_mem_charge(sk, msg->sg.size);
- 			goto more_data;
-+		}
- 	}
- 	return ret;
+-	if (dw_dev->capability & DW_I2S_MASTER)
+-		clk_enable(dw_dev->clk);
++	if (dw_dev->capability & DW_I2S_MASTER) {
++		ret = clk_enable(dw_dev->clk);
++		if (ret)
++			return ret;
++	}
+ 	return 0;
  }
+ 
+@@ -422,10 +426,13 @@ static int dw_i2s_resume(struct snd_soc_component *component)
+ {
+ 	struct dw_i2s_dev *dev = snd_soc_component_get_drvdata(component);
+ 	struct snd_soc_dai *dai;
+-	int stream;
++	int stream, ret;
+ 
+-	if (dev->capability & DW_I2S_MASTER)
+-		clk_enable(dev->clk);
++	if (dev->capability & DW_I2S_MASTER) {
++		ret = clk_enable(dev->clk);
++		if (ret)
++			return ret;
++	}
+ 
+ 	for_each_component_dais(component, dai) {
+ 		for_each_pcm_streams(stream)
 -- 
 2.34.1
 
