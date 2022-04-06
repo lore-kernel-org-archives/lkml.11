@@ -2,165 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CBFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A87C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235240AbiDFVFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48462 "EHLO
+        id S235321AbiDFVIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234834AbiDFVFU (ORCPT
+        with ESMTP id S235681AbiDFVH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:05:20 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88687B368F
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:38:21 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id d29so4706340wra.10
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:38:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=t/OlsO1FKFR5EhHV9ORO6nOTkIXhtzmPjFoAc9FJDKQ=;
-        b=XDKGV13OWuTcpHQtxWsO2pGZJRHijPeLw1lbRH7aQAqCra/Xto8IkoJy+FHPQBBqzl
-         n7QL7p9otGPG7HD1r3iEHoLODppCk6NYvyPIrrXGEJzDuN/b4mQJh7ucRV5HEKUG9oNX
-         LmU02pkmW3bRXIPADpVyIH8lyA8xNakFXmcSU0MVt6juSgKk2GIOOT3Wv7hM7jFXTwcp
-         MoGyktVuWPHTg1idcweYHQ6PYAy6d2mkF6g51Gfcpq7VazIXyEQHME2oWBciEYPZCqIu
-         YbUBiKzmhK6MF3zbUl0Iwf3vNgRGf90MPFj/K20OhRwOHesuZ2sAUeoYEcc7MasYFimx
-         rcGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t/OlsO1FKFR5EhHV9ORO6nOTkIXhtzmPjFoAc9FJDKQ=;
-        b=QlgdUsGjsjCve9WczL24J4wxhNz0U/SYrz9wNbWhzdRQ17Hs8tLSR0hphwCngvWikq
-         RW08fINNFvOs3nyIulxpOFfDkGhqSvLiRwmo44/h8ED9vopCopyC+TngOq8kWLDQZ7K+
-         mY/h2NI52a36XOfoiwA5QbRJt/DYsckYW9FxIYSZS2yZypKxO8WDFaIzvX80qy8zItOc
-         jr3xP9/3Vo50G62YaXNvAzbvLwimMzlX/ZnZbSqvRyzD2jkN7b//vttRM4Z3TGNsMSZN
-         kIKA8bbhboFv2ViSqq9Z07Ji4Fs30gM8vpgK4obVgmlijZWQaGwL8NK4i1uFBSFyXZ7p
-         RTkA==
-X-Gm-Message-State: AOAM5303q43B8aT/uM4c/AWCnswn+UodWNn9CXfRZvp3PN5z60APkP1X
-        1f4LDkiAzy/5GKUCfPhS2MIu40f9kNkGFOROSzqefA==
-X-Google-Smtp-Source: ABdhPJykxlo2lmJKWzLIYXb1mqCY4+iNWrhFOThyodG19xkrBPGOHaSV5IhSMcQbjyGQs2xL+Y9Xi6Y+jdvxnUNKRqg=
-X-Received: by 2002:a05:6000:16cd:b0:207:81ed:b733 with SMTP id
- h13-20020a05600016cd00b0020781edb733mr2507341wrf.111.1649273900001; Wed, 06
- Apr 2022 12:38:20 -0700 (PDT)
+        Wed, 6 Apr 2022 17:07:29 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694D61544A5
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=b/yv+G2D/AyXnxxxBegRVdVItcYI
+        qK+AIz+rFuNHmlk=; b=lsonHqlCA/T9AMMb6/TL6M6sGUf+PMDYuq2sNXPAO2Jy
+        RCl231zou34UZHbyPff7W/8mH6r+fw27c0jtbpFoeB0WXNvyvKUjxNFd6nF96EV1
+        JQGtuHI1akI3RYHX10rbfUN5BIU1d/zMXhyiLq67UVGerijLNSstFDc4+TzY6eY=
+Received: (qmail 2875506 invoked from network); 6 Apr 2022 21:44:00 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 6 Apr 2022 21:44:00 +0200
+X-UD-Smtp-Session: l3s3148p1@BgA8lQHcxscgAQnoAH8rAHnYTrcYCkZJ
+Date:   Wed, 6 Apr 2022 21:44:00 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Eugeniu Rosca <erosca@de.adit-jv.com>
+Cc:     Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
+Message-ID: <Yk3tgDr0/OHHAsj8@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+References: <20211006182314.10585-1-andrew_gabbasov@mentor.com>
+ <Yg6ls0zyTDe7LQbK@kunai>
+ <20220323215229.GA9403@lxhi-065>
+ <YkQ31VMqj1MXqBd3@shikoro>
+ <YkQ6XRITOFZ7hLXV@shikoro>
+ <20220331160207.GA27757@lxhi-065>
+ <YkcqoIMF2uw4FSZh@ninjato>
+ <20220405093048.GA7151@lxhi-065>
+ <YkwPQSPed18iyHox@ninjato>
+ <20220406173245.GA14970@lxhi-065>
 MIME-Version: 1.0
-References: <20220308205000.27646-1-mike.leach@linaro.org> <20220308205000.27646-7-mike.leach@linaro.org>
- <20220406171132.GA16110@p14s>
-In-Reply-To: <20220406171132.GA16110@p14s>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Wed, 6 Apr 2022 20:38:08 +0100
-Message-ID: <CAJ9a7Vjb0G4fSB6U33JruVWcBzpP459rYq+5CzMqxRcWeiJb0w@mail.gmail.com>
-Subject: Re: [PATCH 06/10] coresight: perf: traceid: Add perf notifiers for
- trace ID
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        linux-perf-users@vger.kernel.org, leo.yan@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vvvA8QkHvg0eR6XU"
+Content-Disposition: inline
+In-Reply-To: <20220406173245.GA14970@lxhi-065>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mathieu,
 
-On Wed, 6 Apr 2022 at 18:11, Mathieu Poirier <mathieu.poirier@linaro.org> wrote:
->
-> On Tue, Mar 08, 2022 at 08:49:56PM +0000, Mike Leach wrote:
-> > Adds in notifier calls to the trace ID allocator that perf
-> > events are starting and stopping.
-> >
-> > This ensures that Trace IDs associated with CPUs remain the same
-> > throughout the perf session, and are only release when all perf
-> > sessions are complete.
-> >
-> > Signed-off-by: Mike Leach <mike.leach@linaro.org>
-> > ---
-> >  drivers/hwtracing/coresight/coresight-etm-perf.c | 16 +++++++++++++++-
-> >  1 file changed, 15 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/hwtracing/coresight/coresight-etm-perf.c b/drivers/hwtracing/coresight/coresight-etm-perf.c
-> > index c039b6ae206f..008f9dac429d 100644
-> > --- a/drivers/hwtracing/coresight/coresight-etm-perf.c
-> > +++ b/drivers/hwtracing/coresight/coresight-etm-perf.c
-> > @@ -22,6 +22,7 @@
-> >  #include "coresight-etm-perf.h"
-> >  #include "coresight-priv.h"
-> >  #include "coresight-syscfg.h"
-> > +#include "coresight-trace-id.h"
-> >
-> >  static struct pmu etm_pmu;
-> >  static bool etm_perf_up;
-> > @@ -223,11 +224,21 @@ static void free_event_data(struct work_struct *work)
-> >               struct list_head **ppath;
-> >
-> >               ppath = etm_event_cpu_path_ptr(event_data, cpu);
-> > -             if (!(IS_ERR_OR_NULL(*ppath)))
-> > +             if (!(IS_ERR_OR_NULL(*ppath))) {
-> >                       coresight_release_path(*ppath);
-> > +                     /*
-> > +                      * perf may have read a trace id for a cpu, but never actually
-> > +                      * executed code on that cpu - which means the trace id would
-> > +                      * not release on disable. Re-release here to be sure.
-> > +                      */
-> > +                     coresight_trace_id_put_cpu_id(cpu, coresight_get_trace_id_map());
->
-> A CPU gets a traceID in event_etm_start() when the event is installed for
-> running.  Do you see a scenario where etm_free_aux() is called without
-> previously calling event_etm_stop()?
->
-
-To ensure that IDs are obtained in a timely manner, they assign on
-read. Therefore when cs_etm.c::cs_etm_info_fill() is called,
-potentially the ID will be read for all CPUs - and dumped into the
-AUXINFO data at the top of the perf.data file.
-However, a --per-thread execution may actually only start the event on
-a subset of cpus, hence we ensure that all cpus are released.
-This was proven during testing when I ran both --per-thread and cpu
-wide tests with logging monitoring the ID assignments.
-
-I have programmed this deliberately defensively - on the basis that
-the timings and orderings of the code/callbacks in todays perf may not
-necessarily be the same in tomorrows. perf.
-
-In future we may be able to use Suzuki's idea of embedding the ID into
-an alternative packet in the perf.data file. but I think that should
-be a separate change as it affects decode in a big way.
-
-Regards
-
-Mike
+--vvvA8QkHvg0eR6XU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
 
-> > +             }
-> >               *ppath = NULL;
-> >       }
-> >
-> > +     /* mark perf event as done for trace id allocator */
-> > +     coresight_trace_id_perf_stop();
-> > +
-> >       free_percpu(event_data->path);
-> >       kfree(event_data);
-> >  }
-> > @@ -314,6 +325,9 @@ static void *etm_setup_aux(struct perf_event *event, void **pages,
-> >               sink = user_sink = coresight_get_sink_by_id(id);
-> >       }
-> >
-> > +     /* tell the trace ID allocator that a perf event is starting up */
-> > +     coresight_trace_id_perf_start();
-> > +
-> >       /* check if user wants a coresight configuration selected */
-> >       cfg_hash = (u32)((event->attr.config2 & GENMASK_ULL(63, 32)) >> 32);
-> >       if (cfg_hash) {
-> > --
-> > 2.17.1
-> >
+> > Well, yes, that shows that I am mostly successful with reporting back to
+> > the BSP team :D
+>=20
+> 100%! I remember the early days of Renesas R-Car Gen3 kernels, with
+> literally thousands of patches on top of v4.2/v4.4/v4.6 vanilla tags.
+>=20
+> It felt like mission impossible to upstream those. But here we are. Kudos!
+
+Wow, thanks! I am glad you appreciate our work!
+
+All the best,
+
+   Wolfram
 
 
+--vvvA8QkHvg0eR6XU
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJN7XsACgkQFA3kzBSg
+KbY49Q//Vsun4MCNLYIWAolcD5l+Zi3fPQD1emTij4M1JjtdzeO/x2L7BAoHaAu/
+oD31uZcLL3Vu0fD8SKhhax68LONGOfzic0x/c5VG3X07MGXKyDrfjfac8sVeLt4s
+wkxrgWGrsMQCdwIsRce86zD6pPjUvDsJxRWQO/o5WbCAAStTEng269fWlHx+G6RJ
+f59dHOabUQWuxmLv+3piZ5Ou+OIHUNhwRZS0l8NZZDs8qer6SagUvJN2YONhx8y0
+Til6gFE1qJaRNR9oEfmu8WpB21dmY9SfTqc6L/DFVx9c2ZApgSpszsizJ3XaHPQq
+wqjAaftHYRtSC25cfbrs22r9zwTN/SHRb7665EuwO2kZfqxnn9hk18XXCzrgqjZ2
+S/eugRZXmz/mmid8A7fjW/duuQQCx46l7YbcqPmafoGAkWMViiEjDuw44efPw8Zr
+znx7dptSZa+NPtfOKlGopPqSSDShMdK/mXi1DWbkyP7yxpVyXqdeMeytWGByjHsP
+GfNTWmdFLDwcxCSrnmnokkeJL05BhlsqPcSmOdPxFzp+XPA4mozS8a4z0Pb4ZWQd
+/WhEsht+6uHJnxJvRa6NRw/4zBgAVROi2BbXjwOU2e36OiXSutdE5IQTtDeLKtET
+EK/5e23Xt0nWg8yvyb+tmQ1ngzH3rawUMyUQSYZDQ0/UZJYbcQ8=
+=OkMM
+-----END PGP SIGNATURE-----
+
+--vvvA8QkHvg0eR6XU--
