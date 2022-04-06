@@ -2,158 +2,347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F2F2C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A994DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233099AbiDFM2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:28:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
+        id S233065AbiDFM3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233365AbiDFM1i (ORCPT
+        with ESMTP id S233206AbiDFM2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:27:38 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D926A3B21BB
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:18:32 -0700 (PDT)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220406081827epoutp0101049c66525587f51c30d80d4c9caa2c~jQMXfQw1Q1340813408epoutp017
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:18:27 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220406081827epoutp0101049c66525587f51c30d80d4c9caa2c~jQMXfQw1Q1340813408epoutp017
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1649233107;
-        bh=pZ68lE/yVojdDH0LXtiSiATpeoPKm9HOHcGFlaOhWAo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k31NT6S+v+reWpc0rMoGz1Qow2lqCWqoSg5LeaxqkWaW6Jc9jutbpRxfJ24wSP/tV
-         bo3hE6XmYmYnfq0eK0yGEHpzS2zf90obmolqVy7LG/6TFyIezJXB5GAgMZILaeaMj3
-         Fs9C9bMJooL9TW90ga6mr5xITQLtS3AtzM9EMLuw=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20220406081826epcas2p4c69bea871ea256d610ba66a73c2ed872~jQMXJl8IV2886628866epcas2p4L;
-        Wed,  6 Apr 2022 08:18:26 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.89]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KYHTF2KFfz4x9Q0; Wed,  6 Apr
-        2022 08:18:25 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        41.37.25540.0DC4D426; Wed,  6 Apr 2022 17:18:24 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f~jQMUbDwbC1713417134epcas2p2K;
-        Wed,  6 Apr 2022 08:18:23 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220406081823epsmtrp19183c8d1a985530de3d2a5eba5063025~jQMUaL53y1921919219epsmtrp1m;
-        Wed,  6 Apr 2022 08:18:23 +0000 (GMT)
-X-AuditID: b6c32a47-831ff700000063c4-e2-624d4cd0a85f
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        21.1C.03370.FCC4D426; Wed,  6 Apr 2022 17:18:23 +0900 (KST)
-Received: from localhost.localdomain (unknown [10.229.9.51]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220406081823epsmtip11172b4e3fe7884a960870fbe196feaa6~jQMULi29s2148221482epsmtip1x;
-        Wed,  6 Apr 2022 08:18:23 +0000 (GMT)
-From:   Jaewon Kim <jaewon02.kim@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-samsung-soc@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chanho Park <chanho61.park@samsung.com>,
-        Jaewon Kim <jaewon02.kim@samsung.com>
-Subject: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt and
- console_write
-Date:   Wed,  6 Apr 2022 17:22:16 +0900
-Message-Id: <20220406082216.11206-2-jaewon02.kim@samsung.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406082216.11206-1-jaewon02.kim@samsung.com>
-MIME-Version: 1.0
+        Wed, 6 Apr 2022 08:28:34 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2051.outbound.protection.outlook.com [40.107.21.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6E0373C61;
+        Wed,  6 Apr 2022 01:22:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j7qvILzBuxK/5yR4nErzbmd5M18ElXBFUil3Az8RWN1U3TN6nN27SmylcdJVN10l8aO6/EkYQhhwBiKM8e+ysru2l2yXYMWvCT0w7xUp6x+UUI2r66E85a+gohchmGIfPajtnpD+bZvpgrMAjNx59nm1DIdGLPRiLQ3RZTR32tPLTBBUdUx64S38Dgl1WO6C9KSJhsfckWWDdptn42OxItWLiknSzHRfBZUBbLIoPROhd8lHB8DWW9jmHbKVxcJnt78OqqP+ArdEEKUEo7ufJzT3waWyKFD+xoRxSw+6NSHpcr9T9zqWpb90lpo7CjvSF6ERxgA5ZZSbTYMrkd9qEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JGM0GlgvDDujK/qoex7518ZPOdaTEzinQ3lLKEMK6RY=;
+ b=ZHlzpB6VD0FsWFkEqwO4PtQgk3dn2ndgYwiGi33QSAqYj7VZNLZUs6ljSl8q1a492dUJvQNMR+uLWQox5b5YwV4YXsrraVHQGABOzhSeNPk0gf1lpQyrMzyMXxxyHvwTyOhjsyWjq/qXNi9rx6O8FmOQxEpJEDDs6MBvQnnqmd5EwHkjfbEO6tB4E6fJbl2pKVgfKDy1yDgDTSwCAJVFuIYFtVqgU5WWPyYZwWdDm+2f86TUNpPExAMMME2v7ovam5WLSLpH8KlfbH2w1CHkMcP5+drjIeJ9hy6cpbj9gX0gltu4fxlM6+yyripEPfxgPTCsSUy6RRAwFmgLPMvaeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JGM0GlgvDDujK/qoex7518ZPOdaTEzinQ3lLKEMK6RY=;
+ b=k8Tm0rNY1ZtA+o2YTK2OX4jivWzdpquK3qXGOxP7cFZaRl7YBqUROXz752Xs+2DZdD/ck/wX4eojl9tyqKRz0iKOBh4kipJoXyb/pyZKdk9dv+SOmrH3VpTRGxnpI+Z5QB0xZnNPqq9dF0IW/i/D1yqtbqCr5GhkUryJon5UvOM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by AM9PR04MB8970.eurprd04.prod.outlook.com (2603:10a6:20b:409::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.19; Wed, 6 Apr
+ 2022 08:21:59 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::389f:e6eb:a7a2:61b6]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::389f:e6eb:a7a2:61b6%7]) with mapi id 15.20.5123.031; Wed, 6 Apr 2022
+ 08:21:59 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     djakov@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de
+Cc:     festevam@gmail.com, linux-imx@nxp.com,
+        laurent.pinchart@ideasonboard.com, l.stach@pengutronix.de,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH 4/5] soc: imx: imx8m-blk-ctrl: support i.MX8MP media blk ctrl noc settings
+Date:   Wed,  6 Apr 2022 16:23:29 +0800
+Message-Id: <20220406082330.2681591-5-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220406082330.2681591-1-peng.fan@oss.nxp.com>
+References: <20220406082330.2681591-1-peng.fan@oss.nxp.com>
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprFJsWRmVeSWpSXmKPExsWy7bCmme4FH98kg6/9PBYP5m1js7i8X9ui
-        efF6NosdDUdYLd7NlbE4f34Du8Wmx9dYLS7vmsNmMeP8PiaLM4t72R24PDat6mTz2D93DbvH
-        5iX1Hn1bVjF6fN4kF8AalW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlhrqSQl5ib
-        aqvk4hOg65aZA3SSkkJZYk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUgJafAvECvODG3uDQv
-        XS8vtcTK0MDAyBSoMCE7Y9735ewF3zgr1s07ytbAOI+ji5GTQ0LARKLzRSdbFyMXh5DADkaJ
-        9oufWCGcT4wSJ7u6mSGcz4wSc3ZuYoFpOb7oGFRiF6PE46lLmCCcj4wSK/6dZwKpYhPQlvi+
-        fjHYLBGB04wSh7cfBXOYQbbsav8OViUsECXxf/YMMJtFQFXi1ZxjYDavgK3EjePnGSH2yUt0
-        //sDtptTwE5i18OdbBA1ghInZz4BizMD1TRvnQ12k4RAI4fEr1m3gYo4gBwXiZuPQyHmCEu8
-        Or6FHcKWknjZ3wZlF0sc7/nOBNHbwChx9s4BVoiEscSsZ+2MIHOYBTQl1u/ShxipLHHkFtRa
-        PomOw3/ZIcK8Eh1tQhCNahL3p55jg7BlJCYdWckEYXtILLmyERrYExklPu7sYpnAqDALyTez
-        kHwzC2HxAkbmVYxiqQXFuempxUYFxvA4Ts7P3cQITqRa7jsYZ7z9oHeIkYmD8RCjBAezkghv
-        Va5PkhBvSmJlVWpRfnxRaU5q8SFGU2BYT2SWEk3OB6byvJJ4QxNLAxMzM0NzI1MDcyVxXq+U
-        DYlCAumJJanZqakFqUUwfUwcnFINTPmqpunhvelnJl2yZzi6LC7pZYRqxKM373dkMf1z/Hrp
-        xu8p1/xLHi+8IsvwU0mjQlmmZb+bTEfEMedFMxoN+4pT6ubb2m1cfdP2+6wKVjNn86Kv1/l7
-        2OaJWlQkzNj0r9XjoeDHJANLXdewfSy3DZXeqRmy1rT8Xl1+he2fwEEx0VybaW283DqXb31/
-        scTh3pmH6QkeVd9l5RPl3infL+lte5IyKeZV71uW1+Ez7LaprHY0rlnSb8Hqkj7H5U3adr3C
-        Mgvf+Zk8To7F77bs7a2ftOwC8+1Ifem1JudvbK47uuqp7pYJk/vmrJA9FBLL2jFb4N9jbuvQ
-        knCJwwkmaoULV6zy+BBdv5n3ywF9JZbijERDLeai4kQAWK8xMS0EAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKLMWRmVeSWpSXmKPExsWy7bCSnO55H98kg4/LdS0ezNvGZnF5v7ZF
-        8+L1bBY7Go6wWrybK2Nx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3sjtweWxa1cnmsX/uGnaP
-        zUvqPfq2rGL0+LxJLoA1issmJTUnsyy1SN8ugStj3vfl7AXfOCvWzTvK1sA4j6OLkZNDQsBE
-        4viiY8xdjFwcQgI7GCU2PXzHCpGQkVj+rI8NwhaWuN9yhBWi6D2jxINjW1lAEmwC2hLf1y8G
-        S4gInGeUmPz4DRuIwyywh1FizezvzCBVwgIREmu2nWEEsVkEVCVezTnGBGLzCthK3Dh+nhFi
-        hbxE978/YFM5Bewkdj3cCbZaCKhm15o3rBD1ghInZz4Bq2EGqm/eOpt5AqPALCSpWUhSCxiZ
-        VjFKphYU56bnFhsWGOWllusVJ+YWl+al6yXn525iBIe8ltYOxj2rPugdYmTiYDzEKMHBrCTC
-        W5XrkyTEm5JYWZValB9fVJqTWnyIUZqDRUmc90LXyXghgfTEktTs1NSC1CKYLBMHp1QDk+ND
-        xdK/lktNvnEXBFYv+M0nO1fb7vKvq5tDG+ZoXdrgZnJ3Cdsdveb8tA9HV01/l7b4j5OGoSh/
-        1rcpz48Y+Urd+pfMdO6SQvGLxvRqR+nLhRXz/Y92xL2awnvjfOTWb+KWm3oFU29v9Vm+Y02o
-        xsWoferv05g+vf/6d4aN6NU7N32qZ8vqvgz/4KOjuPCV+5KcTXr7Jbv23enceSiG9yXT6jkZ
-        WlnlX9ny9OxePgwzVpfdenpJT/hd3Zm7eJrvVtd4zm1k5cu4fPSYYp/loTizlVdz74hoL5vr
-        s3dFgmup26xXc/N3n/hXGLz/O9uJzTvKghMnLz1yvLzHpTNr17XGqy1xb1dGOV8KUohpUFZi
-        Kc5INNRiLipOBABobSbH6AIAAA==
-X-CMS-MailID: 20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f
-References: <20220406082216.11206-1-jaewon02.kim@samsung.com>
-        <CGME20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f@epcas2p2.samsung.com>
+Content-Type: text/plain
+X-ClientProxiedBy: SG3P274CA0022.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::34)
+ To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fe7c39c7-a48b-4c09-1f22-08da17a684ef
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8970:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AM9PR04MB8970D061103AB335C54F8248C9E79@AM9PR04MB8970.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hcur9weRxZV20saucYlSYYLLKpvdKab3NjZl5DJX0JnR0BGjmk9+1scn9aC1gT70liJ1AkPCy0ffrNxEFSjAR7Fl23ljhj+yeayYBBZpUd6MAK4Pur5Kn6jfw6OGAwJTrXkCMkktmsCTLXwQ+DCVjCZIP4g53bqp0lvTR2A9GxnxzHmhDHtmrumPBHfGu+3PCLGbH/CBL1cYgasH5UuUE5mepQIgReeRhDNupOUKh9FAtNubJAqLzu4RHDApBY+cSEXHiKE88ekTiJooKKT46HAxrOF7ecodB1yYZBT5Qk7Z18rUwmo7C5sHDOjTqPvha1QVWYYo8CmT3qdrmr53OnHgIOTLVXqxEbnEzY9eT5NtNaJz/rNQgGP9BfXrOHeQNc56kKRW9UO84jJyyO6d7R/WuvJhh2IwYpd5+WZ91/HquszRMu9lYYVyrfu4cGHhTFaJ+cTiQGl4vD/OScxqbzJ0g6F9rEsTATm629IOGvWu/K7FkAxeYHWDb/XCMBvKdqU9BiDAR8AQSqkPPH7OVlX70yHSMPXQzEzvmbwbBn3O0zGyTJUWpYspnmV8Ux7Yb3qOg6blrjLZB9OBmG36RvLZU8pGmfXJOJpzD24opQapY7d0/ATBWxL2B0LlMRV9cHnD5gf9kzfx7RIi3V6Wzar6FIwdDZm92lou7Io4DAF3jQW8Gf/7f+3vaBKKUErBmkFsbaVjx+bK/FSyVFYYLk5361gUp/7dAFGBMNK3BiU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(508600001)(5660300002)(1076003)(26005)(2616005)(186003)(86362001)(83380400001)(7416002)(6666004)(6512007)(52116002)(6506007)(8936002)(66946007)(38350700002)(38100700002)(2906002)(4326008)(66556008)(316002)(66476007)(8676002)(32563001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4/kEsCvOmohutrYGfotdfpJ0Qgz/SF1IQYR+aPIgll1RTZgxt6bJ6uBCAF7I?=
+ =?us-ascii?Q?CFTNvHpY3eY9/aivd4aIh3OFT7VS0nB5zLFgCdRe/HynX/Y6aqO5BJIIgoZR?=
+ =?us-ascii?Q?LLcKIGiEdBMKBNC0rpuwtx0Qb1j+vOrTZgGSja6M16stsSLOP9XrSSJLU6S0?=
+ =?us-ascii?Q?81ZVxwQ0DU8O1iXfhoMmJDPPkZXDQy2GmIDI1Jut6+jdA55K5PWZr4bifi0p?=
+ =?us-ascii?Q?I89lXa4Kog9AEXI/ukgq0ALyboB7ryPEE1HdsLP/EnoVkODM74LiF5N4x1ox?=
+ =?us-ascii?Q?vXRvzsBSe3HZcl1EhyFoP6nBvkQ15uJtJvISYUvdc3lCYIXBbpNWrzXDu6Xo?=
+ =?us-ascii?Q?LkziBkp6qVjbKrhlGGrcU14yvMGZatZGHOdVz3BLb1AImazYPrWpT+QZC/LN?=
+ =?us-ascii?Q?6NduAkfu4aGigR6pATMqUK/yDncjFfNQbGUs5i+rNL8+AqXhM62ImZVKSXPM?=
+ =?us-ascii?Q?ypIeIRDDXtTF2G0zAKzOPB8IB22kKD7Jokrs1Pax9jRGne/270e2cP9PO7EJ?=
+ =?us-ascii?Q?Z12lkrpGMW81DBpEYa32TS04Xw7xKwVZ73xbhmfeKsr+XFTDy98POU5ECSSq?=
+ =?us-ascii?Q?j1Ye43NVg4y/qLp78Z0CLoVEzjCUKkslMkWsN+zUbRGjVBMtX2DViQMnkNnR?=
+ =?us-ascii?Q?yVwrhEh1Bsb5CjGLgs/MQOecO6tlwUw9CubEerPQ+8yX9vuDegfZ1VFsxkXI?=
+ =?us-ascii?Q?nJKEG2zfhd5e0OhmwsXqsu0zjMUVFFSjO2g26jcHnb+6/YQ+c9bPYZYDVQ29?=
+ =?us-ascii?Q?E3El7MIKtdUlA1gtIJ2CM4ycWCFmDMp78viaC03RkZ0hLCzXCr06/gp5kNJv?=
+ =?us-ascii?Q?l0BuNc+x9fBVnfGo43W75xTYblnLCYDhVEKMNf4SY0BGTeOThfZePWolmUkC?=
+ =?us-ascii?Q?cRUMStYGtPdOYukrRM+shASxKdQRwPQft8+0s1qN4xtfxGu1gNH/x5XF3t8r?=
+ =?us-ascii?Q?icvGV7eZF5xuln+63uooeVqjKHPvbeZpwAbyUliJqwLRQtXlS2XpUV4NUmuT?=
+ =?us-ascii?Q?pTYj8kvXLySgyiC0shqkgS2YrV8qPyFyR1F0Dc9nGGlcqKT+x+fLzmKt1+0w?=
+ =?us-ascii?Q?An5pkmwl3HjG7FqVE9FC8qwyoaQ2oDFprPAA1/yt8PiDggaThuK47Iwy8PTe?=
+ =?us-ascii?Q?YSSeFc+SUPYaHzLOL4MW3omBDpNObdF591FKLMFDrFSIzvASNBuWjK5ZPDVF?=
+ =?us-ascii?Q?+GlWNgjnMokPIr4c9x97rMjV4a2FlFp/sjgIwOmrN5jdBdUGYWBabnGfWxw1?=
+ =?us-ascii?Q?PPRpubRcRm7edJtOizJLKOjef4tw+BIdDrSXKfsjl6VOyPL3idqcLJSFmlG0?=
+ =?us-ascii?Q?GyBtkbXJ3z8b++jgTTuPuXzrAcOeHiMzfjVCD9ABpnLlsqk/0752nEiKpMaN?=
+ =?us-ascii?Q?UxuENrVQoioOi3yA3lcDQ+Xsb7eJkjofNoLxoKUfyq9nJwnc77tEBge2+7EO?=
+ =?us-ascii?Q?ue5Qd0d+R5ABnnwlD7axf9P3pYY7nEyhF3pWlGkGERe+ItZ3i1/7zK6207xq?=
+ =?us-ascii?Q?w6OkX0ZcYqcKx7D9QE5EI+g99Ct6vnlagfZMOOYbLSL5m5awgzDcQ7G8FVcL?=
+ =?us-ascii?Q?F4jAHe64Nr6DFKCLNNQHI1erfM0Z48rRskGvf29ZJhHHx/APM9Xn5D27EIld?=
+ =?us-ascii?Q?rHjvjPAXXxNCrhlIpKgj1W4eO0hHNCwSvaObcjT7EyvSiAW0rG45FHwAkbmY?=
+ =?us-ascii?Q?Qiy8YidoggsN0e4E4IbCPnCHqMl8i0UByeenUrO8hylTCooupjapYIz3cRru?=
+ =?us-ascii?Q?PBWfNl6y7A=3D=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe7c39c7-a48b-4c09-1f22-08da17a684ef
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 08:21:59.0338
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gCixDio5VVhBBo4pfXU5e3I8+Vi6DdPmPQ9Iy5SZixuk5+2cP9kUoA9ANAAnER+vqrxoxOduvGeb0ObBGK+3Lg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8970
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The console_write and IRQ handler can run concurrently.
-Problems may occurs console_write is continuously executed while
-the IRQ handler is running.
+From: Peng Fan <peng.fan@nxp.com>
 
-Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+The out of reset value of NoC is not a valid value, we need
+set it to a correct value. We only need to set it after power on.
+
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
- drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/soc/imx/imx8m-blk-ctrl.c | 109 +++++++++++++++++++++++++++++++
+ 1 file changed, 109 insertions(+)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index e1585fbae909..9db479d728b5 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2480,12 +2480,24 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
- 			     unsigned int count)
- {
- 	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-+	unsigned long flags;
-+	bool locked = 1;
+diff --git a/drivers/soc/imx/imx8m-blk-ctrl.c b/drivers/soc/imx/imx8m-blk-ctrl.c
+index 3a6abd70520c..5b382b4e6a64 100644
+--- a/drivers/soc/imx/imx8m-blk-ctrl.c
++++ b/drivers/soc/imx/imx8m-blk-ctrl.c
+@@ -12,6 +12,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/clk.h>
++#include <linux/mfd/syscon.h>
  
- 	/* not possible to xmit on unconfigured port */
- 	if (!s3c24xx_port_configured(ucon))
- 		return;
+ #include <dt-bindings/power/imx8mm-power.h>
+ #include <dt-bindings/power/imx8mn-power.h>
+@@ -29,10 +30,19 @@ struct imx8m_blk_ctrl {
+ 	struct notifier_block power_nb;
+ 	struct device *bus_power_dev;
+ 	struct regmap *regmap;
++	struct regmap *noc_regmap;
+ 	struct imx8m_blk_ctrl_domain *domains;
+ 	struct genpd_onecell_data onecell_data;
+ };
  
-+	if (cons_uart->sysrq)
-+		locked = 0;
-+	else if (oops_in_progress)
-+		locked = spin_trylock_irqsave(&cons_uart->lock, flags);
-+	else
-+		spin_lock_irqsave(&cons_uart->lock, flags);
++struct imx8m_blk_ctrl_noc_data {
++	u32 off;
++	u32 priority;
++	u32 mode;
++	u32 extctrl;
++};
 +
- 	uart_console_write(cons_uart, s, count, s3c24xx_serial_console_putchar);
-+
-+	if (locked)
-+		spin_unlock_irqrestore(&cons_uart->lock, flags);
++#define DOMAIN_MAX_NOC	4
+ struct imx8m_blk_ctrl_domain_data {
+ 	const char *name;
+ 	const char * const *clk_names;
+@@ -49,6 +59,7 @@ struct imx8m_blk_ctrl_domain_data {
+ 	 * register.
+ 	 */
+ 	u32 mipi_phy_rst_mask;
++	const struct imx8m_blk_ctrl_noc_data *noc_data[DOMAIN_MAX_NOC];
+ };
+ 
+ #define DOMAIN_MAX_CLKS 3
+@@ -66,6 +77,7 @@ struct imx8m_blk_ctrl_data {
+ 	notifier_fn_t power_notifier_fn;
+ 	const struct imx8m_blk_ctrl_domain_data *domains;
+ 	int num_domains;
++	bool has_noc;
+ };
+ 
+ static inline struct imx8m_blk_ctrl_domain *
+@@ -74,6 +86,27 @@ to_imx8m_blk_ctrl_domain(struct generic_pm_domain *genpd)
+ 	return container_of(genpd, struct imx8m_blk_ctrl_domain, genpd);
  }
  
- /* Shouldn't be __init, as it can be instantiated from other module */
++static int imx8m_blk_ctrl_noc_set(struct imx8m_blk_ctrl_domain *domain)
++{
++	const struct imx8m_blk_ctrl_domain_data *data = domain->data;
++	struct imx8m_blk_ctrl *bc = domain->bc;
++	struct regmap *regmap = bc->noc_regmap;
++	int i;
++
++	if (!data || !regmap)
++		return 0;
++
++	for (i = 0; i < DOMAIN_MAX_NOC; i++) {
++		if (!data->noc_data[i])
++			continue;
++		regmap_write(regmap, data->noc_data[i]->off + 0x8, data->noc_data[i]->priority);
++		regmap_write(regmap, data->noc_data[i]->off + 0xc, data->noc_data[i]->mode);
++		regmap_write(regmap, data->noc_data[i]->off + 0x18, data->noc_data[i]->extctrl);
++	}
++
++	return 0;
++}
++
+ static int imx8m_blk_ctrl_power_on(struct generic_pm_domain *genpd)
+ {
+ 	struct imx8m_blk_ctrl_domain *domain = to_imx8m_blk_ctrl_domain(genpd);
+@@ -117,6 +150,8 @@ static int imx8m_blk_ctrl_power_on(struct generic_pm_domain *genpd)
+ 	if (data->mipi_phy_rst_mask)
+ 		regmap_set_bits(bc->regmap, BLK_MIPI_RESET_DIV, data->mipi_phy_rst_mask);
+ 
++	imx8m_blk_ctrl_noc_set(domain);
++
+ 	/* disable upstream clocks */
+ 	clk_bulk_disable_unprepare(data->num_clks, domain->clks);
+ 
+@@ -172,6 +207,7 @@ static int imx8m_blk_ctrl_probe(struct platform_device *pdev)
+ 	const struct imx8m_blk_ctrl_data *bc_data;
+ 	struct device *dev = &pdev->dev;
+ 	struct imx8m_blk_ctrl *bc;
++	struct regmap *regmap;
+ 	void __iomem *base;
+ 	int i, ret;
+ 
+@@ -218,6 +254,10 @@ static int imx8m_blk_ctrl_probe(struct platform_device *pdev)
+ 		return dev_err_probe(dev, PTR_ERR(bc->bus_power_dev),
+ 				     "failed to attach power domain\n");
+ 
++	regmap = syscon_regmap_lookup_by_compatible("fsl,imx8m-noc");
++	if (!IS_ERR(regmap))
++		bc->noc_regmap = regmap;
++
+ 	for (i = 0; i < bc_data->num_domains; i++) {
+ 		const struct imx8m_blk_ctrl_domain_data *data = &bc_data->domains[i];
+ 		struct imx8m_blk_ctrl_domain *domain = &bc->domains[i];
+@@ -677,6 +717,55 @@ static int imx8mp_media_power_notifier(struct notifier_block *nb,
+ 	return NOTIFY_OK;
+ }
+ 
++#define IMX8MP_MEDIABLK_LCDIF_RD	0
++#define IMX8MP_MEDIABLK_LCDIF_WR	1
++#define IMX8MP_MEDIABLK_ISI0		2
++#define IMX8MP_MEDIABLK_ISI1		3
++#define IMX8MP_MEDIABLK_ISI2		4
++#define IMX8MP_MEDIABLK_ISP0		5
++#define IMX8MP_MEDIABLK_ISP1		6
++#define IMX8MP_MEDIABLK_DWE		7
++
++static const struct imx8m_blk_ctrl_noc_data imx8mp_media_noc_data[] = {
++	[IMX8MP_MEDIABLK_LCDIF_RD] = {
++		.off = 0x980,
++		.priority = 0x80000202,
++		.extctrl = 1,
++	},
++	[IMX8MP_MEDIABLK_LCDIF_WR] = {
++		.off = 0xa00,
++		.priority = 0x80000202,
++		.extctrl = 1,
++	},
++	[IMX8MP_MEDIABLK_ISI0] = {
++		.off = 0xa80,
++		.priority = 0x80000202,
++		.extctrl = 1,
++	},
++	[IMX8MP_MEDIABLK_ISI1] = {
++		.off = 0xb00,
++		.priority = 0x80000202,
++		.extctrl = 1,
++	},
++	[IMX8MP_MEDIABLK_ISI2] = {
++		.off = 0xb80,
++		.priority = 0x80000202,
++		.extctrl = 1,
++	},
++	[IMX8MP_MEDIABLK_ISP0] = {
++		.off = 0xc00,
++		.priority = 0x80000707,
++	},
++	[IMX8MP_MEDIABLK_ISP1] = {
++		.off = 0xc80,
++		.priority = 0x80000707,
++	},
++	[IMX8MP_MEDIABLK_DWE] = {
++		.off = 0xd00,
++		.priority = 0x80000707,
++	},
++};
++
+ /*
+  * From i.MX 8M Plus Applications Processor Reference Manual, Rev. 1,
+  * section 13.2.2, 13.2.3
+@@ -708,6 +797,10 @@ static const struct imx8m_blk_ctrl_domain_data imx8mp_media_blk_ctl_domain_data[
+ 		.gpc_name = "lcdif1",
+ 		.rst_mask = BIT(4) | BIT(5) | BIT(23),
+ 		.clk_mask = BIT(4) | BIT(5) | BIT(23),
++		.noc_data = {
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_LCDIF_RD],
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_LCDIF_WR],
++		},
+ 	},
+ 	[IMX8MP_MEDIABLK_PD_ISI] = {
+ 		.name = "mediablk-isi",
+@@ -716,6 +809,11 @@ static const struct imx8m_blk_ctrl_domain_data imx8mp_media_blk_ctl_domain_data[
+ 		.gpc_name = "isi",
+ 		.rst_mask = BIT(6) | BIT(7),
+ 		.clk_mask = BIT(6) | BIT(7),
++		.noc_data = {
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_ISI0],
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_ISI1],
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_ISI2],
++		},
+ 	},
+ 	[IMX8MP_MEDIABLK_PD_MIPI_CSI2_2] = {
+ 		.name = "mediablk-mipi-csi2-2",
+@@ -733,6 +831,10 @@ static const struct imx8m_blk_ctrl_domain_data imx8mp_media_blk_ctl_domain_data[
+ 		.gpc_name = "lcdif2",
+ 		.rst_mask = BIT(11) | BIT(12) | BIT(24),
+ 		.clk_mask = BIT(11) | BIT(12) | BIT(24),
++		.noc_data = {
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_LCDIF_RD],
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_LCDIF_WR],
++		},
+ 	},
+ 	[IMX8MP_MEDIABLK_PD_ISP2] = {
+ 		.name = "mediablk-isp2",
+@@ -749,6 +851,10 @@ static const struct imx8m_blk_ctrl_domain_data imx8mp_media_blk_ctl_domain_data[
+ 		.gpc_name = "isp1",
+ 		.rst_mask = BIT(16) | BIT(17) | BIT(18),
+ 		.clk_mask = BIT(16) | BIT(17) | BIT(18),
++		.noc_data = {
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_ISP0],
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_ISP1],
++		},
+ 	},
+ 	[IMX8MP_MEDIABLK_PD_DWE] = {
+ 		.name = "mediablk-dwe",
+@@ -757,6 +863,9 @@ static const struct imx8m_blk_ctrl_domain_data imx8mp_media_blk_ctl_domain_data[
+ 		.gpc_name = "dwe",
+ 		.rst_mask = BIT(19) | BIT(20) | BIT(21),
+ 		.clk_mask = BIT(19) | BIT(20) | BIT(21),
++		.noc_data = {
++			&imx8mp_media_noc_data[IMX8MP_MEDIABLK_DWE],
++		},
+ 	},
+ 	[IMX8MP_MEDIABLK_PD_MIPI_DSI_2] = {
+ 		.name = "mediablk-mipi-dsi-2",
 -- 
-2.35.1
+2.25.1
 
