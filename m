@@ -2,93 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D3D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45AEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232184AbiDFNIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56492 "EHLO
+        id S232212AbiDFNI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232656AbiDFNHg (ORCPT
+        with ESMTP id S232677AbiDFNHi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:07:36 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665933B3F9B;
-        Wed,  6 Apr 2022 02:41:47 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KYKHv0kvvz1HBV6;
-        Wed,  6 Apr 2022 17:40:27 +0800 (CST)
-Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 17:40:53 +0800
-Received: from [10.174.178.220] (10.174.178.220) by
- dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 17:40:52 +0800
-From:   Wenchao Hao <haowenchao@huawei.com>
-Subject: Re: [REQUEST DISCUSS]: speed up SCSI error handle for host with
- massive devices
-To:     Hannes Reinecke <hare@suse.de>,
-        Mike Christie <michael.christie@oracle.com>,
-        Steffen Maier <maier@linux.ibm.com>,
-        <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Lee Duncan <lduncan@suse.com>,
-        John Garry <john.garry@huawei.com>
-CC:     Wu Bo <wubo40@huawei.com>, Feilong Lin <linfeilong@huawei.com>,
-        <zhangjian013@huawei.com>
-References: <71e09bb4-ff0a-23fe-38b4-fe6425670efa@huawei.com>
- <cd7bda98-2160-9271-9520-e98d1fe00ea5@linux.ibm.com>
- <331aafe1-df9b-cae4-c958-9cf1800e389a@huawei.com>
- <64d5a997-a1bf-7747-072d-711a8248874d@suse.de>
- <c4baacf1-0e86-9660-45f7-50ebc853e6af@huawei.com>
- <1dd69d03-b4f6-ab20-4923-0995b40f045d@suse.de>
- <d2f2c89f-c048-4f04-4d95-27958f0fa46a@huawei.com>
- <78d41ec1-b30c-f6d2-811c-e0e4adbc8f01@oracle.com>
- <84b38f16-2a32-f361-43e5-34bce1012e71@oracle.com>
- <769bcd36-4818-8470-2daa-49ac5c05b33a@suse.de>
-Message-ID: <e5f9e720-ddfd-ab8c-c8b9-18ba8ad266f0@huawei.com>
-Date:   Wed, 6 Apr 2022 17:40:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        Wed, 6 Apr 2022 09:07:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80265E3C28;
+        Wed,  6 Apr 2022 02:41:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24474B821F7;
+        Wed,  6 Apr 2022 09:41:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52FD4C385A8;
+        Wed,  6 Apr 2022 09:41:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649238090;
+        bh=rzOQqeQjTPMlc735N7xJrYNzCHkjJGD3CLA4kWFFXVc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fsmLZnAUCJjO+U+L3dKendSoMYuhn2eqy8osmJvvIhBTjLqdB37IWZNzZpA9S73Cg
+         3SNg0GLiAsbq4hw25fmQf+7zMTesohfk3usDw4LZafpHNNJqGVu3pYwF8bmyts2xXM
+         hDbbOOD7lReLeMch8h6BpX3wI/UWOCIVfzjAVM2Wt5OevqPnkdUbK1QoOjUUcU7AC3
+         HySgSOamM/bTmZiJEINAo+FC+If6X9aCs8EII6r0y2ixmu1hPSKRmJIXq4ublR46nm
+         0rt1RX1rCwp8irtAfwzMWmf2EkKaq+AiAFBrlDJ/HKmtN0Z83erUqDGYwhIcnyA+Ub
+         uH3A4s30e2Bvw==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [PATCH v7 12/14] drm/msm/dsi: add mode valid callback for dsi_mgr
+Date:   Wed,  6 Apr 2022 15:10:29 +0530
+Message-Id: <20220406094031.1027376-13-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220406094031.1027376-1-vkoul@kernel.org>
+References: <20220406094031.1027376-1-vkoul@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <769bcd36-4818-8470-2daa-49ac5c05b33a@suse.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.220]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500017.china.huawei.com (7.185.36.178)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/4 13:28, Hannes Reinecke wrote:
-> On 4/3/22 19:17, Mike Christie wrote:
->> On 4/3/22 12:14 PM, Mike Christie wrote:
->>> We could share code with scsi_ioctl_reset as well. Drivers that support
->>> TMFs via that ioctl already expect queuecommand to be possibly in the
->>> middle of a run and IO not yet timed out. For example, the code to
->>> block a queue and reset the device could be used for the new EH and
->>> SG_SCSI_RESET_DEVICE handling.
->>>
->>
->> Hannes or others,
->>
->> How do parallel SCSI drivers support scsi_ioctl_reset? Is is not fully
->> supported and more only used for controlled testing?
-> 
-> That's actually a problem in scsi_ioctl_reset(); it really should wait for all I/O to quiesce. Currently it just sets the 'tmf' flag and calls into the various reset functions.
-> 
-> But really, I'd rather get my EH rework in before we're start discussing modifying EH behaviour.
-> Let me repost it ...
-> 
+Add a mode valid callback for dsi_mgr for checking mode being valid in
+case of DSC. For DSC the height and width needs to be multiple of slice,
+so we check that here
 
-Would you take fast EH(such as single LUN reset) into consideration, maybe
-a second but lightweight EH? It means a lot.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ drivers/gpu/drm/msm/dsi/dsi.h         |  2 ++
+ drivers/gpu/drm/msm/dsi/dsi_host.c    | 26 ++++++++++++++++++++++++++
+ drivers/gpu/drm/msm/dsi/dsi_manager.c | 12 ++++++++++++
+ 3 files changed, 40 insertions(+)
 
-Or give a way drivers can branch out the general timeout and EH handle logic?
+diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
+index 16cd9b2fce86..580a1e6358bf 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi.h
++++ b/drivers/gpu/drm/msm/dsi/dsi.h
+@@ -114,6 +114,8 @@ int msm_dsi_host_power_on(struct mipi_dsi_host *host,
+ int msm_dsi_host_power_off(struct mipi_dsi_host *host);
+ int msm_dsi_host_set_display_mode(struct mipi_dsi_host *host,
+ 				  const struct drm_display_mode *mode);
++enum drm_mode_status msm_dsi_host_check_dsc(struct mipi_dsi_host *host,
++					    const struct drm_display_mode *mode);
+ struct drm_panel *msm_dsi_host_get_panel(struct mipi_dsi_host *host);
+ unsigned long msm_dsi_host_get_mode_flags(struct mipi_dsi_host *host);
+ struct drm_bridge *msm_dsi_host_get_bridge(struct mipi_dsi_host *host);
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index cb2e179127ea..eb0be34add45 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -2554,6 +2554,32 @@ int msm_dsi_host_set_display_mode(struct mipi_dsi_host *host,
+ 	return 0;
+ }
+ 
++enum drm_mode_status msm_dsi_host_check_dsc(struct mipi_dsi_host *host,
++					    const struct drm_display_mode *mode)
++{
++	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
++	struct msm_display_dsc_config *dsc = msm_host->dsc;
++	int pic_width = mode->hdisplay;
++	int pic_height = mode->vdisplay;
++
++	if (!msm_host->dsc)
++		return MODE_OK;
++
++	if (pic_width % dsc->drm->slice_width) {
++		pr_err("DSI: pic_width %d has to be multiple of slice %d\n",
++		       pic_width, dsc->drm->slice_width);
++		return MODE_H_ILLEGAL;
++	}
++
++	if (pic_height % dsc->drm->slice_height) {
++		pr_err("DSI: pic_height %d has to be multiple of slice %d\n",
++		       pic_height, dsc->drm->slice_height);
++		return MODE_V_ILLEGAL;
++	}
++
++	return MODE_OK;
++}
++
+ struct drm_panel *msm_dsi_host_get_panel(struct mipi_dsi_host *host)
+ {
+ 	return of_drm_find_panel(to_msm_dsi_host(host)->device_node);
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+index 0c1b7dde377c..100a8fcbddee 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+@@ -573,6 +573,17 @@ static void dsi_mgr_bridge_mode_set(struct drm_bridge *bridge,
+ 	dsi_mgr_bridge_power_on(bridge);
+ }
+ 
++static enum drm_mode_status dsi_mgr_bridge_mode_valid(struct drm_bridge *bridge,
++						      const struct drm_display_info *info,
++						      const struct drm_display_mode *mode)
++{
++	int id = dsi_mgr_bridge_get_id(bridge);
++	struct msm_dsi *msm_dsi = dsi_mgr_get_dsi(id);
++	struct mipi_dsi_host *host = msm_dsi->host;
++
++	return msm_dsi_host_check_dsc(host, mode);
++}
++
+ static const struct drm_connector_funcs dsi_mgr_connector_funcs = {
+ 	.detect = dsi_mgr_connector_detect,
+ 	.fill_modes = drm_helper_probe_single_connector_modes,
+@@ -593,6 +604,7 @@ static const struct drm_bridge_funcs dsi_mgr_bridge_funcs = {
+ 	.disable = dsi_mgr_bridge_disable,
+ 	.post_disable = dsi_mgr_bridge_post_disable,
+ 	.mode_set = dsi_mgr_bridge_mode_set,
++	.mode_valid = dsi_mgr_bridge_mode_valid,
+ };
+ 
+ /* initialize connector when we're connected to a drm_panel */
+-- 
+2.34.1
+
