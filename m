@@ -2,131 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F920C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232787AbiDFMYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55464 "EHLO
+        id S233048AbiDFMYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233749AbiDFMW7 (ORCPT
+        with ESMTP id S233861AbiDFMXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:22:59 -0400
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B775DB4BC;
-        Wed,  6 Apr 2022 01:07:34 -0700 (PDT)
-Received: by mail-ej1-f46.google.com with SMTP id n6so2513001ejc.13;
-        Wed, 06 Apr 2022 01:07:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iOgrKLV2a4LHZWuaU0zd4hmFB+3+hL8SxL1QKpt1vFw=;
-        b=Aeu0h6eoM3DuD02xlZdprKNSyY6HFgcAKRfyttW8MkDO7zFCP9YDSWeJydn0npQfMw
-         u6HYqON/EDXyOOhjyRFO6jBvp2t94Qgz/nRfPt2sW2+V6RRwTWBJ5CZIVRZxHLEeDnmx
-         x04k4IpxMrwjJ5SAAE/mAGVeTsFDT2rZFLlBlOxlf37VJ6KDp0n8SYSJQCvk5Dph0iWj
-         yBO/QJ5RuGqm0/9W3EM2R1j5ApwIINjTaa8sSivzhuIfMj29neSwFnMhKtNrkWSAua63
-         EmxUdN+vvO3X9ax6wOm8NmOZkdNMmWhILn5HlBDrMGofw6w171i92QTfl2vPFHtlqUKR
-         uVWA==
-X-Gm-Message-State: AOAM533tZBGsSOeh7HTXbaYnk7pIIlcQSaTHZfkXgfHL/9og6e0sBZpf
-        Gu5mOYy+Ajnlw7hGXhrDKGQ83vNpqQs=
-X-Google-Smtp-Source: ABdhPJwgTUFvg/eSX3csMe5evjOo9LmO3q9dhkvN2Iw+ERs2TBcEZaZRM7zyBJuvJ462spR/0PyR/g==
-X-Received: by 2002:a17:907:7245:b0:6e4:b142:f736 with SMTP id ds5-20020a170907724500b006e4b142f736mr7316050ejc.58.1649232453089;
-        Wed, 06 Apr 2022 01:07:33 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm1918181ejb.143.2022.04.06.01.07.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 01:07:32 -0700 (PDT)
-Message-ID: <cffdfa4c-57f8-a8f7-758e-2975b91d7b92@kernel.org>
-Date:   Wed, 6 Apr 2022 10:07:31 +0200
+        Wed, 6 Apr 2022 08:23:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519705415F6;
+        Wed,  6 Apr 2022 01:11:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0F8F60B19;
+        Wed,  6 Apr 2022 08:11:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D4E9C385A1;
+        Wed,  6 Apr 2022 08:11:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649232692;
+        bh=d9mabnz2/PxBWR5XbqNSwFGWUc5kISZ3RG1iYADeuW8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tkERSaWwH2WsExaNM9z3Z+vHFCSkxIF2hpS5qVqLc58xEfB0YxxsFpR5YiHPwkDfG
+         DtWdUvuc9U59wRypRl5pAd59q9f7izG7PrdlFAaIjexHopaQh9zQfc1oWf/oBzZM6m
+         HSJjw8Zch7RvDenKLE+1KioU5WZ0kfvRkVvUHIno=
+Date:   Wed, 6 Apr 2022 10:11:29 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
+Message-ID: <Yk1LMYzEOv7vmEHR@kroah.com>
+References: <20220405070258.802373272@linuxfoundation.org>
+ <20220406010749.GA1133386@roeck-us.net>
+ <20220406023025.GA1926389@roeck-us.net>
+ <20220405225212.061852f9@gandalf.local.home>
+ <20220405230812.2feca4ed@gandalf.local.home>
+ <20220405232413.6b38e966@gandalf.local.home>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] tty: Add lookahead param to receive_buf
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
- <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com>
- <YkxoR+jA9tDJOqNU@smile.fi.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <YkxoR+jA9tDJOqNU@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405232413.6b38e966@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05. 04. 22, 18:03, Andy Shevchenko wrote:
-> On Tue, Apr 05, 2022 at 01:24:36PM +0300, Ilpo Järvinen wrote:
->> After lookahead for XON/XOFF characters is added by the next
->> patch, the receive side needs to ensure the flow-control
->> actions are not retaken later on when those same characters
->> get read by TTY.
->>
->> Thus, pass lookahead count to receive_buf and skip
->> flow-control character actions if already taken for the
->> character in question. Lookahead count will become live after
->> the next patch.
+On Tue, Apr 05, 2022 at 11:24:13PM -0400, Steven Rostedt wrote:
+> On Tue, 5 Apr 2022 23:08:12 -0400
+> Steven Rostedt <rostedt@goodmis.org> wrote:
 > 
-> ...
+> > Here's a thought, if you decide to backport a patch to stable, and you see
+> > that there's another commit with a "Fixes" tag to the automatically
+> > selected commit. DO NOT BACKPORT IF THE FIXES PATCH FAILS TO GO BACK TOO!
 > 
->> -static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
->> +static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
->> +				       bool lookahead_done)
->>   {
->>   	struct n_tty_data *ldata = tty->disc_data;
->>   
->>   	if (I_IXON(tty)) {
->>   		if (c == START_CHAR(tty)) {
->> -			start_tty(tty);
->> -			process_echoes(tty);
->> +			if (!lookahead_done) {
->> +				start_tty(tty);
->> +				process_echoes(tty);
->> +			}
->>   			return;
->>   		}
->>   		if (c == STOP_CHAR(tty)) {
->> -			stop_tty(tty);
->> +			if (!lookahead_done)
->> +				stop_tty(tty);
->>   			return;
->>   		}
+> Seriously. This should be the case for *all* backported patches, not just
+> the AUTOSEL ones.
 > 
-> Wouldn't be cleaner to inside out the conditionals?
+> Otherwise you are backporting a commit to "stable" that is KNOWN TO BE
+> BROKEN!
 
-Seconded.
-
-> 	if (I_IXON(tty)) {
-> 		if (lookahead_done) {
-> 			// Can be joined, but I think this is better
-
-I would join them, IMO it'd be still easy to read and to follow too.
-
-> 			if (c == START_CHAR(tty))
-> 				return;
-> 			if (c == STOP_CHAR(tty))
-> 				return;
-> 		} else {
-> 			if (c == START_CHAR(tty)) {
-> 				start_tty(tty);
-> 				process_echoes(tty);
-> 				return;
-> 			}
-> 			if (c == STOP_CHAR(tty)) {
-> 				stop_tty(tty);
-> 				return;
-> 			}
-> 		}
-> 	}
-
-thanks,
--- 
-js
-suse labs
+My scripts usually do catch this, let me go see what went wrong...
