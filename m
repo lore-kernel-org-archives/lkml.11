@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66ED3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232274AbiDFMP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57138 "EHLO
+        id S229972AbiDFMPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:15:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231234AbiDFMOD (ORCPT
+        with ESMTP id S231279AbiDFMOE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:14:03 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D342E12759C;
-        Wed,  6 Apr 2022 00:56:28 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9L0qr._1649231783;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9L0qr._1649231783)
+        Wed, 6 Apr 2022 08:14:04 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC111B60E1;
+        Wed,  6 Apr 2022 00:56:26 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9L0qp1_1649231779;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9L0qp1_1649231779)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 15:56:24 +0800
+          Wed, 06 Apr 2022 15:56:20 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v8 07/20] cachefiles: document on-demand read mode
-Date:   Wed,  6 Apr 2022 15:55:59 +0800
-Message-Id: <20220406075612.60298-8-jefflexu@linux.alibaba.com>
+Subject: [PATCH v8 04/20] cachefiles: notify user daemon when withdrawing cookie
+Date:   Wed,  6 Apr 2022 15:55:56 +0800
+Message-Id: <20220406075612.60298-5-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
 References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
@@ -41,193 +41,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document new user interface introduced by on-demand read mode.
+Notify user daemon that cookie is going to be withdrawn, providing a
+hint that the associated anon_fd can be closed. The anon_fd attached in
+the CLOSE request shall be same with that in the previous OPEN request.
+
+Be noted that this is only a hint. User daemon can close the anon_fd
+when receiving the CLOSE request, then it will receive another anon_fd
+if the cookie gets looked up. Or it can also ignore the CLOSE request,
+and keep writing data into the anon_fd. However the next time cookie
+gets looked up, the user daemon will still receive another anon_fd.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- .../filesystems/caching/cachefiles.rst        | 165 ++++++++++++++++++
- 1 file changed, 165 insertions(+)
+ fs/cachefiles/interface.c       |  2 ++
+ fs/cachefiles/internal.h        |  5 +++++
+ fs/cachefiles/ondemand.c        | 36 +++++++++++++++++++++++++++++++++
+ include/uapi/linux/cachefiles.h |  5 +++++
+ 4 files changed, 48 insertions(+)
 
-diff --git a/Documentation/filesystems/caching/cachefiles.rst b/Documentation/filesystems/caching/cachefiles.rst
-index 8bf396b76359..386801135027 100644
---- a/Documentation/filesystems/caching/cachefiles.rst
-+++ b/Documentation/filesystems/caching/cachefiles.rst
-@@ -28,6 +28,8 @@ Cache on Already Mounted Filesystem
+diff --git a/fs/cachefiles/interface.c b/fs/cachefiles/interface.c
+index ae93cee9d25d..a69073a1d3f0 100644
+--- a/fs/cachefiles/interface.c
++++ b/fs/cachefiles/interface.c
+@@ -362,6 +362,8 @@ static void cachefiles_withdraw_cookie(struct fscache_cookie *cookie)
+ 		spin_unlock(&cache->object_list_lock);
+ 	}
  
-  (*) Debugging.
++	cachefiles_ondemand_clean_object(object);
++
+ 	if (object->file) {
+ 		cachefiles_begin_secure(cache, &saved_cred);
+ 		cachefiles_clean_up_object(object, cache);
+diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
+index 7d5c7d391fdb..8a397d4da560 100644
+--- a/fs/cachefiles/internal.h
++++ b/fs/cachefiles/internal.h
+@@ -279,6 +279,7 @@ extern int cachefiles_ondemand_copen(struct cachefiles_cache *cache,
+ 				     char *args);
  
-+ (*) On-demand Read.
-+
+ extern int cachefiles_ondemand_init_object(struct cachefiles_object *object);
++extern void cachefiles_ondemand_clean_object(struct cachefiles_object *object);
  
+ #else
+ static inline ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
+@@ -291,6 +292,10 @@ static inline int cachefiles_ondemand_init_object(struct cachefiles_object *obje
+ {
+ 	return 0;
+ }
++
++static inline void cachefiles_ondemand_clean_object(struct cachefiles_object *object)
++{
++}
+ #endif
  
- Overview
-@@ -482,3 +484,166 @@ the control file.  For example::
- 	echo $((1|4|8)) >/sys/module/cachefiles/parameters/debug
+ /*
+diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
+index 75180d02af91..defd65124052 100644
+--- a/fs/cachefiles/ondemand.c
++++ b/fs/cachefiles/ondemand.c
+@@ -213,6 +213,12 @@ ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
+ 		goto err_put_fd;
+ 	}
  
- will turn on all function entry debugging.
++	/* CLOSE request has no reply */
++	if (msg->opcode == CACHEFILES_OP_CLOSE) {
++		xa_erase(&cache->reqs, id);
++		complete(&req->done);
++	}
 +
+ 	return n;
+ 
+ err_put_fd:
+@@ -334,6 +340,28 @@ static int init_open_req(struct cachefiles_req *req, void *private)
+ 	return 0;
+ }
+ 
++static int init_close_req(struct cachefiles_req *req, void *private)
++{
++	struct cachefiles_object *object = req->object;
++	struct cachefiles_close *load = (void *)req->msg.data;
++	int fd = object->fd;
 +
-+On-demand Read
-+==============
++	if (fd == -1) {
++		pr_info_once("CLOSE: anonymous fd closed prematurely.\n");
++		return -EIO;
++	}
 +
-+When working in original mode, cachefiles mainly serves as a local cache for
-+remote networking fs, while in on-demand read mode, cachefiles can boost the
-+scenario where on-demand read semantics is needed, e.g. container image
-+distribution.
++	/*
++	 * It's possible if the cookie looking up phase failed before READ
++	 * request has ever been sent.
++	 */
++	if (fd == 0)
++		return -ENOENT;
 +
-+The essential difference between these two modes is that, in original mode,
-+when cache miss, netfs itself will fetch data from remote, and then write the
-+fetched data into cache file. While in on-demand read mode, a user daemon is
-+responsible for fetching data and then writing to the cache file.
++	load->fd = fd;
++	return 0;
++}
 +
-+``CONFIG_CACHEFILES_ONDEMAND`` shall be enabled to support on-demand read mode.
+ int cachefiles_ondemand_init_object(struct cachefiles_object *object)
+ {
+ 	struct fscache_cookie *cookie = object->cookie;
+@@ -358,3 +386,11 @@ int cachefiles_ondemand_init_object(struct cachefiles_object *object)
+ 					    CACHEFILES_OP_OPEN, data_len,
+ 					    init_open_req, NULL);
+ }
 +
++void cachefiles_ondemand_clean_object(struct cachefiles_object *object)
++{
++	cachefiles_ondemand_send_req(object,
++				     CACHEFILES_OP_CLOSE,
++				     sizeof(struct cachefiles_close),
++				     init_close_req, NULL);
++}
+diff --git a/include/uapi/linux/cachefiles.h b/include/uapi/linux/cachefiles.h
+index 41492f2653c9..73397e142ab3 100644
+--- a/include/uapi/linux/cachefiles.h
++++ b/include/uapi/linux/cachefiles.h
+@@ -12,6 +12,7 @@
+ 
+ enum cachefiles_opcode {
+ 	CACHEFILES_OP_OPEN,
++	CACHEFILES_OP_CLOSE,
+ };
+ 
+ /*
+@@ -46,4 +47,8 @@ struct cachefiles_open {
+ 	__u8  data[];
+ };
+ 
++struct cachefiles_close {
++	__u32 fd;
++};
 +
-+Protocol Communication
-+----------------------
-+
-+The on-demand read mode relies on a simple protocol used for communication
-+between kernel and user daemon. The model is like::
-+
-+	kernel --[request]--> user daemon --[reply]--> kernel
-+
-+The cachefiles kernel module will send requests to user daemon when needed.
-+User daemon needs to poll on the devnode ('/dev/cachefiles') to check if
-+there's pending request to be processed. A POLLIN event will be returned
-+when there's pending request.
-+
-+Then user daemon needs to read the devnode to fetch one request and process it
-+accordingly. It is worth nothing that each read only gets one request. When
-+finished processing the request, user daemon needs to write the reply to the
-+devnode.
-+
-+Each request is started with a message header like::
-+
-+	struct cachefiles_msg {
-+		__u32 id;
-+		__u32 opcode;
-+		__u32 len;
-+		__u8  data[];
-+	};
-+
-+	* ``id`` is a unique ID identifying this request among all pending
-+	  requests.
-+
-+	* ``opcode`` identifies the type of this request.
-+
-+	* ``data`` identifies the payload of this request.
-+
-+	* ``len`` identifies the whole length of this request, including the
-+	  header and following type specific payload.
-+
-+
-+Turn on On-demand Mode
-+----------------------
-+
-+An optional parameter is added to "bind" command::
-+
-+	bind [ondemand]
-+
-+When "bind" command takes without argument, it defaults to the original mode.
-+When "bind" command takes with "ondemand" argument, i.e. "bind ondemand",
-+on-demand read mode will be enabled.
-+
-+
-+OPEN Request
-+------------
-+
-+When netfs opens a cache file for the first time, a request with
-+CACHEFILES_OP_OPEN opcode, a.k.a OPEN request will be sent to user daemon. The
-+payload format is like::
-+
-+	struct cachefiles_open {
-+		__u32 volume_key_size;
-+		__u32 cookie_key_size;
-+		__u32 fd;
-+		__u32 flags;
-+		__u8  data[];
-+	};
-+
-+	* ``data`` contains volume_key and cookie_key in sequence.
-+
-+	* ``volume_key_size`` identifies the size of volume key of the cache
-+	  file, in bytes. volume_key is of string format, with a suffix '\0'.
-+
-+	* ``cookie_key_size`` identifies the size of cookie key of the cache
-+	  file, in bytes. cookie_key is of binary format, which is netfs
-+	  specific.
-+
-+	* ``fd`` identifies the anonymous fd of the cache file, with which user
-+	  daemon can perform write/llseek file operations on the cache file.
-+
-+
-+OPEN request contains (volume_key, cookie_key, anon_fd) triple for corresponding
-+cache file. With this triple, user daemon could fetch and write data into the
-+cache file in the background, even when kernel has not triggered the cache miss
-+yet. User daemon is able to distinguish the requested cache file with the given
-+(volume_key, cookie_key), and write the fetched data into cache file with the
-+given anon_fd.
-+
-+After recording the (volume_key, cookie_key, anon_fd) triple, user daemon shall
-+reply with "copen" (complete open) command::
-+
-+	copen <id>,<cache_size>
-+
-+	* ``id`` is exactly the id field of the previous OPEN request.
-+
-+	* When >= 0, ``cache_size`` identifies the size of the cache file;
-+	  when < 0, ``cache_size`` identifies the error code ecountered by the
-+	  user daemon.
-+
-+
-+CLOSE Request
-+-------------
-+When cookie withdrawed, a request with CACHEFILES_OP_CLOSE opcode, a.k.a CLOSE
-+request, will be sent to user daemon. It will notify user daemon to close the
-+attached anon_fd. The payload format is like::
-+
-+	struct cachefiles_close {
-+		__u32 fd;
-+	};
-+
-+	* ``fd`` identifies the anon_fd to be closed, which is exactly the same
-+	  with that in OPEN request.
-+
-+
-+READ Request
-+------------
-+
-+When on-demand read mode is turned on, and cache miss encountered, kernel will
-+send a request with CACHEFILES_OP_READ opcode, a.k.a READ request, to user
-+daemon. It will notify user daemon to fetch data in the requested file range.
-+The payload format is like::
-+
-+	struct cachefiles_read {
-+		__u64 off;
-+		__u64 len;
-+		__u32 fd;
-+	};
-+
-+	* ``off`` identifies the starting offset of the requested file range.
-+
-+	* ``len`` identifies the length of the requested file range.
-+
-+	* ``fd`` identifies the anonymous fd of the requested cache file. It is
-+	  guaranteed that it shall be the same with the fd field in the previous
-+	  OPEN request.
-+
-+When receiving one READ request, user daemon needs to fetch data of the
-+requested file range, and then write the fetched data into cache file with the
-+given anonymous fd.
-+
-+When finished processing the READ request, user daemon needs to reply with
-+CACHEFILES_IOC_CREAD ioctl on the corresponding anon_fd::
-+
-+	ioctl(fd, CACHEFILES_IOC_CREAD, id);
-+
-+	* ``fd`` is exactly the fd field of the previous READ request.
-+
-+	* ``id`` is exactly the id field of the previous READ request.
+ #endif
 -- 
 2.27.0
 
