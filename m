@@ -2,196 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E93CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233933AbiDFUK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51414 "EHLO
+        id S229798AbiDFUKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233698AbiDFUKQ (ORCPT
+        with ESMTP id S233308AbiDFUKU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:10:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FB7CF4B3;
-        Wed,  6 Apr 2022 11:27:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBF7EB824E1;
-        Wed,  6 Apr 2022 18:27:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F23CC385A3;
-        Wed,  6 Apr 2022 18:27:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269634;
-        bh=T0hUhy+ZEHBPKg8ig2zcn/mvi2SifcsVfTmk4w6GxtQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oaw8xf875UaT0VQxcuA/kQ3b7gN4z7SfO+5nKQGfFptaozx7OjQh3vpreNSxVerQ2
-         RyNFd4TfsT/ZtRcTF4J6ATLdgLwSpRU43GeFKUZS1ehyg2PCV7GM1aSW26/xJb3alK
-         eigwSgnTvmpy95VZ5cXcPSVaroZOqCNalIDOAjxc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Hanjun Guo <hanjun.guo@linaro.org>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 14/43] arm64: arch_timer: Add infrastructure for multiple erratum detection methods
-Date:   Wed,  6 Apr 2022 20:26:23 +0200
-Message-Id: <20220406182437.099454875@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 6 Apr 2022 16:10:20 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01BD11CF71
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:11:51 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id s137so475pgs.5
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:11:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XD5ItTlj29WOcCS4owus3qC0hML8VkaRp6mT60P4fAs=;
+        b=kPmdnsx9LLguRvYL3Ro1Z3H/hbzqUOaaHSA6QYx4TnRIxubdNkfpl5NftPa6B3A32J
+         0mO2aM/7kIc7ajialM8F0oZMG/15whqn7iEi50wmKl74Rz00zFXIfOe0G6H6w7PuUxT1
+         ya1QYh2tvdEW3vXVvLy65KQgfaZwXcBOQXjWisRdiZox3pfzQ80wnCGPRPODglkZeAj+
+         /yegc92v07QiiihtAf04t1N+4o/gz2LOFVvZFKrnF3xashqkZofgO0c8cxzH8lb8BVIn
+         Sd/MNUh2/sRTP7K5lhLD1LibPJJl898v3LOYFGmmvvq5DgiAkne83x5VDbZs+dESUcyp
+         mIWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XD5ItTlj29WOcCS4owus3qC0hML8VkaRp6mT60P4fAs=;
+        b=pj0WrRFzbUoIztWv4SIT6OpCZp9NLEDDI8odlFgZQhmKgZe5D2zo9U1nBn+i9tcQrt
+         cCifbtgABesChbYfB6gIlm4LLWCDL2YmPku52Gv7QA06/yQmoBamzi/AamopFhUbCnZ/
+         YPRt7V+nZge2QPg7ho7x91KZtcG2aOA0xXKZ1jAUGQnGqxc6VsYvbIfRzSJjehlG4DdL
+         aw+T0f1+THdeVK1EqSiAQHkNJ71w4H8IraJLWxYW3rb5P4r3UKBjh6WxXMsxXtKS9dOq
+         ZImtObyLOuFnGDidJY/g0x4M7tGIPHs0SxvY5uTo00AldSInurblj/0esBeXzrbj6RaQ
+         /9xQ==
+X-Gm-Message-State: AOAM5330+INU1Fds+dkyeWivACwiqsACZMnIF6E+ndY0kUule5UnRm2g
+        9QWPF6YWbqEkUdXRGPfN1S7v3Q==
+X-Google-Smtp-Source: ABdhPJwJhqMpUBciUS7gBInD6rkTovC4c40eFaC1Tma7/9HSbIMAi+pqB0ASIGQskCxTS3WkV0FEGw==
+X-Received: by 2002:a05:6a00:2304:b0:4fa:dff2:88f5 with SMTP id h4-20020a056a00230400b004fadff288f5mr9944212pfh.11.1649265095918;
+        Wed, 06 Apr 2022 10:11:35 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id 83-20020a621556000000b004fe5d8c5cf3sm1868411pfv.156.2022.04.06.10.11.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 10:11:34 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 11:11:32 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Mike Leach <mike.leach@linaro.org>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        linux-perf-users@vger.kernel.org, leo.yan@linaro.org
+Subject: Re: [PATCH 06/10] coresight: perf: traceid: Add perf notifiers for
+ trace ID
+Message-ID: <20220406171132.GA16110@p14s>
+References: <20220308205000.27646-1-mike.leach@linaro.org>
+ <20220308205000.27646-7-mike.leach@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220308205000.27646-7-mike.leach@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <marc.zyngier@arm.com>
+On Tue, Mar 08, 2022 at 08:49:56PM +0000, Mike Leach wrote:
+> Adds in notifier calls to the trace ID allocator that perf
+> events are starting and stopping.
+> 
+> This ensures that Trace IDs associated with CPUs remain the same
+> throughout the perf session, and are only release when all perf
+> sessions are complete.
+> 
+> Signed-off-by: Mike Leach <mike.leach@linaro.org>
+> ---
+>  drivers/hwtracing/coresight/coresight-etm-perf.c | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-etm-perf.c b/drivers/hwtracing/coresight/coresight-etm-perf.c
+> index c039b6ae206f..008f9dac429d 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm-perf.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm-perf.c
+> @@ -22,6 +22,7 @@
+>  #include "coresight-etm-perf.h"
+>  #include "coresight-priv.h"
+>  #include "coresight-syscfg.h"
+> +#include "coresight-trace-id.h"
+>  
+>  static struct pmu etm_pmu;
+>  static bool etm_perf_up;
+> @@ -223,11 +224,21 @@ static void free_event_data(struct work_struct *work)
+>  		struct list_head **ppath;
+>  
+>  		ppath = etm_event_cpu_path_ptr(event_data, cpu);
+> -		if (!(IS_ERR_OR_NULL(*ppath)))
+> +		if (!(IS_ERR_OR_NULL(*ppath))) {
+>  			coresight_release_path(*ppath);
+> +			/*
+> +			 * perf may have read a trace id for a cpu, but never actually
+> +			 * executed code on that cpu - which means the trace id would
+> +			 * not release on disable. Re-release here to be sure.
+> +			 */
+> +			coresight_trace_id_put_cpu_id(cpu, coresight_get_trace_id_map());
 
-commit 651bb2e9dca6e6dbad3fba5f6e6086a23575b8b5 upstream.
+A CPU gets a traceID in event_etm_start() when the event is installed for
+running.  Do you see a scenario where etm_free_aux() is called without
+previously calling event_etm_stop()? 
 
-We're currently stuck with DT when it comes to handling errata, which
-is pretty restrictive. In order to make things more flexible, let's
-introduce an infrastructure that could support alternative discovery
-methods. No change in functionality.
-
-Acked-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Hanjun Guo <hanjun.guo@linaro.org>
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
-[ morse: Removed the changes to HiSilicon erratum 161010101, which isn't
-  present in v4.9 ]
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/include/asm/arch_timer.h  |    7 ++-
- drivers/clocksource/arm_arch_timer.c |   81 ++++++++++++++++++++++++++++++-----
- 2 files changed, 76 insertions(+), 12 deletions(-)
-
---- a/arch/arm64/include/asm/arch_timer.h
-+++ b/arch/arm64/include/asm/arch_timer.h
-@@ -37,9 +37,14 @@ extern struct static_key_false arch_time
- #define needs_unstable_timer_counter_workaround()  false
- #endif
- 
-+enum arch_timer_erratum_match_type {
-+	ate_match_dt,
-+};
- 
- struct arch_timer_erratum_workaround {
--	const char *id;		/* Indicate the Erratum ID */
-+	enum arch_timer_erratum_match_type match_type;
-+	const void *id;
-+	const char *desc;
- 	u32 (*read_cntp_tval_el0)(void);
- 	u32 (*read_cntv_tval_el0)(void);
- 	u64 (*read_cntvct_el0)(void);
---- a/drivers/clocksource/arm_arch_timer.c
-+++ b/drivers/clocksource/arm_arch_timer.c
-@@ -140,13 +140,81 @@ EXPORT_SYMBOL_GPL(arch_timer_read_ool_en
- static const struct arch_timer_erratum_workaround ool_workarounds[] = {
- #ifdef CONFIG_FSL_ERRATUM_A008585
- 	{
-+		.match_type = ate_match_dt,
- 		.id = "fsl,erratum-a008585",
-+		.desc = "Freescale erratum a005858",
- 		.read_cntp_tval_el0 = fsl_a008585_read_cntp_tval_el0,
- 		.read_cntv_tval_el0 = fsl_a008585_read_cntv_tval_el0,
- 		.read_cntvct_el0 = fsl_a008585_read_cntvct_el0,
- 	},
- #endif
- };
-+
-+typedef bool (*ate_match_fn_t)(const struct arch_timer_erratum_workaround *,
-+			       const void *);
-+
-+static
-+bool arch_timer_check_dt_erratum(const struct arch_timer_erratum_workaround *wa,
-+				 const void *arg)
-+{
-+	const struct device_node *np = arg;
-+
-+	return of_property_read_bool(np, wa->id);
-+}
-+
-+static const struct arch_timer_erratum_workaround *
-+arch_timer_iterate_errata(enum arch_timer_erratum_match_type type,
-+			  ate_match_fn_t match_fn,
-+			  void *arg)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(ool_workarounds); i++) {
-+		if (ool_workarounds[i].match_type != type)
-+			continue;
-+
-+		if (match_fn(&ool_workarounds[i], arg))
-+			return &ool_workarounds[i];
-+	}
-+
-+	return NULL;
-+}
-+
-+static
-+void arch_timer_enable_workaround(const struct arch_timer_erratum_workaround *wa)
-+{
-+	timer_unstable_counter_workaround = wa;
-+	static_branch_enable(&arch_timer_read_ool_enabled);
-+}
-+
-+static void arch_timer_check_ool_workaround(enum arch_timer_erratum_match_type type,
-+					    void *arg)
-+{
-+	const struct arch_timer_erratum_workaround *wa;
-+	ate_match_fn_t match_fn = NULL;
-+
-+	if (static_branch_unlikely(&arch_timer_read_ool_enabled))
-+		return;
-+
-+	switch (type) {
-+	case ate_match_dt:
-+		match_fn = arch_timer_check_dt_erratum;
-+		break;
-+	default:
-+		WARN_ON(1);
-+		return;
-+	}
-+
-+	wa = arch_timer_iterate_errata(type, match_fn, arg);
-+	if (!wa)
-+		return;
-+
-+	arch_timer_enable_workaround(wa);
-+	pr_info("Enabling global workaround for %s\n", wa->desc);
-+}
-+
-+#else
-+#define arch_timer_check_ool_workaround(t,a)		do { } while(0)
- #endif /* CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND */
- 
- static __always_inline
-@@ -919,17 +987,8 @@ static int __init arch_timer_of_init(str
- 
- 	arch_timer_c3stop = !of_property_read_bool(np, "always-on");
- 
--#ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
--	for (i = 0; i < ARRAY_SIZE(ool_workarounds); i++) {
--		if (of_property_read_bool(np, ool_workarounds[i].id)) {
--			timer_unstable_counter_workaround = &ool_workarounds[i];
--			static_branch_enable(&arch_timer_read_ool_enabled);
--			pr_info("arch_timer: Enabling workaround for %s\n",
--				timer_unstable_counter_workaround->id);
--			break;
--		}
--	}
--#endif
-+	/* Check for globally applicable workarounds */
-+	arch_timer_check_ool_workaround(ate_match_dt, np);
- 
- 	/*
- 	 * If we cannot rely on firmware initializing the timer registers then
-
-
+> +		}
+>  		*ppath = NULL;
+>  	}
+>  
+> +	/* mark perf event as done for trace id allocator */
+> +	coresight_trace_id_perf_stop();
+> +
+>  	free_percpu(event_data->path);
+>  	kfree(event_data);
+>  }
+> @@ -314,6 +325,9 @@ static void *etm_setup_aux(struct perf_event *event, void **pages,
+>  		sink = user_sink = coresight_get_sink_by_id(id);
+>  	}
+>  
+> +	/* tell the trace ID allocator that a perf event is starting up */
+> +	coresight_trace_id_perf_start();
+> +
+>  	/* check if user wants a coresight configuration selected */
+>  	cfg_hash = (u32)((event->attr.config2 & GENMASK_ULL(63, 32)) >> 32);
+>  	if (cfg_hash) {
+> -- 
+> 2.17.1
+> 
