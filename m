@@ -2,175 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE013C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 124BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231615AbiDFMfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35038 "EHLO
+        id S231679AbiDFMfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233175AbiDFMc6 (ORCPT
+        with ESMTP id S232935AbiDFMbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:32:58 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E6A259B78;
-        Wed,  6 Apr 2022 01:30:05 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n8so1362707plh.1;
-        Wed, 06 Apr 2022 01:30:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=TQIMUbozG9SqyvqQCldZuvLei2Xngiw+47KUkt6P5J0=;
-        b=igeBBnP0Y9YvQ9bSGw5U62Q2747s9e3aKAQOBKPNqGJbB6fdgCxYlrw5iS15xm7Ww7
-         8O8JkcqHW+u4kuRBjqSOIb2E83KPYe1cr1O+SEG+H3GE9Dpb4jkTYF5MkR4T84DPaovN
-         YBQuyG7c52B8gbTjz2D/Q3gm4JxxFrAyQJu8CI//8TsGJ+K0HuQIRjqzqD7eXWLqNWQd
-         A5kb+iCa0QkF4FUlI/bnDiAZzkXgz9ShJ7cg2xwWjcn0R+35JRiqXng8O0XPeg/2qIs1
-         AK/ip0y5PpB5sd/i8/qqKNvsyhonSYEOot3Ry0RvjkNZ9ebyo245iywM7hxScWzu/ex1
-         KZ2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=TQIMUbozG9SqyvqQCldZuvLei2Xngiw+47KUkt6P5J0=;
-        b=le0xs55gtf2SRzH0ftONSt+g6HVFjGnPsXl7EurIb+LAGH/rkSTv78WoLiZm1S05LB
-         vjnW7xDLedgv6tiV/GAkSS+qJGNJhZyQT65WKQoKQAUAI7R7eWihmKj3H0W4J8ZUOy9X
-         kOnTHWWTLhS/qzLicx7wQ/suFrcJjdYgbw+gpYlpUJuMi3frYX9EXRflvaeb5VkDjz6l
-         ZVNmTcen/6S3WoFjTEzUnGZThDCRyyBAU1bC73oLxYbjq59IwfE1IJ3+0AS+wPdSQqZd
-         zEGe94g0Zf3A4miQMgPrKv2o18T93JjSABty3BAob7fWM7QBHGL8QCp+8DzwF7Unmt8o
-         Cj/g==
-X-Gm-Message-State: AOAM532pOULxdB45Dli02sFxwzhORYhpK43XaYoCeUm6jbzNHm5++d56
-        jBFSyl1qmvNBS7H831ntZQu+jUGRiWk=
-X-Google-Smtp-Source: ABdhPJwM8I6TscAqthljGeo5TgV0M9U06rHbG0iHUpzu8dQ7beIIlliGOGERfhBZhYVi+7ImbO+OzQ==
-X-Received: by 2002:a17:90b:4d85:b0:1c7:3933:d810 with SMTP id oj5-20020a17090b4d8500b001c73933d810mr8686532pjb.129.1649233804755;
-        Wed, 06 Apr 2022 01:30:04 -0700 (PDT)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id r8-20020a17090a0ac800b001c9e35d3a3asm4904977pje.24.2022.04.06.01.30.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Apr 2022 01:30:04 -0700 (PDT)
-From:   Tony Huang <tonyhuang.sunplus@gmail.com>
-To:     ulf.hansson@linaro.org, robh+dt@kernel.org,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        krzysztof.kozlowski@linaro.org
-Cc:     wells.lu@sunplus.com, lh.Kuo@sunplus.com, tony.huang@sunplus.com,
-        Tony Huang <tonyhuang.sunplus@gmail.com>
-Subject: [PATCH v6 1/2] dt-binding: mmc: Add mmc yaml file for Sunplus SP7021
-Date:   Wed,  6 Apr 2022 16:29:48 +0800
-Message-ID: <9628a68b922ae9f32c6cd7ea734c436440d21e6d.1649229258.git.tonyhuang.sunplus@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1649229258.git.tonyhuang.sunplus@gmail.com>
-References: <cover.1649229258.git.tonyhuang.sunplus@gmail.com>
-In-Reply-To: <cover.1649229258.git.tonyhuang.sunplus@gmail.com>
-References: <cover.1649229258.git.tonyhuang.sunplus@gmail.com>
+        Wed, 6 Apr 2022 08:31:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B501621A0EC;
+        Wed,  6 Apr 2022 01:26:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B6A160BBC;
+        Wed,  6 Apr 2022 08:26:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E474FC385A9;
+        Wed,  6 Apr 2022 08:26:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649233581;
+        bh=xr9ehIzB/NufyUUmJObt5E7/ADYvqnVGS1WjCAn3n7o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=duYGvNgO2c/7ESg2X+pseYZcAu113bXILQDxFmUzZbBEF4ZxMObQGsjvPrvgp22Jh
+         f1BH226n3SaBFHjH8JFTAvefvdS/jZtn9rXsKK+Mf7t6FC5EAIPtYx2he2sol0HXN2
+         C13XCF9DsyMl8dyrsgjXmN5x3Rcs4j8Ge9jPjqqMXCvhu+s/t5E7Zc9mDdVc3wLoZL
+         O5ZJDQW4TK6TZd1cJ6ooDAacoNtIzFUsPSn9dtUt3FJldvWAHlL2A919xWzvwnXtJx
+         RXi1CjHn4Iu87s2d3MNEKwPaHbjcUXKGSX8GZKiOeWgFwCBxewLI+Ye44Kw0ceJ3+3
+         5Bfa2la/7URsQ==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Raed Salem <raeds@nvidia.com>
+Subject: [PATCH mlx5-next 04/17] net/mlx5: Remove XFRM no_trailer flag
+Date:   Wed,  6 Apr 2022 11:25:39 +0300
+Message-Id: <636d75421e1ca4254a062537eea001ab0e50e19b.1649232994.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
+References: <cover.1649232994.git.leonro@nvidia.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220406082948.q1JwSEdp4AaZz33RYMW-2mC2PcbNGY_FHcxNQDHrJ14@z>
 
-Add MMC YAML file for Sunplus SP7021.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Signed-off-by: Tony Huang <tonyhuang.sunplus@gmail.com>
+Only FPGA needed this NO_TRAILER flag, so remove this assignment.
+
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
-Changes in v5:
- - Addressed comments from Krzysztof.
- 
-Changes in v6:
- - Addressed comments from Krzysztof.
- - To substitute MMC for mmc. To substitute YMAL for ymal.
- - Remove max-frequency.
- - Fixed wrong file name.
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c      | 2 --
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h      | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c | 2 --
+ 3 files changed, 5 deletions(-)
 
- .../devicetree/bindings/mmc/sunplus,mmc.yaml       | 62 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 +++
- 2 files changed, 68 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
-
-diff --git a/Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml b/Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
-new file mode 100644
-index 0000000..8ba623e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
-@@ -0,0 +1,62 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Ltd. Co. 2021
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mmc/sunplus,mmc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sunplus MMC Controller
-+
-+maintainers:
-+  - Tony Huang <tonyhuang.sunplus@gmail.com>
-+  - Li-hao Kuo <lhjeff911@gmail.com>
-+
-+allOf:
-+  - $ref: "mmc-controller.yaml"
-+
-+properties:
-+  compatible:
-+    enum:
-+      - sunplus,sp7021-mmc
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - resets
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    mmc0: mmc@9c003b00 {
-+        compatible = "sunplus,mmc";
-+        reg = <0x9c003b00 0x180>;
-+        interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clkc 0x4e>;
-+        resets = <&rstc 0x3e>;
-+        bus-width = <8>;
-+        max-frequency = <52000000>;
-+        non-removable;
-+        disable-wp;
-+        cap-mmc-highspeed;
-+        mmc-ddr-3_3v;
-+        no-sdio;
-+        no-sd;
-+    };
-+
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fb18ce7..75746ec 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18242,6 +18242,12 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/dlink/sundance.c
- 
-+SUNPLUS MMC DRIVER
-+M:	Tony Huang <tonyhuang.sunplus@gmail.com>
-+M:	Li-hao Kuo <lhjeff911@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
-+
- SUPERH
- M:	Yoshinori Sato <ysato@users.sourceforge.jp>
- M:	Rich Felker <dalias@libc.org>
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index 213fbf63dde9..13f6fed74950 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -426,8 +426,6 @@ int mlx5e_ipsec_init(struct mlx5e_priv *priv)
+ 	hash_init(ipsec->sadb_rx);
+ 	spin_lock_init(&ipsec->sadb_rx_lock);
+ 	ipsec->en_priv = priv;
+-	ipsec->no_trailer = !!(mlx5_accel_ipsec_device_caps(priv->mdev) &
+-			       MLX5_ACCEL_IPSEC_CAP_RX_NO_TRAILER);
+ 	ipsec->wq = alloc_ordered_workqueue("mlx5e_ipsec: %s", 0,
+ 					    priv->netdev->name);
+ 	if (!ipsec->wq) {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+index 51ae6145b6fe..6e4f0dbbd4e4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+@@ -81,7 +81,6 @@ struct mlx5e_ipsec_tx;
+ struct mlx5e_ipsec {
+ 	struct mlx5e_priv *en_priv;
+ 	DECLARE_HASHTABLE(sadb_rx, MLX5E_IPSEC_SADB_RX_BITS);
+-	bool no_trailer;
+ 	spinlock_t sadb_rx_lock; /* Protects sadb_rx */
+ 	struct mlx5e_ipsec_sw_stats sw_stats;
+ 	struct mlx5e_ipsec_stats stats;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+index 28e0500d4a48..8e0cf5e65100 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+@@ -347,8 +347,6 @@ void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
+ 	switch (MLX5_IPSEC_METADATA_SYNDROM(ipsec_meta_data)) {
+ 	case MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_DECRYPTED:
+ 		xo->status = CRYPTO_SUCCESS;
+-		if (WARN_ON_ONCE(priv->ipsec->no_trailer))
+-			xo->flags |= XFRM_ESP_NO_TRAILER;
+ 		break;
+ 	case MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_AUTH_FAILED:
+ 		xo->status = CRYPTO_TUNNEL_ESP_AUTH_FAILED;
 -- 
-2.7.4
+2.35.1
 
