@@ -2,125 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27392C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0268C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236562AbiDFVkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
+        id S236725AbiDFVkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238650AbiDFVjH (ORCPT
+        with ESMTP id S237703AbiDFViV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:39:07 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C99815FED
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 14:15:35 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id j17so2156883pfi.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 14:15:35 -0700 (PDT)
+        Wed, 6 Apr 2022 17:38:21 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E526141DB6
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 13:57:18 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id c15so4877399ljr.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 13:57:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pBppaTksBxMSYQ8KEwF0hkGErNoqL29ELbfwE/o2LyQ=;
-        b=s3oDFPukVfuhNj8ZfSNKbijug6xsWY5AXd9u8155hXTtguuSQrv2jG2K4JGWyU1+f4
-         6McDLcEDtoZw/oo1OsN0rR11XyCTBjrM4yz7q/+Ek+cQEqYLIc/QMrGKINzNebUvLJ7j
-         vmQnSg+YY4YTT+L9wT109V/ORxUZAEKwevt2AczcqeXftDnzuGTkO/x1o+jKSlXlkBcZ
-         /dSeM54ERBRYxVG+UDC6WxrSKQs4/yZJ0Vd1bIN4skmGBsqf1LUZSTxYsJeDdnDhXy0I
-         vnQE65kCN1SfRTMYCdmHQMGLVir3F8Mc7ves5b2n5wdfDvX8TRFOIx7pYNYHAgF6kQY/
-         j+Sg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EmyOlWKtSNxj3DWsfduxZVZU5wGOGPxKyvHvnTz6lcI=;
+        b=jq7jeMYa1/GWNQdm7SpRK9Xvt9vCIu2PnkTUcUEhDN34fqe8A1mwBwZbQpRoVisRQk
+         bFNscfrmInpYye5WJvFEAB0/cDGkv2uaKerUby43BamFasp0304fBfSOwFXNB85SDP6X
+         6MZEi480XiupbZ6uw1oGqX/NJ4IMuKzpDnjxrsEo6e11UCbZTHhkb6hoDvTeNN45MKmN
+         rCI5Fe7l4au7J5uZWduHjBOQjW++4F7r9A9Tx/lipjSwToZzpZhVGgfBt6NrBKAVvQym
+         V6qW9bScNq3LR6f8VDqy4g3BhP+ZZx2aBhMZKOAjzgUjbQFRREvDHX42uU2HVWeEciXz
+         TGAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pBppaTksBxMSYQ8KEwF0hkGErNoqL29ELbfwE/o2LyQ=;
-        b=iZtvnF6ucMdO5mhIVvpBAMlHi6pXwvBvlMwYxzpVYqnGBHz6GqfXcU67gotZVIU5mb
-         kkYZHR7jyKL06x2pYyiTjVGEL9ha8VNGnRmaS7UR3NTrupMX/MJAF8GcR10Dhq5VDgvu
-         thyv+BHlVkw0ObFe23nyDg5N2W3q6W7ftrlZ4mEaK871zktCyfbGdYwz/QkmWwxdoBhY
-         IRqEjKMP4eyk2QW45Y8qykvEjZnjep8O2XoMvxQud6dn7ndS9sJvSk0hU7LYOjIDUgQw
-         QTPloV8Wq3i+iM79eNV5a2ZcctMI7DZXMPMM7fDUFvnRgQb3Y9zmFiifnbk/szqwhdxD
-         EoSw==
-X-Gm-Message-State: AOAM533BVwzudUjFLeRUiRCwYXuAXLY6gvNGljuDlmqDF5ukuiOsPa7a
-        CD1QsUEvouCNY2qNTsjfvZE5kw==
-X-Google-Smtp-Source: ABdhPJz34FDyktVxt3U52IjSJ+sWap5q0lea2zQvyKD/pTpOEF9bIjwLB1bdquXs2h9QefNRXroxhA==
-X-Received: by 2002:a63:7f1c:0:b0:382:1fb5:58b8 with SMTP id a28-20020a637f1c000000b003821fb558b8mr8454585pgd.507.1649279734739;
-        Wed, 06 Apr 2022 14:15:34 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id i2-20020a17090ac40200b001bd0e552d27sm6217879pjt.11.2022.04.06.14.15.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EmyOlWKtSNxj3DWsfduxZVZU5wGOGPxKyvHvnTz6lcI=;
+        b=XoVtz+EshjnzgmUUHFOA2p+HyZIIqINxSGs4klPpfPBJix/5MilSXH+hN8PQoWUmoD
+         7/KH9ZKnhczMgckZuZrtgihxHMTGzuZsK44pieaw/reSQ12nsQouAWBSSk/SALsiow6M
+         lQIp7TnzDttt1lyq4NGTEa52IgNSaAW2YAchihsjnqR6VpXoDpuiat+LP4tiYOZ0H9zk
+         ftFxm1I1/VUtaqJWc3tq6TVxq59CO3sgLJijt3XpeUR8jDFPMY1z875n1WOnMrLQh6tN
+         3akDxRL4vXQnyjvhuIm1+N0xoi+veKltRg6cQ4hSKxcfePImmnLkTaJgvpIafn9uPi9S
+         QjEg==
+X-Gm-Message-State: AOAM531quVOz3it2jl7peSg9VcOlRrmDNjVN2EOVk41xJKY95DoikxBh
+        1so0b/7As5hQylJCOhAenym1Xg==
+X-Google-Smtp-Source: ABdhPJykjllUjWrbBsbw9MgTMptQWUmRwtV9PhKiS1HBV5kr4L/Yq3KlfOAlxjrC6M1nHBmpsq2SLw==
+X-Received: by 2002:a2e:bf1d:0:b0:247:dea7:f657 with SMTP id c29-20020a2ebf1d000000b00247dea7f657mr6468467ljr.454.1649278636823;
+        Wed, 06 Apr 2022 13:57:16 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id t19-20020a19dc13000000b0044b022fd9f1sm1246586lfg.160.2022.04.06.13.57.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 14:15:34 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 21:15:30 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Chenyi Qiang <chenyi.qiang@intel.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Xiaoyao Li <xiaoyao.li@intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 1/3] KVM: X86: Save&restore the triple fault request
-Message-ID: <Yk4C8gA2xVCrzgrG@google.com>
-References: <20220318074955.22428-1-chenyi.qiang@intel.com>
- <20220318074955.22428-2-chenyi.qiang@intel.com>
- <YkzRSHHDMaVBQrxd@google.com>
- <YkzUceG4rhw15U3i@google.com>
+        Wed, 06 Apr 2022 13:57:16 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] clocksource/drivers/ixp4xx: Drop boardfile probe path
+Date:   Wed,  6 Apr 2022 22:55:05 +0200
+Message-Id: <20220406205505.2332821-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkzUceG4rhw15U3i@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022, Sean Christopherson wrote:
-> On Tue, Apr 05, 2022, Sean Christopherson wrote:
-> > On Fri, Mar 18, 2022, Chenyi Qiang wrote:
-> > > @@ -4976,6 +4980,9 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
-> > >  		}
-> > >  	}
-> > >  
-> > > +	if (events->flags & KVM_VCPUEVENT_TRIPLE_FAULT)
-> > > +		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
-> > > +
-> > >  	kvm_make_request(KVM_REQ_EVENT, vcpu);
-> > 
-> > Looks correct, but this really needs a selftest, at least for the SET path since
-> > the intent is to use that for the NOTIFY handling.  Doesn't need to be super fancy,
-> > e.g. do port I/O from L2, inject a triple fault, and verify L1 sees the appropriate
-> > exit.
-> > 
-> > Aha!  And for the GET path, abuse KVM_X86_SET_MCE with CR4.MCE=0 to coerce KVM into
-> > making a KVM_REQ_TRIPLE_FAULT, that way there's no need to try and hit a timing
-> > window to intercept the request.
-> 
-> Drat, I bet that MCE path means the WARN in nested_vmx_vmexit() can be triggered
-> by userspace.  If so, this patch makes it really, really easy to hit, e.g. queue the
-> request while L2 is active, then do KVM_SET_NESTED_STATE to force an "exit" without
-> bouncing through kvm_check_nested_events().
-> 
->   WARN_ON_ONCE(kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu))
-> 
-> I don't think SVM has a user-triggerable WARN, but the request should still be
-> dropped on forced exit from L2, e.g. I believe this is the correct fix:
+The boardfiles for IXP4xx have been deleted. Delete all the
+quirks and code dealing with that boot path and rely solely on
+device tree boot.
 
-Confirmed the WARN can be triggered by abusing this patch, I'll get a patch out
-once I figure out why kvm/queue is broken.
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/clocksource/Kconfig                |  2 +-
+ drivers/clocksource/timer-ixp4xx.c         | 25 ----------------------
+ include/linux/platform_data/timer-ixp4xx.h | 11 ----------
+ 3 files changed, 1 insertion(+), 37 deletions(-)
+ delete mode 100644 include/linux/platform_data/timer-ixp4xx.h
 
-diff --git a/tools/testing/selftests/kvm/x86_64/state_test.c b/tools/testing/selftests/kvm/x86_64/state_test.c
-index 2e0a92da8ff5..b7faeae3dcc4 100644
---- a/tools/testing/selftests/kvm/x86_64/state_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/state_test.c
-@@ -210,6 +210,12 @@ int main(int argc, char *argv[])
-                memset(&regs1, 0, sizeof(regs1));
-                vcpu_regs_get(vm, VCPU_ID, &regs1);
-
-+               if (stage == 6) {
-+                       state->events.flags |= 0x20;
-+                       vcpu_events_set(vm, VCPU_ID, &state->events);
-+                       vcpu_nested_state_set(vm, VCPU_ID, &state->nested, false);
-+               }
-+
-                kvm_vm_release(vm);
-
-                /* Restore state in a new VM.  */
+diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+index 1589ae7d5abb..8182ff2d12fe 100644
+--- a/drivers/clocksource/Kconfig
++++ b/drivers/clocksource/Kconfig
+@@ -80,7 +80,7 @@ config IXP4XX_TIMER
+ 	bool "Intel XScale IXP4xx timer driver" if COMPILE_TEST
+ 	depends on HAS_IOMEM
+ 	select CLKSRC_MMIO
+-	select TIMER_OF if OF
++	select TIMER_OF
+ 	help
+ 	  Enables support for the Intel XScale IXP4xx SoC timer.
+ 
+diff --git a/drivers/clocksource/timer-ixp4xx.c b/drivers/clocksource/timer-ixp4xx.c
+index cbb184953510..720ed70a2964 100644
+--- a/drivers/clocksource/timer-ixp4xx.c
++++ b/drivers/clocksource/timer-ixp4xx.c
+@@ -19,8 +19,6 @@
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/platform_device.h>
+-/* Goes away with OF conversion */
+-#include <linux/platform_data/timer-ixp4xx.h>
+ 
+ /*
+  * Constants to make it easy to access Timer Control/Status registers
+@@ -263,28 +261,6 @@ static struct platform_driver ixp4xx_timer_driver = {
+ };
+ builtin_platform_driver(ixp4xx_timer_driver);
+ 
+-/**
+- * ixp4xx_timer_setup() - Timer setup function to be called from boardfiles
+- * @timerbase: physical base of timer block
+- * @timer_irq: Linux IRQ number for the timer
+- * @timer_freq: Fixed frequency of the timer
+- */
+-void __init ixp4xx_timer_setup(resource_size_t timerbase,
+-			       int timer_irq,
+-			       unsigned int timer_freq)
+-{
+-	void __iomem *base;
+-
+-	base = ioremap(timerbase, 0x100);
+-	if (!base) {
+-		pr_crit("IXP4xx: can't remap timer\n");
+-		return;
+-	}
+-	ixp4xx_timer_register(base, timer_irq, timer_freq);
+-}
+-EXPORT_SYMBOL_GPL(ixp4xx_timer_setup);
+-
+-#ifdef CONFIG_OF
+ static __init int ixp4xx_of_timer_init(struct device_node *np)
+ {
+ 	void __iomem *base;
+@@ -315,4 +291,3 @@ static __init int ixp4xx_of_timer_init(struct device_node *np)
+ 	return ret;
+ }
+ TIMER_OF_DECLARE(ixp4xx, "intel,ixp4xx-timer", ixp4xx_of_timer_init);
+-#endif
+diff --git a/include/linux/platform_data/timer-ixp4xx.h b/include/linux/platform_data/timer-ixp4xx.h
+deleted file mode 100644
+index ee92ae7edaed..000000000000
+--- a/include/linux/platform_data/timer-ixp4xx.h
++++ /dev/null
+@@ -1,11 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __TIMER_IXP4XX_H
+-#define __TIMER_IXP4XX_H
+-
+-#include <linux/ioport.h>
+-
+-void __init ixp4xx_timer_setup(resource_size_t timerbase,
+-			       int timer_irq,
+-			       unsigned int timer_freq);
+-
+-#endif
+-- 
+2.35.1
 
