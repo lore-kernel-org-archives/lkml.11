@@ -2,236 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D62C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbiDFUEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
+        id S233453AbiDFUEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235409AbiDFUDu (ORCPT
+        with ESMTP id S234534AbiDFUDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:03:50 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA4F60DBA;
-        Wed,  6 Apr 2022 10:52:05 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236GESm1030105;
-        Wed, 6 Apr 2022 17:51:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=hWy5I10SyMCKmhD0+kEodm/y+gl5qzddelF/Lh2wtH0=;
- b=gpCaxE2L4xXcID7HaSzkpTPuYGz8qFLUrwDxZg5+5F0pcGcIWZJaKndpwofexWytg+XR
- OCfsHHmyh6S+9NRP8dJKBQ8DR/bUU2HAF68vPoWSE95rJNqjq+6KnoWzSKqurm17PiLw
- VCTZmocNtP0TJn40CdQslYfJSWL1gTzaBDxHj87l514TBUeTWvNtMvBJIoTySaLP0u4o
- 1Tc+qxMpacYBnIPJHRZkqMXPLYCOkCNoq2l3n5H7eP0nz3GQGNkNoHFuOQavbwxm8/wY
- TxslO25B3idxtkwMfGy4Qmj211X7M20UC4aghIuv6P6Ra6fi4U+XlYlWT9/wfdxXa5Wv 5A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f95epwyq6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 17:51:53 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 236Hgf9d011564;
-        Wed, 6 Apr 2022 17:51:52 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f95epwypm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 17:51:52 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 236Hhi6M019355;
-        Wed, 6 Apr 2022 17:51:50 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06ams.nl.ibm.com with ESMTP id 3f6drhr7k4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 17:51:49 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 236HpllX43057440
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Apr 2022 17:51:47 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DAE814C04A;
-        Wed,  6 Apr 2022 17:51:46 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5C8F54C040;
-        Wed,  6 Apr 2022 17:51:41 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.211.90.125])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Apr 2022 17:51:40 +0000 (GMT)
-From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-To:     acme@kernel.org, jolsa@kernel.org, disgoel@linux.vnet.ibm.com
-Cc:     mpe@ellerman.id.au, linux-perf-users@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, maddy@linux.vnet.ibm.com,
-        rnsastry@linux.ibm.com, kjain@linux.ibm.com,
-        linux-kernel@vger.kernel.org, srikar@linux.vnet.ibm.com,
-        irogers@google.com
-Subject: [PATCH v2 4/4] tools/perf: Fix perf bench numa testcase to check if CPU used to bind task is online
-Date:   Wed,  6 Apr 2022 23:21:13 +0530
-Message-Id: <20220406175113.87881-5-atrajeev@linux.vnet.ibm.com>
+        Wed, 6 Apr 2022 16:03:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD9A181B12;
+        Wed,  6 Apr 2022 11:27:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28B63B8252B;
+        Wed,  6 Apr 2022 18:27:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66849C385A3;
+        Wed,  6 Apr 2022 18:26:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269618;
+        bh=Q0RYEjzeisjhD20Or2HKQ6z6h4FOwlY7X2OSh5h/0K8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LFa5Yzg/qVPSO1xuaHeYbFtrBX3JgC3p5/0LIh//H+jhCgr1s7wkxOk7zdIPpy8c4
+         LyhGVoo5Z/Vk3lRYeKh+wyTrfNDDA6TmPqDxgsoO65aijQx5DZR+gHvST0g4z/EZR4
+         qIk67RsWZ75HrWiZBh3L6Xq/avUV4sJ2vRDC7fzY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.9 00/43] 4.9.310-rc1 review
+Date:   Wed,  6 Apr 2022 20:26:09 +0200
+Message-Id: <20220406182436.675069715@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
-References: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.310-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.310-rc1
+X-KernelTest-Deadline: 2022-04-08T18:24+00:00
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Z94Fa6rh7GGPCk_QPb0VIRZWRQ5zXAZw
-X-Proofpoint-ORIG-GUID: 5zuHFViFxtoaVLPnUmFfj3zwISZojtkT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_09,2022-04-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- bulkscore=0 clxscore=1015 priorityscore=1501 phishscore=0 adultscore=0
- lowpriorityscore=0 impostorscore=0 malwarescore=0 mlxlogscore=999
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204060087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Perf numa bench test fails with error:
+This is the start of the stable review cycle for the 4.9.310 release.
+There are 43 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-Testcase:
-./perf bench numa mem -p 2 -t 1 -P 1024 -C 0,8 -M 1,0 -s 20 -zZq
---thp  1 --no-data_rand_walk
+Responses should be made by Fri, 08 Apr 2022 18:24:27 +0000.
+Anything received after that time might be too late.
 
-Failure snippet:
-<<>>
- Running 'numa/mem' benchmark:
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.310-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+and the diffstat can be found below.
 
- # Running main, "perf bench numa numa-mem -p 2 -t 1 -P 1024 -C 0,8
--M 1,0 -s 20 -zZq --thp 1 --no-data_rand_walk"
+thanks,
 
-perf: bench/numa.c:333: bind_to_cpumask: Assertion `!(ret)' failed.
-<<>>
+greg k-h
 
-The Testcases uses CPU’s 0 and 8. In function "parse_setup_cpu_list",
-There is check to see if cpu number is greater than max cpu’s possible
-in the system ie via "if (bind_cpu_0 >= g->p.nr_cpus ||
-bind_cpu_1 >= g->p.nr_cpus) {". But it could happen that system has
-say 48 CPU’s, but only number of online CPU’s is 0-7. Other CPU’s
-are offlined. Since "g->p.nr_cpus" is 48, so function will go ahead
-and set bit for CPU 8 also in cpumask ( td->bind_cpumask).
+-------------
+Pseudo-Shortlog of commits:
 
-bind_to_cpumask function is called to set affinity using
-sched_setaffinity and the cpumask. Since the CPU8 is not present,
-set affinity will fail here with EINVAL. Fix this issue by adding a
-check to make sure that, CPU’s provided in the input argument values
-are online before proceeding further and skip the test. For this,
-include new helper function "is_cpu_online" in
-"tools/perf/util/header.c".
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.9.310-rc1
 
-Since "BIT(x)" definition will get included from header.h, remove
-that from bench/numa.c
+James Morse <james.morse@arm.com>
+    arm64: Use the clearbhb instruction in mitigations
 
-Tested-by: Disha Goel <disgoel@linux.vnet.ibm.com>
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Reported-by: Disha Goel <disgoel@linux.vnet.ibm.com>
----
- tools/perf/bench/numa.c  |  8 ++++++--
- tools/perf/util/header.c | 43 ++++++++++++++++++++++++++++++++++++++++
- tools/perf/util/header.h |  1 +
- 3 files changed, 50 insertions(+), 2 deletions(-)
+James Morse <james.morse@arm.com>
+    arm64: add ID_AA64ISAR2_EL1 sys register
 
-diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
-index 29e41e32bd88..7992d79b3e41 100644
---- a/tools/perf/bench/numa.c
-+++ b/tools/perf/bench/numa.c
-@@ -34,6 +34,7 @@
- #include <linux/numa.h>
- #include <linux/zalloc.h>
- 
-+#include "../util/header.h"
- #include <numa.h>
- #include <numaif.h>
- 
-@@ -616,6 +617,11 @@ static int parse_setup_cpu_list(void)
- 			return -1;
- 		}
- 
-+		if (is_cpu_online(bind_cpu_0) != 1 || is_cpu_online(bind_cpu_1) != 1) {
-+			printf("\nTest not applicable, bind_cpu_0 or bind_cpu_1 is offline\n");
-+			return -1;
-+		}
-+
- 		BUG_ON(bind_cpu_0 < 0 || bind_cpu_1 < 0);
- 		BUG_ON(bind_cpu_0 > bind_cpu_1);
- 
-@@ -786,8 +792,6 @@ static int parse_nodes_opt(const struct option *opt __maybe_unused,
- 	return parse_node_list(arg);
- }
- 
--#define BIT(x) (1ul << x)
--
- static inline uint32_t lfsr_32(uint32_t lfsr)
- {
- 	const uint32_t taps = BIT(1) | BIT(5) | BIT(6) | BIT(31);
-diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
-index 6da12e522edc..3f5fcf5d4b3f 100644
---- a/tools/perf/util/header.c
-+++ b/tools/perf/util/header.c
-@@ -983,6 +983,49 @@ static int write_dir_format(struct feat_fd *ff,
- 	return do_write(ff, &data->dir.version, sizeof(data->dir.version));
- }
- 
-+#define SYSFS "/sys/devices/system/cpu/"
-+
-+/*
-+ * Check whether a CPU is online
-+ *
-+ * Returns:
-+ *     1 -> if CPU is online
-+ *     0 -> if CPU is offline
-+ *    -1 -> error case
-+ */
-+int is_cpu_online(unsigned int cpu)
-+{
-+	char sysfs_cpu[255];
-+	char buf[255];
-+	struct stat statbuf;
-+	size_t len;
-+	int fd;
-+
-+	snprintf(sysfs_cpu, sizeof(sysfs_cpu), SYSFS "cpu%u", cpu);
-+
-+	if (stat(sysfs_cpu, &statbuf) != 0)
-+		return 0;
-+
-+	/*
-+	 * Check if /sys/devices/system/cpu/cpux/online file
-+	 * exists. In kernels without CONFIG_HOTPLUG_CPU, this
-+	 * file won't exist.
-+	 */
-+	snprintf(sysfs_cpu, sizeof(sysfs_cpu), SYSFS "cpu%u/online", cpu);
-+	if (stat(sysfs_cpu, &statbuf) != 0)
-+		return 1;
-+
-+	fd = open(sysfs_cpu, O_RDONLY);
-+	if (fd == -1)
-+		return -1;
-+
-+	len = read(fd, buf, sizeof(buf) - 1);
-+	buf[len] = '\0';
-+	close(fd);
-+
-+	return strtoul(buf, NULL, 16);
-+}
-+
- #ifdef HAVE_LIBBPF_SUPPORT
- static int write_bpf_prog_info(struct feat_fd *ff,
- 			       struct evlist *evlist __maybe_unused)
-diff --git a/tools/perf/util/header.h b/tools/perf/util/header.h
-index c9e3265832d9..0eb4bc29a5a4 100644
---- a/tools/perf/util/header.h
-+++ b/tools/perf/util/header.h
-@@ -158,6 +158,7 @@ int do_write(struct feat_fd *fd, const void *buf, size_t size);
- int write_padded(struct feat_fd *fd, const void *bf,
- 		 size_t count, size_t count_aligned);
- 
-+int is_cpu_online(unsigned int cpu);
- /*
-  * arch specific callback
-  */
--- 
-2.35.1
+James Morse <james.morse@arm.com>
+    KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+
+James Morse <james.morse@arm.com>
+    arm64: Mitigate spectre style branch history side channels
+
+James Morse <james.morse@arm.com>
+    KVM: arm64: Add templates for BHB mitigation sequences
+
+James Morse <james.morse@arm.com>
+    arm64: Add percpu vectors for EL1
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add macro for reading symbol addresses from the trampoline
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add vectors that have the bhb mitigation sequences
+
+James Morse <james.morse@arm.com>
+    arm64: Move arm64_update_smccc_conduit() out of SSBD ifdef
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow the trampoline text to occupy multiple pages
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the kpti trampoline's kpti sequence optional
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move trampoline macros out of ifdef'd section
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Don't assume tramp_vectors is the start of the vectors
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Move the trampoline data page before the text page
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Free up another register on kpti's tramp_exit path
+
+James Morse <james.morse@arm.com>
+    arm64: entry: Make the trampoline cleanup optional
+
+James Morse <james.morse@arm.com>
+    arm64: entry.S: Add ventry overflow sanity checks
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: Add helper to decode register from instruction
+
+Anshuman Khandual <anshuman.khandual@arm.com>
+    arm64: Add Cortex-X2 CPU part definition
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
+
+Rob Herring <robh@kernel.org>
+    arm64: Add part number for Arm Cortex-A77
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: Add part number for Neoverse N1
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: Make ARM64_ERRATUM_1188873 depend on COMPAT
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: Add silicon-errata.txt entry for ARM erratum 1188873
+
+Arnd Bergmann <arnd@arndb.de>
+    arm64: arch_timer: avoid unused function warning
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: arch_timer: Add workaround for ARM erratum 1188873
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: arch_timer: Add erratum handler for CPU-specific capability
+
+Marc Zyngier <marc.zyngier@arm.com>
+    arm64: arch_timer: Add infrastructure for multiple erratum detection methods
+
+Ding Tianhong <dingtianhong@huawei.com>
+    clocksource/drivers/arm_arch_timer: Introduce generic errata handling infrastructure
+
+Ding Tianhong <dingtianhong@huawei.com>
+    clocksource/drivers/arm_arch_timer: Remove fsl-a008585 parameter
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: capabilities: Add support for checks based on a list of MIDRs
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: Add helpers for checking CPU MIDR against a range
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: capabilities: Clean up midr range helpers
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: capabilities: Add flags to handle the conflicts on late CPU
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: capabilities: Prepare for fine grained capabilities
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: capabilities: Move errata processing code
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: capabilities: Move errata work around check on boot CPU
+
+Dave Martin <dave.martin@arm.com>
+    arm64: capabilities: Update prototype for enable call back
+
+Suzuki K Poulose <suzuki.poulose@arm.com>
+    arm64: Add MIDR encoding for Arm Cortex-A55 and Cortex-A35
+
+James Morse <james.morse@arm.com>
+    arm64: Remove useless UAO IPI and describe how this gets enabled
+
+Robert Richter <rrichter@cavium.com>
+    arm64: errata: Provide macro for major and minor cpu revisions
+
+
+-------------
+
+Diffstat:
+
+ Documentation/arm64/silicon-errata.txt |   1 +
+ Documentation/kernel-parameters.txt    |   9 -
+ Makefile                               |   4 +-
+ arch/arm/include/asm/kvm_host.h        |   5 +
+ arch/arm/kvm/psci.c                    |   4 +
+ arch/arm64/Kconfig                     |  24 ++
+ arch/arm64/include/asm/arch_timer.h    |  44 ++-
+ arch/arm64/include/asm/assembler.h     |  34 ++
+ arch/arm64/include/asm/cpu.h           |   1 +
+ arch/arm64/include/asm/cpucaps.h       |   4 +-
+ arch/arm64/include/asm/cpufeature.h    | 232 ++++++++++++-
+ arch/arm64/include/asm/cputype.h       |  63 ++++
+ arch/arm64/include/asm/fixmap.h        |   6 +-
+ arch/arm64/include/asm/insn.h          |   2 +
+ arch/arm64/include/asm/kvm_host.h      |   4 +
+ arch/arm64/include/asm/kvm_mmu.h       |   2 +-
+ arch/arm64/include/asm/mmu.h           |   8 +-
+ arch/arm64/include/asm/processor.h     |   6 +-
+ arch/arm64/include/asm/sections.h      |   6 +
+ arch/arm64/include/asm/sysreg.h        |   5 +
+ arch/arm64/include/asm/vectors.h       |  74 +++++
+ arch/arm64/kernel/bpi.S                |  55 +++
+ arch/arm64/kernel/cpu_errata.c         | 591 ++++++++++++++++++++++++++-------
+ arch/arm64/kernel/cpufeature.c         | 167 +++++++---
+ arch/arm64/kernel/cpuinfo.c            |   1 +
+ arch/arm64/kernel/entry.S              | 197 ++++++++---
+ arch/arm64/kernel/fpsimd.c             |   1 +
+ arch/arm64/kernel/insn.c               |  29 ++
+ arch/arm64/kernel/smp.c                |   6 -
+ arch/arm64/kernel/traps.c              |   4 +-
+ arch/arm64/kernel/vmlinux.lds.S        |   2 +-
+ arch/arm64/kvm/hyp/hyp-entry.S         |   4 +
+ arch/arm64/kvm/hyp/switch.c            |   9 +-
+ arch/arm64/mm/fault.c                  |  17 +-
+ arch/arm64/mm/mmu.c                    |  11 +-
+ drivers/clocksource/Kconfig            |   4 +
+ drivers/clocksource/arm_arch_timer.c   | 192 ++++++++---
+ include/linux/arm-smccc.h              |   7 +
+ 38 files changed, 1504 insertions(+), 331 deletions(-)
+
 
