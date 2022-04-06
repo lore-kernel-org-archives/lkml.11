@@ -2,73 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE77BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D811C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235881AbiDFVy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54476 "EHLO
+        id S236479AbiDFVyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236767AbiDFVwe (ORCPT
+        with ESMTP id S236802AbiDFVwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:52:34 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7A213E3F;
-        Wed,  6 Apr 2022 14:46:22 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id l4-20020a17090a49c400b001c6840df4a3so4224151pjm.0;
-        Wed, 06 Apr 2022 14:46:22 -0700 (PDT)
+        Wed, 6 Apr 2022 17:52:35 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D557613EA0;
+        Wed,  6 Apr 2022 14:46:43 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id m16so3162179plx.3;
+        Wed, 06 Apr 2022 14:46:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CkfyiKrfymnOnK0EWh7i1INSgOHYBA/tWH69CgASpO0=;
-        b=SWGT0CpR2h+e8t/dq9fbCqwGiZLLkh7/LSkWSszvAoyz0gM2C2Mn4NR0XNtKO3jIHO
-         6MI6LH6EKtxhfhBx3V9nRKR2EKKptHiUN5tkesiycFAGO1N5BlAgoNLb/cEOvbhFG4nB
-         QqZpr39h5HdBjq6KeKrcyBrFN3T6woSB/O2M3EjW4KIbcwjxnMe+QgQPuU9T53el1cpr
-         T8m+53Zdl5eI67t+dtfwmYexj6zIN1okpyIan7MUost9AMd5/te5wkHHkV4xB1EKZnc5
-         swZFiki4Ogxqnipn5wfa3VvG1jvboEMltJuAObAiAirDVyBmCe6bpblQfVICSp4Oja1n
-         SVbg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=u0tHIsGzTPzPZiDuRsukQZsT+v6AmVTymqyX9Izja0U=;
+        b=AQA4hqL0s9Q7QXsT6cS5iuwpbM2FT8mX+MhS/6wcy+NqU+0LG0xU9oEJeZmj3+mEbf
+         vARWqxRwWftnWmXFUTFoo6UAhch6IJwLBNvvPZUsKNJHFEer5bSc/+6GUkyjsFPSVctQ
+         IYR1nFIrUI2xTV+kD5R7V6koa9uCM3yRF+ocNcX9g8YSK5fRC8YTd+neuUlsz/VTUuO3
+         uJ4jgXGg0h3i+DihHTyYtVClDsxoq3iEMdm4HOL9XOfQcPJEAM7gIh9c5uxbi0Qb5EIf
+         ul+zZMM/Y5MfYehrFj146UviUozKgg3FwnoHZ7AjENjyeGgvQy+VRtNrtf+yk8fHOaGm
+         yt5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CkfyiKrfymnOnK0EWh7i1INSgOHYBA/tWH69CgASpO0=;
-        b=0+WXrh1koy2OCpyLM/UZx9Qq4kwKr7L/dgRyDurJAkULtdEBkPjb863ch0edEVm9ge
-         0FDfwQ+MAb+nAGpvQwGjGTXIhDZsWcS7+iWR559qGw2EeSAk8wxMl67TUKhAARHjcT2/
-         YYGkvIQgDXGvdfDMLgRpfQE1r+5EK9Tm8oPuYjqIIjH/wbrw1Pncfkqax5EOSe+V43Ch
-         on5EYl/YnVQ4gcfZS/kA0w1iK3bPWFvPs+lprOEefLOYLZwR5+Oo171uNR/LURATwnjw
-         /RQUiQSdEbmRKj6dvd1H5X/pLEwfh3hKXi+18gsEa5NaOpX1Dfmvw0TFzsDoOY1FHeBD
-         +l0w==
-X-Gm-Message-State: AOAM531RUNAsIhzUoyepe1gvtTsY4h5HEmsMp0QT8eW5KCtr3xWTMTKG
-        ACI8Y5OUlmtOADZqxfOwpKE=
-X-Google-Smtp-Source: ABdhPJxwUPsOIMPEeUMSDmd1Dismd7EZeSiKJZLKwwpOnWoiIlPLX8vmG2SjQh+6tbo+/dcs4XrTCg==
-X-Received: by 2002:a17:903:2452:b0:157:69d:744f with SMTP id l18-20020a170903245200b00157069d744fmr54104pls.47.1649281581862;
-        Wed, 06 Apr 2022 14:46:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=u0tHIsGzTPzPZiDuRsukQZsT+v6AmVTymqyX9Izja0U=;
+        b=3eXQX7PTyOJqpAoUq+vf32m4u4XNwGi6nmoPjAs/H40Qpg29q6EL+GFj/7Mh5iQd8G
+         B59CUyITKkFPdQWkwDLT2Y8ar+1gHjCyUynAO+fbjYZkBMUmUHFm9+Icwe5sPfR4fp/9
+         N0/9zn31goIgMsArPxJ93k27MNun2mi5pjIH45W0SnOKUSevJz5Uak5PlmBW8b3xUzyF
+         VZsA4+ttiXZCQQjst2AKLAVg1OxXDMDxc0PqVxoj0aCDnXNArYplnK/GkwUoD0SFJfI6
+         YJydiImNayNtqR0K739RtiSDKPnKKYw/Hy4iQxJvlO8kBo0eXicjM8R1cDepyg5cSABD
+         SN6w==
+X-Gm-Message-State: AOAM532iBJZfZrGhA6p/dplhefB9Kw6+YA3nMmYda5FLcfHddJn/rHBm
+        re0V15F9FOBIwvoCrTbTm1uOx1afPlA=
+X-Google-Smtp-Source: ABdhPJwv6a6gChwpRdXvCUj2qOkIUsO7XVaw0bin3rIB0wrQDGyQFAFzCGJ0wPo/O87A61RCEoFEAA==
+X-Received: by 2002:a17:902:7689:b0:157:3d:a5bc with SMTP id m9-20020a170902768900b00157003da5bcmr1165399pll.25.1649281603252;
+        Wed, 06 Apr 2022 14:46:43 -0700 (PDT)
 Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
-        by smtp.gmail.com with ESMTPSA id rm5-20020a17090b3ec500b001c7559762e9sm6536425pjb.20.2022.04.06.14.46.20
+        by smtp.gmail.com with ESMTPSA id t34-20020a056a0013a200b004faa8346e83sm21523201pfg.2.2022.04.06.14.46.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 14:46:20 -0700 (PDT)
+        Wed, 06 Apr 2022 14:46:42 -0700 (PDT)
 From:   Rob Clark <robdclark@gmail.com>
 To:     dri-devel@lists.freedesktop.org
 Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Dmitry Osipenko <dmitry.osipenko@collabora.com>,
         Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
         Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        linux-kernel@vger.kernel.org (open list),
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Wang Qing <wangqing@vivo.com>,
-        Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH v3 00/10] drm/msm: Userspace allocated GPU addresses
-Date:   Wed,  6 Apr 2022 14:46:16 -0700
-Message-Id: <20220406214636.1156978-1-robdclark@gmail.com>
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v3 06/10] drm/msm: Drop msm_gem_iova()
+Date:   Wed,  6 Apr 2022 14:46:22 -0700
+Message-Id: <20220406214636.1156978-7-robdclark@gmail.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406214636.1156978-1-robdclark@gmail.com>
+References: <20220406214636.1156978-1-robdclark@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -77,53 +73,114 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rob Clark <robdclark@chromium.org>
 
-The first six paches are various cleanups and simplifications.  The
-next two get rid of redundant vma lookups in the submit and retire
-paths.  Following that, fenced vma lets us indicate a fence value
-following which the vma is no longer used, which is needed because
-otherwise userspace could observe the signaled fence prior to
-retire_submits() finishing.  (With userspace allocated GPU addresses
-userspace is tracking when a buffer is no longer used and it's vma can
-be deleted.)  And finally the last patch adds the new uabi for user-
-space allocated iova.
+There was only a single user, which could just as easily stash the iova
+when pinning.
 
-v2: Fix inuse check in last patch, split GEM_WARN_ON() conversion to
-    separate patch, and nits
-v3: Fix nested fb prepares in 06/10, return -EBUSY if trying to set
-    iova on buffer that already has one in 10/10
+v2: fix prepare->prepare->cleanup->cleanup sequences
 
-Rob Clark (10):
-  drm/msm/gem: Move prototypes
-  drm/msm/gpu: Drop duplicate fence counter
-  drm/msm/gem: Convert some missed GEM_WARN_ON()s
-  drm/msm/gem: Split out inuse helper
-  drm/msm/gem: Drop PAGE_SHIFT for address space mm
-  drm/msm: Drop msm_gem_iova()
-  drm/msm/gem: Rework vma lookup and pin
-  drm/msm/gem: Split vma lookup and pin
-  drm/msm/gem: Add fenced vma unpin
-  drm/msm: Add a way for userspace to allocate GPU iova
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ drivers/gpu/drm/msm/msm_fb.c  | 20 ++++++++++++++------
+ drivers/gpu/drm/msm/msm_gem.c | 16 ----------------
+ drivers/gpu/drm/msm/msm_gem.h |  2 --
+ 3 files changed, 14 insertions(+), 24 deletions(-)
 
- drivers/gpu/drm/msm/adreno/a5xx_gpu.c   |   2 +-
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c   |   2 +-
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c   |   2 +-
- drivers/gpu/drm/msm/adreno/adreno_gpu.c |  14 ++-
- drivers/gpu/drm/msm/msm_drv.c           |  21 ++++
- drivers/gpu/drm/msm/msm_drv.h           |  23 ----
- drivers/gpu/drm/msm/msm_fb.c            |  20 +++-
- drivers/gpu/drm/msm/msm_fence.c         |   6 +-
- drivers/gpu/drm/msm/msm_fence.h         |   3 +
- drivers/gpu/drm/msm/msm_gem.c           | 151 ++++++++++++++----------
- drivers/gpu/drm/msm/msm_gem.h           |  47 +++++++-
- drivers/gpu/drm/msm/msm_gem_submit.c    |  17 ++-
- drivers/gpu/drm/msm/msm_gem_vma.c       |  59 ++++++---
- drivers/gpu/drm/msm/msm_gpu.c           |   8 +-
- drivers/gpu/drm/msm/msm_gpu.h           |   2 +-
- drivers/gpu/drm/msm/msm_ringbuffer.c    |  12 +-
- drivers/gpu/drm/msm/msm_ringbuffer.h    |   1 -
- include/uapi/drm/msm_drm.h              |   3 +
- 18 files changed, 262 insertions(+), 131 deletions(-)
-
+diff --git a/drivers/gpu/drm/msm/msm_fb.c b/drivers/gpu/drm/msm/msm_fb.c
+index 7137492fe78e..362775ae50af 100644
+--- a/drivers/gpu/drm/msm/msm_fb.c
++++ b/drivers/gpu/drm/msm/msm_fb.c
+@@ -21,6 +21,10 @@ struct msm_framebuffer {
+ 
+ 	/* Count of # of attached planes which need dirtyfb: */
+ 	refcount_t dirtyfb;
++
++	/* Framebuffer per-plane address, if pinned, else zero: */
++	uint64_t iova[DRM_FORMAT_MAX_PLANES];
++	atomic_t prepare_count;
+ };
+ #define to_msm_framebuffer(x) container_of(x, struct msm_framebuffer, base)
+ 
+@@ -76,14 +80,16 @@ int msm_framebuffer_prepare(struct drm_framebuffer *fb,
+ {
+ 	struct msm_framebuffer *msm_fb = to_msm_framebuffer(fb);
+ 	int ret, i, n = fb->format->num_planes;
+-	uint64_t iova;
+ 
+ 	if (needs_dirtyfb)
+ 		refcount_inc(&msm_fb->dirtyfb);
+ 
++	atomic_inc(&msm_fb->prepare_count);
++
+ 	for (i = 0; i < n; i++) {
+-		ret = msm_gem_get_and_pin_iova(fb->obj[i], aspace, &iova);
+-		drm_dbg_state(fb->dev, "FB[%u]: iova[%d]: %08llx (%d)", fb->base.id, i, iova, ret);
++		ret = msm_gem_get_and_pin_iova(fb->obj[i], aspace, &msm_fb->iova[i]);
++		drm_dbg_state(fb->dev, "FB[%u]: iova[%d]: %08llx (%d)",
++			      fb->base.id, i, msm_fb->iova[i], ret);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -103,14 +109,16 @@ void msm_framebuffer_cleanup(struct drm_framebuffer *fb,
+ 
+ 	for (i = 0; i < n; i++)
+ 		msm_gem_unpin_iova(fb->obj[i], aspace);
++
++	if (!atomic_dec_return(&msm_fb->prepare_count))
++		memset(msm_fb->iova, 0, sizeof(msm_fb->iova));
+ }
+ 
+ uint32_t msm_framebuffer_iova(struct drm_framebuffer *fb,
+ 		struct msm_gem_address_space *aspace, int plane)
+ {
+-	if (!fb->obj[plane])
+-		return 0;
+-	return msm_gem_iova(fb->obj[plane], aspace) + fb->offsets[plane];
++	struct msm_framebuffer *msm_fb = to_msm_framebuffer(fb);
++	return msm_fb->iova[plane];
+ }
+ 
+ struct drm_gem_object *msm_framebuffer_bo(struct drm_framebuffer *fb, int plane)
+diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index f4b68bb28a4d..deafae6feaa8 100644
+--- a/drivers/gpu/drm/msm/msm_gem.c
++++ b/drivers/gpu/drm/msm/msm_gem.c
+@@ -509,22 +509,6 @@ int msm_gem_get_iova(struct drm_gem_object *obj,
+ 	return ret;
+ }
+ 
+-/* get iova without taking a reference, used in places where you have
+- * already done a 'msm_gem_get_and_pin_iova' or 'msm_gem_get_iova'
+- */
+-uint64_t msm_gem_iova(struct drm_gem_object *obj,
+-		struct msm_gem_address_space *aspace)
+-{
+-	struct msm_gem_vma *vma;
+-
+-	msm_gem_lock(obj);
+-	vma = lookup_vma(obj, aspace);
+-	msm_gem_unlock(obj);
+-	GEM_WARN_ON(!vma);
+-
+-	return vma ? vma->iova : 0;
+-}
+-
+ /*
+  * Locked variant of msm_gem_unpin_iova()
+  */
+diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
+index 090c3b1a6d9a..772de010a669 100644
+--- a/drivers/gpu/drm/msm/msm_gem.h
++++ b/drivers/gpu/drm/msm/msm_gem.h
+@@ -142,8 +142,6 @@ int msm_gem_get_and_pin_iova_locked(struct drm_gem_object *obj,
+ 		struct msm_gem_address_space *aspace, uint64_t *iova);
+ int msm_gem_get_and_pin_iova(struct drm_gem_object *obj,
+ 		struct msm_gem_address_space *aspace, uint64_t *iova);
+-uint64_t msm_gem_iova(struct drm_gem_object *obj,
+-		struct msm_gem_address_space *aspace);
+ void msm_gem_unpin_iova_locked(struct drm_gem_object *obj,
+ 		struct msm_gem_address_space *aspace);
+ void msm_gem_unpin_iova(struct drm_gem_object *obj,
 -- 
 2.35.1
 
