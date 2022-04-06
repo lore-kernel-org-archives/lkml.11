@@ -2,108 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 071ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E474C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbiDFTdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
+        id S231894AbiDFTdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232038AbiDFTct (ORCPT
+        with ESMTP id S231997AbiDFTct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 15:32:49 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5AD43441B2;
-        Wed,  6 Apr 2022 11:37:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=YGjX529UM3G1Sm5ZEV/Cp3ZmPunyP2OAVWthxaOm0TE=; b=tFJFatXB6xPNnIMbja6SvXD6Cu
-        bXU3vUUO2xXCQztEU1jTleEdty4GRLL6fyovwu4ho7/XnxRC1YoSxvItgGIztyc6J2Yjr4HUEetQZ
-        rNCnT4wt2/HAhtlf+zClghovZH7e4bhX8oK2ntrborSlj/r0U+pQu3ADTxv2fYmtBfz0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ncAXN-00EVLu-E7; Wed, 06 Apr 2022 20:37:49 +0200
-Date:   Wed, 6 Apr 2022 20:37:49 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Puranjay Mohan <p-mohan@ti.com>
-Cc:     linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
-        mathieu.poirier@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        nm@ti.com, ssantosh@kernel.org, s-anna@ti.com,
-        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, vigneshr@ti.com,
-        kishon@ti.com
-Subject: Re: [RFC 13/13] net: ti: icssg-prueth: Add ICSSG ethernet driver
-Message-ID: <Yk3d/cC36fhNmfY2@lunn.ch>
-References: <20220406094358.7895-1-p-mohan@ti.com>
- <20220406094358.7895-14-p-mohan@ti.com>
+Received: from smtp1.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC4C7938A;
+        Wed,  6 Apr 2022 10:32:52 -0700 (PDT)
+Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 715FA3C0579;
+        Wed,  6 Apr 2022 19:32:51 +0200 (CEST)
+Received: from lxhi-065 (10.72.94.4) by hi2exch02.adit-jv.com (10.72.92.28)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Wed, 6 Apr
+ 2022 19:32:50 +0200
+Date:   Wed, 6 Apr 2022 19:32:45 +0200
+From:   Eugeniu Rosca <erosca@de.adit-jv.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+CC:     Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        <linux-renesas-soc@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
+Message-ID: <20220406173245.GA14970@lxhi-065>
+References: <000001d7badd$a8512d30$f8f38790$@mentor.com>
+ <20211006182314.10585-1-andrew_gabbasov@mentor.com>
+ <Yg6ls0zyTDe7LQbK@kunai>
+ <20220323215229.GA9403@lxhi-065>
+ <YkQ31VMqj1MXqBd3@shikoro>
+ <YkQ6XRITOFZ7hLXV@shikoro>
+ <20220331160207.GA27757@lxhi-065>
+ <YkcqoIMF2uw4FSZh@ninjato>
+ <20220405093048.GA7151@lxhi-065>
+ <YkwPQSPed18iyHox@ninjato>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220406094358.7895-14-p-mohan@ti.com>
+In-Reply-To: <YkwPQSPed18iyHox@ninjato>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.72.94.4]
+X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
+ hi2exch02.adit-jv.com (10.72.92.28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static int emac_phy_connect(struct prueth_emac *emac)
-> +{
-> +	struct prueth *prueth = emac->prueth;
-> +
-> +	/* connect PHY */
-> +	emac->phydev = of_phy_connect(emac->ndev, emac->phy_node,
-> +				      &emac_adjust_link, 0, emac->phy_if);
+Hi Wolfram,
 
-> +static int prueth_config_rgmiidelay(struct prueth *prueth,
-> +				    struct device_node *eth_np,
-> +				    phy_interface_t phy_if)
-> +{
-> +	struct device *dev = prueth->dev;
-> +	struct regmap *ctrl_mmr;
-> +	u32 rgmii_tx_id = 0;
-> +	u32 icssgctrl_reg;
-> +
-> +	if (!phy_interface_mode_is_rgmii(phy_if))
-> +		return 0;
-> +
-> +	ctrl_mmr = syscon_regmap_lookup_by_phandle(eth_np, "ti,syscon-rgmii-delay");
-> +	if (IS_ERR(ctrl_mmr)) {
-> +		dev_err(dev, "couldn't get ti,syscon-rgmii-delay\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	if (of_property_read_u32_index(eth_np, "ti,syscon-rgmii-delay", 1,
-> +				       &icssgctrl_reg)) {
-> +		dev_err(dev, "couldn't get ti,rgmii-delay reg. offset\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	if (phy_if == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
-> +		rgmii_tx_id |= ICSSG_CTRL_RGMII_ID_MODE;
-> +
-> +	regmap_update_bits(ctrl_mmr, icssgctrl_reg, ICSSG_CTRL_RGMII_ID_MODE, rgmii_tx_id);
-> +
-> +	return 0;
-> +}
->
+On Tue, Apr 05, 2022 at 11:43:29AM +0200, Wolfram Sang wrote:
+> > In general, the Renesas kernel always carries a set of patches with
+> > non-mainlined changes, Fortunately, for i2c specifically (as opposed
+> > to other subsystems), it is narrow enough to not raise major concerns:
+> 
+> Well, yes, that shows that I am mostly successful with reporting back to
+> the BSP team :D
 
-O.K, so this does not do what i initially thought it was doing. I was
-thinking it was to fine tune the delay, ti,syscon-rgmii-delay would be
-a small pico second value to allow the 2ns delay to be tuned to the
-board.
+100%! I remember the early days of Renesas R-Car Gen3 kernels, with
+literally thousands of patches on top of v4.2/v4.4/v4.6 vanilla tags.
 
-But now i think this is actually inserting the full 2ns delay?
+It felt like mission impossible to upstream those. But here we are. Kudos!
 
-The problem is, you also pass phy_if to of_phy_connect() so the PHY
-will also insert the delay if requested. So you end up with double
-delays for rgmii_id and rgmii_txid.
-
-The general recommendation is that the PHY inserts the delay, based on
-phy-mode. The MAC does not add a delay, so i suggest you always write
-0 here, just to ensure the system is in a deterministic state, and the
-bootloader and not being messing around with things.
-
-	   Andrew
+Best regards,
+Eugeniu
