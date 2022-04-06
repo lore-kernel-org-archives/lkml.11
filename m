@@ -2,194 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F54DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234545AbiDFOLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+        id S234243AbiDFOLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234525AbiDFOLA (ORCPT
+        with ESMTP id S234526AbiDFOLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:11:00 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7C6464C06;
-        Wed,  6 Apr 2022 03:05:41 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 318F51F4390F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649239457;
-        bh=E8FhNhaGBVpp9KYAfMViAIYnlBsslTuXK5L56LwxxPk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iDroqQIjwGb1F45SMf1ymLcMRoiCrTI2tU6b17nIfl9XUwDoeczop+FCOASkmf+9v
-         6+X4j77EdD+bcta1wEuiDuyhCrIZdbeJgKcLFniP4MwWnNpzjQXrUEAVW4c313/raH
-         vfsjIlE3v2a3NeIs48Vu9k8BCgIGfrJoGMPDt65ixnTc5um3CcZKxP0tP8/4tagVbR
-         R0lrZxrBNnSpxteEga3SI9ShWtcuPtpwJ0c/dacT9QMGZMdrgN9pJvzpllHM9XmSM9
-         2hix9HziDZMV/sonCUyxfErF1PTCPxDmozbB4g9FZ+srzoD6LMGjlNIE6L1n6LdRHR
-         zFh8SamPhFS4w==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     broonie@kernel.org
-Cc:     matthias.bgg@gmail.com, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        nfraprado@collabora.com, kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 5/7] spi: mt65xx: Simplify probe function with dev_err_probe()
-Date:   Wed,  6 Apr 2022 12:04:07 +0200
-Message-Id: <20220406100409.93113-6-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406100409.93113-1-angelogioacchino.delregno@collabora.com>
-References: <20220406100409.93113-1-angelogioacchino.delregno@collabora.com>
+        Wed, 6 Apr 2022 10:11:07 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5837428253F
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:06:48 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 3EECF3202069;
+        Wed,  6 Apr 2022 06:06:15 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Wed, 06 Apr 2022 06:06:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; bh=rzh+YVo8AjmVzXYtwCOyrTTWQiWeb9VJ0DWPZZ
+        BZogk=; b=Iwl/Hcis915YuxuSYdtKUaM/emcwdNwLUmOhK6Uz82oFFtNQo63baz
+        Ff5WVmMH4CgIgB7Mjfc5roxPZ0JdXi0pY34k5ZIeLjH3enh4PdbqE3fxuGXU4pHV
+        3hdnWggWcpKE6ptGCcatiyrWEHik3RVX22Vpulup6f6z/FberTjC3fiBs/BaUMP2
+        niwV6K24YkECzfaWDbiKrXjqT+cuw3wK/0wd/7NWxLp4iZdqkn59yFYerh4SfVtl
+        QvKs0QQ0rjf86CoCz+GhX9FldByRRlCzIVxn6PQLtl8fE/vvyg9uP7RXCDhZHRXa
+        9AbPtGKycpgEyc73ClOkJmrdbu7HaqGg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=rzh+YVo8AjmVzXYtw
+        COyrTTWQiWeb9VJ0DWPZZBZogk=; b=oJmVUCYa8RfGhDk7IDvEzqizOrCriQbxv
+        WdMHs6fMqIyIi3LPz6EI/scjODZShthbGt7AcwVMnlmsQwqNKQbqtrk7p/PcipWC
+        ecVAyKG61Np/F1E+MIxcWHz3ZPHLYas2VHt9DmPa2RBmZxClg91IlIiAr4Q53YuR
+        l/y5XAFHyRvZh8n9FDiyNhq8VW9Q2oQT3GfmHfgIJZkK0YLqP6fEK1t1sFSThi4E
+        YHFU+5HU0XY6nGnJXU/voDMb2tmchA5A6ZagEFAYDI+MDrQ4knCFrAg3M90fVEbw
+        2Jd5MVa9ixw40lX5/Vcm7UzV83wl3vCgbZFRkRAfy16QetfoY1Btg==
+X-ME-Sender: <xms:FmZNYpJl84yEK7oacOxfoP1IURA_k3vTeG1huh40Qr5-r_tVWKxnzg>
+    <xme:FmZNYlKHcTc7M2cYTupcwic4PCFhpt_NuhXN7PM_lZhmfneYkwCaps03-x-fjv6_4
+    HOb7n524u4a06ACdtM>
+X-ME-Received: <xmr:FmZNYhui4m3AsCU4MTpBt76kbnVxXWXaR2wY32nkqlW--tXu5EDCr8ttmPEWK9f45yHk_7v6H4PRNtuQRiiIRGMNsJhUgNmEn_Ywv6Y>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejiedgvdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddunecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepuddvudfhkeekhefgffetffelgffftdehffduffegveetffehueeivddvjedv
+    gfevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:FmZNYqaz6oaZVAssejHnLeAU8GbZO9Mh9YaMZYA9Kr2tGAgvIPv-LA>
+    <xmx:FmZNYgZmoRxnLfPw2ysMKf-mQYdh9yyn2ZhQqFMA-tmCIBb30k0pvg>
+    <xmx:FmZNYuBw0PTi9pVOCgEUkOdb0QIjl3O5WLVJGNTDssWHFwPv3EWNsg>
+    <xmx:FmZNYvyzyhoy5Khxf_IBHaOsGBVgMQmSHjUQWsjmpOQLFwXLiJ17Rg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 6 Apr 2022 06:06:14 -0400 (EDT)
+Date:   Wed, 6 Apr 2022 12:06:12 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     "Zhengbin (OSKernel)" <zhengbin13@huawei.com>
+Cc:     emma@anholt.net, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        tangyizhou@huawei.com
+Subject: Re: [PATCH v2 -next] drm/vc4: Fix build error when CONFIG_DRM_VC4=y
+ && CONFIG_RASPBERRYPI_FIRMWARE=m
+Message-ID: <20220406100612.2nuvjcc2oxo54n5j@houat>
+References: <20220325021831.2812735-1-zhengbin13@huawei.com>
+ <20220325130541.tjxq4kjgmkaz32en@houat>
+ <601a9682-6afc-d87b-cfa7-5c683271f7a5@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="m2ydzgbnjwzzthnm"
+Content-Disposition: inline
+In-Reply-To: <601a9682-6afc-d87b-cfa7-5c683271f7a5@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch to dev_err_probe() to remove all dev_err() -> return repeated
-patterns, simplifying and shortening the probe function.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/spi/spi-mt65xx.c | 70 ++++++++++++++--------------------------
- 1 file changed, 25 insertions(+), 45 deletions(-)
+--m2ydzgbnjwzzthnm
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index b8ec04795141..c5b8aecfada6 100644
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -795,10 +795,8 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 	int i, irq, ret, addr_bits;
- 
- 	master = devm_spi_alloc_master(dev, sizeof(*mdata));
--	if (!master) {
--		dev_err(dev, "failed to alloc spi master\n");
--		return -ENOMEM;
--	}
-+	if (!master)
-+		return dev_err_probe(dev, -ENOMEM, "failed to alloc spi master\n");
- 
- 	master->auto_runtime_pm = true;
- 	master->dev.of_node = dev->of_node;
-@@ -826,11 +824,9 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 	if (mdata->dev_comp->need_pad_sel) {
- 		mdata->pad_num = of_property_count_u32_elems(dev->of_node,
- 			"mediatek,pad-select");
--		if (mdata->pad_num < 0) {
--			dev_err(dev,
-+		if (mdata->pad_num < 0)
-+			return dev_err_probe(dev, -EINVAL,
- 				"No 'mediatek,pad-select' property\n");
--			return -EINVAL;
--		}
- 
- 		mdata->pad_sel = devm_kmalloc_array(dev, mdata->pad_num,
- 						    sizeof(u32), GFP_KERNEL);
-@@ -841,11 +837,10 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 			of_property_read_u32_index(dev->of_node,
- 						   "mediatek,pad-select",
- 						   i, &mdata->pad_sel[i]);
--			if (mdata->pad_sel[i] > MT8173_SPI_MAX_PAD_SEL) {
--				dev_err(dev, "wrong pad-sel[%d]: %u\n",
--					i, mdata->pad_sel[i]);
--				return -EINVAL;
--			}
-+			if (mdata->pad_sel[i] > MT8173_SPI_MAX_PAD_SEL)
-+				return dev_err_probe(dev, -EINVAL,
-+						     "wrong pad-sel[%d]: %u\n",
-+						     i, mdata->pad_sel[i]);
- 		}
- 	}
- 
-@@ -863,40 +858,30 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 
- 	ret = devm_request_irq(dev, irq, mtk_spi_interrupt,
- 			       IRQF_TRIGGER_NONE, dev_name(dev), master);
--	if (ret) {
--		dev_err(dev, "failed to register irq (%d)\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to register irq\n");
- 
- 	mdata->parent_clk = devm_clk_get(dev, "parent-clk");
--	if (IS_ERR(mdata->parent_clk)) {
--		dev_err(dev, "failed to get parent-clk: %d\n", ret);
--		return PTR_ERR(mdata->parent_clk);
--	}
-+	if (IS_ERR(mdata->parent_clk))
-+		return dev_err_probe(dev, PTR_ERR(mdata->parent_clk),
-+				     "failed to get parent-clk\n");
- 
- 	mdata->sel_clk = devm_clk_get(dev, "sel-clk");
--	if (IS_ERR(mdata->sel_clk)) {
--		dev_err(dev, "failed to get sel-clk: %d\n", ret);
--		return PTR_ERR(mdata->sel_clk);
--	}
-+	if (IS_ERR(mdata->sel_clk))
-+		return dev_err_probe(dev, PTR_ERR(mdata->sel_clk), "failed to get sel-clk\n");
- 
- 	mdata->spi_clk = devm_clk_get(dev, "spi-clk");
--	if (IS_ERR(mdata->spi_clk)) {
--		dev_err(dev, "failed to get spi-clk: %d\n", ret);
--		return PTR_ERR(mdata->spi_clk);
--	}
-+	if (IS_ERR(mdata->spi_clk))
-+		return dev_err_probe(dev, PTR_ERR(mdata->spi_clk), "failed to get spi-clk\n");
- 
- 	ret = clk_prepare_enable(mdata->spi_clk);
--	if (ret < 0) {
--		dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to enable spi_clk\n");
- 
- 	ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
- 	if (ret < 0) {
--		dev_err(dev, "failed to clk_set_parent (%d)\n", ret);
- 		clk_disable_unprepare(mdata->spi_clk);
--		return ret;
-+		return dev_err_probe(dev, ret, "failed to clk_set_parent\n");
- 	}
- 
- 	mdata->spi_clk_hz = clk_get_rate(mdata->spi_clk);
-@@ -907,18 +892,14 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 		clk_disable_unprepare(mdata->spi_clk);
- 
- 	if (mdata->dev_comp->need_pad_sel) {
--		if (mdata->pad_num != master->num_chipselect) {
--			dev_err(dev,
-+		if (mdata->pad_num != master->num_chipselect)
-+			return dev_err_probe(dev, -EINVAL,
- 				"pad_num does not match num_chipselect(%d != %d)\n",
- 				mdata->pad_num, master->num_chipselect);
--			return -EINVAL;
--		}
- 
--		if (!master->cs_gpiods && master->num_chipselect > 1) {
--			dev_err(dev,
-+		if (!master->cs_gpiods && master->num_chipselect > 1)
-+			return dev_err_probe(dev, -EINVAL,
- 				"cs_gpios not specified and num_chipselect > 1\n");
--			return -EINVAL;
--		}
- 	}
- 
- 	if (mdata->dev_comp->dma_ext)
-@@ -935,8 +916,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 	ret = devm_spi_register_master(dev, master);
- 	if (ret) {
- 		pm_runtime_disable(dev);
--		dev_err(dev, "failed to register master (%d)\n", ret);
--		return ret;
-+		return dev_err_probe(dev, ret, "failed to register master\n");
- 	}
- 
- 	return 0;
--- 
-2.35.1
+Hi,
 
+On Mon, Mar 28, 2022 at 10:22:11AM +0800, Zhengbin (OSKernel) wrote:
+> On 2022/3/25 21:05, Maxime Ripard wrote:
+> > On Fri, Mar 25, 2022 at 10:18:31AM +0800, Zheng Bin wrote:
+> > > If CONFIG_DRM_VC4=3Dy, CONFIG_RASPBERRYPI_FIRMWARE=3Dm, CONFIG_COMPIL=
+E_TEST=3Dn,
+> > > bulding fails:
+> > >=20
+> > > drivers/gpu/drm/vc4/vc4_drv.o: In function `vc4_drm_bind':
+> > > vc4_drv.c:(.text+0x320): undefined reference to `rpi_firmware_get'
+> > > vc4_drv.c:(.text+0x320): relocation truncated to fit: R_AARCH64_CALL2=
+6 against undefined symbol `rpi_firmware_get'
+> > > vc4_drv.c:(.text+0x34c): undefined reference to `rpi_firmware_propert=
+y'
+> > > vc4_drv.c:(.text+0x34c): relocation truncated to fit: R_AARCH64_CALL2=
+6 against undefined symbol `rpi_firmware_property'
+> > > vc4_drv.c:(.text+0x354): undefined reference to `rpi_firmware_put'
+> > > vc4_drv.c:(.text+0x354): relocation truncated to fit: R_AARCH64_CALL2=
+6 against undefined symbol `rpi_firmware_put'
+> > >=20
+> > > Make DRM_VC4 depends on RASPBERRYPI_FIRMWARE || COMPILE_TEST to fix t=
+his.
+> > >=20
+> > > Fixes: c406ad5e4a85 ("drm/vc4: Notify the firmware when DRM is in cha=
+rge")
+> > > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > > Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+> > > ---
+> > > v2: follow Maxime's advise, add RASPBERRYPI_FIRMWARE as an additional=
+ depends
+> > >   drivers/gpu/drm/vc4/Kconfig | 1 +
+> > >   1 file changed, 1 insertion(+)
+> > >=20
+> > > diff --git a/drivers/gpu/drm/vc4/Kconfig b/drivers/gpu/drm/vc4/Kconfig
+> > > index de3424fed2fc..92d74ba7c449 100644
+> > > --- a/drivers/gpu/drm/vc4/Kconfig
+> > > +++ b/drivers/gpu/drm/vc4/Kconfig
+> > > @@ -2,6 +2,7 @@
+> > >   config DRM_VC4
+> > >   	tristate "Broadcom VC4 Graphics"
+> > >   	depends on ARCH_BCM || ARCH_BCM2835 || COMPILE_TEST
+> > > +	depends on RASPBERRYPI_FIRMWARE || COMPILE_TEST
+> > Why do we need the || COMPILE_TEST here?
+> >=20
+> > The rpi_firmware_get, _property and _put functions aren't define if
+> > RASPBERRYPI_FIRMWARE, so we need that dependency every time, even if
+> > COMPILE_TEST is set?
+>=20
+> include/soc/bcm2835/raspberrypi-firmware.h
+>=20
+> #if IS_ENABLED(CONFIG_RASPBERRYPI_FIRMWARE)
+>=20
+> struct rpi_firmware *rpi_firmware_get(struct device_node
+> *firmware_node);/_property/_put
+>=20
+> #else=A0=A0=A0 -->empty function
+>=20
+> =A0static inline struct rpi_firmware *rpi_firmware_get(struct device_node
+> *firmware_node)/_property/_put
+> {
+> =A0=A0=A0=A0=A0=A0=A0=A0 return NULL;
+> =A0}
+> #endif
+>=20
+>=20
+> We can refer to drivers/pwm/Kconfig
+>=20
+> config PWM_RASPBERRYPI_POE
+> =A0=A0=A0=A0=A0=A0=A0=A0 tristate "Raspberry Pi Firwmware PoE Hat PWM sup=
+port"
+> =A0=A0=A0=A0=A0=A0=A0=A0 # Make sure not 'y' when RASPBERRYPI_FIRMWARE is=
+ 'm'. This can only
+> =A0=A0=A0=A0=A0=A0=A0 # happen when COMPILE_TEST=3Dy, hence the added !RA=
+SPBERRYPI_FIRMWARE.
+> =A0=A0=A0=A0=A0=A0=A0=A0 depends on RASPBERRYPI_FIRMWARE || (COMPILE_TEST=
+ &&
+> !RASPBERRYPI_FIRMWARE)=A0 -->There is no need to add (&&
+> !RASPBERRYPI_FIRMWARE)
+
+Oh, so you're fixing the case where vc4 would be built-in, but the
+firmware driver a module?
+
+I guess that makes sense, but the comment definitely helps there. And
+the (COMPILE_TEST && !RASPBERRYPI_FIRMWARE) is also needed, since it
+wouldn't fix the issue you're trying to fix for COMPILE_TEST otherwise.
+
+Maxime
+
+--m2ydzgbnjwzzthnm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYk1mFAAKCRDj7w1vZxhR
+xT80AQC7Tm+NmNDitAW/WPTe7zEurlBuKyI80CaozozVmnmeUgD/ZdkwChF2xf3c
+k1aWDhJy5q1hEMUagUb6QAuZLV0lMAM=
+=wzKX
+-----END PGP SIGNATURE-----
+
+--m2ydzgbnjwzzthnm--
