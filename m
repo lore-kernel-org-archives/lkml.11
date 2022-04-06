@@ -2,97 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 929ADC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F536C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234254AbiDFOG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44436 "EHLO
+        id S234133AbiDFOGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234360AbiDFOGJ (ORCPT
+        with ESMTP id S234173AbiDFOGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:06:09 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27E2398880;
-        Wed,  6 Apr 2022 02:36:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649237796;
-  x=1680773796;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=sKttvewg13jPI0W2V5bQyh9PjPvGiCcvTJm9/+nsTOw=;
-  b=FVSGDEeByy6YZrQAJDkMgNa7hVyMMtb+zcdSqQEFHzm6hmQkaRMDJH9u
-   R3UAoa0EIXmg+I33VRrJiLiOj7nVifpSqQ0L6TMiKsRj5RtwHzjskeBAL
-   WIbm/KEBKKTzD1q3VaMTugPAn4SlRfQTu3++jHfSQyRmbAg/4d/LBc/us
-   q0gBpwGMYkRf3Jsaz6Tv38h7pebWZLwgvyyX4FvOX/UAr4jxt/9UyszNd
-   loiXUY5H/4+PBqK9u6PFIhMm5VnTC63c0EDcaoHhO6aCpHl8T7Bhb4WWE
-   HfgWihd6UL76ZMWxd0Qvn0dShedXkT3RvNt4dxqdmlmzi7oGUxycDeYK3
-   w==;
-From:   Camel Guo <camel.guo@axis.com>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>
-CC:     <kernel@axis.com>, Camel Guo <camelg@axis.com>,
-        <linux-hwmon@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] hwmon: (tmp401) Support extended temperature range
-Date:   Wed, 6 Apr 2022 11:29:01 +0200
-Message-ID: <20220406092901.408861-1-camel.guo@axis.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 6 Apr 2022 10:06:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81C0475846;
+        Wed,  6 Apr 2022 02:41:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83F1161629;
+        Wed,  6 Apr 2022 09:40:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 718B7C385A8;
+        Wed,  6 Apr 2022 09:40:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649238049;
+        bh=x+m2MWCq6qFwh90X4cyqG6Rzi2rBlGxar0o6fHyYx9k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jNSeNrDj23At6EHMPg1C8m5Oz1arUCkHbccAcgjer2F7/6FHRapW4xfDAHAZYW/Df
+         aEIh8Te2D4fRXNsmMgLuApoKtzl/pfOI7BW13H47pqcJxPPjpLAfU1bnnQGDTYXHjU
+         EurkrPKnep+qF8WfOUjA9EzY0zUPoaUJBts96en6WJFhJqR5RllepO8IBL0CWkAfPl
+         Az3BR9ktB5iE2RjlEx9TGXNpb0CvZc6YWHN/Y0TEpdNbj+Y32U0SGv5gc4Wlxncuc+
+         dO0kpvU5ngEHubgD0vmY56ClCoR4EjF1rfHHEvBIVpROYwMo5BTGntacPbwgMtmCT2
+         6BgIxgM1ukXRA==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [PATCH v7 02/14] drm/msm/dsi: Pass DSC params to drm_panel
+Date:   Wed,  6 Apr 2022 15:10:19 +0530
+Message-Id: <20220406094031.1027376-3-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220406094031.1027376-1-vkoul@kernel.org>
+References: <20220406094031.1027376-1-vkoul@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Camel Guo <camelg@axis.com>
+When DSC is enabled, we need to get the DSC parameters from the panel
+driver, so add a dsc parameter in panel to fetch and pass DSC
+configuration for DSI panels to DPU encoder, which will enable and
+then configure DSC hardware blocks accordingly.
 
-This patch only applies to tmp431 and devicetree configuration.
-
-Signed-off-by: Camel Guo <camelg@axis.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- Documentation/hwmon/tmp401.rst | 13 +++++++++++++
- drivers/hwmon/tmp401.c         |  5 +++++
- 2 files changed, 18 insertions(+)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |  2 ++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c     |  2 ++
+ drivers/gpu/drm/msm/dsi/dsi.c               |  5 +++++
+ drivers/gpu/drm/msm/dsi/dsi.h               |  1 +
+ drivers/gpu/drm/msm/dsi/dsi_host.c          | 22 +++++++++++++++++++++
+ drivers/gpu/drm/msm/msm_drv.h               |  6 ++++++
+ include/drm/drm_panel.h                     |  7 +++++++
+ 7 files changed, 45 insertions(+)
 
-diff --git a/Documentation/hwmon/tmp401.rst b/Documentation/hwmon/tmp401.rst
-index 3aacf3d3bdf3..d12e9c9ba40f 100644
---- a/Documentation/hwmon/tmp401.rst
-+++ b/Documentation/hwmon/tmp401.rst
-@@ -78,3 +78,16 @@ some additional features.
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+index 42db6ce12caf..ef873e5285a0 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
+@@ -27,6 +27,7 @@
+  *                      based on num_of_h_tiles
+  * @is_te_using_watchdog_timer:  Boolean to indicate watchdog TE is
+  *				 used instead of panel TE in cmd mode panels
++ * @dsc:		DSC configuration data for DSC-enabled displays
+  */
+ struct msm_display_info {
+ 	int intf_type;
+@@ -34,6 +35,7 @@ struct msm_display_info {
+ 	uint32_t num_of_h_tiles;
+ 	uint32_t h_tile_instance[MAX_H_TILES_PER_DISPLAY];
+ 	bool is_te_using_watchdog_timer;
++	struct msm_display_dsc_config *dsc;
+ };
  
- TMP432 is compatible with TMP401 and TMP431. It supports two external
- temperature sensors.
-+
-+Device tree
-+-----------
-+TMP431 has support for the device tree parameter "extended-range" which enables
-+the extended range in the chip.
-+
-+Example:
-+
-+main-temp@4c {
-+  compatible = "ti,tmp431";
-+  reg = <0x4c>;
-+  extended-range;
-+};
-diff --git a/drivers/hwmon/tmp401.c b/drivers/hwmon/tmp401.c
-index b86d9df7105d..6efd2475ffda 100644
---- a/drivers/hwmon/tmp401.c
-+++ b/drivers/hwmon/tmp401.c
-@@ -557,6 +557,11 @@ static int tmp401_init_client(struct tmp401_data *data)
- 	config_orig = config;
- 	config &= ~TMP401_CONFIG_SHUTDOWN;
+ /**
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index e29796c4f27b..e64154407425 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -582,6 +582,8 @@ static int _dpu_kms_initialize_dsi(struct drm_device *dev,
+ 			MSM_DISPLAY_CAP_CMD_MODE :
+ 			MSM_DISPLAY_CAP_VID_MODE;
  
-+	if (of_property_read_bool(data->client->dev.of_node, "extended-range")) {
-+		/* Enable extended range */
-+		config |= TMP401_CONFIG_RANGE;
++		info.dsc = msm_dsi_get_dsc_config(priv->dsi[i]);
++
+ 		if (msm_dsi_is_bonded_dsi(priv->dsi[i]) && priv->dsi[other]) {
+ 			rc = msm_dsi_modeset_init(priv->dsi[other], dev, encoder);
+ 			if (rc) {
+diff --git a/drivers/gpu/drm/msm/dsi/dsi.c b/drivers/gpu/drm/msm/dsi/dsi.c
+index c12e66aa42a3..06a76834be52 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi.c
++++ b/drivers/gpu/drm/msm/dsi/dsi.c
+@@ -21,6 +21,11 @@ bool msm_dsi_is_cmd_mode(struct msm_dsi *msm_dsi)
+ 	return !(host_flags & MIPI_DSI_MODE_VIDEO);
+ }
+ 
++struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi)
++{
++	return msm_dsi_host_get_dsc_config(msm_dsi->host);
++}
++
+ static int dsi_get_phy(struct msm_dsi *msm_dsi)
+ {
+ 	struct platform_device *pdev = msm_dsi->pdev;
+diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
+index c8dedc95428c..16cd9b2fce86 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi.h
++++ b/drivers/gpu/drm/msm/dsi/dsi.h
+@@ -152,6 +152,7 @@ int dsi_calc_clk_rate_v2(struct msm_dsi_host *msm_host, bool is_bonded_dsi);
+ int dsi_calc_clk_rate_6g(struct msm_dsi_host *msm_host, bool is_bonded_dsi);
+ void msm_dsi_host_snapshot(struct msm_disp_state *disp_state, struct mipi_dsi_host *host);
+ void msm_dsi_host_test_pattern_en(struct mipi_dsi_host *host);
++struct msm_display_dsc_config *msm_dsi_host_get_dsc_config(struct mipi_dsi_host *host);
+ 
+ /* dsi phy */
+ struct msm_dsi_phy;
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index 4a8a9b31ce1d..cb2e179127ea 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -2061,9 +2061,24 @@ int msm_dsi_host_modeset_init(struct mipi_dsi_host *host,
+ {
+ 	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
+ 	const struct msm_dsi_cfg_handler *cfg_hnd = msm_host->cfg_hnd;
++	struct drm_panel *panel;
+ 	int ret;
+ 
+ 	msm_host->dev = dev;
++	panel = msm_dsi_host_get_panel(&msm_host->base);
++
++	if (panel && panel->dsc) {
++		struct msm_display_dsc_config *dsc = msm_host->dsc;
++
++		if (!dsc) {
++			dsc = devm_kzalloc(&msm_host->pdev->dev, sizeof(*dsc), GFP_KERNEL);
++			if (!dsc)
++				return -ENOMEM;
++			dsc->drm = panel->dsc;
++			msm_host->dsc = dsc;
++		}
 +	}
 +
- 	data->extended_range = !!(config & TMP401_CONFIG_RANGE);
+ 	ret = cfg_hnd->ops->tx_buf_alloc(msm_host, SZ_4K);
+ 	if (ret) {
+ 		pr_err("%s: alloc tx gem obj failed, %d\n", __func__, ret);
+@@ -2628,3 +2643,10 @@ void msm_dsi_host_test_pattern_en(struct mipi_dsi_host *host)
+ 		dsi_write(msm_host, REG_DSI_TEST_PATTERN_GEN_CMD_STREAM0_TRIGGER,
+ 				DSI_TEST_PATTERN_GEN_CMD_STREAM0_TRIGGER_SW_TRIGGER);
+ }
++
++struct msm_display_dsc_config *msm_dsi_host_get_dsc_config(struct mipi_dsi_host *host)
++{
++	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
++
++	return msm_host->dsc;
++}
+diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+index 57aee75f5022..2a3280df7b12 100644
+--- a/drivers/gpu/drm/msm/msm_drv.h
++++ b/drivers/gpu/drm/msm/msm_drv.h
+@@ -336,6 +336,7 @@ void msm_dsi_snapshot(struct msm_disp_state *disp_state, struct msm_dsi *msm_dsi
+ bool msm_dsi_is_cmd_mode(struct msm_dsi *msm_dsi);
+ bool msm_dsi_is_bonded_dsi(struct msm_dsi *msm_dsi);
+ bool msm_dsi_is_master_dsi(struct msm_dsi *msm_dsi);
++struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi);
+ #else
+ static inline void __init msm_dsi_register(void)
+ {
+@@ -364,6 +365,11 @@ static inline bool msm_dsi_is_master_dsi(struct msm_dsi *msm_dsi)
+ {
+ 	return false;
+ }
++
++static inline struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi)
++{
++	return NULL;
++}
+ #endif
  
- 	if (config != config_orig)
+ #ifdef CONFIG_DRM_MSM_DP
+diff --git a/include/drm/drm_panel.h b/include/drm/drm_panel.h
+index 4602f833eb51..eb8ae9bf32ed 100644
+--- a/include/drm/drm_panel.h
++++ b/include/drm/drm_panel.h
+@@ -171,6 +171,13 @@ struct drm_panel {
+ 	 * Panel entry in registry.
+ 	 */
+ 	struct list_head list;
++
++	/**
++	 * @dsc:
++	 *
++	 * Panel DSC pps payload to be sent
++	 */
++	struct drm_dsc_config *dsc;
+ };
+ 
+ void drm_panel_init(struct drm_panel *panel, struct device *dev,
 -- 
-2.30.2
+2.34.1
 
