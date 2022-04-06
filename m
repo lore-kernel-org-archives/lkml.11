@@ -2,149 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC451C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB01CC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352984AbiDFFua (ORCPT
+        id S1356601AbiDFFvK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34572 "EHLO
+        Wed, 6 Apr 2022 01:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446731AbiDFE5o (ORCPT
+        with ESMTP id S1353968AbiDFEmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 00:57:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1518202155
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:46:25 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649205983;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mhpo2Erwb4Hr62Oe++KrjfRdUmCMgVLEH3CRGWnSUZU=;
-        b=VVCsLwCe9WroduPZLTOprTutk2/LjIHSHCoAMcbDcDQf3TSRxDVLJ9paBfFKHyEYYjolzw
-        SeCqLE8Ym+eiEKX2EEvkBb9/2wwVp6+fTjvcbGuK0ZZXlzxCYQ43tIu90Lni2hbxl+x1SC
-        rdgj5x7Z+ORnTN4gLLhIWZbZ47EntLimz8muiIsGNescmkqDk9F3nDe/lgGIY4y94XzV/B
-        A87NsTFKqxXN4SuHdLy6fby9+5b8lDMYC3WBqDSLIgjc8YlSrVsDrabcqe9mLzECKfi02y
-        k7ECoAxDmfL9I/befIKDot+182tTutJGU5ejv/KeOsVjknrNzIqkGcR4W8e1ew==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649205983;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mhpo2Erwb4Hr62Oe++KrjfRdUmCMgVLEH3CRGWnSUZU=;
-        b=bigqMih2qo6UghO2aXG8VmXwyOAhcsqT19RjrMOzUYbpYh3rmGh4257RDT8mWJhU/H2+Sq
-        I9BiGflJ0eD58KAg==
-To:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, mbenes@suse.cz, x86@kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: drivers/gpu/drm/i915/i915.prelink.o: warning: objtool:
- __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR:
- vlv_allow_gt_wake.cold+0x0
-In-Reply-To: <20220406000500.5hlaqy5zrdqsg5mg@treble>
-References: <202204041241.Hw855BWm-lkp@intel.com>
- <YkxLqznOz0ldTz5a@hirez.programming.kicks-ass.net>
- <20220406000500.5hlaqy5zrdqsg5mg@treble>
-Date:   Wed, 06 Apr 2022 02:46:22 +0200
-Message-ID: <87czhv11k1.ffs@tglx>
+        Wed, 6 Apr 2022 00:42:18 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AC91B84CD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:41:31 -0700 (PDT)
+Received: from kwepemi100020.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KY5HK6msSz4wqT;
+        Wed,  6 Apr 2022 08:39:09 +0800 (CST)
+Received: from kwepemm600004.china.huawei.com (7.193.23.242) by
+ kwepemi100020.china.huawei.com (7.221.188.48) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 08:41:28 +0800
+Received: from [10.174.177.238] (10.174.177.238) by
+ kwepemm600004.china.huawei.com (7.193.23.242) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 08:41:27 +0800
+Message-ID: <36ac1182-36d3-d6fa-6954-c7c6a2e1d968@huawei.com>
+Date:   Wed, 6 Apr 2022 08:41:27 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.0.2
+Subject: Re: [PATCH v3] lz4: fix LZ4_decompress_safe_partial read out of bound
+To:     Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     Nick Terrell <terrelln@fb.com>, Chengyang Fan <cy.fan@huawei.com>,
+        "Yann Collet" <cyan@fb.com>,
+        "fangwei1@huawei.com" <fangwei1@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com" 
+        <syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com>,
+        "wangli74@huawei.com" <wangli74@huawei.com>
+References: <20211111085058.1940591-1-guoxuenan@huawei.com>
+ <20211111105048.2006070-1-guoxuenan@huawei.com>
+ <CCE83845-DC40-4E14-9105-6319C048FACB@fb.com>
+ <YkfXSzePVEhlajCU@B-P7TQMD6M-0146.local>
+ <20220404142123.7de8d3a291d6484e7fb4c8a0@linux-foundation.org>
+ <YktxATidpH2A1QJu@B-P7TQMD6M-0146.local>
+From:   Guo Xuenan <guoxuenan@huawei.com>
+In-Reply-To: <YktxATidpH2A1QJu@B-P7TQMD6M-0146.local>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.238]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600004.china.huawei.com (7.193.23.242)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05 2022 at 17:05, Josh Poimboeuf wrote:
-> On Tue, Apr 05, 2022 at 04:01:15PM +0200, Peter Zijlstra wrote:
->
-> But objtool is complaining about a real problem (albeit with a cryptic
-> warning).  I don't think we want to paper over that. See patch.
->
-> Also, are in-tree users of trace_printk() even allowed??
+Hi all，
 
-See the comment in the header file you are patching:
-
- * This is intended as a debugging tool for the developer only.
- * Please refrain from leaving trace_printks scattered around in
- * your code. (Extra memory is used for special buffers that are
- * allocated when trace_printk() is used.)
-
-....
-
-> From: Josh Poimboeuf <jpoimboe@redhat.com>
-> Subject: [PATCH] tracing: Fix _THIS_IP_ usage in trace_printk()
+在 2022/4/5 6:28, Gao Xiang Write:
+> On Mon, Apr 04, 2022 at 02:21:23PM -0700, Andrew Morton wrote:
+>> On Sat, 2 Apr 2022 12:55:39 +0800 Gao Xiang <hsiangkao@linux.alibaba.com> wrote:
+>>
+>>> On Fri, Nov 19, 2021 at 06:23:24PM +0000, Nick Terrell wrote:
+>>>>
+>>>>> On Nov 11, 2021, at 2:50 AM, Guo Xuenan <guoxuenan@huawei.com> wrote:
+>>>>>
+>>>>> When partialDecoding, it is EOF if we've either, filled the output
+>>>>> buffer or can't proceed with reading an offset for following match.
+>>>>>
+>>>>> In some extreme corner cases when compressed data is crusted corrupted,
+>>>>> UAF will occur. As reported by KASAN [1], LZ4_decompress_safe_partial
+>>>>> may lead to read out of bound problem during decoding. lz4 upstream has
+>>>>> fixed it [2] and this issue has been disscussed here [3] before.
+>>>>>
+>>>>> current decompression routine was ported from lz4 v1.8.3, bumping lib/lz4
+>>>>> to v1.9.+ is certainly a huge work to be done later, so, we'd better fix
+>>>>> it first.
+>>>>>
+>>>>> [1] https://lore.kernel.org/all/000000000000830d1205cf7f0477@google.com/
+>>>>> [2] https://github.com/lz4/lz4/commit/c5d6f8a8be3927c0bec91bcc58667a6cfad244ad#
+>>>>> [3] https://lore.kernel.org/all/CC666AE8-4CA4-4951-B6FB-A2EFDE3AC03B@fb.com/
+>>>>>
+>>>>> Reported-by: syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com
+>>>>> Cc: hsiangkao@linux.alibaba.com
+>>>>> Cc: terrelln@fb.com
+>>>>> Cc: cyan@fb.com
+>>>>> Cc: cy.fan@huawei.com
+>>>>> Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
+>>>> Sorry I’m a bit late to the party, but this looks good to me!
+>>>>
+>>>> Reviewed-by: Nick Terrell <terrelln@fb.com>
+>>> Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+>>>
+>>> Hi Andrew,
+>>>
+>>> This patch has already been pending for 2 release cycles.. Would you
+>>> mind submitting it upstream? Or are there other concerns about this?
+>> Sorry, I'd not noticed that this was from lz4 upstream.
+>>
+>> I'll put a cc:stable in there and shall send it upstream this week.
+>>
+>> In the changelog, can someone please explain what "crusted corrupted"
+>> is saying?
+Sorry for my missspelling, Gao Xiang is right, i mean "well-designed 
+corrupted".
+> Er.. It sounds like "well-designed corrupted". I think it was a typo
+> though.
 >
-> do_trace_printk() uses the _THIS_IP_ macro to save the current
-> instruction pointer as an argument to a called function.  However,
-> because _THIS_IP_ relies on an empty label hack to get the IP, the
-> compiler is actually free to place the label anywhere in the function,
-> including at the very end -- which, since the label doesn't actually
-> have any code, is technically at the beginning of whatever function
-> happens to come next.
->
-> For example:
->
->       1d89:	48 c7 c7 00 00 00 00 	mov    $0x0,%rdi
->   			1d8c: R_X86_64_32S	.text.unlikely+0x1d3a
->       1d90:	e8 00 00 00 00       	callq  1d95 <__intel_wait_for_register_fw.cold+0xd4>
->   			1d91: R_X86_64_PLT32	__trace_bprintk-0x4
->       1d95:	e8 00 00 00 00       	callq  1d9a <__intel_wait_for_register_fw.cold+0xd9>
->   			1d96: R_X86_64_PLT32	__sanitizer_cov_trace_pc-0x4
->       1d9a:	bf 01 00 00 00       	mov    $0x1,%edi
->       1d9f:	e8 00 00 00 00       	callq  1da4 <__intel_wait_for_register_fw.cold+0xe3>
->   			1da0: R_X86_64_PLT32	ftrace_dump-0x4
->       1da4:	31 f6                	xor    %esi,%esi
->       1da6:	bf 09 00 00 00       	mov    $0x9,%edi
->       1dab:	e8 00 00 00 00       	callq  1db0 <__intel_wait_for_register_fw.cold+0xef>
->   			1dac: R_X86_64_PLT32	add_taint-0x4
->       1db0:	90                   	nop
->       1db1:	0f 0b                	ud2
->
->   0000000000001db3 <vlv_allow_gt_wake.cold>:
->
-> In this case _THIS_IP_ causes the instruction at 0x1d89 to reference the
-> next function.  This results in a semi-cryptic objtool warning:
->
->   warning: objtool: __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR: vlv_allow_gt_wake.cold+0x
->
-> While _THIS_IP_ is inherently imprecise, we can at least coddle the
-> compiler into putting the label *before* the call by using _THIS_IP_
-> immediately before the call instead of as an argument to the call.
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> ---
->  include/linux/kernel.h | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-> index 08ba5995aa8b..c399b29840eb 100644
-> --- a/include/linux/kernel.h
-> +++ b/include/linux/kernel.h
-> @@ -390,13 +390,15 @@ do {									\
->  	static const char *trace_printk_fmt __used			\
->  		__section("__trace_printk_fmt") =			\
->  		__builtin_constant_p(fmt) ? fmt : NULL;			\
-> +	unsigned long __ip;						\
->  									\
->  	__trace_printk_check_format(fmt, ##args);			\
->  									\
-> +	__ip = _THIS_IP_;						\
->  	if (__builtin_constant_p(fmt))					\
-> -		__trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);	\
-> +		__trace_bprintk(__ip, trace_printk_fmt, ##args);	\
->  	else								\
-> -		__trace_printk(_THIS_IP_, fmt, ##args);			\
-> +		__trace_printk(__ip, fmt, ##args);			\
->  } while (0)
->  
->  extern __printf(2, 3)
-
-This covers the trace_printk() case which uses do_trace_printk(), but
-the same problem exists in trace_puts() and ftrace_vprintk()...., no?
-
+> Thanks,
+> Gao Xiang
+> .
 Thanks,
-
-        tglx
+Guo Xuenan
+.
