@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C359C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:28:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B01E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234909AbiDFOan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
+        id S234773AbiDFOaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234937AbiDFOaU (ORCPT
+        with ESMTP id S234936AbiDFOaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 10:30:20 -0400
 Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D9447D5AB;
-        Wed,  6 Apr 2022 03:46:30 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iNNw059322;
-        Wed, 6 Apr 2022 04:44:23 -0500
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B3123C0F1;
+        Wed,  6 Apr 2022 03:46:27 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iTYO059331;
+        Wed, 6 Apr 2022 04:44:29 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649238263;
-        bh=3mr6PWWFKPhhqSpWuRBqusywwjTd5CFgavwJj4zaMBI=;
+        s=ti-com-17Q1; t=1649238269;
+        bh=bOueUZzyW20sYdI3Y7AsG+jWAy7mLl38rubmozgTXVo=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=CpC3IY8l4kE8f6xFTLsMq5aYiQaQwh8p3CAEt/ibd5By7p7b2BUC1tBNlE2OaZFLP
-         X87ofzxeY0sUZ55x2Ou5Dz4DLgizb4Jhl0rE/OR/IemH+15EF4Rv/N8fDEYdQT6eEq
-         F+UbMqHDDYgob9SVESZjD3WZjjYzO1v/NwWb+7m4=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iNa5113119
+        b=DEdUB0rYvXnBUEhJftLPZACNDQDHdhCdDL6JjR5pq5uJTTJ7ELfg9WQXqqIbNf+1h
+         UrA1nv5WIXbOBAkgfiAjnUPZxv5OiV9eICC6Qa510Xm4zlT7FjPCQsFrdBLy4nZ2mp
+         AtZLt23AMf04VDbsbaH62xFIXxkNfaViIbV6LRd0=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iTbP014883
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 04:44:23 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 04:44:22 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE108.ent.ti.com
+        Wed, 6 Apr 2022 04:44:29 -0500
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE108.ent.ti.com
  (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Apr 2022 04:44:28 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 04:44:22 -0500
+ Frontend Transport; Wed, 6 Apr 2022 04:44:28 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369iLLW025792;
-        Wed, 6 Apr 2022 04:44:22 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369iRg1025885;
+        Wed, 6 Apr 2022 04:44:28 -0500
 From:   Puranjay Mohan <p-mohan@ti.com>
 To:     <linux-kernel@vger.kernel.org>
 CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
@@ -49,9 +49,9 @@ CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
         <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
         <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <vigneshr@ti.com>, <kishon@ti.com>
-Subject: [RFC 08/13] soc: ti: pruss: Add pruss_cfg_read()/update() API
-Date:   Wed, 6 Apr 2022 15:13:53 +0530
-Message-ID: <20220406094358.7895-9-p-mohan@ti.com>
+Subject: [RFC 10/13] soc: ti: pruss: Add helper function to enable OCP master ports
+Date:   Wed, 6 Apr 2022 15:13:55 +0530
+Message-ID: <20220406094358.7895-11-p-mohan@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
 References: <20220406094358.7895-1-p-mohan@ti.com>
@@ -64,205 +64,173 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Suman Anna <s-anna@ti.com>
 
-Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
-the PRUSS platform driver to allow other drivers to read and program
-respectively a register within the PRUSS CFG sub-module represented
-by a syscon driver. This interface provides a simple way for client
-drivers without having them to include and parse the CFG syscon node
-within their respective device nodes. Various useful registers and
-macros for certain register bit-fields and their values have also
-been added.
+The PRU-ICSS subsystem on OMAP-architecture based SoCS (AM33xx, AM437x
+and AM57xx SoCs) has a control bit STANDBY_INIT in the PRUSS_CFG register
+to initiate a Standby sequence (when set) and trigger a MStandby request
+to the SoC's PRCM module. This same bit is also used to enable the OCP
+master ports (when cleared). The clearing of the STANDBY_INIT bit requires
+an acknowledgment from PRCM and is done through the monitoring of the
+PRUSS_SYSCFG.SUB_MWAIT bit.
 
-It is the responsibility of the client drivers to reconfigure or
-reset a particular register upon any failures.
+Add a helper function pruss_cfg_ocp_master_ports() to allow the PRU
+client drivers to control this bit and enable or disable the firmware
+running on PRU cores access to any peripherals or memory to achieve
+desired functionality. The access is disabled by default on power-up
+and on any suspend (context is not maintained).
 
 Signed-off-by: Suman Anna <s-anna@ti.com>
 Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
 Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
 Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
 ---
- drivers/soc/ti/pruss.c |  41 +++++++++++++++++
- include/linux/pruss.h  | 102 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 143 insertions(+)
+ drivers/soc/ti/pruss.c | 81 ++++++++++++++++++++++++++++++++++++++++--
+ include/linux/pruss.h  |  6 ++++
+ 2 files changed, 85 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-index bda920662de2..9ef15daa405a 100644
+index 9ef15daa405a..dbc1700d3176 100644
 --- a/drivers/soc/ti/pruss.c
 +++ b/drivers/soc/ti/pruss.c
-@@ -164,6 +164,47 @@ int pruss_release_mem_region(struct pruss *pruss,
+@@ -22,14 +22,19 @@
+ #include <linux/remoteproc.h>
+ #include <linux/slab.h>
+ 
++#define SYSCFG_STANDBY_INIT	BIT(4)
++#define SYSCFG_SUB_MWAIT_READY	BIT(5)
++
+ /**
+  * struct pruss_private_data - PRUSS driver private data
+  * @has_no_sharedram: flag to indicate the absence of PRUSS Shared Data RAM
+  * @has_core_mux_clock: flag to indicate the presence of PRUSS core clock
++ * @has_ocp_syscfg: flag to indicate if OCP SYSCFG is present
+  */
+ struct pruss_private_data {
+ 	bool has_no_sharedram;
+ 	bool has_core_mux_clock;
++	bool has_ocp_syscfg;
+ };
+ 
+ /**
+@@ -205,6 +210,72 @@ int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
  }
- EXPORT_SYMBOL_GPL(pruss_release_mem_region);
+ EXPORT_SYMBOL_GPL(pruss_cfg_update);
  
 +/**
-+ * pruss_cfg_read() - read a PRUSS CFG sub-module register
++ * pruss_cfg_ocp_master_ports() - configure PRUSS OCP master ports
 + * @pruss: the pruss instance handle
-+ * @reg: register offset within the CFG sub-module
-+ * @val: pointer to return the value in
++ * @enable: set to true for enabling or false for disabling the OCP master ports
 + *
-+ * Reads a given register within the PRUSS CFG sub-module and
-+ * returns it through the passed-in @val pointer
++ * This function programs the PRUSS_SYSCFG.STANDBY_INIT bit either to enable or
++ * disable the OCP master ports (applicable only on SoCs using OCP interconnect
++ * like the OMAP family). Clearing the bit achieves dual functionalities - one
++ * is to deassert the MStandby signal to the device PRCM, and the other is to
++ * enable OCP master ports to allow accesses outside of the PRU-ICSS. The
++ * function has to wait for the PRCM to acknowledge through the monitoring of
++ * the PRUSS_SYSCFG.SUB_MWAIT bit when enabling master ports. Setting the bit
++ * disables the master access, and also signals the PRCM that the PRUSS is ready
++ * for Standby.
 + *
-+ * Return: 0 on success, or an error code otherwise
++ * Return: 0 on success, or an error code otherwise. ETIMEDOUT is returned
++ * when the ready-state fails.
 + */
-+int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val)
++int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable)
 +{
++	int ret;
++	u32 syscfg_val, i;
++	const struct pruss_private_data *data;
++
 +	if (IS_ERR_OR_NULL(pruss))
 +		return -EINVAL;
 +
-+	return regmap_read(pruss->cfg_regmap, reg, val);
-+}
-+EXPORT_SYMBOL_GPL(pruss_cfg_read);
++	data = of_device_get_match_data(pruss->dev);
 +
-+/**
-+ * pruss_cfg_update() - configure a PRUSS CFG sub-module register
-+ * @pruss: the pruss instance handle
-+ * @reg: register offset within the CFG sub-module
-+ * @mask: bit mask to use for programming the @val
-+ * @val: value to write
-+ *
-+ * Programs a given register within the PRUSS CFG sub-module
-+ *
-+ * Return: 0 on success, or an error code otherwise
-+ */
-+int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
-+		     unsigned int mask, unsigned int val)
-+{
-+	if (IS_ERR_OR_NULL(pruss))
-+		return -EINVAL;
++	/* nothing to do on non OMAP-SoCs */
++	if (!data || !data->has_ocp_syscfg)
++		return 0;
 +
-+	return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
++	/* assert the MStandby signal during disable path */
++	if (!enable)
++		return pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG,
++					SYSCFG_STANDBY_INIT,
++					SYSCFG_STANDBY_INIT);
++
++	/* enable the OCP master ports and disable MStandby */
++	ret = pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT, 0);
++	if (ret)
++		return ret;
++
++	/* wait till we are ready for transactions - delay is arbitrary */
++	for (i = 0; i < 10; i++) {
++		ret = pruss_cfg_read(pruss, PRUSS_CFG_SYSCFG, &syscfg_val);
++		if (ret)
++			goto disable;
++
++		if (!(syscfg_val & SYSCFG_SUB_MWAIT_READY))
++			return 0;
++
++		udelay(5);
++	}
++
++	dev_err(pruss->dev, "timeout waiting for SUB_MWAIT_READY\n");
++	ret = -ETIMEDOUT;
++
++disable:
++	pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT,
++			 SYSCFG_STANDBY_INIT);
++	return ret;
 +}
-+EXPORT_SYMBOL_GPL(pruss_cfg_update);
++EXPORT_SYMBOL_GPL(pruss_cfg_ocp_master_ports);
 +
  static void pruss_of_free_clk_provider(void *data)
  {
  	struct device_node *clk_mux_np = data;
+@@ -496,10 +567,16 @@ static int pruss_remove(struct platform_device *pdev)
+ /* instance-specific driver private data */
+ static const struct pruss_private_data am437x_pruss1_data = {
+ 	.has_no_sharedram = false,
++	.has_ocp_syscfg = true,
+ };
+ 
+ static const struct pruss_private_data am437x_pruss0_data = {
+ 	.has_no_sharedram = true,
++	.has_ocp_syscfg = false,
++};
++
++static const struct pruss_private_data am33xx_am57xx_data = {
++	.has_ocp_syscfg = true,
+ };
+ 
+ static const struct pruss_private_data am65x_j721e_pruss_data = {
+@@ -507,10 +584,10 @@ static const struct pruss_private_data am65x_j721e_pruss_data = {
+ };
+ 
+ static const struct of_device_id pruss_of_match[] = {
+-	{ .compatible = "ti,am3356-pruss" },
++	{ .compatible = "ti,am3356-pruss", .data = &am33xx_am57xx_data },
+ 	{ .compatible = "ti,am4376-pruss0", .data = &am437x_pruss0_data, },
+ 	{ .compatible = "ti,am4376-pruss1", .data = &am437x_pruss1_data, },
+-	{ .compatible = "ti,am5728-pruss" },
++	{ .compatible = "ti,am5728-pruss", .data = &am33xx_am57xx_data },
+ 	{ .compatible = "ti,k2g-pruss" },
+ 	{ .compatible = "ti,am654-icssg", .data = &am65x_j721e_pruss_data, },
+ 	{ .compatible = "ti,j721e-icssg", .data = &am65x_j721e_pruss_data, },
 diff --git a/include/linux/pruss.h b/include/linux/pruss.h
-index 689ef243bcbc..eb2f974eef9c 100644
+index 84e95eb884e9..7e5e904521ac 100644
 --- a/include/linux/pruss.h
 +++ b/include/linux/pruss.h
-@@ -10,12 +10,99 @@
- #ifndef __LINUX_PRUSS_H
- #define __LINUX_PRUSS_H
- 
-+#include <linux/bits.h>
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/types.h>
- 
- #define PRU_RPROC_DRVNAME "pru-rproc"
- 
-+/*
-+ * PRU_ICSS_CFG registers
-+ * SYSCFG, ISRP, ISP, IESP, IECP, SCRP applicable on AMxxxx devices only
-+ */
-+#define PRUSS_CFG_REVID		0x00
-+#define PRUSS_CFG_SYSCFG	0x04
-+#define PRUSS_CFG_GPCFG(x)	(0x08 + (x) * 4)
-+#define PRUSS_CFG_CGR		0x10
-+#define PRUSS_CFG_ISRP		0x14
-+#define PRUSS_CFG_ISP		0x18
-+#define PRUSS_CFG_IESP		0x1C
-+#define PRUSS_CFG_IECP		0x20
-+#define PRUSS_CFG_SCRP		0x24
-+#define PRUSS_CFG_PMAO		0x28
-+#define PRUSS_CFG_MII_RT	0x2C
-+#define PRUSS_CFG_IEPCLK	0x30
-+#define PRUSS_CFG_SPP		0x34
-+#define PRUSS_CFG_PIN_MX	0x40
-+
-+/* PRUSS_GPCFG register bits */
-+#define PRUSS_GPCFG_PRU_GPO_SH_SEL		BIT(25)
-+
-+#define PRUSS_GPCFG_PRU_DIV1_SHIFT		20
-+#define PRUSS_GPCFG_PRU_DIV1_MASK		GENMASK(24, 20)
-+
-+#define PRUSS_GPCFG_PRU_DIV0_SHIFT		15
-+#define PRUSS_GPCFG_PRU_DIV0_MASK		GENMASK(15, 19)
-+
-+#define PRUSS_GPCFG_PRU_GPO_MODE		BIT(14)
-+#define PRUSS_GPCFG_PRU_GPO_MODE_DIRECT		0
-+#define PRUSS_GPCFG_PRU_GPO_MODE_SERIAL		BIT(14)
-+
-+#define PRUSS_GPCFG_PRU_GPI_SB			BIT(13)
-+
-+#define PRUSS_GPCFG_PRU_GPI_DIV1_SHIFT		8
-+#define PRUSS_GPCFG_PRU_GPI_DIV1_MASK		GENMASK(12, 8)
-+
-+#define PRUSS_GPCFG_PRU_GPI_DIV0_SHIFT		3
-+#define PRUSS_GPCFG_PRU_GPI_DIV0_MASK		GENMASK(7, 3)
-+
-+#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_POSITIVE	0
-+#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_NEGATIVE	BIT(2)
-+#define PRUSS_GPCFG_PRU_GPI_CLK_MODE		BIT(2)
-+
-+#define PRUSS_GPCFG_PRU_GPI_MODE_MASK		GENMASK(1, 0)
-+#define PRUSS_GPCFG_PRU_GPI_MODE_SHIFT		0
-+
-+#define PRUSS_GPCFG_PRU_MUX_SEL_SHIFT		26
-+#define PRUSS_GPCFG_PRU_MUX_SEL_MASK		GENMASK(29, 26)
-+
-+/* PRUSS_MII_RT register bits */
-+#define PRUSS_MII_RT_EVENT_EN			BIT(0)
-+
-+/* PRUSS_SPP register bits */
-+#define PRUSS_SPP_XFER_SHIFT_EN			BIT(1)
-+#define PRUSS_SPP_PRU1_PAD_HP_EN		BIT(0)
-+
-+/*
-+ * enum pruss_gp_mux_sel - PRUSS GPI/O Mux modes for the
-+ * PRUSS_GPCFG0/1 registers
-+ *
-+ * NOTE: The below defines are the most common values, but there
-+ * are some exceptions like on 66AK2G, where the RESERVED and MII2
-+ * values are interchanged. Also, this bit-field does not exist on
-+ * AM335x SoCs
-+ */
-+enum pruss_gp_mux_sel {
-+	PRUSS_GP_MUX_SEL_GP = 0,
-+	PRUSS_GP_MUX_SEL_ENDAT,
-+	PRUSS_GP_MUX_SEL_RESERVED,
-+	PRUSS_GP_MUX_SEL_SD,
-+	PRUSS_GP_MUX_SEL_MII2,
-+	PRUSS_GP_MUX_SEL_MAX,
-+};
-+
-+/*
-+ * enum pruss_gpi_mode - PRUSS GPI configuration modes, used
-+ *			 to program the PRUSS_GPCFG0/1 registers
-+ */
-+enum pruss_gpi_mode {
-+	PRUSS_GPI_MODE_DIRECT = 0,
-+	PRUSS_GPI_MODE_PARALLEL,
-+	PRUSS_GPI_MODE_28BIT_SHIFT,
-+	PRUSS_GPI_MODE_MII,
-+};
-+
- /*
-  * enum pruss_pru_id - PRU core identifiers
-  */
-@@ -73,6 +160,9 @@ int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
- 			     struct pruss_mem_region *region);
- int pruss_release_mem_region(struct pruss *pruss,
- 			     struct pruss_mem_region *region);
-+int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val);
-+int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
-+		     unsigned int mask, unsigned int val);
+@@ -163,6 +163,7 @@ int pruss_release_mem_region(struct pruss *pruss,
+ int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val);
+ int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
+ 		     unsigned int mask, unsigned int val);
++int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable);
  
  #else
  
-@@ -96,6 +186,18 @@ static inline int pruss_release_mem_region(struct pruss *pruss,
+@@ -198,6 +199,11 @@ static inline int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
  	return -EOPNOTSUPP;
  }
  
-+static inline int pruss_cfg_read(struct pruss *pruss, unsigned int reg,
-+				 unsigned int *val)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
-+				   unsigned int mask, unsigned int val)
++static inline int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable)
 +{
 +	return -EOPNOTSUPP;
 +}
