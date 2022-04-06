@@ -2,103 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 199B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233793AbiDFNum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
+        id S233399AbiDFNu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233635AbiDFNu3 (ORCPT
+        with ESMTP id S233880AbiDFNue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:50:29 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E776DB4D9;
-        Wed,  6 Apr 2022 04:20:40 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 236BIgjD021840;
-        Wed, 6 Apr 2022 06:18:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649243922;
-        bh=qg6EV2IZc1k/9CqC+u3u9RiNmaa89xg9kphbIADuZ+g=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=zQJGOIk/wYiqKUt6EV0CQTtSGiDru84V6lTgBPUw569T7+Wm3Jkf1U60kDwMuQA0u
-         docahuL6oiEbnx/swKDlQb4dxe55WSRlZcqf89N7AeC17drJ1gGd2qrfRJf0gBxJeu
-         QVxuADL/hRKgwqLobCco1iB4P+UqhluPNejUTd88=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 236BIgWg037134
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 06:18:42 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 06:18:41 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 06:18:41 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 236BIcf8012911;
-        Wed, 6 Apr 2022 06:18:39 -0500
-Message-ID: <f8130c2a-f51d-21fd-d999-886ce9559e9c@ti.com>
-Date:   Wed, 6 Apr 2022 14:18:38 +0300
+        Wed, 6 Apr 2022 09:50:34 -0400
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D7C3A0B0B;
+        Wed,  6 Apr 2022 04:21:13 -0700 (PDT)
+Received: by mail-ej1-f44.google.com with SMTP id n6so3489253ejc.13;
+        Wed, 06 Apr 2022 04:21:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/E0Zaul7G+qNTtOYXrVNpVo8Eq1Tbjxqas5afyEvmXI=;
+        b=yhuO5+SRgpDRwX5XpK+wz6mYJAs3ktm171XsBX2IdjaJ/Qhx9JRVMMeXfh2WLxGy2V
+         uMYlS9L8Y49qv8NzErQKnzYZiKEweLHEaVLc8jc8HjhyS+pggIaM48fS/sqsJrc/yNcV
+         3a7rRI+yuUysS3eifAJADvPO7xfe6gjYCWTMx/41y1zidM9tihLrWh7kCZbuaZZE3Qdu
+         5zw5MqH9AluuMQg31k+6OXu06Yz5pPu4+VcPyWnqg3/75zvzq2CzbJrfFKBnGFRowugm
+         iZc8E/QiDV3cGtfdxQjGaE4Tioj21v3qsBrbTsGrBQfHNIFt6ymoU4v1IvtkR6wVdPQ3
+         idNw==
+X-Gm-Message-State: AOAM533VyLwOPLN4bbwIyrytpcAS1mgTJ/jXt31+kVFrUN/DqH82gcfB
+        2hxtxWTQJOIImJf6rWdXonETwhgiT9A=
+X-Google-Smtp-Source: ABdhPJy+w5JmZ7zlbPP+sjHY4UMYaCYUyg3o2G7jpLBB1TEr0Ibp/apvXaDINUgn8UNLSXKd06L8vA==
+X-Received: by 2002:a17:907:3fa6:b0:6e0:dac6:79d8 with SMTP id hr38-20020a1709073fa600b006e0dac679d8mr7654128ejc.86.1649244071612;
+        Wed, 06 Apr 2022 04:21:11 -0700 (PDT)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id k12-20020a170906a38c00b006e7ddaa89absm3963325ejz.52.2022.04.06.04.21.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 04:21:11 -0700 (PDT)
+Message-ID: <42d9cf5d-2e08-51e4-a3f1-9bd856223a6a@kernel.org>
+Date:   Wed, 6 Apr 2022 13:21:10 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
+Subject: Re: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt and
+ console_write
 Content-Language: en-US
-To:     Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Michael Walle <michael@walle.cc>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux@armlinux.org.uk>, <mlichvar@redhat.com>,
-        <netdev@vger.kernel.org>, <qiangqing.zhang@nxp.com>,
-        <vladimir.oltean@nxp.com>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
- <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc> <87wng3pyjl.fsf@kurt>
- <defe77d9-1a41-7112-0ef6-a12aa2b725ab@ti.com> <YkxEIZfA0H8yvrzn@lunn.ch>
- <20220405154821.GB6509@hoboy.vegasvil.org>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-In-Reply-To: <20220405154821.GB6509@hoboy.vegasvil.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Jaewon Kim <jaewon02.kim@samsung.com>,
+        'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc:     'Krzysztof Kozlowski' <krzk@kernel.org>,
+        'Alim Akhtar' <alim.akhtar@samsung.com>,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        'Chanho Park' <chanho61.park@samsung.com>
+References: <20220406082216.11206-1-jaewon02.kim@samsung.com>
+ <CGME20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f@epcas2p2.samsung.com>
+ <20220406082216.11206-2-jaewon02.kim@samsung.com>
+ <Yk1NmTdUgMcSIq1O@kroah.com> <042701d84991$ca50d410$5ef27c30$@samsung.com>
+ <98c359ba-9563-3da0-d968-ae40cee9d45f@kernel.org>
+ <004401d849a8$30b87d00$92297700$@samsung.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <004401d849a8$30b87d00$92297700$@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 06. 04. 22, 13:19, Jaewon Kim wrote:
+> Okay, Thanks to review.
+> I will fix 1 to bool in next v3 patch.
 
-
-On 05/04/2022 18:48, Richard Cochran wrote:
-> On Tue, Apr 05, 2022 at 03:29:05PM +0200, Andrew Lunn wrote:
-> 
->> Maybe. Device tree is supposed to describe the hardware, not how you
->> configure the hardware. Which PTP you using is a configuration choice,
->> so i expect some people will argue it should not be in DT.
-> 
-> +1
-> 
-> Pure DT means no configuration choices.
-> 
-> (but you find many examples that break the rules!)
-> 
-
-My point was related to one of issues described by Michael Walle in this thread:
-- supporting TS by the PHY may require also additional board support;
-- phy_has_hwtstamp() defined statically by PHY drivers without taking into account board design;
-- Kconfig option Doesn't really work with generic distro support and not allowed per-port cfg.
-
-So adding smth like "hwtstamp-en" will clear identify that this particular PHY on this particular board
-supports time stamping.
-(or hwtstamp-full/hwtstamp-rx/hwtstamp-tx).
-
-Of course, it will not help with default or dynamic selection of time stamping layer :(,
-but it will be one problem less.
+(And 0 to false.)
 
 -- 
-Best regards,
-Grygorii, Ukraine
+js
+suse labs
