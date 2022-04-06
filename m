@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9102DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239167AbiDFRop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48444 "EHLO
+        id S239313AbiDFRoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239565AbiDFRoH (ORCPT
+        with ESMTP id S239521AbiDFRoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 13:44:07 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA43F1AD1E3;
-        Wed,  6 Apr 2022 09:26:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649262373;
+Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [85.215.255.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D6C111409D;
+        Wed,  6 Apr 2022 09:26:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649262374;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=XcDnRua1uEeDGMPHUYm+AIxPrh0N3urB8auCHil5oBo=;
-    b=Wz+Ws0ToeRUsrl3oYpR7R2GCE2fmWfjQStj6yCx7TqI+pWDOvHXI3fl/1EVZYLLvPl
-    k42uP2QVwg2+gstgz6JxkiCzSk6RVD1eLHbSXxqfrvEs0A9jYRD6gBhFbcJ3kzmr8Vf6
-    ZqFvUhSezmJyC987XsNvX1jwjwpQXCZwY4i5bExXnVNf3PTZeCQv2GAdExhmwrEOniOO
-    l7WfLbLwIRThRj6DDZSZvJmODsWg1Fh+DoNEsCGpYzzxdrYYQqUeFXQRNFnESClTLhxw
-    RJz7AEriPrqJX6bel1QPBE4fRiqLoZ3kDspapsduEv5xb+z4zakx0uEovjqTuXMPoZcP
-    36gQ==
+    bh=iZmJQU4w0loEJYUzL+duhnqemsckspj5xYLJuUIpWSY=;
+    b=qHqDmUV+j/Sq5TxP/VqDgpS5xjh63cqKxuPUR58be0RRo6utMc8FwbdFcjTHvXkAy2
+    bKMFMXG4FTIKmydbMdGCGmfroFSYBLW031PuV+lVV0WKbUtQUY954G8RWK8KIR6I+meb
+    lgJF1AMsHEQXlzzWl2DXgP7/+GJdHe5xJOxaqIJqidJD6fNZurF2sK0O39us/x83KpR5
+    oCvP0AO4ZTecg5tUiAddZiJd6D1ErWwUOXrNKLlNvi2Hs0LH4m44it6p+7c/ajtp8vL3
+    Q84lGibkidslprwtZIO0ybKHG53FLSI5urwdK8vDCcxEp336hCmZuqN8/7QlgbAvHQjz
+    Jgtw==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbgcbPa"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy36GQCgVO
+    with ESMTPSA id k708cfy36GQDgVQ
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Wed, 6 Apr 2022 18:26:12 +0200 (CEST)
+    Wed, 6 Apr 2022 18:26:13 +0200 (CEST)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
@@ -51,11 +51,10 @@ To:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
 Cc:     Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
         dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
-        letux-kernel@openphoenux.org,
-        Ezequiel Garcia <ezequiel@collabora.com>
-Subject: [PATCH v17 2/6] drm/ingenic: Add dw-hdmi driver specialization for jz4780
-Date:   Wed,  6 Apr 2022 18:26:04 +0200
-Message-Id: <a5575ec3f7fc8c747602c014bcf06d14ad954171.1649262368.git.hns@goldelico.com>
+        letux-kernel@openphoenux.org
+Subject: [PATCH v17 4/6] drm/bridge: dw-hdmi: handle unusable or non-configured CSC module
+Date:   Wed,  6 Apr 2022 18:26:06 +0200
+Message-Id: <8de76ca2b478016f4dbed84e37db231e7810e56c.1649262368.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1649262368.git.hns@goldelico.com>
 References: <cover.1649262368.git.hns@goldelico.com>
@@ -65,172 +64,239 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Boddie <paul@boddie.org.uk>
+From: Neil Armstrong <narmstrong@baylibre.com>
 
-A specialisation of the generic Synopsys HDMI driver is employed for
-JZ4780 HDMI support. This requires a new driver, plus device tree and
-configuration modifications.
+The dw-hdmi integrates an optional Color Space Conversion feature used
+to handle color-space conversions.
 
-Here we add Kconfig DRM_INGENIC_DW_HDMI, Makefile and driver code.
+On some platforms, the CSC isn't built-in or non-functional.
 
-Note that there is no hpd-gpio installed on the CI20 board HDMI
-connector. Hence there is no hpd detection by the connector driver
-and we have to enable polling in the dw-hdmi core driver.
+This adds the necessary code to disable the CSC functionality
+and limit the bus format negotiation to force using the same
+input bus format as the output bus format.
 
-For that we need to set .poll_enabled but that struct component
-can only be accessed by core code. Hence we use the public
-setter function drm_kms_helper_hotplug_event() introduced before.
-
-Also note that we disable Color Space Conversion since it is not
-working on jz4780.
-
-Signed-off-by: Paul Boddie <paul@boddie.org.uk>
-Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/gpu/drm/ingenic/Kconfig           |   9 ++
- drivers/gpu/drm/ingenic/Makefile          |   1 +
- drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c | 104 ++++++++++++++++++++++
- 3 files changed, 114 insertions(+)
- create mode 100644 drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 100 +++++++++++++++-------
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.h |   1 +
+ include/drm/bridge/dw_hdmi.h              |   1 +
+ 3 files changed, 71 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/gpu/drm/ingenic/Kconfig b/drivers/gpu/drm/ingenic/Kconfig
-index 001f59fb06d56..090830bcbde7f 100644
---- a/drivers/gpu/drm/ingenic/Kconfig
-+++ b/drivers/gpu/drm/ingenic/Kconfig
-@@ -24,4 +24,13 @@ config DRM_INGENIC_IPU
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index f50af40e10340..b5a665c5e406e 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -158,6 +158,8 @@ struct dw_hdmi {
+ 	struct hdmi_data_info hdmi_data;
+ 	const struct dw_hdmi_plat_data *plat_data;
  
- 	  The Image Processing Unit (IPU) will appear as a second primary plane.
++	bool csc_available;		/* indicates if the CSC engine is usable */
++
+ 	int vic;
  
-+config DRM_INGENIC_DW_HDMI
-+	tristate "Ingenic specific support for Synopsys DW HDMI"
-+	depends on MACH_JZ4780
-+	select DRM_DW_HDMI
-+	help
-+	  Choose this option to enable Synopsys DesignWare HDMI based driver.
-+	  If you want to enable HDMI on Ingenic JZ4780 based SoC, you should
-+	  select this option.
+ 	u8 edid[HDMI_EDID_LEN];
+@@ -1009,9 +1011,10 @@ static int is_color_space_interpolation(struct dw_hdmi *hdmi)
+ 
+ static bool is_csc_needed(struct dw_hdmi *hdmi)
+ {
+-	return is_color_space_conversion(hdmi) ||
+-	       is_color_space_decimation(hdmi) ||
+-	       is_color_space_interpolation(hdmi);
++	return hdmi->csc_available &&
++	       (is_color_space_conversion(hdmi) ||
++		is_color_space_decimation(hdmi) ||
++		is_color_space_interpolation(hdmi));
+ }
+ 
+ static void dw_hdmi_update_csc_coeffs(struct dw_hdmi *hdmi)
+@@ -1064,6 +1067,9 @@ static void hdmi_video_csc(struct dw_hdmi *hdmi)
+ 	int interpolation = HDMI_CSC_CFG_INTMODE_DISABLE;
+ 	int decimation = 0;
+ 
++	if (!hdmi->csc_available)
++		return;
 +
- endif
-diff --git a/drivers/gpu/drm/ingenic/Makefile b/drivers/gpu/drm/ingenic/Makefile
-index d313326bdddbb..f10cc1c5a5f22 100644
---- a/drivers/gpu/drm/ingenic/Makefile
-+++ b/drivers/gpu/drm/ingenic/Makefile
-@@ -1,3 +1,4 @@
- obj-$(CONFIG_DRM_INGENIC) += ingenic-drm.o
- ingenic-drm-y = ingenic-drm-drv.o
- ingenic-drm-$(CONFIG_DRM_INGENIC_IPU) += ingenic-ipu.o
-+obj-$(CONFIG_DRM_INGENIC_DW_HDMI) += ingenic-dw-hdmi.o
-diff --git a/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
-new file mode 100644
-index 0000000000000..10c56183613b0
---- /dev/null
-+++ b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
-@@ -0,0 +1,104 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2011-2013 Freescale Semiconductor, Inc.
-+ * Copyright (C) 2019, 2020 Paul Boddie <paul@boddie.org.uk>
-+ *
-+ * Derived from dw_hdmi-imx.c with i.MX portions removed.
-+ */
+ 	/* YCC422 interpolation to 444 mode */
+ 	if (is_color_space_interpolation(hdmi))
+ 		interpolation = HDMI_CSC_CFG_INTMODE_CHROMA_INT_FORMULA1;
+@@ -2665,6 +2671,7 @@ static u32 *dw_hdmi_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
+ 					u32 output_fmt,
+ 					unsigned int *num_input_fmts)
+ {
++	struct dw_hdmi *hdmi = bridge->driver_private;
+ 	u32 *input_fmts;
+ 	unsigned int i = 0;
+ 
+@@ -2683,62 +2690,81 @@ static u32 *dw_hdmi_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
+ 	/* 8bit */
+ 	case MEDIA_BUS_FMT_RGB888_1X24:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_RGB888_1X24;
+-		input_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
+-		input_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
++			input_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
++		}
+ 		break;
+ 	case MEDIA_BUS_FMT_YUV8_1X24:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
+-		input_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
+-		input_fmts[i++] = MEDIA_BUS_FMT_RGB888_1X24;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
++			input_fmts[i++] = MEDIA_BUS_FMT_RGB888_1X24;
++		}
+ 		break;
+ 	case MEDIA_BUS_FMT_UYVY8_1X16:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
+-		input_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
+-		input_fmts[i++] = MEDIA_BUS_FMT_RGB888_1X24;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
++			input_fmts[i++] = MEDIA_BUS_FMT_RGB888_1X24;
++		}
+ 		break;
+ 
+ 	/* 10bit */
+ 	case MEDIA_BUS_FMT_RGB101010_1X30:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
+-		input_fmts[i++] = MEDIA_BUS_FMT_YUV10_1X30;
+-		input_fmts[i++] = MEDIA_BUS_FMT_UYVY10_1X20;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_YUV10_1X30;
++			input_fmts[i++] = MEDIA_BUS_FMT_UYVY10_1X20;
++		}
+ 		break;
+ 	case MEDIA_BUS_FMT_YUV10_1X30:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_YUV10_1X30;
+-		input_fmts[i++] = MEDIA_BUS_FMT_UYVY10_1X20;
+-		input_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_UYVY10_1X20;
++			input_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
++		}
+ 		break;
+ 	case MEDIA_BUS_FMT_UYVY10_1X20:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_UYVY10_1X20;
+-		input_fmts[i++] = MEDIA_BUS_FMT_YUV10_1X30;
+-		input_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_YUV10_1X30;
++			input_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
++		}
+ 		break;
+ 
+ 	/* 12bit */
+ 	case MEDIA_BUS_FMT_RGB121212_1X36:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_RGB121212_1X36;
+-		input_fmts[i++] = MEDIA_BUS_FMT_YUV12_1X36;
+-		input_fmts[i++] = MEDIA_BUS_FMT_UYVY12_1X24;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_YUV12_1X36;
++			input_fmts[i++] = MEDIA_BUS_FMT_UYVY12_1X24;
++		}
+ 		break;
+ 	case MEDIA_BUS_FMT_YUV12_1X36:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_YUV12_1X36;
+-		input_fmts[i++] = MEDIA_BUS_FMT_UYVY12_1X24;
+-		input_fmts[i++] = MEDIA_BUS_FMT_RGB121212_1X36;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_UYVY12_1X24;
++			input_fmts[i++] = MEDIA_BUS_FMT_RGB121212_1X36;
++		}
+ 		break;
+ 	case MEDIA_BUS_FMT_UYVY12_1X24:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_UYVY12_1X24;
+-		input_fmts[i++] = MEDIA_BUS_FMT_YUV12_1X36;
+-		input_fmts[i++] = MEDIA_BUS_FMT_RGB121212_1X36;
++		if (hdmi->csc_available) {
++			input_fmts[i++] = MEDIA_BUS_FMT_YUV12_1X36;
++			input_fmts[i++] = MEDIA_BUS_FMT_RGB121212_1X36;
++		}
+ 		break;
+ 
+ 	/* 16bit */
+ 	case MEDIA_BUS_FMT_RGB161616_1X48:
+ 		input_fmts[i++] = MEDIA_BUS_FMT_RGB161616_1X48;
+-		input_fmts[i++] = MEDIA_BUS_FMT_YUV16_1X48;
++		if (hdmi->csc_available)
++			input_fmts[i++] = MEDIA_BUS_FMT_YUV16_1X48;
+ 		break;
+ 	case MEDIA_BUS_FMT_YUV16_1X48:
+-		input_fmts[i++] = MEDIA_BUS_FMT_YUV16_1X48;
+-		input_fmts[i++] = MEDIA_BUS_FMT_RGB161616_1X48;
++		if (hdmi->csc_available)
++			input_fmts[i++] = MEDIA_BUS_FMT_YUV16_1X48;
+ 		break;
+ 
+ 	/*YUV 4:2:0 */
+@@ -2767,15 +2793,24 @@ static int dw_hdmi_bridge_atomic_check(struct drm_bridge *bridge,
+ {
+ 	struct dw_hdmi *hdmi = bridge->driver_private;
+ 
+-	hdmi->hdmi_data.enc_out_bus_format =
+-			bridge_state->output_bus_cfg.format;
++	if (!hdmi->csc_available &&
++	    bridge_state->output_bus_cfg.format != bridge_state->input_bus_cfg.format) {
++		dev_warn(hdmi->dev, "different input format 0x%04x & output format 0x%04x while CSC isn't usable, fallback to safe format\n",
++			 bridge_state->input_bus_cfg.format,
++			 bridge_state->output_bus_cfg.format);
++		hdmi->hdmi_data.enc_out_bus_format = MEDIA_BUS_FMT_FIXED;
++		hdmi->hdmi_data.enc_in_bus_format = MEDIA_BUS_FMT_FIXED;
++	} else {
++		hdmi->hdmi_data.enc_out_bus_format =
++				bridge_state->output_bus_cfg.format;
+ 
+-	hdmi->hdmi_data.enc_in_bus_format =
+-			bridge_state->input_bus_cfg.format;
++		hdmi->hdmi_data.enc_in_bus_format =
++				bridge_state->input_bus_cfg.format;
+ 
+-	dev_dbg(hdmi->dev, "input format 0x%04x, output format 0x%04x\n",
+-		bridge_state->input_bus_cfg.format,
+-		bridge_state->output_bus_cfg.format);
++		dev_dbg(hdmi->dev, "input format 0x%04x, output format 0x%04x\n",
++			bridge_state->input_bus_cfg.format,
++			bridge_state->output_bus_cfg.format);
++	}
+ 
+ 	return 0;
+ }
+@@ -3481,6 +3516,9 @@ struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
+ 		hdmi->cec = platform_device_register_full(&pdevinfo);
+ 	}
+ 
++	/* Get CSC useability from config0 register and permit override for platforms */
++	hdmi->csc_available = !plat_data->disable_csc || (config0 & HDMI_CONFIG0_CSC);
 +
-+#include <linux/module.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+
-+#include <drm/bridge/dw_hdmi.h>
-+#include <drm/drm_of.h>
-+#include <drm/drm_print.h>
-+
-+static const struct dw_hdmi_mpll_config ingenic_mpll_cfg[] = {
-+	{ 45250000,  { { 0x01e0, 0x0000 }, { 0x21e1, 0x0000 }, { 0x41e2, 0x0000 } } },
-+	{ 92500000,  { { 0x0140, 0x0005 }, { 0x2141, 0x0005 }, { 0x4142, 0x0005 } } },
-+	{ 148500000, { { 0x00a0, 0x000a }, { 0x20a1, 0x000a }, { 0x40a2, 0x000a } } },
-+	{ 216000000, { { 0x00a0, 0x000a }, { 0x2001, 0x000f }, { 0x4002, 0x000f } } },
-+	{ ~0UL,      { { 0x0000, 0x0000 }, { 0x0000, 0x0000 }, { 0x0000, 0x0000 } } }
-+};
-+
-+static const struct dw_hdmi_curr_ctrl ingenic_cur_ctr[] = {
-+	/*pixelclk     bpp8    bpp10   bpp12 */
-+	{ 54000000,  { 0x091c, 0x091c, 0x06dc } },
-+	{ 58400000,  { 0x091c, 0x06dc, 0x06dc } },
-+	{ 72000000,  { 0x06dc, 0x06dc, 0x091c } },
-+	{ 74250000,  { 0x06dc, 0x0b5c, 0x091c } },
-+	{ 118800000, { 0x091c, 0x091c, 0x06dc } },
-+	{ 216000000, { 0x06dc, 0x0b5c, 0x091c } },
-+	{ ~0UL,      { 0x0000, 0x0000, 0x0000 } },
-+};
-+
-+/*
-+ * Resistance term 133Ohm Cfg
-+ * PREEMP config 0.00
-+ * TX/CK level 10
-+ */
-+static const struct dw_hdmi_phy_config ingenic_phy_config[] = {
-+	/*pixelclk   symbol   term   vlev */
-+	{ 216000000, 0x800d, 0x0005, 0x01ad},
-+	{ ~0UL,      0x0000, 0x0000, 0x0000}
-+};
-+
-+static enum drm_mode_status
-+ingenic_dw_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
-+			   const struct drm_display_info *info,
-+			   const struct drm_display_mode *mode)
-+{
-+	if (mode->clock < 13500)
-+		return MODE_CLOCK_LOW;
-+	/* FIXME: Hardware is capable of 270MHz, but setup data is missing. */
-+	if (mode->clock > 216000)
-+		return MODE_CLOCK_HIGH;
-+
-+	return MODE_OK;
-+}
-+
-+static struct dw_hdmi_plat_data ingenic_dw_hdmi_plat_data = {
-+	.mpll_cfg   = ingenic_mpll_cfg,
-+	.cur_ctr    = ingenic_cur_ctr,
-+	.phy_config = ingenic_phy_config,
-+	.mode_valid = ingenic_dw_hdmi_mode_valid,
-+	.output_port	= 1,
-+	.disable_csc	= 0,	/* DRM_COLOR_FORMAT_YCBCR do not work */
-+};
-+
-+static const struct of_device_id ingenic_dw_hdmi_dt_ids[] = {
-+	{ .compatible = "ingenic,jz4780-dw-hdmi" },
-+	{ /* Sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, ingenic_dw_hdmi_dt_ids);
-+
-+static void ingenic_dw_hdmi_cleanup(void *data)
-+{
-+	struct dw_hdmi *hdmi = (struct dw_hdmi *)data;
-+
-+	dw_hdmi_remove(hdmi);
-+}
-+
-+static int ingenic_dw_hdmi_probe(struct platform_device *pdev)
-+{
-+	struct dw_hdmi *hdmi;
-+
-+	hdmi = dw_hdmi_probe(pdev, &ingenic_dw_hdmi_plat_data);
-+	if (IS_ERR(hdmi))
-+		return PTR_ERR(hdmi);
-+
-+	return devm_add_action_or_reset(&pdev->dev, ingenic_dw_hdmi_cleanup, hdmi);
-+}
-+
-+static struct platform_driver ingenic_dw_hdmi_driver = {
-+	.probe  = ingenic_dw_hdmi_probe,
-+	.driver = {
-+		.name = "dw-hdmi-ingenic",
-+		.of_match_table = ingenic_dw_hdmi_dt_ids,
-+	},
-+};
-+module_platform_driver(ingenic_dw_hdmi_driver);
-+
-+MODULE_DESCRIPTION("JZ4780 Specific DW-HDMI Driver Extension");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:dw-hdmi-ingenic");
+ 	drm_bridge_add(&hdmi->bridge);
+ 
+ 	return hdmi;
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.h b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.h
+index 1999db05bc3b2..279722e4d1898 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.h
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.h
+@@ -541,6 +541,7 @@ enum {
+ 
+ /* CONFIG0_ID field values */
+ 	HDMI_CONFIG0_I2S = 0x10,
++	HDMI_CONFIG0_CSC = 0x04,
+ 	HDMI_CONFIG0_CEC = 0x02,
+ 
+ /* CONFIG1_ID field values */
+diff --git a/include/drm/bridge/dw_hdmi.h b/include/drm/bridge/dw_hdmi.h
+index 2a1f85f9a8a3f..b2f689cbe864c 100644
+--- a/include/drm/bridge/dw_hdmi.h
++++ b/include/drm/bridge/dw_hdmi.h
+@@ -157,6 +157,7 @@ struct dw_hdmi_plat_data {
+ 			     unsigned long mpixelclock);
+ 
+ 	unsigned int disable_cec : 1;
++	unsigned int disable_csc : 1;
+ };
+ 
+ struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
 -- 
 2.33.0
 
