@@ -2,84 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC65C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiDFNF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
+        id S232202AbiDFNGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231888AbiDFNFj (ORCPT
+        with ESMTP id S231450AbiDFNFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:05:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF343A1069;
-        Tue,  5 Apr 2022 18:25:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66355B8203B;
-        Wed,  6 Apr 2022 01:25:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C03C385A0;
-        Wed,  6 Apr 2022 01:25:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649208317;
-        bh=AtPl7j1FF7B7J/OEKjtzhOhaatn8aGKD5EedvEowc9A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ICRE4EkXoAcYXSy6dlr64+g8iuxWN4dgB46QvVguvImBFQ08ycZUAl1zDPm61Kl1a
-         O/P0XPYs8lylIglx5W5pJjEevojhA5AcSr21KX/XVkjmcNV6q+b/MkdplkLZiMpYcn
-         8zv2l7L08ayhBIuezLr10AkYncjZZaSLH3uuxFxrL1blj8FBudIKKzZAnKDxDvP8P/
-         4U8rywsD44dFdt48ooQ79WXNTYG4Dz+rlPCYQ+WlNA5C5dPOzym4YymqEhc/EfWy26
-         jO6kTYkGUOcStjxKhEoeX436gDbhPJ6hYxAHmd9bZSahGfGqa3zBnR70+xAtUTE7WY
-         wI4glUD3o03KQ==
-Date:   Tue, 5 Apr 2022 18:25:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     christopher.lee@cspi.com, davem@davemloft.net, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RESEND][PATCH v2] myri10ge: remove an unneeded NULL check
-Message-ID: <20220405182514.40fae2d0@kernel.org>
-In-Reply-To: <20220405000553.21856-1-xiam0nd.tong@gmail.com>
-References: <20220405000553.21856-1-xiam0nd.tong@gmail.com>
+        Wed, 6 Apr 2022 09:05:45 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC4A24096A5;
+        Tue,  5 Apr 2022 18:35:52 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.31:54096.784187684
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-123.150.8.42 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id 51B6C1002AE;
+        Wed,  6 Apr 2022 09:35:48 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-bwdqx with ESMTP id a29d35676fba41b29fedbb3bbd7277bc for andrii.nakryiko@gmail.com;
+        Wed, 06 Apr 2022 09:35:51 CST
+X-Transaction-ID: a29d35676fba41b29fedbb3bbd7277bc
+X-Real-From: chensong_2000@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: chensong_2000@189.cn
+Message-ID: <529149bc-d095-8161-11be-b36d7d63b7ed@189.cn>
+Date:   Wed, 6 Apr 2022 09:35:45 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] sample: bpf: syscall_tp_kern: add dfd before filename
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <1648777246-21352-1-git-send-email-chensong_2000@189.cn>
+ <CAEf4Bzbo=DU_LqJ=sXgawP9-O4VR84jDdhuf9Xto=T3LSsrySA@mail.gmail.com>
+From:   Song Chen <chensong_2000@189.cn>
+In-Reply-To: <CAEf4Bzbo=DU_LqJ=sXgawP9-O4VR84jDdhuf9Xto=T3LSsrySA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  5 Apr 2022 08:05:53 +0800 Xiaomeng Tong wrote:
-> The define of skb_list_walk_safe(first, skb, next_skb) is:
->   for ((skb) = (first), (next_skb) = (skb) ? (skb)->next : NULL; (skb);  \
->      (skb) = (next_skb), (next_skb) = (skb) ? (skb)->next : NULL)
+Hi,
+
+在 2022/4/5 06:17, Andrii Nakryiko 写道:
+> On Thu, Mar 31, 2022 at 6:34 PM Song Chen <chensong_2000@189.cn> wrote:
+>>
+>> When i was writing my eBPF program, i copied some pieces of code from
+>> syscall_tp, syscall_tp_kern only records how many files are opened, but
+>> mine needs to print file name.I reused struct syscalls_enter_open_args,
+>> which is defined as:
+>>
+>> struct syscalls_enter_open_args {
+>>          unsigned long long unused;
+>>          long syscall_nr;
+>>          long filename_ptr;
+>>          long flags;
+>>          long mode;
+>> };
+>>
+>> I tried to use filename_ptr, but it's not the pointer of filename, flags
+>> turns out to be the pointer I'm looking for, there might be something
+>> missed in the struct.
+>>
+>> I read the ftrace log, found the missed one is dfd, which is supposed to be
+>> placed in between syscall_nr and filename_ptr.
+>>
+>> Actually syscall_tp has nothing to do with dfd, it can run anyway without
+>> it, but it's better to have it to make it a better eBPF sample, especially
+>> to new eBPF programmers, then i fixed it.
+>>
+>> Signed-off-by: Song Chen <chensong_2000@189.cn>
+>> ---
+>>   samples/bpf/syscall_tp_kern.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/samples/bpf/syscall_tp_kern.c b/samples/bpf/syscall_tp_kern.c
+>> index 50231c2eff9c..e4ac818aee57 100644
+>> --- a/samples/bpf/syscall_tp_kern.c
+>> +++ b/samples/bpf/syscall_tp_kern.c
+>> @@ -7,6 +7,7 @@
+>>   struct syscalls_enter_open_args {
+>>          unsigned long long unused;
+>>          long syscall_nr;
+>> +       long dfd_ptr;
+>>          long filename_ptr;
+>>          long flags;
+>>          long mode;
 > 
-> Thus, if the 'segs' passed as 'first' into the skb_list_walk_safe is NULL,
-> the loop will exit immediately. In other words, it can be sure the 'segs'
-> is non-NULL when we run inside the loop. So just remove the unnecessary
-> NULL check. Also remove the unneeded assignmnets.
+> Here's what I see on latest bpf-next:
 > 
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> # cat /sys/kernel/debug/tracing/events/syscalls/sys_enter_open/format
+> name: sys_enter_open
+> ID: 613
+> format:
+>          field:unsigned short common_type;       offset:0;
+> size:2; signed:0;
+>          field:unsigned char common_flags;       offset:2;
+> size:1; signed:0;
+>          field:unsigned char common_preempt_count;       offset:3;
+>   size:1; signed:0;
+>          field:int common_pid;   offset:4;       size:4; signed:1;
+> 
+>          field:int __syscall_nr; offset:8;       size:4; signed:1;
+>          field:const char * filename;    offset:16;      size:8; signed:0;
+>          field:int flags;        offset:24;      size:8; signed:0;
+>          field:umode_t mode;     offset:32;      size:8; signed:0;
+> 
+> This layout doesn't correspond either to before or after state of
+> syscalls_enter_open_args. Not sure what's going on, but it doesn't
+> seem that struct syscalls_enter_open_args is correct anyways.
+> 
 
-The existing code is pretty clearly buggy. Please fix the bugs or don't
-touch it. You're obfuscating what the original intention was.
+sys_enter_open is not enabled in my system somehow and i haven't figured 
+out why, then i used sys_enter_openat, whose format is:
 
-> diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> index 50ac3ee2577a..071657e3dba8 100644
-> --- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> +++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> @@ -2903,12 +2903,8 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
->  		status = myri10ge_xmit(curr, dev);
->  		if (status != 0) {
->  			dev_kfree_skb_any(curr);
-> -			if (segs != NULL) {
-> -				curr = segs;
-> -				segs = next;
-> -				curr->next = NULL;
-> -				dev_kfree_skb_any(segs);
-> -			}
-> +			segs->next = NULL;
-> +			dev_kfree_skb_any(next);
->  			goto drop;
->  		}
->  	}
+name: sys_enter_openat
+ID: 647
+format:
+	field:unsigned short common_type;	offset:0;	size:2;	signed:0;
+	field:unsigned char common_flags;	offset:2;	size:1;	signed:0;
+	field:unsigned char common_preempt_count;	offset:3;	size:1;	signed:0;
+	field:int common_pid;	offset:4;	size:4;	signed:1;
 
+	field:int __syscall_nr;	offset:8;	size:4;	signed:1;
+	field:int dfd;	offset:16;	size:8;	signed:0;
+	field:const char * filename;	offset:24;	size:8;	signed:0;
+	field:int flags;	offset:32;	size:8;	signed:0;
+	field:umode_t mode;	offset:40;	size:8;	signed:0;
+
+print fmt: "dfd: 0x%08lx, filename: 0x%08lx, flags: 0x%08lx, mode: 
+0x%08lx", ((unsigned long)(REC->dfd)), ((unsigned long)(REC->filename)), 
+((unsigned long)(REC->flags)), ((unsigned long)(REC->mode))
+
+I think in this case syscalls_enter_open_args is not applicable for 
+sys_enter_openat, how about we introduce a new struct specific for 
+sys_enter_openat with dfd in it?
+
+/Song
+
+> 
+>> --
+>> 2.25.1
+>>
+> 
