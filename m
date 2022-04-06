@@ -2,71 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5147AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B01C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbiDFHFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
+        id S231139AbiDFHGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 03:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386973AbiDFGTp (ORCPT
+        with ESMTP id S1447544AbiDFGj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:19:45 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C161B757E;
-        Tue,  5 Apr 2022 22:21:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=xkKN41eLVrIheZpH/2SH1i+aJL00RRx4irbbX94rx9Q=; b=Q/3lDXWd19Mt0b3/k3Rb7zcP5h
-        p5Eze/s2YucUMuPYsP3/q20TplDhpywYDITWcq7DW8bCL9f9peotPecyp39tdZIQ1ExUkalAybXyS
-        Sxt54IpLbAnxVjk06D6a2NNMvqpMHsxgMeosQjblK8oh9AW6ILrD0OEcrPhOIK4bCqie2ImxZgB4X
-        gS/zqX5LtXLSyVWRgAmLMMXXDrccEDWzqicolNHUqaDXH8PiWuHSYpqXNQ8jCr6Cn3U5UgMr7P2gH
-        bzB3VhlCqf6aRtj6S9vDNsm1YM8SxrSXMJeCnnlVBFrEDH/mbtk/QwMI4mI6duvxeYNJiTCqNnT1B
-        dCRczSmQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nby6y-003oOR-F6; Wed, 06 Apr 2022 05:21:44 +0000
-Date:   Tue, 5 Apr 2022 22:21:44 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     david@fromorbit.com, djwong@kernel.org, dan.j.williams@intel.com,
-        hch@infradead.org, vishal.l.verma@intel.com, dave.jiang@intel.com,
-        agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
-        ira.weiny@intel.com, willy@infradead.org, vgoyal@redhat.com,
-        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        x86@kernel.org
-Subject: Re: [PATCH v7 6/6] pmem: implement pmem_recovery_write()
-Message-ID: <Yk0jaC9rHwwoEV11@infradead.org>
-References: <20220405194747.2386619-1-jane.chu@oracle.com>
- <20220405194747.2386619-7-jane.chu@oracle.com>
+        Wed, 6 Apr 2022 02:39:26 -0400
+Received: from out203-205-221-164.mail.qq.com (out203-205-221-164.mail.qq.com [203.205.221.164])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB40424879C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 21:30:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649219405;
+        bh=SW7cCxbNw7fP/uh78qTenXR+2MZct6mcKLxV49Y5gMI=;
+        h=From:To:Cc:Subject:Date;
+        b=EkvD29I7n+opEYEqlP+ejzhcOEPhO55hc8BAO/7zF66LKjJMUSJ+TKUEQ9DChRO2l
+         n7zMWcAjPQbVYMML8HMBbG9i3ynYN9ju2rNv96j1kBjkiOWCyN75oNb6xYiJeaJ7lt
+         Tn4XCtdXE52Zt3cQ2Bo+LPJkqthCZCBLyLrXmA6E=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
+        id 7829ECDF; Wed, 06 Apr 2022 12:30:02 +0800
+X-QQ-mid: xmsmtpt1649219402tp1cwvijp
+Message-ID: <tencent_5AB92A7786438342357C5669E7BF0C249505@qq.com>
+X-QQ-XMAILINFO: NddGNcM70cPAn0dAvnaiD1hQr6vG/nJbcNjebT2nXn1KoP7NzirpfE3fK94qMT
+         d5Ed6KskMHmRJkapWFhToWwPu4kf/PvEq/13GpvYuH+KyfHors5kI1GzZPwSEO80Y/KfXXF0wE5J
+         1LntFpaybi8aKw+UwxIf0hcnjxsZyDVJeyaKXYPfRnE2qAm/vaUP7m6fQ9+hDotNTXGTzfCnRwKf
+         6GgkEOQK/G45kgFaPhlMn6jjLuMteIYTsm/GjUmiHC0CoHPBSkrsx7dTNqlmD16qNAc5lr1rTdTC
+         deApv7V5lwdbZXtNsAmxsXp7eb17+8Aro7cXZg8U2nZyGuuQpglS38Cz7D9VSbZ6w+LCWhciYpm/
+         Wj8nNgbiABpuFfHEHvCovHLCGh4ewCmwKYAheVAXKBn0TSwAvwIS2tLY6WMHLmpUyQITR7gPV3TT
+         VLIaLdXRZz7Cq+JJ30EKz4bKo39XqlUmeLA8GHenL7wVnSFfXv7j+y8eMwOBV9fQ/iqV5z6lXkxp
+         7KpDWEZKOfA6B20qhMLw4h4WmSRIl0RwIn7SuiOj6A0B6W3TAeRH7V3XjfF7rBDFis0VzX1yyT9b
+         5cqOdpYnh18ZcrKKE9GpL2mtnrmTvea0B4CqX4yNE+ujzMPV/U4sjQPQepSohNAihGcxtCgksATg
+         x5eUDaKfR0T3UntpnVk4rwXwCPs717mecH5V1xQfqJ+a1Z7P8vBEVVkSXLWpvyanEE8w6vyxc1Q5
+         b1dwdllZM/zxQw9k9MVbIk8+MxA6rRjjNixoTXLdU7ruucAWwcnnLn+eHF+dkfin4xKZ4BfST9Qj
+         DbiAXSMEqLJYTlyR5HYdbZnANTgnO6LMsZtiIV5gqQTfhWD4JaJflgdSn5LV2mY0vKwPfl4NAhs5
+         HeiNJMKkrieZAAD9LUJHbc2kJMpFXAT5gMMSt6GwBDDFyXfrIGEOMq577e625gxLTbmUI0pFpTOC
+         GOaxY4KfKMVU6GNAIpoCqE+CP5l4N02dGdhrBImTY=
+From:   xkernel.wang@foxmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH v2 1/2] staging: r8188eu: fix potential memory leak in _rtw_init_xmit_priv()
+Date:   Wed,  6 Apr 2022 12:29:52 +0800
+X-OQ-MSGID: <20220406042952.13372-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405194747.2386619-7-jane.chu@oracle.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:47:47PM -0600, Jane Chu wrote:
-> +	off = (unsigned long)addr & ~PAGE_MASK;
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-offset_inpage()
+In _rtw_init_xmit_priv(), there are several error paths for allocation
+failures just jump to the `exit` section. However, there is no action
+will be performed, so the allocated resources are not properly released,
+which leads to various memory leaks.
 
-> +	if (off || !(PAGE_ALIGNED(bytes))) {
+To properly release them, this patch unifies the error handling code and
+several error handling paths are added.
+According to the allocation sequence, if the validation fails, it will
+jump to its corresponding error tag to release the resources.
 
-No need for the inner braces.
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ChangeLog:
+v1->v2 update the description and adjust the sequence of patches.
+ drivers/staging/r8188eu/core/rtw_xmit.c | 32 ++++++++++++++++++-------
+ 1 file changed, 24 insertions(+), 8 deletions(-)
 
-> +	mutex_lock(&pmem->recovery_lock);
-> +	pmem_off = PFN_PHYS(pgoff) + pmem->data_offset;
-> +	cleared = __pmem_clear_poison(pmem, pmem_off, len);
-> +	if (cleared > 0 && cleared < len) {
-> +		dev_warn(dev, "poison cleared only %ld out of %lu\n",
-> +			cleared, len);
-> +		mutex_unlock(&pmem->recovery_lock);
-> +		return 0;
-> +	} else if (cleared < 0) {
-
-No need for an else after a return.
+diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+index aede8ef..865b2fc 100644
+--- a/drivers/staging/r8188eu/core/rtw_xmit.c
++++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+@@ -112,7 +112,7 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 
+ 	if (!pxmitpriv->pallocated_xmitbuf) {
+ 		res = _FAIL;
+-		goto exit;
++		goto free_frame_buf;
+ 	}
+ 
+ 	pxmitpriv->pxmitbuf = (u8 *)N_BYTE_ALIGMENT((size_t)(pxmitpriv->pallocated_xmitbuf), 4);
+@@ -134,7 +134,7 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 			msleep(10);
+ 			res = rtw_os_xmit_resource_alloc(padapter, pxmitbuf, (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
+ 			if (res == _FAIL)
+-				goto exit;
++				goto free_xmitbuf;
+ 		}
+ 
+ 		pxmitbuf->flags = XMIT_VO_QUEUE;
+@@ -152,7 +152,7 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 
+ 	if (!pxmitpriv->pallocated_xmit_extbuf) {
+ 		res = _FAIL;
+-		goto exit;
++		goto free_xmitbuf;
+ 	}
+ 
+ 	pxmitpriv->pxmit_extbuf = (u8 *)N_BYTE_ALIGMENT((size_t)(pxmitpriv->pallocated_xmit_extbuf), 4);
+@@ -167,10 +167,8 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 		pxmitbuf->ext_tag = true;
+ 
+ 		res = rtw_os_xmit_resource_alloc(padapter, pxmitbuf, max_xmit_extbuf_size + XMITBUF_ALIGN_SZ);
+-		if (res == _FAIL) {
+-			res = _FAIL;
+-			goto exit;
+-		}
++		if (res == _FAIL)
++			goto free_xmit_extbuf;
+ 
+ 		list_add_tail(&pxmitbuf->list, &pxmitpriv->free_xmit_extbuf_queue.queue);
+ 		pxmitbuf++;
+@@ -200,8 +198,26 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 
+ 	rtl8188eu_init_xmit_priv(padapter);
+ 
+-exit:
++	return _SUCCESS;
+ 
++free_xmit_extbuf:
++	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmit_extbuf;
++	while (i-- > 0) {
++		rtw_os_xmit_resource_free(padapter, pxmitbuf, (max_xmit_extbuf_size + XMITBUF_ALIGN_SZ));
++		pxmitbuf++;
++	}
++	vfree(pxmitpriv->pallocated_xmit_extbuf);
++	i = NR_XMITBUFF;
++free_xmitbuf:
++	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmitbuf;
++	while (i-- > 0) {
++		rtw_os_xmit_resource_free(padapter, pxmitbuf, (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
++		pxmitbuf++;
++	}
++	vfree(pxmitpriv->pallocated_xmitbuf);
++free_frame_buf:
++	vfree(pxmitpriv->pallocated_frame_buf);
++exit:
+ 	return res;
+ }
+ 
+-- 
