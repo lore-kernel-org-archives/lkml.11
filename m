@@ -2,78 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ECE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5819C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235086AbiDFOy1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:54:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48652 "EHLO
+        id S235032AbiDFOyk convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235410AbiDFOyI (ORCPT
+        with ESMTP id S235126AbiDFOwT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:54:08 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDFA60136C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:30:28 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2369gXSf007091;
-        Wed, 6 Apr 2022 04:53:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=ipm/ngHMypCesWys/XTa0OgI71t3t3hjG5sHl/IPXrk=;
- b=MS3ehJE+I5jkKUoSg8zUxweUJxNXtKR12L6XE/vZCBgoOovXNVIuLaRDld8uxChMvklv
- nbm7sy28ll+ZmA0NZbI5dvfIpxTwtyqF83CzESeo7Gyo2sm7YqMhgEJ6aDxF8oLKWpDS
- TnAa8W5FCETxSP3SmexLAvykSRRb7wEb+69ofx/9WE27f5OG3m5AyrYxXN1rKc+iIjPI
- 1hMbCrbXRs16alZKDOw8okvQgEHhjyGBLMI/p3XqlQIh77r9Ge1m5w3GcfD0oLYGZxW5
- 5MiL1UA5J9kqKvUfL9tyCNiUwETUeAHqFl3HBcp8X/68tRjgYk7WvOR4sET/fMotSbPh ZA== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f6kw2d06h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 06 Apr 2022 04:53:56 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 10:53:54 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Wed, 6 Apr 2022 10:53:54 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 0EDABB1A;
-        Wed,  6 Apr 2022 09:53:54 +0000 (UTC)
-Date:   Wed, 6 Apr 2022 09:53:54 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Stephen Kitt <steve@sk2.org>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <patches@opensource.cirrus.com>, Wolfram Sang <wsa@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] ASoC: wm8731: use simple i2c probe function
-Message-ID: <20220406095354.GT38351@ediswmail.ad.cirrus.com>
-References: <20220405173952.2180743-1-steve@sk2.org>
+        Wed, 6 Apr 2022 10:52:19 -0400
+X-Greylist: delayed 2339 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 04:27:52 PDT
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B074C4E5D4C;
+        Wed,  6 Apr 2022 04:27:52 -0700 (PDT)
+Received: from mail-wm1-f41.google.com ([209.85.128.41]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MuDoR-1nq8pN1sfF-00ua7I; Wed, 06 Apr 2022 11:41:00 +0200
+Received: by mail-wm1-f41.google.com with SMTP id l62-20020a1c2541000000b0038e4570af2fso1232266wml.5;
+        Wed, 06 Apr 2022 02:41:00 -0700 (PDT)
+X-Gm-Message-State: AOAM532nots+nSUALq2sX+8t4yFa83Z0hnqRN2+LPukycXzuCmW5OmVI
+        zgohL12wKb90MaWG5IcnjzZDov4cWCjAw8++KEk=
+X-Google-Smtp-Source: ABdhPJzxUZX+E7XCtlp8CuL3coz4kajfPoqdCKk/EJtWFQ5dur8RDTboYWVRRTfTH1oiwHkEqf8zaBfFzz/1pPZluso=
+X-Received: by 2002:a05:600c:4ecc:b0:38e:354d:909 with SMTP id
+ g12-20020a05600c4ecc00b0038e354d0909mr6846810wmq.33.1649238060031; Wed, 06
+ Apr 2022 02:41:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220405173952.2180743-1-steve@sk2.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: YkNeHWFXdysIDpp7KySJ9IqP0vEH1COc
-X-Proofpoint-GUID: YkNeHWFXdysIDpp7KySJ9IqP0vEH1COc
-X-Proofpoint-Spam-Reason: safe
+References: <20220307091923.9909-1-ychuang3@nuvoton.com> <20220307091923.9909-4-ychuang3@nuvoton.com>
+ <2669852c-5bb6-1edf-bf58-ea815f54d50f@kernel.org> <ef8efda1-e985-0684-470f-7acf9b8a5e93@nuvoton.com>
+ <bba99b9d-6960-f6e8-0ee4-0b5fe8a5601d@linaro.org> <ab89589f-6dd7-d4ff-635d-ff8dbd2d3e02@nuvoton.com>
+In-Reply-To: <ab89589f-6dd7-d4ff-635d-ff8dbd2d3e02@nuvoton.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 6 Apr 2022 11:40:44 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a034bvYcD81h-jo92PbQwDDapa8JvS140fsBhaP7qrFXw@mail.gmail.com>
+Message-ID: <CAK8P3a034bvYcD81h-jo92PbQwDDapa8JvS140fsBhaP7qrFXw@mail.gmail.com>
+Subject: Re: [PATCH 3/3] arm64: dts: nuvoton: Add initial support for MA35D1
+To:     Jacky Huang <ychuang3@nuvoton.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "soc@kernel.org" <soc@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:ym5E5RCTMbe3WDe7e5tAv7Ns5tg0qVR7XTBsncM0V4ygUGzYLkX
+ wVNMZVF4lA38S+Ax9xlUCP7lUFgv6Mo3+vKhVqN0weEC2oXc2EeHOxVIAPOcTcZktUvRYMM
+ kqD/0uGLlOHjulxDn6dg4oh6Kwz3U5fDRYmeavTrJg/tjjmv5nd0bam+u3zhRNNEJ0iD0vA
+ vIPUj1TkMFdLgXxHFz/Aw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:0FJFHUnyfrw=:M1ZZfWhg0NqGqONOnDrmqt
+ YjskGH/X47PoWikYHCufKyZa4tD+iAvY8z0u9qhNkZrGLVdMlpcWo+y2nh3rukQIJ2WFm2UM1
+ rnsJQ9WjRfU4xuyqx2mgevuwzv0FnFd6E/PUtNLMGCyWhSU2tLGHf6/itW/btxeSR3sEtuusY
+ l2KsvKcpPk0zhwADNd6ekB9MEG87cVrHR8K+lasn5rKf50PUvyts/egDzKXk1y+3miL147uDx
+ DHSN5phmvW5NzQ7HoF/FUl8c7FrNsHW7Wz93tJtZOo/b9XVE9gyHVzaTGfhwyLAgf9B1VZm8u
+ NN0YnfLEBEl1Si6a6hcoXi1uGSaugNJcPV/mOlOfQatte+oDOSNpyHKrxpPTO2fVt+nOn6hoM
+ JHwAVNxdyM0N99MkYiMK1Cw4lqSYSMEfPBR1e5svbEmrMgI+u6GnUORA5PO4mhtn1s5Raa4mW
+ LPec6BwxC8LdxXj8eNsRQCEUGsI8fS87BsYxN5XgbzvzH54xSdcSzu5xXeqNfqIV8XR5Ax+nr
+ gLXOk3wjIin8XGpWjcGwlWv8OAV/DxKh2/l3DFKz0iXjcCXhuE+gv9hLid0NhoKYHpdj4VHFk
+ 6kd2L1vhKPoibYC0l2vOQxit7nxU30ITOwtaMqBOy7/58JlXXV+PlkOtRy45ELUdIMx/95Iew
+ lWcaw9ddPKiwq7gnktuagoRAv2yIdF242WA0db42RM9vKKQV8vFEfnmzALlOw1eulTQMK72Ae
+ mZycrRY7LFQTPGwUtP9SjELIzfR99TIsC+zEGwQzFNAZh121MUWmMa94B88SHQKeEpe3ReYHc
+ 0HdrfQdExzmvhEZb/i2wolaxA0K2z1N4UFJGOB6Yh6BS8usfac=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 07:39:52PM +0200, Stephen Kitt wrote:
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
-> 
-> This avoids scanning the identifier tables during probes.
-> 
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-> ---
+On Wed, Apr 6, 2022 at 11:25 AM Jacky Huang <ychuang3@nuvoton.com> wrote:
+> On 2022/4/6 下午 03:14, Krzysztof Kozlowski wrote:
+> > On 06/04/2022 04:58, Jacky Huang wrote:
+> >> config ARCH_MA35D1
+> >>       bool "Nuvoton MA35D1 SOC Family"
+> > We do not add options for specific SoCs, but for entire families, so
+> > ARCH_NUVOTON is correct.
+>
+> Yes, I would like to modify it as the following:
+>
+> config ARCH_NUVOTON
+>      bool "Nuvoton SoC Family"
+>      select PINCTRL
+>      select PINCTRL_MA35D1
+>      select PM
+>      select GPIOLIB
+>      select SOC_BUS
+>      help
+>        This enables support for Nuvoton MA35D1 ARMv8 SoC.
+>
+> (Currently, we have MA35D1 only in the support list for arm64 SoC.).
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+You could reword this to "This enables support for Nuvoton ARMv8 SoCs
+such as the MA35D1", to prevent this from getting stale, or repeatedly
+updated when future SoCs are added.
 
-Thanks,
-Charles
+Another change you can consider is to remove the 'select PINCTRL_MA35D1'
+here and instead change the pinctrl Kconfig entry to
+
+config PINCTRL_MA35D1
+           bool "..."
+           depends on ARCH_NUVOTON || COMPILE_TEST
+           default ARCH_NUVOTON
+
+That way you get it default-enabled when ARCH_NUVOTON is
+turned on, or disabled in configurations without ARCH_NUVOTON,
+but can make a more fine-grained selection for a particular SoC
+if you get more than one such driver in the future.
+
+        Arnd
