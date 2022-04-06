@@ -2,135 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 284ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD2A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235676AbiDFPTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46332 "EHLO
+        id S235736AbiDFPWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236325AbiDFPR7 (ORCPT
+        with ESMTP id S235993AbiDFPV1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:17:59 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9304F7AC0;
-        Wed,  6 Apr 2022 05:18:10 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iVIE031133;
-        Wed, 6 Apr 2022 04:44:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649238271;
-        bh=V24Pg9flw1bNbkBXpcqZ1XDD4yowcEtZAzI4rpfzD24=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=NFBaEH2tni6szUgCBluHVeBrweVIKSj3mOzplXXjcpS4hWqn45ZmlrocHs91zEd0q
-         ThbLxFoVveL6adi1yyCvTh6WOZdl0oWqTzkR2+sM0hYshEgHrwsi+JTm19j+pkoHfJ
-         g4vUjTWHFehedQyTkOf0nPLF6yL4X0rNXqANXzhc=
-Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iVgs069842
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 04:44:31 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 04:44:31 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 04:44:31 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369iTbO021546;
-        Wed, 6 Apr 2022 04:44:30 -0500
-From:   Puranjay Mohan <p-mohan@ti.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <vigneshr@ti.com>, <kishon@ti.com>
-Subject: [RFC 11/13] soc: ti: pruss: Add helper functions to get/set PRUSS_CFG_GPMUX
-Date:   Wed, 6 Apr 2022 15:13:56 +0530
-Message-ID: <20220406094358.7895-12-p-mohan@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
-References: <20220406094358.7895-1-p-mohan@ti.com>
+        Wed, 6 Apr 2022 11:21:27 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC9D536101;
+        Wed,  6 Apr 2022 05:32:28 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2332F1F38A;
+        Wed,  6 Apr 2022 11:37:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649245050; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=omCD+DLP3/+QylhgzsKFATIPCNWQpkF0Re2FTx3XaUA=;
+        b=B8308rxncAvAJV75F0pwKjhI2+p4nKDbofAxnnot3gLUCcjV5neLLW8OsQyTRtk/t5Pm2R
+        yO/chUwNdOraZBuwmUcGtPkvrthRqB4poHNH56EU7o6eYgglaO7YqfEgxsoBBhmBcC7I6o
+        2HZtQda3lcljLa5X7YOWOg9zFl5yEsA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649245050;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=omCD+DLP3/+QylhgzsKFATIPCNWQpkF0Re2FTx3XaUA=;
+        b=wISK9QMyY+V16+1YnssoF1ORF0co5WJE3GH0/Dr5sWwz6wHUV3Vdmnlt78Nhubr5VLezb8
+        DFDaFbg33wr7ETBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9E2CF139F5;
+        Wed,  6 Apr 2022 11:37:29 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qlY7I3l7TWKFSAAAMHmgww
+        (envelope-from <dkirjanov@suse.de>); Wed, 06 Apr 2022 11:37:29 +0000
+Message-ID: <934017ec-8cec-b25c-cd01-f5ede0cfff82@suse.de>
+Date:   Wed, 6 Apr 2022 14:36:58 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3] myri10ge: fix an incorrect free for skb in
+ myri10ge_sw_tso
+Content-Language: ru
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, christopher.lee@cspi.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+From:   Denis Kirjanov <dkirjanov@suse.de>
+In-Reply-To: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tero Kristo <t-kristo@ti.com>
 
-Add two new helper functions pruss_cfg_get_gpmux() & pruss_cfg_set_gpmux()
-to get and set the GP MUX mode for programming the PRUSS internal wrapper
-mux functionality as needed by usecases.
 
-Co-developed-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Tero Kristo <t-kristo@ti.com>
-Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
----
- include/linux/pruss_driver.h | 44 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
-
-diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
-index e2d5477225c6..3312281ef4c1 100644
---- a/include/linux/pruss_driver.h
-+++ b/include/linux/pruss_driver.h
-@@ -35,4 +35,48 @@ struct pruss {
- 	struct clk *iep_clk_mux;
- };
- 
-+/**
-+ * pruss_cfg_get_gpmux() - get the current GPMUX value for a PRU device
-+ * @pruss: pruss instance
-+ * @pru_id: PRU identifier (0-1)
-+ * @mux: pointer to store the current mux value into
-+ *
-+ * Return: 0 on success, or an error code otherwise
-+ */
-+static inline int pruss_cfg_get_gpmux(struct pruss *pruss,
-+				      enum pruss_pru_id pru_id, u8 *mux)
-+{
-+	int ret = 0;
-+	u32 val;
-+
-+	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
-+		return -EINVAL;
-+
-+	ret = pruss_cfg_read(pruss, PRUSS_CFG_GPCFG(pru_id), &val);
-+	if (!ret)
-+		*mux = (u8)((val & PRUSS_GPCFG_PRU_MUX_SEL_MASK) >>
-+			    PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
-+	return ret;
-+}
-+
-+/**
-+ * pruss_cfg_set_gpmux() - set the GPMUX value for a PRU device
-+ * @pruss: pruss instance
-+ * @pru_id: PRU identifier (0-1)
-+ * @mux: new mux value for PRU
-+ *
-+ * Return: 0 on success, or an error code otherwise
-+ */
-+static inline int pruss_cfg_set_gpmux(struct pruss *pruss,
-+				      enum pruss_pru_id pru_id, u8 mux)
-+{
-+	if (mux >= PRUSS_GP_MUX_SEL_MAX ||
-+	    pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
-+		return -EINVAL;
-+
-+	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
-+				PRUSS_GPCFG_PRU_MUX_SEL_MASK,
-+				(u32)mux << PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
-+}
-+
- #endif	/* _PRUSS_DRIVER_H_ */
--- 
-2.17.1
-
+4/6/22 06:55, Xiaomeng Tong пишет:
+> All remaining skbs should be released when myri10ge_xmit fails to
+> transmit a packet. Fix it within another skb_list_walk_safe.
+> 
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
+> 
+> changes since v2:
+>   - free all remaining skbs. (Xiaomeng Tong)
+> 
+> changes since v1:
+>   - remove the unneeded assignmnets. (Xiaomeng Tong)
+> 
+> v2:https://lore.kernel.org/lkml/20220405000553.21856-1-xiam0nd.tong@gmail.com/
+> v1:https://lore.kernel.org/lkml/20220319052350.26535-1-xiam0nd.tong@gmail.com/
+> 
+> ---
+>   drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 6 ++----
+>   1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+> index 50ac3ee2577a..21d2645885ce 100644
+> --- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+> +++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+> @@ -2903,11 +2903,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+>   		status = myri10ge_xmit(curr, dev);
+>   		if (status != 0) {
+a transmit function returns NETDEV_TX_OK on success
+>   			dev_kfree_skb_any(curr);
+> -			if (segs != NULL) {
+> -				curr = segs;
+> -				segs = next;
+> +			skb_list_walk_safe(next, curr, next) {
+>   				curr->next = NULL;
+> -				dev_kfree_skb_any(segs);
+> +				dev_kfree_skb_any(curr);
+>   			}
+>   			goto drop;
+>   		}
