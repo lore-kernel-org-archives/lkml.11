@@ -2,181 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED97C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD788C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241608AbiDFI0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 04:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
+        id S231768AbiDFI0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 04:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381632AbiDFIZD (ORCPT
+        with ESMTP id S1357081AbiDFIYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:25:03 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D4110FC6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:37:44 -0700 (PDT)
-Received: from kwepemi100010.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KY6Xs3t3QzgYP3;
-        Wed,  6 Apr 2022 09:35:57 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- kwepemi100010.china.huawei.com (7.221.188.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 09:37:41 +0800
-Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
- (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 6 Apr
- 2022 09:37:41 +0800
-Subject: Re: [PATCH v3 1/2] drivers/perf: hisi: Associate PMUs in SICL with
- CPUs online
-To:     John Garry <john.garry@huawei.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>
-CC:     Zhangshaokun <zhangshaokun@hisilicon.com>,
-        Linuxarm <linuxarm@huawei.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220321070124.41338-1-liuqi115@huawei.com>
- <20220321070124.41338-2-liuqi115@huawei.com>
- <ba5aa606-54bf-e19f-39ba-a21998781a6c@huawei.com>
-From:   "liuqi (BA)" <liuqi115@huawei.com>
-Message-ID: <3243b077-1cca-9986-f587-362a46589aba@huawei.com>
-Date:   Wed, 6 Apr 2022 09:37:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Wed, 6 Apr 2022 04:24:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EA1FE41C;
+        Tue,  5 Apr 2022 18:20:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7A2861978;
+        Wed,  6 Apr 2022 01:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 25B47C385A6;
+        Wed,  6 Apr 2022 01:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649208012;
+        bh=dC3v0I2tbjatrppFTcXtArePWkg3Hg3WP7/TXZKrEYI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eU31G606J6itN38BjoJvPTgXdZX9D6h9QYMA93UzZGQsHvHjkWfL9P1Z4yEkPTWHb
+         G3qrb/qmquK50artxYNOA9piMh4BLAOUIN58X0tAES7w+/jBtFNCU6g33XJqczHuRz
+         yWrn3ed6ij3wseUkl4Dwdg7Kwhj2wTUDNSBo35R4rZADwjoolI0EIfJfXc985Wpenf
+         MP9j1o4rp00XelBQh4vY5Ts3i4PpwY0XyPd7YwBDbGW2tvJy1UeerC1YJmANox8guI
+         BqPF+gOqzyoAgDLTEgA15s/CDi0+9cpNX3B1COEASNaHS03QAkyUQFPuA0qIjCRZy+
+         S7Y8QgH5UBkYQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0A490E85BCB;
+        Wed,  6 Apr 2022 01:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <ba5aa606-54bf-e19f-39ba-a21998781a6c@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.101.67]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+Subject: Re: [PATCH net] net: micrel: Fix KS8851 Kconfig
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164920801203.3942.12236675927293580268.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Apr 2022 01:20:12 +0000
+References: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        Divya.Koppera@microchip.com, lkp@intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi John,
+Hello:
 
-Thanks for the comments. some replies inline.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-On 2022/4/5 16:18, John Garry wrote:
-> On 21/03/2022 07:01, Qi Liu wrote:
->> If a PMU is in SICL, we associate it with all CPUs online, rather
+On Tue, 5 Apr 2022 08:59:36 +0200 you wrote:
+> KS8851 selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL, so
+> make KS8851 also depend on PTP_1588_CLOCK_OPTIONAL.
 > 
-> /s/in SICL/in a SICL/ [and all other places, including the code change], 
-> or maybe it is better mention "IO super cluster" as well for people who 
-> would not know or remember.
+> Fixes kconfig warning and build errors:
 > 
-got it, will change these description, thanks.
+> WARNING: unmet direct dependencies detected for MICREL_PHY
+>   Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
+>     Selected by [y]:
+>       - KS8851 [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && SPI [=y]
+> 
+> [...]
 
->> than CPUs in the nearest SCCL.
-> 
-> You are not really saying why. I would mention that we do it as it is 
-> not appropiate to associate with a CPU die, and you can also mention 
-> problems that associating with a SICL creates.
-> 
-> Please also mention how changing FW definition is ok at this stage.
+Here is the summary with links:
+  - [net] net: micrel: Fix KS8851 Kconfig
+    https://git.kernel.org/netdev/net/c/1d7e4fd72bb9
 
-ok, I'll metion this next time.
-> 
->>
->> Signed-off-by: Qi Liu <liuqi115@huawei.com>
->> ---
->>   drivers/perf/hisilicon/hisi_uncore_pa_pmu.c | 18 +++++++-----------
->>   drivers/perf/hisilicon/hisi_uncore_pmu.c    |  4 ++++
->>   drivers/perf/hisilicon/hisi_uncore_pmu.h    |  1 +
->>   3 files changed, 12 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c 
->> b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
->> index bad99d149172..54c604c0d404 100644
->> --- a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
->> +++ b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
->> @@ -258,13 +258,12 @@ static int hisi_pa_pmu_init_data(struct 
->> platform_device *pdev,
->>                      struct hisi_pmu *pa_pmu)
->>   {
->>       /*
->> -     * Use the SCCL_ID and the index ID to identify the PA PMU,
->> -     * while SCCL_ID is the nearst SCCL_ID from this SICL and
->> -     * CPU core is chosen from this SCCL to manage this PMU.
->> +     * As PA PMU is in SICL, use the SICL_ID and the index ID
-> 
-> "a SICL"
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-got it.
-> 
->> +     * to identify the PA PMU.
->>        */
->>       if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
->> -                     &pa_pmu->sccl_id)) {
->> -        dev_err(&pdev->dev, "Cannot read sccl-id!\n");
->> +                     &pa_pmu->sicl_id)) {
->> +        dev_err(&pdev->dev, "Cannot read sicl-id!\n");
->>           return -EINVAL;
->>       }
->> @@ -275,6 +274,7 @@ static int hisi_pa_pmu_init_data(struct 
->> platform_device *pdev,
->>       }
->>       pa_pmu->ccl_id = -1;
->> +    pa_pmu->sccl_id = -1;
->>       pa_pmu->base = devm_platform_ioremap_resource(pdev, 0);
->>       if (IS_ERR(pa_pmu->base)) {
->> @@ -399,13 +399,9 @@ static int hisi_pa_pmu_probe(struct 
->> platform_device *pdev)
->>       ret = hisi_pa_pmu_dev_probe(pdev, pa_pmu);
->>       if (ret)
->>           return ret;
->> -    /*
->> -     * PA is attached in SICL and the CPU core is chosen to manage this
->> -     * PMU which is the nearest SCCL, while its SCCL_ID is greater than
->> -     * one with the SICL_ID.
->> -     */
->> +
->>       name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sicl%u_pa%u",
->> -                  pa_pmu->sccl_id - 1, pa_pmu->index_id);
->> +                  pa_pmu->sicl_id, pa_pmu->index_id);
->>       if (!name)
->>           return -ENOMEM;
->> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c 
->> b/drivers/perf/hisilicon/hisi_uncore_pmu.c
->> index a738aeab5c04..31930166c34b 100644
->> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
->> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
->> @@ -458,6 +458,10 @@ static bool hisi_pmu_cpu_is_associated_pmu(struct 
->> hisi_pmu *hisi_pmu)
->>   {
->>       int sccl_id, ccl_id;
->> +    /* If SCCL_ID is -1, the PMU is in SICL and can be associated 
->> this PMU with any CPU */
-> 
-> too long, just have "The PMU is in a SICL and has no CPU affinity"
 
-ok, will fix this.
-
-Thanks,
-Qi
-> 
->> +    if (hisi_pmu->sccl_id == -1)
->> +        return true;
->> +
->>       if (hisi_pmu->ccl_id == -1) {
->>           /* If CCL_ID is -1, the PMU only shares the same SCCL */
->>           hisi_read_sccl_and_ccl_id(&sccl_id, NULL);
->> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.h 
->> b/drivers/perf/hisilicon/hisi_uncore_pmu.h
->> index 7f5841d6f592..96eeddad55ff 100644
->> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.h
->> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.h
->> @@ -81,6 +81,7 @@ struct hisi_pmu {
->>       struct device *dev;
->>       struct hlist_node node;
->>       int sccl_id;
->> +    int sicl_id;
->>       int ccl_id;
->>       void __iomem *base;
->>       /* the ID of the PMU modules */
-> 
-> .
