@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C7CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2056EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239749AbiDFRoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
+        id S239459AbiDFRoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:44:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239481AbiDFRoF (ORCPT
+        with ESMTP id S239526AbiDFRoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:44:05 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245CE296899;
+        Wed, 6 Apr 2022 13:44:07 -0400
+Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [85.215.255.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA871162BF;
         Wed,  6 Apr 2022 09:26:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649262373;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649262374;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=/Yq+n6cNzT+gxBZbrCtn24poPh8ut1JXnQGOstsLGOc=;
-    b=jkAB9q+SB9vNysgSIZNi3GPEW3S+QAnQq2/gPBTKLq8V0nEokg0tSLcS/GbdD7vlCh
-    5/Y2Ob90/X94q+oh30hBRMip+vhYVeTGPjOiZUPLoX+kBK1NovlLaT1Gj66LglwCXSoe
-    7uEjGG4IiY+CkdfHYzYiwa7l9+sr5VL7QuLGqghn3t75tofLkg24tlkmg3R2r9piXdKK
-    tUhyJROIl4zoEvbXKd4Xl/uxnVn4CsqAImoN0Ws1jBsjKceAMuCxRa2mqinP+LHGCNi3
-    P14ZtC6gHTxPGG4ZBKQVLfHKYqOyHfc+dN3EbMzxFaGe8Nrw7BEt+qhccG7+FWTM+QNC
-    4tpQ==
+    bh=KR13NrwR20zSnWj2ej7PoEMIq+O+MWSZlNAGuKlspIA=;
+    b=MaUqpElqHdAzdRvn1WMicaIyHDhkY7ObvP0u4Uy6X+ur1PgEUgdVIkFIn01ZOQhvJ2
+    YLT/vZG2GlmTFmgM+mja3HVE7MGJ/xw/Q1Kg/xToqAcFzfyRJUcSndMzyJHkguwYKuTf
+    CvU4IbL1ZLqHg744dKucD6Tc3JSva/PJT5/PmOKxu1VlA4DhfpOVWfe9Q4N3+NHBN0lU
+    uwE6zUeFXNVzLqf/6G6si29DAaROIHnFRyAUHVqcPJRuPLK+OQ6WL3PVlIMMi/yMTwaE
+    NmT67/5V4c+gMR2+XWI20SHaMd7yNFA7spf0Sju1PRTtV3oYRpIzpT2MYPibsfSkUcCC
+    lCMQ==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbgcbPa"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy36GQDgVP
+    with ESMTPSA id k708cfy36GQEgVR
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Wed, 6 Apr 2022 18:26:13 +0200 (CEST)
+    Wed, 6 Apr 2022 18:26:14 +0200 (CEST)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
@@ -52,9 +52,9 @@ To:     Andrzej Hajda <andrzej.hajda@intel.com>,
 Cc:     Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
         dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
         letux-kernel@openphoenux.org
-Subject: [PATCH v17 3/6] drm/bridge: dw-hdmi: filter out YUV output formats when DVI
-Date:   Wed,  6 Apr 2022 18:26:05 +0200
-Message-Id: <92fce442c23ff855041bec2dfa4b4d4649c206be.1649262368.git.hns@goldelico.com>
+Subject: [PATCH v17 5/6] drm/bridge: dw-hdmi: add YCBCR formats only if CSC is available
+Date:   Wed,  6 Apr 2022 18:26:07 +0200
+Message-Id: <d5801eb7733a616df30fef1d192e88ad147afc1c.1649262368.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1649262368.git.hns@goldelico.com>
 References: <cover.1649262368.git.hns@goldelico.com>
@@ -64,80 +64,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neil Armstrong <narmstrong@baylibre.com>
+otherwise they will produce a black HDMI screen.
 
-When the display is not an HDMI sink, only the RGB output format is
-valid. Thus stop returning YUV output formats when sink is not HDMI.
-
-Fixes: 6c3c719936da ("drm/bridge: synopsys: dw-hdmi: add bus format negociation")
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index a563460f8d209..f50af40e10340 100644
+index b5a665c5e406e..ec40dd8865065 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -2538,6 +2538,7 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 	struct drm_connector *conn = conn_state->connector;
- 	struct drm_display_info *info = &conn->display_info;
- 	struct drm_display_mode *mode = &crtc_state->mode;
-+	struct dw_hdmi *hdmi = bridge->driver_private;
- 	u8 max_bpc = conn_state->max_requested_bpc;
- 	bool is_hdmi2_sink = info->hdmi.scdc.supported ||
- 			     (info->color_formats & DRM_COLOR_FORMAT_YCBCR420);
-@@ -2564,7 +2565,7 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 	 * If the current mode enforces 4:2:0, force the output but format
- 	 * to 4:2:0 and do not add the YUV422/444/RGB formats
- 	 */
--	if (conn->ycbcr_420_allowed &&
-+	if (hdmi->sink_is_hdmi && conn->ycbcr_420_allowed &&
- 	    (drm_mode_is_420_only(info, mode) ||
- 	     (is_hdmi2_sink && drm_mode_is_420_also(info, mode)))) {
- 
-@@ -2595,36 +2596,36 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 	 */
- 
- 	if (max_bpc >= 16 && info->bpc == 16) {
--		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
-+		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
- 			output_fmts[i++] = MEDIA_BUS_FMT_YUV16_1X48;
- 
- 		output_fmts[i++] = MEDIA_BUS_FMT_RGB161616_1X48;
- 	}
- 
- 	if (max_bpc >= 12 && info->bpc >= 12) {
--		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
-+		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
- 			output_fmts[i++] = MEDIA_BUS_FMT_UYVY12_1X24;
- 
--		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
-+		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
- 			output_fmts[i++] = MEDIA_BUS_FMT_YUV12_1X36;
- 
- 		output_fmts[i++] = MEDIA_BUS_FMT_RGB121212_1X36;
- 	}
- 
- 	if (max_bpc >= 10 && info->bpc >= 10) {
--		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
-+		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
- 			output_fmts[i++] = MEDIA_BUS_FMT_UYVY10_1X20;
- 
--		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
-+		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
- 			output_fmts[i++] = MEDIA_BUS_FMT_YUV10_1X30;
- 
+@@ -2628,10 +2628,12 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
  		output_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
  	}
  
--	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
-+	if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
+-	if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
++	if (hdmi->csc_available && hdmi->sink_is_hdmi &&
++	    (info->color_formats & DRM_COLOR_FORMAT_YCBCR422))
  		output_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
  
--	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
-+	if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
+-	if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
++	if (hdmi->csc_available && hdmi->sink_is_hdmi &&
++	    (info->color_formats & DRM_COLOR_FORMAT_YCBCR444))
  		output_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
  
  	/* Default 8bit RGB fallback */
