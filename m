@@ -2,103 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB34C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEEE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234940AbiDFUyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
+        id S234727AbiDFUwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:52:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233763AbiDFUx2 (ORCPT
+        with ESMTP id S233554AbiDFUvf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:53:28 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FA9FFF76;
-        Wed,  6 Apr 2022 12:09:49 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-de3eda6b5dso4037889fac.0;
-        Wed, 06 Apr 2022 12:09:49 -0700 (PDT)
+        Wed, 6 Apr 2022 16:51:35 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614123CBF30
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:07:35 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id l26so6294069ejx.1
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:07:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linbit-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0vcoWpko5M6BsO9WO6BZaEztSvAjnr2wIhZH0Y0nwWU=;
+        b=mi8paDeGJ9FgOE5KAUIYIDlCD6t9WRIXW8Zbxzongj6zFKj7quoAet0fhWDUc5SmZZ
+         xayddIqSEyI7Dea/HQIrpqGu5yheJHlfO1suXNQxYPDr5klhiDG31V04CeBKUxei7+ca
+         0uTdz7MsCQGNpsEQ70paHowFP/DBIK5J6Fj6tWvzXh/hUpmCtlYstrUvlG+Xi7Rdloz/
+         N3iDKbQcXbxEI5pj/fUur06ak9ZOnuD6GrGbyxTMSB+111T9S1hz1sv8/cNJS7W1FVSm
+         rbKM2LzDMGzWgcX65SRXCJqlKq3vguzKAH5r7POFaeMyJ13qps80aqz+e8GmhQpmmike
+         4C4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=nkvvt5iU3/huYVMTWpqmeVmasOECJdxAJG738D8isiA=;
-        b=OKWvqx7hcaKUS/28ToViBmpMK0cuazkpiIkPLGVzHVCNju/1O0JgfrlscSu44yFLqA
-         f59T54LRbdIpBAMUM1TpK6XgrhmaKmtLuGqNJzxiCHQkEMOZvsxNXLCU328KWOEJggNc
-         Z2ReyLQ6AhvWz2cVAIanWUQcPBJVNkeXs1/zbxeAU/0V37jp1rmIxF70V4Bsi+2YhStb
-         jMcVWu4o5VXUgFQqysqIQFBmJ4vdea3Hqrv4oVk/0LZASYK5SbUFQqbzUau6sZn//eLe
-         LZlixLmp/OvajG6ThkWfDKF2HUK5fan3ob0r1EK+0VRuRAEfwN3dDNMIdnTwv7oDYnbL
-         DHtw==
-X-Gm-Message-State: AOAM532x1LV8EvZEfD3TnYzQPZ5dSXEzREBz4afbcC3RzhGlTOeCvFkJ
-        1FGwTORK3dCx+qUpo7vvUg==
-X-Google-Smtp-Source: ABdhPJw25u3J4jdicjV95QI6NUKAkXMnWtfFRhrT2nJEQpb3wVemqoBH7x9wlwuPgFzL3oA/pMeSGw==
-X-Received: by 2002:a05:6870:2103:b0:de:29de:12c4 with SMTP id f3-20020a056870210300b000de29de12c4mr4829087oae.203.1649272188810;
-        Wed, 06 Apr 2022 12:09:48 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w1-20020a056808090100b002da82caced5sm6676892oih.3.2022.04.06.12.09.48
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0vcoWpko5M6BsO9WO6BZaEztSvAjnr2wIhZH0Y0nwWU=;
+        b=5qyWNB70FYQ9HHJsiRXZ7wIKwIgdGEfRNjuHHfwIiQqRzymyb40QwvTpTyr79zPktB
+         J/kNXNDRoxfDcrRWrgwaablabzivaDIv3DBH8uJHyMQ7eM0KgAUBaw+uaek1F8BWj01v
+         U1VCdbV5yddPLjjiX68pE4FX+xOTmaHcCdexM61CL1GxuJJLIa+rGhUzgSeJ+fZ/bb6n
+         rKwEO48OLGPHtCa/P0rM1DFnVwpOynLJPdtWQjR5nW1iQ6yc/4C/fT6lgUui/q9deI3g
+         Ls7CKMar1KtdQIuSLoUmPpTz3IUgCXdOY0qDydSRcnvX1Dm4uYBYOVOQbfoIgpxBMOXI
+         AaTQ==
+X-Gm-Message-State: AOAM530bsS7a5E8T/KR0Z7wo3CLFgTlH/1dchNdOtg01eztpqkmXb+JB
+        v+bQvbGCiC0EHJ9lvcj3PiQ3/Q==
+X-Google-Smtp-Source: ABdhPJwS75mCEvIsWowddkngt4NmRn8+jLBJvmrzPpQ7wLwXC5KAdkj6Vik6DmpRxwMlJAQJjznehg==
+X-Received: by 2002:a17:907:6da3:b0:6e6:ec5e:c2f7 with SMTP id sb35-20020a1709076da300b006e6ec5ec2f7mr9677283ejc.309.1649272053940;
+        Wed, 06 Apr 2022 12:07:33 -0700 (PDT)
+Received: from localhost (85-127-190-169.dsl.dynamic.surfer.at. [85.127.190.169])
+        by smtp.gmail.com with ESMTPSA id n5-20020a1709065e0500b006e4dae9b1besm6503475eju.145.2022.04.06.12.07.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 12:09:48 -0700 (PDT)
-Received: (nullmailer pid 2604082 invoked by uid 1000);
-        Wed, 06 Apr 2022 19:09:47 -0000
-Date:   Wed, 6 Apr 2022 14:09:47 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        soc@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH] arm: dts: at91: Fix boolean properties with values
-Message-ID: <Yk3leykDEKGBN8rk@robh.at.kernel.org>
+        Wed, 06 Apr 2022 12:07:33 -0700 (PDT)
+From:   =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     drbd-dev@lists.linbit.com, linux-kernel@vger.kernel.org,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        linux-block@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>
+Subject: [PATCH 3/7] block: drbd: drbd_receiver: Remove redundant assignment to err
+Date:   Wed,  6 Apr 2022 21:07:11 +0200
+Message-Id: <20220406190715.1938174-4-christoph.boehmwalder@linbit.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406190715.1938174-1-christoph.boehmwalder@linbit.com>
+References: <20220406190715.1938174-1-christoph.boehmwalder@linbit.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.32.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Boolean properties in DT are present or not present and don't take a value.
-A property such as 'foo = <0>;' evaluated to true. IOW, the value doesn't
-matter.
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-It may have been intended that 0 values are false, but there is no change
-in behavior with this patch.
+Variable err is set to '-EIO' but this value is never read as
+it is overwritten or not used later on, hence it is a redundant
+assignment and can be removed.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
+Clean up the following clang-analyzer warning:
+
+drivers/block/drbd/drbd_receiver.c:3955:5: warning: Value stored to
+'err' is never read [clang-analyzer-deadcode.DeadStores].
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Acked-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
 ---
-Can someone apply this for 5.18 please.
+ drivers/block/drbd/drbd_receiver.c | 1 -
+ 1 file changed, 1 deletion(-)
 
- arch/arm/boot/dts/at91-kizbox3-hs.dts      | 2 +-
- arch/arm/boot/dts/at91-kizbox3_common.dtsi | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/boot/dts/at91-kizbox3-hs.dts b/arch/arm/boot/dts/at91-kizbox3-hs.dts
-index 2799b2a1f4d2..f7d90cf1bb77 100644
---- a/arch/arm/boot/dts/at91-kizbox3-hs.dts
-+++ b/arch/arm/boot/dts/at91-kizbox3-hs.dts
-@@ -225,7 +225,7 @@ pinctrl_pio_zbe_rst: gpio_zbe_rst {
- 		pinctrl_pio_io_reset: gpio_io_reset {
- 			pinmux = <PIN_PB30__GPIO>;
- 			bias-disable;
--			drive-open-drain = <1>;
-+			drive-open-drain;
- 			output-low;
- 		};
- 		pinctrl_pio_input: gpio_input {
-diff --git a/arch/arm/boot/dts/at91-kizbox3_common.dtsi b/arch/arm/boot/dts/at91-kizbox3_common.dtsi
-index abe27adfa4d6..465664628419 100644
---- a/arch/arm/boot/dts/at91-kizbox3_common.dtsi
-+++ b/arch/arm/boot/dts/at91-kizbox3_common.dtsi
-@@ -211,7 +211,7 @@ pinctrl_flx4_default: flx4_i2c6_default {
- 		pinmux = <PIN_PD12__FLEXCOM4_IO0>, //DATA
- 		<PIN_PD13__FLEXCOM4_IO1>; //CLK
- 		bias-disable;
--		drive-open-drain = <1>;
-+		drive-open-drain;
- 	};
+diff --git a/drivers/block/drbd/drbd_receiver.c b/drivers/block/drbd/drbd_receiver.c
+index 08da922f81d1..911c26753556 100644
+--- a/drivers/block/drbd/drbd_receiver.c
++++ b/drivers/block/drbd/drbd_receiver.c
+@@ -3903,7 +3903,6 @@ static int receive_SyncParam(struct drbd_connection *connection, struct packet_i
+ 				drbd_err(device, "verify-alg of wrong size, "
+ 					"peer wants %u, accepting only up to %u byte\n",
+ 					data_size, SHARED_SECRET_MAX);
+-				err = -EIO;
+ 				goto reconnect;
+ 			}
  
- 	pinctrl_pwm0 {
 -- 
-2.32.0
+2.35.1
 
