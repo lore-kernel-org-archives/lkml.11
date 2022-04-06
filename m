@@ -2,76 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E474C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbiDFTdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
+        id S231733AbiDFTes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231997AbiDFTct (ORCPT
+        with ESMTP id S231244AbiDFTeQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:32:49 -0400
-Received: from smtp1.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC4C7938A;
-        Wed,  6 Apr 2022 10:32:52 -0700 (PDT)
-Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
+        Wed, 6 Apr 2022 15:34:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49824216F8A;
+        Wed,  6 Apr 2022 10:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 715FA3C0579;
-        Wed,  6 Apr 2022 19:32:51 +0200 (CEST)
-Received: from lxhi-065 (10.72.94.4) by hi2exch02.adit-jv.com (10.72.92.28)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Wed, 6 Apr
- 2022 19:32:50 +0200
-Date:   Wed, 6 Apr 2022 19:32:45 +0200
-From:   Eugeniu Rosca <erosca@de.adit-jv.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-CC:     Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        <linux-renesas-soc@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Bhuvanesh Surachari <bhuvanesh_surachari@mentor.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-Subject: Re: [PATCH v2] i2c: rcar: add SMBus block read support
-Message-ID: <20220406173245.GA14970@lxhi-065>
-References: <000001d7badd$a8512d30$f8f38790$@mentor.com>
- <20211006182314.10585-1-andrew_gabbasov@mentor.com>
- <Yg6ls0zyTDe7LQbK@kunai>
- <20220323215229.GA9403@lxhi-065>
- <YkQ31VMqj1MXqBd3@shikoro>
- <YkQ6XRITOFZ7hLXV@shikoro>
- <20220331160207.GA27757@lxhi-065>
- <YkcqoIMF2uw4FSZh@ninjato>
- <20220405093048.GA7151@lxhi-065>
- <YkwPQSPed18iyHox@ninjato>
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD704B824E3;
+        Wed,  6 Apr 2022 17:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 63CC3C385A6;
+        Wed,  6 Apr 2022 17:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649265612;
+        bh=bCQGB0u5v44OC+IqUjXAgcJRjdQnsHHjN1iUEPhYK8k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=W7oTstl4G4acgRkxfXpf0qPEpX1eA6h4/2al+5RPktvFKLYKWJv9fHUVmdWxXy8cX
+         1ccVNKAViOjrQm/9AAl+hyt6izIYx5x9YeW+puQNVqpBtnxbbkE+79qSAQ+/8zU9Us
+         UdI8T0Bv3bawFuypMECm8+6woESICJO1VS2H0RvpTgNKAaU9MVLOWxhQFljkzZxwaP
+         sSRSNdDtbixoWKr1fqU3fkda7yWPfRChm2iz4aP+WTweQ/edJTrXe3b43RmfbS8cnx
+         DANWj0hgxCYfiDhm0ZtLnF95WSaux6x24yG3YTuvKbkUMqDbde4vzXap37CoObL6LP
+         xgFS2FpYDBKow==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 481E5E8DBDD;
+        Wed,  6 Apr 2022 17:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YkwPQSPed18iyHox@ninjato>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.72.94.4]
-X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
- hi2exch02.adit-jv.com (10.72.92.28)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] bpf/selftests: use bpf_num_possible_cpus() in
+ per-cpu map allocations
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164926561229.23950.7869141234456390467.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Apr 2022 17:20:12 +0000
+References: <20220406085408.339336-1-asavkov@redhat.com>
+In-Reply-To: <20220406085408.339336-1-asavkov@redhat.com>
+To:     Artem Savkov <asavkov@redhat.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wolfram,
+Hello:
 
-On Tue, Apr 05, 2022 at 11:43:29AM +0200, Wolfram Sang wrote:
-> > In general, the Renesas kernel always carries a set of patches with
-> > non-mainlined changes, Fortunately, for i2c specifically (as opposed
-> > to other subsystems), it is narrow enough to not raise major concerns:
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
+
+On Wed,  6 Apr 2022 10:54:08 +0200 you wrote:
+> bpf_map_value_size() uses num_possible_cpus() to determine map size, but
+> some of the tests only allocate enough memory for online cpus. This
+> results in out-of-bound writes in userspace during bpf(BPF_MAP_LOOKUP_ELEM)
+> syscalls in cases when number of online cpus is lower than the number of
+> possible cpus. Fix by switching from get_nprocs_conf() to
+> bpf_num_possible_cpus() when determining the number of processors in
+> these tests (test_progs/netcnt and test_cgroup_storage).
 > 
-> Well, yes, that shows that I am mostly successful with reporting back to
-> the BSP team :D
+> [...]
 
-100%! I remember the early days of Renesas R-Car Gen3 kernels, with
-literally thousands of patches on top of v4.2/v4.4/v4.6 vanilla tags.
+Here is the summary with links:
+  - [bpf-next] bpf/selftests: use bpf_num_possible_cpus() in per-cpu map allocations
+    https://git.kernel.org/bpf/bpf-next/c/ebaf24c589d7
 
-It felt like mission impossible to upstream those. But here we are. Kudos!
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Best regards,
-Eugeniu
+
