@@ -2,112 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16492C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232790AbiDFUO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        id S234253AbiDFUPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237033AbiDFUN4 (ORCPT
+        with ESMTP id S236447AbiDFUNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:13:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C137E1B60F3;
-        Wed,  6 Apr 2022 11:28:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F27B61C57;
-        Wed,  6 Apr 2022 18:28:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 702AFC385A3;
-        Wed,  6 Apr 2022 18:28:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269681;
-        bh=Ar6wQxHGUgKLPgy00kKXXw91vno3jB1Vdh5h58ZAXlg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TG0+vkYgKTOWNP3oEE1kylw2RVQY6wuVgz6CdB43FhNN64zU9eogAo1GA3maucujA
-         5Xbok/TkpSrz1PZ17FOVKlOWOE1attGQ8/3vMh06bGdH2WmNpZkN8yCQvrREMqU+UG
-         1TP3f+myFnvtxQUkyVUNxrr+rVy/X+fKhM7mqISY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Dave Martin <dave.martin@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 05/43] arm64: capabilities: Move errata work around check on boot CPU
-Date:   Wed,  6 Apr 2022 20:26:14 +0200
-Message-Id: <20220406182436.835640694@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 6 Apr 2022 16:13:42 -0400
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C560B14144F;
+        Wed,  6 Apr 2022 10:32:48 -0700 (PDT)
+Received: by mail-pj1-f51.google.com with SMTP id kw18so3187563pjb.5;
+        Wed, 06 Apr 2022 10:32:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1p8gUuneckKY8YLiEV5xhyLd1rkixdksic7T++BXSFo=;
+        b=1FEsfjRlo0QfDUzwuwuNA5IhH0olWwSJftyKFQxGAImpRJ3r6cpGWZLRa9O84JAyLJ
+         F279G0VKZzSYPUbjgtAEYgNamizRSDvdSMMbekzyeB3IK+7Zumi2dVlEesVMKenyNJYC
+         x8xdh4E4/FZ4oSNz3u65wy0Yqtaotehlwnz9/Vq0phY2SRaAeTyG7kmqJny8Hlen8d+/
+         7O9fLt5Ky+t3GSeOnve6KI08zUlmaeLxJtQUwCIv8ppni5MMxOn62deov3UTe7MiWAFD
+         o35CCokAbRft1iVnKM26AmIPAX6wEkMiWs2PX2D0i8X42/0twcjQw2pi1mGpAk7U90ev
+         zK6g==
+X-Gm-Message-State: AOAM530pgtT//yc4DkmUe9milgOVAxzti/BdqtIrla5PZU3a3nJINO6G
+        sNJid8+gBveFgnMB3trnkI4=
+X-Google-Smtp-Source: ABdhPJxyL8mCwgcllhty9biVKtUpTHo4mXsfQpbuIBga5V0A8ZuzeKzBXeJfVylupuW8iUwBo0uotw==
+X-Received: by 2002:a17:902:834a:b0:14f:3337:35de with SMTP id z10-20020a170902834a00b0014f333735demr9895533pln.8.1649266367475;
+        Wed, 06 Apr 2022 10:32:47 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id mu1-20020a17090b388100b001c77e79531bsm6454716pjb.50.2022.04.06.10.32.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 10:32:46 -0700 (PDT)
+Message-ID: <e72812a9-1e5b-a826-d490-62ed23d94116@acm.org>
+Date:   Wed, 6 Apr 2022 10:32:44 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 0/4] rpmb subsystem, uapi and virtio-rpmb driver
+Content-Language: en-US
+To:     Bean Huo <huobean@gmail.com>,
+        =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, maxim.uvarov@linaro.org,
+        joakim.bech@linaro.org, ulf.hansson@linaro.org,
+        ilias.apalodimas@linaro.org, arnd@linaro.org,
+        ruchika.gupta@linaro.org, tomas.winkler@intel.com,
+        yang.huang@intel.com, bing.zhu@intel.com,
+        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
+        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org
+References: <20220405093759.1126835-1-alex.bennee@linaro.org>
+ <8b3ce88f65fd11523a4d2daab3c617f7089eb1ce.camel@gmail.com>
+ <87r16bk013.fsf@linaro.org>
+ <aeb64d1c4bbddfd8463c07a40ab1fc78be0d158d.camel@gmail.com>
+ <87ee2ajuky.fsf@linaro.org>
+ <c18a2b359046a14250cafa5a619dbe53f2872b5a.camel@gmail.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <c18a2b359046a14250cafa5a619dbe53f2872b5a.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
+On 4/6/22 10:19, Bean Huo wrote:
+> On Wed, 2022-04-06 at 12:22 +0100, Alex Bennée wrote:
+>>
+>> Bean Huo <huobean@gmail.com> writes:
+>>
+>>> On Tue, 2022-04-05 at 16:43 +0100, Alex Bennée wrote:
+>>>>
+>>>> Bean Huo <huobean@gmail.com> writes:
+>>>>
+>>>>> Hi Alex,
+>>>>>
+>>>>> Thanks for this unified RPMB interface, I wanted to verify this
+>>>>> on
+>>>>> our
+>>>>> UFS, it seems you didn't add the UFS access interface in this
+>>>>> version
+>>>>> from your userspace tools, right?
+>>>>
+>>>> No I didn't but it should be easy enough to add some function
+>>>> pointer
+>>>> redirection everywhere one of the op_* functions calls a vrpmb_*
+>>>> function. Do you already have a UFS RPMB device driver?
+>>>>
+>>>
+>>> Hi Alex,
+>>> Thanks for your feedback.
+>>>
+>>> We now access UFS RPMB through the RPMB LUN BSG device, RPMB is a
+>>> well-
+>>> known LU and we have a userspace tool to access it.
+>>>
+>>> I see that if we're going to use your interface, "static struct
+>>> rpmb_ops" should be registered from a lower-level driver, for
+>>> example
+>>> in a UFS driver, yes there should be no problem with this
+>>> registration,
+>>> but I don't know with the current way Compared, what are the
+>>> advantages
+>>> to add a driver. maybe the main advantage is that we will have an
+>>> unified user space tool for RPMB. right?
+>>
+>> Pretty much. The main issue for virtio-rpmb is it doesn't really fit
+>> neatly into the block stack because all it does is the RPMB part so a
+>> non-block orientate API makes sense.
+>>
+>> Can you point be to where the UFS driver does it's current RPMB
+>> stuff?
+>>
+> 
+> It's the SCSI BSG driver, in fact, we don't have a dedicated UFS RPMB
+> driver in the kernel. RPMB is a well known LU, we are using userspace
+> tools to issue SCSI commands directly to the UFS RPMB LU via ioctl()
+> from the BSG device node in the /dev/sg/ folder.
+> 
+> Here is the BSG part of the code in the userspace tools:
+> 
+>          io_hdr_v4.guard = 'Q';
+>          io_hdr_v4.protocol = BSG_PROTOCOL_SCSI;
+>          io_hdr_v4.subprotocol = BSG_SUB_PROTOCOL_SCSI_CMD;
+>          io_hdr_v4.response = (__u64)sense_buffer;
+>          io_hdr_v4.max_response_len = SENSE_BUFF_LEN;
+>          io_hdr_v4.request_len = cmd_len;
+>          io_hdr_v4.request = (__u64)cdb;
+>                                                                                                                            
+>                                                                                   
+>          ioctl(fd, SG_IO, &io_hdr_v4))
 
-[ Upstream commit 5e91107b06811f0ca147cebbedce53626c9c4443 ]
+Hi Bean,
 
-We trigger CPU errata work around check on the boot CPU from
-smp_prepare_boot_cpu() to make sure that we run the checks only
-after the CPU feature infrastructure is initialised. While this
-is correct, we can also do this from init_cpu_features() which
-initilises the infrastructure, and is called only on the
-Boot CPU. This helps to consolidate the CPU capability handling
-to cpufeature.c. No functional changes.
+I'm not sure where the above comes from? The Android RPMB client uses 
+slightly different code. Additionally, the retry loop around the 
+submission of SG/IO commands is very important. See also the 
+check_sg_io_hdr() call in send_ufs_rpmb_req(). See also 
+https://cs.android.com/android/platform/superproject/+/master:system/core/trusty/storage/proxy/rpmb.c
 
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Reviewed-by: Dave Martin <dave.martin@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/kernel/cpufeature.c |    5 +++++
- arch/arm64/kernel/smp.c        |    6 ------
- 2 files changed, 5 insertions(+), 6 deletions(-)
+Thanks,
 
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -476,6 +476,11 @@ void __init init_cpu_features(struct cpu
- 		init_cpu_ftr_reg(SYS_MVFR2_EL1, info->reg_mvfr2);
- 	}
- 
-+	/*
-+	 * Run the errata work around checks on the boot CPU, once we have
-+	 * initialised the cpu feature infrastructure.
-+	 */
-+	update_cpu_errata_workarounds();
- }
- 
- static void update_cpu_ftr_reg(struct arm64_ftr_reg *reg, u64 new)
---- a/arch/arm64/kernel/smp.c
-+++ b/arch/arm64/kernel/smp.c
-@@ -444,12 +444,6 @@ void __init smp_prepare_boot_cpu(void)
- 	jump_label_init();
- 	cpuinfo_store_boot_cpu();
- 	save_boot_cpu_run_el();
--	/*
--	 * Run the errata work around checks on the boot CPU, once we have
--	 * initialised the cpu feature infrastructure from
--	 * cpuinfo_store_boot_cpu() above.
--	 */
--	update_cpu_errata_workarounds();
- }
- 
- static u64 __init of_get_cpu_mpidr(struct device_node *dn)
-
-
+Bart.
