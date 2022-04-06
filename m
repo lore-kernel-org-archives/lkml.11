@@ -2,117 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA87BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233680AbiDFUGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
+        id S233778AbiDFUHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233655AbiDFUEl (ORCPT
+        with ESMTP id S233100AbiDFUGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:04:41 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0401FAA25
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:16:10 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so3800436fac.7
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:16:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=W6QLU9dpsf8mc4939lySYzSPSw/dtTexZuzBHIuLUrg=;
-        b=EBTf1bBIiIG/kG0lhqJVTnNvF5u0I5Bml0AKBgrXKGQB/0qt+BtzLG+NBXiFyM1x8D
-         olDpNLvBJ790rjNjiYjgWvGsRpx8xFizHYfJ16SP9BmBooefqv5zWU3ErFPjkkz+knCA
-         rIsgx8howkxkhEF/ME5pJYrDyjSfoyrm1ECGk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=W6QLU9dpsf8mc4939lySYzSPSw/dtTexZuzBHIuLUrg=;
-        b=EcNZ5t5TB5yr0SsI0PFzx0U6Ujv2XHgwsR5uIQUG6g2e6np3X88CYB3cHR6O3kzaIU
-         SWAUnDA5zkD8yrvZARb9nNvsEbxBWKelYF/yNC5kWBtc0N+emNx2aiQoje6ReiFPK4uS
-         nrubyj9xQxAG/1kmlzJxnOkEXfpy6bIHyE39b7x3b92b4/4+7yEfJTV/xP+vrThhlTSR
-         xreqbKdYba1Jxq+D/rELpRYZoXWLwiEzxUJT6J/3Hrkci18j3g1U4vhVQ6aF7Hlpm1Re
-         j9sueCs3nXVuCK3q6nu+QyBDnc1UGNjc5zCS64Y/RUzFo498VYlIdTVjcS0AFNSMuU13
-         7ldA==
-X-Gm-Message-State: AOAM531GUQwY3Ww2y/KLz6CcmrG0r02AKiU5nue0Bgj302fovFS7VFRP
-        M+Zm82oEXjweWmpDFMvfsBsOCML+5OBXZgUF+CZlkA==
-X-Google-Smtp-Source: ABdhPJw1RdwYSbawGoUWfudSiGTBCjFseP6+LEsJiUEoEd7sXlF3awSAqT7Ef73IMxW5Sp5PVs4oa7X7vTackHPxJx4=
-X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
- n14-20020a056870558e00b000e1db7c26aamr4580721oao.63.1649268969711; Wed, 06
- Apr 2022 11:16:09 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 6 Apr 2022 11:16:09 -0700
-MIME-Version: 1.0
-In-Reply-To: <Yk3NkNK3e+fgj4eG@sirena.org.uk>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
- <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
- <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
- <Yk1B4f51WMGIV9WB@sirena.org.uk> <CAE-0n53Cv_bR92M64dhdnDge_=_jeOs4VZzDhUkksN90Y7rgog@mail.gmail.com>
- <Yk21pdu16lyR8jXm@sirena.org.uk> <CAE-0n50C8khP2x4sgNP5xnfLVMRQj2=LChyWWx1BWL+Xgecgyw@mail.gmail.com>
- <Yk3Bfnxe/meBYokp@sirena.org.uk> <CAE-0n53O23=N0zkZpg87Q3EyKquLe3WLNJT8qnZz4WEor6QK7A@mail.gmail.com>
- <Yk3NkNK3e+fgj4eG@sirena.org.uk>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 6 Apr 2022 11:16:09 -0700
-Message-ID: <CAE-0n51DJyWQKG1AsMjD1wwxx=KCyvyp7-P9BGfiRX=EKjxfdw@mail.gmail.com>
-Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008 PMIC
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+        Wed, 6 Apr 2022 16:06:41 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5903BEDF31;
+        Wed,  6 Apr 2022 10:50:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649267438; x=1680803438;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=X17Y4T8rB8Ztasx5yMthgbTjl9W6u1YVCq0voA7BqwQ=;
+  b=D1xHeazfaSe9JN/FtujFkaH6OJjW/DMAVMpuVgaLhtZsY2OF0pyTprbF
+   ZedE5Lj9gn3YreAiY1sf01Q/AquijCIGZSLmc4fsQsHz/sCs9nu267A7x
+   MEM6mxHZszursbhDDhMCrdBCDmOW6ljSHbLIU+qzpqYevctZcEWWfrtTT
+   KhSRsq5n5GbVGtvWXcDz+8qMcJZ5lHjvgalKGgilBqGl5cx4XnSH1KdkU
+   6xpNSkGnwGuKctXgzqneOK3ACVQ4ecmSPK2SYQKnQzW01sZoTwkz1jAw2
+   1xXmBafeDd13vQDcl2GIFQRpEk2i8TOYx6aoPgUdGcQpShMyhqJ1IVB9E
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="286089885"
+X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
+   d="scan'208";a="286089885"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 10:50:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
+   d="scan'208";a="608994166"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by fmsmga008.fm.intel.com with ESMTP; 06 Apr 2022 10:50:37 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 6 Apr 2022 10:50:37 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 6 Apr 2022 10:50:37 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.170)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 6 Apr 2022 10:50:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Sw6wLsj7f1ldMuI9LgZwDUlZxvpxl+ZCdsmx9/RJqLL/XjajWWlNWnhKnWYfxAmlRo+1hsigbGNhD3Z7J7wdaqKGoIFW5SqWxrH1YnxE6oPvEQdStq2jhP4bPLydpTFtE2c2TnFWXHHxZfXWBNTBpC4pl+rtVh+v/FKUkqzGN+mRSJiAQ3qs2GLQNT0bHIkAUuTlDaBnGIwg2ao5/jbvb+aTnU7TUD/um46HrZ6FNksHsyvO0271btlnYDksIxhaudKt1lQc7gc62nnZnRCXjqqUWMawkeK3/y0779BVRpH5ISbJLBNBlrFwBTPWmkNi9CPF8Nl4w6kr4OaFjHeudg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bL+Z1XzG5LVMutrhQtaFMhmws1jlmVyV942mKQOdl40=;
+ b=BGBOGaPFfAvVYveQxeAlhpM7L2jVLiKGNL7uhUyjn9rtjg8Z1LKpjnQfTBR01vHKEJKVr1ZjQBghvHAtnsxC1+k7wL1E4fvR70+iyPCs0ul9f3s5WyZUUdDX/nXy8oVHRtO9udaI8jwx0lZ34vHIEMNqB37JN+7Y0L3W+0J1OU/Cy/mMr3Z9sFHFEkurUncJQ1IdvMY5wB/ZjQV8rzv78ZaMw+W79j957t2jK3CvtzwSZTe4L9xmm2+zVQ4SEwmW9Wg4YH4BExGHnPB39+4s9SEDRiVMJupxJcXXQWjRsyjJbl7nz4/cuU26HcObMl6jdLym3DfVEvYNKyFCkSV+KA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
+ by DM6PR11MB4348.namprd11.prod.outlook.com (2603:10b6:5:1db::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 17:50:28 +0000
+Received: from BN0PR11MB5744.namprd11.prod.outlook.com
+ ([fe80::918d:6022:8ee6:3e36]) by BN0PR11MB5744.namprd11.prod.outlook.com
+ ([fe80::918d:6022:8ee6:3e36%2]) with mapi id 15.20.5144.021; Wed, 6 Apr 2022
+ 17:50:28 +0000
+Message-ID: <573970eb-f466-aad4-3808-fde5f3374e7c@intel.com>
+Date:   Wed, 6 Apr 2022 10:50:23 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH V3 19/30] x86/sgx: Free up EPC pages directly to support
+ large page ranges
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Dave Hansen <dave.hansen@intel.com>
+CC:     <dave.hansen@linux.intel.com>, <tglx@linutronix.de>,
+        <bp@alien8.de>, <luto@kernel.org>, <mingo@redhat.com>,
+        <linux-sgx@vger.kernel.org>, <x86@kernel.org>, <seanjc@google.com>,
+        <kai.huang@intel.com>, <cathy.zhang@intel.com>,
+        <cedric.xing@intel.com>, <haitao.huang@intel.com>,
+        <mark.shanahan@intel.com>, <hpa@zytor.com>,
+        <linux-kernel@vger.kernel.org>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+ <b3a17e1ce7bcd14db3c28903e8a97f094998ae74.1648847675.git.reinette.chatre@intel.com>
+ <Ykvrk4hYvBEnNOOl@kernel.org>
+ <e118f4c6-7216-15f3-2bda-3a5851b0bcb1@intel.com>
+ <f8d92685-27dd-e7ef-ce0d-100a285aec4b@intel.com>
+ <984834578beba18fa5b0196a0d9e4327dc22cf73.camel@kernel.org>
+From:   Reinette Chatre <reinette.chatre@intel.com>
+In-Reply-To: <984834578beba18fa5b0196a0d9e4327dc22cf73.camel@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MW3PR05CA0024.namprd05.prod.outlook.com
+ (2603:10b6:303:2b::29) To BN0PR11MB5744.namprd11.prod.outlook.com
+ (2603:10b6:408:166::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ff78001f-4643-4f67-a4b3-08da17f5efc2
+X-MS-TrafficTypeDiagnostic: DM6PR11MB4348:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <DM6PR11MB4348164AB1698180C699029AF8E79@DM6PR11MB4348.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ECP9x6ZnKaIPe3F7LRkPGjxnEekyaYDtXK0TK/KNAphwc50OUQiVhbWWvpmpvMqEUgyFFLh11engM60xubCKd113w8GkSaUFMQ2R0CMDexQSm6prAIbnssrLl1UQh2YbW4DMMQK7G5SL0FqxKIvkgIDQKZcUG1XuTXrWAjXqZFIr6ELVbT1sM6h2RmIqkiKXoMdfzzh4Q/42AoCoZOxUxqRv3Iw4IYWcCNWK4EUjzKSObtg7+Czu1BHKwAK6EIwm//u4xTuqhyqaYGJ9sohNXp4BsbOy5gvmrTg1cdMxxo1yOcqpZGhT49pEkzyEwGOts2xVQ1yv6Td5+E2Dtr6btiLO3akhw8t3BZIa0/juI4gB16sTMxCbfTNtpsdFLnHsV6vI8qN6UlxXbX7Wsoy1GCkSakGe+6slVvONnAAI2DZHQG88holfp+0cSwgvx73opF/3PTVr0o23EuIJO+ayDymFp1MVNIDg+Sf73hg3JqXeYPyNM+GqYeZNnyOXkZAUQ3r1ZzZB6huTTL6NmDTF5Mp8vPa0Yy6DFArP6X7xmMxyeH0Adt+2gCTKswLww57fYtvs8KLdo6/39Sc2+J6kVwx83ddUt+LNE8h9QoByiunw5DilsRjJ17SDU5Hh6+tDqFeilaqNXk1Z4/yyEXW5CPZ1815XvlSjc4C8y6ayU3b+VGUZRru94zHFut2xYixUjw+jnZvUNUcv68cmp02zJKiv5g75H8o/fvArMlQM7p+pm5CjLnP2m2jhX+ICX+L/
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR11MB5744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(6512007)(508600001)(316002)(31686004)(36756003)(6506007)(53546011)(6486002)(26005)(6636002)(110136005)(2616005)(7416002)(82960400001)(2906002)(31696002)(4326008)(66476007)(8676002)(83380400001)(66946007)(86362001)(44832011)(8936002)(38100700002)(6666004)(66556008)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?emZGY0hEMUNzQ1ByR0d4MGQyenBYMllucTBVanZsS3AzOGY3ZC9rVkJFZTNX?=
+ =?utf-8?B?dzlMbHlpcWNpazc5TUNkZkRBVGhpem5uYzRnczUzeXI0NFVIVnlKZnJTcmtm?=
+ =?utf-8?B?a01LRFVENFZSLzNDYTFjdGc3ZEQyWERRUFd4Z2piMmhhTjQzT2NocFFJK2ZN?=
+ =?utf-8?B?ckk5OUwwSnoxSittbGJuUGo1WkxMQVZ5TEZhckM5ZG9oRVBXcDhRcERVRUsw?=
+ =?utf-8?B?UEQ0NkZVejdRWWcxOTVHKzRGWWlTcGsyd3hTWG1rNFdVd3phVVFOMVlsT1Vn?=
+ =?utf-8?B?b2Y3dUVUZUJWWDNFUFVESTBPWEYzZ0tYSGVwcjNodzB1bEFOZmZ6SERGbHBB?=
+ =?utf-8?B?NEdENFNldmQ5RU1DNWNIRTEvR1diazFleW80Z1EzZGw2eWFtWVZtaHN6U0hN?=
+ =?utf-8?B?MGl0ZDhIUGlCZmZDTUc1akRJbHpzVFk5akFBcTg1Q2Uxb1N1amtwR2Z3TnR2?=
+ =?utf-8?B?TXN5cWtSWGZHYmFzWXFMUnI4YitHMGlsM2ZlVjZXZ2F1SXF4TWRjR3NnNjNW?=
+ =?utf-8?B?d3BOY29xUEpibys2MG82cER4dFdBb25uZTlUNHVwWXJta1ZNaUpMUmo1a0pm?=
+ =?utf-8?B?YlhvZ21kcTZpR1ZCdzdQeHlOR3REcVNObnZlRG5OUTBwcjcxZ1dKTUpJb1RJ?=
+ =?utf-8?B?cXY1aHBwWVp6MGQvMFN2UVFsbmxqRS9nNDRjZWE4eDZOVHRub2RmRFhhaHZo?=
+ =?utf-8?B?aFQvVTNHdFlzVSsrVnhMV1MvN3hxZFRrS3liVDBjb09GYU52OElTeWw2bXVp?=
+ =?utf-8?B?VzFjZ0NMOGhpWVNDc0dFckJuSmZXK21jMC9hdnk5QUxXUi9vSDhrWnhQQWdF?=
+ =?utf-8?B?K3hFbWsvTXc5VXZ1QWpTUnFRWVd1Nk41WC9kT3hlUGZFQTBLTFc1Y2FvUVdk?=
+ =?utf-8?B?K3V6SVBDZ3hQb1ZCSWF3TTBvbmZTOEhBOVlkTGkzUWtid0trU1JhM2s3WEcr?=
+ =?utf-8?B?ejlLbEE4MzREaU5WTUtXOWl3ZG1zWGpaS0NzeW52ZUgrNFpSS3QzN2ZOZTNL?=
+ =?utf-8?B?b3VZUVNvZGtDRnB1dGhjck5TbEV2djIvYzZSM3FJSHhaOG5PWU5uTzVDbUx2?=
+ =?utf-8?B?Q2QvL1I2Ri9FcGVxelpsNEp6WE41MlpncERTOWh2eVVLNjdCRklUcVhsWEY2?=
+ =?utf-8?B?cTZPTEdqNUpkZlVWKzJqZWhUN2NkR0FTOVNPV2dlYUptcDZoemhreDhCYmJG?=
+ =?utf-8?B?UllNbngxQWJjd0JJZ2pTM0V5dFZKUmxMcnBQQ3NwRGF2bCtVdm9Vb0p6YkVq?=
+ =?utf-8?B?aGNkMkRCSzVJaVVmZWtBdDRyQms2eTcyajZtcHU3U2NVTG9rc1BXTFR6YUlX?=
+ =?utf-8?B?ZnJoREhjZllTYjRWckgzaHBKZU9BUGdPUlZzL2NMN2pDQkZRa21xSmExL0pz?=
+ =?utf-8?B?QUNkWmV6YTg0dytSK21nYlBuTWxRZHEzZzlrRnQzSmdDL0FUS3lIbkdOZ29E?=
+ =?utf-8?B?Kzd3YTUyVTFTVGo1bnBOdW1COUJiVnBwWVV3KytTZk1rUEZaSGUvTDNjdTFP?=
+ =?utf-8?B?KzVGQU9aVmxZMlBzaHBFRnR4SU9FTjJmUFpaQ0IvaDBQQTY1eWpYS2lsU2Mz?=
+ =?utf-8?B?VE8rdDg2ekNBaDBHa0dJTTByekVqU1NxNlExUzJsZjNQaDI3emM2bnpCMzN4?=
+ =?utf-8?B?RkhWMVB4RVVXZ0ZJL04rYm5qUWZJaFhBZTFYWkJxQ1labG9yVE12aUk4UHNS?=
+ =?utf-8?B?S2xvY01FdTlQRzV1V3dhTlNyMEFibUZiaHQ0WGJnbWVITmw1YVljNWU1a01N?=
+ =?utf-8?B?V0JDdTh3bnRxTTNTRkR0aXpubTRsK3oxQVo5Vlcyb29jNktSTkVOdjM5YXpy?=
+ =?utf-8?B?SS91QUVxeU9hRVNLSlRtTmkxVWxqd0lwcGlsMFd5R01SR2RHYjE2cTMwUVBq?=
+ =?utf-8?B?U1ZUUS8vUTN1bnZ3cHBDQ0ZIa0ozTFNITFIyRXRSeWpPSjRvS3BIMmc2Q0Rm?=
+ =?utf-8?B?Q1N4enRsL09INmovdmhhZVdhOWtjc3BCMWlSallKWFFESUMyQWdqNFRSVVR4?=
+ =?utf-8?B?MWlIKytrcVN5ekVjYkdDR0NzdGpVNjR6Y1Q5bzRDZ25oREZ3TnlUTmFtY2gy?=
+ =?utf-8?B?STVzNUhibElRamFxQkRNeEg1cnRTUjdFUVFXZFI4Wk1US3BISzlPRytXU01z?=
+ =?utf-8?B?QkpWWVd1MGZ1amkwU2NSTytNbEdZcDE0RStZbkpJUXVtTzE0eVJYUUp4dkVW?=
+ =?utf-8?B?SmtmQ2NwT1lwNVdQWCtudHgvNmJDbE15RER2a1lMZUttQXpxL2pvS3VKWWZx?=
+ =?utf-8?B?QUh5Sy9aNHVTbnU3akJNNDQ3cll5d0p6elBsTTFBVUE5N1poYitiWWl5R2pV?=
+ =?utf-8?B?UDJMbVRKcGpSTjZBQUUxcmIvM1NMS01ucHRHWTNTbkNDWVBBa2NOSFpNNWRt?=
+ =?utf-8?Q?14dl51SgYNnN20qM=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff78001f-4643-4f67-a4b3-08da17f5efc2
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR11MB5744.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 17:50:28.5470
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7L1w/kMnkHT1040Uv+P801E7Ty8iKKh2x04MFe1eOc+Zoku4B9b2RbuI0AOi+m/gCh1A0hJdSuVQQPLb/m+zUYJ6JaNybyUdoN63N6ps/FA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4348
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Mark Brown (2022-04-06 10:27:44)
-> On Wed, Apr 06, 2022 at 10:21:01AM -0700, Stephen Boyd wrote:
-> > Quoting Mark Brown (2022-04-06 09:36:14)
-> > > On Wed, Apr 06, 2022 at 08:51:48AM -0700, Stephen Boyd wrote:
->
-> > > > My guess is that this is one IC that responds to multiple i2c addresses.
-> > > > The "main" qcom,pm8008 address is 0x8 and that supports things like
-> > > > interrupts. Then there's an address for regulators at 0x9 which controls
-> > > > the handful of LDOs on the PMIC.
->
-> > > So it's like the TI TWL4030 and Palmas - in which case it should
-> > > probably be handled similarly?
->
-> > How did those work out? I wasn't involved and I don't know what you
-> > mean. Do they have multiple i2c addresses they respond to?
->
-> Yes, exactly.  The main device uses i2c_new_dummy_device() to
-> instantiate the extras when it probes.  See twl-core.c
+Hi Jarkko,
 
-Cool. That approach sounds good to me. Then the regulators can be child
-nodes of the qcom,pm8008 node at i2c address 0x8? It still feels like
-making a struct driver for each regulator node is overkill and will
-waste memory.
+On 4/5/2022 11:35 PM, Jarkko Sakkinen wrote:
+> On Tue, 2022-04-05 at 10:25 -0700, Dave Hansen wrote:
+>> On 4/5/22 10:13, Reinette Chatre wrote:
+>>>>> +void sgx_direct_reclaim(void)
+>>>>> +{
+>>>>> +       if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
+>>>>> +               sgx_reclaim_pages();
+>>>>> +}
+>>>> Please, instead open code this to both locations - not enough redundancy
+>>>> to be worth of new function. Causes only unnecessary cross-referencing
+>>>> when maintaining. Otherwise, I agree with the idea.
+>>>>
+>>> hmmm, that means the heart of the reclaimer (sgx_reclaim_pages()) would be
+>>> made available for direct use from everywhere in the driver. I will look into this.
+>>
+>> I like the change.  It's not about reducing code redundancy, it's about
+>> *describing* what the code does.  Each location could have:
+>>
+>>         /* Enter direct SGX reclaim: */
+>>         if (sgx_should_reclaim(SGX_NR_LOW_PAGES))
+>>                 sgx_reclaim_pages();
+>>
+>> Or, it could just be:
+>>
+>>         sgx_direct_reclaim();
+>>
+>> Which also provides a logical choke point to add comments, like:
+>>
+>> /*
+>>  * sgx_direct_reclaim() should be called in locations where SGX
+>>  * memory resources might be low and might be needed in order
+>>  * to make forward progress.
+>>  */
+>> void sgx_direct_reclaim(void)
+>> {
+>>         ...
+> 
+> Maybe cutting hairs but could it be "sgx_reclaim_direct"? Rationale
+> is easier grepping of reclaimer functions, e.g. when tracing.
 
->
-> >
-> > > Note that the original sumbission was
-> > > *also* a MFD subfunction, but using a DT compatible to match the
-> > > platform device - this is the first I've heard of this being a separate
-> > > I2C function.
->
-> > I'm mainly looking at the dts file now. It clearly has two i2c devices
-> > at 0x8 and 0x9. Maybe the regulator driver followed the mfd design
-> > because the first driver for this device is an mfd.
->
-> I'm guessing from the naming that they're also externally described as
-> the same device - presumably it's two dies shoved together in the same
-> package for some reason without being otherwise joined up.  Is the
-> second device geniunely regulators only or does it have anything else
-> bundled in there?
+Sure, will do.
 
-I think it's regulators only. Pretty sure I asked qcom this a round or
-two ago on this patch series and they said that. Let's wait for Satya to
-respond.
+This may not help grepping all reclaimer functions though since
+the code is not consistent in this regard.
+
+Reinette
