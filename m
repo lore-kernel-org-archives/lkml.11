@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3595C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232298AbiDFNK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32822 "EHLO
+        id S232635AbiDFNKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232515AbiDFNKF (ORCPT
+        with ESMTP id S232648AbiDFNKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:10:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1442300A8;
-        Tue,  5 Apr 2022 19:31:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6799DB80EEB;
-        Wed,  6 Apr 2022 02:31:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92DAAC385A4;
-        Wed,  6 Apr 2022 02:31:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649212300;
-        bh=f5hf7D5TOW99iCnwO8kt6lFjR6zeUwXI7tLm2to12Qo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A+0wVCvFuyDGt9jDtBmmeUHHtOs4eMMxrROWP8voKqq9/5n9bVhy1nR5JnT0Tu9ue
-         NihknhiDf8bs9x8ouLFYDNZM0ki3+RoegUSj1Y1hNom9q5DgolipUBaA7Nz59JswNK
-         m4UXP6gyZOrjoAcA22v8+obrSs93/5IBvSuqi3y15QeBjlnXcZ0HYAVhy0jiBEUBeb
-         RJ7snLY3RS3JFoEpkQXgVVMVJgDFwqCi+j9oC206Ql/4/rgzt/rsq6iXYxepex3YbA
-         HT8PsRsvbxlKai2UHs5BYItHx8JyytVt6S7BdVHbUKmcYpBG5Gp9i+Yruu5UjksmrL
-         M0JJBIZ3WzGrg==
-Date:   Wed, 6 Apr 2022 11:31:35 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH v7 3/4] bootconfig: Support embedding a bootconfig file
- in kernel
-Message-Id: <20220406113135.ce40e165654dbafcb78f980f@kernel.org>
-In-Reply-To: <20220405110243.21cdee07@gandalf.local.home>
-References: <164871505771.178991.7870442736805590948.stgit@devnote2>
-        <164871509158.178991.12705786877340857725.stgit@devnote2>
-        <20220405235548.38344aba5a7fcb059924c367@kernel.org>
-        <20220405110243.21cdee07@gandalf.local.home>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Wed, 6 Apr 2022 09:10:14 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FDE2BFC1B
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:39:55 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KY7y7322fzdZTR;
+        Wed,  6 Apr 2022 10:39:27 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 10:39:53 +0800
+Subject: Re: [PATCH] filemap: remove obsolete comment in lock_page
+To:     Matthew Wilcox <willy@infradead.org>
+CC:     <akpm@linux-foundation.org>, <dhowells@redhat.com>,
+        <william.kucharski@oracle.com>, <vbabka@suse.cz>,
+        <kirill.shutemov@linux.intel.com>, <hannes@cmpxchg.org>,
+        <agruenba@redhat.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220402062218.30709-1-linmiaohe@huawei.com>
+ <YksPkskcR6AdMaZf@casper.infradead.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <c728cb4c-6a87-94b6-b087-bbf2b55af35c@huawei.com>
+Date:   Wed, 6 Apr 2022 10:39:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <YksPkskcR6AdMaZf@casper.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 11:02:43 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On 2022/4/4 23:32, Matthew Wilcox wrote:
+> On Sat, Apr 02, 2022 at 02:22:18PM +0800, Miaohe Lin wrote:
+>> lock_page needs the caller to have a reference on the page->mapping inode
+>> due to sync_page. Also lock_page_nosync is introduced which does not do a
+>> sync_page via commit db37648cd6ce ("[PATCH] mm: non syncing lock_page()").
+>> But commit 7eaceaccab5f ("block: remove per-queue plugging") kills off the
+>> old plugging along with aops->sync_page() and lock_page_nosync. So there
+>> is no need to have a reference on the page->mapping inode when calling
+>> lock_page anymore. Remove this obsolete and confusing comment.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> 
+> Thanks.  I'll fix up the changelog (some of the tenses are a little
+> strange) and take this through my pagecache tree.
 
-> On Tue, 5 Apr 2022 23:55:48 +0900
-> Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> 
-> > Have you already picked this series?
-> 
-> No I haven't. I do not add any patches until after the merge window, which
-> just ended Sunday.
-> 
-> > 
-> > Actually, kernel test robot reported an issue in this patch today.
-> > Here is the patch. Should I send v8 including this?
-> 
-> Yes, please send a v8.
-
-OK, thanks for the confirmation!
-Let me send v8.
-
-Thanks!
+Many thanks for doing this. :)
 
 > 
-> Thanks!
+>>  include/linux/pagemap.h | 3 ---
+>>  1 file changed, 3 deletions(-)
+>>
+>> diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+>> index 993994cd943a..8dfe8e49c427 100644
+>> --- a/include/linux/pagemap.h
+>> +++ b/include/linux/pagemap.h
+>> @@ -908,9 +908,6 @@ static inline void folio_lock(struct folio *folio)
+>>  		__folio_lock(folio);
+>>  }
+>>  
+>> -/*
+>> - * lock_page may only be called if we have the page's inode pinned.
+>> - */
+>>  static inline void lock_page(struct page *page)
+>>  {
+>>  	struct folio *folio;
+>> -- 
+>> 2.23.0
+>>
 > 
-> -- Steve
+> .
+> 
 
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
