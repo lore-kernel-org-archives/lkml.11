@@ -2,106 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E24AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE8A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238138AbiDFQyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
+        id S238147AbiDFQy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238049AbiDFQyY (ORCPT
+        with ESMTP id S238339AbiDFQya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:54:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0688945CFC1
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:18:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649254705;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ODOVaz/edmhBMoEaKgg2w+ntcwg87Ta6yU5ilJ/7uSY=;
-        b=hAJblArK92wXhIjvmcbOlhTB6zUXxNJdaR0/p3Kz9ZCXCMKbBGAVMMCWsusvz8qK7luAAL
-        v1S1RXlC0S646SVRqHGYamDwMNKZfW9EzcPVpn2PI6nd0yZq+4M2BNNqU2QyKXF4hEf6RK
-        E4/Lok9hgN0tBcTA/rouZ9aGfenmkiY=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-377-vj0khCuwOVaN4szukj7f8A-1; Wed, 06 Apr 2022 10:18:24 -0400
-X-MC-Unique: vj0khCuwOVaN4szukj7f8A-1
-Received: by mail-qv1-f69.google.com with SMTP id im8-20020a056214246800b00443d3d3956dso3574338qvb.22
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:18:24 -0700 (PDT)
+        Wed, 6 Apr 2022 12:54:30 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3743C2A9138
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:56:27 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id z12so4522757lfu.10
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:56:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=nNVtA40oQHM0eOGId5yNo8xiVPzOWuJpNkMLS3feFc0=;
+        b=muU3faxErilQjUnsrCmgyj60U8GEHYstiuZuK2DRn5NgDG38ZnUH2qyP1UUrECX3MF
+         WmBZi7gaaPPLqwNdDPrVdXTcSmplJbHbgh7dAwcBtWX/0PB/R1FtVVWyWeWGBEqa2Dt5
+         qG4ww8t31zd7uK0muC6tgclP5/Yb4MErHKHGy57IcxecvvLTVwjgGdDoiLVwREVFUg9y
+         qj1fZR5zwQOmSapyD6wZHha26vwyKIvj3KzYUIgFb7ngPFmjjjKsN5wjhp8rBli8wxn+
+         jMiEj/l4Z+MHIARTLbk5ZzOTCR0hyNkQdkDS6V8wfPzPaiK3cfJ0Y6mz+zyOLTdp3QSo
+         2ovA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=ODOVaz/edmhBMoEaKgg2w+ntcwg87Ta6yU5ilJ/7uSY=;
-        b=6B/SFyQdbJYU35TA1G8AvLMKa/Xhk8gy/J2XPqLfXFSauSdEkLPCEpM9Spj4RoAwNV
-         ZMtcoHJs6Na6DrCJqh2Bqsbhhr1vr7NzsUd41b0o49Qrz2VOl2w8VeDuGpakDETC71/r
-         6E+1L1tzSJcAtUElLytFsZRphBve05OUoD9sfOwbSYcmkCBpFW2f0OsdOnQ+1jjrmzjo
-         LFMNU3/iDtNfezS8D5FyWNR4CQk+ogQ9cdFU//MAvPK2RqGxlH8MB9DKjDerT/N6Ggo6
-         CjZWctBx0ocFI7gXTiqIlrytGQAKqWxWq1GN+JV3GG74XUxbA0vVIZgRD4R87dxCtuh+
-         dp7g==
-X-Gm-Message-State: AOAM530WIWzI4KuMKKiDkHn4H90sy8z/vNR9I9YXG9gavkOd8hFPJmKP
-        xLJeACPXOuRBrwwToGhK38I6MEMq5B+/pp2dpMVD+v2fqiB9eE21yR+NW09ItOgS/EmKI0Bundd
-        uvOVKHggMVnS2kShK0bcSblr1XHqYLrdRHp8+vb4g/l47VELE8UCp3H9ckJbaNFj6PHu4Tas=
-X-Received: by 2002:ad4:5b8f:0:b0:443:5663:12ad with SMTP id 15-20020ad45b8f000000b00443566312admr7625119qvp.93.1649254703934;
-        Wed, 06 Apr 2022 07:18:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz5Ek+S4hfi61dB9TIY5eREbgIsa4+FJaeRcA2oPQoc6YVwJZraRCwA7foiQ+eI3V9hRLSlOQ==
-X-Received: by 2002:ad4:5b8f:0:b0:443:5663:12ad with SMTP id 15-20020ad45b8f000000b00443566312admr7625091qvp.93.1649254703704;
-        Wed, 06 Apr 2022 07:18:23 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id a6-20020ae9e806000000b0067ba5a8a2a7sm9427968qkg.134.2022.04.06.07.18.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 07:18:23 -0700 (PDT)
-Subject: Re: [PATCH] fpga: altera-pr-ip: fix unsigned comparison with less
- than zero
-To:     Marco Pagani <marpagan@redhat.com>,
-        Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
-        Xu Yilun <yilun.xu@intel.com>
-Cc:     linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220405185349.220607-1-marpagan@redhat.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <d39cdc4c-0dc5-f929-17fa-ffbaf9e767c7@redhat.com>
-Date:   Wed, 6 Apr 2022 07:18:21 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=nNVtA40oQHM0eOGId5yNo8xiVPzOWuJpNkMLS3feFc0=;
+        b=6E8rtNMWLY+Q0O8vu1HExVJInnQetjVLArqhV4BnPVqG+THPNRQN18tNRopGt1JKm8
+         wgGfeIUICe23R8EWGRpc1hFWNikcF95FU3Uog7f4y9zB3vghhO7W2bWGd7l2k2eAlh3z
+         /KA6ql6D2nKm3Vbl7/2dby8vstIwhwJaPiDoJXUwg+gFvOa3I7hbWwBk/fDy9A3p8xKC
+         +emkYfZnEtWpk8NJof+FnZyHcxWQ8TTnl2daN3vQlJRZG4twU0dogqq2UNwLsK1QXU1Z
+         b2GovUq/vXaGrQteAmmspwozxv4TFRn+xNlXR4rb3yKlEfhfP3OaoGhPxw2IfRPrRhXC
+         LMKQ==
+X-Gm-Message-State: AOAM532QW7DbRsLWAf4IXDOrgzuV11+HgP7t8ShPmqqxRX5weN11iKVw
+        yV7FrP3FbQlCzHCWQ6Zk6jedVxy42ULAfcyZrJNzhQ==
+X-Google-Smtp-Source: ABdhPJzKPggqZccGIT2HfZeUDHW9yOnVHP5ILJl0MafomwBwwOiE+fVEx0WmfbRtpslMc/dD7zdERcTgRqXSNkmI4QM=
+X-Received: by 2002:a05:6512:c0c:b0:44a:6865:860a with SMTP id
+ z12-20020a0565120c0c00b0044a6865860amr5978705lfu.71.1649256985512; Wed, 06
+ Apr 2022 07:56:25 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220405185349.220607-1-marpagan@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20c6efa9a4c7423bbfb9352705c4a53a@hyperstone.com>
+In-Reply-To: <20c6efa9a4c7423bbfb9352705c4a53a@hyperstone.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 6 Apr 2022 16:55:49 +0200
+Message-ID: <CAPDyKFod9iFyOAByt3C1G4qxvDYGOk7xsSqi0+Yh+W43eDZKxw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] mmc: mmc_spi: parse speed mode options
+To:     =?UTF-8?Q?Christian_L=C3=B6hle?= <CLoehle@hyperstone.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "digetx@gmail.com" <digetx@gmail.com>,
+        "avri.altman@wdc.com" <avri.altman@wdc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 4/5/22 11:53 AM, Marco Pagani wrote:
-> Fix the "comparison with less than zero" warning reported by
-> cppcheck for the unsigned (size_t) parameter "count" of the
-> "alt_pr_fpga_write()" function.
+On Thu, 31 Mar 2022 at 09:28, Christian L=C3=B6hle <CLoehle@hyperstone.com>=
+ wrote:
 >
-> Signed-off-by: Marco Pagani <marpagan@redhat.com>
+> Since SD and MMC Highspeed modes are also valid for SPI let's parse
+> them too.
+>
+> Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+
+Applied for next, thanks!
+
+Kind regards
+Uffe
+
+
 > ---
->   drivers/fpga/altera-pr-ip-core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/mmc/host/of_mmc_spi.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 >
-> diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
-> index be0667968d33..2ff3d8e46a0c 100644
-> --- a/drivers/fpga/altera-pr-ip-core.c
-> +++ b/drivers/fpga/altera-pr-ip-core.c
-> @@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
->   	u32 *buffer_32 = (u32 *)buf;
->   	size_t i = 0;
->   
-> -	if (count <= 0)
-> +	if (count == 0)
->   		return -EINVAL;
-
-Reviewed-by: Tom Rix <trix@redhat.com>
-
->   
->   	/* Write out the complete 32-bit chunks */
-
+> diff --git a/drivers/mmc/host/of_mmc_spi.c b/drivers/mmc/host/of_mmc_spi.=
+c
+> index 3629550528b6..bf54776fb26c 100644
+> --- a/drivers/mmc/host/of_mmc_spi.c
+> +++ b/drivers/mmc/host/of_mmc_spi.c
+> @@ -70,6 +70,10 @@ struct mmc_spi_platform_data *mmc_spi_get_pdata(struct=
+ spi_device *spi)
+>         } else {
+>                 oms->pdata.caps |=3D MMC_CAP_NEEDS_POLL;
+>         }
+> +       if (device_property_read_bool(dev, "cap-sd-highspeed"))
+> +               oms->pdata.caps |=3D MMC_CAP_SD_HIGHSPEED;
+> +       if (device_property_read_bool(dev, "cap-mmc-highspeed"))
+> +               oms->pdata.caps |=3D MMC_CAP_MMC_HIGHSPEED;
+>
+>         dev->platform_data =3D &oms->pdata;
+>         return dev->platform_data;
+> --
+> 2.34.1
+> Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
+> Managing Director: Dr. Jan Peter Berns.
+> Commercial register of local courts: Freiburg HRB381782
+>
