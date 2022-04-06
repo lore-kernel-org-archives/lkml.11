@@ -2,177 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B23EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F70CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236694AbiDFPtY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        id S236708AbiDFPtb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237334AbiDFPsV (ORCPT
+        with ESMTP id S236424AbiDFPs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:48:21 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8DD4781C6;
-        Wed,  6 Apr 2022 06:07:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649250471; x=1680786471;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=IHd+NLZREeqx4UE9sFXsjEcbaAa5I96BAyNN4S3AmjU=;
-  b=YZTlJeQKqCxXfv/XAIX0fTwLZERgAnJvWUJ/K04tRhhYR6osg8bNvk5u
-   7rQKlvhd+1OKPifbNuw3+Tg4quji5ki7GWXZ5rt1o2rBBaG90CthVGwaR
-   5rFep5dp8ePPh8jwn7OhlEqNi/kBWi5UtGY3fv/nh+JN4GQ7uLm/Ct/v6
-   c=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 06 Apr 2022 04:38:31 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 04:38:31 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 6 Apr 2022 04:38:30 -0700
-Received: from [10.216.29.113] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Apr 2022
- 04:38:25 -0700
-Message-ID: <d23b7674-214f-10f4-d669-5de32c82152f@quicinc.com>
-Date:   Wed, 6 Apr 2022 17:08:19 +0530
+        Wed, 6 Apr 2022 11:48:27 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719434961DE;
+        Wed,  6 Apr 2022 06:09:31 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 1B58C210F4;
+        Wed,  6 Apr 2022 13:08:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649250535;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ny6SkW/jjvFpcVUGJahdGz/N3Zi6Zn73i10e9D2Lh3E=;
+        b=UZlmD6C1rcVd7c9TYRt/MA0lDF47JspYw//BPhBSRvqyAnMd4a3lIiZ4eizQW9DFdw/MHF
+        1dWIeP+32cmwnnlMnyAgHZDmH0NzATbB6x2tf2x2b3ag10oCI9XF2FAx26O0dmeSq2S0Oo
+        nCF+YTvEuyLdMC6V7+atUIVQr7+R+HQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649250535;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ny6SkW/jjvFpcVUGJahdGz/N3Zi6Zn73i10e9D2Lh3E=;
+        b=85Vj1nlNdiZXDGccmK9QqluymfR/owT8jdecNZDrZ/7Xncs1RHkrzEnpmk5uyyEvqjRY7E
+        BtKfJojqA68BCgCA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id C6AD5A3B83;
+        Wed,  6 Apr 2022 13:08:54 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 32AB9DA80E; Wed,  6 Apr 2022 15:04:53 +0200 (CEST)
+Date:   Wed, 6 Apr 2022 15:04:53 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     cgel.zte@gmail.com
+Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] Btrfs: remove redundant judgment
+Message-ID: <20220406130453.GB15609@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, cgel.zte@gmail.com, clm@fb.com,
+        josef@toxicpanda.com, dsterba@suse.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220406090404.2488787-1-lv.ruyi@zte.com.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH V1 3/3] rpmsg: glink: Add lock for ctrl device
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <swboyd@chromium.org>, <quic_clew@quicinc.com>,
-        <mathieu.poirier@linaro.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>,
-        "Ohad Ben-Cohen" <ohad@wizery.com>
-References: <1643223886-28170-1-git-send-email-quic_deesin@quicinc.com>
- <1643223886-28170-4-git-send-email-quic_deesin@quicinc.com>
- <Yiu3Fl/Diw5iqh24@builder.lan>
-From:   Deepak Kumar Singh <quic_deesin@quicinc.com>
-In-Reply-To: <Yiu3Fl/Diw5iqh24@builder.lan>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406090404.2488787-1-lv.ruyi@zte.com.cn>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Apr 06, 2022 at 09:04:04AM +0000, cgel.zte@gmail.com wrote:
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+> 
+> iput() has already handled null and non-null parameter. so there is no
+> need to use if().
 
-On 3/12/2022 2:24 AM, Bjorn Andersson wrote:
-> On Wed 26 Jan 13:04 CST 2022, Deepak Kumar Singh wrote:
->
->> Race between rpmsg_eptdev_create and rpmsg_chrdev_remove
->> can sometime casue crash while accessing rpdev while new
->> endpoint is being created. Using lock ensure no new eptdev
->> is created after rpmsg_chrdev_remove has been completed.
-> This patch lacks a Signed-off-by.
-I will correct that in next patch.
-> Isn't this solving the same problem as the previous patch? Would be nice
-> with some more specifics on the race that you're seeing.
->
-> Thanks,
-> Bjorn
-
-Issue was observed after having patch 2, in reboot test case.
-
-Here observation was, user space daemon was able to create rpmsg0 device 
-through
-
-ctrl device and it was in process of rpmsg_eptdev_create() but as such 
-ept creation was not yet done.
-
-At the same time rpmsg_chrdev_remove() call happened which caused ctrl 
-device to be freed.
-
-backtrace of crash -
-
-rpmsg_create_ept+0x40/0xa0
-rpmsg_eptdev_open+0x88/0x138
-chrdev_open+0xc4/0x1c8
-do_dentry_open+0x230/0x378
-vfs_open+0x3c/0x48
-path_openat+0x93c/0xa78
-do_filp_open+0x98/0x118
-do_sys_openat2+0x90/0x220
-do_sys_open+0x64/0x8c
-
->> ---
->>   drivers/rpmsg/rpmsg_char.c | 11 ++++++++++-
->>   1 file changed, 10 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
->> index 2108ef8..3e5b85d 100644
->> --- a/drivers/rpmsg/rpmsg_char.c
->> +++ b/drivers/rpmsg/rpmsg_char.c
->> @@ -27,6 +27,7 @@
->>   
->>   static dev_t rpmsg_major;
->>   static struct class *rpmsg_class;
->> +struct mutex ctrl_lock;
->>   
->>   static DEFINE_IDA(rpmsg_ctrl_ida);
->>   static DEFINE_IDA(rpmsg_ept_ida);
->> @@ -396,9 +397,12 @@ static int rpmsg_eptdev_create(struct rpmsg_ctrldev *ctrldev,
->>   	struct device *dev;
->>   	int ret;
->>   
->> +	mutex_lock(&ctrl_lock);
->>   	eptdev = kzalloc(sizeof(*eptdev), GFP_KERNEL);
->> -	if (!eptdev)
->> +	if (!eptdev) {
->> +		mutex_unlock(&ctrl_lock);
->>   		return -ENOMEM;
->> +	}
->>   
->>   	dev = &eptdev->dev;
->>   	eptdev->rpdev = rpdev;
->> @@ -443,6 +447,7 @@ static int rpmsg_eptdev_create(struct rpmsg_ctrldev *ctrldev,
->>   		put_device(dev);
->>   	}
->>   
->> +	mutex_unlock(&ctrl_lock);
->>   	return ret;
->>   
->>   free_ept_ida:
->> @@ -453,6 +458,7 @@ static int rpmsg_eptdev_create(struct rpmsg_ctrldev *ctrldev,
->>   	put_device(dev);
->>   	kfree(eptdev);
->>   
->> +	mutex_unlock(&ctrl_lock);
->>   	return ret;
->>   }
->>   
->> @@ -525,6 +531,7 @@ static int rpmsg_chrdev_probe(struct rpmsg_device *rpdev)
->>   	if (!ctrldev)
->>   		return -ENOMEM;
->>   
->> +	mutex_init(&ctrl_lock);
->>   	ctrldev->rpdev = rpdev;
->>   
->>   	dev = &ctrldev->dev;
->> @@ -581,12 +588,14 @@ static void rpmsg_chrdev_remove(struct rpmsg_device *rpdev)
->>   	int ret;
->>   
->>   	/* Destroy all endpoints */
->> +	mutex_lock(&ctrl_lock);
->>   	ret = device_for_each_child(&ctrldev->dev, NULL, rpmsg_eptdev_destroy);
->>   	if (ret)
->>   		dev_warn(&rpdev->dev, "failed to nuke endpoints: %d\n", ret);
->>   
->>   	device_del(&ctrldev->dev);
->>   	put_device(&ctrldev->dev);
->> +	mutex_unlock(&ctrl_lock);
->>   }
->>   
->>   static struct rpmsg_driver rpmsg_chrdev_driver = {
->> -- 
->> 2.7.4
->>
+Ok, we can drop the check, have you looked if there are more similar
+places to update?
