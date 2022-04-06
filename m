@@ -2,88 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7051CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237895AbiDFQg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
+        id S237979AbiDFQiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237859AbiDFQgq (ORCPT
+        with ESMTP id S239021AbiDFQid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:36:46 -0400
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADA22438E7;
-        Wed,  6 Apr 2022 08:07:58 -0700 (PDT)
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.95)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1nc7GD-002kvz-Sv; Wed, 06 Apr 2022 17:07:53 +0200
-Received: from suse-laptop.physik.fu-berlin.de ([160.45.32.140])
-          by inpost2.zedat.fu-berlin.de (Exim 4.95)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_128_GCM_SHA256
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1nc7GD-0008j8-NA; Wed, 06 Apr 2022 17:07:53 +0200
-Message-ID: <aeb1fa60-ba95-9f0e-3f00-ab2bb40a7464@physik.fu-berlin.de>
-Date:   Wed, 6 Apr 2022 17:07:53 +0200
+        Wed, 6 Apr 2022 12:38:33 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4390230F0E7;
+        Wed,  6 Apr 2022 06:57:38 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-df22f50e0cso2977270fac.3;
+        Wed, 06 Apr 2022 06:57:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IoTrH399V4w8zNS3hx92QeecL6aapQBwIZRVFzEFkyA=;
+        b=AydhoGsNhOvR4qLXcmo7wICq+phpgbjf0Q0ePxytNG8olancLb3uKb+bWozUGzKkgN
+         nRztUoqOIPks9vpQyUZMXQaUMzCJvPGV+rVpzlNGr9vlj7TJSSmNZxMRN1s72KhwtXf+
+         6qw8nl2DIsPqkp+wOhH2TEpmQ08V0IMj9xViNzdVd6GpW+EyzjYJCAPpMJcx5kyozDZc
+         CLaDnaMYcuOa5axlWCp/P2osbxAPt2BsDoAwTmZ8b4wZaEvTZi7ozfyx9mxG9LWmvFVp
+         PyW7SICCjoqU71MQNdHZ1stDFxSsmcIs00hR+A/op8HQwOn1t9hzHrl3viOUT87Sptis
+         v5rw==
+X-Gm-Message-State: AOAM5329/G1rcUEBlq5M+rP4da0YN4hXhkW9RJtlrwtP5yghDG2BXQpq
+        MkmquYTfvx4p8u3jZ6gdiA==
+X-Google-Smtp-Source: ABdhPJyVkLh7kt44PDdY781513MiisiGrnzUUrMoGmsbykheJJX4LewN7PtkNvDUojOPiN2cC9nuCg==
+X-Received: by 2002:a05:6870:51cc:b0:e1:e6ee:448f with SMTP id b12-20020a05687051cc00b000e1e6ee448fmr3880243oaj.136.1649253457860;
+        Wed, 06 Apr 2022 06:57:37 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id el17-20020a056870f69100b000de9672ac3csm6478072oab.52.2022.04.06.06.57.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 06:57:37 -0700 (PDT)
+Received: (nullmailer pid 2155527 invoked by uid 1000);
+        Wed, 06 Apr 2022 13:57:35 -0000
+Date:   Wed, 6 Apr 2022 08:57:35 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        linux-renesas-soc@vger.kernel.org,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [RFC PATCH] of/platform: Drop static setup of IRQ resource from
+ DT core
+Message-ID: <Yk2cTwmYqAZf4sCz@robh.at.kernel.org>
+References: <20220316200633.28974-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v15 4/5] clocksource/drivers: Add a goldfish-timer
- clocksource
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Laurent Vivier <laurent@vivier.eu>,
-        linux-kernel@vger.kernel.org
-Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-rtc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Stultz <john.stultz@linaro.org>
-References: <20220310090048.1933020-1-laurent@vivier.eu>
- <20220310090048.1933020-5-laurent@vivier.eu>
- <b9a53a99-55ac-3f23-c87c-9827dd76239b@linaro.org>
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-In-Reply-To: <b9a53a99-55ac-3f23-c87c-9827dd76239b@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-Originating-IP: 160.45.32.140
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220316200633.28974-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/6/22 13:32, Daniel Lezcano wrote:
-> On 10/03/2022 10:00, Laurent Vivier wrote:
->> Add a clocksource based on the goldfish-rtc device.
->>
->> Move the timer register definition to <clocksource/timer-goldfish.h>
->>
->> This kernel implementation is based on the QEMU upstream implementation:
->>
->>     https://git.qemu.org/?p=qemu.git;a=blob_plain;f=hw/rtc/goldfish_rtc.c
->>
->> goldfish-timer is a high-precision signed 64-bit nanosecond timer.
->> It is part of the 'goldfish' virtual hardware platform used to run
->> some emulated Android systems under QEMU.
->> This timer only supports oneshot event.
->>
->> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+On Wed, Mar 16, 2022 at 08:06:33PM +0000, Lad Prabhakar wrote:
+> Now that all the DT drivers have switched to platform_get_irq() we can now
+> safely drop the static setup of IRQ resource from DT core code.
 > 
-> Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> With the above change hierarchical setup of irq domains is no longer
+> bypassed and thus allowing hierarchical interrupt domains to describe
+> interrupts using "interrupts" DT property.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> Hi All,
+> 
+> Sending this as RFC as couple of more drivers need to hit -rc yet with
+> the platform_get_irq() change while that is in progress I wanted to get
+> some feedback on this patch.
 
-Cool \o/
+I've applied this now and it is in today's linux-next. Keep an eye out 
+for any regression reports. There's one for i.MX8 in kernel-ci, but I 
+don't think it is related.
 
--- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer - glaubitz@debian.org
-`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
-
+Rob
