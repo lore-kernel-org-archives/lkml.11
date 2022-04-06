@@ -2,202 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85210C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A307AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231607AbiDFMOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
+        id S231904AbiDFMOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiDFMNy (ORCPT
+        with ESMTP id S232278AbiDFMMI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:13:54 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C56E42540C;
-        Wed,  6 Apr 2022 00:56:20 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R781e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9L1BIW_1649231775;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9L1BIW_1649231775)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 15:56:16 +0800
-From:   Jeffle Xu <jefflexu@linux.alibaba.com>
-To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org
-Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-Subject: [PATCH v8 02/20] cachefiles: extract write routine
-Date:   Wed,  6 Apr 2022 15:55:54 +0800
-Message-Id: <20220406075612.60298-3-jefflexu@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
-References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
+        Wed, 6 Apr 2022 08:12:08 -0400
+X-Greylist: delayed 3607 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Apr 2022 20:38:54 PDT
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A74F2354D2D
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:38:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=cBzQY
+        bALC2Ft4VBebUDpTOM6eZy0ea20UFYYZFAlbxg=; b=Ue82tJbY8gIXtkv7iVep0
+        E2NOmACflFjlZXfTmk8SeiJDQnpOuN4f4JCdhhXFdgaSlJDHg4sgrbAS8qCWRF4s
+        eeM+qiYHZHZxSckG7kBLk+9Mgf52YZHH1OvaJvz+8JNnCZS037AbSb2Is6IQX7Fk
+        RzV8bnQr+dgsS4ydUQcRWo=
+Received: from localhost.localdomain (unknown [39.99.236.58])
+        by smtp3 (Coremail) with SMTP id DcmowAAXHV229Uxi5SFMAQ--.31622S2;
+        Wed, 06 Apr 2022 10:06:46 +0800 (CST)
+From:   Hongbin Wang <wh_bin@126.com>
+To:     davem@davemloft.net
+Cc:     yoshfuji@linux-ipv6.org, sahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ip6_tunnel: Remove duplicate assignments
+Date:   Tue,  5 Apr 2022 22:06:34 -0400
+Message-Id: <20220406020634.72995-1-wh_bin@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcmowAAXHV229Uxi5SFMAQ--.31622S2
+X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUU8529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxU7nNVDUUUU
+X-Originating-IP: [39.99.236.58]
+X-CM-SenderInfo: xzkbuxbq6rjloofrz/1tbiGBbaolpEGNmrIwAAsh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extract the generic routine of writing data to cache files, and make it
-generally available.
+There is a same action when the variable is initialized
 
-This will be used by the following patch implementing on-demand read
-mode. Since it's called inside cachefiles module in this case, make the
-interface generic and unrelated to netfs_cache_resources.
-
-It is worth nothing that, ki->inval_counter is not initialized after
-this cleanup. It shall not make any visible difference, since
-inval_counter is no longer used in the write completion routine, i.e.
-cachefiles_write_complete().
-
-Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Signed-off-by: Hongbin Wang <wh_bin@126.com>
 ---
- fs/cachefiles/internal.h | 10 +++++++
- fs/cachefiles/io.c       | 61 +++++++++++++++++++++++-----------------
- 2 files changed, 45 insertions(+), 26 deletions(-)
+ net/ipv6/ip6_tunnel.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
-index c793d33b0224..e80673d0ab97 100644
---- a/fs/cachefiles/internal.h
-+++ b/fs/cachefiles/internal.h
-@@ -201,6 +201,16 @@ extern void cachefiles_put_object(struct cachefiles_object *object,
-  */
- extern bool cachefiles_begin_operation(struct netfs_cache_resources *cres,
- 				       enum fscache_want_state want_state);
-+extern int __cachefiles_prepare_write(struct cachefiles_object *object,
-+				      struct file *file,
-+				      loff_t *_start, size_t *_len,
-+				      bool no_space_allocated_yet);
-+extern int __cachefiles_write(struct cachefiles_object *object,
-+			      struct file *file,
-+			      loff_t start_pos,
-+			      struct iov_iter *iter,
-+			      netfs_io_terminated_t term_func,
-+			      void *term_func_priv);
+diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+index 53f632a560ec..19325b7600bb 100644
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -257,8 +257,6 @@ static int ip6_tnl_create2(struct net_device *dev)
+ 	struct ip6_tnl_net *ip6n = net_generic(net, ip6_tnl_net_id);
+ 	int err;
  
- /*
-  * key.c
-diff --git a/fs/cachefiles/io.c b/fs/cachefiles/io.c
-index 9dc81e781f2b..50a14e8f0aac 100644
---- a/fs/cachefiles/io.c
-+++ b/fs/cachefiles/io.c
-@@ -277,36 +277,33 @@ static void cachefiles_write_complete(struct kiocb *iocb, long ret)
- /*
-  * Initiate a write to the cache.
-  */
--static int cachefiles_write(struct netfs_cache_resources *cres,
--			    loff_t start_pos,
--			    struct iov_iter *iter,
--			    netfs_io_terminated_t term_func,
--			    void *term_func_priv)
-+int __cachefiles_write(struct cachefiles_object *object,
-+		       struct file *file,
-+		       loff_t start_pos,
-+		       struct iov_iter *iter,
-+		       netfs_io_terminated_t term_func,
-+		       void *term_func_priv)
- {
--	struct cachefiles_object *object;
- 	struct cachefiles_cache *cache;
- 	struct cachefiles_kiocb *ki;
- 	struct inode *inode;
--	struct file *file;
- 	unsigned int old_nofs;
--	ssize_t ret = -ENOBUFS;
-+	ssize_t ret;
- 	size_t len = iov_iter_count(iter);
- 
--	if (!fscache_wait_for_operation(cres, FSCACHE_WANT_WRITE))
--		goto presubmission_error;
- 	fscache_count_write();
--	object = cachefiles_cres_object(cres);
- 	cache = object->volume->cache;
--	file = cachefiles_cres_file(cres);
- 
- 	_enter("%pD,%li,%llx,%zx/%llx",
- 	       file, file_inode(file)->i_ino, start_pos, len,
- 	       i_size_read(file_inode(file)));
- 
--	ret = -ENOMEM;
- 	ki = kzalloc(sizeof(struct cachefiles_kiocb), GFP_KERNEL);
--	if (!ki)
--		goto presubmission_error;
-+	if (!ki) {
-+		if (term_func)
-+			term_func(term_func_priv, -ENOMEM, false);
-+		return -ENOMEM;
-+	}
- 
- 	refcount_set(&ki->ki_refcnt, 2);
- 	ki->iocb.ki_filp	= file;
-@@ -314,7 +311,6 @@ static int cachefiles_write(struct netfs_cache_resources *cres,
- 	ki->iocb.ki_flags	= IOCB_DIRECT | IOCB_WRITE;
- 	ki->iocb.ki_ioprio	= get_current_ioprio();
- 	ki->object		= object;
--	ki->inval_counter	= cres->inval_counter;
- 	ki->start		= start_pos;
- 	ki->len			= len;
- 	ki->term_func		= term_func;
-@@ -369,11 +365,24 @@ static int cachefiles_write(struct netfs_cache_resources *cres,
- 	cachefiles_put_kiocb(ki);
- 	_leave(" = %zd", ret);
- 	return ret;
-+}
- 
--presubmission_error:
--	if (term_func)
--		term_func(term_func_priv, ret, false);
--	return ret;
-+static int cachefiles_write(struct netfs_cache_resources *cres,
-+			    loff_t start_pos,
-+			    struct iov_iter *iter,
-+			    netfs_io_terminated_t term_func,
-+			    void *term_func_priv)
-+{
-+	if (!fscache_wait_for_operation(cres, FSCACHE_WANT_WRITE)) {
-+		if (term_func)
-+			term_func(term_func_priv, -ENOBUFS, false);
-+		return -ENOBUFS;
-+	}
-+
-+	return __cachefiles_write(cachefiles_cres_object(cres),
-+				  cachefiles_cres_file(cres),
-+				  start_pos, iter,
-+				  term_func, term_func_priv);
- }
- 
- /*
-@@ -484,13 +493,12 @@ static enum netfs_io_source cachefiles_prepare_read(struct netfs_io_subrequest *
- /*
-  * Prepare for a write to occur.
-  */
--static int __cachefiles_prepare_write(struct netfs_cache_resources *cres,
--				      loff_t *_start, size_t *_len, loff_t i_size,
--				      bool no_space_allocated_yet)
-+int __cachefiles_prepare_write(struct cachefiles_object *object,
-+			       struct file *file,
-+			       loff_t *_start, size_t *_len,
-+			       bool no_space_allocated_yet)
- {
--	struct cachefiles_object *object = cachefiles_cres_object(cres);
- 	struct cachefiles_cache *cache = object->volume->cache;
--	struct file *file = cachefiles_cres_file(cres);
- 	loff_t start = *_start, pos;
- 	size_t len = *_len, down;
- 	int ret;
-@@ -577,7 +585,8 @@ static int cachefiles_prepare_write(struct netfs_cache_resources *cres,
- 	}
- 
- 	cachefiles_begin_secure(cache, &saved_cred);
--	ret = __cachefiles_prepare_write(cres, _start, _len, i_size,
-+	ret = __cachefiles_prepare_write(object, cachefiles_cres_file(cres),
-+					 _start, _len,
- 					 no_space_allocated_yet);
- 	cachefiles_end_secure(cache, saved_cred);
- 	return ret;
+-	t = netdev_priv(dev);
+-
+ 	dev->rtnl_link_ops = &ip6_link_ops;
+ 	err = register_netdevice(dev);
+ 	if (err < 0)
 -- 
-2.27.0
+2.25.1
 
