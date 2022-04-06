@@ -2,188 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB194C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF06C4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344888AbiDFHLf (ORCPT
+        id S1348600AbiDFHMM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
+        Wed, 6 Apr 2022 03:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586059AbiDFGtw (ORCPT
+        with ESMTP id S235874AbiDFG5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:49:52 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EF14967CD;
-        Tue,  5 Apr 2022 22:20:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kLa5oUSgaNFUARPCCRK3MtvUz9vPBIGfTXvIZgPjfRk=; b=g31RPnEWyQAdFvhv+AatEvE3d7
-        ga7RtNK5QlYiWaMbDbFcU+ZDovzFUq0aoZtZpfPZmVud6GW0ZpB2efEr1RWdUdE4Jp0TjZ56qfiEL
-        bsUCd8mi9gghBU3OUKpbq3014qPfC+3nFmTBoRXXYodMcLNPqAUtHag51c8sl/Z76gjwCUU4iJW4m
-        HFOdqrY3AtKqkW2X+wBUTCigB0QBPvE9ns9rS6+dZx7nUxNrBoRTK0W0bTT+rGzgLMtELg5bl2Uxi
-        lkKoaIjx61eO9ASb5252Baqhts+85B/Nodx78ihgu4QatcqgcsFQ0B+dc0V1NZRZPz3ILMOWTnEyl
-        rQRTVDdg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nby5G-003oBJ-1m; Wed, 06 Apr 2022 05:19:58 +0000
-Date:   Tue, 5 Apr 2022 22:19:58 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     david@fromorbit.com, djwong@kernel.org, dan.j.williams@intel.com,
-        hch@infradead.org, vishal.l.verma@intel.com, dave.jiang@intel.com,
-        agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
-        ira.weiny@intel.com, willy@infradead.org, vgoyal@redhat.com,
-        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        x86@kernel.org
-Subject: Re: [PATCH v7 4/6] dax: add DAX_RECOVERY flag and .recovery_write
- dev_pgmap_ops
-Message-ID: <Yk0i/pODntZ7lbDo@infradead.org>
-References: <20220405194747.2386619-1-jane.chu@oracle.com>
- <20220405194747.2386619-5-jane.chu@oracle.com>
+        Wed, 6 Apr 2022 02:57:19 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2070.outbound.protection.outlook.com [40.107.212.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CF21D2069;
+        Tue,  5 Apr 2022 22:25:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aWBeqpQOx40kDLsJi2SfpzHzOq+5K6jOK/b7eioiFQkqzkEeOXMzoUxwSLLO/+NK/Ukl6eAtZtSDbejVPhtSqBLG2hQq7lTxABZdqRJhRvDWY0hapQ8u1dZ3pfm5PKKhaMlojj8UyVS2baHAEwM+oArRT0R3HYPvo6Dq3ytPEjRkOfqxPLHififnb8nku2bcGTksYpfwQ6s9D3EJ2PWn7ehxeKW7ke8+POkDkvz1wqscwUVKHt+uf9WK5tIZtYEIWpmQgDf2TeqOcRt9rkocXnmHGKCuqmQcBV+MiCb18oYNrBvtCqLKmth0Msx1WG68rSn2ljhE7xSsY5PTwMUk0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=99r1v5r5od5O/aXUdW2QEQW8bEtdH3taAa31oRxXURc=;
+ b=iM/wntrFBCOYmfWdEWCZ/jip/1e+EEaDVLYrHVaxa2B0QZeLVYszSA+R3Zr3MtJ0kVVh46S2eeHIcwpCBHMZQ2WtV9xuu+ofmB3cBk+4mGJn70LBtTe2pfMqpfD9YYPfNj0G2ebBxvjmLVFNbL+KWX5QfGAuZzuNcmGihA2ANHYjoC5eO+KC61gmiReylXtOsnjk9TbMKeuvR4Ox+pRdXkKFlbNhVPRLk+wx5/B2GZDVZQGQWKhvwdhLuBkUTvR4LIYHq8Cjqp/6JrhwqUhL4qhFPlsvfgii5YVnVYe8IYdZ2C5xddRCyuhysj73z0F7pqEy218vkK6vkq1/rxteFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=99r1v5r5od5O/aXUdW2QEQW8bEtdH3taAa31oRxXURc=;
+ b=bl5/V+H9guGDgjnwKJogQ+Ry4QbrgLnyXbMbiZdLkLhGW9pLiCH2xxt87aDpD2rDwEs3sREWzo3m2nVYe0sntaW7KBxz8+NQ10zeVBFuxNB32XECsSTKIE5bX72V35stvGh6NytrHwne7faRDg3zjAtEYs5lohrtBLxzsgWnR4teh3dESBRHIs7f+Fl7OgIMkfBwhQPtSsri8Ricm6eJmpRmp+78UouILQ8Dwkc0DApZsUtBLt0Edqp8sfAX7iz9NT6kZu8htfVe1chPKxvrPSiFuShhEURHRjLkCY7+DKvIM1BwhltjN7jkPEn9y/wGXRKUnJcEn9KH8N/ZiKJb5g==
+Received: from MW2PR16CA0037.namprd16.prod.outlook.com (2603:10b6:907:1::14)
+ by BY5PR12MB4968.namprd12.prod.outlook.com (2603:10b6:a03:1d2::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Wed, 6 Apr
+ 2022 05:25:11 +0000
+Received: from CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:907:1:cafe::99) by MW2PR16CA0037.outlook.office365.com
+ (2603:10b6:907:1::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Wed, 6 Apr 2022 05:25:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ CO1NAM11FT036.mail.protection.outlook.com (10.13.174.124) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5144.20 via Frontend Transport; Wed, 6 Apr 2022 05:25:10 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 6 Apr
+ 2022 05:25:10 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 5 Apr 2022
+ 22:25:09 -0700
+Received: from amhetre.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Tue, 5 Apr 2022 22:25:06 -0700
+From:   Ashish Mhetre <amhetre@nvidia.com>
+To:     <krzysztof.kozlowski@linaro.org>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>, <digetx@gmail.com>, <robh+dt@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <vdumpa@nvidia.com>, <Snikam@nvidia.com>,
+        Ashish Mhetre <amhetre@nvidia.com>
+Subject: [Patch v6 0/4] memory: tegra: Add MC channels and error logging
+Date:   Wed, 6 Apr 2022 10:54:55 +0530
+Message-ID: <20220406052459.10438-1-amhetre@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="uA3+SxEy8RfCAOX5"
-Content-Disposition: inline
-In-Reply-To: <20220405194747.2386619-5-jane.chu@oracle.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d1c7e2b9-5b80-4f5b-c292-08da178dd22f
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4968:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB4968A014F2D945CE68E87274CAE79@BY5PR12MB4968.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NrYfiMagzHiS2YS+4J/g2r+LAiWVnYuAKkQFe2iX8R+T1w1dsdpKwhoEfXMNUYf2jQziWlNMTkSLAoMpMCasA4Br9+BJeqzd8Ot7Nl3b/UuEBKXQxkIVwsiWtMAKdCx/JHW/Dv32CDOohRk5dec3BsXSzU6UelkQzG4mpHNTl6EtT1JM6ZNjH1blHmcst5Li4jxZwJYLKTLdhRI6CP9ilmniDAJXFAJ6bv8Dh93ilG8H6/7qziuLyO8yrtg5ygq4MPckP+oHTNL/V1a0qqFFsMmXpKBoOEjD14B6I3NkfFAXLAa0GpasP8PpscPkJMJ1sZzQAUSu5i0Rb4fuLvqpIMVNWAnGodFbr6rtnm50QfpLBs0lkgD+sAB2bHFyxsNQv2Y73wiMDfNcDqgNSzEn6+1Mc7rsUcTibq7qrGfQNdcYRz1bJKcaoQlnuQyy4DBsc+BolPD+Cq1AY/MRaQFzE3SjZPWDjayclNpixrI9y2duLeMDqIrg7fTMZeQ7EF9GKtbAfzfGs43MKKVS/ePsc6jIvKs7fyYmAF9lXmdtJWG9qOphlV6AnGuZVX3kDN7eK7ImtKMwc7wDVSMB/dDcEKnmMQhA2MgY6BRDgoptAEAap7NTr2/k1AzWbAIlDieOD6ERYpLLxvEuhKSLM9Iz9weVwtgTtYhADmHL4AY2DxPEcuPyHwJRiOk2MaW311givpQlnAUO79Ch45H1+pPvXQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(70206006)(70586007)(4326008)(8676002)(316002)(54906003)(110136005)(36860700001)(36756003)(86362001)(356005)(81166007)(83380400001)(26005)(186003)(1076003)(2616005)(7696005)(508600001)(6666004)(82310400005)(40460700003)(8936002)(336012)(426003)(47076005)(107886003)(5660300002)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 05:25:10.9425
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1c7e2b9-5b80-4f5b-c292-08da178dd22f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4968
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From tegra186 onward, memory controllers support multiple channels.
+Add memory controller channels in device tree and add support to map
+address spaces of these channels in tegra MC driver.
+When memory controller interrupt occurs, registers from these channels
+are required to be read in order to get error information.
+Add error logging support from tegra186 onward for memory controller
+interrupts.
 
---uA3+SxEy8RfCAOX5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Ashish Mhetre (4):
+  memory: tegra: Add memory controller channels support
+  memory: tegra: Add MC error logging on tegra186 onward
+  dt-bindings: memory: Update reg maxitems for tegra186
+  arm64: tegra: Add memory controller channels
 
-On Tue, Apr 05, 2022 at 01:47:45PM -0600, Jane Chu wrote:
-> Introduce DAX_RECOVERY flag to dax_direct_access(). The flag is
-> not set by default in dax_direct_access() such that the helper
-> does not translate a pmem range to kernel virtual address if the
-> range contains uncorrectable errors.  When the flag is set,
-> the helper ignores the UEs and return kernel virtual adderss so
-> that the caller may get on with data recovery via write.
-> 
-> Also introduce a new dev_pagemap_ops .recovery_write function.
-> The function is applicable to FSDAX device only. The device
-> page backend driver provides .recovery_write function if the
-> device has underlying mechanism to clear the uncorrectable
-> errors on the fly.
+---
+Changes in v6:
+- Added reg-names for each reg item of memory controller node
+- Added logging for interrupts on multiple memory controller channels
+- Added clearing interrupt support for global intstatus
+- Updated DT binding documentation to work with existing DTS as well
+- Updated function to get MC channels
+- Updated variable names
 
-I know Dan suggested it, but I still think dev_pagemap_ops is the very
-wrong choice here.  It is about VM callbacks to ZONE_DEVICE owners
-independent of what pagemap type they are.  .recovery_write on the
-other hand is completely specific to the DAX write path and has no
-MM interactions at all.
+Changes in v5:
+- Updated patch sequence such that driver patches are before DT patches
+- Fixed DT ABI break from v4
+- Fixed smatch bug
+- Updated description in DT binding documentation
+- Updated variable names
 
->  /* see "strong" declaration in tools/testing/nvdimm/pmem-dax.c */
->  __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
-> -		long nr_pages, void **kaddr, pfn_t *pfn)
-> +		long nr_pages, int flags, void **kaddr, pfn_t *pfn)
->  {
->  	resource_size_t offset = PFN_PHYS(pgoff) + pmem->data_offset;
-> +	sector_t sector = PFN_PHYS(pgoff) >> SECTOR_SHIFT;
-> +	unsigned int num = PFN_PHYS(nr_pages) >> SECTOR_SHIFT;
-> +	struct badblocks *bb = &pmem->bb;
-> +	sector_t first_bad;
-> +	int num_bad;
-> +	bool bad_in_range;
-> +	long actual_nr;
-> +
-> +	if (!bb->count)
-> +		bad_in_range = false;
-> +	else
-> +		bad_in_range = !!badblocks_check(bb, sector, num, &first_bad, &num_bad);
->  
-> -	if (unlikely(is_bad_pmem(&pmem->bb, PFN_PHYS(pgoff) / 512,
-> -					PFN_PHYS(nr_pages))))
-> +	if (bad_in_range && !(flags & DAX_RECOVERY))
->  		return -EIO;
+Changes in v4:
+- Added memory controller channels support
+- Added newlines after every break statement of all switch cases
+- Fixed compile error with W=1 build
+- Fixed the interrupt mask bit logic
 
-The use of bad_in_range here seems a litle convoluted.  See the attached
-patch on how I would structure the function to avoid the variable and
-have the reocvery code in a self-contained chunk.
+Changes in v3:
+- Removed unnecessary ifdefs
+- Grouped newly added MC registers with existing MC registers
+- Removed unnecessary initialization of variables
+- Updated code to use newly added field 'has_addr_hi_reg' instead of ifdefs
 
-> -		map_len = dax_direct_access(dax_dev, pgoff, PHYS_PFN(size),
-> -				&kaddr, NULL);
-> +		nrpg = PHYS_PFN(size);
-> +		map_len = dax_direct_access(dax_dev, pgoff, nrpg, 0, &kaddr, NULL);
+Changes in v2:
+- Updated patch subject and commit message
+- Removed separate irq handlers
+- Updated tegra30_mc_handle_irq to be used for tegra186 onwards as well
 
-Overly long line here.
+ .../nvidia,tegra186-mc.yaml                   |  14 +-
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi      |   7 +-
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi      |  21 ++-
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi      |  21 ++-
+ drivers/memory/tegra/mc.c                     | 120 +++++++++++++++---
+ drivers/memory/tegra/mc.h                     |  37 +++++-
+ drivers/memory/tegra/tegra186.c               |  98 ++++++++++++++
+ drivers/memory/tegra/tegra194.c               |  45 +++++++
+ drivers/memory/tegra/tegra234.c               |  64 ++++++++++
+ include/soc/tegra/mc.h                        |  12 ++
+ 10 files changed, 412 insertions(+), 27 deletions(-)
 
---uA3+SxEy8RfCAOX5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename=diff
+-- 
+2.17.1
 
-diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
-index b868a88a0d589..377e4d59aa90f 100644
---- a/drivers/nvdimm/pmem.c
-+++ b/drivers/nvdimm/pmem.c
-@@ -272,42 +272,40 @@ __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
- 	struct badblocks *bb = &pmem->bb;
- 	sector_t first_bad;
- 	int num_bad;
--	bool bad_in_range;
--	long actual_nr;
--
--	if (!bb->count)
--		bad_in_range = false;
--	else
--		bad_in_range = !!badblocks_check(bb, sector, num, &first_bad, &num_bad);
--
--	if (bad_in_range && !(flags & DAX_RECOVERY))
--		return -EIO;
- 
- 	if (kaddr)
- 		*kaddr = pmem->virt_addr + offset;
- 	if (pfn)
- 		*pfn = phys_to_pfn_t(pmem->phys_addr + offset, pmem->pfn_flags);
- 
--	if (!bad_in_range) {
-+	if (bb->count &&
-+	    badblocks_check(bb, sector, num, &first_bad, &num_bad)) {
-+		long actual_nr;
-+
-+		if (!(flags & DAX_RECOVERY))
-+			return -EIO;
- 		/*
--		 * If badblock is present but not in the range, limit known good range
--		 * to the requested range.
-+		 * Set the recovery stride to the kernel page size because the
-+		 * underlying driver and firmware clear poison functions don't
-+		 * appear to handle large chunk (such as
-+		 * 2MiB) reliably.
- 		 */
--		if (bb->count)
--			return nr_pages;
--		return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);
-+		actual_nr = PHYS_PFN(
-+			PAGE_ALIGN((first_bad - sector) << SECTOR_SHIFT));
-+		dev_dbg(pmem->bb.dev, "start sector(%llu), nr_pages(%ld), first_bad(%llu), actual_nr(%ld)\n",
-+				sector, nr_pages, first_bad, actual_nr);
-+		if (actual_nr)
-+			return actual_nr;
-+		return 1;
- 	}
- 
- 	/*
--	 * In case poison is found in the given range and DAX_RECOVERY flag is set,
--	 * recovery stride is set to kernel page size because the underlying driver and
--	 * firmware clear poison functions don't appear to handle large chunk (such as
--	 * 2MiB) reliably.
-+	 * If badblock is present but not in the range, limit known good range
-+	 * to the requested range.
- 	 */
--	actual_nr = PHYS_PFN(PAGE_ALIGN((first_bad - sector) << SECTOR_SHIFT));
--	dev_dbg(pmem->bb.dev, "start sector(%llu), nr_pages(%ld), first_bad(%llu), actual_nr(%ld)\n",
--			sector, nr_pages, first_bad, actual_nr);
--	return (actual_nr == 0) ? 1 : actual_nr;
-+	if (bb->count)
-+		return nr_pages;
-+	return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);
- }
- 
- static const struct block_device_operations pmem_fops = {
-
---uA3+SxEy8RfCAOX5--
