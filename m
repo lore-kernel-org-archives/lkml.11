@@ -2,92 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B47AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F76C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236789AbiDFQNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46546 "EHLO
+        id S237386AbiDFQOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237339AbiDFQLr (ORCPT
+        with ESMTP id S237354AbiDFQOY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:11:47 -0400
-Received: from out203-205-221-233.mail.qq.com (out203-205-221-233.mail.qq.com [203.205.221.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4757F44B453
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:48:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649216899;
-        bh=1Z77nqbV2+A1Msr6oVHor24E79pO7sQR7sgV6KHu69k=;
-        h=From:To:Cc:Subject:Date;
-        b=OKEtZLy45G9u/sY40I+KcsZq34g6zltQvS0hqxIDgWItTzc/GZRKZztA9M0Qrpb/8
-         xaRQ2+hxWnA+6css/oVUrPnFDZSyz/HkkQrVaAld/UrqozjtT1GqP/BwdVgmtbqxFN
-         o4kKXavPSBb3t/U1JXUmSylLTWv6DHHKd00vgTFY=
-Received: from localhost.localdomain ([43.227.138.48])
-        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
-        id C1000240; Wed, 06 Apr 2022 11:48:16 +0800
-X-QQ-mid: xmsmtpt1649216896tdpol2cs8
-Message-ID: <tencent_525C5EC9EBBF0CC494993AB78C438E822005@qq.com>
-X-QQ-XMAILINFO: MB5+LsFw85No1HPsB7BdfXhvDdXXQaBWHlesPbwLSGyT0YiJdzKzksbzMaL8Hl
-         wgRI2QIwKNsyiYTSJjWb6YFwiJJF3Povsd8Ko7gbZBK3F9+vsos17gkMDTkSNeL8R+mGdDwl5i6n
-         +1eei3rQLmYH8A7nXtDcxM16VYB1M5TAr62JZEfplPF2kcG+bTpYPhB9/IamYM8uQkjDgsNzEIDW
-         hwrBEKdkVDdP9chsnbpTgScJNYIYma63Kvarau3gVTZjXqjHJoiykcHSBDiQz9dtlxFZXrTfhh5w
-         UoLrXVoLNdTChInZVBnJUT1s0yv02ig509yCk9vMhJTw1k2T+m5qXZiVzyeugFIk7Oy9mUIhh80d
-         eN+nVsbqRHIS2zU76GtOgA++AE6aPMvgFokxretq9+xg/knXPdnfxDv4VOuJ/y6vp5hmK1YIP9WB
-         jMaknJUsCI0F+0axFh85EZ5JhUWzIaaBvEYN81WqYyPNfI/uV2B+ADWJiiJoQOJOYUpV2KMYk8Ih
-         0g2nGw0ReEElzoGaeZbNFfz0zhSQNq88p3qPrRni5QKlivhYxKf28QWbP6kVOxnB8R6hK53x0Y4E
-         0Pxq9RauG70+8v7M3U9vcuUGy+cN7v94I2Xq0eO9GpwzrjbHbMTXVTnEipHZt0nRJBF4hkly6oLc
-         ikp5ke1vNaSiB/RsnezSZ5z8l7UtDop6j0om87bLT0EPZcuZP6nLofwC7aU7VbClxRutBDuhFjWX
-         VNk0UQeU3qUBBasO40nUU8QJ/33CtNUt4KakASeM6QxaWJmwkobJjzziobvgUWsCIJRKPPVGG7uT
-         zQ4sLzd2CvoK2vDRaRZu+2TfeR1b+Dvv5c/Y02t1pf1dtDI72POBNBkIE2XfW1y7K0e4DUCrjsGo
-         xwAQXbuXKRAtNt9svQCNN7WhyrmKAnXrzyWT+oEJa9xJKvbf4eCBQn5V/vnIpw82ORSfgke3xc
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2] staging: r8188eu: fix potential memory leak in rtw_os_xmit_resource_alloc()
-Date:   Wed,  6 Apr 2022 11:48:03 +0800
-X-OQ-MSGID: <20220406034803.12660-1-xkernel.wang@foxmail.com>
+        Wed, 6 Apr 2022 12:14:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366365DA04;
+        Wed,  6 Apr 2022 06:41:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C82B1615E4;
+        Wed,  6 Apr 2022 13:41:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B02E5C385A3;
+        Wed,  6 Apr 2022 13:41:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649252466;
+        bh=BmgZ/1mmISCzEBB5knGB373Rii6dB/CAioOuAHnaKJA=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=JlSFfjYaAB9PLg4Rofz28z7Pvxlm2o7uwTzjQJBHk1qaQ2fjpGZlexGkRtO+CGxqC
+         lBiig24iJqQDbfq21HS92W5sy4K8LteUZMV+s7P3yAHOyqtQWPRT/rI4gDkOdokzOZ
+         b0hWn8YlNYnHRU7RZFTExCRrMxsUhirWFc3wyUpjEUG315qdyf5rhHSxdXWQKJI3Hh
+         zfqV8/1JDs/WWubPcOp65sZTH9P9oFVkiXRls1fs4DyybyWOPUV4cePez0+gu7yR5p
+         gdos7XP19oddCW85Aa9t1cKsVGbatF0tPOt33yiqTWM1UNyJTGLGw+u0ueiaGRGfWs
+         xGrrzRMWuPV4g==
+Message-ID: <f0ed169ed02fe810076e959e9ec5455d9de4b4ff.camel@kernel.org>
+Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
+ inodes
+From:   Jeff Layton <jlayton@kernel.org>
+To:     Xiubo Li <xiubli@redhat.com>,
+        =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>
+Cc:     Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 06 Apr 2022 09:41:04 -0400
+In-Reply-To: <321104e6-36db-c143-a7ba-58f9199e6fb7@redhat.com>
+References: <20220401133243.1075-1-lhenriques@suse.de>
+         <d6407dd1-b6df-4de4-fe37-71b765b2088a@redhat.com>
+         <878rsia391.fsf@brahms.olymp>
+         <6ba91390-83e8-8702-2729-dc432abd3cc5@redhat.com>
+         <87zgky8n0o.fsf@brahms.olymp>
+         <6306fba71325483a1ea22fa73250c8777ea647d7.camel@kernel.org>
+         <321104e6-36db-c143-a7ba-58f9199e6fb7@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Wed, 2022-04-06 at 21:10 +0800, Xiubo Li wrote:
+> On 4/6/22 7:48 PM, Jeff Layton wrote:
+> > On Wed, 2022-04-06 at 12:33 +0100, Luís Henriques wrote:
+> > > Xiubo Li <xiubli@redhat.com> writes:
+> > > 
+> > > > On 4/6/22 6:57 PM, Luís Henriques wrote:
+> > > > > Xiubo Li <xiubli@redhat.com> writes:
+> > > > > 
+> > > > > > On 4/1/22 9:32 PM, Luís Henriques wrote:
+> > > > > > > When doing DIO on an encrypted node, we need to invalidate the page cache in
+> > > > > > > the range being written to, otherwise the cache will include invalid data.
+> > > > > > > 
+> > > > > > > Signed-off-by: Luís Henriques <lhenriques@suse.de>
+> > > > > > > ---
+> > > > > > >     fs/ceph/file.c | 11 ++++++++++-
+> > > > > > >     1 file changed, 10 insertions(+), 1 deletion(-)
+> > > > > > > 
+> > > > > > > Changes since v1:
+> > > > > > > - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
+> > > > > > > - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+> > > > > > > 
+> > > > > > > Note: I'm not really sure this last change is required, it doesn't really
+> > > > > > > affect generic/647 result, but seems to be the most correct.
+> > > > > > > 
+> > > > > > > diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+> > > > > > > index 5072570c2203..b2743c342305 100644
+> > > > > > > --- a/fs/ceph/file.c
+> > > > > > > +++ b/fs/ceph/file.c
+> > > > > > > @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
+> > > > > > >     	if (ret < 0)
+> > > > > > >     		return ret;
+> > > > > > >     -	ceph_fscache_invalidate(inode, false);
+> > > > > > > +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
+> > > > > > >     	ret = invalidate_inode_pages2_range(inode->i_mapping,
+> > > > > > >     					    pos >> PAGE_SHIFT,
+> > > > > > >     					    (pos + count - 1) >> PAGE_SHIFT);
+> > > > > > The above has already invalidated the pages, why doesn't it work ?
+> > > > > I suspect the reason is because later on we loop through the number of
+> > > > > pages, call copy_page_from_iter() and then ceph_fscrypt_encrypt_pages().
+> > > > Checked the 'copy_page_from_iter()', it will do the kmap for the pages but will
+> > > > kunmap them again later. And they shouldn't update the i_mapping if I didn't
+> > > > miss something important.
+> > > > 
+> > > > For 'ceph_fscrypt_encrypt_pages()' it will encrypt/dencrypt the context inplace,
+> > > > IMO if it needs to map the page and it should also unmap it just like in
+> > > > 'copy_page_from_iter()'.
+> > > > 
+> > > > I thought it possibly be when we need to do RMW, it may will update the
+> > > > i_mapping when reading contents, but I checked the code didn't find any
+> > > > place is doing this. So I am wondering where tha page caches come from ? If that
+> > > > page caches really from reading the contents, then we should discard it instead
+> > > > of flushing it back ?
+> > > > 
+> > > > BTW, what's the problem without this fixing ? xfstest fails ?
+> > > Yes, generic/647 fails if you run it with test_dummy_encryption.  And I've
+> > > also checked that the RMW code was never executed in this test.
+> > > 
+> > > But yeah I have assumed (perhaps wrongly) that the kmap/kunmap could
+> > > change the inode->i_mapping.
+> > > 
+> > No, kmap/unmap are all about high memory and 32-bit architectures. Those
+> > functions are usually no-ops on 64-bit arches.
+> 
+> Yeah, right.
+> 
+> So they do nothing here.
+> 
+> > > In my debugging this seemed to be the case
+> > > for the O_DIRECT path.  That's why I added this extra call here.
+> > > 
+> > I agree with Xiubo that we really shouldn't need to invalidate multiple
+> > times.
+> > 
+> > I guess in this test, we have a DIO write racing with an mmap read
+> > Probably what's happening is either that we can't invalidate the page
+> > because it needs to be cleaned, or the mmap read is racing in just after
+> > the invalidate occurs but before writeback.
+> 
+> This sounds a possible case.
+> 
+> 
+> > In any case, it might be interesting to see whether you're getting
+> > -EBUSY back from the new invalidate_inode_pages2 calls with your patch.
+> > 
+> If it's really this case maybe this should be retried some where ?
+> 
 
-In rtw_os_xmit_resource_alloc(), if `pxmitbuf->pxmit_urb[i]` is  
-allocated in failure, the other resources allocated such as 
-`pxmitbuf->pallocated_buf` allocated by kzalloc() and the other explored 
-items allocated by usb_alloc_urb() will not be properly released.
+Possibly, or we may need to implement ->launder_folio.
 
-To release the resources, this patch first re-explores the allocated 
-items and uses usb_free_urb() to release them, then uses kree() to 
-release `pxmitbuf->pallocated_buf`.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
-ChangeLog:
-v1->v2 update the description.
- drivers/staging/r8188eu/os_dep/xmit_linux.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/staging/r8188eu/os_dep/xmit_linux.c b/drivers/staging/r8188eu/os_dep/xmit_linux.c
-index 8c3f8f0..5a59f62 100644
---- a/drivers/staging/r8188eu/os_dep/xmit_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/xmit_linux.c
-@@ -78,8 +78,12 @@ int rtw_os_xmit_resource_alloc(struct adapter *padapter, struct xmit_buf *pxmitb
- 
- 	for (i = 0; i < 8; i++) {
- 		pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
--		if (!pxmitbuf->pxmit_urb[i])
-+		if (!pxmitbuf->pxmit_urb[i]) {
-+			while (i-- > 0)
-+				usb_free_urb(pxmitbuf->pxmit_urb[i]);
-+			kfree(pxmitbuf->pallocated_buf);
- 			return _FAIL;
-+		}
- 	}
- 	return _SUCCESS;
- }
+Either way, we need to understand what's happening first and then we can
+figure out a solution for it.
 -- 
+Jeff Layton <jlayton@kernel.org>
