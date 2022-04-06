@@ -2,80 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62115C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E67C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235501AbiDFPKe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:10:34 -0400
+        id S235452AbiDFPLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:11:03 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235790AbiDFPKM (ORCPT
+        with ESMTP id S235362AbiDFPKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:10:12 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA57728CA93;
-        Wed,  6 Apr 2022 05:08:17 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 318E01F454CE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649245528;
-        bh=Fewgg+W6G1clWAEhEVkkn/lbkFWCF9MXpHqn8lun8+U=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=W0PyamTsuvA78l+/qDMNGB6+50vsfBr9RtR3NmgbT0TpB0CLcmKhN3U7kOED1i6j5
-         4+luSQam5SOsryOX1O7J4La7JDlAFG0pBGud0XvHsMv6oaLx4ZOBHwj9YTmpfpjY7k
-         t2OWz3k2yeyD2DPbW/THzfBJ6dKVKPCHFDfOVyL55k5fBwgB+mCtCmsW6oxi3ZSCb0
-         E2xnpJh2X1rqd4mYjf+kP1TFxVs0WxfPxionk63hhXfPvYetGY4acG5czvaTsgJpBb
-         /cZL7/mTkLhfHPFTUQOPWijqhkXc2FF/YNXd2TdT8gRcM/9QU9jvCxKkyqNV8kh+NH
-         lYINv/Sd3khPQ==
-Message-ID: <a263e572-35ec-9671-50e3-dbc71b55b6cd@collabora.com>
-Date:   Wed, 6 Apr 2022 13:45:25 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] arm64: dts: mediatek: mt8173: Add gce-client-reg handle
- to disp-mutex
-Content-Language: en-US
-To:     robh+dt@kernel.org
-Cc:     krzysztof.kozlowski@canonical.com, matthias.bgg@gmail.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-References: <20220228110329.245366-1-angelogioacchino.delregno@collabora.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220228110329.245366-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Wed, 6 Apr 2022 11:10:46 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B2DFFFB5;
+        Wed,  6 Apr 2022 05:10:48 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236BgTjv003534;
+        Wed, 6 Apr 2022 12:09:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=BmKJuJMODVttv+/lBaYf3hGEbzzMxoGNKuLFEm/ZpD4=;
+ b=cQs2TctgJZPet3Mwn7W4WiuDwIeZipc+5OoPbN0Lgj4yIq5IBE5X83K+XKhqMk3rixx1
+ pQF0vw7KGo9vAR0vTvqMmagDcjerpMR+XVGGjWX36rc/zE7A3VPLc43zyM0jPGMaCgru
+ FKJZG5c4uWdXBEuoVKT2rTnLKzW/k0j+AndLlJzqSU8N48WesLv7VSk9rXoWa40gbgST
+ HJqEZVVwqBKGycbW8x0K6Kc/pLQgCaR2X4vByGv6vaUgOMxa8GJbhVV6JI1c2lz5+fw7
+ 422zsRb26fERlbTur4yWmiJ7REHPbjUYXDPzAVedMJR+W10kT1cRJwzZgqQEtkIqOja3 /Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f94js7nh8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 12:08:59 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 236BqC5Q010819;
+        Wed, 6 Apr 2022 12:08:59 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f94js7ng2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 12:08:59 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 236C3Hsg002663;
+        Wed, 6 Apr 2022 12:08:56 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3f6e48xcvf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 12:08:56 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 236C8sEn35324370
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 6 Apr 2022 12:08:54 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4D0A352050;
+        Wed,  6 Apr 2022 12:08:54 +0000 (GMT)
+Received: from sig-9-65-95-173.ibm.com (unknown [9.65.95.173])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 7ED485204F;
+        Wed,  6 Apr 2022 12:08:53 +0000 (GMT)
+Message-ID: <35c38676a8b464a0fb7e4842de5108e08cb53380.camel@linux.ibm.com>
+Subject: Re: [PATCH v2] ima: remove the IMA_TEMPLATE Kconfig option
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     GUO Zihua <guozihua@huawei.com>, linux-integrity@vger.kernel.org
+Cc:     dmitry.kasatkin@gmail.com, roberto.sassu@huawei.com,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 06 Apr 2022 08:08:52 -0400
+In-Reply-To: <20220406061624.173584-1-guozihua@huawei.com>
+References: <20220406061624.173584-1-guozihua@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: zpShxX2sIuoOT1E96ea0mOmgaXLBxued
+X-Proofpoint-GUID: 8WkfBX0dsUk2htx-JqrPoZZgst7KIBa1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-06_04,2022-04-06_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 mlxlogscore=999 malwarescore=0 mlxscore=0 phishscore=0
+ bulkscore=0 suspectscore=0 impostorscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204060057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 28/02/22 12:03, AngeloGioacchino Del Regno ha scritto:
-> Add a gce client reg handle to the disp mutex to enable MT8173
-> platforms to use MediaTek's CMDQ for extra performance.
+On Wed, 2022-04-06 at 14:16 +0800, GUO Zihua wrote:
+> It is discovered thatO allowing template "ima" as the compiled default
+> would cause the following issue: the boot command line option
+> "ima_hash=" must be behind "ima_template=", otherwise "ima_hash=" might
+> be rejected.
+
+The format of a proper patch description describes the current status,
+provides a succinct problem description, followed by the solution.
+
+The original 'ima' measurement list template contains a hash, defined
+as 20 bytes, and a null terminated pathname, limited to 255
+characters.  Other measurement list templates permit both larger hashes
+and longer pathnames.  When the "ima" template is configured as the
+default, a new measurement list template (ima_template=) must be
+specified before specifying a larger hash algorithm (ima_hash=) on the
+boot command line.
+
+To avoid this boot command line ordering issue, remove the legacy "ima"
+template configuration option, allowing it to still be specified on the
+boot command line.
+
 > 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> The root cause of this issue is that during the processing of ima_hash,
+> we would try to check whether the hash algorithm is compatible with the
+> template. If the template is not set at the moment we do the check, we
+> check the algorithm against the compiled default template. If the
+> complied default template is "ima", then we reject any hash algorithm
+> other than sha1 and md5.
+> 
+> For example, if the compiled default template is "ima", and the default
+> algorithm is sha1 (which is the current default). In the cmdline, we put
+> in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
+> that ima starts with ima-ng as the template and sha256 as the hash
+> algorithm. However, during the processing of "ima_hash=",
+> "ima_template=" has not been processed yet, and hash_setup would check
+> the configured hash algorithm against the compiled default: ima, and
+> reject sha256. So at the end, the hash algorithm that is actually used
+> will be sha1.
+> 
+> With template "ima" removed from the compiled default, we ensure that
+> the default tempalte would at least be "ima-ng" which allows for
+> basically any hash algorithm. Users who needs to use "ima" template
+> could still do it by specifying "ima_template=ima" in boot command line.
+> 
+> This change would not break the algorithm compatibility checking for
+> IMA.
+> 
+> Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
+> Signed-off-by: GUO Zihua <guozihua@huawei.com>
 > ---
->   arch/arm64/boot/dts/mediatek/mt8173.dtsi | 1 +
->   1 file changed, 1 insertion(+)
+>  security/integrity/ima/Kconfig | 22 +++++++++-------------
+>  1 file changed, 9 insertions(+), 13 deletions(-)
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> index 291db4fcbb25..9eaea1156e25 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> @@ -1278,6 +1278,7 @@ mutex: mutex@14020000 {
->   			interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_LOW>;
->   			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
->   			clocks = <&mmsys CLK_MM_MUTEX_32K>;
-> +			mediatek,gce-client-reg = <&gce SUBSYS_1402XXXX 0 0x1000>;
->   			mediatek,gce-events = <CMDQ_EVENT_MUTEX0_STREAM_EOF>,
->                                                 <CMDQ_EVENT_MUTEX1_STREAM_EOF>;
->   		};
+> diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
+> index f3a9cc201c8c..f392cac7a7d1 100644
+> --- a/security/integrity/ima/Kconfig
+> +++ b/security/integrity/ima/Kconfig
+> @@ -65,14 +65,11 @@ choice
+>  	help
+>  	  Select the default IMA measurement template.
+>  
+> -	  The original 'ima' measurement list template contains a
+> -	  hash, defined as 20 bytes, and a null terminated pathname,
+> -	  limited to 255 characters.  The 'ima-ng' measurement list
+> -	  template permits both larger hash digests and longer
+> -	  pathnames.
+> -
+> -	config IMA_TEMPLATE
+> -		bool "ima"
+> +	  The 'ima-ng' measurement list template permits various hash
+> +	  digests and long pathnames. The compiled default template
+> +	  can be overwritten using the kernel command line
+> +	  'ima_template=' option.
+> +
 
-Hello, this is a friendly ping to avoid forgetting about this patch.
+Other than perhaps changing "contains" to "contained", there's no
+reason for changing the text.  Adding an additional line is fine - The
+configured default template can be replaced by specifying
+"ima_template="  on the boot command line.
 
-As a note, this was successfully tested on MT8173 Acer Chromebook R13 (Elm).
+>  	config IMA_NG_TEMPLATE
+>  		bool "ima-ng (default)"
+>  	config IMA_SIG_TEMPLATE
+> @@ -82,7 +79,6 @@ endchoice
+>  config IMA_DEFAULT_TEMPLATE
+>  	string
+>  	depends on IMA
+> -	default "ima" if IMA_TEMPLATE
+>  	default "ima-ng" if IMA_NG_TEMPLATE
+>  	default "ima-sig" if IMA_SIG_TEMPLATE
+>  
+> @@ -102,19 +98,19 @@ choice
+>  
+>  	config IMA_DEFAULT_HASH_SHA256
+>  		bool "SHA256"
+> -		depends on CRYPTO_SHA256=y && !IMA_TEMPLATE
+> +		depends on CRYPTO_SHA256=y
+>  
+>  	config IMA_DEFAULT_HASH_SHA512
+>  		bool "SHA512"
+> -		depends on CRYPTO_SHA512=y && !IMA_TEMPLATE
+> +		depends on CRYPTO_SHA512=y
+>  
+>  	config IMA_DEFAULT_HASH_WP512
+>  		bool "WP512"
+> -		depends on CRYPTO_WP512=y && !IMA_TEMPLATE
+> +		depends on CRYPTO_WP512=y
+>  
+>  	config IMA_DEFAULT_HASH_SM3
+>  		bool "SM3"
+> -		depends on CRYPTO_SM3=y && !IMA_TEMPLATE
+> +		depends on CRYPTO_SM3=y
+>  endchoice
+>  
+>  config IMA_DEFAULT_HASH
 
-Cheers,
-Angelo
+
