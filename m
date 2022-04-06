@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD47C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B98D0C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346117AbiDFHLw (ORCPT
+        id S1344398AbiDFHLZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
+        Wed, 6 Apr 2022 03:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456665AbiDFGon (ORCPT
+        with ESMTP id S1456892AbiDFGor (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:44:43 -0400
+        Wed, 6 Apr 2022 02:44:47 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F8C1624A2;
-        Tue,  5 Apr 2022 21:50:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A15D39B1;
+        Tue,  5 Apr 2022 21:51:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649220659; x=1680756659;
+  t=1649220664; x=1680756664;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=I+dWPDiE4xf63aSyJo77PiXg+mtIis/JHI1I6V04uBU=;
-  b=VnYeP5a6xZf1ud7WMcSOMT3bckQN5oFJHRqp0knZRRoey2yd7tJON/46
-   SYNkVS7ijNxPTFjvUxPYi6AcOp6FM/zh74VamAPn09iW6GM/Uoykah68S
-   1SCUU5xJphPVAde5UTEEUJnJVNgI1WAwgfoKPwpWnMADfaEY+92MUev+p
-   65FJnx+U8cQE/5wC9ESohiY+UDwXrMXqlAVNQsIJw93KVMLQaMDwBAMo0
-   Qw+2Ubg97fOsJTxpJkG7YQaQj0KM5M7HTGm8Dxc4IcRGMQFgv3/hKa8B+
-   cUTf/Q175MWycEGy+U5PmeujMFMRTf4nIp5gHbu+fVEwGlJCvVlnhZwRC
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089913"
+  bh=9gK6ukJipXBNl/xV9In8MOBFfm49FnqwURztoNRxISs=;
+  b=WgP5884SOAmV69zoKxAFLYLOdoAGQ0pcE1NwgB2kX6cP47lqv1jDRCai
+   gBt0LyaecNdTGwBKhA+PuIlRpnXcsrhl8KstAdL7+sY57hfjYdZXDHCG5
+   NmeZIDLITW/iz6dj/h0iUiaW1HmvAubv+l+Lx54QAN3LB5Sv1LFj7KhP6
+   ABtmoQOrTz9ZTrxEM2DP+2wjobVZweSUlmFFaXQIF0SDD+lYuxOvdvoGA
+   Yo4rrMH1fqdJoS2wH5MiwNkMnrz548rJmcMceKG1q3jr5+ybeEOphjRFQ
+   XQ19NO+6PIp1f/cEuuxVWv1U6oTdm61vFHi6HKnYZpc4T870DAnoqgoVr
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089923"
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="243089913"
+   d="scan'208";a="243089923"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:56 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:51:03 -0700
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="524302468"
+   d="scan'208";a="524302499"
 Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:52 -0700
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:51:00 -0700
 From:   Kai Huang <kai.huang@intel.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
@@ -47,9 +47,9 @@ Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
         kirill.shutemov@linux.intel.com,
         sathyanarayanan.kuppuswamy@linux.intel.com,
         isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v3 18/21] x86/virt/tdx: Initialize all TDMRs
-Date:   Wed,  6 Apr 2022 16:49:30 +1200
-Message-Id: <9c180b4f34956a5d43bbf7894c423fcbe75fc7a9.1649219184.git.kai.huang@intel.com>
+Subject: [PATCH v3 20/21] x86/virt/tdx: Add kernel command line to opt-in TDX host support
+Date:   Wed,  6 Apr 2022 16:49:32 +1200
+Message-Id: <0d50d13e5f9bd590ee97ff150f1393c4d99a8fa0.1649219184.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
 References: <cover.1649219184.git.kai.huang@intel.com>
@@ -59,148 +59,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Initialize TDMRs via TDH.SYS.TDMR.INIT as the last step to complete the
-TDX initialization.
-
-All TDMRs need to be initialized using TDH.SYS.TDMR.INIT SEAMCALL before
-the TDX memory can be used to run any TD guest.  The SEAMCALL internally
-uses the global KeyID to initialize PAMTs in order to crypto protect
-them from malicious host kernel.  TDH.SYS.TDMR.INIT can be done any cpu.
-
-The time of initializing TDMR is proportional to the size of the TDMR.
-To avoid long latency caused in one SEAMCALL, TDH.SYS.TDMR.INIT only
-initializes an (implementation-specific) subset of PAMT entries of one
-TDMR in one invocation.  The caller is responsible for calling
-TDH.SYS.TDMR.INIT iteratively until all PAMT entries of the requested
-TDMR are initialized.
-
-Current implementation initializes TDMRs one by one.  It takes ~100ms on
-a 2-socket machine with 2.2GHz CPUs and 64GB memory when the system is
-idle.  Each TDH.SYS.TDMR.INIT takes ~7us on average.
-
-TDX does allow different TDMRs to be initialized concurrently on
-multiple CPUs. This parallel scheme could be introduced later when the
-total initialization time becomes a real concern, e.g. on a platform
-with a much bigger memory size.
+Enabling TDX consumes additional memory (used by TDX as metadata) and
+additional initialization time.  Introduce a kernel command line to
+allow to opt-in TDX host kernel support when user truly wants to use
+TDX.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- arch/x86/virt/vmx/tdx/tdx.c | 75 ++++++++++++++++++++++++++++++++++---
- arch/x86/virt/vmx/tdx/tdx.h |  1 +
- 2 files changed, 71 insertions(+), 5 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |  6 ++++++
+ arch/x86/virt/vmx/tdx/tdx.c                     | 14 ++++++++++++++
+ 2 files changed, 20 insertions(+)
 
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 3f1cc5e317ed..cfa5b36890ea 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5790,6 +5790,12 @@
+ 
+ 	tdfx=		[HW,DRM]
+ 
++	tdx_host=	[X86-64, TDX]
++			Format: {on|off}
++			on: Enable TDX host kernel support
++			off: Disable TDX host kernel support
++			Default is off.
++
+ 	test_suspend=	[SUSPEND][,N]
+ 			Specify "mem" (for Suspend-to-RAM) or "standby" (for
+ 			standby suspend) or "freeze" (for suspend type freeze)
 diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index bb15122fb8bd..11bd1daffee3 100644
+index 031af7b83cea..fee243cd454f 100644
 --- a/arch/x86/virt/vmx/tdx/tdx.c
 +++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -1376,6 +1376,65 @@ static int config_global_keyid(void)
- 	return seamcall_on_each_package_serialized(&sc);
- }
+@@ -116,6 +116,16 @@ static struct tdsysinfo_struct tdx_sysinfo;
+ /* TDX global KeyID to protect TDX metadata */
+ static u32 tdx_global_keyid;
  
-+/* Initialize one TDMR */
-+static int init_tdmr(struct tdmr_info *tdmr)
++static bool enable_tdx_host;
++
++static int __init tdx_host_setup(char *s)
 +{
-+	u64 next;
-+
-+	/*
-+	 * Initializing PAMT entries might be time-consuming (in
-+	 * proportion to the size of the requested TDMR).  To avoid long
-+	 * latency in one SEAMCALL, TDH.SYS.TDMR.INIT only initializes
-+	 * an (implementation-defined) subset of PAMT entries in one
-+	 * invocation.
-+	 *
-+	 * Call TDH.SYS.TDMR.INIT iteratively until all PAMT entries
-+	 * of the requested TDMR are initialized (if next-to-initialize
-+	 * address matches the end address of the TDMR).
-+	 */
-+	do {
-+		struct tdx_module_output out;
-+		int ret;
-+
-+		ret = seamcall(TDH_SYS_TDMR_INIT, tdmr->base, 0, 0, 0,
-+				NULL, &out);
-+		if (ret)
-+			return ret;
-+		/*
-+		 * RDX contains 'next-to-initialize' address if
-+		 * TDH.SYS.TDMR.INT succeeded.
-+		 */
-+		next = out.rdx;
-+		if (need_resched())
-+			cond_resched();
-+	} while (next < tdmr->base + tdmr->size);
-+
-+	return 0;
++	if (!strcmp(s, "on"))
++		enable_tdx_host = true;
++	return 1;
 +}
++__setup("tdx_host=", tdx_host_setup);
 +
-+/* Initialize all TDMRs */
-+static int init_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
-+{
-+	int i;
-+
-+	/*
-+	 * Initialize TDMRs one-by-one for simplicity, though the TDX
-+	 * architecture does allow different TDMRs to be initialized in
-+	 * parallel on multiple CPUs.  Parallel initialization could
-+	 * be added later when the time spent in the serialized scheme
-+	 * becomes a real concern.
-+	 */
-+	for (i = 0; i < tdmr_num; i++) {
-+		int ret;
-+
-+		ret = init_tdmr(tdmr_array[i]);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int init_tdx_module(void)
+ static bool __seamrr_enabled(void)
  {
- 	struct tdmr_info **tdmr_array;
-@@ -1457,11 +1516,12 @@ static int init_tdx_module(void)
- 	if (ret)
- 		goto out_free_pamts;
+ 	return (seamrr_mask & SEAMRR_ENABLED_BITS) == SEAMRR_ENABLED_BITS;
+@@ -500,6 +510,10 @@ static int detect_p_seamldr(void)
  
--	/*
--	 * Return -EFAULT until all steps of TDX module
--	 * initialization are done.
--	 */
--	ret = -EFAULT;
-+	/* Initialize TDMRs to complete the TDX module initialization */
-+	ret = init_tdmrs(tdmr_array, tdmr_num);
-+	if (ret)
-+		goto out_free_pamts;
+ static int __tdx_detect(void)
+ {
++	/* Disabled by kernel command line */
++	if (!enable_tdx_host)
++		goto no_tdx_module;
 +
-+	tdx_module_status = TDX_MODULE_INITIALIZED;
- out_free_pamts:
- 	/*
- 	 * Free PAMTs allocated in construct_tdmrs() when TDX module
-@@ -1484,6 +1544,11 @@ static int init_tdx_module(void)
- 	free_tdmrs(tdmr_array, tdmr_num);
- 	kfree(tdmr_array);
- out:
-+	if (ret)
-+		pr_info("Failed to initialize TDX module.\n");
-+	else
-+		pr_info("TDX module initialized.\n");
-+
- 	return ret;
- }
- 
-diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-index bba8cabea4bb..212f83374c0a 100644
---- a/arch/x86/virt/vmx/tdx/tdx.h
-+++ b/arch/x86/virt/vmx/tdx/tdx.h
-@@ -126,6 +126,7 @@ struct tdmr_info {
- #define TDH_SYS_INFO		32
- #define TDH_SYS_INIT		33
- #define TDH_SYS_LP_INIT		35
-+#define TDH_SYS_TDMR_INIT	36
- #define TDH_SYS_LP_SHUTDOWN	44
- #define TDH_SYS_CONFIG		45
- 
+ 	/* The TDX module is not loaded if SEAMRR is disabled */
+ 	if (!seamrr_enabled()) {
+ 		pr_info("SEAMRR not enabled.\n");
 -- 
 2.35.1
 
