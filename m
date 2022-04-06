@@ -2,86 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA83EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB65AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbiDFLll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57472 "EHLO
+        id S229864AbiDFLni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232455AbiDFLjs (ORCPT
+        with ESMTP id S231648AbiDFLnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:39:48 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFECC5601DE;
-        Wed,  6 Apr 2022 01:27:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649233636; x=1680769636;
-  h=from:to:cc:subject:date:message-id;
-  bh=mxkKTAJbE88/K0WJ0aBJfYdx2O1wtFiDPVBLHhOOmjw=;
-  b=WF+hPYF+k2lxiae9ecAKwzqzVOS3LyZE+q/FmDv9+tcV50+05XPqzgI0
-   Jl/lX5rQ/luj+Eqx6FBOzXvKQ8Y2sYoEPLqx6O9vJowbv6Yq/FXtRFaXD
-   fBAoR70wVIUyMUiMgL9Pnh5byDZ9+jfyZUs5dYg7NS422fXrEy5oENaOV
-   k=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 06 Apr 2022 01:27:15 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 06 Apr 2022 01:27:13 -0700
-X-QCInternal: smtphost
-Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 06 Apr 2022 13:57:00 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id 54D213B54; Wed,  6 Apr 2022 13:56:59 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [V2] drivers/tty/serial/qcom-geni-serial: Do stop_rx in suspend path for console if console_suspend is disabled
-Date:   Wed,  6 Apr 2022 13:56:52 +0530
-Message-Id: <1649233612-30844-1-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 6 Apr 2022 07:43:19 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83135826C2;
+        Wed,  6 Apr 2022 01:29:36 -0700 (PDT)
+Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MUGmJ-1nTSAf49gp-00RGcd; Wed, 06 Apr 2022 10:29:35 +0200
+Received: by mail-wr1-f42.google.com with SMTP id z1so2052634wrg.4;
+        Wed, 06 Apr 2022 01:29:34 -0700 (PDT)
+X-Gm-Message-State: AOAM531OqtwpTUOg/EVfV2+UmJYA0dXu/AnjpJjfw+EM4q16jICsyIML
+        tf37VFHTca6RTkr9lTjXbOaswI6c/kFG7cPnJtk=
+X-Google-Smtp-Source: ABdhPJzqKjimJ4xZnU9IPYt6fad20KHtM3TIsGz7LIfUNSAEh1Re0WD0ken3T+oCqWElZNVdr0ug0qBt3+5Wlumu5QE=
+X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
+ e12-20020a056000178c00b002040648b4c4mr5517385wrg.219.1649233774585; Wed, 06
+ Apr 2022 01:29:34 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220405195755.10817-1-nbd@nbd.name> <20220405195755.10817-5-nbd@nbd.name>
+ <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org> <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
+In-Reply-To: <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 6 Apr 2022 10:29:18 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1A6QYajv_HTw79HjiJ8CN6YPeKXc_X3ZFD83pdOqVTkQ@mail.gmail.com>
+Message-ID: <CAK8P3a1A6QYajv_HTw79HjiJ8CN6YPeKXc_X3ZFD83pdOqVTkQ@mail.gmail.com>
+Subject: Re: [PATCH v2 04/14] dt-bindings: arm: mediatek: document WED binding
+ for MT7622
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Networking <netdev@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:LqaHr6zQfU63/KWC6IeHSigHnsL9BIJjTNGAo+pOtFMNqkYgWK+
+ qUDoplE/Sw83CfpzQULwxHJ1W39zwgAd79ykAa/+fe0ExWXw7ftfen8XLjT7gYwvaNy4BPA
+ 3KuKZG3aMpEW6CuAyECDaQAnlIA+VuavkpT64DltnENZgd+kr2pa6LnNklCAdqE7hudEIjS
+ A9GRnXOMY6UbCs4JsAz6A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BzheXsG6FwM=:lg/g4Wyl4/RF5LqxEvpfvk
+ KKYJWvaS+wvWRZtVArZ/ClXOWia8PVjNVm9si85mcWYixRVc/aRdfzIMpy+tUiYinSaKfjG4+
+ hdrDYGeExr9bn1ct26akXZ+DDFtFII4AFZ4m0njrWitiNEwUTV33lDXAaR2FjqOhJnUCbHL2g
+ E4E1g/pIi7dF2QUrpUCUUM5Zgco7yTrqoC1Y7NNIWrZjNfRuvR/5zM8mBfRxd+rn+8z9FxDxj
+ M934Rd0egAkdXZjNk0EyjvFvgsYVVPG0k1zDuvJ5eXxpWsGUX6uF2abfyRswd161OkVCEXCZA
+ QSSEuW/5VAdAOQbyyFkCWQ3oZAzUnerlmSjukdDCbnxQjkOd7ZisOS1ocdvQKMnExWZ+D0rmk
+ xdHggtD8TWKFmZDo5UE9hN+slc8mM+2IxIhDdRzsLZjRxSdF11zRfMvoeSuumj9Gpp/il2q3U
+ xD/XngG83S1iCDLrV8LkcUt/YQA8OR4CckWCQ13gR3cP5EapDHPKIFmZAdUh1MeGG727aK0iC
+ x0Nbwh/avUzfvZFDgI+JQfJ1vWMBCHx686wpb9h7Hms9hUmmf0vEXm2eyt84f5t1q4ftX2P+P
+ YGs8tilrlLW2N0ibBxnYY2If4knWoFDohzhE7BG7K2yWgKQ/o7p7HyJ0ZEN8hIGfvnHmF/1CZ
+ KK+Dzkf6eBd8zqCK7cpXK4f6iFHU6gaVPL6DBGp7TMXhnZMBCPbP4CprSftVytQ/xvKSFFtQI
+ +OVn74Rm2A+faAFh6VQPFV9bFKFak2GydaBuQmSJCCsI0PiW9QxWZcL5XQf86yMLxRFRxEgpt
+ cAZ47H5qjCXwXhea4f5I4x5ux1RwZ25ZVpwMz+HbsdsDiEHVG4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the case of console_suspend disabled, if back to back suspend/resume
-test is executed, at the end of test, sometimes console would appear to
-be frozen not responding to input. This would happen because, for
-console_suspend disabled, suspend/resume routines only turn resources
-off/on but don't do a port close/open.
-As a result, during resume, some rx transactions come in before system is
-ready, malfunction of rx happens in turn resulting in console appearing
-to be stuck.
+On Wed, Apr 6, 2022 at 10:18 AM Felix Fietkau <nbd@nbd.name> wrote:
+> On 06.04.22 10:09, Krzysztof Kozlowski wrote:
+> > On 05/04/2022 21:57, Felix Fietkau wrote:
+> >> From: Lorenzo Bianconi <lorenzo@kernel.org>
+> >>
+> >> Document the binding for the Wireless Ethernet Dispatch core on the MT7622
+> >> SoC, which is used for Ethernet->WLAN offloading
+> >> Add related info in mediatek-net bindings.
+> >>
+> >> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> >> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> >
+> > Thank you for your patch. There is something to discuss/improve.
+> >
+> >> ---
+> >>  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 50 +++++++++++++++++++
+> >>  .../devicetree/bindings/net/mediatek-net.txt  |  2 +
+> >>  2 files changed, 52 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+> >
+> > Don't store drivers in arm directory. See:
+> > https://lore.kernel.org/linux-devicetree/YkJa1oLSEP8R4U6y@robh.at.kernel.org/
+> >
+> > Isn't this a network offload engine? If yes, then probably it should be
+> > in "net/".
+> It's not a network offload engine by itself. It's a SoC component that
+> connects to the offload engine and controls a MTK PCIe WLAN device,
+> intercepting interrupts and DMA rings in order to be able to inject
+> packets coming in from the offload engine.
+> Do you think it still belongs in net, or maybe in soc instead?
 
-Do a stop_rx in suspend sequence to prevent this. start_rx is already
-present in resume sequence as part of call to set_termios which does a
-stop_rx/start_rx.
+I think it belongs into drivers/net/. Presumably this has some kind of
+user interface to configure which packets are forwarded? I would not
+want to maintain that in a SoC driver as this clearly needs to communicate
+with both of the normal network devices in some form.
 
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 1543a60..6f767c7 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1481,6 +1481,10 @@ static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
- 	struct uart_port *uport = &port->uport;
- 	struct qcom_geni_private_data *private_data = uport->private_data;
- 
-+	/* do a stop_rx here, start_rx is handled in uart_resume_port by call to setermios */
-+	if (!console_suspend_enabled && uart_console(uport))
-+		uport->ops->stop_rx(uport);
-+
- 	/*
- 	 * This is done so we can hit the lowest possible state in suspend
- 	 * even with no_console_suspend
--- 
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
-
+         Arnd
