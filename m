@@ -2,63 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00AEC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8719C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355858AbiDFKT2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
+        id S232615AbiDFKTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243468AbiDFKRV (ORCPT
+        with ESMTP id S1377250AbiDFKSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:17:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95742140DF;
-        Tue,  5 Apr 2022 19:52:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 6 Apr 2022 06:18:38 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CA4E43A7;
+        Tue,  5 Apr 2022 23:45:40 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0DBB7CE208B;
-        Wed,  6 Apr 2022 02:52:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4EEFC385A4;
-        Wed,  6 Apr 2022 02:52:13 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 22:52:12 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
-Message-ID: <20220405225212.061852f9@gandalf.local.home>
-In-Reply-To: <20220406023025.GA1926389@roeck-us.net>
-References: <20220405070258.802373272@linuxfoundation.org>
-        <20220406010749.GA1133386@roeck-us.net>
-        <20220406023025.GA1926389@roeck-us.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KYFQC2Sxzz4xNp;
+        Wed,  6 Apr 2022 16:45:39 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649227539;
+        bh=GY7NqJT5gG15KDdh+bqIXSFySSoQEilEDlX+CFfVH5M=;
+        h=Date:From:To:Cc:Subject:From;
+        b=qjwjHMH5ttiBhM4GfXQvLVTVXKbv3XRQe8zlqkFCjwz36Iyl6kX9EWftSWfXUolcY
+         F4Jmb8J3crTULvcshcEZf5nd2o//Ad91gOtU9KNXGeGGolGDmkPLE6x8cZQLRijoEj
+         Mzw/Uj/BA0yeBRL3jxeDtfsHnF7RBk39xw5APF1qdoSzzC0vpNdUfIigX801omHD/Z
+         YMOPZPvzuc4UCH6NUyO/GlzHp+h/zR8D9O8bPIQrbwUg0G4B/RAu7QjYgPaYl1Z4Nc
+         LVCZoy2b0xai+yqoc/eNzDCXMe9lF2K/aNtq+5A1Af6Vl1bZ3b3SXECZvowxERtHFE
+         bK7cff63RcuxQ==
+Date:   Wed, 6 Apr 2022 16:45:38 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the kbuild tree
+Message-ID: <20220406164538.0438bd0e@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/uAcPf6hRDwqokOX0NsMO1d2";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 19:30:25 -0700
-Guenter Roeck <linux@roeck-us.net> wrote:
+--Sig_/uAcPf6hRDwqokOX0NsMO1d2
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> > s390 tests crashed. Other failed qemu tests did not compile.  
-> 
-> Bisect points to commit 93fe2389e6fd ("tracing: Have TRACE_DEFINE_ENUM
-> affect trace event types as well"). Bisect log attached. Reverting the
-> offending patch fixes the problem. Copying Steven for comments/input.
+Hi all,
 
-Do you have this commit?
+Commit
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=795301d3c2899
+  33057b0081b7 ("docs: kbuild: add references on Kconfig semantics")
 
--- Steve
+is missing a Signed-off-by from its committer.
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/uAcPf6hRDwqokOX0NsMO1d2
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJNNxIACgkQAVBC80lX
+0GztYgf+Po2sx3ZyCb8JCY1PE9r0gxnHMR38JnauKMHT0BgL/R6o2ydwZmwPsQXI
+b2DHDScE0Fk8p2gaYTVUrSsIJ8/wwzLXXQY+4X7GHb23z6xuP91fF0+bo5CQHRU9
+X7NoZJdJHnF/E0s7mINPPnpNR433LvtKBR6bhf4KYjt6xqmNLFS3gsomWatL6Oq5
+c0F+vgnjlOZKpKb1T662ZpqKEC1+wNEy4VqF1pXywqOSh1VoobTn/cQWGinyIQRR
+U3XOcXaIBc6/pSIRDYfCfImkST07v2Bl+fCIbXrNCk9LfMdMv8hJuSExsObfuO0r
+nyVJ58+0BXUbRzxeHWRNzN4rtnHyNA==
+=jj5G
+-----END PGP SIGNATURE-----
+
+--Sig_/uAcPf6hRDwqokOX0NsMO1d2--
