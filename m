@@ -2,190 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDEEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 560FFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237120AbiDFQH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
+        id S237306AbiDFQHb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237147AbiDFQG3 (ORCPT
+        with ESMTP id S237128AbiDFQGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:06:29 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A0944E582;
-        Tue,  5 Apr 2022 21:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649220598; x=1680756598;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WHxeJqE3D4iwmpDphKbul2MIPxVCEPcU/ycrWHIMsbA=;
-  b=V3+e5A8HTXcp5sUz3yKTJLzDkKXxTqaXfHBo8TsX0Ney1m8BKRbotx/V
-   mCzBi6X52BF6KGHERVHy2AjBG34h5WiGwmhWbw4kFjuEKAoL7fuTBjhOM
-   taFdlW1A7JlYNYmD6R4smEj7TO9FGXNpKABpVYnYh8ymJQhMBV6MNN8nA
-   8YVq9Ys0QVc2rWFw/fFWLd76S/19rK7EsVjJnjeQR2Emb1WC9rYAHlkpI
-   ZIMSwv0x7Cq6oo3g+75v8SXRNoQw+oX2kaQKLra62UlJsQj4QdLdX1BSm
-   on5z8JYlCMB4yScjtfBaceN0nWvHRvbkpNpAnCuwb/nl5hhGaOgOlNrJ1
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089776"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="243089776"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:49:56 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="524302107"
-Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:49:53 -0700
-From:   Kai Huang <kai.huang@intel.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
-        len.brown@intel.com, tony.luck@intel.com,
-        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
-        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v3 03/21] x86/virt/tdx: Implement the SEAMCALL base function
-Date:   Wed,  6 Apr 2022 16:49:15 +1200
-Message-Id: <1c3f555934c73301a9cbf10232500f3d15efe3cc.1649219184.git.kai.huang@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
-References: <cover.1649219184.git.kai.huang@intel.com>
+        Wed, 6 Apr 2022 12:06:31 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60A6D24D985
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:37:48 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D871F12FC;
+        Wed,  6 Apr 2022 06:37:47 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE9363F73B;
+        Wed,  6 Apr 2022 06:37:45 -0700 (PDT)
+Message-ID: <b7639218-2d10-fd71-0f4b-3af3f8fa224b@arm.com>
+Date:   Wed, 6 Apr 2022 14:37:40 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RFC v2 03/11] iommu/sva: Add iommu_domain type for SVA
+Content-Language: en-GB
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
+ <20220329053800.3049561-4-baolu.lu@linux.intel.com>
+ <20220330190201.GB2120790@nvidia.com>
+ <BN9PR11MB5276A39F481E2E31B0FCFEAE8CE39@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220402233210.GM2120790@nvidia.com>
+ <BN9PR11MB527660D99D154F922B0A628B8CE79@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220406012334.GZ2120790@nvidia.com>
+ <BN9PR11MB52764E3DE16E19D1F1515D008CE79@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <d0f6caea-0cd9-d839-c9fb-0fe49c2bad16@arm.com>
+ <20220406130614.GC2120790@nvidia.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220406130614.GC2120790@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Secure Arbitration Mode (SEAM) is an extension of VMX architecture.  It
-defines a new VMX root operation (SEAM VMX root) and a new VMX non-root
-operation (SEAM VMX non-root) which are isolated from legacy VMX root
-and VMX non-root mode.
+On 2022-04-06 14:06, Jason Gunthorpe wrote:
+> On Wed, Apr 06, 2022 at 01:32:07PM +0100, Robin Murphy wrote:
+>> a particular IOMMU instance, and potentially allocate separate domains for
+>> separate devices to represent the same address space, much like
+>> vfio_iommu_type1_attach_group() does.
+> 
+> I think this VFIO code also needs some more work, it currently assumes
+> that if the domain ops are the same then the domains are compatible,
+> and that is not true for ARM SMMU drivers.
 
-A CPU-attested software module (called the 'TDX module') runs in SEAM
-VMX root to manage the crypto-protected VMs running in SEAM VMX non-root.
-SEAM VMX root is also used to host another CPU-attested software module
-(called the 'P-SEAMLDR') to load and update the TDX module.
+Well, strictly it uses the ops as a "negative" heuristic that the 
+domains are not definitely incompatible, and only then consolidates 
+domains if cross-attaching actually succeeds. So I don't think it's 
+really so bad.
 
-Host kernel transits to either the P-SEAMLDR or the TDX module via the
-new SEAMCALL instruction.  SEAMCALL leaf functions are host-side
-interface functions defined by the P-SEAMLDR and the TDX module around
-the new SEAMCALL instruction.  They are similar to a hypercall, except
-they are made by host kernel to the SEAM software.
+> I've been thinking of adding a domain callback 'can device attach' and
+> replacing the ops compare with that instead.
 
-SEAMCALL leaf functions use an ABI different from the x86-64 system-v
-ABI.  Instead, they share the same ABI with the TDCALL leaf functions.
-%rax is used to carry both the SEAMCALL leaf function number (input) and
-the completion status code (output).  Additional GPRs (%rcx, %rdx,
-%r8->%r11) may be further used as both input and output operands in
-individual leaf functions.
+Previous comment notwithstanding, much as I do tend to prefer "just try 
+the operation and see what happens" APIs, that might be more reliable in 
+the long run than trying to encode specific "sorry, you'll need to 
+allocate a separate domain for this device" vs. "this should have worked 
+but something went wrong" semantics in the return value from attach.
 
-Implement a C function __seamcall() to do SEAMCALL leaf functions using
-the assembly macro used by __tdx_module_call() (the implementation of
-TDCALL leaf functions).  The only exception not covered here is TDENTER
-leaf function which takes all GPRs and XMM0-XMM15 as both input and
-output.  The caller of TDENTER should implement its own logic to call
-TDENTER directly instead of using this function.
+>> It's not really worth IOMMU drivers trying to support a domain spanning
+>> potentially-heterogeneous instances internally, since they can't reasonably
+>> know what matters in any particular situation.
+> 
+> In the long run I think it will be worth optimizing. If the SMMU
+> instances can share IOPTE memory then we get two wins - memory
+> reduction and reduced work to read dirty bits.
+> 
+> The dirty read in particular is very performance sensitive so if real
+> work loads have many SMMUs per VM it will become a pain point.
 
-SEAMCALL instruction is essentially a VMExit from VMX root to SEAM VMX
-root, and it can fail with VMfailInvalid, for instance, when the SEAM
-software module is not loaded.  The C function __seamcall() returns
-TDX_SEAMCALL_VMFAILINVALID, which doesn't conflict with any actual error
-code of SEAMCALLs, to uniquely represent this case.
+In the ideal case though, the SVA domains are only there to logically 
+bridge between an existing process pagetable and IOMMU instances at the 
+API level, right? Surely if we're shadowing physical pagetables for SVA 
+we've basically already lost the performance game?
 
-Signed-off-by: Kai Huang <kai.huang@intel.com>
----
- arch/x86/virt/vmx/tdx/Makefile   |  2 +-
- arch/x86/virt/vmx/tdx/seamcall.S | 52 ++++++++++++++++++++++++++++++++
- arch/x86/virt/vmx/tdx/tdx.h      | 11 +++++++
- 3 files changed, 64 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/virt/vmx/tdx/seamcall.S
- create mode 100644 arch/x86/virt/vmx/tdx/tdx.h
-
-diff --git a/arch/x86/virt/vmx/tdx/Makefile b/arch/x86/virt/vmx/tdx/Makefile
-index 1bd688684716..fd577619620e 100644
---- a/arch/x86/virt/vmx/tdx/Makefile
-+++ b/arch/x86/virt/vmx/tdx/Makefile
-@@ -1,2 +1,2 @@
- # SPDX-License-Identifier: GPL-2.0-only
--obj-$(CONFIG_INTEL_TDX_HOST)	+= tdx.o
-+obj-$(CONFIG_INTEL_TDX_HOST)	+= tdx.o seamcall.o
-diff --git a/arch/x86/virt/vmx/tdx/seamcall.S b/arch/x86/virt/vmx/tdx/seamcall.S
-new file mode 100644
-index 000000000000..327961b2dd5a
---- /dev/null
-+++ b/arch/x86/virt/vmx/tdx/seamcall.S
-@@ -0,0 +1,52 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#include <linux/linkage.h>
-+#include <asm/frame.h>
-+
-+#include "tdxcall.S"
-+
-+/*
-+ * __seamcall()  - Host-side interface functions to SEAM software module
-+ *		   (the P-SEAMLDR or the TDX module)
-+ *
-+ * Transform function call register arguments into the SEAMCALL register
-+ * ABI.  Return TDX_SEAMCALL_VMFAILINVALID, or the completion status of
-+ * the SEAMCALL.  Additional output operands are saved in @out (if it is
-+ * provided by caller).
-+ *
-+ *-------------------------------------------------------------------------
-+ * SEAMCALL ABI:
-+ *-------------------------------------------------------------------------
-+ * Input Registers:
-+ *
-+ * RAX                 - SEAMCALL Leaf number.
-+ * RCX,RDX,R8-R9       - SEAMCALL Leaf specific input registers.
-+ *
-+ * Output Registers:
-+ *
-+ * RAX                 - SEAMCALL completion status code.
-+ * RCX,RDX,R8-R11      - SEAMCALL Leaf specific output registers.
-+ *
-+ *-------------------------------------------------------------------------
-+ *
-+ * __seamcall() function ABI:
-+ *
-+ * @fn  (RDI)          - SEAMCALL Leaf number, moved to RAX
-+ * @rcx (RSI)          - Input parameter 1, moved to RCX
-+ * @rdx (RDX)          - Input parameter 2, moved to RDX
-+ * @r8  (RCX)          - Input parameter 3, moved to R8
-+ * @r9  (R8)           - Input parameter 4, moved to R9
-+ *
-+ * @out (R9)           - struct tdx_module_output pointer
-+ *			 stored temporarily in R12 (not
-+ *			 used by the P-SEAMLDR or the TDX
-+ *			 module). It can be NULL.
-+ *
-+ * Return (via RAX) the completion status of the SEAMCALL, or
-+ * TDX_SEAMCALL_VMFAILINVALID.
-+ */
-+SYM_FUNC_START(__seamcall)
-+	FRAME_BEGIN
-+	TDX_MODULE_CALL host=1
-+	FRAME_END
-+	ret
-+SYM_FUNC_END(__seamcall)
-diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-new file mode 100644
-index 000000000000..9d5b6f554c20
---- /dev/null
-+++ b/arch/x86/virt/vmx/tdx/tdx.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _X86_VIRT_TDX_H
-+#define _X86_VIRT_TDX_H
-+
-+#include <linux/types.h>
-+
-+struct tdx_module_output;
-+u64 __seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
-+	       struct tdx_module_output *out);
-+
-+#endif
--- 
-2.35.1
-
+Robin.
