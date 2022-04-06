@@ -2,114 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4006C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:01:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F94C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234437AbiDFOD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
+        id S233878AbiDFODi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230049AbiDFOCy (ORCPT
+        with ESMTP id S234060AbiDFODX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:02:54 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31AD726AF3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:20:19 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id h4so2185834wrc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 02:20:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=W2aIkhSbWTJlWRBmYZEWYtrp0yLkamumDlvUWGDjJiI=;
-        b=JZIfw3GHWIPY0Sa9qHp8NyB6Oim7mUgr96GyW0rRJieHrrsLkU6hxeUahe3oK1e8+B
-         SdRcfmSLRMGJtHdvfy5100qjasQeK4knEGgDa/HIhyJVZkW0EBr7mAdnuDa4S6kTwu6F
-         4Zt1zYMhHFfBsGwHrZefb9/7qIemr9sk6Gfu/BIzlVHP2GL+aNMh+0jhOXRbDMpT9Xi3
-         2uXQzkLloVh60g8safmJuPGdzuVqH0YqgDVQWys5IWngVxD9OOGBkIY943jthA4/PejL
-         5UWBsOBja1Cumr69Sf3kr7WEni22hVGQCKaZL/W7Svvq5bq58aT6lSNg/dgmFgaaDJFl
-         RDGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=W2aIkhSbWTJlWRBmYZEWYtrp0yLkamumDlvUWGDjJiI=;
-        b=kKukpDdvjx/+5ckqmY90aIsFwsIeLSJqQRRRn0HSpm5XY9/mnQBWuyi2uDRbDdl/XR
-         7GnEJI+U+SJIgiqkJSrs1L5GymElLDAzUwmnmJcOvBYIjfw6H165JwmcBYSKj3ZUeQwK
-         VMSIYJblS3cWlw2veVf3cxAbNIjOQV0t3A4FKKpMhRYyDL7cUljHTxJeudbH8tDHLEJ2
-         eK7jLLbqO0Cv7SeXfwBlBtDPo0XbegqWLp/m/jQeeZI6r7+uWeI0LN0PAvRNOAdxFesh
-         bvc/iBuYBSv7XFurC+61F7MxGuk3Ge1oakaCHp8UyZUGjS7tIbO4QD9RNqbmCavxiHsp
-         XYCQ==
-X-Gm-Message-State: AOAM531M6Cs6pmFyhEimA8PpianLjTq4smOcoNFmmkQG+n8GNUMNDm2g
-        nZDxGJrQrOexP5gTs7Q/uD4a3A==
-X-Google-Smtp-Source: ABdhPJzgMIrKDZHP11m0BbEp9aD8JUJktaSH2xen2F0e/uKtKJEwkgGvuV/pcq0Q6dfVMJZ6Km5hAg==
-X-Received: by 2002:a5d:588a:0:b0:204:1f46:cf08 with SMTP id n10-20020a5d588a000000b002041f46cf08mr5911861wrf.133.1649236817626;
-        Wed, 06 Apr 2022 02:20:17 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:d960:ec5e:e421:9c9e? ([2001:861:44c0:66c0:d960:ec5e:e421:9c9e])
-        by smtp.gmail.com with ESMTPSA id q187-20020a1c43c4000000b0038e70f4f42dsm4318396wma.47.2022.04.06.02.20.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 02:20:17 -0700 (PDT)
-Message-ID: <203a2b93-a842-8cf2-b265-864f520c16a6@baylibre.com>
-Date:   Wed, 6 Apr 2022 11:20:16 +0200
+        Wed, 6 Apr 2022 10:03:23 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE48095A20;
+        Tue,  5 Apr 2022 21:50:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649220655; x=1680756655;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XT+Yu0zqAvB34KyhxTSK4J2jUzqJeBdgYuJKQre9+Fs=;
+  b=KCalozvRFFIAKT+i1S41qpEnELIEWtBrF+PUbel6RY3is0qHkNu1FCpT
+   7ABlQOYOzBu1QQRAE2U4IVhMpkeec6V5oNO32yeVqiH5oyrynRDKgTnjS
+   0dn/zqO2Gy9X6aVH70pQYH4wXzgVkSFbeopB6IJyfjnVQ5vCwFRQ/2tWe
+   RzVQ4Cs7RoDAH3WhDYO3Mfm9qS+bBWzMr31Bb88z0TNKs2vWUSUCjX/HW
+   5u4KXgh6jKGZKkkp10SU1Xjix24HIHQeWPJJLY+7zmhna4gPI2pjIo7e4
+   yzfM1MjoUQEET6Lj+T5enKZBw5h8Na5AQgimSyYFEfx4Ki3MMTVIxWoyW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089873"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="243089873"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:40 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="524302404"
+Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:36 -0700
+From:   Kai Huang <kai.huang@intel.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, kai.huang@intel.com
+Subject: [PATCH v3 14/21] x86/virt/tdx: Set up reserved areas for all TDMRs
+Date:   Wed,  6 Apr 2022 16:49:26 +1200
+Message-Id: <b761a1b05a87c2c291daf811c325ceb4198dfba8.1649219184.git.kai.huang@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1 3/5] drm: bridge: dw_hdmi: Enable GCP only for Deep
- Color
-Content-Language: en-US
-To:     Sandor.yu@nxp.com, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, andrzej.hajda@intel.com,
-        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com
-Cc:     shengjiu.wang@nxp.com, cai.huoqing@linux.dev, maxime@cerno.tech,
-        harry.wentland@amd.com, hverkuil-cisco@xs4all.nl,
-        amuel@sholland.org
-References: <cover.1649230434.git.Sandor.yu@nxp.com>
- <ebd9830fe35d79153cb0051bed0d255fb004fb63.1649230434.git.Sandor.yu@nxp.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <ebd9830fe35d79153cb0051bed0d255fb004fb63.1649230434.git.Sandor.yu@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/2022 10:48, Sandor.yu@nxp.com wrote:
-> From: Sandor Yu <Sandor.yu@nxp.com>
-> 
-> HDMI1.4b specification section 6.5.3:
-> Source shall only send GCPs with non-zero CD to sinks
-> that indicate support for Deep Color.
-> 
-> DW HDMI GPC default enabled, clear gpc_auto bit for bpp 24.
-> 
-> Signed-off-by: Sandor Yu <Sandor.yu@nxp.com>
-> ---
->   drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 8 ++++++++
->   1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> index b11577de4836..c7b11582529e 100644
-> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> @@ -1160,6 +1160,14 @@ static void hdmi_video_packetize(struct dw_hdmi *hdmi)
->   		HDMI_VP_PR_CD_DESIRED_PR_FACTOR_MASK);
->   	hdmi_writeb(hdmi, val, HDMI_VP_PR_CD);
->   
-> +	val = hdmi_readb(hdmi, HDMI_FC_DATAUTO3);
-> +	if (color_depth == 4)
-> +		/* disable Auto GCP when bpp 24 */
-> +		val &= ~0x4;
-> +	else
-> +		val |= 0x4;
-> +	hdmi_writeb(hdmi, val, HDMI_FC_DATAUTO3);
-> +
->   	hdmi_modb(hdmi, HDMI_VP_STUFF_PR_STUFFING_STUFFING_MODE,
->   		  HDMI_VP_STUFF_PR_STUFFING_MASK, HDMI_VP_STUFF);
->   
+As the last step of constructing TDMRs, create reserved area information
+for the memory region holes in each TDMR.  If any PAMT (or part of it)
+resides within a particular TDMR, also mark it as reserved.
 
-Do you handle the case when color_depth == 0 when output is YUV422 ?
+All reserved areas in each TDMR must be in address ascending order,
+required by TDX architecture.
 
-Neil
+Signed-off-by: Kai Huang <kai.huang@intel.com>
+---
+ arch/x86/virt/vmx/tdx/tdx.c | 148 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 146 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index 1b807dcbc101..bf0d13644898 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -15,6 +15,7 @@
+ #include <linux/atomic.h>
+ #include <linux/slab.h>
+ #include <linux/math.h>
++#include <linux/sort.h>
+ #include <asm/msr-index.h>
+ #include <asm/msr.h>
+ #include <asm/cpufeature.h>
+@@ -1112,6 +1113,145 @@ static int tdmrs_setup_pamt_all(struct tdmr_info **tdmr_array, int tdmr_num)
+ 	return -ENOMEM;
+ }
+ 
++static int tdmr_add_rsvd_area(struct tdmr_info *tdmr, int *p_idx,
++			      u64 addr, u64 size)
++{
++	struct tdmr_reserved_area *rsvd_areas = tdmr->reserved_areas;
++	int idx = *p_idx;
++
++	/* Reserved area must be 4K aligned in offset and size */
++	if (WARN_ON(addr & ~PAGE_MASK || size & ~PAGE_MASK))
++		return -EINVAL;
++
++	/* Cannot exceed maximum reserved areas supported by TDX */
++	if (idx >= tdx_sysinfo.max_reserved_per_tdmr)
++		return -E2BIG;
++
++	rsvd_areas[idx].offset = addr - tdmr->base;
++	rsvd_areas[idx].size = size;
++
++	*p_idx = idx + 1;
++
++	return 0;
++}
++
++/* Compare function called by sort() for TDMR reserved areas */
++static int rsvd_area_cmp_func(const void *a, const void *b)
++{
++	struct tdmr_reserved_area *r1 = (struct tdmr_reserved_area *)a;
++	struct tdmr_reserved_area *r2 = (struct tdmr_reserved_area *)b;
++
++	if (r1->offset + r1->size <= r2->offset)
++		return -1;
++	if (r1->offset >= r2->offset + r2->size)
++		return 1;
++
++	/* Reserved areas cannot overlap.  Caller should guarantee. */
++	WARN_ON(1);
++	return -1;
++}
++
++/* Set up reserved areas for a TDMR, including memory holes and PAMTs */
++static int tdmr_setup_rsvd_areas(struct tdmr_info *tdmr,
++				     struct tdmr_info **tdmr_array,
++				     int tdmr_num)
++{
++	u64 start, end, prev_end;
++	int rsvd_idx, i, ret = 0;
++
++	/* Mark holes between e820 RAM entries as reserved */
++	rsvd_idx = 0;
++	prev_end = TDMR_START(tdmr);
++	e820_for_each_mem(i, start, end) {
++		/* Break if this entry is after the TDMR */
++		if (start >= TDMR_END(tdmr))
++			break;
++
++		/* Exclude entries before this TDMR */
++		if (end < TDMR_START(tdmr))
++			continue;
++
++		/*
++		 * Skip if no hole exists before this entry. "<=" is
++		 * used because one e820 entry might span two TDMRs.
++		 * In that case the start address of this entry is
++		 * smaller then the start address of the second TDMR.
++		 */
++		if (start <= prev_end) {
++			prev_end = end;
++			continue;
++		}
++
++		/* Add the hole before this e820 entry */
++		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, prev_end,
++				start - prev_end);
++		if (ret)
++			return ret;
++
++		prev_end = end;
++	}
++
++	/* Add the hole after the last RAM entry if it exists. */
++	if (prev_end < TDMR_END(tdmr)) {
++		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, prev_end,
++				TDMR_END(tdmr) - prev_end);
++		if (ret)
++			return ret;
++	}
++
++	/*
++	 * Walk over all TDMRs to find out whether any PAMT falls into
++	 * the given TDMR. If yes, mark it as reserved too.
++	 */
++	for (i = 0; i < tdmr_num; i++) {
++		struct tdmr_info *tmp = tdmr_array[i];
++		u64 pamt_start, pamt_end;
++
++		pamt_start = tmp->pamt_4k_base;
++		pamt_end = pamt_start + tmp->pamt_4k_size +
++			tmp->pamt_2m_size + tmp->pamt_1g_size;
++
++		/* Skip PAMTs outside of the given TDMR */
++		if ((pamt_end <= TDMR_START(tdmr)) ||
++				(pamt_start >= TDMR_END(tdmr)))
++			continue;
++
++		/* Only mark the part within the TDMR as reserved */
++		if (pamt_start < TDMR_START(tdmr))
++			pamt_start = TDMR_START(tdmr);
++		if (pamt_end > TDMR_END(tdmr))
++			pamt_end = TDMR_END(tdmr);
++
++		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, pamt_start,
++				pamt_end - pamt_start);
++		if (ret)
++			return ret;
++	}
++
++	/* TDX requires reserved areas listed in address ascending order */
++	sort(tdmr->reserved_areas, rsvd_idx, sizeof(struct tdmr_reserved_area),
++			rsvd_area_cmp_func, NULL);
++
++	return 0;
++}
++
++static int tdmrs_setup_rsvd_areas_all(struct tdmr_info **tdmr_array,
++				      int tdmr_num)
++{
++	int i;
++
++	for (i = 0; i < tdmr_num; i++) {
++		int ret;
++
++		ret = tdmr_setup_rsvd_areas(tdmr_array[i], tdmr_array,
++				tdmr_num);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
+ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+ {
+ 	int ret;
+@@ -1128,8 +1268,12 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+ 	if (ret)
+ 		goto err_free_tdmrs;
+ 
+-	/* Return -EFAULT until constructing TDMRs is done */
+-	ret = -EFAULT;
++	ret = tdmrs_setup_rsvd_areas_all(tdmr_array, *tdmr_num);
++	if (ret)
++		goto err_free_pamts;
++
++	return 0;
++err_free_pamts:
+ 	tdmrs_free_pamt_all(tdmr_array, *tdmr_num);
+ err_free_tdmrs:
+ 	free_tdmrs(tdmr_array, *tdmr_num);
+-- 
+2.35.1
+
