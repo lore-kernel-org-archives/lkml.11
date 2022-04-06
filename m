@@ -2,199 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CCEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0949C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235259AbiDFO7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
+        id S235314AbiDFPAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235164AbiDFO6a (ORCPT
+        with ESMTP id S235561AbiDFO77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:58:30 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D9C2ED609
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:54:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1649213671; x=1680749671;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=vAu5yhRsAxK8DaXi5q3xVSokcgRRmeIeyixebptv42U=;
-  b=VOaCvooYxErdvH7VJT/H5PyEeD4RPZFIKQWvz2Z0yc0vvhFFl331e5Xd
-   +NKuBa23BNVJ6ES+0/CiT1kN/p3h6XLVELXfCNePZNc5vgtyRtBm3Lk+0
-   FkUofqDA7eGjniqC4JCLoixaQMfcNrIzY2jdAtjzmVfHl7lIffQAjNnD9
-   GqkIRa5Mcmo5RZCFO/rwcwi8drRLxj4w/Rjp5lEh8Mftb3s21Xs3xtjZ6
-   vlrjPM6UHnKcLD5gkyxjxnQY56cps+oxfPUmILo5gSbwwXamS30EUl7rJ
-   UBYqr6aG4H7axulvrgzb7KQLdlvxYnFDnJqak0vS4tbptU/BYCdPMxQmw
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,238,1643644800"; 
-   d="scan'208";a="202041845"
-Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 06 Apr 2022 10:54:28 +0800
-IronPort-SDR: tgx+vl5hzmsu4QteR36zqGQA80N0X86LIV4B0OcWrkicg1Ie9HCZuKZs2OxSTNTpgsumgCOEQ5
- U2siCayfgBeO7JeuAbYZefthPA+Qa6dtFgXVMesLnjww1GB7r1P0NakTJhrr8sZBqoflz2E+bS
- BRGqA4Ef23dz/GZwKsv5yjNumg99vYHqNkp4qHR1HcgibPT7T5+qESKAPPX0s1DyAPAPXcrGk4
- TiZPpyKrIUDJIq49PZZWw1rjSU/km0v9MyMTJ88a1LOBS7l6ncGIJogoubvgSPkaxKku9jjg4p
- tY0kIcOLUpuUmgoPrKHVlh9v
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Apr 2022 19:26:00 -0700
-IronPort-SDR: GNt06s6lM3JhKCoW164f2X17ruDMNDq1SZO4zdI5jdxesdlE0OxCPEbo5Z8AbCyKYFd2VXm4c1
- zwmreyKRlpP7fRbsOT06wibT/OA0nXH3/nTCwepn96aF2nJyQ8qP1R988LerVETnW+yIThQZ7I
- q6m+Fwo4b9ZEan6pcWg3MoA2NOenhNSfcT55hcPW1wFN38Av+W3ukxUDN6b66VnjTypWk4s2DH
- iSD3HPiwpKVDLODAeqgdEYLyHISJOskYx7JvYaR2gVUVq+xgw1jmWVvXssFyJfTosBYPezmzGd
- Uds=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Apr 2022 19:54:29 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KY8HS02Hvz1SHwl
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:54:27 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1649213667; x=1651805668; bh=vAu5yhRsAxK8DaXi5q3xVSokcgRRmeIeyix
-        ebptv42U=; b=nXK/eVunNt5Gn8uUnqNba7nQX1hdJGDSw2NrFJlMcgPIMbr/0LH
-        SL3FSj5rYiHbbdOEd94S65j68ibo1JviSw27Tcs5SKEi1eOylfwgfaumUZaNJ2bF
-        P3qRKSZrMT7c+T/XESZvSThhM2Xc/l0qnUwl8DiXy+GZkGDvBHfiWPjA1vmBZOGV
-        7TgwkT8AltXgRCVHvxR2HPZC6eZVwK3YT926U6Xv1L1r+LlROP+glN0m0fIJehVD
-        WHUc4Le7oKOeB7VZQSKB+GWy72gYiokO/1CeykMTox50pQX5EHOzjrvKAK3l0wbT
-        vzV/1m9ZHyIRmlZB8PAc0woR53cqyQyW7Sw==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id eWDdNKU3RPzs for <linux-kernel@vger.kernel.org>;
-        Tue,  5 Apr 2022 19:54:27 -0700 (PDT)
-Received: from [10.149.53.254] (washi.fujisawa.hgst.com [10.149.53.254])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KY8HQ2V3Mz1Rvlx;
-        Tue,  5 Apr 2022 19:54:26 -0700 (PDT)
-Message-ID: <393d9a36-9dcb-d2d3-6202-bca8e0329f50@opensource.wdc.com>
-Date:   Wed, 6 Apr 2022 11:54:25 +0900
+        Wed, 6 Apr 2022 10:59:59 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9653A48BF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 21:04:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649217892; x=1680753892;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=v1Q/9FY5s8v+kl8d9wmv8zGTJTqZMaJh5qs6/N8Rucs=;
+  b=MYZSZGi2YlGFjGQAY4AsE7q3Uihe0Sc2XJE2rRgbOPMdc9Ig/Bu+TCAb
+   ypDTPcighY76FoMq8/UdOPfp5W3zr7OuqJ9xjqYprsgiMpb0Z3VeEmM2M
+   H6vL8qZ78BCh+4TJlYYEX7+6YPtaHGZSZcBHfadCtQHNmA0Lccv3hyPU9
+   VxiADl9lW2HMheS96TGTTnop58SiOTPzR9UaxNhaeWqPRwD0s5ySOs8cv
+   gcUxyp9XMX48xwWZxtKPGl9W5GBb3WoXkNdDXtTO2jc6pWeNvCjdlOElK
+   T3Tp8c9ZKwg5mmjcb+9R4QWcR9uJLRhuqHBklrZlNrZBKUDPC/7ca+vBo
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="324115165"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="324115165"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:04:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="722346486"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 05 Apr 2022 21:04:47 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbwuU-00042a-Va;
+        Wed, 06 Apr 2022 04:04:46 +0000
+Date:   Wed, 6 Apr 2022 12:03:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [krzk-github:n/qcom-ufs-opp-v2 14/15]
+ drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier
+ 'clki'
+Message-ID: <202204061241.LQDOaiaI-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] bus: fsl-mc-msi: fix MSI descriptor mutex lock for
- msi_first_desc()
-Content-Language: en-US
-To:     Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
-        linux-kernel@vger.kernel.org, Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Jason Gunthorpe <jgg@ziepe.ca>
-References: <20220405125929.688616-1-shinichiro.kawasaki@wdc.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220405125929.688616-1-shinichiro.kawasaki@wdc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 21:59, Shin'ichiro Kawasaki wrote:
-> Commit e8604b1447b4 ("bus: fsl-mc-msi: Simplify MSI descriptor
-> handling") introduced a call to the helper function msi_first_desc(),
-> which needs MSI descriptor mutex lock before call. However, the required
-> mutex lock was not added. This resulted in lockdep assert WARNING [1].
-> Fix this by adding the mutex lock and unlock around the function call.
-> 
-> [1]
-> 
-> [    8.542804] WARNING: CPU: 4 PID: 119 at kernel/irq/msi.c:274 msi_first_desc+0xd0/0x10c
-> [    8.551428] Modules linked in:
-> [    8.555184] CPU: 4 PID: 119 Comm: kworker/u32:1 Not tainted 5.18.0-rc1+ #5
-> [    8.562755] Hardware name: SolidRun Ltd. SolidRun CEX7 Platform, BIOS EDK II Aug  9 2021
-> [    8.571539] Workqueue: events_unbound deferred_probe_work_func
-> [    8.578079] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [    8.585736] pc : msi_first_desc+0xd0/0x10c
-> [    8.590529] lr : msi_first_desc+0xcc/0x10c
-> [    8.595321] sp : ffff800009856fb0
-> [    8.599328] x29: ffff800009856fb0 x28: ffff3018789f0000 x27: ffff3018789f0000
-> [    8.607175] x26: 1ffff0000130ae2a x25: 1fffe6030f13e0a4 x24: 1fffe6030f13e0a3
-> [    8.615020] x23: ffff301878a09024 x22: ffff301860993800 x21: ffffc539150ec000
-> [    8.622865] x20: 0000000000000000 x19: ffff301878a04880 x18: ffff30257b37b588
-> [    8.630710] x17: 0000000000000000 x16: 1fffe6030c3d89a3 x15: 1fffe6030c3d8982
-> [    8.638555] x14: 0000000000000004 x13: ffff301861ec4c14 x12: ffff70000130adc3
-> [    8.646400] x11: 1ffff0000130adc2 x10: ffff70000130adc2 x9 : ffffc53911dd0790
-> [    8.654245] x8 : ffff800009856e17 x7 : 0000000000000001 x6 : 0000000041b58ab3
-> [    8.662089] x5 : ffff70000130ada2 x4 : 1ffff0000130add2 x3 : 1fffe6030c3d8802
-> [    8.669933] x2 : 0000000000000000 x1 : 0000000000000000 x0 : 0000000000000000
-> [    8.677778] Call trace:
-> [    8.680918]  msi_first_desc+0xd0/0x10c
-> [    8.685364]  fsl_mc_msi_domain_alloc_irqs+0x7c/0xc0
-> [    8.690938]  fsl_mc_populate_irq_pool+0x80/0x3cc
-> [    8.696251]  dprc_scan_objects+0x370/0x560
-> [    8.701042]  dprc_probe+0x54/0x210
-> [    8.705137]  fsl_mc_driver_probe+0x60/0xc0
-> [    8.709934]  really_probe+0x328/0x9bc
-> [    8.714292]  __driver_probe_device+0x268/0x3d0
-> [    8.719431]  driver_probe_device+0x64/0x154
-> [    8.724310]  __device_attach_driver+0x194/0x250
-> [    8.729536]  bus_for_each_drv+0x114/0x190
-> [    8.734241]  __device_attach+0x198/0x34c
-> [    8.738859]  device_initial_probe+0x20/0x30
-> [    8.743738]  bus_probe_device+0x168/0x1e0
-> [    8.748443]  device_add+0x858/0x12a0
-> [    8.752713]  fsl_mc_device_add+0x4bc/0x950
-> [    8.757505]  fsl_mc_bus_probe+0x464/0x740
-> [    8.762210]  platform_probe+0xd0/0x1b0
-> [    8.766653]  really_probe+0x328/0x9bc
-> [    8.771010]  __driver_probe_device+0x268/0x3d0
-> [    8.776149]  driver_probe_device+0x64/0x154
-> [    8.781028]  __device_attach_driver+0x194/0x250
-> [    8.786254]  bus_for_each_drv+0x114/0x190
-> [    8.790958]  __device_attach+0x198/0x34c
-> [    8.795576]  device_initial_probe+0x20/0x30
-> [    8.800455]  bus_probe_device+0x168/0x1e0
-> [    8.805159]  deferred_probe_work_func+0x16c/0x24c
-> [    8.810558]  process_one_work+0x69c/0xf40
-> [    8.815265]  worker_thread+0x3dc/0xc50
-> [    8.819710]  kthread+0x2cc/0x340
-> [    8.823635]  ret_from_fork+0x10/0x20
-> [    8.827909] irq event stamp: 2082
-> [    8.831915] hardirqs last  enabled at (2081): [<ffffc539131f6670>] _raw_spin_unlock_irqrestore+0x120/0x144
-> [    8.842267] hardirqs last disabled at (2082): [<ffffc539131d5ef4>] el1_dbg+0x24/0x80
-> [    8.850708] softirqs last  enabled at (2002): [<ffffc53910d90a38>] __do_softirq+0x528/0x8e0
-> [    8.859753] softirqs last disabled at (1997): [<ffffc53910e3c3e8>] __irq_exit_rcu+0x3f8/0x680
-> 
-> Fixes: e8604b1447b4 ("bus: fsl-mc-msi: Simplify MSI descriptor handling")
-> Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-> CC: stable@vger.kernel.org # v5.17+
-> ---
->   drivers/bus/fsl-mc/fsl-mc-msi.c | 7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/bus/fsl-mc/fsl-mc-msi.c b/drivers/bus/fsl-mc/fsl-mc-msi.c
-> index 5e0e4393ce4d..b2d827ecf33a 100644
-> --- a/drivers/bus/fsl-mc/fsl-mc-msi.c
-> +++ b/drivers/bus/fsl-mc/fsl-mc-msi.c
-> @@ -224,8 +224,13 @@ int fsl_mc_msi_domain_alloc_irqs(struct device *dev,  unsigned int irq_count)
->   	if (error)
->   		return error;
->   
-> +	msi_lock_descs(dev);
->   	if (msi_first_desc(dev, MSI_DESC_ALL))
-> -		return -EINVAL;
-> +		error = -EINVAL;
-> +	msi_unlock_descs(dev);
-> +
+tree:   https://github.com/krzk/linux n/qcom-ufs-opp-v2
+head:   fff8a3e9335a828deb502bbcf983c4316d27c74e
+commit: ae883f49d1137ae5f4997c5287dbf35f9bdd0272 [14/15] ufs wip
+config: hexagon-randconfig-r045-20220405 (https://download.01.org/0day-ci/archive/20220406/202204061241.LQDOaiaI-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/krzk/linux/commit/ae883f49d1137ae5f4997c5287dbf35f9bdd0272
+        git remote add krzk-github https://github.com/krzk/linux
+        git fetch --no-tags krzk-github n/qcom-ufs-opp-v2
+        git checkout ae883f49d1137ae5f4997c5287dbf35f9bdd0272
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/scsi/ufs/
 
-Nit: you could remove the blank line here.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> +	if (error)
-> +		return error;
->   
->   	/*
->   	 * NOTE: Calling this function will trigger the invocation of the
+All errors (new ones prefixed by >>):
 
-Looks good to me.
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+                   list_for_each_entry(clki, head, list) {
+                                       ^
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:373:23: error: use of undeclared identifier 'clki'
+   drivers/scsi/ufs/ufshcd-pltfrm.c:374:24: error: use of undeclared identifier 'clki'
+                           if (!IS_ERR_OR_NULL(clki->clk)) {
+                                               ^
+   drivers/scsi/ufs/ufshcd-pltfrm.c:379:18: error: use of undeclared identifier 'clki'
+                                   names[i++] = clki->name;
+                                                ^
+   drivers/scsi/ufs/ufshcd-pltfrm.c:383:15: error: implicit declaration of function 'dev_pm_opp_set_clknames' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                   opp_table = dev_pm_opp_set_clknames(dev, names, i);
+                               ^
+   drivers/scsi/ufs/ufshcd-pltfrm.c:383:15: note: did you mean 'dev_pm_opp_set_clkname'?
+   include/linux/pm_opp.h:158:19: note: 'dev_pm_opp_set_clkname' declared here
+   struct opp_table *dev_pm_opp_set_clkname(struct device *dev, const char *name);
+                     ^
+   drivers/scsi/ufs/ufshcd-pltfrm.c:383:13: warning: incompatible integer to pointer conversion assigning to 'struct opp_table *' from 'int' [-Wint-conversion]
+                   opp_table = dev_pm_opp_set_clknames(dev, names, i);
+                             ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/scsi/ufs/ufshcd-pltfrm.c:385:4: error: use of undeclared identifier 'ret'
+                           ret = PTR_ERR(opp_table);
+                           ^
+   1 warning and 13 errors generated.
 
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+
+vim +/clki +373 drivers/scsi/ufs/ufshcd-pltfrm.c
+
+   314	
+   315	/**
+   316	 * ufshcd_pltfrm_init - probe routine of the driver
+   317	 * @pdev: pointer to Platform device handle
+   318	 * @vops: pointer to variant ops
+   319	 *
+   320	 * Returns 0 on success, non-zero value on failure
+   321	 */
+   322	int ufshcd_pltfrm_init(struct platform_device *pdev,
+   323			       const struct ufs_hba_variant_ops *vops)
+   324	{
+   325		struct ufs_hba *hba;
+   326		void __iomem *mmio_base;
+   327		int irq, err;
+   328		struct device *dev = &pdev->dev;
+   329	
+   330		mmio_base = devm_platform_ioremap_resource(pdev, 0);
+   331		if (IS_ERR(mmio_base)) {
+   332			err = PTR_ERR(mmio_base);
+   333			goto out;
+   334		}
+   335	
+   336		irq = platform_get_irq(pdev, 0);
+   337		if (irq < 0) {
+   338			err = irq;
+   339			goto out;
+   340		}
+   341	
+   342		err = ufshcd_alloc_host(dev, &hba);
+   343		if (err) {
+   344			dev_err(dev, "Allocation failed\n");
+   345			goto out;
+   346		}
+   347	
+   348		hba->vops = vops;
+   349	
+   350		err = ufshcd_parse_clock_info(hba);
+   351		if (err) {
+   352			dev_err(dev, "%s: clock parse failed %d\n",
+   353					__func__, err);
+   354			goto dealloc_host;
+   355		}
+   356		err = ufshcd_parse_regulator_info(hba);
+   357		if (err) {
+   358			dev_err(dev, "%s: regulator init failed %d\n",
+   359					__func__, err);
+   360			goto dealloc_host;
+   361		}
+   362	
+   363		if (devm_pm_opp_of_add_table(dev)) {
+   364			dev_dbg(dev, "no OPP table (%d), no performance state control\n",
+   365				err);
+   366		} else {
+   367			struct list_head *head = &hba->clk_list_head;
+   368			char *names[32];
+   369			unsigned int i = 0;
+   370			struct opp_table *opp_table;
+   371	
+   372			pr_err("AAA USING OPP\n");
+ > 373			list_for_each_entry(clki, head, list) {
+   374				if (!IS_ERR_OR_NULL(clki->clk)) {
+   375					if (i == ARRAY_SIZE(names)) {
+   376						pr_err("AAA BBBB too many\n");
+   377						goto dealloc_host;
+   378					}
+   379					names[i++] = clki->name;
+   380				}
+   381			}
+   382			hba->use_pm_opp = true;
+   383			opp_table = dev_pm_opp_set_clknames(dev, names, i);
+   384			if (IS_ERR(opp_table)) {
+ > 385				ret = PTR_ERR(opp_table);
+   386				goto dealloc_host;
+   387			}
+   388			// FIXME: put table
+   389		}
+   390	
+   391		ufshcd_init_lanes_per_dir(hba);
+   392	
+   393		err = ufshcd_init(hba, mmio_base, irq);
+   394		if (err) {
+   395			dev_err(dev, "Initialization failed\n");
+   396			goto dealloc_host;
+   397		}
+   398	
+   399		pm_runtime_set_active(dev);
+   400		pm_runtime_enable(dev);
+   401	
+   402		return 0;
+   403	
+   404	dealloc_host:
+   405		ufshcd_dealloc_host(hba);
+   406	out:
+   407		return err;
+   408	}
+   409	EXPORT_SYMBOL_GPL(ufshcd_pltfrm_init);
+   410	
 
 -- 
-Damien Le Moal
-Western Digital Research
+0-DAY CI Kernel Test Service
+https://01.org/lkp
