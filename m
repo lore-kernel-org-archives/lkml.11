@@ -2,100 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B275C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233586AbiDFNie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54208 "EHLO
+        id S233291AbiDFNio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233595AbiDFNh2 (ORCPT
+        with ESMTP id S233781AbiDFNhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:37:28 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D288D4F78C1
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:38:42 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 0D55C21100;
-        Wed,  6 Apr 2022 10:32:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649241121; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OMDGAmoV8QktX8IKltrIly445f2xIv5AMZSxxxqIcwQ=;
-        b=DecQ10YcpW+8SnMPjyYeJuMQiKBj5stHvhKa5KRxfYwUpEc5PEDk273yXhBPNW3/cgZRdv
-        0Rjp4dTIAU+jGaiKu/8NNDh79SQOmBngcYf7XtSqu3bFaMFSXrV+JFuPcZCPEtd7+k2q6l
-        ACQfQ3QZC8yaBdMLQkUuOMwKGMGyzME=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DA53CA3B82;
-        Wed,  6 Apr 2022 10:32:00 +0000 (UTC)
-Date:   Wed, 6 Apr 2022 12:31:59 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH printk v2 05/12] printk: add macro for console detail
- messages
-Message-ID: <Yk1sH5huJa6dayqJ@alley>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
- <20220405132535.649171-6-john.ogness@linutronix.de>
+        Wed, 6 Apr 2022 09:37:33 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47BD368F4CC;
+        Wed,  6 Apr 2022 03:38:56 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id C74DE1F40636
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649241526;
+        bh=5GWmZjBirWLKxTJDH+AOnbEW/7YRX30utZckHcSznsA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=b1yhGPYeG8w7Hp3otl5OwFcOZbuTdGDLENoQCChDRid7NyaHwJgMzTFezCf/36fV2
+         fuQOYSawPvsvy2Gil0LJd3sKx2+iNHU5Z4uP1KTdPjDCbN6zti6mJwrFqE/0mULBDa
+         MtpEJV+jra0//NFIIRW8QWD0FXJMBPQqRUx5zS7pyhDoIGAMd3uI9rU/mc7OwIX76V
+         4CbeW4SEYM6BK09Mdij+l+jwkckSSGuGVOX6qG0lKjWZSGR43dbXQSq+O7AfSps4PQ
+         D+HY0d/19iLzO9ZI2pjsLvnk0S8sbVY7t0/n1m8IXHILCglQspsK4DfeKx3NeaVWux
+         V7Uhzleh+dAMA==
+Message-ID: <19a1af29-19a7-a546-b565-a2cc973a7f28@collabora.com>
+Date:   Wed, 6 Apr 2022 12:38:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405132535.649171-6-john.ogness@linutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/3] dt-bindings: display: mediatek: Correct disp_aal
+ binding for MT8183
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de, airlied@linux.ie,
+        yongqiang.niu@mediatek.com, jason-jh.lin@mediatek.com,
+        nancy.lin@mediatek.com, allen-kh.cheng@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+ <20220406094654.29722-2-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220406094654.29722-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-04-05 15:31:28, John Ogness wrote:
-> It is useful to generate log messages that include details about
-> the related console. Rather than duplicate the logic to assemble
-> the details, put that logic into a macro printk_console_msg().
+Il 06/04/22 11:46, Rex-BC Chen ha scritto:
+> The driver data of MT8183 and MT8173 are different.
+> The value of has_gamma for MT8173 is true while the value of MT8183 is
+> false. Therefore, the compatible of disp_aal for MT8183 is not suitable
+> for the compatible for MT8173.
 > 
-> Once console printers become threaded, this macro will find many
-> users.
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-I really like this idea.
+Hello!
+Yes, I definitely agree with this change, it makes no sense to have both
+8173 and 8183 compatibles for 8183 (and similar).
 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> ---
->  kernel/printk/printk.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index fb9a6eaf54fd..39ca9d758e52 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2993,6 +2993,10 @@ static void try_enable_default_console(struct console *newcon)
->  		newcon->flags |= CON_CONSDEV;
->  }
->  
-> +#define printk_console_msg(c, lvl, msg) \
-> +	printk(lvl pr_fmt("%sconsole [%s%d] " msg "\n"), \
-> +	       (c->flags & CON_BOOT) ? "boot" : "", c->name, c->index)
+Though, please, add a note in this commit message advertising that the
+mistake was only in the yaml binding, as the driver doesn't require any
+functional changes, so that things are clear for people with less expertise
+on MediaTek platforms.
 
-This might be dangerous because "msg" is handled as printk format.
-Any potential %<modifier> might cause unexpected memory access.
-
-Honestly, I am not good at writing macros. I played with it and
-the following worked for me:
-
-#define printk_console_msg(c, lvl, fmt, ...)			\
-	printk(lvl pr_fmt("%sconsole [%s%d] " fmt),		\
-	       (c->flags & CON_BOOT) ? "boot" : "",		\
-	       c->name, c->index,				\
-		##__VA_ARGS__)
-
-Note that it requires adding "\n" back to the callers.
-
-Also, please, call it "console_printk()" or so. It needs extra
-arguments and this name will help to distinguish it from
-the plain printk() wrappers. From my POV, it is something like,
-for example, dev_printk(), snd_printk(), or xfs_printk_ratelimited().
-
-Best Regards,
-Petr
+After that:
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
