@@ -2,163 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF06C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD47C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348600AbiDFHMM (ORCPT
+        id S1346117AbiDFHLw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
+        Wed, 6 Apr 2022 03:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235874AbiDFG5T (ORCPT
+        with ESMTP id S1456665AbiDFGon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:57:19 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2070.outbound.protection.outlook.com [40.107.212.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CF21D2069;
-        Tue,  5 Apr 2022 22:25:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aWBeqpQOx40kDLsJi2SfpzHzOq+5K6jOK/b7eioiFQkqzkEeOXMzoUxwSLLO/+NK/Ukl6eAtZtSDbejVPhtSqBLG2hQq7lTxABZdqRJhRvDWY0hapQ8u1dZ3pfm5PKKhaMlojj8UyVS2baHAEwM+oArRT0R3HYPvo6Dq3ytPEjRkOfqxPLHififnb8nku2bcGTksYpfwQ6s9D3EJ2PWn7ehxeKW7ke8+POkDkvz1wqscwUVKHt+uf9WK5tIZtYEIWpmQgDf2TeqOcRt9rkocXnmHGKCuqmQcBV+MiCb18oYNrBvtCqLKmth0Msx1WG68rSn2ljhE7xSsY5PTwMUk0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=99r1v5r5od5O/aXUdW2QEQW8bEtdH3taAa31oRxXURc=;
- b=iM/wntrFBCOYmfWdEWCZ/jip/1e+EEaDVLYrHVaxa2B0QZeLVYszSA+R3Zr3MtJ0kVVh46S2eeHIcwpCBHMZQ2WtV9xuu+ofmB3cBk+4mGJn70LBtTe2pfMqpfD9YYPfNj0G2ebBxvjmLVFNbL+KWX5QfGAuZzuNcmGihA2ANHYjoC5eO+KC61gmiReylXtOsnjk9TbMKeuvR4Ox+pRdXkKFlbNhVPRLk+wx5/B2GZDVZQGQWKhvwdhLuBkUTvR4LIYHq8Cjqp/6JrhwqUhL4qhFPlsvfgii5YVnVYe8IYdZ2C5xddRCyuhysj73z0F7pqEy218vkK6vkq1/rxteFg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=99r1v5r5od5O/aXUdW2QEQW8bEtdH3taAa31oRxXURc=;
- b=bl5/V+H9guGDgjnwKJogQ+Ry4QbrgLnyXbMbiZdLkLhGW9pLiCH2xxt87aDpD2rDwEs3sREWzo3m2nVYe0sntaW7KBxz8+NQ10zeVBFuxNB32XECsSTKIE5bX72V35stvGh6NytrHwne7faRDg3zjAtEYs5lohrtBLxzsgWnR4teh3dESBRHIs7f+Fl7OgIMkfBwhQPtSsri8Ricm6eJmpRmp+78UouILQ8Dwkc0DApZsUtBLt0Edqp8sfAX7iz9NT6kZu8htfVe1chPKxvrPSiFuShhEURHRjLkCY7+DKvIM1BwhltjN7jkPEn9y/wGXRKUnJcEn9KH8N/ZiKJb5g==
-Received: from MW2PR16CA0037.namprd16.prod.outlook.com (2603:10b6:907:1::14)
- by BY5PR12MB4968.namprd12.prod.outlook.com (2603:10b6:a03:1d2::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Wed, 6 Apr
- 2022 05:25:11 +0000
-Received: from CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:907:1:cafe::99) by MW2PR16CA0037.outlook.office365.com
- (2603:10b6:907:1::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
- Transport; Wed, 6 Apr 2022 05:25:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT036.mail.protection.outlook.com (10.13.174.124) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5144.20 via Frontend Transport; Wed, 6 Apr 2022 05:25:10 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 6 Apr
- 2022 05:25:10 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 5 Apr 2022
- 22:25:09 -0700
-Received: from amhetre.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Tue, 5 Apr 2022 22:25:06 -0700
-From:   Ashish Mhetre <amhetre@nvidia.com>
-To:     <krzysztof.kozlowski@linaro.org>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <digetx@gmail.com>, <robh+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <vdumpa@nvidia.com>, <Snikam@nvidia.com>,
-        Ashish Mhetre <amhetre@nvidia.com>
-Subject: [Patch v6 0/4] memory: tegra: Add MC channels and error logging
-Date:   Wed, 6 Apr 2022 10:54:55 +0530
-Message-ID: <20220406052459.10438-1-amhetre@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-X-NVConfidentiality: public
+        Wed, 6 Apr 2022 02:44:43 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F8C1624A2;
+        Tue,  5 Apr 2022 21:50:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649220659; x=1680756659;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=I+dWPDiE4xf63aSyJo77PiXg+mtIis/JHI1I6V04uBU=;
+  b=VnYeP5a6xZf1ud7WMcSOMT3bckQN5oFJHRqp0knZRRoey2yd7tJON/46
+   SYNkVS7ijNxPTFjvUxPYi6AcOp6FM/zh74VamAPn09iW6GM/Uoykah68S
+   1SCUU5xJphPVAde5UTEEUJnJVNgI1WAwgfoKPwpWnMADfaEY+92MUev+p
+   65FJnx+U8cQE/5wC9ESohiY+UDwXrMXqlAVNQsIJw93KVMLQaMDwBAMo0
+   Qw+2Ubg97fOsJTxpJkG7YQaQj0KM5M7HTGm8Dxc4IcRGMQFgv3/hKa8B+
+   cUTf/Q175MWycEGy+U5PmeujMFMRTf4nIp5gHbu+fVEwGlJCvVlnhZwRC
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089913"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="243089913"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:56 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="524302468"
+Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:52 -0700
+From:   Kai Huang <kai.huang@intel.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, kai.huang@intel.com
+Subject: [PATCH v3 18/21] x86/virt/tdx: Initialize all TDMRs
+Date:   Wed,  6 Apr 2022 16:49:30 +1200
+Message-Id: <9c180b4f34956a5d43bbf7894c423fcbe75fc7a9.1649219184.git.kai.huang@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d1c7e2b9-5b80-4f5b-c292-08da178dd22f
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4968:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB4968A014F2D945CE68E87274CAE79@BY5PR12MB4968.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NrYfiMagzHiS2YS+4J/g2r+LAiWVnYuAKkQFe2iX8R+T1w1dsdpKwhoEfXMNUYf2jQziWlNMTkSLAoMpMCasA4Br9+BJeqzd8Ot7Nl3b/UuEBKXQxkIVwsiWtMAKdCx/JHW/Dv32CDOohRk5dec3BsXSzU6UelkQzG4mpHNTl6EtT1JM6ZNjH1blHmcst5Li4jxZwJYLKTLdhRI6CP9ilmniDAJXFAJ6bv8Dh93ilG8H6/7qziuLyO8yrtg5ygq4MPckP+oHTNL/V1a0qqFFsMmXpKBoOEjD14B6I3NkfFAXLAa0GpasP8PpscPkJMJ1sZzQAUSu5i0Rb4fuLvqpIMVNWAnGodFbr6rtnm50QfpLBs0lkgD+sAB2bHFyxsNQv2Y73wiMDfNcDqgNSzEn6+1Mc7rsUcTibq7qrGfQNdcYRz1bJKcaoQlnuQyy4DBsc+BolPD+Cq1AY/MRaQFzE3SjZPWDjayclNpixrI9y2duLeMDqIrg7fTMZeQ7EF9GKtbAfzfGs43MKKVS/ePsc6jIvKs7fyYmAF9lXmdtJWG9qOphlV6AnGuZVX3kDN7eK7ImtKMwc7wDVSMB/dDcEKnmMQhA2MgY6BRDgoptAEAap7NTr2/k1AzWbAIlDieOD6ERYpLLxvEuhKSLM9Iz9weVwtgTtYhADmHL4AY2DxPEcuPyHwJRiOk2MaW311givpQlnAUO79Ch45H1+pPvXQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(70206006)(70586007)(4326008)(8676002)(316002)(54906003)(110136005)(36860700001)(36756003)(86362001)(356005)(81166007)(83380400001)(26005)(186003)(1076003)(2616005)(7696005)(508600001)(6666004)(82310400005)(40460700003)(8936002)(336012)(426003)(47076005)(107886003)(5660300002)(2906002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 05:25:10.9425
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1c7e2b9-5b80-4f5b-c292-08da178dd22f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4968
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From tegra186 onward, memory controllers support multiple channels.
-Add memory controller channels in device tree and add support to map
-address spaces of these channels in tegra MC driver.
-When memory controller interrupt occurs, registers from these channels
-are required to be read in order to get error information.
-Add error logging support from tegra186 onward for memory controller
-interrupts.
+Initialize TDMRs via TDH.SYS.TDMR.INIT as the last step to complete the
+TDX initialization.
 
-Ashish Mhetre (4):
-  memory: tegra: Add memory controller channels support
-  memory: tegra: Add MC error logging on tegra186 onward
-  dt-bindings: memory: Update reg maxitems for tegra186
-  arm64: tegra: Add memory controller channels
+All TDMRs need to be initialized using TDH.SYS.TDMR.INIT SEAMCALL before
+the TDX memory can be used to run any TD guest.  The SEAMCALL internally
+uses the global KeyID to initialize PAMTs in order to crypto protect
+them from malicious host kernel.  TDH.SYS.TDMR.INIT can be done any cpu.
 
+The time of initializing TDMR is proportional to the size of the TDMR.
+To avoid long latency caused in one SEAMCALL, TDH.SYS.TDMR.INIT only
+initializes an (implementation-specific) subset of PAMT entries of one
+TDMR in one invocation.  The caller is responsible for calling
+TDH.SYS.TDMR.INIT iteratively until all PAMT entries of the requested
+TDMR are initialized.
+
+Current implementation initializes TDMRs one by one.  It takes ~100ms on
+a 2-socket machine with 2.2GHz CPUs and 64GB memory when the system is
+idle.  Each TDH.SYS.TDMR.INIT takes ~7us on average.
+
+TDX does allow different TDMRs to be initialized concurrently on
+multiple CPUs. This parallel scheme could be introduced later when the
+total initialization time becomes a real concern, e.g. on a platform
+with a much bigger memory size.
+
+Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
-Changes in v6:
-- Added reg-names for each reg item of memory controller node
-- Added logging for interrupts on multiple memory controller channels
-- Added clearing interrupt support for global intstatus
-- Updated DT binding documentation to work with existing DTS as well
-- Updated function to get MC channels
-- Updated variable names
+ arch/x86/virt/vmx/tdx/tdx.c | 75 ++++++++++++++++++++++++++++++++++---
+ arch/x86/virt/vmx/tdx/tdx.h |  1 +
+ 2 files changed, 71 insertions(+), 5 deletions(-)
 
-Changes in v5:
-- Updated patch sequence such that driver patches are before DT patches
-- Fixed DT ABI break from v4
-- Fixed smatch bug
-- Updated description in DT binding documentation
-- Updated variable names
-
-Changes in v4:
-- Added memory controller channels support
-- Added newlines after every break statement of all switch cases
-- Fixed compile error with W=1 build
-- Fixed the interrupt mask bit logic
-
-Changes in v3:
-- Removed unnecessary ifdefs
-- Grouped newly added MC registers with existing MC registers
-- Removed unnecessary initialization of variables
-- Updated code to use newly added field 'has_addr_hi_reg' instead of ifdefs
-
-Changes in v2:
-- Updated patch subject and commit message
-- Removed separate irq handlers
-- Updated tegra30_mc_handle_irq to be used for tegra186 onwards as well
-
- .../nvidia,tegra186-mc.yaml                   |  14 +-
- arch/arm64/boot/dts/nvidia/tegra186.dtsi      |   7 +-
- arch/arm64/boot/dts/nvidia/tegra194.dtsi      |  21 ++-
- arch/arm64/boot/dts/nvidia/tegra234.dtsi      |  21 ++-
- drivers/memory/tegra/mc.c                     | 120 +++++++++++++++---
- drivers/memory/tegra/mc.h                     |  37 +++++-
- drivers/memory/tegra/tegra186.c               |  98 ++++++++++++++
- drivers/memory/tegra/tegra194.c               |  45 +++++++
- drivers/memory/tegra/tegra234.c               |  64 ++++++++++
- include/soc/tegra/mc.h                        |  12 ++
- 10 files changed, 412 insertions(+), 27 deletions(-)
-
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index bb15122fb8bd..11bd1daffee3 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -1376,6 +1376,65 @@ static int config_global_keyid(void)
+ 	return seamcall_on_each_package_serialized(&sc);
+ }
+ 
++/* Initialize one TDMR */
++static int init_tdmr(struct tdmr_info *tdmr)
++{
++	u64 next;
++
++	/*
++	 * Initializing PAMT entries might be time-consuming (in
++	 * proportion to the size of the requested TDMR).  To avoid long
++	 * latency in one SEAMCALL, TDH.SYS.TDMR.INIT only initializes
++	 * an (implementation-defined) subset of PAMT entries in one
++	 * invocation.
++	 *
++	 * Call TDH.SYS.TDMR.INIT iteratively until all PAMT entries
++	 * of the requested TDMR are initialized (if next-to-initialize
++	 * address matches the end address of the TDMR).
++	 */
++	do {
++		struct tdx_module_output out;
++		int ret;
++
++		ret = seamcall(TDH_SYS_TDMR_INIT, tdmr->base, 0, 0, 0,
++				NULL, &out);
++		if (ret)
++			return ret;
++		/*
++		 * RDX contains 'next-to-initialize' address if
++		 * TDH.SYS.TDMR.INT succeeded.
++		 */
++		next = out.rdx;
++		if (need_resched())
++			cond_resched();
++	} while (next < tdmr->base + tdmr->size);
++
++	return 0;
++}
++
++/* Initialize all TDMRs */
++static int init_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
++{
++	int i;
++
++	/*
++	 * Initialize TDMRs one-by-one for simplicity, though the TDX
++	 * architecture does allow different TDMRs to be initialized in
++	 * parallel on multiple CPUs.  Parallel initialization could
++	 * be added later when the time spent in the serialized scheme
++	 * becomes a real concern.
++	 */
++	for (i = 0; i < tdmr_num; i++) {
++		int ret;
++
++		ret = init_tdmr(tdmr_array[i]);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
+ static int init_tdx_module(void)
+ {
+ 	struct tdmr_info **tdmr_array;
+@@ -1457,11 +1516,12 @@ static int init_tdx_module(void)
+ 	if (ret)
+ 		goto out_free_pamts;
+ 
+-	/*
+-	 * Return -EFAULT until all steps of TDX module
+-	 * initialization are done.
+-	 */
+-	ret = -EFAULT;
++	/* Initialize TDMRs to complete the TDX module initialization */
++	ret = init_tdmrs(tdmr_array, tdmr_num);
++	if (ret)
++		goto out_free_pamts;
++
++	tdx_module_status = TDX_MODULE_INITIALIZED;
+ out_free_pamts:
+ 	/*
+ 	 * Free PAMTs allocated in construct_tdmrs() when TDX module
+@@ -1484,6 +1544,11 @@ static int init_tdx_module(void)
+ 	free_tdmrs(tdmr_array, tdmr_num);
+ 	kfree(tdmr_array);
+ out:
++	if (ret)
++		pr_info("Failed to initialize TDX module.\n");
++	else
++		pr_info("TDX module initialized.\n");
++
+ 	return ret;
+ }
+ 
+diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+index bba8cabea4bb..212f83374c0a 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.h
++++ b/arch/x86/virt/vmx/tdx/tdx.h
+@@ -126,6 +126,7 @@ struct tdmr_info {
+ #define TDH_SYS_INFO		32
+ #define TDH_SYS_INIT		33
+ #define TDH_SYS_LP_INIT		35
++#define TDH_SYS_TDMR_INIT	36
+ #define TDH_SYS_LP_SHUTDOWN	44
+ #define TDH_SYS_CONFIG		45
+ 
 -- 
-2.17.1
+2.35.1
 
