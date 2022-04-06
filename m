@@ -2,97 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B11B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236854AbiDFP6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58230 "EHLO
+        id S236444AbiDFP6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237539AbiDFP6O (ORCPT
+        with ESMTP id S237592AbiDFP6T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:58:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D7613DFF;
-        Wed,  6 Apr 2022 06:25:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C87F96152F;
-        Wed,  6 Apr 2022 13:25:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78B4DC385AA;
-        Wed,  6 Apr 2022 13:25:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649251529;
-        bh=NZuFXM3zqS91214yNiugl+PV0SUW+INnvg+0l8KGQ2g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i7hIVXjO8JIfjb8oqfshU57Clp3/ThSRPXcXZ21/OMEq7lCJxrkgyrQmgut1J8DC9
-         9R637NI/wj8sryhCNbyrpqEtW4zHrrJ0tMI4/m2T1sGqMvEXKXc962WIVLINpF77D5
-         oSOL52BCtccx0EgXpgTlKI9Z92ZiDlIPSgYroaHHruZw2L+McYa1p3B3+mhXPtpnk8
-         O0Js3em3qzq6LxsmzX+wFbWG/XRY9v/WMV/m0mcAoTVRgI2wZNZ99rEsVFSkqou1Xe
-         FQbhSnNXiphRwzEygoHIfX6eCBD3SHOL/sJCQnkC7sYVJf5syNNKOyJqbK1tV3c8Gz
-         h2u2/JR1SQezA==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] dmaengine: qcom: gpi: Add support for ee_offset
-Date:   Wed,  6 Apr 2022 18:55:08 +0530
-Message-Id: <20220406132508.1029348-3-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220406132508.1029348-1-vkoul@kernel.org>
-References: <20220406132508.1029348-1-vkoul@kernel.org>
+        Wed, 6 Apr 2022 11:58:19 -0400
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8F63682F1;
+        Wed,  6 Apr 2022 06:26:22 -0700 (PDT)
+Received: by mail-oi1-f175.google.com with SMTP id e189so2347932oia.8;
+        Wed, 06 Apr 2022 06:26:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=1zwzlI7cDrUzx3niiG9DPxuZXhYhVpti1uJIhGlGfYY=;
+        b=BVSJ8J0OM0HgsNezJy9eJIOp66aZeOHqkFqd0EjYfsOwibtO41hrzFWXLs6ytTz7+D
+         lYvev3oJunZpL+aIqqev/II4GgGfEsqrUXnh+1G/LaDXRH7VdGRYaiUSYE+mcuWO7Yja
+         BUnCrjwXGfFuh7js99qGO+VKi4c6/tFFklBl6hB4b3UdqIIbH1p3VIFSTNRYjAJrDL/6
+         j65/6z58KEnWaN6TpMrgA3Y3g15hHWBm9KQLrFLxOAiDOJUdugpuXzuwzUMULm1b9sty
+         G33PFaDG/CRqJLXvbBtsLBzmcf4Zn4NQKsMI5//SNHNz76Q8Mmpi3Af2bzQKScTC9FWr
+         Nfjw==
+X-Gm-Message-State: AOAM530UWtcak+PPu+JRYHdE20EQuKGsYqthspbeaNnHQ7nc3jtWcnaC
+        m+GkBD6IQk3lqeFVczydww==
+X-Google-Smtp-Source: ABdhPJxRu/8yUMGQBmDRWK9rgvz5VsTpRYrAT/ZBZZqPkpqxXBOa3HIPT9w7lInfRN59KLNvMwy4/A==
+X-Received: by 2002:aca:4b50:0:b0:2ef:b47:294a with SMTP id y77-20020aca4b50000000b002ef0b47294amr3479270oia.69.1649251582202;
+        Wed, 06 Apr 2022 06:26:22 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:20d6:52b3:6546:933d:31a7:672c])
+        by smtp.gmail.com with ESMTPSA id a17-20020a056870b31100b000e1fc4e696esm3454144oao.28.2022.04.06.06.26.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 06:26:21 -0700 (PDT)
+Received: (nullmailer pid 2091366 invoked by uid 1000);
+        Wed, 06 Apr 2022 13:04:35 -0000
+Date:   Wed, 6 Apr 2022 08:04:35 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Lizhi Hou <lizhi.hou@xilinx.com>,
+        Sonal Santan <sonal.santan@xilinx.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
+Message-ID: <Yk2P4zgKP8dVYUWm@robh.at.kernel.org>
+References: <20220324141237.297207-1-clement.leger@bootlin.com>
+ <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
+ <20220405092434.6e424ed4@fixe.home>
+ <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
+ <20220405175120.23fc6b2a@fixe.home>
+ <CAL_JsqLdBcAw1KPnrATHqEngRWkx6moxDODH1xV67EKAufc6_w@mail.gmail.com>
+ <CAL_JsqL4xY-k4ZsJDuxX6Wbevv+aNRki4WfeiXg0R-4NkqPC1w@mail.gmail.com>
+ <20220406095213.21cf3ffb@fixe.home>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220406095213.21cf3ffb@fixe.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Controller on newer SoCs like SM8450 have registers at at offset. Add
-ee_offset to driver_data and add this compatible for the driver.
+On Wed, Apr 06, 2022 at 09:52:13AM +0200, Clément Léger wrote:
+> Le Tue, 5 Apr 2022 16:28:02 -0500,
+> Rob Herring <robh@kernel.org> a écrit :
+> 
+> 
+> > >
+> > > No, the kernel already maintains its own tree of devices. You just
+> > > need to use that to generate the tree. That's really not much more
+> > > than nodes with a 'reg' property encoding the device and function
+> > > numbers.
+> > >
+> > > We already support matching a PCI device to a DT node. The PCI
+> > > subsystem checks if there is a corresponding DT node for each PCI
+> > > device created and sets the of_node pointer if there is. For
+> > > OpenFirmware systems (PPC), there always is a node. For FDT, we
+> > > generally don't have a node unless there are additional
+> > > non-discoverable properties. Hikey960 is an example with PCI device
+> > > nodes in the DT as it has a soldered down PCIe switch with downstream
+> > > devices and non-discoverable properties (e.g. reset GPIO for each
+> > > port).  
+> > 
+> > Here's a quick and dirty implementation creating DT nodes for PCI devices:
+> > 
+> > git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git dt/pop-pci-nodes
+> 
+> Ok, thanks, after looking at the branch, it appears that you expect the
+> PCI nodes matching the probed PCI devices should be created by the PCI
+> subsystem itself. My previous comment saying that the node would be
+> created by the PCI driver itself is then wrong and I understand what
+> you meant.
 
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
----
- drivers/dma/qcom/gpi.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+As I said before, the driver could create its node and all the parents. 
+I went with the other option partly because I didn't have a particular 
+driver. That has the advantage of only creating necessary nodes and 
+provides a way to trigger doing so. The issue with it is the timing of 
+when the node gets set (after parent devices have probed).
 
-diff --git a/drivers/dma/qcom/gpi.c b/drivers/dma/qcom/gpi.c
-index 3429ceccd13b..0b402d923eae 100644
---- a/drivers/dma/qcom/gpi.c
-+++ b/drivers/dma/qcom/gpi.c
-@@ -2152,6 +2152,7 @@ static int gpi_probe(struct platform_device *pdev)
- {
- 	struct gpi_dev *gpi_dev;
- 	unsigned int i;
-+	u32 ee_offset;
- 	int ret;
- 
- 	gpi_dev = devm_kzalloc(&pdev->dev, sizeof(*gpi_dev), GFP_KERNEL);
-@@ -2179,6 +2180,9 @@ static int gpi_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	ee_offset = (uintptr_t)device_get_match_data(gpi_dev->dev);
-+	gpi_dev->ee_base = gpi_dev->ee_base - ee_offset;
-+
- 	gpi_dev->ev_factor = EV_FACTOR;
- 
- 	ret = dma_set_mask(gpi_dev->dev, DMA_BIT_MASK(64));
-@@ -2282,9 +2286,10 @@ static int gpi_probe(struct platform_device *pdev)
- }
- 
- static const struct of_device_id gpi_of_match[] = {
--	{ .compatible = "qcom,sdm845-gpi-dma" },
--	{ .compatible = "qcom,sm8150-gpi-dma" },
--	{ .compatible = "qcom,sm8250-gpi-dma" },
-+	{ .compatible = "qcom,sdm845-gpi-dma", .data = (void *)0x0 },
-+	{ .compatible = "qcom,sm8150-gpi-dma", .data = (void *)0x0 },
-+	{ .compatible = "qcom,sm8250-gpi-dma", .data = (void *)0x0 },
-+	{ .compatible = "qcom,sm8450-gpi-dma", .data = (void *)0x10000 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, gpi_of_match);
--- 
-2.34.1
+> Then, there is still a bit of magic to do to correctly fill the ranges
+> for translation and then the driver "simply" have to load the dtbo and
+> apply it with of_overlay_fdt_apply().
 
+The host bridge resource list should have all the information needed.
+
+Rob
