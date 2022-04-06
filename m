@@ -2,145 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 866E0C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18752C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232720AbiDFNJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
+        id S231857AbiDFNKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232306AbiDFNJA (ORCPT
+        with ESMTP id S232464AbiDFNKF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:09:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D13D4DFABC
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:42:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C37D161610
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:42:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CEFC385A9
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:42:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649238130;
-        bh=XzVxpBsHw3+lhhtvnfC+mj1Qwrhv5YqoiAyqzFtUD5c=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=EXCqvy/CnsUDmgpBZpBUyYOoMRigOSbEcWbSekemHlLuP/NeGZv3GnXF6zKtYN4T6
-         j2ilPqi6ypmKfsqtq07//UBu6eXYdNc3iDQn9U89kspijrH5KZdJr26UiJvKxRrc0T
-         R40M+6Sn4X6XlGahw6Dzkuh+aDEupMBSUFIUtV3lzbWDeO/vfMlQJ0qeDhjbIcPQhp
-         pnlEUPykGf5vxGnLRIf/1HSusoMyTAVQvMyZ1MG1E0dc17JFtKr2ImJejx7HKAYYoT
-         THYRZnThLw3bRzIbgKrJL/lmmAxxyGcpnTjCapuNNQZcLnOpDDr5pkD/oRf6yJi65e
-         8u3T0W7mYlhBA==
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-e1dcc0a327so2341571fac.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 02:42:10 -0700 (PDT)
-X-Gm-Message-State: AOAM531t5lSWZA0Q0Lx4L7JJM3s+r0TaxO/L3AR2Yu56xlXLmf0D1tUu
-        /CZcTYkjTe1xonoXHXmG13UfXW1/hxs7RrIYVW4=
-X-Google-Smtp-Source: ABdhPJwwHH5A0PBmv1nZ8cSGrgFifDCeI9KaFOyeonSom2CtrOcrp6GXsNRKDdTSY+arKNjYbJZc0uwe9QynX2Cqj+M=
-X-Received: by 2002:a05:6870:b027:b0:de:7fcd:fabf with SMTP id
- y39-20020a056870b02700b000de7fcdfabfmr3489495oae.126.1649238129370; Wed, 06
- Apr 2022 02:42:09 -0700 (PDT)
+        Wed, 6 Apr 2022 09:10:05 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8E523009C;
+        Tue,  5 Apr 2022 19:28:41 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KY7cr2lkyzBrX0;
+        Wed,  6 Apr 2022 10:24:28 +0800 (CST)
+Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
+ 2022 10:28:37 +0800
+From:   Liao Chang <liaochang1@huawei.com>
+To:     <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
+        <liaochang1@huawei.com>, <tglx@linutronix.de>, <nitesh@redhat.com>,
+        <edumazet@google.com>, <clg@kaod.org>, <tannerlove@google.com>,
+        <peterz@infradead.org>, <joshdon@google.com>,
+        <masahiroy@kernel.org>, <nathan@kernel.org>, <vbabka@suse.cz>,
+        <akpm@linux-foundation.org>, <gustavoars@kernel.org>,
+        <arnd@arndb.de>, <chris@chrisdown.name>,
+        <dmitry.torokhov@gmail.com>, <linux@rasmusvillemoes.dk>,
+        <daniel@iogearbox.net>, <john.ogness@linutronix.de>,
+        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <heying24@huawei.com>, <guohanjun@huawei.com>,
+        <weiyongjun1@huawei.com>
+Subject: [RFC 0/3] softirq: Introduce softirq throttling
+Date:   Wed, 6 Apr 2022 10:27:46 +0800
+Message-ID: <20220406022749.184807-1-liaochang1@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
- <20220405135758.774016-8-catalin.marinas@arm.com> <YkzJP6zmkAhc6CI9@gondor.apana.org.au>
- <CAMj1kXEXhFmGc4VTTcJU1YFsHJhZN44OdJ5Suf2ONG5=LR29HQ@mail.gmail.com> <Yk1UJs6eZMoIp3Eh@arm.com>
-In-Reply-To: <Yk1UJs6eZMoIp3Eh@arm.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 6 Apr 2022 11:41:58 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHGb1GY2AFUYrzn484wf5SJSbMNgNcdmh=MrRvONakuBQ@mail.gmail.com>
-Message-ID: <CAMj1kXHGb1GY2AFUYrzn484wf5SJSbMNgNcdmh=MrRvONakuBQ@mail.gmail.com>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.53]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022 at 10:49, Catalin Marinas <catalin.marinas@arm.com> wrote:
->
-> On Wed, Apr 06, 2022 at 08:53:33AM +0200, Ard Biesheuvel wrote:
-> > On Wed, 6 Apr 2022 at 00:57, Herbert Xu <herbert@gondor.apana.org.au> wrote:
-> > > On Tue, Apr 05, 2022 at 02:57:55PM +0100, Catalin Marinas wrote:
-> > > > ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
-> > > > operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
-> > > > alignment.
-> > > >
-> > > > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> > > > Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> > > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > > ---
-> > > >  include/linux/crypto.h | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-> > > > index 2324ab6f1846..654b9c355575 100644
-> > > > --- a/include/linux/crypto.h
-> > > > +++ b/include/linux/crypto.h
-> > > > @@ -167,7 +167,7 @@
-> > > >   * maintenance for non-coherent DMA (cache invalidation in particular) does not
-> > > >   * affect data that may be accessed by the CPU concurrently.
-> > > >   */
-> > > > -#define CRYPTO_MINALIGN ARCH_KMALLOC_MINALIGN
-> > > > +#define CRYPTO_MINALIGN ARCH_DMA_MINALIGN
-> > >
-> > > I think this should remain as ARCH_KMALLOC_MINALIGN with the
-> > > comment above modified.  The reason is that we assume memory
-> > > returned by kmalloc is already aligned to this value.
-> > >
-> > > Ard, you added the comment regarding the DMA requirement, so
-> > > does anything actually rely on this? If they do, they now need
-> > > to do their own alignment.
-> >
-> > This patch looks incorrect to me, as ARCH_DMA_MINALIGN is not
-> > #define'd on all architectures.
->
-> It is after the first patch:
->
-> https://lore.kernel.org/all/20220405135758.774016-2-catalin.marinas@arm.com/
->
+Kernel check for pending softirqs periodically, they are performed in a
+few points of kernel code, such as irq_exit() and __local_bh_enable_ip(),
+softirqs that have been activated by a given CPU must be executed on the
+same CPU, this characteristic of softirq is always a potentially
+"dangerous" operation, because one CPU might be end up very busy while
+the other are most idle.
 
-I wasn't cc'ed on that :-)
+Above concern is proven in a networking user case: recenlty, we
+engineer find out the time used for connection re-establishment on
+kernel v5.10 is 300 times larger than v4.19, meanwhile, softirq
+monopolize almost 99% of CPU. This problem stem from that the connection
+between Sender and Receiver node get lost, the NIC driver on Sender node
+will keep raising NET_TX softirq before connection recovery. The system
+log show that most of softirq is performed from __local_bh_enable_ip(),
+since __local_bh_enable_ip is used widley in kernel code, it is very
+easy to run out most of CPU, and the user-mode application can't obtain
+enough CPU cycles to establish connection as soon as possible.
 
-> The series makes both ARCH_*_MINALIGN available irrespective of what an
-> arch defines. If one needs guaranteed static alignment for DMA, use the
-> DMA macro. If the minimum kmalloc() alignment is needed (e.g. to store
-> some flags in the lower pointer bits), use the KMALLOC macro. I grep'ed
-> through drivers/ and I've seen both cases (e.g.
-> drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c for the latter use-case).
->
-> > But I am fine with the intent: ARCH_DMA_MINALIGN will be >=
-> > ARCH_KMALLOC_MINALIGN, and so the compile time layout of structs will
-> > take the worst cast minimum DMA alignment into account, whereas their
-> > placement in memory when they allocated dynamically may be aligned to
-> > ARCH_KMALLOC_MINALIGN only. Since the latter will be based on the
-> > actual cache geometry, this should be fine.
->
-> That's the idea.
->
-> > Apart from the 'shash desc on stack' issue solved by the patch that
-> > also introduced the above comment(660d2062190d), I've never looked
-> > into the actual memory footprint of the crypto related data structures
-> > resulting from this alignment, but it seems to me that /if/ this is
-> > significant, we should be able to punt this to the drivers that
-> > actually need this, rather than impose it for the whole system. (This
-> > would involve over-allocating the context struct, and aligning up the
-> > pointer in the various xxx_ctx() getters iff needed by the driver in
-> > question)
->
-> Since ARCH_KMALLOC_MINALIGN on arm64 prior to this series is 128, there
-> is any change to the crypto code.
->
+Although kernel limit the running time of __do_softirq(), it does not
+control the running time of entire softirqs on given CPU, so this
+patchset introduce a safeguard mechanism that allows the system
+administrator to allocate bandwidth for used by softirqs, this safeguard
+mechanism is known as Sofitrq Throttling and is controlled by two
+parameters in the /proc file system:
 
-No, not currently. But what I started looking into today is avoiding
-the need to impose DMA alignment on every single data structure
-allocated by the crypto API, even if it is never used for DMA or
-touched by a device. That seems rather wasteful as well.
+/proc/sys/kernel/sofitrq_period_ms
+  Defines the period in ms(millisecond) to be considered as 100% of CPU
+  bandwidth, the default value is 1,000 ms(1second). Changes to the
+  value of the period must be very well thought out, as too long or too
+  short are beyond one's expectation.
+
+/proc/sys/kernel/softirq_runtime_ms
+  Define the bandwidth available to softirqs on each CPU, the default
+  values is 950 ms(0.95 second) or, in other words, 95% of the CPU
+  bandwidth. Setting negative integer to this value means that softirqs
+  my use up to 100% CPU times.
+
+The default values for softirq throttling mechanism define that 95% of
+the CPU time can be used by softirqs. The remaing 5% will be devoted to
+other kinds of tasks, such as syscall, interrupt, exception, real-time
+processes and normal processes when the softirqs workload in system are
+very heavy. System administrator can tune above two parameters to
+satifies the need of system performance and stability.
+
+Liao Chang (3):
+  softirq: Add two parameters to control CPU bandwidth for use by
+    softirq
+  softirq: Do throttling when softirqs use up its bandwidth
+  softirq: Introduce statistics about softirq throttling
+
+ fs/proc/softirqs.c          |  18 +++++
+ include/linux/interrupt.h   |   7 ++
+ include/linux/kernel_stat.h |  27 +++++++
+ init/Kconfig                |  10 +++
+ kernel/softirq.c            | 155 ++++++++++++++++++++++++++++++++++++
+ kernel/sysctl.c             |  16 ++++
+ 6 files changed, 233 insertions(+)
+
+-- 
+2.17.1
+
