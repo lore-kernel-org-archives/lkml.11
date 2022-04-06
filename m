@@ -2,142 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E19C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:29:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237476AbiDFQbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        id S237654AbiDFQb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237640AbiDFQah (ORCPT
+        with ESMTP id S237734AbiDFQal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:30:37 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C6A41FD2C;
-        Tue,  5 Apr 2022 18:48:21 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KY6pd6wRQz1HBSF;
-        Wed,  6 Apr 2022 09:47:53 +0800 (CST)
-Received: from [10.67.110.173] (10.67.110.173) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 09:48:19 +0800
-Message-ID: <84ba6fb8-45e1-461b-1aa3-c97f065cbe60@huawei.com>
-Date:   Wed, 6 Apr 2022 09:48:19 +0800
+        Wed, 6 Apr 2022 12:30:41 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4B12EF17E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:44:20 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649209459;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0FQc76hjkumZRb0ef3sm4lyuJ9dDneJQs2XYFpXinew=;
+        b=213m3rZ0KLU5Eu0hBKewzbweOZpySZN6OV61gHJimd/7JeEreR71y3Ey0y35wKxn4WJrzI
+        TFdGe1p/602glRhZx+wBjf4nc9XvKV8Hi9OGH9S/b1UjWDSzk1FKEH8+vmp56Kb0bV2W9l
+        UFHFvlX/yUCmHioI8bEoP7cx6Bt/ARs7eD7n/A6aIeYmTVNC1SjiouR4ACO5CNmd7HzFah
+        fu14BJSyaD/Br0lv7RVox4Aec98GwcFkY0NCuqr8XrOok1R8veUjE+VmQBhKydGZ79RqfX
+        6+cmkZsrcL8ktGXfj4rI1epqU9A4C0/nZZBB2OqrL1FiIOAevQ3VTy6IlDZqjA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649209459;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0FQc76hjkumZRb0ef3sm4lyuJ9dDneJQs2XYFpXinew=;
+        b=EYz1XW4YJ5aPrJtrGMIWZkcekdSxXo4QFhSDh+PbKmMOwBcWReyVnH3jdH/AnruKBHEH7o
+        XC6RaRq4LPl0UbDw==
+To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Karny, Wyes" <Wyes.Karny@amd.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Carroll, Lewis" <Lewis.Carroll@amd.com>,
+        "Shenoy, Gautham Ranjal" <gautham.shenoy@amd.com>,
+        "Narayan, Ananth" <Ananth.Narayan@amd.com>,
+        "Rao, Bharata Bhasker" <bharata@amd.com>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "metze@samba.org" <metze@samba.org>,
+        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+Subject: RE: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+In-Reply-To: <BL1PR12MB515702C06E483DF4EB78A7ADE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
+References: <20220405130021.557880-1-wyes.karny@amd.com>
+ <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
+ <7cdc2103-c6d4-e1b6-9804-6739112eee4d@intel.com>
+ <BL1PR12MB515745615F4C92627033CD5BE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
+ <5873a444-bb32-f0d5-27f1-173f469baf21@intel.com>
+ <BL1PR12MB515702C06E483DF4EB78A7ADE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
+Date:   Wed, 06 Apr 2022 03:44:18 +0200
+Message-ID: <87a6cz0yvh.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] ima: remove template "ima" as the compiled default
-Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>, <linux-integrity@vger.kernel.org>
-CC:     <dmitry.kasatkin@gmail.com>, <roberto.sassu@huawei.com>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xiujianfeng@huawei.com>,
-        <wangweiyang2@huawei.com>
-References: <20220321074737.138002-1-guozihua@huawei.com>
- <5c3565f5a46f5728873c9aedd634699ba171fe98.camel@linux.ibm.com>
-From:   "Guozihua (Scott)" <guozihua@huawei.com>
-In-Reply-To: <5c3565f5a46f5728873c9aedd634699ba171fe98.camel@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.110.173]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500024.china.huawei.com (7.185.36.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/5 4:22, Mimi Zohar wrote:
-> Hi Guo,
-> 
-> The Subject line above sounds like the default template is currently
-> "ima", which it isn't.   Perhaps "ima: remove the IMA_TEMPLATE Kconfig
-> option" is more accurate.
-> 
-> On Mon, 2022-03-21 at 15:47 +0800, GUO Zihua wrote:
->> Template "ima" is a legacy template which limits the hash algorithm to
->> either sha1 or md5. None of them should be considered "strong" these
->> days. Besides, allowing template "ima" as the compiled default would
->> also cause the following issue: the cmdline option "ima_hash=" must be
->> behind "ima_template=", otherwise "ima_hash=" might be rejected.
->>
-> 
-> True "ima" is a legacy template, but the purpose of removing the
-> IMA_TEMPLATE from the Kconfig is to address the remaining boot command
-> line ordering issue not previously addressed.  This is reasonable
-> because the "ima" template is limited to SHA1 and MD5.  If someone
-> still needs to use the "ima" template, "ima_template=ima" could still
-> be specified on the boot command line.
-> 
->> The root cause of this issue is that during the processing of ima_hash,
->> we would try to check whether the hash algorithm is compatible with the
->> template. If the template is not set at the moment we do the check, we
->> check the algorithm against the compiled default template. If the
->> complied default template is "ima", then we reject any hash algorithm
->> other than sha1 and md5.
->>
->> For example, if the compiled default template is "ima", and the default
->> algorithm is sha1 (which is the current default). In the cmdline, we put
->> in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
->> that ima starts with ima-ng as the template and sha256 as the hash
->> algorithm. However, during the processing of "ima_hash=",
->> "ima_template=" has not been processed yet, and hash_setup would check
->> the configured hash algorithm against the compiled default: ima, and
->> reject sha256. So at the end, the hash algorithm that is actually used
->> will be sha1.
->>
->> With template "ima" removed from the compiled default, we ensure that the
->> default tempalte would at least be "ima-ng" which allows for basically
->> any hash algorithm.
->>
->> This change would not break the algorithm compatibility checking for
->> IMA.
->>
->> Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
->> Signed-off-by: GUO Zihua <guozihua@huawei.com>
->> ---
->>   security/integrity/ima/Kconfig | 14 +++++---------
->>   1 file changed, 5 insertions(+), 9 deletions(-)
->>
->> diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
->> index f3a9cc201c8c..9513df2ac19e 100644
->> --- a/security/integrity/ima/Kconfig
->> +++ b/security/integrity/ima/Kconfig
->> @@ -65,14 +65,11 @@ choice
->>   	help
->>   	  Select the default IMA measurement template.
->>   
->> -	  The original 'ima' measurement list template contains a
->> -	  hash, defined as 20 bytes, and a null terminated pathname,
->> -	  limited to 255 characters.  The 'ima-ng' measurement list
->> -	  template permits both larger hash digests and longer
->> -	  pathnames.
->> -
->> -	config IMA_TEMPLATE
->> -		bool "ima"
->> +	  The 'ima-ng' measurement list template permits various hash
->> +	  digests and long pathnames. The compiled default template
->> +	  can be overwritten using the kernel command line
->> +	  'ima_template=' option.
->> +
->>   	config IMA_NG_TEMPLATE
->>   		bool "ima-ng (default)"
->>   	config IMA_SIG_TEMPLATE
->> @@ -82,7 +79,6 @@ endchoice
->>   config IMA_DEFAULT_TEMPLATE
->>   	string
->>   	depends on IMA
->> -	default "ima" if IMA_TEMPLATE
->>   	default "ima-ng" if IMA_NG_TEMPLATE
->>   	default "ima-sig" if IMA_SIG_TEMPLATE
->>   
-> 
-> The IMA_TEMPLATE definition is removed, but leaves a few references to
-> it.
+Mario,
 
-Thank you very much for the detailed review Mimi! I'll fix these right now.
+On Tue, Apr 05 2022 at 20:40, Mario Limonciello wrote:
 
--- 
-Best
-GUO Zihua
+> [Public]
+
+Really useful information that your post is public while some of the
+earlier posts in this _public_ thread were marked '[AMD confidential]'.
+
+>> >> This seem _bit_ at odds with the commit message (and the AMD SSBD
+>> >> whitepaper):
+>> >>
+>> >>>     Add the necessary synchronization logic for AMD family 17H.
+>> >> So, is X86_FEATURE_ZEN for family==0x17, or family>=0x17?
+>> > There are Zen family CPUs and APUs from family 0x19.  Perhaps at the
+>> > time of the whitepaper there weren't yet though.
+>> 
+>> Is this a gap in the documentation, then?  Is there some documentation
+>> of the availability of SSBD mitigations on family 0x19?
+>
+> It looks like a misinterpretation of the document.
+
+Not at all. The document does not mention family 19h at all. So where is
+the misinterpretation?
+
+Dave was asking for documentation for family 0x19, right?
+
+> Notice it mentions in Non-architectural MSRs explicitly:
+>
+> "some models of family 17h have logic that allow loads to bypass older stores 
+> but lack the architectural SPEC_CTRL or VIRT_SPEC_CTR"
+
+That's relevant to Dave's question in which way? 
+
+> But that is not for all family 17h nor for family 19h.  You can see earlier in
+> the document the method to detect presence for SSBD which applies to the
+> rest of 17h and 19h.
+
+We know how to read this document. But this document does not mention
+anything else than family 17h. So what are you talking about?
+
+> That code in amd_set_core_ssb_state is only used for one of the
+> mitigation codepaths without MSR support, not for all Zen CPUs.
+
+Again, how is that relevant to the legitimate question whether that
+document applies to family 17h only or to 17h+ which includes 19h?
+
+We need to make a decison about what X86_FEATURE_ZEN means. Is it that
+hard to give an authoritive answer?
+
+Thanks,
+
+        tglx
