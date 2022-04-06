@@ -2,149 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81263C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235333AbiDFOzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43558 "EHLO
+        id S234947AbiDFOzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235238AbiDFOyW (ORCPT
+        with ESMTP id S235291AbiDFOy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:54:22 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE741608C05;
-        Wed,  6 Apr 2022 04:32:50 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Wed, 6 Apr 2022 10:54:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7293FC854;
+        Wed,  6 Apr 2022 04:31:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id A39EF1F858;
-        Wed,  6 Apr 2022 11:32:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649244767; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3Xisg031nvUyjGa8rCi6g+/z5EvYZTh85G/9xqOb5KY=;
-        b=P/2Ym6ZL6GdwRefQpv/AEkV8+b4JtOemLvBrqv7RjuD2PfNcJpOfI564pSYltQEcy5BwsY
-        Eu6IOAw83soFaggPo3L0EPH/DUt22OI4vFkCZaFECXqiPUsGpfH4pF6bPfpqnY7LnvcFED
-        1ayP1Qwm9A/UrdjRKmxvE7Yfzzonp98=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649244767;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3Xisg031nvUyjGa8rCi6g+/z5EvYZTh85G/9xqOb5KY=;
-        b=vigZobKfTvpGZEYPPCz/hre6y0dvlKsE+qj6qu4Xqu+34dqKdh1/zdH4dAAVBqd/Ov4KA+
-        WonnjSEUQfLHxdAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3D96A139F5;
-        Wed,  6 Apr 2022 11:32:47 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id ziL9C196TWIkRgAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Wed, 06 Apr 2022 11:32:47 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id b51e56ad;
-        Wed, 6 Apr 2022 11:33:11 +0000 (UTC)
-From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
-To:     Xiubo Li <xiubli@redhat.com>
-Cc:     Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
- inodes
-References: <20220401133243.1075-1-lhenriques@suse.de>
-        <d6407dd1-b6df-4de4-fe37-71b765b2088a@redhat.com>
-        <878rsia391.fsf@brahms.olymp>
-        <6ba91390-83e8-8702-2729-dc432abd3cc5@redhat.com>
-Date:   Wed, 06 Apr 2022 12:33:11 +0100
-In-Reply-To: <6ba91390-83e8-8702-2729-dc432abd3cc5@redhat.com> (Xiubo Li's
-        message of "Wed, 6 Apr 2022 19:18:04 +0800")
-Message-ID: <87zgky8n0o.fsf@brahms.olymp>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6B52617A4;
+        Wed,  6 Apr 2022 11:31:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61650C385A3;
+        Wed,  6 Apr 2022 11:31:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649244672;
+        bh=rq06VmIuMSd782CjswQUqWiuw4QAO8FvZY+ZJ8QuK7g=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=eTgBx5rJB/8+yVjy2Zo/heV1EaidJsxo9DgXseaMLBGEg6/PAVKRBOSwYMd/ti5yi
+         bMXZqADalBiI3q3c8OJk/j2+DUhTylOcgi+TbhgJ4jt9Lk4nTo96B9cqAX42Me83tw
+         QIVuZb1+cp/BdNQjP7tDIpZWu/SJRNkfjadDa+NTJ9s4AD+lf6Unfncf7d8oanyl1l
+         sulKvpZtYGhUnKfqtNmvawMolKW1eP7ReTuKKT5pTlCGlaBThEZOSeSvgnM1HwjqVU
+         XtCYmZK87uR8p/CzGIQk9K/KwshnF/Qy7pifAZA+bn8gewL/H9X69hHkss/UPhBgIn
+         481qFTz86eZ0g==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 20/22 v3] ray_cs: Improve card_status[]
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <6cae7be8-0329-7b0f-9a61-695f3d0cceb4@stuerz.xyz>
+References: <6cae7be8-0329-7b0f-9a61-695f3d0cceb4@stuerz.xyz>
+To:     =?utf-8?q?Benjamin_St=C3=BCrz?= <benni@stuerz.xyz>
+Cc:     Joe Perches <joe@perches.com>, kuba@kernel.org,
+        davem@davemloft.net, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164924466816.19026.18285097320216238925.kvalo@kernel.org>
+Date:   Wed,  6 Apr 2022 11:31:10 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Xiubo Li <xiubli@redhat.com> writes:
+Benjamin Stürz <benni@stuerz.xyz> wrote:
 
-> On 4/6/22 6:57 PM, Lu=C3=ADs Henriques wrote:
->> Xiubo Li <xiubli@redhat.com> writes:
->>
->>> On 4/1/22 9:32 PM, Lu=C3=ADs Henriques wrote:
->>>> When doing DIO on an encrypted node, we need to invalidate the page ca=
-che in
->>>> the range being written to, otherwise the cache will include invalid d=
-ata.
->>>>
->>>> Signed-off-by: Lu=C3=ADs Henriques <lhenriques@suse.de>
->>>> ---
->>>>    fs/ceph/file.c | 11 ++++++++++-
->>>>    1 file changed, 10 insertions(+), 1 deletion(-)
->>>>
->>>> Changes since v1:
->>>> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_ran=
-ge
->>>> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing =
-DIO
->>>>
->>>> Note: I'm not really sure this last change is required, it doesn't rea=
-lly
->>>> affect generic/647 result, but seems to be the most correct.
->>>>
->>>> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
->>>> index 5072570c2203..b2743c342305 100644
->>>> --- a/fs/ceph/file.c
->>>> +++ b/fs/ceph/file.c
->>>> @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_i=
-ter *from, loff_t pos,
->>>>    	if (ret < 0)
->>>>    		return ret;
->>>>    -	ceph_fscache_invalidate(inode, false);
->>>> +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
->>>>    	ret =3D invalidate_inode_pages2_range(inode->i_mapping,
->>>>    					    pos >> PAGE_SHIFT,
->>>>    					    (pos + count - 1) >> PAGE_SHIFT);
->>> The above has already invalidated the pages, why doesn't it work ?
->> I suspect the reason is because later on we loop through the number of
->> pages, call copy_page_from_iter() and then ceph_fscrypt_encrypt_pages().
->
-> Checked the 'copy_page_from_iter()', it will do the kmap for the pages bu=
-t will
-> kunmap them again later. And they shouldn't update the i_mapping if I did=
-n't
-> miss something important.
->
-> For 'ceph_fscrypt_encrypt_pages()' it will encrypt/dencrypt the context i=
-nplace,
-> IMO if it needs to map the page and it should also unmap it just like in
-> 'copy_page_from_iter()'.
->
-> I thought it possibly be when we need to do RMW, it may will update the
-> i_mapping when reading contents, but I checked the code didn't find any=20
-> place is doing this. So I am wondering where tha page caches come from ? =
-If that
-> page caches really from reading the contents, then we should discard it i=
-nstead
-> of flushing it back ?
->
-> BTW, what's the problem without this fixing ? xfstest fails ?
+> On 28.03.22 21:23, Joe Perches wrote:
+> > On Mon, 2022-03-28 at 20:21 +0200, Benjamin Stürz wrote:
+> >> Replace comments with C99's designated initializers.
+> > []
+> >> diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+> > []
+> >> @@ -2529,20 +2529,23 @@ static void clear_interrupt(ray_dev_t *local)
+> >>  #define MAXDATA (PAGE_SIZE - 80)
+> >>
+> >>  static const char *card_status[] = {
+> >> -	"Card inserted - uninitialized",	/* 0 */
+> >> -	"Card not downloaded",			/* 1 */
+> >> -	"Waiting for download parameters",	/* 2 */
+> >> -	"Card doing acquisition",		/* 3 */
+> >> -	"Acquisition complete",			/* 4 */
+> >> -	"Authentication complete",		/* 5 */
+> >> -	"Association complete",			/* 6 */
+> >> -	"???", "???", "???", "???",		/* 7 8 9 10 undefined */
+> >> -	"Card init error",			/* 11 */
+> >> -	"Download parameters error",		/* 12 */
+> >> -	"???",					/* 13 */
+> >> -	"Acquisition failed",			/* 14 */
+> >> -	"Authentication refused",		/* 15 */
+> >> -	"Association failed"			/* 16 */
+> >> +	[0]  = "Card inserted - uninitialized",
+> > 
+> > If you are going to do this at all, please use the #defines
+> > in drivers/net/wireless/rayctl.h
+> > 
+> > 	[CARD_INSERTED] = "Card inserted - uninitialized",
+> > 	[CARD_AWAITING_PARAM] = "Card not downloaded",
+> > 
+> > etc...
+> > 
+> > $ git grep -w -P 'CARD_\w+' drivers/net/wireless/rayctl.h
+> > drivers/net/wireless/rayctl.h:#define CARD_INSERTED       (0)
+> > drivers/net/wireless/rayctl.h:#define CARD_AWAITING_PARAM (1)
+> > drivers/net/wireless/rayctl.h:#define CARD_INIT_ERROR     (11)
+> > drivers/net/wireless/rayctl.h:#define CARD_DL_PARAM       (2)
+> > drivers/net/wireless/rayctl.h:#define CARD_DL_PARAM_ERROR (12)
+> > drivers/net/wireless/rayctl.h:#define CARD_DOING_ACQ      (3)
+> > drivers/net/wireless/rayctl.h:#define CARD_ACQ_COMPLETE   (4)
+> > drivers/net/wireless/rayctl.h:#define CARD_ACQ_FAILED     (14)
+> > drivers/net/wireless/rayctl.h:#define CARD_AUTH_COMPLETE  (5)
+> > drivers/net/wireless/rayctl.h:#define CARD_AUTH_REFUSED   (15)
+> > drivers/net/wireless/rayctl.h:#define CARD_ASSOC_COMPLETE (6)
+> > drivers/net/wireless/rayctl.h:#define CARD_ASSOC_FAILED   (16)
+> > 
+> >> +	[1]  = "Card not downloaded",
+> >> +	[2]  = "Waiting for download parameters",
+> >> +	[3]  = "Card doing acquisition",
+> >> +	[4]  = "Acquisition complete",
+> >> +	[5]  = "Authentication complete",
+> >> +	[6]  = "Association complete",
+> >> +	[7]  = "???",
+> >> +	[8]  = "???",
+> >> +	[9]  = "???",
+> >> +	[10] = "???",
+> >> +	[11] = "Card init error",
+> >> +	[12] = "Download parameters error",
+> >> +	[13] = "???",
+> >> +	[14] = "Acquisition failed",
+> >> +	[15] = "Authentication refused",
+> >> +	[16] = "Association failed"
+> >>  };
+> >>
+> >>  static const char *nettype[] = { "Adhoc", "Infra " };
+> > 
+> > 
+> 
+> 
+> - Make card_status[] const, because it should never be modified
+> - Replace comments with C99's designated initializers to improve
+>   readability and maintainability
+> 
+> Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
 
-Yes, generic/647 fails if you run it with test_dummy_encryption.  And I've
-also checked that the RMW code was never executed in this test.
+Please don't include the email discussion in the commit log.
 
-But yeah I have assumed (perhaps wrongly) that the kmap/kunmap could
-change the inode->i_mapping.  In my debugging this seemed to be the case
-for the O_DIRECT path.  That's why I added this extra call here.
+Patch set to Changes Requested.
 
-Cheers,
---=20
-Lu=C3=ADs
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/6cae7be8-0329-7b0f-9a61-695f3d0cceb4@stuerz.xyz/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
