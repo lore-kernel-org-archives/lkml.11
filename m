@@ -2,132 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5D72C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A67FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233201AbiDFNZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
+        id S233348AbiDFN00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233303AbiDFNYy (ORCPT
+        with ESMTP id S233291AbiDFNZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:24:54 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29776658DFA;
-        Wed,  6 Apr 2022 03:20:59 -0700 (PDT)
-X-UUID: d8bf1bdb4e264a849f69ad5925330207-20220406
-X-UUID: d8bf1bdb4e264a849f69ad5925330207-20220406
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 74661343; Wed, 06 Apr 2022 18:05:19 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 6 Apr 2022 18:05:18 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 18:05:17 +0800
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <nfraprado@collabora.com>, <tzungbi@google.com>
-CC:     <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
-        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
-        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [v9 1/4] ASoC: dt-bindings: mt8192-mt6359: add new compatible and new properties
-Date:   Wed, 6 Apr 2022 18:05:11 +0800
-Message-ID: <20220406100514.11269-2-jiaxin.yu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220406100514.11269-1-jiaxin.yu@mediatek.com>
-References: <20220406100514.11269-1-jiaxin.yu@mediatek.com>
+        Wed, 6 Apr 2022 09:25:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF84386A89;
+        Tue,  5 Apr 2022 18:13:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67F2F61923;
+        Wed,  6 Apr 2022 01:13:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D82AC385A1;
+        Wed,  6 Apr 2022 01:13:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649207598;
+        bh=XhrRwaJr766BJcr+zRvpxYXxBy6jna9TGrTSweXCY1Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=g8Oqp0wSAhnciHM0lfhuzwuROBlAV0QXRuF062IwHGhpgOFIKfLzrVHCccbzRkOin
+         7R0C0T2xEWGUUREEo79Ws2luDtk97Bcv5Ix1hjIqwDgbv7+de+7BD6E+WqzDBDPNRe
+         WLEMFqAz1mSdFu+lYXB/7w2enU5on5KfevctBaZCzti1J+5FSBMla8KL9U+coMTrDc
+         PT9TDJs3mvxU1JWtZW7ZFa0n0gCUnxc2cb75v7MSxLS7xP52BBXPpbMrZorpTWBtNy
+         bV7obvFWjwnCmzqkA00ARtjNoz8YawBqMbRpjx+OerzeqhQ4pFZPyamnWaUQCXhzGN
+         Efl3Qn+Ia+nGA==
+Date:   Wed, 6 Apr 2022 09:13:10 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc:     =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Scott Branden <sbranden@broadcom.com>,
+        Tony Lindgren <tony@atomide.com>, kernel@pengutronix.de,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v5 9/9] arm64: dts: imx8mm-kontron: fix ethernet node name
+Message-ID: <20220406011310.GC129381@dragon>
+References: <20220216074927.3619425-1-o.rempel@pengutronix.de>
+ <20220216074927.3619425-10-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216074927.3619425-10-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1. Adds new compatible string "mt8192_mt6359_rt1015p_rt5682s" for machines
-with rt1015p and rt5682s.
-2. Adds new property "headset-codec" for getting headset codec.
-3. Adds new property "speaker-codecs" for getting speaker codecs.
++ Frieder Schrempf who is the board owner.
 
-Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../sound/mt8192-mt6359-rt1015-rt5682.yaml    | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
+On Wed, Feb 16, 2022 at 08:49:27AM +0100, Oleksij Rempel wrote:
+> The node name of Ethernet controller should be "ethernet" instead of
+> "usbether" as required by Ethernet controller devicetree schema:
+>  Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> 
+> This patch can potentially affect boot loaders patching against full
+> node path instead of using device aliases.
 
-diff --git a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-index 5a5b765b859a..4fa179909c62 100644
---- a/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-+++ b/Documentation/devicetree/bindings/sound/mt8192-mt6359-rt1015-rt5682.yaml
-@@ -18,6 +18,7 @@ properties:
-     enum:
-       - mediatek,mt8192_mt6359_rt1015_rt5682
-       - mediatek,mt8192_mt6359_rt1015p_rt5682
-+      - mediatek,mt8192_mt6359_rt1015p_rt5682s
- 
-   mediatek,platform:
-     $ref: "/schemas/types.yaml#/definitions/phandle"
-@@ -27,11 +28,33 @@ properties:
-     $ref: "/schemas/types.yaml#/definitions/phandle"
-     description: The phandle of HDMI codec.
- 
-+  headset-codec:
-+    type: object
-+    properties:
-+      sound-dai:
-+        $ref: /schemas/types.yaml#/definitions/phandle
-+    required:
-+      - sound-dai
-+
-+  speaker-codecs:
-+    type: object
-+    properties:
-+      sound-dai:
-+        minItems: 1
-+        maxItems: 2
-+        items:
-+          maxItems: 1
-+        $ref: /schemas/types.yaml#/definitions/phandle-array
-+    required:
-+      - sound-dai
-+
- additionalProperties: false
- 
- required:
-   - compatible
-   - mediatek,platform
-+  - headset-codec
-+  - speaker-codecs
- 
- examples:
-   - |
-@@ -44,6 +67,15 @@ examples:
-                         "aud_clk_mosi_on";
-         pinctrl-0 = <&aud_clk_mosi_off>;
-         pinctrl-1 = <&aud_clk_mosi_on>;
-+
-+        headset-codec {
-+            sound-dai = <&rt5682>;
-+        };
-+
-+        speaker-codecs {
-+            sound-dai = <&rt1015_l>,
-+                        <&rt1015_r>;
-+        };
-     };
- 
- ...
--- 
-2.25.1
+Frieder,
 
+Are you okay with that?
+
+Shawn
+
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
+> index d40caf14ac4a..23be1ec538ba 100644
+> --- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
+> +++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
+> @@ -182,7 +182,7 @@ usb1@1 {
+>  		#address-cells = <1>;
+>  		#size-cells = <0>;
+>  
+> -		usbnet: usbether@1 {
+> +		usbnet: ethernet@1 {
+>  			compatible = "usb424,ec00";
+>  			reg = <1>;
+>  			local-mac-address = [ 00 00 00 00 00 00 ];
+> -- 
+> 2.30.2
+> 
