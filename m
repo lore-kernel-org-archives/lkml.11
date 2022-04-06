@@ -2,111 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B84C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1942C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236997AbiDFQJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
+        id S237240AbiDFQJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237186AbiDFQHY (ORCPT
+        with ESMTP id S238246AbiDFQIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:07:24 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41384432D6D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 21:47:08 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id e4so1315034oif.2
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 21:47:08 -0700 (PDT)
+        Wed, 6 Apr 2022 12:08:34 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1CB2E196F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 21:24:24 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id n8so953997plh.1
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 21:24:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=NW58TngHF2iGAMKYPwCczd/NajU2Zo1ovbXcFt5HfVg=;
-        b=HbEFFFNDXGE1evlb0UhGkovo3mQz8rrsjMrZ0rgXuwXs/AsmlxLjIo0Y/JJoBSEaQ/
-         XsZtm/oRIVWvTKK38RZ5aNicioktfbqpFBo+Sjlu2WX5W20YXu3GB6KXtrAJN9vyxhav
-         C18wFUMX1doDa1fxtMwdq+D3EQkj1WUoF1cXc=
+        d=arista.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EeYSfZ5xH+IlAcJ+xTcG79IheqB96eU+egCEaXP6x+E=;
+        b=AHF1rXqXob8GH6Q42EmoIPDa3FIN/ShW5cryQ1NF5CsnI3Q4IBqEluwLsG6COLPDx0
+         Z3SWGnP4ihH7x8YNVj62yYfO/96aZU1+aPoiUYoyc1wtms/QghNZFvN1KvjESswg8R2y
+         ZQ1Bqo3CjtDWo0i3JnzVofQ3E0Ldc26N4vNQhVuTq++0u02l+131z6Vr9gQXIBGSmEeg
+         Hykj0SsCvX1UZh9VrWSUeejNNeT6m2/JJx+vx00vsGB7nmgeX0TCZVIbjdYLk7ANs7oO
+         GelNP2wxknJhqLGogdUwWbHfeTPsYaPkfdbjig+bKUNEuOXbK621hVR7CMejpJ8ViiBo
+         e3WA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=NW58TngHF2iGAMKYPwCczd/NajU2Zo1ovbXcFt5HfVg=;
-        b=TqzxKbYFxU5tZ+ybQ/av9UBuKrfVcpJy4FEdCsiGhk2DEISEtNdx+MPF7V22Qrpm8X
-         q3nAd7mngkjA4oeEQUb+RgEvezUF1IABVEe5BicnuITkQYezVz0/JiI2ahP9wAzMHyYj
-         YYUKkNS9T5ytK8YhnRWWRDiH+xqo8c0SyWxjAkpw6dAb0Ou0rYY8bjbLvWW0/7GTUu0y
-         EUqfHoc+j0+aMy2EOD6zevp1s2RWgsJuedTlJ7eM0jm+3joX9UD5RVUXcmfNVxdTCljC
-         CixwCN41DD28xXGlvMfzMyyHQOBRzUf6SH9lkku+KJxUcEoRDolE2Hujba4DO+++82BS
-         xABw==
-X-Gm-Message-State: AOAM530x3qQOgcEjh3y3pYebQkG9c1IbKdGT7JC3FFFwQga6NGjvHq30
-        xBigU+gYRxPV+7k/9MUs41Fs/4XXE2nZG54IrIGBbQ==
-X-Google-Smtp-Source: ABdhPJznEpRzhYei7BQOzmtrp7K7kVlyM+t3hMHY0+2YiIUtrVJ/MLs5xc2bsd5dbee7S/GYtq5ePSIQqXJlseQIpxc=
-X-Received: by 2002:aca:a9c8:0:b0:2da:45b6:b796 with SMTP id
- s191-20020acaa9c8000000b002da45b6b796mr2700245oie.193.1649220427524; Tue, 05
- Apr 2022 21:47:07 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 5 Apr 2022 21:47:07 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EeYSfZ5xH+IlAcJ+xTcG79IheqB96eU+egCEaXP6x+E=;
+        b=OU4sf0Z1cQyhC8uf+0SuFlI6kpy1mwymepD6kix7SMQlIszaRZNuHkzJ5++s+sknOB
+         zeNv0jUj7+K4XOpn0hyK9i5VoqQ07wTQZstV+M+mtDcIFyaBzoakackvJ8Nd+XfVTGKB
+         mRdQVSg4EAFvS8q+pPdcz4+hyAULBHXJNRK+UgMhZhzC3u7qLrmBsmv5PY58+OILA6yz
+         lMWFtNNwfXZjP4TKtpL9j0XQ0i8SFk+MmPhtyywu/AQAAOuoXONsoShJfe08c9hEU+ld
+         /nC8ebdS6kjTQSGo0yaTFz6BgRhLs3OsKxpsr5n6SpJaKVm+yfVkf5ui3uAISFwA2UA1
+         gD9A==
+X-Gm-Message-State: AOAM53197NLPFTtM0BfL/7kRkVe6CQHYjU5ESKDZXkxWtgCyenCYkzqD
+        s5phNRXxeBnHcXYsO3e8/w+hbw==
+X-Google-Smtp-Source: ABdhPJxtDZ3YxYOmx1j8+U4YCNNKFsjDW1w53GcKKllZ/RrkFc1eKLttBEbYltHxtMDJirkkE7liRQ==
+X-Received: by 2002:a17:90b:4a01:b0:1c9:a552:f487 with SMTP id kk1-20020a17090b4a0100b001c9a552f487mr8001917pjb.68.1649219063598;
+        Tue, 05 Apr 2022 21:24:23 -0700 (PDT)
+Received: from localhost.localdomain ([2405:201:d008:8bfd:2c57:ced7:5f4:42e2])
+        by smtp.gmail.com with ESMTPSA id l27-20020a63701b000000b0038233e59422sm14437523pgc.84.2022.04.05.21.24.19
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Tue, 05 Apr 2022 21:24:22 -0700 (PDT)
+From:   Arun Ajith S <aajith@arista.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, dsahern@kernel.org,
+        yoshfuji@linux-ipv6.org, gilligan@arista.com,
+        noureddine@arista.com, aajith@arista.com
+Subject: [PATCH net-next] net/ipv6: Introduce accept_unsolicited_na knob to implement router-side changes for RFC9131
+Date:   Wed,  6 Apr 2022 09:53:39 +0530
+Message-Id: <20220406042339.10986-1-aajith@arista.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-In-Reply-To: <CAE-0n51xeigKFS9Zek44HZGD9cdc4Em91aQ5HHzuy7P1FBmfFg@mail.gmail.com>
-References: <20211125174751.25317-1-djakov@kernel.org> <CAE-0n51xeigKFS9Zek44HZGD9cdc4Em91aQ5HHzuy7P1FBmfFg@mail.gmail.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 5 Apr 2022 21:47:07 -0700
-Message-ID: <CAE-0n52xQ+SbwpDfzuW-tMLJP17Z2qog2s_pS=XBTULLNpUkLg@mail.gmail.com>
-Subject: Re: [PATCH v3] interconnect: qcom: icc-rpmh: Add BCMs to commit list
- in pre_aggregate
-To:     Alex Elder <elder@linaro.org>, djakov@kernel.org,
-        okukatla@codeaurora.org, quic_mdtipton@quicinc.com
-Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Stephen Boyd (2022-04-05 16:00:55)
-> Quoting Georgi Djakov (2021-11-25 09:47:51)
-> > From: Mike Tipton <mdtipton@codeaurora.org>
-> >
-> > We're only adding BCMs to the commit list in aggregate(), but there are
-> > cases where pre_aggregate() is called without subsequently calling
-> > aggregate(). In particular, in icc_sync_state() when a node with initial
-> > BW has zero requests. Since BCMs aren't added to the commit list in
-> > these cases, we don't actually send the zero BW request to HW. So the
-> > resources remain on unnecessarily.
-> >
-> > Add BCMs to the commit list in pre_aggregate() instead, which is always
-> > called even when there are no requests.
-> >
-> > Signed-off-by: Mike Tipton <mdtipton@codeaurora.org>
-> > [georgi: remove icc_sync_state for platforms with incomplete support]
-> > Signed-off-by: Georgi Djakov <djakov@kernel.org>
->
-> This patch fixes suspend/resume for me on sc7180-trogdor-lazor. Without
-> it I can't achieve XO shutdown. It seems that it fixes the sync_state
-> support that was added in commit b1d681d8d324 ("interconnect: Add sync
-> state support"). Before that commit suspend worked because the
-> interconnect wasn't maxed out at boot. After that commit we started
-> maxing out the interconnect state and never dropping it.
+Add a new neighbour cache entry in STALE state for routers on receiving
+an unsolicited (gratuitous) neighbour advertisement with
+source-link-layer-address option specified.
+This is similar to the arp_accept configuration for IPv4.
+A new sysctl endpoint is created to turn on this behaviour:
+/proc/sys/net/ipv6/conf/interface/accept_unsolicited_na.
 
-I'm also wondering if this means suspend doesn't work without sync_state
-support? Does this mean that device links are required? And device links
-are only made if fw_devlink is enabled? I don't see any devlinks made in
-drivers/interconnect so I worry that we have to use fw_devlink to get
-device links made to make sync_state happen to remove the max votes that
-are put in at boot.
+Signed-off-by: Arun Ajith S <aajith@arista.com>
+Tested-by: Arun Ajith S <aajith@arista.com>
+---
+ Documentation/networking/ip-sysctl.rst | 23 +++++++++++++++++++++++
+ include/linux/ipv6.h                   |  1 +
+ include/uapi/linux/ipv6.h              |  1 +
+ net/ipv6/addrconf.c                    |  8 ++++++++
+ net/ipv6/ndisc.c                       | 20 +++++++++++++++++++-
+ 5 files changed, 52 insertions(+), 1 deletion(-)
 
->
-> It would be good to pick this back to stable kernels so we have a
-> working suspend/resume on LTS kernels. I tried picking it back to
-> 5.10.109 (latest 5.10 LTS) and booting it on my Lazor w/ LTE device but
-> it crashes at boot pretty reliably in the IPA driver. Interestingly I
-> can't get it to crash on 5.15.32 when I pick it back, so maybe something
-> has changed between 5.10 and 5.15 for IPA? I'll try to bisect it.
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index b0024aa7b051..92e870693436 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -2467,6 +2467,29 @@ drop_unsolicited_na - BOOLEAN
+ 
+ 	By default this is turned off.
+ 
++accept_unsolicited_na - BOOLEAN
++	Add a new neighbour cache entry in STALE state for routers on receiving an
++	unsolicited neighbour advertisement with source-link-layer address option
++	specified. This is as per router-side behavior documented in RFC9131.
++	This has lower precedence than drop_unsolicited_na.
++	 drop   accept  fwding                   behaviour
++	 ----   ------  ------  ----------------------------------------------
++	    1        X       X  Drop NA packet and don't pass up the stack
++	    0        0       X  Pass NA packet up the stack, don't update NC
++	    0        1       0  Pass NA packet up the stack, don't update NC
++	    0        1       1  Pass NA packet up the stack, and add a STALE
++	                          NC entry
++	This will optimize the return path for the initial off-link communication
++	that is initiated by a directly connected host, by ensuring that
++	the first-hop router which turns on this setting doesn't have to
++	buffer the initial return packets to do neighbour-solicitation.
++	The prerequisite is that the host is configured to send
++	unsolicited neighbour advertisements on interface bringup.
++	This setting should be used in conjunction with the ndisc_notify setting
++	on the host to satisfy this prerequisite.
++
++	By default this is turned off.
++
+ enhanced_dad - BOOLEAN
+ 	Include a nonce option in the IPv6 neighbor solicitation messages used for
+ 	duplicate address detection per RFC7527. A received DAD NS will only signal
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index 16870f86c74d..918bfea4ef5f 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -61,6 +61,7 @@ struct ipv6_devconf {
+ 	__s32		suppress_frag_ndisc;
+ 	__s32		accept_ra_mtu;
+ 	__s32		drop_unsolicited_na;
++	__s32		accept_unsolicited_na;
+ 	struct ipv6_stable_secret {
+ 		bool initialized;
+ 		struct in6_addr secret;
+diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
+index d4178dace0bf..549ddeaf788b 100644
+--- a/include/uapi/linux/ipv6.h
++++ b/include/uapi/linux/ipv6.h
+@@ -194,6 +194,7 @@ enum {
+ 	DEVCONF_IOAM6_ID,
+ 	DEVCONF_IOAM6_ID_WIDE,
+ 	DEVCONF_NDISC_EVICT_NOCARRIER,
++	DEVCONF_ACCEPT_UNSOLICITED_NA,
+ 	DEVCONF_MAX
+ };
+ 
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index b22504176588..e8a50f2c08d7 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -5569,6 +5569,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
+ 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
+ 	array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
++	array[DEVCONF_ACCEPT_UNSOLICITED_NA] = cnf->accept_unsolicited_na;
+ }
+ 
+ static inline size_t inet6_ifla6_size(void)
+@@ -7019,6 +7020,13 @@ static const struct ctl_table addrconf_sysctl[] = {
+ 		.extra1		= (void *)SYSCTL_ZERO,
+ 		.extra2		= (void *)SYSCTL_ONE,
+ 	},
++	{
++		.procname	= "accept_unsolicited_na",
++		.data		= &ipv6_devconf.accept_unsolicited_na,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ 	{
+ 		/* sentinel */
+ 	}
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index fcb288b0ae13..254addad0dd3 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -979,6 +979,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
+ 	struct inet6_dev *idev = __in6_dev_get(dev);
+ 	struct inet6_ifaddr *ifp;
+ 	struct neighbour *neigh;
++	bool create_neigh;
+ 
+ 	if (skb->len < sizeof(struct nd_msg)) {
+ 		ND_PRINTK(2, warn, "NA: packet too short\n");
+@@ -999,6 +1000,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
+ 	/* For some 802.11 wireless deployments (and possibly other networks),
+ 	 * there will be a NA proxy and unsolicitd packets are attacks
+ 	 * and thus should not be accepted.
++	 * drop_unsolicited_na takes precedence over accept_unsolicited_na
+ 	 */
+ 	if (!msg->icmph.icmp6_solicited && idev &&
+ 	    idev->cnf.drop_unsolicited_na)
+@@ -1039,7 +1041,23 @@ static void ndisc_recv_na(struct sk_buff *skb)
+ 		in6_ifa_put(ifp);
+ 		return;
+ 	}
+-	neigh = neigh_lookup(&nd_tbl, &msg->target, dev);
++	/* RFC 9131 updates original Neighbour Discovery RFC 4861.
++	 * An unsolicited NA can now create a neighbour cache entry
++	 * on routers if it has Target LL Address option.
++	 *
++	 * drop   accept  fwding                   behaviour
++	 * ----   ------  ------  ----------------------------------------------
++	 *    1        X       X  Drop NA packet and don't pass up the stack
++	 *    0        0       X  Pass NA packet up the stack, don't update NC
++	 *    0        1       0  Pass NA packet up the stack, don't update NC
++	 *    0        1       1  Pass NA packet up the stack, and add a STALE
++	 *                          NC entry
++	 * Note that we don't do a (daddr == all-routers-mcast) check.
++	 */
++	create_neigh = !msg->icmph.icmp6_solicited && lladdr &&
++		       idev && idev->cnf.forwarding &&
++		       idev->cnf.accept_unsolicited_na;
++	neigh = __neigh_lookup(&nd_tbl, &msg->target, dev, create_neigh);
+ 
+ 	if (neigh) {
+ 		u8 old_flags = neigh->flags;
+-- 
+2.32.0 (Apple Git-132)
 
-Bisecting pointed to commit 1aac309d3207 ("net: ipa: use autosuspend")
-as fixing it. I think before that commit we weren't enabling some
-interconnect, but now we're booting, runtime suspending, and then
-runtime resuming again. With the sync state patch I suspect the
-interconnect bandwidth is dropped and IPA needs to use runtime PM to
-actually turn resources back on because it assumed that resources are on
-when it probes.
