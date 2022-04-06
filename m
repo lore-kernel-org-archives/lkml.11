@@ -2,433 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C11C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D83FC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232321AbiDFNSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
+        id S232908AbiDFNSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233593AbiDFNSC (ORCPT
+        with ESMTP id S233585AbiDFNSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:18:02 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2AB612F09;
+        Wed, 6 Apr 2022 09:18:01 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00850612F02;
         Wed,  6 Apr 2022 02:56:10 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23677hhO007704;
-        Wed, 6 Apr 2022 11:55:27 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=ISQOsMP+xc3UEeUbyEdCLmmcEtbjANcQdQ6aIrp1Ncs=;
- b=1Vjtz/V+dx/vRyXYHmRxeXpic5zAPwNCHd/gLFB2Yh1nkzMumGeB1lPDoaLDXcqlLdHe
- jZ2IsS1RvVMRTPUaH1cXEr/2jF8GKQPgJVW3oScNB1VDskPylAAum71vmR9leHSnG6w9
- AyWWUa5KoqEmYdM4o+Dib6bILZNtbxvDDpe6EoK6iB55FHqYvEwxKWc9sUCdmRmNW1Uh
- ol88mNmIBo9+F2QeWily/rpHkX1oiYgzJNWPpyn/h8bBHml7qllYRxTAYd8Aavs5gTqs
- noe/X68x3AHo0PHGrhK1iQ8bJeKB112VVAmYsRVrohTFJu+L7kmP6e/SgZVr8RAKHZCK zg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f8x9gbd20-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 11:55:26 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 65D1B100034;
-        Wed,  6 Apr 2022 11:55:26 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5DAC920F2A4;
-        Wed,  6 Apr 2022 11:55:26 +0200 (CEST)
-Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 6 Apr 2022 11:55:25
- +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Stefano Stabellini <stefanos@xilinx.com>,
-        Bruce Ashfield <bruce.ashfield@xilinx.com>,
-        <arnaud.pouliquen@foss.st.com>
-Subject: [RFC PATCH v5 4/4] remoteproc: virtio: Create platform device for the remoteproc_virtio
-Date:   Wed, 6 Apr 2022 11:54:46 +0200
-Message-ID: <20220406095446.1187968-5-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
-References: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYKFv47H7zgYRC;
+        Wed,  6 Apr 2022 17:38:43 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 17:40:21 +0800
+Received: from [10.174.178.220] (10.174.178.220) by
+ dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 17:40:26 +0800
+Subject: Re: [REQUEST DISCUSS]: speed up SCSI error handle for host with
+ massive devices
+To:     Mike Christie <michael.christie@oracle.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Steffen Maier <maier@linux.ibm.com>,
+        <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        John Garry <john.garry@huawei.com>
+CC:     Wu Bo <wubo40@huawei.com>, Feilong Lin <linfeilong@huawei.com>,
+        <zhangjian013@huawei.com>
+References: <71e09bb4-ff0a-23fe-38b4-fe6425670efa@huawei.com>
+ <cd7bda98-2160-9271-9520-e98d1fe00ea5@linux.ibm.com>
+ <331aafe1-df9b-cae4-c958-9cf1800e389a@huawei.com>
+ <64d5a997-a1bf-7747-072d-711a8248874d@suse.de>
+ <c4baacf1-0e86-9660-45f7-50ebc853e6af@huawei.com>
+ <1dd69d03-b4f6-ab20-4923-0995b40f045d@suse.de>
+ <d2f2c89f-c048-4f04-4d95-27958f0fa46a@huawei.com>
+ <78d41ec1-b30c-f6d2-811c-e0e4adbc8f01@oracle.com>
+From:   Wenchao Hao <haowenchao@huawei.com>
+Message-ID: <fd42ea1d-7b77-ba67-4dd6-7f5caac1c703@huawei.com>
+Date:   Wed, 6 Apr 2022 17:40:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
+In-Reply-To: <78d41ec1-b30c-f6d2-811c-e0e4adbc8f01@oracle.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_03,2022-04-05_01,2022-02-23_01
+X-Originating-IP: [10.174.178.220]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define a platform driver to manage the remoteproc virtio device as
-a platform devices.
+On 2022/4/4 1:14, Mike Christie wrote:
+> On 3/30/22 5:59 AM, Wenchao Hao wrote:
+>> On 2022/3/30 17:32, Hannes Reinecke wrote:
+>>> On 3/30/22 11:11, Wenchao Hao wrote:
+>>>> On 2022/3/30 2:56, Hannes Reinecke wrote:
+>>>>> On 3/29/22 14:40, Wenchao Hao wrote:
+>>>>>> On 2022/3/29 18:56, Steffen Maier wrote:
+>>>>>>> On 3/29/22 11:06, Wenchao Hao wrote:
+>>>>>>>> SCSI timeout would call scsi_eh_scmd_add() on some conditions, host would be set
+>>>>>>>> to SHOST_RECOVERY state. Once host enter SHOST_RECOVERY, IOs submitted to all
+>>>>>>>> devices in this host would not succeed until the scsi_error_handler() finished.
+>>>>>>>> The scsi_error_handler() might takes long time to be done, it's unbearable when
+>>>>>>>> host has massive devices.
+>>>>>>>>
+>>>>>>>> I want to ask is anyone applying another error handler flow to address this
+>>>>>>>> phenomenon?
+>>>>>>>>
+>>>>>>>> I think we can move some operations(like scsi get sense, scsi send startunit
+>>>>>>>> and scsi device reset) out of scsi_unjam_host(), to perform these operations
+>>>>>>>> without setting host to SHOST_RECOVERY? It would reduce the time of block the
+>>>>>>>> whole host.
+>>>>>>>>
+>>>>>>>> Waiting for your discussion.
+>>>>>>>
+>>>>>>> We already have "async" aborts before even entering scsi_eh. So your use case seems to imply that those aborts fail and we enter scsi_eh?
+>>>>>>>
+>>>>>>
+>>>>>> Yes, I mean when scsi_abort_command() failed and scsi_eh_scmd_add() is called.
+>>>>>>
+>>>>>>> There's eh_deadline for limiting the time spent in escalation of scsi_eh, and instead directly go to host reset. Would this help?
+>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>> The deadline seems not helpful. What we want to see is a single LUN's command error
+>>>>>> would not stop other LUNs which share the same host. So my plan is to move reset LUN out
+>>>>>> from scsi_unjam_host() which run with host set to SHOST_RECOVERY.
+>>>>>
+>>>>> Nope. One of the key points of scsi_unjam_host() is that is has to stop all I/O before proceeding. Without doing so basically all SCSI parallel HBAs will fail EH as they _require_ I/O to be stopped.
+>>>>>
+>>>>
+>>>> I still can not understand why we must stop all I/O. In my comprehension, stopping all I/O
+>>>> is because we might reset host during scsi_error_handler() and we must wait host's number of
+>>>> failed command equal to number of busy command then we can wake up scsi_error_handler().
+>>>>
+>>>> If move reset LUN out of scsi_error_handler(), and perform single LUN reset, we only need
+>>>> stop I/O of this single LUN, this would not affect other LUNs. If single LUN reset failed,
+>>>> we can then call in the large scale error handle.
+>>>>
+>>> I know the EH flow.
+>>>
+>>> Problem here is the way parallel SCSI operates. Remember, parallel SCSI is a _bus_, and there can be only one command at a time on the bus.
+>>> So if one command on the bus misfires and you have to start EH you have to stop all I/O on the bus to ensure that your EH command is the only one active on the bus.
+>>>
+>>
+>> Thank you for you explanation, it's clear to me now.
+>>
+>>> For modern HBAs we sure can device other ways and means of error recovery, but I can't really see how we would do that on legacy HBAs.
+>>>
+>>
+>> How about define a new return value of scsi_host_template's eh_timed_out callback which indicate this timeout
+>> is totally handled by LLDs. Like following:
+>>
+>> --- a/drivers/scsi/scsi_error.c
+>> +++ b/drivers/scsi/scsi_error.c
+>> @@ -359,6 +359,8 @@ enum blk_eh_timer_return scsi_times_out(struct request *req)
+>>                         set_host_byte(scmd, DID_TIME_OUT);
+>>                         scsi_eh_scmd_add(scmd);
+>>                 }
+>> +       } else if (rtn == EH_HANDLED_BY_DRIVERS) {
+>> +               return BLK_EH_DONE;
+>>         }
+>>
+>> Or scsi_host_template's eh_timed_out should not do this, we can define another callback?
+>> In the LLDs's timeout handler callback, apply single LUN reset first flow as previous mail metioned.
+>>
+> 
+> You probably want to add a scsi_host_template field or new callouts
+> because some drivers only preallocate enough resources for one TMF
+> at a time so we have to do it on a driver by driver basis.
+> 
+> For driver's setting/implementing it then to escalate you can do something
+> like:
+> 
+> 1. Block the queue for just the LU with scsi_internal_device_block.
+> 2. You can then call the new callout or old one if we just added some
+> new field.
+> 3. If device/lun reset fails, then block the target. Then you can do
+> the host.
+> 
 
-The platform device allows to pass rproc_vdev_data platform data to
-specify properties that are stored in the rproc_vdev structure.
+Thanks a lot for your guide. I want to wait hannes's change.
 
-Such approach will allow to preserve legacy remoteproc virtio device
-creation but also to probe the device using device tree mechanism.
+> We could share code with scsi_ioctl_reset as well. Drivers that support
+> TMFs via that ioctl already expect queuecommand to be possibly in the
+> middle of a run and IO not yet timed out. For example, the code to
+> block a queue and reset the device could be used for the new EH and
+> SG_SCSI_RESET_DEVICE handling.
+> 
+> 
+> 
+>> Anyway, what we need is a way to reduce the time of setting host to SHOST_RECOVERY.
+>>
+>>>> Here is a brief flow:
+>>>>
+>>>> abort command
+>>>>     ||
+>>>>     || failed
+>>>>     ||
+>>>>     \/
+>>>> stop single LUN's I/O (need to wait LUN's failed command number equal to busy command  number)
+>>>>     ||
+>>>>     || failed  (according to our statistic, 90% reset LUN would succeed)
+>>>>     ||
+>>>>     \/
+>>>
+>>> Interesting. This does not match up with my experience, where 99% of the errors were due to a command timeout.
+>>>
+>>> So which errors do you see here? What are the causes?
+>>
+>> These error statistic are from our consumers' environment,they told me about 90% timeout triggered errors can be
+>> handled by reset LUN.
+>>
+> 
+> Is this with specific drivers, transport or targets?
+> .
+> 
 
-remoteproc_virtio.c update:
-  - Add rproc_virtio_driver platform driver. The probe/remove ops replace
-    the rproc_rvdev_add_device/rproc_rvdev_remove_device functions.
-  - All reference to the rvdev->dev has been updated to rvdev-pdev->dev.
-  - rproc_rvdev_release is removed as associated to the rvdev device.
-  - The use of rvdev->kref counter is replaced by get/put_device on the
-    remoteproc virtio platform device.
-  - The vdev device no longer increments rproc device counter.
-    increment/decrement is done in rproc_virtio_probe/rproc_virtio_remove
-    function in charge of the vrings allocation/free.
-
-remoteproc_core.c update:
-  Migrate from the rvdev device to the rvdev platform device.
-  From this patch, when a vdev resource is found in the resource table
-  the remoteproc core register a platform device.
-
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
----
-Update vs previous revision:
- - Updated the compatible name to align with the "virtio, <transport>"
-name used for instance for "virtio,mmio"
----
- drivers/remoteproc/remoteproc_core.c     |  13 +-
- drivers/remoteproc/remoteproc_internal.h |   3 -
- drivers/remoteproc/remoteproc_virtio.c   | 146 +++++++++++------------
- include/linux/remoteproc.h               |   6 +-
- 4 files changed, 84 insertions(+), 84 deletions(-)
-
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index bd6d3f2decc6..c0c88ecaa66e 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -478,6 +478,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
- 	struct device *dev = &rproc->dev;
- 	struct rproc_vdev *rvdev;
- 	struct rproc_vdev_data rvdev_data;
-+	struct platform_device *pdev;
- 
- 	/* make sure resource isn't truncated */
- 	if (struct_size(rsc, vring, rsc->num_of_vrings) + rsc->config_len >
-@@ -506,9 +507,13 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
- 	rvdev_data.rsc_offset = offset;
- 	rvdev_data.rsc = rsc;
- 
--	rvdev = rproc_rvdev_add_device(rproc, &rvdev_data);
--	if (IS_ERR(rvdev))
--		return PTR_ERR(rvdev);
-+	pdev = platform_device_register_data(dev, "rproc-virtio", rvdev_data.index, &rvdev_data,
-+					     sizeof(rvdev_data));
-+	if (IS_ERR(pdev)) {
-+		dev_err(rproc->dev.parent,
-+			"failed to create rproc-virtio device\n");
-+		return PTR_ERR(pdev);
-+	}
- 
- 	return 0;
- }
-@@ -1248,7 +1253,7 @@ void rproc_resource_cleanup(struct rproc *rproc)
- 
- 	/* clean up remote vdev entries */
- 	list_for_each_entry_safe(rvdev, rvtmp, &rproc->rvdevs, node)
--		kref_put(&rvdev->refcount, rproc_vdev_release);
-+		platform_device_unregister(rvdev->pdev);
- 
- 	rproc_coredump_cleanup(rproc);
- }
-diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
-index f82f9a5378ae..41176f4b35c9 100644
---- a/drivers/remoteproc/remoteproc_internal.h
-+++ b/drivers/remoteproc/remoteproc_internal.h
-@@ -45,10 +45,7 @@ int rproc_of_parse_firmware(struct device *dev, int index,
- 			    const char **fw_name);
- 
- /* from remoteproc_virtio.c */
--struct rproc_vdev *rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data);
--void rproc_rvdev_remove_device(struct rproc_vdev *rvdev);
- irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
--void rproc_vdev_release(struct kref *ref);
- 
- /* from remoteproc_debugfs.c */
- void rproc_remove_trace_file(struct dentry *tfile);
-diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-index e2e796ab2fd8..3937c1e5eb19 100644
---- a/drivers/remoteproc/remoteproc_virtio.c
-+++ b/drivers/remoteproc/remoteproc_virtio.c
-@@ -13,6 +13,7 @@
- #include <linux/dma-map-ops.h>
- #include <linux/dma-mapping.h>
- #include <linux/export.h>
-+#include <linux/of_platform.h>
- #include <linux/of_reserved_mem.h>
- #include <linux/remoteproc.h>
- #include <linux/virtio.h>
-@@ -46,7 +47,11 @@ static int copy_dma_range_map(struct device *to, struct device *from)
- 
- static struct rproc_vdev *vdev_to_rvdev(struct virtio_device *vdev)
- {
--	return container_of(vdev->dev.parent, struct rproc_vdev, dev);
-+	struct platform_device *pdev;
-+
-+	pdev = container_of(vdev->dev.parent, struct platform_device, dev);
-+
-+	return platform_get_drvdata(pdev);
- }
- 
- static  struct rproc *vdev_to_rproc(struct virtio_device *vdev)
-@@ -341,13 +346,10 @@ static void rproc_virtio_dev_release(struct device *dev)
- {
- 	struct virtio_device *vdev = dev_to_virtio(dev);
- 	struct rproc_vdev *rvdev = vdev_to_rvdev(vdev);
--	struct rproc *rproc = vdev_to_rproc(vdev);
- 
- 	kfree(vdev);
- 
--	kref_put(&rvdev->refcount, rproc_vdev_release);
--
--	put_device(&rproc->dev);
-+	put_device(&rvdev->pdev->dev);
- }
- 
- /**
-@@ -363,7 +365,7 @@ static void rproc_virtio_dev_release(struct device *dev)
- static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
- {
- 	struct rproc *rproc = rvdev->rproc;
--	struct device *dev = &rvdev->dev;
-+	struct device *dev = &rvdev->pdev->dev;
- 	struct virtio_device *vdev;
- 	struct rproc_mem_entry *mem;
- 	int ret;
-@@ -433,18 +435,8 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
- 	vdev->dev.parent = dev;
- 	vdev->dev.release = rproc_virtio_dev_release;
- 
--	/*
--	 * We're indirectly making a non-temporary copy of the rproc pointer
--	 * here, because drivers probed with this vdev will indirectly
--	 * access the wrapping rproc.
--	 *
--	 * Therefore we must increment the rproc refcount here, and decrement
--	 * it _only_ when the vdev is released.
--	 */
--	get_device(&rproc->dev);
--
- 	/* Reference the vdev and vring allocations */
--	kref_get(&rvdev->refcount);
-+	get_device(dev);
- 
- 	ret = register_virtio_device(vdev);
- 	if (ret) {
-@@ -486,78 +478,57 @@ static int rproc_vdev_do_start(struct rproc_subdev *subdev)
- static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
- {
- 	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
-+	struct device *dev = &rvdev->pdev->dev;
- 	int ret;
- 
--	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
-+	ret = device_for_each_child(dev, NULL, rproc_remove_virtio_dev);
- 	if (ret)
--		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
-+		dev_warn(dev, "can't remove vdev child device: %d\n", ret);
- }
- 
--/**
-- * rproc_rvdev_release() - release the existence of a rvdev
-- *
-- * @dev: the subdevice's dev
-- */
--static void rproc_rvdev_release(struct device *dev)
--{
--	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
--
--	of_reserved_mem_device_release(dev);
--
--	kfree(rvdev);
--}
--
--struct rproc_vdev *
--rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
-+static int rproc_virtio_probe(struct platform_device *pdev)
- {
-+	struct device *dev = &pdev->dev;
-+	struct rproc_vdev_data *rvdev_data = dev->platform_data;
- 	struct rproc_vdev *rvdev;
--	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
--	char name[16];
-+	struct rproc *rproc = container_of(dev->parent, struct rproc, dev);
-+	struct fw_rsc_vdev *rsc;
- 	int i, ret;
- 
--	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
--	if (!rvdev)
--		return ERR_PTR(-ENOMEM);
-+	if (!rvdev_data)
-+		return -EINVAL;
- 
--	kref_init(&rvdev->refcount);
-+	rvdev = devm_kzalloc(dev, sizeof(*rvdev), GFP_KERNEL);
-+	if (!rvdev)
-+		return -ENOMEM;
- 
- 	rvdev->id = rvdev_data->id;
- 	rvdev->rproc = rproc;
- 	rvdev->index = rvdev_data->index;
- 
--	/* Initialise vdev subdevice */
--	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
--	rvdev->dev.parent = &rproc->dev;
--	rvdev->dev.release = rproc_rvdev_release;
--	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
--	dev_set_drvdata(&rvdev->dev, rvdev);
--
--	ret = device_register(&rvdev->dev);
--	if (ret) {
--		put_device(&rvdev->dev);
--		return ERR_PTR(ret);
--	}
--
--	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
-+	ret = copy_dma_range_map(dev, rproc->dev.parent);
- 	if (ret)
--		goto free_rvdev;
-+		return ret;
- 
- 	/* Make device dma capable by inheriting from parent's capabilities */
--	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
-+	set_dma_ops(dev, get_dma_ops(rproc->dev.parent));
- 
--	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
--					   dma_get_mask(rproc->dev.parent));
-+	ret = dma_coerce_mask_and_coherent(dev, dma_get_mask(rproc->dev.parent));
- 	if (ret) {
--		dev_warn(&rvdev->dev,
--			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
-+		dev_warn(dev, "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
- 			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
- 	}
- 
-+	platform_set_drvdata(pdev, rvdev);
-+	rvdev->pdev = pdev;
-+
-+	rsc = rvdev_data->rsc;
-+
- 	/* parse the vrings */
- 	for (i = 0; i < rsc->num_of_vrings; i++) {
- 		ret = rproc_parse_vring(rvdev, rsc, i);
- 		if (ret)
--			goto free_rvdev;
-+			return ret;
- 	}
- 
- 	/* remember the resource offset*/
-@@ -577,18 +548,30 @@ rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
- 
- 	rproc_add_subdev(rproc, &rvdev->subdev);
- 
--	return rvdev;
-+	dev_dbg(dev, "virtio dev %d added\n",  rvdev->index);
-+
-+	/*
-+	 * We're indirectly making a non-temporary copy of the rproc pointer
-+	 * here, because the platform devicer or the vdev device will indirectly
-+	 * access the wrapping rproc.
-+	 *
-+	 * Therefore we must increment the rproc refcount here, and decrement
-+	 * it _only_ on platform remove.
-+	 */
-+	get_device(&rproc->dev);
-+
-+	return 0;
- 
- unwind_vring_allocations:
- 	for (i--; i >= 0; i--)
- 		rproc_free_vring(&rvdev->vring[i]);
--free_rvdev:
--	device_unregister(&rvdev->dev);
--	return ERR_PTR(ret);
-+
-+	return ret;
- }
- 
--void rproc_rvdev_remove_device(struct rproc_vdev *rvdev)
-+static int rproc_virtio_remove(struct platform_device *pdev)
- {
-+	struct rproc_vdev *rvdev = dev_get_drvdata(&pdev->dev);
- 	struct rproc *rproc = rvdev->rproc;
- 	struct rproc_vring *rvring;
- 	int id;
-@@ -600,12 +583,29 @@ void rproc_rvdev_remove_device(struct rproc_vdev *rvdev)
- 
- 	rproc_remove_subdev(rproc, &rvdev->subdev);
- 	rproc_remove_rvdev(rvdev);
--	device_unregister(&rvdev->dev);
--}
- 
--void rproc_vdev_release(struct kref *ref)
--{
--	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
-+	of_reserved_mem_device_release(&pdev->dev);
-+
-+	dev_dbg(&pdev->dev, "virtio dev %d removed\n",  rvdev->index);
- 
--	rproc_rvdev_remove_device(rvdev);
-+	/* The remote proc device can be removed */
-+	put_device(&rproc->dev);
-+
-+	return 0;
- }
-+
-+/* Platform driver */
-+static const struct of_device_id rproc_virtio_match[] = {
-+	{ .compatible = "virtio,rproc", },
-+	{},
-+};
-+
-+static struct platform_driver rproc_virtio_driver = {
-+	.probe		= rproc_virtio_probe,
-+	.remove		= rproc_virtio_remove,
-+	.driver		= {
-+		.name	= "rproc-virtio",
-+		.of_match_table	= rproc_virtio_match,
-+	},
-+};
-+builtin_platform_driver(rproc_virtio_driver);
-diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
-index 7c943f0a2fc4..64b9809d0ec1 100644
---- a/include/linux/remoteproc.h
-+++ b/include/linux/remoteproc.h
-@@ -616,9 +616,8 @@ struct rproc_vring {
- 
- /**
-  * struct rproc_vdev - remoteproc state for a supported virtio device
-- * @refcount: reference counter for the vdev and vring allocations
-  * @subdev: handle for registering the vdev as a rproc subdevice
-- * @dev: device struct used for reference count semantics
-+ * @pdev: remoteproc virtio platform device
-  * @id: virtio device id (as in virtio_ids.h)
-  * @node: list node
-  * @rproc: the rproc handle
-@@ -627,10 +626,9 @@ struct rproc_vring {
-  * @index: vdev position versus other vdev declared in resource table
-  */
- struct rproc_vdev {
--	struct kref refcount;
- 
- 	struct rproc_subdev subdev;
--	struct device dev;
-+	struct platform_device *pdev;
- 
- 	unsigned int id;
- 	struct list_head node;
--- 
-2.25.1
-
+Yes, it's based on specific hardware. Details about the statistic seems secret which can not send out.
