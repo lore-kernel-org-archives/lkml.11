@@ -2,104 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC44AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 927E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233459AbiDFUEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60250 "EHLO
+        id S233775AbiDFUEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235185AbiDFUDp (ORCPT
+        with ESMTP id S235593AbiDFUDx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:03:45 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27337E5A3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:21:02 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-e1dcc0a327so3670868fac.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:21:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=RUU1F0wpujC7WhqVwBC+2pTO1HYEQ6X5S3p8UJ+PTMc=;
-        b=iE0ztCXOiYH9yto1ZKUgnifI908erHLqfQyguoCUhqSjQjwBN3nHvyPzvdgfKblAaC
-         txVXePDctGgXJNraMQvZ1ugNcw3UiGH/2MPqUDn0HFb+eDuEfcQNXfzBHDL837S8x2df
-         tSfN2hzVdetG7C75UtpGguKAqnkdia10CyhDQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=RUU1F0wpujC7WhqVwBC+2pTO1HYEQ6X5S3p8UJ+PTMc=;
-        b=sfVXgv8YGujp0b3LU05uz0gc2ePkouRCHA7akILfhc818bfe6uyqPSRUUCgVm5oQER
-         olmcN9CyIHIrQGi1HVOw9sy0n3KBXdNWP8aOkHFDVi4h+UF82kUg4Zhv3LXOGpBnEe2U
-         XWlIhd1YdTwMUYWOMpqEF1WWTcT4Ky0KQ2JPvXYxSpGQQRnmnkCAU5og/guYMw43yhGF
-         JMPH8/l/psMMieuSIZUYUpigXlFDPjzarNy9idqPwGBMuiEEAJzoJVKlm6o1FmO3w/1U
-         5jGrrkROmBYmumEOqPcI/JO0eJD7TnjvrIFH4ko9Q0H9DOfWAKpD9RZRXsr1Qga/zGhX
-         RiMw==
-X-Gm-Message-State: AOAM533yJ80LZ1b5nRelgZhpVwVx/FNc8tU4T8Z/JBoLaN9Yh/Dr0K3y
-        53hPdjSB5X4oKwoCZVJYn08wXvCjF0PWjdNWEsB3Mg==
-X-Google-Smtp-Source: ABdhPJyZQyu/K5x1uJUUL3GjBmaiHMZMMBfeE1A4A4cNNBRKCil6XVdMRFMtXJn+fZcA2z3NkLK8jXc2zoN5xcSGrbU=
-X-Received: by 2002:a05:6870:e314:b0:e1:e5f0:d777 with SMTP id
- z20-20020a056870e31400b000e1e5f0d777mr4254311oad.193.1649265661935; Wed, 06
- Apr 2022 10:21:01 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 6 Apr 2022 10:21:01 -0700
+        Wed, 6 Apr 2022 16:03:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6F21FF205;
+        Wed,  6 Apr 2022 11:27:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84FE761B89;
+        Wed,  6 Apr 2022 18:27:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 935F9C385A5;
+        Wed,  6 Apr 2022 18:27:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269670;
+        bh=TEO1ws/joQIZlBlf0QTXMmwaDURYuXSVRVRTRhqI9DI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=znpkq99dOhVAghgYw7ANzbsqI0s7urmGc5oUtuPlinSgyI1lOmOzeYMFgyVzz8vAT
+         j386/XoQOF0n07g7YoDsHAVVaadXguQd03WQfB1ML7ECaM0Jh5BG2swc6S/eGbydWp
+         /7VhCSfpLAvlmhz8o6QEsE7YfdnD3UFeSxuxrN1k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 26/43] arm64: entry: Make the trampoline cleanup optional
+Date:   Wed,  6 Apr 2022 20:26:35 +0200
+Message-Id: <20220406182437.441263260@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <Yk3Bfnxe/meBYokp@sirena.org.uk>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
- <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
- <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
- <Yk1B4f51WMGIV9WB@sirena.org.uk> <CAE-0n53Cv_bR92M64dhdnDge_=_jeOs4VZzDhUkksN90Y7rgog@mail.gmail.com>
- <Yk21pdu16lyR8jXm@sirena.org.uk> <CAE-0n50C8khP2x4sgNP5xnfLVMRQj2=LChyWWx1BWL+Xgecgyw@mail.gmail.com>
- <Yk3Bfnxe/meBYokp@sirena.org.uk>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 6 Apr 2022 10:21:01 -0700
-Message-ID: <CAE-0n53O23=N0zkZpg87Q3EyKquLe3WLNJT8qnZz4WEor6QK7A@mail.gmail.com>
-Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008 PMIC
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Mark Brown (2022-04-06 09:36:14)
-> On Wed, Apr 06, 2022 at 08:51:48AM -0700, Stephen Boyd wrote:
-> > Quoting Mark Brown (2022-04-06 08:45:41)
->
-> > > There's a MFD parent for it, and if it's for an I2C device for a pm8008
-> > > why would it have a -regulators in the name?
->
-> > There are two i2c devices. One is pm8008 at i2c address 0x8 and one is
-> > pm8008-regulators at i2c address 0x9. Earlier revisions of this patch
-> > series were making it very confusing by redoing the pm8008 binding and
-> > adding the pm8008-regulator i2c address device to the same binding and
-> > driver.
->
-> > My guess is that this is one IC that responds to multiple i2c addresses.
-> > The "main" qcom,pm8008 address is 0x8 and that supports things like
-> > interrupts. Then there's an address for regulators at 0x9 which controls
-> > the handful of LDOs on the PMIC.
->
-> So it's like the TI TWL4030 and Palmas - in which case it should
-> probably be handled similarly?
+From: James Morse <james.morse@arm.com>
 
-How did those work out? I wasn't involved and I don't know what you
-mean. Do they have multiple i2c addresses they respond to?
+commit d739da1694a0eaef0358a42b76904b611539b77b upstream.
 
-> Note that the original sumbission was
-> *also* a MFD subfunction, but using a DT compatible to match the
-> platform device - this is the first I've heard of this being a separate
-> I2C function.
+Subsequent patches will add additional sets of vectors that use
+the same tricks as the kpti vectors to reach the full-fat vectors.
+The full-fat vectors contain some cleanup for kpti that is patched
+in by alternatives when kpti is in use. Once there are additional
+vectors, the cleanup will be needed in more cases.
 
-I'm mainly looking at the dts file now. It clearly has two i2c devices
-at 0x8 and 0x9. Maybe the regulator driver followed the mfd design
-because the first driver for this device is an mfd.
+But on big/little systems, the cleanup would be harmful if no
+trampoline vector were in use. Instead of forcing CPUs that don't
+need a trampoline vector to use one, make the trampoline cleanup
+optional.
+
+Entry at the top of the vectors will skip the cleanup. The trampoline
+vectors can then skip the first instruction, triggering the cleanup
+to run.
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/kernel/entry.S |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -76,16 +76,20 @@
+ 	.align 7
+ .Lventry_start\@:
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-alternative_if ARM64_UNMAP_KERNEL_AT_EL0
+ 	.if	\el == 0
++	/*
++	 * This must be the first instruction of the EL0 vector entries. It is
++	 * skipped by the trampoline vectors, to trigger the cleanup.
++	 */
++	b	.Lskip_tramp_vectors_cleanup\@
+ 	.if	\regsize == 64
+ 	mrs	x30, tpidrro_el0
+ 	msr	tpidrro_el0, xzr
+ 	.else
+ 	mov	x30, xzr
+ 	.endif
++.Lskip_tramp_vectors_cleanup\@:
+ 	.endif
+-alternative_else_nop_endif
+ #endif
+ 
+ 	sub	sp, sp, #S_FRAME_SIZE
+@@ -934,7 +938,7 @@ __ni_sys_trace:
+ #endif
+ 	prfm	plil1strm, [x30, #(1b - tramp_vectors)]
+ 	msr	vbar_el1, x30
+-	add	x30, x30, #(1b - tramp_vectors)
++	add	x30, x30, #(1b - tramp_vectors + 4)
+ 	isb
+ 	ret
+ .org 1b + 128	// Did we overflow the ventry slot?
+
+
