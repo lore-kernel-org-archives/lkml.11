@@ -2,92 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11084C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E17C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:29:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237432AbiDFQaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        id S237557AbiDFQbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237706AbiDFQ3h (ORCPT
+        with ESMTP id S237556AbiDFQah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:29:37 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEA543B83B;
-        Tue,  5 Apr 2022 18:55:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649210102; x=1680746102;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=S/gcWPbQqOYy2qVePMHR8mvnRPUxCPUqOYRtPIoCTPY=;
-  b=CKOAgXFs/ACH9HTYA8ySNi7vqHNHK87sA9u8Ol8qPZHgLMokFErSI0+l
-   wrT/tevKj5KPJqYI8+qm748luk3Ulg+amDVtbIIlOKOhpg07tk23BjYyD
-   Zwrnb3Z4rpRlj53JOQWSPOWAGUAV9pOpZqZmcx8zkRWdL5ytXhkj+DUpM
-   mEd+I4lJ7hVDvAS002qsCCOS7SDwqF33aw2bZ3R9v1ehAGv4670hrg3jP
-   9+po+yqcRbgIgvRqtopV24A4rHC41t5TD2u6R3a4i6vFYt+kixxhgEj27
-   +nMNN9EhU5XwGR8qyhARvrljLkGEpnL+pHYBZhxiqbCLjdyFwM58NtK0B
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261099515"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="261099515"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 18:54:59 -0700
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="570281512"
-Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.249.175.134]) ([10.249.175.134])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 18:54:56 -0700
-Message-ID: <17981a2e-03e3-81df-0654-5ccb29f43546@intel.com>
-Date:   Wed, 6 Apr 2022 09:54:05 +0800
+        Wed, 6 Apr 2022 12:30:37 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22ED941FD1A
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:48:20 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id n9so694361plc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 18:48:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tUE3dxQm/ksTxTn0YMfdCief23RhMLZPJwxq1FLJlMc=;
+        b=VDD6vs6I4ZQlRu9OeS2u6w2N8sFH2qI9RbfYFDtXvg9XdFfZxICldOMoE7yokycFxh
+         yuQyWgSPIAK+HELV4CSopTWMPJFA4XXa6j+0duIyjmxDyTV/2aQhlNB37qiN6edt+A+l
+         YKf4BLcWUI+o1ieTRXp19Q8G55/hJgpwrrR8fcNKpbsWe3NA7JyJeE64hoWBFtAaGd+P
+         XySN7WvclIffaDz9YH+XEZmBp4VKMuYdfOMJ8CuG00zY7T+uhq78Y/nlQ3LX0nSrTlpq
+         SSM1ZYh6SRV+g6pnoay+cqEe9rhAWH8yj5JELx/5ziOXmXPfFhpoRGCtQ/5FX5qZXUQC
+         MUnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tUE3dxQm/ksTxTn0YMfdCief23RhMLZPJwxq1FLJlMc=;
+        b=oHcEVS5T3SWwjqUmxg/ndoaqlPAQB8SeQiTKyZIOlKb37f0OwvshdJikCTa2THbLOr
+         PGkh+Q/+1b2TdBItuUKffuVic/g09Z5l/M2IuWjW/3/4AN53jOcz8b2Cb7IU81E5xzuf
+         6Ui29DxIN1Jeow9ZvsrqHCYL6+LbEQsEvifN6wP16L7HWoQLJxjzId8/DzOhpwngscQn
+         X9dEs2EmO5owNupqxgouja+D1Hvx5z9vwSiJxpqw1u6eD4/hklRGOFaz+ugsFnFHv2A7
+         wNUEkYtuly4tb7SY75MVqdCfniiVOr/lnUTw7ew3nHC1S56IFJhPDxmf4IkB7kge4ZH2
+         GqhQ==
+X-Gm-Message-State: AOAM532yi9YlcLrLReNb0CozwNvGeYLWQzk4C6d5/i6eCBweZRT9KGQj
+        4wzcZUXyYfWx+pE86VLDWA+g2BQAJlqFMA==
+X-Google-Smtp-Source: ABdhPJy6Pf+75fs32a7/oPyt8T8e0CpqTdA+RG43t3USzaHGLlu21u/QTbiCC2JdmrrtrrCWV3dd4g==
+X-Received: by 2002:a17:902:da90:b0:154:1510:acc7 with SMTP id j16-20020a170902da9000b001541510acc7mr6258840plx.103.1649209699460;
+        Tue, 05 Apr 2022 18:48:19 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id y3-20020a17090a8b0300b001c735089cc2sm3534686pjn.54.2022.04.05.18.48.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 18:48:18 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 01:48:15 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying
+ the instruction
+Message-ID: <YkzxXw1Aznv4zX0a@google.com>
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-6-seanjc@google.com>
+ <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
+ <YkshgrUaF4+MrrXf@google.com>
+ <7caee33a-da0f-00be-3195-82c3d1cd4cb4@maciej.szmigiero.name>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 026/104] KVM: TDX: x86: Add vm ioctl to get TDX
- systemwide parameters
-Content-Language: en-US
-To:     Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <5ff08ce32be458581afe59caa05d813d0e4a1ef0.1646422845.git.isaku.yamahata@intel.com>
- <586be87a-4f81-ea43-2078-a6004b4aba08@redhat.com>
-From:   Xiaoyao Li <xiaoyao.li@intel.com>
-In-Reply-To: <586be87a-4f81-ea43-2078-a6004b4aba08@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7caee33a-da0f-00be-3195-82c3d1cd4cb4@maciej.szmigiero.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/2022 8:52 PM, Paolo Bonzini wrote:
-> On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
->> Implement a VM-scoped subcomment to get system-wide parameters.  Although
->> this is system-wide parameters not per-VM, this subcomand is VM-scoped
->> because
->> - Device model needs TDX system-wide parameters after creating KVM VM.
->> - This subcommands requires to initialize TDX module.  For lazy
->>    initialization of the TDX module, vm-scope ioctl is better.
+On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
+> On 4.04.2022 18:49, Sean Christopherson wrote:
+> > On Mon, Apr 04, 2022, Maxim Levitsky wrote:
+> > In svm_update_soft_interrupt_rip(), snapshot all information regardless of whether
+> > or not nrips is enabled:
+> > 
+> > 	svm->soft_int_injected = true;
+> > 	svm->soft_int_csbase = svm->vmcb->save.cs.base;
+> > 	svm->soft_int_old_rip = old_rip;
+> > 	svm->soft_int_next_rip = rip;
+> > 
+> > 	if (nrips)
+> > 		kvm_rip_write(vcpu, old_rip);
+> > 
+> > 	if (static_cpu_has(X86_FEATURE_NRIPS))
+> > 		svm->vmcb->control.next_rip = rip;
+> > 
+> > and then in svm_complete_interrupts(), change the linear RIP matching code to look
+> > for the old rip in the nrips case and stuff svm->vmcb->control.next_rip on match.
+> > 
+> > 	bool soft_int_injected = svm->soft_int_injected;
+> > 	unsigned soft_int_rip;
+> > 
+> > 	svm->soft_int_injected = false;
+> > 
+> > 	if (soft_int_injected) {
+> > 		if (nrips)
+> > 			soft_int_rip = svm->soft_int_old_rip;
+> > 		else
+> > 			soft_int_rip = svm->soft_int_next_rip;
+> > 	}
+> > 
+> > 	...
+> > 
+> > 	if soft_int_injected && type == SVM_EXITINTINFO_TYPE_EXEPT &&
+> > 	   kvm_is_linear_rip(vcpu, soft_int_rip + svm->soft_int_csbase)) {
+> > 		if (nrips)
+> > 			svm->vmcb->control.next_rip = svm->soft_int_next_rip;
+> > 		else
+> > 			kvm_rip_write(vcpu, svm->soft_int_old_rip);
+> > 	}
+> > 
+> > 
+> > 
 > 
-> Since there was agreement to install the TDX module on load, please 
-> place this ioctl on the /dev/kvm file descriptor.
-> 
-> At least for SEV, there were cases where the system-wide parameters are 
-> needed outside KVM, so it's better to avoid requiring a VM file descriptor.
+> Despite what the svm_update_soft_interrupt_rip() name might suggest this
+> handles only *soft exceptions*, not *soft interrupts*
+> (which are injected by svm_inject_irq() and also need proper next_rip
+> management).
 
-I don't have strong preference on KVM-scope ioctl or VM-scope.
+Yeah, soft interrupts are handled in the next patch.  I couldn't come up with a
+less awful name.
 
-Initially, we made it KVM-scope and change it to VM-scope in this 
-version. Yes, it returns the info from TDX module, which doesn't vary 
-per VM. However, what if we want to return different capabilities 
-(software controlled capabilities) per VM? Part of the TDX capabilities 
-serves like get_supported_cpuid, making it KVM wide lacks the 
-flexibility to return differentiated capabilities for different TDs.
+> Also, I'm not sure that even the proposed updated code above will
+> actually restore the L1-requested next_rip correctly on L1 -> L2
+> re-injection (will review once the full version is available).
 
+Spoiler alert, it doesn't.  Save yourself the review time.  :-)
 
-> Thanks,
-> 
-> Paolo
-> 
+The missing piece is stashing away the injected event on nested VMRUN.  Those
+events don't get routed through the normal interrupt/exception injection code and
+so the next_rip info is lost on the subsequent #NPF.
 
+Treating soft interrupts/exceptions like they were injected by KVM (which they
+are, technically) works and doesn't seem too gross.  E.g. when prepping vmcb02
+
+	if (svm->nrips_enabled)
+		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
+	else if (boot_cpu_has(X86_FEATURE_NRIPS))
+		vmcb02->control.next_rip    = vmcb12_rip;
+
+	if (is_evtinj_soft(vmcb02->control.event_inj)) {
+		svm->soft_int_injected = true;
+		svm->soft_int_csbase = svm->vmcb->save.cs.base;
+		svm->soft_int_old_rip = vmcb12_rip;
+		if (svm->nrips_enabled)
+			svm->soft_int_next_rip = svm->nested.ctl.next_rip;
+		else
+			svm->soft_int_next_rip = vmcb12_rip;
+	}
+
+And then the VMRUN error path just needs to clear soft_int_injected.
