@@ -2,90 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D543C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbiDFNOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45236 "EHLO
+        id S232106AbiDFNOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:14:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234113AbiDFNNk (ORCPT
+        with ESMTP id S233719AbiDFNMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:13:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB5824BD4C;
-        Tue,  5 Apr 2022 20:08:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C12E86182C;
-        Wed,  6 Apr 2022 03:08:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9887FC385A0;
-        Wed,  6 Apr 2022 03:08:14 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 23:08:12 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
-Message-ID: <20220405230812.2feca4ed@gandalf.local.home>
-In-Reply-To: <20220405225212.061852f9@gandalf.local.home>
-References: <20220405070258.802373272@linuxfoundation.org>
-        <20220406010749.GA1133386@roeck-us.net>
-        <20220406023025.GA1926389@roeck-us.net>
-        <20220405225212.061852f9@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 6 Apr 2022 09:12:54 -0400
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1685F90BE;
+        Wed,  6 Apr 2022 02:50:19 -0700 (PDT)
+Received: by mail-ed1-f54.google.com with SMTP id g20so1932702edw.6;
+        Wed, 06 Apr 2022 02:50:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PO8bgVYc+6yq/GV1chIgW+khCSDiG15QhmYnAA0FTmY=;
+        b=jJY4a1XyPEMAt4EXBRXTFwKg733D9QCnjp+tvaRH5ix3czCPMdBiaFhGrl6pXlKB/9
+         pIgnjxa8JfFVfQAwgIa+yBy47KMzwTPmkxQnuQvzyrn+oEZQxnluyC4h/IPHa7c4z2NR
+         rCTvZe15XxY1xU7J16/Cyfwek8+3rskF/9+/Y7ujEb9T748yip38DNllJ7bxo5hEoyaS
+         vDkrYzSsQy274lfuHEItbgQ1lc4RQtexBjLz75X6JcBPnvEMSKR+KAUAHnR7/qEwx0ny
+         e8YLXLYjEoATiKiQJu1bMgT4Jl5h3FA2TZ/bv7Ga4xThOfLL+0tskUwvOT+0sY0JCjeW
+         OhaA==
+X-Gm-Message-State: AOAM532vz4Dw9LxDqYjIgDKvXTV7NrhizPwW7qr1CpZnTk1DayB8jxj+
+        XlFzVyBFD+jgT/b/jPUVL70=
+X-Google-Smtp-Source: ABdhPJwDepzSDc+UC30gZbKsINVUj0Z32NzckEH9QLPfmT3vbdsNLWRBxxyj70khlKjB9SmuoiVNsA==
+X-Received: by 2002:a50:ed0b:0:b0:41c:cf60:a882 with SMTP id j11-20020a50ed0b000000b0041ccf60a882mr7956124eds.12.1649238539608;
+        Wed, 06 Apr 2022 02:48:59 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id sb15-20020a1709076d8f00b006dfe4cda58fsm6356961ejc.95.2022.04.06.02.48.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 02:48:59 -0700 (PDT)
+Message-ID: <98c359ba-9563-3da0-d968-ae40cee9d45f@kernel.org>
+Date:   Wed, 6 Apr 2022 11:48:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt and
+ console_write
+Content-Language: en-US
+To:     Jaewon Kim <jaewon02.kim@samsung.com>,
+        'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc:     'Krzysztof Kozlowski' <krzk@kernel.org>,
+        'Alim Akhtar' <alim.akhtar@samsung.com>,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        'Chanho Park' <chanho61.park@samsung.com>
+References: <20220406082216.11206-1-jaewon02.kim@samsung.com>
+ <CGME20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f@epcas2p2.samsung.com>
+ <20220406082216.11206-2-jaewon02.kim@samsung.com>
+ <Yk1NmTdUgMcSIq1O@kroah.com> <042701d84991$ca50d410$5ef27c30$@samsung.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <042701d84991$ca50d410$5ef27c30$@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 22:52:12 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
-
-> On Tue, 5 Apr 2022 19:30:25 -0700
-> Guenter Roeck <linux@roeck-us.net> wrote:
+On 06. 04. 22, 10:39, Jaewon Kim wrote:
+> On 22. 4. 6. 17:21, Greg Kroah-Hartman wrote:
+>> On Wed, Apr 06, 2022 at 05:22:16PM +0900, Jaewon Kim wrote:
+>>> The console_write and IRQ handler can run concurrently.
+>>> Problems may occurs console_write is continuously executed while the
+>>> IRQ handler is running.
+>>>
+>>> Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+>>> ---
+>>>   drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
+>>>   1 file changed, 12 insertions(+)
+>>>
+>>> diff --git a/drivers/tty/serial/samsung_tty.c
+>>> b/drivers/tty/serial/samsung_tty.c
+>>> index e1585fbae909..9db479d728b5 100644
+>>> --- a/drivers/tty/serial/samsung_tty.c
+>>> +++ b/drivers/tty/serial/samsung_tty.c
+>>> @@ -2480,12 +2480,24 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
+>>>   			     unsigned int count)
+>>>   {
+>>>   	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
+>>> +	unsigned long flags;
+>>> +	bool locked = 1;
+>>
+>> "1" is not a boolean :)
 > 
-> > > s390 tests crashed. Other failed qemu tests did not compile.    
-> > 
-> > Bisect points to commit 93fe2389e6fd ("tracing: Have TRACE_DEFINE_ENUM
-> > affect trace event types as well"). Bisect log attached. Reverting the
-> > offending patch fixes the problem. Copying Steven for comments/input.  
-> 
-> Do you have this commit?
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=795301d3c2899
-> 
+> return value of spin_trylock() is 1 or 0.
+> It seems better to keep it as an int than to change it to bool.
+> I will return it to int.
 
-OK, I see what happened. I wrote that patch because a new event appeared
-that used enums in the field format that gets exposed to user space. This
-patch is only needed for events that do that. Which until this release,
-nothing did.
+Hi, no, do not that. Simply use bool/true/false.
 
-That patch was then flagged as something to backport (but it was never
-tagged as stable, so this was one of the "AUTOSEL" backports). And it
-should have only been backported if any of these new events were also
-backported. Otherwise, the patch is useless.
-
-When this patch was in linux-next, it caused s390 and powerpc to crash. I
-found the issue and fixed it with the linked patch above, and even added a
-"Fixes" tag to tie the two commits together.
-
-Both of problem patch and the fix went into mainline in the same pull
-request.
-
-Here's a thought, if you decide to backport a patch to stable, and you see
-that there's another commit with a "Fixes" tag to the automatically
-selected commit. DO NOT BACKPORT IF THE FIXES PATCH FAILS TO GO BACK TOO!
-
-This never should have been backported without the fix. Please revert that
-patch for any stable release that the fixes patch fails to apply.
-
--- Steve
+thanks,
+-- 
+js
+suse labs
