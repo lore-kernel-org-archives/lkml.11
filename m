@@ -2,91 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D77D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A20A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236864AbiDFV6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53976 "EHLO
+        id S236841AbiDFV7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236888AbiDFV5W (ORCPT
+        with ESMTP id S233270AbiDFV7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:57:22 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B331539159
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 14:53:41 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id m12-20020a17090b068c00b001cabe30a98dso7078261pjz.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 14:53:41 -0700 (PDT)
+        Wed, 6 Apr 2022 17:59:39 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B325100E3A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 14:57:41 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id f3so3460855qvz.10
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 14:57:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/t0ovIQiUOSTuPx9jgrpi/PzvlKilbnhNLqfgQvkTNs=;
-        b=QL0b/ugDp7rEfToKioRS6zaw7qMCtRzhXcx97rQeoYhDmLHwlXGgRRpH9/kMshrhwz
-         ZvfKDIfCfddTINqz3Ut1ZA5+lG4dH51YXHRcB685tp/LLFVd+aL6aDHRAaXBXeaP6ANW
-         4wa9+Hz52fWdDsWuwwvC2oYNMX47hWa75bcMo1oNuFEnf2Q+saFIXZmUZ5kOGRfNhDI2
-         VqFM4m5yVogBKZQfMTG0q4TTzLkFv0CfYmaikSIzrQwO3FFMv665RR+Woci08izfo7pg
-         zKIWsGtKJoQaGHwZlbiuouHhnmLo+dBwCFunJka+1riOfe31SJ/hXerOQsM4QBAwMxpQ
-         u3BA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rU3HELUX1XIytnmJX3ImprHYMsSbQFe5QXWr9mWpDno=;
+        b=gqSaIZ6PbdRaDdsgcUaKEm4bAh0znrnMb0xSRY8tLLEoZys8+3TpztKS9SLxOEwEwf
+         rxuQJbK6+WYzU486JcgzpTMVJlG0tJR4rKgb8wm70JlQfHu+50wpC4DixvUqlZdXp9M1
+         SOiFBIaHLXHYJL6GBIZVbMAU4bu533ieqLFeL0GrGE4aOyWOhLHDJ7sgVqN4GQLes6Go
+         DQxgHpJrQrLDIP+ijEZwnFJ68EPz59uz0l8LZwb4aJKZsa3jEF0+MWR82r+V2zSRBxIH
+         zMPvNAEM0IVAlsd66H8KYQMpsVnUg7MkqKsEeEv965c7kTobzs4FcefoV8NCaGS4Zh25
+         x4eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/t0ovIQiUOSTuPx9jgrpi/PzvlKilbnhNLqfgQvkTNs=;
-        b=tqWF3CSvvAlIW4Py5gAmeBmQLY1qvdDHbxh3nAIAP9ugTryV6yXC7KZymOud9DZu70
-         n7JL1IpF6tFpXHCLG1m8a1Mpx3EHXu7jEI3ShVxQMhPg5ijHP+7y8AVjjB/tspJOHLmY
-         vyGA9EJgzTbW7wmywswF5QXbVZKAK2GCmBd9/nxebaZjP3qNb0jra4Q9URJ8IIt2UkLO
-         beoMjZQQmcSqPQB6x+jzQHFlXhhg9J5i50ttWCKTyhDCNIVUoe8an/pk0zuS5HS45XXP
-         cFS7o4K0ba98Lro+n+VMkwYYQaZU+3fkKQYJIIEYNPTY9JTSuv4P4PHhgv8TYyC/oCMA
-         D/yw==
-X-Gm-Message-State: AOAM530Qi17K0BLeEDORP9a2ED/4llzjmP3Veeo1iFukWKeQzR15FIAG
-        nQ0P0M2kWMSfczSrnYnq1XiKvw==
-X-Google-Smtp-Source: ABdhPJzpSTHlVf5liK/Coh3Y8gHE/AVi3LRJciJq/cTWPnnJs2IFkVnqTH+/PxB+ksKiO4u5dnoncQ==
-X-Received: by 2002:a17:903:246:b0:153:87f0:a93e with SMTP id j6-20020a170903024600b0015387f0a93emr10696792plh.171.1649282021257;
-        Wed, 06 Apr 2022 14:53:41 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id z7-20020a056a00240700b004e1cde37bc1sm20683081pfh.84.2022.04.06.14.53.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 14:53:40 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1ncDas-00DxdY-9t; Wed, 06 Apr 2022 18:53:38 -0300
-Date:   Wed, 6 Apr 2022 18:53:38 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     kernel test robot <lkp@intel.com>, benve@cisco.com,
-        neescoba@cisco.com, kbuild-all@lists.01.org,
-        linux-rdma@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] RDMA/usnic: Refactor usnic_uiom_alloc_pd()
-Message-ID: <20220406215338.GU64706@ziepe.ca>
-References: <ef607cb3f5a09920b86971b8c8e60af8c647457e.1649169359.git.robin.murphy@arm.com>
- <202204070316.vOzwORw5-lkp@intel.com>
- <87075d61-c51c-8d94-9263-17aa40f7d70e@arm.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rU3HELUX1XIytnmJX3ImprHYMsSbQFe5QXWr9mWpDno=;
+        b=1Ul+UwZpfr4Gs4k8bBd7XsN/7TdDtAXPMowtWYjfyewh00dIzRJi1tmE7PgUdTpfdr
+         7jnDH//K0weTCsSazsWsS8E9zjapbAIL3CGhBzC3OQ7787HxhV06xbieMdnV16azh3LT
+         /NGC+IsD4c3xUUuXxaPkCzygiUjNSSZjBWfUcTkeQYzbnTrJsOdXmH+D0/QVEh54UGr9
+         ETZKSt1MQMIupZXd4KG/UiZqtQsy633hU6oK6dCOYg+eEyaW0FgNE9IJRyIAZyrTcj4H
+         SgqCYJ3MI0yoANVKSLFkxIPW3l7R8XFn1w9qcLPK5by1lU/gAtkQB4uAjPIQPAhNL1bz
+         XjWw==
+X-Gm-Message-State: AOAM533kaaOK4lilzxz7u1oRv0ko87DL8VZzrKmZ5eEQX+IlhFnLkRV4
+        XkOxMa7aajcHnlRQ3DhmCDc32ixdXOE=
+X-Google-Smtp-Source: ABdhPJzCfi9Fz1zWZQibYtxfu1ku0Wh3ORE0jCoxXScCLMl8RsJGsSfZk5sviGg+voLL/FRREwli9g==
+X-Received: by 2002:a05:6214:1d28:b0:443:e2e3:6221 with SMTP id f8-20020a0562141d2800b00443e2e36221mr9050012qvd.6.1649282260493;
+        Wed, 06 Apr 2022 14:57:40 -0700 (PDT)
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
+        by smtp.gmail.com with ESMTPSA id u17-20020ac858d1000000b002e1cdbb50besm14195906qta.78.2022.04.06.14.57.39
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 14:57:40 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2e5e9025c20so41988837b3.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 14:57:39 -0700 (PDT)
+X-Received: by 2002:a81:b04a:0:b0:2eb:6919:f27 with SMTP id
+ x10-20020a81b04a000000b002eb69190f27mr9061866ywk.54.1649282259237; Wed, 06
+ Apr 2022 14:57:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87075d61-c51c-8d94-9263-17aa40f7d70e@arm.com>
+References: <20220406192956.3291614-1-vladimir.oltean@nxp.com>
+ <20220406192956.3291614-2-vladimir.oltean@nxp.com> <CA+FuTSdK4T7DBf9wi3GjXA6P9o+6X-7c5vh9V0BN40GwbKSeGw@mail.gmail.com>
+ <20220406194711.3apwre6dbzbtw3ou@skbuf>
+In-Reply-To: <20220406194711.3apwre6dbzbtw3ou@skbuf>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 6 Apr 2022 17:57:03 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScA5=kkgZ2MfbzFpxKtkVdkZe_9Vmz1innHf+co7hJTAQ@mail.gmail.com>
+Message-ID: <CA+FuTScA5=kkgZ2MfbzFpxKtkVdkZe_9Vmz1innHf+co7hJTAQ@mail.gmail.com>
+Subject: Re: [PATCH 4.14 1/2] ipv6: add missing tx timestamping on IPPROTO_RAW
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 10:39:47PM +0100, Robin Murphy wrote:
-> On 2022-04-06 20:54, kernel test robot wrote:
-> > Hi Robin,
-> > 
-> > I love your patch! Yet something to improve:
-> > 
-> > [auto build test ERROR on rdma/for-next]
-> > [also build test ERROR on v5.18-rc1 next-20220406]
-> > [If your patch is applied to the wrong git tree, kindly drop us a note.
-> > And when submitting patch, we suggest to use '--base' as documented in
-> > https://git-scm.com/docs/git-format-patch]
-> 
-> Oops, I failed to notice that this does actually depend on the other patch I
-> sent cleaning up iommu_present()[1] - I should have sent them together as a
-> series, sorry about that.
+On Wed, Apr 6, 2022 at 5:15 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+>
+> On Wed, Apr 06, 2022 at 03:45:14PM -0400, Willem de Bruijn wrote:
+> > On Wed, Apr 6, 2022 at 3:30 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> > >
+> > > From: Willem de Bruijn <willemb@google.com>
+> > >
+> > > [ Upstream commit fbfb2321e950918b430e7225546296b2dcadf725 ]
+> > >
+> > > Raw sockets support tx timestamping, but one case is missing.
+> > >
+> > > IPPROTO_RAW takes a separate packet construction path. raw_send_hdrinc
+> > > has an explicit call to sock_tx_timestamp, but rawv6_send_hdrinc does
+> > > not. Add it.
+> > >
+> > > Fixes: 11878b40ed5c ("net-timestamp: SOCK_RAW and PING timestamping")
+> > > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > > Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> > > Signed-off-by: David S. Miller <davem@davemloft.net>
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > For 4.14.y cherry-pick:
+> >
+> > Acked-by: Willem de Bruijn <willemb@google.com>
+>
+> Thanks.
+>
+> > Might be good to point out that this is not only a clean cherry-pick
+> > of the one-line patch, but has to include part of commit a818f75e311c
+> > ("net: ipv6: Hook into time based transmission") to plumb the
+> > sockcm_cookie. The rest of that patch is not a candidate for stable,
+> > so LGTM.
+>
+> Point out how?
 
-No worries, I'll take care to order it right
-
-Jason
+In this case I did, so we're good. In general, perhaps it's fine to
+add such comments below the original Signed-off-by/Acked-by/.. block?
+Not sure what the common approach is, if any.
