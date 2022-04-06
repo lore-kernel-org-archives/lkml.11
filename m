@@ -2,97 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF39C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2273FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386417AbiDFJdk (ORCPT
+        id S1382744AbiDFJhb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
+        Wed, 6 Apr 2022 05:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244925AbiDFJPA (ORCPT
+        with ESMTP id S1451058AbiDFJem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:15:00 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7505918CD12
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:21:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649208106; x=1680744106;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=lDmiDQtEEmXB0cb1YjRoZl6xlM1hhF0n4UWVWcsiDiw=;
-  b=ZQHwRL102EmfnE0+ZmTc3sTeexzVbDwRw9OCKqK4MQ/1XpAawCwq0TiS
-   HWQaG0IA/5lzAiXnlAh8Dd35B3nyC86SffT9lkQ/JIx/qN3zZpcFNnz1C
-   IBHksCIEDYuzpxXpNxd9azQlDdSkztgLW4YgzlXQheKUErQvnPfREdS+d
-   dtIlRIrDYrNgeFCPFPsmkS87EEL5Png2gLUX8CgEoDi5f3f/DHLRZSTZn
-   DoHDjSNs3z06GtcETpb7eoKwkc60ZtET96AMBFnXtqsLJ8AzlJcIyEGcM
-   TClKLRZ0AqHJAKWKRIfmt45ZfcwywZps/9M2XGQiSc4LOdm2HTz33xbbI
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240847686"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="240847686"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 18:21:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="505516591"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2022 18:21:43 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbuMh-0003wi-6q;
-        Wed, 06 Apr 2022 01:21:43 +0000
-Date:   Wed, 6 Apr 2022 09:20:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 38/40] ERROR:
- modpost: "__tracepoint_netfs_sreq" [fs/afs/kafs.ko] undefined!
-Message-ID: <202204060951.AmHlbl9O-lkp@intel.com>
+        Wed, 6 Apr 2022 05:34:42 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A1722521;
+        Tue,  5 Apr 2022 23:17:27 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso4878622pju.1;
+        Tue, 05 Apr 2022 23:17:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nVbjX3Usy314kCEmgJkih9YlvsbX+haXG81Sqj35s8g=;
+        b=ZvKow59G7wgedgEZP1PPqH1eXcP9OiV8Kd7FM5DnYblp7q42FVsXDbPGUNkImJCupb
+         P/ezDSEztfmEuAJEdN1i0airGh3Ffws8BQDG1ZxhQUEYJtQ5HPmWl/4hqYDSiss+hZbs
+         RIpHnsisnZk+CnvC71UbICJpHoHvCuNUQaehT+zvC7PnrNUXWJdq7aAS2YYJnr3V1lLb
+         xWoUdlFV0nUgnLdNlyxT4yZfgFZPKfnk5xazNAiIDj7wcuiKNLXc8OzruKZu11c79v3S
+         RUevlVZJr1MhqMlxJ7uXqqgIaw2Df/JKCqoB3c3o5wEfll1WbG91XAEGLEdJQ87STzO7
+         /jNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nVbjX3Usy314kCEmgJkih9YlvsbX+haXG81Sqj35s8g=;
+        b=eBmXU3nzbRS1uFY6gUGlvBX3P0rQibTadcj6oqaLdwpNCUddbxBAcqxAsFcTdYUDWV
+         8dCczj+s9e8N15rriZ88RnvCR5nkqp8aP0vJO5qdZJmNXVX7o3A1+UeGuHCi0w1vjxiO
+         lKGC43KRU/2XRNGtmt3T5ICw4OalKBipjOukQIMZ7Kdty1G5L3EoJgQz+sVygnQGgRgX
+         x3Dfwgrv3RdG4a1rhYNiZZaxREeZ7vBu4lvaUJOchyquvtc6/P98Nd6ecvtrKvTjXX/V
+         TiCXLGvmv4CZDsjKYxWJozi0/FNIUjtksx6d8N2Ji2ysZUSgXNSPdtfNiAQWZTaJ+PFD
+         bjtw==
+X-Gm-Message-State: AOAM530h+67/K1Irp3JGHOkJh2Io/AGcdXvgHRd0gaf0P3CjsFVMLh+K
+        iWXnHqf7WFT0tJn2BBqQHoY=
+X-Google-Smtp-Source: ABdhPJzhUsmuDt8gnYBz+cRjQzbACyW9NzlTD9u/nSS8aqaAXwzOmfveWvgCAprpGMqd1HMc4ETXJA==
+X-Received: by 2002:a17:902:8a95:b0:156:a40a:71e5 with SMTP id p21-20020a1709028a9500b00156a40a71e5mr7170857plo.144.1649225847168;
+        Tue, 05 Apr 2022 23:17:27 -0700 (PDT)
+Received: from slim.das-security.cn ([103.84.139.53])
+        by smtp.gmail.com with ESMTPSA id l13-20020a056a00140d00b004e13da93eaasm17675683pfu.62.2022.04.05.23.17.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 23:17:26 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     valentina.manea.m@gmail.com, shuah@kernel.org,
+        gregkh@linuxfoundation.org, khoroshilov@ispras.ru
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] usb: usbip: fix a refcount leak in stub_probe()
+Date:   Wed,  6 Apr 2022 14:17:13 +0800
+Message-Id: <20220406061713.18938-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+usb_get_dev is called in stub_device_alloc. When stub_probe fails after
+that, usb_put_dev needs to be used.
 
-First bad commit (maybe != root cause):
+Fix this by moving usb_put_dev to sdev_free.
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   674eea41fc70a740ff83ec590f9833f805852464
-commit: 2726127983997dfb5bb1bc83d69cec5baeea5694 [38/40] afs: Use the netfs write helpers
-config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220406/202204060951.AmHlbl9O-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/2726127983997dfb5bb1bc83d69cec5baeea5694
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout 2726127983997dfb5bb1bc83d69cec5baeea5694
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
+Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
+ drivers/usb/usbip/stub_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
-ERROR: modpost: "netfs_put_subrequest" [fs/afs/kafs.ko] undefined!
->> ERROR: modpost: "__tracepoint_netfs_sreq" [fs/afs/kafs.ko] undefined!
->> ERROR: modpost: "__traceiter_netfs_sreq" [fs/afs/kafs.ko] undefined!
-ERROR: modpost: "netfs_page_mkwrite" [fs/afs/kafs.ko] undefined!
-ERROR: modpost: "mas_walk" [fs/netfs/netfs.ko] undefined!
-ERROR: modpost: "mas_destroy" [fs/netfs/netfs.ko] undefined!
-ERROR: modpost: "mas_expected_entries" [fs/netfs/netfs.ko] undefined!
-ERROR: modpost: "mas_store" [fs/netfs/netfs.ko] undefined!
-
+diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
+index d8d3892e5a69..3c6d452e3bf4 100644
+--- a/drivers/usb/usbip/stub_dev.c
++++ b/drivers/usb/usbip/stub_dev.c
+@@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
+ 
+ err_port:
+ 	dev_set_drvdata(&udev->dev, NULL);
+-	usb_put_dev(udev);
+ 
+ 	/* we already have busid_priv, just lock busid_lock */
+ 	spin_lock(&busid_priv->busid_lock);
+@@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
+ 	put_busid_priv(busid_priv);
+ 
+ sdev_free:
++	usb_put_dev(udev);
+ 	stub_device_free(sdev);
+ 
+ 	return rc;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
