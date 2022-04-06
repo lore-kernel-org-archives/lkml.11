@@ -2,108 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59869C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84BA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237309AbiDFQPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60118 "EHLO
+        id S237507AbiDFQQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237236AbiDFQPP (ORCPT
+        with ESMTP id S237381AbiDFQQN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:15:15 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CABA3E37FB;
-        Tue,  5 Apr 2022 21:11:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649218307; x=1680754307;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cR9iKxrz/8HA3dd1/jwZRF3XG6WX3t9oScAc0DPOnW8=;
-  b=Qhr3ZgcT6AghAGdmMiC42Yq+xjXtn3ha0USfQQjyMEydVBDv0FC4Afip
-   QdNUZQ5q7U+avhoyBYeNyTjKoqHwy+n23gZMIHzRPszfWR/i5RRVn9FAA
-   ivTGW0i/EvCYdBLPQvqQOYItX+SyA2zvCLZ/mNieoxs8FT4MbVJm9nC/C
-   a9ayqykO7f69eBEIwUcKcPSD+CVQsymH20Nr3ySz9Zj6Ag6I/EYxD7+A4
-   m/MYFj82grrvtlc+Q/5JvURh0DZ0wzaeJArpjZFZUwgo4zPIIwuEOqryq
-   l+kWxm2bsTJyg/7HHWH44kRAvhEqy+H1bV212Gk/aG7KTZUvU9SM7g5uW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="241530382"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="241530382"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:11:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="524294591"
-Received: from unknown (HELO localhost.localdomain) ([10.23.185.145])
-  by orsmga006.jf.intel.com with ESMTP; 05 Apr 2022 21:11:44 -0700
-Message-ID: <f3b6524f899f2775e630dee2ad1cc4c4c389b2fe.camel@intel.com>
-Subject: Re: [PATCH] i2c: ismt: Remove useless DMA-32 fallback configuration
-From:   Seth Heasley <seth.heasley@intel.com>
-To:     Wolfram Sang <wsa@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Neil Horman <nhorman@tuxdriver.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-i2c@vger.kernel.org,
-        seth.heasley@intel.com
-Date:   Tue, 05 Apr 2022 14:13:04 -0700
-In-Reply-To: <YgEtUT7Dhntmidxy@shikoro>
-References: <853d9f9d746864435abf93dfc822fccac5b04f37.1641731339.git.christophe.jaillet@wanadoo.fr>
-         <YgEtUT7Dhntmidxy@shikoro>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-8.el7) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Wed, 6 Apr 2022 12:16:13 -0400
+Received: from out203-205-221-245.mail.qq.com (out203-205-221-245.mail.qq.com [203.205.221.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CAB1AD1FD
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:53:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649217185;
+        bh=/3v/n9JdJY9saPfEt6mwbCOo5wF4ZWKg9nyuXSpL/9o=;
+        h=From:To:Cc:Subject:Date;
+        b=Z/8fMC2eyMMGrdbh/tCxFMovJMt+6JN57CnQVvkSANSYcAscA0JReqCofMa/jqigF
+         OhhFJ1QPFqowsqKVDhvTxEv9kT6jPhbu9GesNzz4WvPwQ/Ic71EOHSII/zkcNzYYVI
+         n69xW/ojzgy2hWNs9wwTnVGIU+4UI6vbYolYYpLA=
+Received: from localhost.localdomain ([43.227.138.48])
+        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
+        id D422002D; Wed, 06 Apr 2022 11:53:02 +0800
+X-QQ-mid: xmsmtpt1649217182td0indq9y
+Message-ID: <tencent_A887200ACC0AB9B11C761479E1E84A22FF08@qq.com>
+X-QQ-XMAILINFO: OZZSS56D9fAjlcvuejhie0WMTAU+d81tm9s6Jv1nFWGjhjJ4MNjXOZq43kjLv7
+         pwA0Ny9Egj4o4m6ocfIWk7ut04zOPpy/KfySOf96JdTu1cf9TrwkO8/MsybjrniZVSNzgOCr7wSS
+         hm0zIWB8mAwpPu2cupXBkmM8bqErBY9LBs3GpaZq0TCgeHfYCAFp/XAB1SCippNC8oVuJzGHJ48n
+         +sducBurCMIqdP0RfzAoM/OMtrtYuPKwCQUEa9pepWawMYGJCaHuhc5Y+KEqtlzuNyFhxi5/tO8I
+         wj4icrQ0Po6Bu+YMqjw9jnGjuRJMVKC/Ul0bzInz1E1Z4wf54ydAX/3qwoPQDNPVWT/iitChNhdw
+         8rReJ6OF5tYOsOSjU1dJc13OGO+RaN3H+huDOOeNz/moQ9PZrzA92zmLZCEJzTlqo0tCBu79n5u7
+         OhGTH0pyPl6pgjp1yuv1ZXdaSNL3u4qssLelXj6aO/Ty+qjxaRYc9YzPdNY8+OLZ9K3T7Dp6Niyw
+         qQhl/HaAYZbDykr2PpHPM9fwRxvAccWaniFmDLBMdUM3uEGqHq7ATCg2BPo+svuMxsj/TftW7k30
+         +sV2yJxd6n8ikP2OP+kieT/BZ/Bwu4mHC5bp+zZVHYMbZfRBeCGH0jb2jncLXPjEEqpruRydNJkr
+         OIadWCQm8S8g9XH7KczZqCuA0HAEcG5PVHurXeTNatuo5pFyjxVxxpUSsk95EVYQlDABhjbDQ8VY
+         vGDRyAEpFjDjKHeYWGhZp6etKmpmmPfAgHw95pjzbXO27qBp8Vd5H1s+cwOLeA0JzB55xIcr0IAC
+         v2DQ9WeVr6HBV2Miw1NKe/NMqc214mifFcMaTP2s4q54ANTRju+dcTVlIJElMPlIbHDyPsr3z06P
+         LuvCr8U4/ZlgLhoxoQcv5o/5H8IBWAHiz6W0kPC9uAQSfBYY5CukxfmlWblKNUfdJUmtNdJKW+C/
+         +YUrxqMjyMl7Hn7GczXDosmh8fx+5I
+From:   xkernel.wang@foxmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH v2] staging: rtl8712: fix potential memory leak in r8712_xmit_resource_alloc()
+Date:   Wed,  6 Apr 2022 11:52:52 +0800
+X-OQ-MSGID: <20220406035252.12835-1-xkernel.wang@foxmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-07 at 15:31 +0100, Wolfram Sang wrote:
-> On Sun, Jan 09, 2022 at 01:29:45PM +0100, Christophe JAILLET wrote:
-> > As stated in [1], dma_set_mask() with a 64-bit mask never fails if
-> > dev->dma_mask is non-NULL.
-> > So, if it fails, the 32 bits case will also fail for the same
-> > reason.
-> > 
-> > 
-> > Simplify code and remove some dead code accordingly.
-> > 
-> > [1]: https://lkml.org/lkml/2021/6/7/398
-> > 
-> > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Seth Heasley <seth.heasley@intel.com>
-> 
-> Seth, Neil, do you agree?
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Yes, I agree this change makes sense.
+In r8712_xmit_resource_alloc(), if usb_alloc_urb() fails, there can be 
+some explored items are not released before this function returns.
 
-> 
-> > ---
-> >  drivers/i2c/busses/i2c-ismt.c | 7 ++-----
-> >  1 file changed, 2 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/i2c/busses/i2c-ismt.c
-> > b/drivers/i2c/busses/i2c-ismt.c
-> > index f4820fd3dc13..951f3511afaa 100644
-> > --- a/drivers/i2c/busses/i2c-ismt.c
-> > +++ b/drivers/i2c/busses/i2c-ismt.c
-> > @@ -920,11 +920,8 @@ ismt_probe(struct pci_dev *pdev, const struct
-> > pci_device_id *id)
-> >  
-> >  	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-> >  	if (err) {
-> > -		err = dma_set_mask_and_coherent(&pdev->dev,
-> > DMA_BIT_MASK(32));
-> > -		if (err) {
-> > -			dev_err(&pdev->dev, "dma_set_mask fail\n");
-> > -			return -ENODEV;
-> > -		}
-> > +		dev_err(&pdev->dev, "dma_set_mask fail\n");
-> > +		return -ENODEV;
-> >  	}
-> >  
-> >  	err = ismt_dev_init(priv);
-> > -- 
-> > 2.32.0
-> > 
+Therefore, this patch re-explores the allocated items and uses 
+usb_free_urb() to release them.
 
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ChangeLog:
+v1->v2 remove kmemleak_not_leak() and update the description.
+ drivers/staging/rtl8712/xmit_linux.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/rtl8712/xmit_linux.c b/drivers/staging/rtl8712/xmit_linux.c
+index 4a93839..034de02 100644
+--- a/drivers/staging/rtl8712/xmit_linux.c
++++ b/drivers/staging/rtl8712/xmit_linux.c
+@@ -113,9 +113,10 @@ int r8712_xmit_resource_alloc(struct _adapter *padapter,
+ 		pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
+ 		if (!pxmitbuf->pxmit_urb[i]) {
+ 			netdev_err(padapter->pnetdev, "pxmitbuf->pxmit_urb[i] == NULL\n");
++			while (i-- > 0)
++				usb_free_urb(pxmitbuf->pxmit_urb[i]);
+ 			return -ENOMEM;
+ 		}
+-		kmemleak_not_leak(pxmitbuf->pxmit_urb[i]);
+ 	}
+ 	return 0;
+ }
+-- 
