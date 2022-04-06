@@ -2,103 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73619C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233452AbiDFNdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41126 "EHLO
+        id S233544AbiDFNdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233657AbiDFNck (ORCPT
+        with ESMTP id S230203AbiDFNcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:32:40 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850FA67C7E8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:32:27 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 9A43922238;
-        Wed,  6 Apr 2022 12:31:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649241082;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=teRjar+QxUq3g1wf45P3zQIoOzFA3FHoJkTKj33N6VI=;
-        b=B3ohjPB3uUOpuA+Cx2WNqILMHe80lLNb4or7/isCZTcTXr0NobDkMaYjPWcXcb+zG7wA29
-        U5/VwKQuSBZRMpZbVh4Qle3XWk4EToIwtV9E6G6CjL59OTpPS8zOlb5DJnE5zjxVKqwxYL
-        Tq93ygyKkXDSYCpfnmFTllqKPDat3Fo=
+        Wed, 6 Apr 2022 09:32:07 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8748A6799A4
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:31:49 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5C97C23A;
+        Wed,  6 Apr 2022 03:22:13 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.10.98])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1A93D3F718;
+        Wed,  6 Apr 2022 03:22:10 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 11:22:07 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Vincenzo Frascino <vincenzo.frascino@arm.com>
+Subject: Re: [RFC PATCH -next V2 2/7] arm64: fix page_address return value in
+ copy_highpage
+Message-ID: <Yk1pz7IYwEyGDVNV@FVFF77S0Q05N>
+References: <20220406091311.3354723-1-tongtiangen@huawei.com>
+ <20220406091311.3354723-3-tongtiangen@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 06 Apr 2022 12:31:22 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Pratyush Yadav <p.yadav@ti.com>
-Cc:     Tudor.Ambarus@microchip.com, miquel.raynal@bootlin.com,
-        richard@nod.at, vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Nicolas.Ferre@microchip.com
-Subject: Re: [PATCH v2 4/4] mtd: spi-nor: sfdp: Keep SFDP definitions private
-In-Reply-To: <20220405193111.pnekaivbsj7hronp@ti.com>
-References: <20220309144215.179449-1-tudor.ambarus@microchip.com>
- <20220309144215.179449-5-tudor.ambarus@microchip.com>
- <20220401200133.gyyvoe7xdbsww7cv@ti.com>
- <ed093fa5-b514-b0a6-166f-ecf117582b0b@microchip.com>
- <20220405193111.pnekaivbsj7hronp@ti.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <1fa079c4a0341ffe6ad7bdebd3cb8958@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406091311.3354723-3-tongtiangen@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-I didn't follow the series closely, so I might miss something.
-
-Am 2022-04-05 21:31, schrieb Pratyush Yadav:
-> On 04/04/22 06:19AM, Tudor.Ambarus@microchip.com wrote:
->> On 4/1/22 23:01, Pratyush Yadav wrote:
->> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->> >
->> > On 09/03/22 04:42PM, Tudor Ambarus wrote:
->> >> Keep the SFDP definitions private and expose just the definitions that are
->> >> required by the core and manufacturer drivers.
->> >
->> > I am not so sure about this. Since the post_bfpt hook passes in the bfpt
->> > table to flash drivers, they might end up wanting to use these for some
->> > checks like issi.c does for DWORD 1. They would have to move them back
->> > to sfdp.h for that, which just causes extra churn, and also puts some
->> > BFPT related defines in sfdp.h and some in sfdp.c.
->> >
-
-It's not the extra churn, but also git blame doesn't really work. In
-fact, it is already really hard to follow all the commits in spi-nor/
-with all the code moving around. So what is the actual adavantage of
-having this stuff private? One clear disadvantage is that you need to
-move it from sfdp.c to sfdp.h once you need it. And potentially, you
-might need all the defines.
-
-Also, if you pass the SFDP data to any fixups, the drivers are expected
-to use them.
-
->> That's correct, but I think exposing just the public defines in sfdp.h 
->> is
->> the path to follow. We should keep private all the definitions that we 
->> can
->> private in sfdp.c and expose publicly in sfdp.h just the ones that are 
->> shared.
->> Flash collisions, and implicitly the need of public SFDP definitions, 
->> should be
->> an exception, so I expect sfdp.h to be short in size.
+On Wed, Apr 06, 2022 at 09:13:06AM +0000, Tong Tiangen wrote:
+> Function page_address return void, fix it.
 > 
-> I disagree. I think we should keep everything in the same place. And
-> since we need to expose this to manufacturer drivers, that place is
-> sfdp.h. Who is going to cast the tiebreaking vote here? ;-)
+> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
 
-I'm leaning towards Pratyush opinion unless there is a clear advantage
-to move the defines.
+This looks like a sensible cleanup, but the commit title and message aren't
+that clear.
 
--michael
+Can you please make this:
+
+| arm64: fix types in copy_highpage()
+|
+| In copy_highpage() the `kto` and `kfrom` local variables are pointers to
+| struct page, but these are used to hold arbitrary pointers to kernel memory.
+| Each call to page_address() returns a void pointer to memory associated with
+| the relevant page, and copy_page() expects void pointers to this memory.
+|
+| This inconsistency was introduced in commit:
+|
+|   2563776b41c31908 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
+|
+| ... and while this doesn't appear to be harmful in practice it is clearly wrong.
+|
+| Correct this by making `kto` and `kfrom` void pointers.
+|
+| Fixes: 2563776b41c31908 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
+
+With that:
+
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+Thanks,
+Mark.
+
+> ---
+>  arch/arm64/mm/copypage.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
+> index b5447e53cd73..0dea80bf6de4 100644
+> --- a/arch/arm64/mm/copypage.c
+> +++ b/arch/arm64/mm/copypage.c
+> @@ -16,8 +16,8 @@
+>  
+>  void copy_highpage(struct page *to, struct page *from)
+>  {
+> -	struct page *kto = page_address(to);
+> -	struct page *kfrom = page_address(from);
+> +	void *kto = page_address(to);
+> +	void *kfrom = page_address(from);
+>  
+>  	copy_page(kto, kfrom);
+>  
+> -- 
+> 2.18.0.huawei.25
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
