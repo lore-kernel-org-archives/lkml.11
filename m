@@ -2,90 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA858C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233280AbiDFNaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
+        id S233462AbiDFNbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233291AbiDFN3V (ORCPT
+        with ESMTP id S233328AbiDFNbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:29:21 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA29E137B08
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:45:49 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V9JmdQB_1649213146;
-Received: from 30.225.24.86(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9JmdQB_1649213146)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 10:45:47 +0800
-Message-ID: <1c6b191b-4a2e-0333-b0a3-f76bcd6b6515@linux.alibaba.com>
-Date:   Wed, 6 Apr 2022 10:45:46 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [Linux-cachefs] [PATCH] fscache: Move fscache_cookies_seq_ops
- specific code under CONFIG_PROC_FS
-Content-Language: en-US
-To:     Yue Hu <huyue2@coolpad.com>, dhowells@redhat.com,
-        linux-cachefs@redhat.com
-Cc:     linux-kernel@vger.kernel.org, zbestahu@163.com, zbestahu@gmail.com
-References: <20220402044728.9669-1-huyue2@coolpad.com>
-From:   JeffleXu <jefflexu@linux.alibaba.com>
-In-Reply-To: <20220402044728.9669-1-huyue2@coolpad.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Wed, 6 Apr 2022 09:31:13 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EF6E674212
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:30:26 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxusyWa01iAhAZAA--.30206S5;
+        Wed, 06 Apr 2022 18:29:43 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Oleg Nesterov <oleg@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] MAINTAINERS: Remove redundant file of PTRACE SUPPORT entry
+Date:   Wed,  6 Apr 2022 18:29:41 +0800
+Message-Id: <1649240981-11024-4-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1649240981-11024-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1649240981-11024-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9AxusyWa01iAhAZAA--.30206S5
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYX7k0a2IF6F4UM7kC6x804xWl14x267AK
+        xVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGw
+        A2048vs2IY020E87I2jVAFwI0_JrWl82xGYIkIc2x26xkF7I0E14v26r1I6r4UM28lY4IE
+        w2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84
+        ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxd
+        M28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc
+        02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAF
+        wI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwV
+        W8twCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v2
+        6r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jrv_JF1lIxkGc2
+        Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_
+        Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMI
+        IF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jrAwsUUUUU
+        =
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In MAINTAINERS PTRACE SUPPORT entry, the file include/uapi/linux/ptrace.h
+is redundant, remove it.
 
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
 
-On 4/2/22 12:47 PM, Yue Hu wrote:
-> fscache_cookies_seq_ops is only used in proc.c that is compiled under
-> enabled CONFIG_PROC_FS, so move related code under this config. The
-> same case exsits in internal.h.
-> 
-> Also, make fscache_lru_cookie_timeout static due to no user outside
-> of cookie.c.
-> 
-> Signed-off-by: Yue Hu <huyue2@coolpad.com>
-> ---
->  fs/fscache/cookie.c   | 4 +++-
->  fs/fscache/internal.h | 4 ++++
->  2 files changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/fs/fscache/cookie.c b/fs/fscache/cookie.c
-> index 9bb1ab5fe5ed..9d3cf0111709 100644
-> --- a/fs/fscache/cookie.c
-> +++ b/fs/fscache/cookie.c
-> @@ -30,7 +30,7 @@ static DEFINE_SPINLOCK(fscache_cookie_lru_lock);
->  DEFINE_TIMER(fscache_cookie_lru_timer, fscache_cookie_lru_timed_out);
->  static DECLARE_WORK(fscache_cookie_lru_work, fscache_cookie_lru_worker);
->  static const char fscache_cookie_states[FSCACHE_COOKIE_STATE__NR] = "-LCAIFUWRD";
-> -unsigned int fscache_lru_cookie_timeout = 10 * HZ;
-> +static unsigned int fscache_lru_cookie_timeout = 10 * HZ;
->  
->  void fscache_print_cookie(struct fscache_cookie *cookie, char prefix)
->  {
-> @@ -1069,6 +1069,7 @@ void __fscache_invalidate(struct fscache_cookie *cookie,
->  }
->  EXPORT_SYMBOL(__fscache_invalidate);
->  
-> +#ifdef CONFIG_PROC_FS
->  /*
->   * Generate a list of extant cookies in /proc/fs/fscache/cookies
->   */
-> @@ -1145,3 +1146,4 @@ const struct seq_operations fscache_cookies_seq_ops = {
->  	.stop   = fscache_cookies_seq_stop,
->  	.show   = fscache_cookies_seq_show,
->  };
-> +#endif
-
-Then I'm afraid fscache_cookies_seq_stop() and
-fscache_cookies_seq_show() also need to be wrapped with "#ifdef
-CONFIG_PROC_F" ...
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fd768d4..881e3ea 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15959,7 +15959,6 @@ F:	include/asm-generic/syscall.h
+ F:	include/linux/ptrace.h
+ F:	include/linux/regset.h
+ F:	include/uapi/linux/ptrace.h
+-F:	include/uapi/linux/ptrace.h
+ F:	kernel/ptrace.c
+ 
+ PULSE8-CEC DRIVER
 -- 
-Thanks,
-Jeffle
+2.1.0
+
