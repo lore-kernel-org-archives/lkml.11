@@ -2,106 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E5AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB194C43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245594AbiDFHLH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:11:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57426 "EHLO
+        id S1344888AbiDFHLf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 03:11:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574068AbiDFGpv (ORCPT
+        with ESMTP id S1586059AbiDFGtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:45:51 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B158B465FAD;
-        Tue,  5 Apr 2022 21:56:04 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id k14so1286572pga.0;
-        Tue, 05 Apr 2022 21:56:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XBTdao9jI2D9lmUstuUU/m3zazcNfOzNZk+VV+cPROc=;
-        b=o2agCgrxWu1S/e5lz0xVtEak+ZjQkhVy9NqMyYFzMyY9ik/F5+gNKctB0njKq7ces1
-         aI/9JWwLMVlb+SvDL4nLGYceD8GUnBuB/ONF0LmL/uiVr3LrEJ/UZM7qBmuRV19R/Lqq
-         eEg/JAcATqtsVoCvUWoIIqBN/6e5wq5qRQfvABEdDppWnVMgzARscEEzZjgQeVUdVG5M
-         fxerWuCIAL3EyhOtgbvIVu58ec4jw1A/ts/oS3qgv6TNXThW00V0lAflUITHPoQp0bs6
-         yWv0l3EIHNotko3JivWOqOdwgXH7rq89XnKq9MNou+P2mCs5gQDzXfocQIhR/IjQ0aaJ
-         m8dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XBTdao9jI2D9lmUstuUU/m3zazcNfOzNZk+VV+cPROc=;
-        b=RaG2oI9zchAbQ8StOKgKJM4m8kFwVLmYaiWfH8BhPRFLnV4daiDR1WjVBIo5pCTq5G
-         E9pNV4D7NXGvyzrJ4avTzpfKz7MUuvP0T6WbBDjXZ2Ur8Ct9scOessk0vAek7HL671Pc
-         7ERFGhKVUbRSdBSpWFWHXLP5mUZ1hfsK3Jg6fkOpOGZmTgGoCMS/554lMk8NKjM9+sAF
-         Ph6cq5L9eRzTj4CVwPj6acyKfUyaBCvmPEU4QF9sup+T2kaDK5PsVTVDAMx4OsPDMQnV
-         e2y8HVguIXPJ6PbId8fbGawR91876ACW+DpeU6RAZspRARfVUQYs/OUSLlaMd5DPv+aB
-         rpGw==
-X-Gm-Message-State: AOAM531Xe8/J+CrCycYZXi6Ig1Wo7F4XT+tsPUkIB0WotegtkQcI2jCf
-        q3tO6kQDP0EPhkZWtghf90U=
-X-Google-Smtp-Source: ABdhPJytkJ6f/uulz3QgK3M86/NPKKlfRJs2XNZcJl7LiOP0j6bY87u1/erao2AY0FPEkWDZU/f7xw==
-X-Received: by 2002:a63:cf12:0:b0:399:38a7:5063 with SMTP id j18-20020a63cf12000000b0039938a75063mr5592832pgg.311.1649220964192;
-        Tue, 05 Apr 2022 21:56:04 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-9.three.co.id. [180.214.233.9])
-        by smtp.gmail.com with ESMTPSA id s24-20020a17090a441800b001ca9b5724a6sm3858330pjg.36.2022.04.05.21.55.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 21:56:03 -0700 (PDT)
-Message-ID: <bc258b22-71b9-c8af-4045-21d424d978b8@gmail.com>
-Date:   Wed, 6 Apr 2022 11:55:56 +0700
+        Wed, 6 Apr 2022 02:49:52 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EF14967CD;
+        Tue,  5 Apr 2022 22:20:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=kLa5oUSgaNFUARPCCRK3MtvUz9vPBIGfTXvIZgPjfRk=; b=g31RPnEWyQAdFvhv+AatEvE3d7
+        ga7RtNK5QlYiWaMbDbFcU+ZDovzFUq0aoZtZpfPZmVud6GW0ZpB2efEr1RWdUdE4Jp0TjZ56qfiEL
+        bsUCd8mi9gghBU3OUKpbq3014qPfC+3nFmTBoRXXYodMcLNPqAUtHag51c8sl/Z76gjwCUU4iJW4m
+        HFOdqrY3AtKqkW2X+wBUTCigB0QBPvE9ns9rS6+dZx7nUxNrBoRTK0W0bTT+rGzgLMtELg5bl2Uxi
+        lkKoaIjx61eO9ASb5252Baqhts+85B/Nodx78ihgu4QatcqgcsFQ0B+dc0V1NZRZPz3ILMOWTnEyl
+        rQRTVDdg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nby5G-003oBJ-1m; Wed, 06 Apr 2022 05:19:58 +0000
+Date:   Tue, 5 Apr 2022 22:19:58 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Jane Chu <jane.chu@oracle.com>
+Cc:     david@fromorbit.com, djwong@kernel.org, dan.j.williams@intel.com,
+        hch@infradead.org, vishal.l.verma@intel.com, dave.jiang@intel.com,
+        agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
+        ira.weiny@intel.com, willy@infradead.org, vgoyal@redhat.com,
+        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        x86@kernel.org
+Subject: Re: [PATCH v7 4/6] dax: add DAX_RECOVERY flag and .recovery_write
+ dev_pgmap_ops
+Message-ID: <Yk0i/pODntZ7lbDo@infradead.org>
+References: <20220405194747.2386619-1-jane.chu@oracle.com>
+ <20220405194747.2386619-5-jane.chu@oracle.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] Documentation: arch_pgtable_helpers: demote pgtable list
- headings
-Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220326131313.691027-1-bagasdotme@gmail.com>
- <87k0c3ecc1.fsf@meer.lwn.net>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <87k0c3ecc1.fsf@meer.lwn.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="uA3+SxEy8RfCAOX5"
+Content-Disposition: inline
+In-Reply-To: <20220405194747.2386619-5-jane.chu@oracle.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/04/22 23.15, Jonathan Corbet wrote:
-> Bagas Sanjaya <bagasdotme@gmail.com> writes:
+
+--uA3+SxEy8RfCAOX5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Tue, Apr 05, 2022 at 01:47:45PM -0600, Jane Chu wrote:
+> Introduce DAX_RECOVERY flag to dax_direct_access(). The flag is
+> not set by default in dax_direct_access() such that the helper
+> does not translate a pmem range to kernel virtual address if the
+> range contains uncorrectable errors.  When the flag is set,
+> the helper ignores the UEs and return kernel virtual adderss so
+> that the caller may get on with data recovery via write.
 > 
->> Demote pgtable list headings from title heading to chapter heading.
-> 
-> This is a classic example of the sort of changelog that says *what* the
-> patch does (which we can also see from the patch itself) but not *why*.
-> Why do these headings need to be changed?
-> 
+> Also introduce a new dev_pagemap_ops .recovery_write function.
+> The function is applicable to FSDAX device only. The device
+> page backend driver provides .recovery_write function if the
+> device has underlying mechanism to clear the uncorrectable
+> errors on the fly.
 
-In this case, before this patch, generated table of contents for
-vm/ contains:
+I know Dan suggested it, but I still think dev_pagemap_ops is the very
+wrong choice here.  It is about VM callbacks to ZONE_DEVICE owners
+independent of what pagemap type they are.  .recovery_write on the
+other hand is completely specific to the DAX write path and has no
+MM interactions at all.
 
-- Active MM
-- Architecture Page Table Helpers
-- PTE Page Table Helpers
-- PMD Page Table Helpers
-- PUD Page Table Helpers
-- HugeTLB Page Table Helpers
-- SWAP Page Table Helpers
-- Memory Balancing
-...
+>  /* see "strong" declaration in tools/testing/nvdimm/pmem-dax.c */
+>  __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
+> -		long nr_pages, void **kaddr, pfn_t *pfn)
+> +		long nr_pages, int flags, void **kaddr, pfn_t *pfn)
+>  {
+>  	resource_size_t offset = PFN_PHYS(pgoff) + pmem->data_offset;
+> +	sector_t sector = PFN_PHYS(pgoff) >> SECTOR_SHIFT;
+> +	unsigned int num = PFN_PHYS(nr_pages) >> SECTOR_SHIFT;
+> +	struct badblocks *bb = &pmem->bb;
+> +	sector_t first_bad;
+> +	int num_bad;
+> +	bool bad_in_range;
+> +	long actual_nr;
+> +
+> +	if (!bb->count)
+> +		bad_in_range = false;
+> +	else
+> +		bad_in_range = !!badblocks_check(bb, sector, num, &first_bad, &num_bad);
+>  
+> -	if (unlikely(is_bad_pmem(&pmem->bb, PFN_PHYS(pgoff) / 512,
+> -					PFN_PHYS(nr_pages))))
+> +	if (bad_in_range && !(flags & DAX_RECOVERY))
+>  		return -EIO;
 
-The headings for PTE, PMD, PUD, HugeTLB, and SWAP Page Table Helpers
-should be subheading of Architecture Page Table Helpers, but these
-were marked up with page title heading instead of chapter heading.
+The use of bad_in_range here seems a litle convoluted.  See the attached
+patch on how I would structure the function to avoid the variable and
+have the reocvery code in a self-contained chunk.
 
--- 
-An old man doll... just what I always wanted! - Clara
+> -		map_len = dax_direct_access(dax_dev, pgoff, PHYS_PFN(size),
+> -				&kaddr, NULL);
+> +		nrpg = PHYS_PFN(size);
+> +		map_len = dax_direct_access(dax_dev, pgoff, nrpg, 0, &kaddr, NULL);
+
+Overly long line here.
+
+--uA3+SxEy8RfCAOX5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=diff
+
+diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
+index b868a88a0d589..377e4d59aa90f 100644
+--- a/drivers/nvdimm/pmem.c
++++ b/drivers/nvdimm/pmem.c
+@@ -272,42 +272,40 @@ __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
+ 	struct badblocks *bb = &pmem->bb;
+ 	sector_t first_bad;
+ 	int num_bad;
+-	bool bad_in_range;
+-	long actual_nr;
+-
+-	if (!bb->count)
+-		bad_in_range = false;
+-	else
+-		bad_in_range = !!badblocks_check(bb, sector, num, &first_bad, &num_bad);
+-
+-	if (bad_in_range && !(flags & DAX_RECOVERY))
+-		return -EIO;
+ 
+ 	if (kaddr)
+ 		*kaddr = pmem->virt_addr + offset;
+ 	if (pfn)
+ 		*pfn = phys_to_pfn_t(pmem->phys_addr + offset, pmem->pfn_flags);
+ 
+-	if (!bad_in_range) {
++	if (bb->count &&
++	    badblocks_check(bb, sector, num, &first_bad, &num_bad)) {
++		long actual_nr;
++
++		if (!(flags & DAX_RECOVERY))
++			return -EIO;
+ 		/*
+-		 * If badblock is present but not in the range, limit known good range
+-		 * to the requested range.
++		 * Set the recovery stride to the kernel page size because the
++		 * underlying driver and firmware clear poison functions don't
++		 * appear to handle large chunk (such as
++		 * 2MiB) reliably.
+ 		 */
+-		if (bb->count)
+-			return nr_pages;
+-		return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);
++		actual_nr = PHYS_PFN(
++			PAGE_ALIGN((first_bad - sector) << SECTOR_SHIFT));
++		dev_dbg(pmem->bb.dev, "start sector(%llu), nr_pages(%ld), first_bad(%llu), actual_nr(%ld)\n",
++				sector, nr_pages, first_bad, actual_nr);
++		if (actual_nr)
++			return actual_nr;
++		return 1;
+ 	}
+ 
+ 	/*
+-	 * In case poison is found in the given range and DAX_RECOVERY flag is set,
+-	 * recovery stride is set to kernel page size because the underlying driver and
+-	 * firmware clear poison functions don't appear to handle large chunk (such as
+-	 * 2MiB) reliably.
++	 * If badblock is present but not in the range, limit known good range
++	 * to the requested range.
+ 	 */
+-	actual_nr = PHYS_PFN(PAGE_ALIGN((first_bad - sector) << SECTOR_SHIFT));
+-	dev_dbg(pmem->bb.dev, "start sector(%llu), nr_pages(%ld), first_bad(%llu), actual_nr(%ld)\n",
+-			sector, nr_pages, first_bad, actual_nr);
+-	return (actual_nr == 0) ? 1 : actual_nr;
++	if (bb->count)
++		return nr_pages;
++	return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);
+ }
+ 
+ static const struct block_device_operations pmem_fops = {
+
+--uA3+SxEy8RfCAOX5--
