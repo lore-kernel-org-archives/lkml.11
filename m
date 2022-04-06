@@ -2,97 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC26C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1419C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234489AbiDFOJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
+        id S234495AbiDFOKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234987AbiDFOIT (ORCPT
+        with ESMTP id S234384AbiDFOH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:08:19 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A1E49E435
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:57:09 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id ch16-20020a17090af41000b001ca867ef52bso3976396pjb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 02:57:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id;
-        bh=3qKR+9UnHfH7y3GmZazKtwO1JgDzyIRfNNCTfPUQzPQ=;
-        b=T3HnXpLMVHF84AhdAnlosPkOaV9Jf1AjBveZ6piPcw9aDZW1oz4WzNV2VhuUNw/R2C
-         J+zpHigYJ7kSTbrfi/JOJd/Ye1VvqmGmrrnv4r4BlvLI7X2At5ameEPt54Wou+JUQxrp
-         ibuMUAdTv4PeAIClj6apPHezgvlvgWZzZv7mAA4vnm9EEeqx1QyTxrTI5RVOSI1jz65E
-         a12ad43olBO8boyJ+XDOVKvfUeGq+qikcUCOeNeKotPR7Cdw1PGt5rTIZYF8LbiXXJxD
-         jqV5SdO3xpqL9bxSS2rvIZUbIISbhzGKCFeogBLA4+pz90zogiw7/xDsQwBhe4kX5ZFQ
-         cZgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=3qKR+9UnHfH7y3GmZazKtwO1JgDzyIRfNNCTfPUQzPQ=;
-        b=2OeQ46q7paymPBXfyy5kM9DD6bmjiTaYZQp4GiOs+e53eSQpFR6Cct8D/Dupc+Yms7
-         /+kJeSzADnRnk1zFQPgXjYW5GZhwOyVQ+gcdEJJr1qzOpHYjuIyI9v7WUre64wSL4FOh
-         7B0U2sQ1fxz1KsYd7uCmdu58QIbHfK4/auNgvPR49uY92Qp+Td9JfXq2PD4ziCCTpLrg
-         0DnsLdM9t8lR5nCbUv5FU7M4yNq2kJUEzTsRStnPav9gtXcszq2RHuHwSSlUKaahubJg
-         fR26tDo+BEKXYDbgdmppEefAF+eznb6sLsmG5vRhnyiG5bINBDGil8OKBNJEjASAPmes
-         9o6A==
-X-Gm-Message-State: AOAM532Y+/aTVIRaxmneBCl44Cgdd0yGGMJUogGTPU5ROz5smypTt5/5
-        mnDPhb+SKnY2xovPGffg8Do=
-X-Google-Smtp-Source: ABdhPJyaTfQXuOcyyB4tlk7RTPW0lnRDh830vmHgHzSF2CCzCjDUWDY2jx4oMSGO99Ww3z/x8GSojw==
-X-Received: by 2002:a17:902:a588:b0:156:599c:6278 with SMTP id az8-20020a170902a58800b00156599c6278mr7641266plb.109.1649239029282;
-        Wed, 06 Apr 2022 02:57:09 -0700 (PDT)
-Received: from localhost.localdomain ([150.109.127.35])
-        by smtp.gmail.com with ESMTPSA id lp4-20020a17090b4a8400b001c9ada2f28fsm5581497pjb.8.2022.04.06.02.57.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Apr 2022 02:57:08 -0700 (PDT)
-From:   zgpeng <zgpeng.linux@gmail.com>
-X-Google-Original-From: zgpeng <zgpeng@tencent.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org
-Subject: [PATCH] sched/fair: Move calculate of avg_load to a better location
-Date:   Wed,  6 Apr 2022 17:57:05 +0800
-Message-Id: <1649239025-10010-1-git-send-email-zgpeng@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 6 Apr 2022 10:07:28 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBCC2E1959;
+        Wed,  6 Apr 2022 02:46:59 -0700 (PDT)
+X-UUID: 0a38c940db9e494ea16a9483d4e7e7f1-20220406
+X-UUID: 0a38c940db9e494ea16a9483d4e7e7f1-20220406
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1412427719; Wed, 06 Apr 2022 17:46:56 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 6 Apr 2022 17:46:55 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 17:46:55 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>
+CC:     <matthias.bgg@gmail.com>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <yongqiang.niu@mediatek.com>,
+        <jason-jh.lin@mediatek.com>, <nancy.lin@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH 0/3] Correct disp_aal dt-binding
+Date:   Wed, 6 Apr 2022 17:46:51 +0800
+Message-ID: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In calculate_imbalance function, when the value of local->avg_load is
-greater than or equal to busiest->avg_load, the calculated sds->avg_load is
-not used. So this calculation can be placed in a more appropriate position.
+There are several dt-binding error for MT8183 and MT8192. Therefore,
+we send this series to correct them.
+1. Correct dt-binding and dts for MT8183.
+2. Correct dt-binding for MT8192.
 
-Signed-off-by: zgpeng <zgpeng@tencent.com>
-Reviewed-by: Samuel Liao <samuelliao@tencent.com>
----
- kernel/sched/fair.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+This series is based on this series:
+"add display support for MediaTek SoC MT8186":
+Message id: 20220406030009.2357-1-rex-bc.chen@mediatek.com
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index d4bd299..601f8bd 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -9460,8 +9460,6 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
- 		local->avg_load = (local->group_load * SCHED_CAPACITY_SCALE) /
- 				  local->group_capacity;
- 
--		sds->avg_load = (sds->total_load * SCHED_CAPACITY_SCALE) /
--				sds->total_capacity;
- 		/*
- 		 * If the local group is more loaded than the selected
- 		 * busiest group don't try to pull any tasks.
-@@ -9470,6 +9468,9 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
- 			env->imbalance = 0;
- 			return;
- 		}
-+
-+		sds->avg_load = (sds->total_load * SCHED_CAPACITY_SCALE) /
-+				sds->total_capacity;
- 	}
- 
- 	/*
+Rex-BC Chen (3):
+  dt-bindings: display: mediatek: Correct disp_aal binding for MT8183
+  arm64: dts: mt8183: Correct disp_aal node compatible
+  dt-bindings: display: mediatek: Correct disp_aal binding for MT8192
+
+ .../bindings/display/mediatek/mediatek,aal.yaml           | 8 ++++----
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi                  | 3 +--
+ 2 files changed, 5 insertions(+), 6 deletions(-)
+
 -- 
-2.9.5
+2.18.0
 
