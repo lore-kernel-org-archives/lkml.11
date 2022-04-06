@@ -2,106 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233938AbiDFULe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
+        id S230321AbiDFULl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233906AbiDFUK5 (ORCPT
+        with ESMTP id S232429AbiDFULI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:10:57 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 821741B60E2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:51:41 -0700 (PDT)
-Received: (qmail 195999 invoked by uid 1000); 6 Apr 2022 13:51:40 -0400
-Date:   Wed, 6 Apr 2022 13:51:40 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Maxim Devaev <mdevaev@gmail.com>
-Cc:     linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] usb: gadget: f_mass_storage: break IO operations via
- configfs
-Message-ID: <Yk3TLPKyaQDsnuD4@rowland.harvard.edu>
-References: <20220406092445.215288-1-mdevaev@gmail.com>
- <Yk2wvhSTMKTLFK6c@rowland.harvard.edu>
- <20220406195234.4f63cb4a@reki>
+        Wed, 6 Apr 2022 16:11:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E410652FA;
+        Wed,  6 Apr 2022 11:13:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 317BEB8252B;
+        Wed,  6 Apr 2022 18:13:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555C0C385A3;
+        Wed,  6 Apr 2022 18:13:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649268819;
+        bh=QMVfExX2amMvHMtMH2GP6BV4ahQ74qFyqqVQ9KVADKw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nVLUe7kjQEhu47BJhERVDSXy36Yev3KQsjVkpGHx4Xhpkkjbfpx+xmOXrE0vwvRH1
+         izDi+3ku6R7AFPmW3NTCcJkcIWmMPWwHpQi5D65PUOkQaTLvTVm9zcgMF1Hzqcdrv/
+         apzPtGjoyfCVSk3vOs4spS75LuzT+ireuOcoiQ84=
+Date:   Wed, 6 Apr 2022 20:13:36 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     guoren@kernel.org
+Cc:     arnd@arndb.de, palmer@dabbelt.com, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Guo Ren <guoren@linux.alibaba.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH V3] riscv: patch_text: Fixup last cpu should be master
+Message-ID: <Yk3YUFfvEszb+cXT@kroah.com>
+References: <20220406141649.728971-1-guoren@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220406195234.4f63cb4a@reki>
+In-Reply-To: <20220406141649.728971-1-guoren@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 07:52:34PM +0300, Maxim Devaev wrote:
-> > It's not clear to me how breaking I/O operations allows you to do a 
-> > "force eject".  It seems that what you would need is something like 
-> > fsg_store_file() that omits the curlun->prevent_medium_removal check.
-> > Interrupting a lengthy I/O operation doesn't really have anything to do 
-> > with this.
+On Wed, Apr 06, 2022 at 10:16:49PM +0800, guoren@kernel.org wrote:
+> From: Guo Ren <guoren@linux.alibaba.com>
 > 
-> Perhaps I chose the wrong path, it's just how my userspace code works now.
-> If the drive is connected to a Linux host, then in order to clear
-> the "file" and extract the image, I sent a SIGUSR1 signal to the "file-storage"
-> thread. This interrupted long IO operations, reset curlun->prevent_medium_removal
-> and I got the ability to extract.
-
-Oh, I see.  That's kind of an unintended side effect of not calling 
-raise_exception().
-
-And while it does interrupt long I/O operations, it does so in 
-non-sanctioned way.  To the host it will appear as though the gadget's 
-firmware has crashed, since the gadget will stop sending or receiving 
-data.  Eventually the host will time out and reset the gadget.
-
-Maybe that's the sort of thing you want, but I rather doubt it.
-
-> It was done in our KVM-over-IP project and worked for several years,
-> just now I want to do it without searching for procfs and the need
-> to use sudo helpers like this:
-> https://github.com/pikvm/kvmd/blob/1b3a2cc/kvmd/helpers/otgmsd/unlock/__init__.py
+> These patch_text implementations are using stop_machine_cpuslocked
+> infrastructure with atomic cpu_count. The original idea: When the
+> master CPU patch_text, the others should wait for it. But current
+> implementation is using the first CPU as master, which couldn't
+> guarantee the remaining CPUs are waiting. This patch changes the
+> last CPU as the master to solve the potential risk.
 > 
-> Maybe it's worth introducing some option that will allow us to ignore
-> curlun->prevent_medium_removal and perform a forced extraction?
-> Something like "allow_force_eject" on the same lavel with "stall".
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+> Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+> Cc: <stable@vger.kernel.org>
+> ---
+>  arch/riscv/kernel/patch.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Or have a separate sysfs file where any write at all will be interpreted 
-as a forced eject.  Either way would work.
+What commit id does this change fix?
 
-> Will masking the curlun->prevent_medium_removal flag be enough?
-
-I think so.  But it will be blocked to some extent by long-running I/O 
-operations, because those operations acquire the filesem rw-semaphore 
-for reading.
-
-More precisely, each individual command holds the rw-semaphore.  But the 
-semaphore is dropped between commands, and a long-running I/O operation 
-typically consists of many separate commands.  So the blocking may be 
-acceptable.
-
-> > Or to keep this ability restricted to the superuser, if that is desired.
-> 
-> Indeed.
-> 
-> > You should not call send_sig_info() directly; instead call 
-> > raise_exception().  It already does the work you need (including some 
-> > things you left out).
-> 
-> raise_exception() assumes the setting of a new state, and I did not want to do this,
-> since the same does not happen when throwing a signal from userspace.
-
-Userspace isn't supposed to send the USR1 signal, only the INT, TERM, or 
-KILL signals.  USR1 is supposed to be reserved for the driver's internal 
-use.  Unfortunately, AFAIK there's no way to allow the driver to send a 
-signal to itself without also allowing the signal to be sent by 
-userspace.  :-(
-
-And sending the signal _does_ set a new state, whether you intended to 
-or not.  Although in this case, the new state is always the same as the 
-old state, i.e., FSG_STATE_NORMAL.
-
-Alan Stern
