@@ -2,240 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64987C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D09C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229532AbiDFUxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60226 "EHLO
+        id S234734AbiDFUxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235069AbiDFUwm (ORCPT
+        with ESMTP id S234488AbiDFUvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:52:42 -0400
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907B03D103F;
-        Wed,  6 Apr 2022 12:08:57 -0700 (PDT)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1ncB1K-0002ZY-U6; Wed, 06 Apr 2022 21:08:46 +0200
-Message-ID: <5135b502-ce2e-babb-7812-4d4c431a5252@maciej.szmigiero.name>
-Date:   Wed, 6 Apr 2022 21:08:41 +0200
+        Wed, 6 Apr 2022 16:51:43 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440703CBF3E
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:07:39 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id g22so3817638edz.2
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:07:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linbit-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=POlr1a0iTGBoJ3bnuukX0R50RftAjAl0lTvKR+vp4fE=;
+        b=lsMjsM8hxfLRElDhpBGCBQAWVxHPdgBMTP0fgUwIURdERrRguIPnGMBktd9IeLNUl0
+         QTSMQCDikvX/cPN4g0moz7n7yXWOVjRvKJpzHbdmQloqYiAZ7qGSl0P1uWyEnLMl7bcJ
+         HVIl/2ATefvZPve2FGSxSnvynVBVVDeGqyCmU51duL5Gz88iDLthmoj7DrGz/XEBVeJx
+         TfUA1W0R58CKFNnbhiFvGEoZyqocemong5+RmVpQYF7FkgQk/ygaQM2FubSmPfq2UFvt
+         o3/f9QlfBKhhliDJUZ9nKbRTy8tu9dd4L1S+zc3gkU7pgvMH20Mnegiwv2iqGAk32ZGC
+         K2tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=POlr1a0iTGBoJ3bnuukX0R50RftAjAl0lTvKR+vp4fE=;
+        b=0ryhV3mEo96ysgswOImm5UB6UVpA6d1CVbke9ZyXtDgyZ5XmsmcgVGDRTw+5V12ceC
+         zlqIktVrPDlo0t9pZV8aKNq9EUetXA+jm9e6Y/bLnWiit6AdIRvNFONDH4EdKGYcWIgI
+         2PveEak8PMEYSlpyuf143ProFNdl1UlWKYfagw5Gdsr/YmLITdFFFGbBaHC1ifG5JD+f
+         ZLqNFiPL7fEULXIvudxUCOJ+5P9uohEwxuZAu9nMOkC9JcRFfcTait5vQjZ9qU4ap6Ci
+         QCL2a4YWW9z2g2SAifHq4x+0noCPLzsqviN95FTNxVsLNx2w19xw1m3xOmoBB98NZWuZ
+         A1iw==
+X-Gm-Message-State: AOAM530eYxpyNYxiHFgUOM0mGUcnlCBXyzQvcSyIZFxrxQ0LvD1b+3RC
+        k2LHkK8noG2va2c19dtnM7LARg==
+X-Google-Smtp-Source: ABdhPJyO9677zCd7VbzMR7POWXOfRfPVkPceRUPrJkIhga3FMwv044ystxo1E0V0UEFKxVx4KhhlTA==
+X-Received: by 2002:a05:6402:2050:b0:41c:dd5e:3c63 with SMTP id bc16-20020a056402205000b0041cdd5e3c63mr10339789edb.56.1649272057830;
+        Wed, 06 Apr 2022 12:07:37 -0700 (PDT)
+Received: from localhost (85-127-190-169.dsl.dynamic.surfer.at. [85.127.190.169])
+        by smtp.gmail.com with ESMTPSA id c3-20020a17090654c300b006e4e1a3e9d5sm6404685ejp.144.2022.04.06.12.07.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 12:07:37 -0700 (PDT)
+From:   =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     drbd-dev@lists.linbit.com, linux-kernel@vger.kernel.org,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        linux-block@vger.kernel.org,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>
+Subject: [PATCH 6/7] drdb: Switch to kvfree_rcu() API
+Date:   Wed,  6 Apr 2022 21:07:14 +0200
+Message-Id: <20220406190715.1938174-7-christoph.boehmwalder@linbit.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406190715.1938174-1-christoph.boehmwalder@linbit.com>
+References: <20220406190715.1938174-1-christoph.boehmwalder@linbit.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-6-seanjc@google.com>
- <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
- <YkshgrUaF4+MrrXf@google.com>
- <7caee33a-da0f-00be-3195-82c3d1cd4cb4@maciej.szmigiero.name>
- <YkzxXw1Aznv4zX0a@google.com>
- <eed1cea4-409a-f03e-5c31-e82d49bb2101@maciej.szmigiero.name>
- <Yk3Jd6xAfgVoFgLc@google.com>
-Content-Language: en-US
-Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying the
- instruction
-In-Reply-To: <Yk3Jd6xAfgVoFgLc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6.04.2022 19:10, Sean Christopherson wrote:
-> On Wed, Apr 06, 2022, Maciej S. Szmigiero wrote:
->> On 6.04.2022 03:48, Sean Christopherson wrote:
->>> On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
->> (..)
->>>> Also, I'm not sure that even the proposed updated code above will
->>>> actually restore the L1-requested next_rip correctly on L1 -> L2
->>>> re-injection (will review once the full version is available).
->>>
->>> Spoiler alert, it doesn't.  Save yourself the review time.  :-)
->>>
->>> The missing piece is stashing away the injected event on nested VMRUN.  Those
->>> events don't get routed through the normal interrupt/exception injection code and
->>> so the next_rip info is lost on the subsequent #NPF.
->>>
->>> Treating soft interrupts/exceptions like they were injected by KVM (which they
->>> are, technically) works and doesn't seem too gross.  E.g. when prepping vmcb02
->>>
->>> 	if (svm->nrips_enabled)
->>> 		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
->>> 	else if (boot_cpu_has(X86_FEATURE_NRIPS))
->>> 		vmcb02->control.next_rip    = vmcb12_rip;
->>>
->>> 	if (is_evtinj_soft(vmcb02->control.event_inj)) {
->>> 		svm->soft_int_injected = true;
->>> 		svm->soft_int_csbase = svm->vmcb->save.cs.base;
->>> 		svm->soft_int_old_rip = vmcb12_rip;
->>> 		if (svm->nrips_enabled)
->>> 			svm->soft_int_next_rip = svm->nested.ctl.next_rip;
->>> 		else
->>> 			svm->soft_int_next_rip = vmcb12_rip;
->>> 	}
->>>
->>> And then the VMRUN error path just needs to clear soft_int_injected.
->>
->> I am also a fan of parsing EVENTINJ from VMCB12 into relevant KVM
->> injection structures (much like EXITINTINFO is parsed), as I said to
->> Maxim two days ago [1].
->> Not only for software {interrupts,exceptions} but for all incoming
->> events (again, just like EXITINTINFO).
-> 
-> Ahh, I saw that fly by, but somehow I managed to misread what you intended.
-> 
-> I like the idea of populating vcpu->arch.interrupt/exception as "injected" events.
-> KVM prioritizes "injected" over other nested events, so in theory it should work
-> without too much fuss.  I've ran through a variety of edge cases in my head and
-> haven't found anything that would be fundamentally broken.  I think even live
-> migration would work.
-> 
-> I think I'd prefer to do that in a follow-up series so that nVMX can be converted
-> at the same time?  It's a bit absurd to add the above soft int code knowing that,
-> at least in theory, simply populating the right software structs would automagically
-> fix the bug.  But manually handling the soft int case first would be safer in the
-> sense that we'd still have a fix for the soft int case if it turns out that populating
-> vcpu->arch.interrupt/exception isn't as straightfoward as it seems.
+From: "Uladzislau Rezki (Sony)" <urezki@gmail.com>
 
-I don't see any problem with having two patch series, the second series
-depending on the first.
+Instead of invoking a synchronize_rcu() to free a pointer
+after a grace period we can directly make use of new API
+that does the same but in more efficient way.
 
-I planned to at least fix the bugs that I described in my previous message
-(the NMI one actually breaks a real Windows guest) but that needs
-knowledge how the event injection code will finally look like after the
-first series of fixes.
+TO: Jens Axboe <axboe@kernel.dk>
+TO: Philipp Reisner <philipp.reisner@linbit.com>
+TO: Jason Gunthorpe <jgg@nvidia.com>
+TO: drbd-dev@lists.linbit.com
+TO: linux-block@vger.kernel.org
+Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+---
+ drivers/block/drbd/drbd_nl.c       | 9 +++------
+ drivers/block/drbd/drbd_receiver.c | 6 ++----
+ drivers/block/drbd/drbd_state.c    | 3 +--
+ 3 files changed, 6 insertions(+), 12 deletions(-)
 
->> However, there is another issue related to L1 -> L2 event re-injection
->> using standard KVM event injection mechanism: it mixes the L1 injection
->> state with the L2 one.
->>
->> Specifically for SVM:
->> * When re-injecting a NMI into L2 NMI-blocking is enabled in
->> vcpu->arch.hflags (shared between L1 and L2) and IRET intercept is
->> enabled.
->>
->> This is incorrect, since it is L1 that is responsible for enforcing NMI
->> blocking for NMIs that it injects into its L2.
-> 
-> Ah, I see what you're saying.  I think :-)  IIUC, we can fix this bug without any
-> new flags, just skip the side effects if the NMI is being injected into L2.
-> 
-> @@ -3420,6 +3424,10 @@ static void svm_inject_nmi(struct kvm_vcpu *vcpu)
->          struct vcpu_svm *svm = to_svm(vcpu);
-> 
->          svm->vmcb->control.event_inj = SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_NMI;
-> +
-> +       if (is_guest_mode(vcpu))
-> +               return;
-> +
->          vcpu->arch.hflags |= HF_NMI_MASK;
->          if (!sev_es_guest(vcpu->kvm))
->                  svm_set_intercept(svm, INTERCEPT_IRET);
-> 
-> and for nVMX:
-> 
-> @@ -4598,6 +4598,9 @@ static void vmx_inject_nmi(struct kvm_vcpu *vcpu)
->   {
->          struct vcpu_vmx *vmx = to_vmx(vcpu);
-> 
-> +       if (is_guest_mode(vcpu))
-> +               goto inject_nmi;
-> +
->          if (!enable_vnmi) {
->                  /*
->                   * Tracking the NMI-blocked state in software is built upon
-> @@ -4619,6 +4622,7 @@ static void vmx_inject_nmi(struct kvm_vcpu *vcpu)
->                  return;
->          }
-> 
-> +inject_nmi:
->          vmcs_write32(VM_ENTRY_INTR_INFO_FIELD,
->                          INTR_TYPE_NMI_INTR | INTR_INFO_VALID_MASK | NMI_VECTOR);
-> 
+diff --git a/drivers/block/drbd/drbd_nl.c b/drivers/block/drbd/drbd_nl.c
+index 074b884ec225..ad6e40864b37 100644
+--- a/drivers/block/drbd/drbd_nl.c
++++ b/drivers/block/drbd/drbd_nl.c
+@@ -1612,8 +1612,7 @@ int drbd_adm_disk_opts(struct sk_buff *skb, struct genl_info *info)
+ 			drbd_send_sync_param(peer_device);
+ 	}
+ 
+-	synchronize_rcu();
+-	kfree(old_disk_conf);
++	kvfree_rcu(old_disk_conf);
+ 	kfree(old_plan);
+ 	mod_timer(&device->request_timer, jiffies + HZ);
+ 	goto success;
+@@ -2444,8 +2443,7 @@ int drbd_adm_net_opts(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	mutex_unlock(&connection->resource->conf_update);
+ 	mutex_unlock(&connection->data.mutex);
+-	synchronize_rcu();
+-	kfree(old_net_conf);
++	kvfree_rcu(old_net_conf);
+ 
+ 	if (connection->cstate >= C_WF_REPORT_PARAMS) {
+ 		struct drbd_peer_device *peer_device;
+@@ -2859,8 +2857,7 @@ int drbd_adm_resize(struct sk_buff *skb, struct genl_info *info)
+ 		new_disk_conf->disk_size = (sector_t)rs.resize_size;
+ 		rcu_assign_pointer(device->ldev->disk_conf, new_disk_conf);
+ 		mutex_unlock(&device->resource->conf_update);
+-		synchronize_rcu();
+-		kfree(old_disk_conf);
++		kvfree_rcu(old_disk_conf);
+ 		new_disk_conf = NULL;
+ 	}
+ 
+diff --git a/drivers/block/drbd/drbd_receiver.c b/drivers/block/drbd/drbd_receiver.c
+index 0825766ce910..5e10572a4d3e 100644
+--- a/drivers/block/drbd/drbd_receiver.c
++++ b/drivers/block/drbd/drbd_receiver.c
+@@ -3751,8 +3751,7 @@ static int receive_protocol(struct drbd_connection *connection, struct packet_in
+ 		drbd_info(connection, "peer data-integrity-alg: %s\n",
+ 			  integrity_alg[0] ? integrity_alg : "(none)");
+ 
+-	synchronize_rcu();
+-	kfree(old_net_conf);
++	kvfree_rcu(old_net_conf);
+ 	return 0;
+ 
+ disconnect_rcu_unlock:
+@@ -4120,8 +4119,7 @@ static int receive_sizes(struct drbd_connection *connection, struct packet_info
+ 
+ 			rcu_assign_pointer(device->ldev->disk_conf, new_disk_conf);
+ 			mutex_unlock(&connection->resource->conf_update);
+-			synchronize_rcu();
+-			kfree(old_disk_conf);
++			kvfree_rcu(old_disk_conf);
+ 
+ 			drbd_info(device, "Peer sets u_size to %lu sectors (old: %lu)\n",
+ 				 (unsigned long)p_usize, (unsigned long)my_usize);
+diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
+index b8a27818ab3f..826e496821c7 100644
+--- a/drivers/block/drbd/drbd_state.c
++++ b/drivers/block/drbd/drbd_state.c
+@@ -2071,8 +2071,7 @@ static int w_after_conn_state_ch(struct drbd_work *w, int unused)
+ 		conn_free_crypto(connection);
+ 		mutex_unlock(&connection->resource->conf_update);
+ 
+-		synchronize_rcu();
+-		kfree(old_conf);
++		kvfree_rcu(old_conf);
+ 	}
+ 
+ 	if (ns_max.susp_fen) {
+-- 
+2.35.1
 
-And what if it's L0 that is trying to inject a NMI into L2?
-In this case is_guest_mode() is true, but the full NMI injection machinery
-should be used.
-
->> Also, *L2* being the target of such injection definitely should not block
->> further NMIs for *L1*.
-> 
-> Actually, it should block NMIs for L1.  From L1's perspective, the injection is
-> part of VM-Entry.  That's a single gigantic instruction, thus there is no NMI window
-> until VM-Entry completes from L1's perspetive.  Any exit that occurs on vectoring
-> an injected event and is handled by L0 should not be visible to L1, because from
-> L1's perspective it's all part of VMRUN/VMLAUNCH/VMRESUME.  So blocking new events
-> because an NMI (or any event) needs to be reinjected for L2 is correct.
-
-I think this kind of NMI blocking will be already handled by having
-the pending new NMI in vcpu->arch.nmi_pending but the one that needs
-re-injecting in vcpu->arch.nmi_injected.
-
-The pending new NMI in vcpu->arch.nmi_pending won't be handled until
-vcpu->arch.nmi_injected gets cleared (that is, until re-injection is
-successful).
-
-It is incorrect however, to wait for L2 to execute IRET to unblock
-L0 -> L1 NMIs or L1 -> L2 NMIs, in these two cases we (L0) just need the CPU
-to vector that L2 NMI so it no longer shows in EXITINTINFO.
-
-It is also incorrect to block L1 -> L2 NMI injection because either L1
-or L2 is currently under NMI blocking: the first case is obvious,
-the second because it's L1 that is supposed to take care of proper NMI
-blocking for L2 when injecting an NMI there.
-
->> * When re-injecting a *hardware* IRQ into L2 GIF is checked (previously
->> even on the BUG_ON() level), while L1 should be able to inject even when
->> L2 GIF is off,
-> 
-> Isn't that just a matter of tweaking the assertion to ignore GIF if L2 is
-> active?  Hmm, or deleting the assertion altogether, it's likely doing more harm
-> than good at this point.
-
-I assume this assertion is meant to catch the case when KVM itself (L0) is
-trying to erroneously inject a hardware interrupt into L1 or L2, so it will
-need to be skipped only for L1 -> L2 event injection.
-
-Whether this assertion benefits outweigh its costs is debatable - don't have
-a strong opinion here (BUG_ON() is for sure too strong, but WARN_ON_ONCE()
-might make sense to catch latent bugs).
-
->> With the code in my previous patch set I planned to use
->> exit_during_event_injection() to detect such case, but if we implement
->> VMCB12 EVENTINJ parsing we can simply add a flag that the relevant event
->> comes from L1, so its normal injection side-effects should be skipped.
-> 
-> Do we still need a flag based on the above?  Honest question... I've been staring
-> at all this for the better part of an hour and may have lost track of things.
-
-If checking just is_guest_mode() is not enough due to reasons I described
-above then we need to somehow determine in the NMI / IRQ injection handler
-whether the event to be injected into L2 comes from L0 or L1.
-For this (assuming we do VMCB12 EVENTINJ parsing) I think we need an extra flag.
-
->> By the way, the relevant VMX code also looks rather suspicious,
->> especially for the !enable_vnmi case.
-> 
-> I think it's safe to say we can ignore edge cases for !enable_vnmi.  It might even
-> be worth trying to remove that support again (Paolo tried years ago), IIRC the
-> only Intel CPUs that don't support virtual NMIs are some funky Yonah SKUs.
-
-Ack, we could at least disable nested on !enable_vnmi.
-
-BTW, I think that besides Yonah cores very early Core 2 CPUs also lacked
-vNMI support, that's why !enable_vnmi support was reinstated.
-But that's hardware even older than !nrips AMD parts.
-
-Thanks,
-Maciej
