@@ -2,138 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 834AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34ADEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233758AbiDFNna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52428 "EHLO
+        id S233424AbiDFNoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbiDFNnH (ORCPT
+        with ESMTP id S233598AbiDFNnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:43:07 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ABDE6AB4A7;
-        Wed,  6 Apr 2022 03:50:36 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id B58CF210EE;
-        Wed,  6 Apr 2022 10:50:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649242232; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0VPqKsepdHjXuh5eCVq2lcW8r7HHaKzIHYylD0wcWMA=;
-        b=18shT1nJv+kZLrU/iP0drYE3s73dWDbXuvufc06nIlhJ1NRCoWQl6NK2x7zEg3zZsqygMy
-        km46y2DyRcJK0y0JoLRwW/odLdwAZrfzTmFRXA4T4I5sbhCgzdDjg+q0I7h2taC0ws1jWW
-        7wZFA0kywvl6J9YUlYcMk+Tt44Bkalc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649242232;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0VPqKsepdHjXuh5eCVq2lcW8r7HHaKzIHYylD0wcWMA=;
-        b=O8FpfxrA4R79/fkzjy9v7QLR0ytKcUOPGT+VtRmGM7irghX5SIz7OXTeK4A0mp05eWuvMW
-        Jl7HmADMD2tENuDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5A69C13A8E;
-        Wed,  6 Apr 2022 10:50:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 9C0vE3hwTWLIMAAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Wed, 06 Apr 2022 10:50:32 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id a2e9b2cc;
-        Wed, 6 Apr 2022 10:50:56 +0000 (UTC)
-From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
-To:     Xiubo Li <xiubli@redhat.com>
-Cc:     Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
- inodes
-References: <20220401133243.1075-1-lhenriques@suse.de>
-        <5146f7a8-94c1-a7aa-db2d-d3ae98c5b83a@redhat.com>
-Date:   Wed, 06 Apr 2022 11:50:56 +0100
-In-Reply-To: <5146f7a8-94c1-a7aa-db2d-d3ae98c5b83a@redhat.com> (Xiubo Li's
-        message of "Wed, 6 Apr 2022 13:24:33 +0800")
-Message-ID: <87fsmqa3jj.fsf@brahms.olymp>
+        Wed, 6 Apr 2022 09:43:52 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D65512631;
+        Wed,  6 Apr 2022 03:51:19 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KYLMP4fygzBs2q;
+        Wed,  6 Apr 2022 18:28:33 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 18:32:44 +0800
+Received: from [10.174.178.220] (10.174.178.220) by
+ dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 18:32:43 +0800
+Subject: Re: [REQUEST DISCUSS]: speed up SCSI error handle for host with
+ massive devices
+To:     Hannes Reinecke <hare@suse.de>,
+        Mike Christie <michael.christie@oracle.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        John Garry <john.garry@huawei.com>
+CC:     Wu Bo <wubo40@huawei.com>, Feilong Lin <linfeilong@huawei.com>,
+        <zhangjian013@huawei.com>
+References: <71e09bb4-ff0a-23fe-38b4-fe6425670efa@huawei.com>
+ <cd7bda98-2160-9271-9520-e98d1fe00ea5@linux.ibm.com>
+ <331aafe1-df9b-cae4-c958-9cf1800e389a@huawei.com>
+ <64d5a997-a1bf-7747-072d-711a8248874d@suse.de>
+ <c4baacf1-0e86-9660-45f7-50ebc853e6af@huawei.com>
+ <1dd69d03-b4f6-ab20-4923-0995b40f045d@suse.de>
+ <d2f2c89f-c048-4f04-4d95-27958f0fa46a@huawei.com>
+ <78d41ec1-b30c-f6d2-811c-e0e4adbc8f01@oracle.com>
+ <84b38f16-2a32-f361-43e5-34bce1012e71@oracle.com>
+ <769bcd36-4818-8470-2daa-49ac5c05b33a@suse.de>
+From:   Wenchao Hao <haowenchao@huawei.com>
+Message-ID: <90e4af07-074c-1f60-e64a-e6dbe9a5c1bb@huawei.com>
+Date:   Wed, 6 Apr 2022 18:32:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <769bcd36-4818-8470-2daa-49ac5c05b33a@suse.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.220]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Xiubo Li <xiubli@redhat.com> writes:
+On 2022/4/4 13:28, Hannes Reinecke wrote:
+> On 4/3/22 19:17, Mike Christie wrote:
+>> On 4/3/22 12:14 PM, Mike Christie wrote:
+>>> We could share code with scsi_ioctl_reset as well. Drivers that support
+>>> TMFs via that ioctl already expect queuecommand to be possibly in the
+>>> middle of a run and IO not yet timed out. For example, the code to
+>>> block a queue and reset the device could be used for the new EH and
+>>> SG_SCSI_RESET_DEVICE handling.
+>>>
+>>
+>> Hannes or others,
+>>
+>> How do parallel SCSI drivers support scsi_ioctl_reset? Is is not fully
+>> supported and more only used for controlled testing?
+> 
+> That's actually a problem in scsi_ioctl_reset(); it really should wait for all I/O to quiesce. Currently it just sets the 'tmf' flag and calls into the various reset functions.
+> 
+> But really, I'd rather get my EH rework in before we're start discussing modifying EH behaviour.
+> Let me repost it ...
+> 
+> Cheers,
+> 
+> Hannes
 
-> On 4/1/22 9:32 PM, Lu=C3=ADs Henriques wrote:
->> When doing DIO on an encrypted node, we need to invalidate the page cach=
-e in
->> the range being written to, otherwise the cache will include invalid dat=
-a.
->>
->> Signed-off-by: Lu=C3=ADs Henriques <lhenriques@suse.de>
->> ---
->>   fs/ceph/file.c | 11 ++++++++++-
->>   1 file changed, 10 insertions(+), 1 deletion(-)
->>
->> Changes since v1:
->> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
->> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
->>
->> Note: I'm not really sure this last change is required, it doesn't really
->> affect generic/647 result, but seems to be the most correct.
->>
->> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
->> index 5072570c2203..b2743c342305 100644
->> --- a/fs/ceph/file.c
->> +++ b/fs/ceph/file.c
->> @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_ite=
-r *from, loff_t pos,
->>   	if (ret < 0)
->>   		return ret;
->>   -	ceph_fscache_invalidate(inode, false);
->> +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
->>   	ret =3D invalidate_inode_pages2_range(inode->i_mapping,
->>   					    pos >> PAGE_SHIFT,
->>   					    (pos + count - 1) >> PAGE_SHIFT);
->> @@ -1895,6 +1895,15 @@ ceph_sync_write(struct kiocb *iocb, struct iov_it=
-er *from, loff_t pos,
->>   		req->r_inode =3D inode;
->>   		req->r_mtime =3D mtime;
->>   +		if (IS_ENCRYPTED(inode) && (iocb->ki_flags & IOCB_DIRECT)) {
->> +			ret =3D invalidate_inode_pages2_range(
->> +				inode->i_mapping,
->> +				write_pos >> PAGE_SHIFT,
->> +				(write_pos + write_len - 1) >> PAGE_SHIFT);
->> +			if (ret < 0)
->> +				dout("invalidate_inode_pages2_range returned %d\n", ret);
->> +		}
->
-> Shouldn't we fail it if the 'invalidate_inode_pages2_range()' fails here ?
+Hi hannes:
 
-Yeah, I'm not really sure.  I'm simply following the usual pattern where
-an invalidate_inode_pages2_range() failure is logged and ignored.  And
-this is not ceph-specific, other filesystems seem to do the same thing.
+According to the statistic, following scenario would cause an abort failed can be handled by LUN reset:
+1. The task execute of disk's FW is abnormal;
+2. Intermittent bit errors or intermittent disconnection;
+3. FW do not response IO;
 
-Cheers,
---=20
-Lu=C3=ADs
+Following scenario can not be handled by LUN reset:
+1. Disk HW issue, LUN reset can not be handled;
+2. DDR UNC in disk, can not fix, the only way is to power off then power on
+3. FW of disk is out of service, can not fix, the only way is to power off then power on
 
->
-> -- Xiubo
->
->> +
->>   		/* Set up the assertion */
->>   		if (rmw) {
->>   			/*
->>
->
+And the statistic shows most command abort failed can be handled by LUN reset.
+
+So we plan to design a lightweight timeout handle flow as following:
+
+                 if disable lightweight EH(default)
+scsi_times_out  ====================================> origin EH flow
+   ||                            
+   || if enable lightweight EH 
+   || 
+   \/
+do not using current timeout flow, and branch to another flow which perform following steps:
+
+abort command
+   ||
+   || failed
+   || 
+   \/
+stop single LUN's I/O (need to wait LUN's failed command number equal to busy command  number)
+   ||
+   || failed  (according to our statistic, 90% reset LUN would succeed)
+   ||
+   \/
+reset single LUN
+   ||
+   ||           if host with multi LUNs timeout
+   || failed =====================================> perform Host reset
+   ||                                                   ||
+   ||                                                   || failed
+   ||                                                   ||
+   || <=================================================//
+   ||
+   \/
+offline disk
+
+Since it's a lightweight EH, we prefer offline disk once reset LUN failed.
+These changes would not affect origin EH flow. The advantage of this design is it would not affect
+other LUNs of same host.
