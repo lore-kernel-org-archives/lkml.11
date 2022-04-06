@@ -2,118 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75018C4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5F0C4167E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378990AbiDFJDi (ORCPT
+        id S1358413AbiDFJDV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
+        Wed, 6 Apr 2022 05:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454389AbiDFI7Q (ORCPT
+        with ESMTP id S1451246AbiDFI6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:59:16 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6155F217948;
-        Tue,  5 Apr 2022 21:00:05 -0700 (PDT)
-Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
-        by maillog.nuvoton.com (Postfix) with ESMTP id A2EBF1C8114F;
-        Wed,  6 Apr 2022 12:00:04 +0800 (CST)
-Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
- (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 6 Apr
- 2022 12:00:04 +0800
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS03.nuvoton.com
- (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1847.3; Wed, 6 Apr 2022
- 12:00:04 +0800
-Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS01.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Wed, 6 Apr 2022 12:00:04 +0800
-Message-ID: <724094ab-ed58-debd-8901-466540a66eab@nuvoton.com>
-Date:   Wed, 6 Apr 2022 12:00:04 +0800
+        Wed, 6 Apr 2022 04:58:11 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B694F4D;
+        Tue,  5 Apr 2022 20:01:18 -0700 (PDT)
+X-UUID: 86ce2accd19941c19653cafc602097aa-20220406
+X-UUID: 86ce2accd19941c19653cafc602097aa-20220406
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 48669215; Wed, 06 Apr 2022 11:00:58 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 6 Apr 2022 11:00:12 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 Apr
+ 2022 11:00:11 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 11:00:11 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <krzysztof.kozlowski@canonical.com>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>, <jassisinghbrar@gmail.com>,
+        <fparent@baylibre.com>, <yongqiang.niu@mediatek.com>,
+        <hsinyi@chromium.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v10 0/4] add display support for MediaTek SoC MT8186
+Date:   Wed, 6 Apr 2022 11:00:05 +0800
+Message-ID: <20220406030009.2357-1-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/3] dt-bindings: clock: add binding for MA35D1 clock
- controller
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
-        "soc@kernel.org" <soc@kernel.org>, MS10 CFLi0 <CFLi0@nuvoton.com>
-References: <20220331024256.14762-1-ychuang3@nuvoton.com>
- <20220331024256.14762-2-ychuang3@nuvoton.com>
- <866c6b42-434d-e7db-5319-2256cd7003d7@linaro.org>
- <cbe5c963-c727-0fe6-6e03-039c4334f7a9@linaro.org>
-From:   Jacky Huang <ychuang3@nuvoton.com>
-In-Reply-To: <cbe5c963-c727-0fe6-6e03-039c4334f7a9@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+v10:
+1. Rebase to 5.18-rc1
+2. Drop "dt-bindings: display: mediatek: add aal binding for MT8183".
+   I will move it to another series.
 
+v9:
+1. Revise [1/5] dt-bindings: display: mediatek: add aal binding for MT8183.
 
-On 2022/3/31 下午 02:34, Krzysztof Kozlowski wrote:
-> On 31/03/2022 08:29, Krzysztof Kozlowski wrote:
->> On 31/03/2022 04:42, Jacky Huang wrote:
->>> Add the dt-bindings header for Nuvoton MA35D1, that gets shared
->>> between the clock controller and clock references in the dts.
->>>
->>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->>> ---
->>>   .../dt-bindings/clock/nuvoton,ma35d1-clk.h    | 262 ++++++++++++++++++
->>>   1 file changed, 262 insertions(+)
->>>   create mode 100644 include/dt-bindings/clock/nuvoton,ma35d1-clk.h
->>>
->>> diff --git a/include/dt-bindings/clock/nuvoton,ma35d1-clk.h b/include/dt-bindings/clock/nuvoton,ma35d1-clk.h
->>> new file mode 100644
->>> index 000000000000..3634e5edcac5
->>> --- /dev/null
->>> +++ b/include/dt-bindings/clock/nuvoton,ma35d1-clk.h
->>> @@ -0,0 +1,262 @@
->>> +/* SPDX-License-Identifier: GPL-2.0+ OR MIT */
->> Can you make it the same license as bindings?
->>
->>> +/*
->>> + * Copyright (c) 2022 Nuvoton Technology Corporation.
->>> + */
->>> +
->>> +#ifndef __DT_BINDINGS_MA35D1_CLK_H
->>> +#define __DT_BINDINGS_MA35D1_CLK_H
->>> +
->>> +/* Clock Sources */
->>> +/* External and Internal oscillator clocks */
->>> +#define	HXT		0
->> One space after '#define'. Please do not introduce some non-Linux coding
->> style.
-> You also ignored my comments from your v1 (because this is not v1...).
-> Do not resend without discussion or implementation.
->
-> Best regards,
-> Krzysztof
+v8:
+1. Revise [1/5] dt-bindings: display: mediatek: add aal binding for MT8183.
 
-Hi Krzysztof,
+v7:
+1. Rebase to chunkuang.hu/linux.git mediatek-drm-fixes
 
-I am finding out the comments from all mails of this series and working 
-on them.
-I will fix all the issues before sending the next version.
-So, the next version should be V3, right?
-I will add modification history "V1 -> V2" and "V2 -> V3" to [PATCH V3 0/3].
-Is that OK?
+v6:
+1. Remove mmsys patches which are accepted.
+2. Fix error of dt-binding.
 
-Sincerely,
-Jacky
+v5:
+1. Add binding patch of aal for MT8183.
+2. Revise enum to const.
+3. Change to use enum for mutex.
+4. Remove patches which are accepted by maintainers. (mmsys and mutex)
 
+v4:
+1. Remove binding of dsi and dpi.
+2. Revise aal binding.
+3. Fix indention in [4/5].
 
+v3:
+1. Modify display binding based on mtk display binding patch. ([1])
+2. Remove patch: drm/mediatek: separate postmask component from mtk_disp_drv.c
+3. Remove compatible of 8186 ovl because we can re-use compatible of 8192 for 8186.
+4. Fix issue of space before tab on mutex patch.
 
+[1]: repo: chunkuang.hu/linux.git, branch: mediatek-drm-next, id: 4ed545e7d10049b5492afc184e61a67e478a2cfd
+
+v2:
+1. Add binding documentation for mmsys, mutex and mtk_display.
+2. Remove duplicated definition of postmask registers on mtk_drm_drv.
+3. Add disp_ovl support for MT8186.
+4. Add detailed commit messages.
+
+Rex-BC Chen (3):
+  dt-bindings: display: mediatek: revise enum to const
+  dt-bindings: display: mediatek: change to use enum for mutex
+  dt-bindings: display: mediatek: add MT8186 SoC binding
+
+Yongqiang Niu (1):
+  drm/mediatek: add display support for MT8186
+
+ .../display/mediatek/mediatek,aal.yaml        |  5 ++-
+ .../display/mediatek/mediatek,ccorr.yaml      |  5 ++-
+ .../display/mediatek/mediatek,color.yaml      |  7 ++--
+ .../display/mediatek/mediatek,dither.yaml     |  4 +--
+ .../display/mediatek/mediatek,gamma.yaml      |  4 +--
+ .../display/mediatek/mediatek,mutex.yaml      | 25 ++++++--------
+ .../display/mediatek/mediatek,ovl-2l.yaml     |  4 +++
+ .../display/mediatek/mediatek,ovl.yaml        |  8 +++--
+ .../display/mediatek/mediatek,postmask.yaml   |  4 +++
+ .../display/mediatek/mediatek,rdma.yaml       |  7 ++--
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c        | 33 +++++++++++++++++++
+ 11 files changed, 74 insertions(+), 32 deletions(-)
+
+-- 
+2.18.0
 
