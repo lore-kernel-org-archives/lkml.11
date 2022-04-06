@@ -2,100 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35824C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 941E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbiDFNuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
+        id S233534AbiDFNug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233850AbiDFNt4 (ORCPT
+        with ESMTP id S233947AbiDFNt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:49:56 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E264B54881A;
-        Wed,  6 Apr 2022 04:19:39 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so2352921pjk.4;
-        Wed, 06 Apr 2022 04:19:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZzrJzEO0/L2Fv829K067oD4D3q7XNJ2h/EQeJLl1REM=;
-        b=e1q6suMh+HRmHJvIosuu5YyBROUGiQBsGv64joCiBUFBmQ+I5ihJ9NCB7ms02X33Qm
-         G9eiv3v3ohR1WsMjpLqUYYZXPEML+O2y51nABHRMfYCuro11ClvNQEu6GQgyJuLZg9Df
-         8PtQP4kF+csQfKQG0PrDLtDsdQF5PcNBV5/IpGrBhnUK3NnxrUevCj8SWUUsnwmJ6HSZ
-         /CDc3/GWrkBrIJwJMI2aPzBii9lMAFfRR+0r5rjm+/EHrwbVEksVn5WEwpp6Zoh6JCy+
-         nD60DzgFJ0JBgRq/pROX1sQXYNl8TmEzzxJ1EPSAxomOCpaH1TMFSLNDJcB49rReg2dC
-         NuTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZzrJzEO0/L2Fv829K067oD4D3q7XNJ2h/EQeJLl1REM=;
-        b=UTXX5lksn1dkKM+3dlYIxkLQSECCLBUuHbO6ECXoIbZzy2YESEWS6cP8hs35zqET3l
-         A6BxLxiwOl+8WtGKAOKSOuWCS20KLKblnxZdOQWu+LdcWxj/W2cXckFKEJSxqLJXS3+O
-         CQCG9633xBlT3myzNGgoUXE1yoxqsCHxqeJR1BdXyHEWaVdak8sRXZ9dmWa6btAT+fwY
-         +M8U/J3g8r2UK84rtnu4Go19O55uMibjhhWFbrTlCoLU5lZCIrilb8uZoXDJtXPVHa8F
-         vK4088SRPlZfPGa8+GePxATmHMXmGTyT0pf3OzvnQ1EKr48H5qgXp35qM+nZpPu2ndrQ
-         /a8Q==
-X-Gm-Message-State: AOAM530Ty9YxlEQgsUgSuiXis8ckLWJEK0qEVeaN4YHZ+pfWc3Iwiw6v
-        31s8mQWiIzy5wMuj7vLS9R8QgG+1R5Vw1A==
-X-Google-Smtp-Source: ABdhPJx49C5uI7nHegDpc4R0pKmz+Db+BOqX82s95K2GSR4hJWF3SDNT8p8KyB78kMdFSlm5hsGp1w==
-X-Received: by 2002:a17:90a:1697:b0:1ca:526a:5dcd with SMTP id o23-20020a17090a169700b001ca526a5dcdmr9361783pja.143.1649243979367;
-        Wed, 06 Apr 2022 04:19:39 -0700 (PDT)
-Received: from localhost.localdomain ([180.150.111.33])
-        by smtp.gmail.com with ESMTPSA id nn7-20020a17090b38c700b001c9ba103530sm5507294pjb.48.2022.04.06.04.19.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 04:19:38 -0700 (PDT)
-From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
-To:     Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        Ariel Elior <ariel.elior@cavium.com>,
-        Manish Chopra <manish.chopra@cavium.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] qede: confirm skb is allocated before using
-Date:   Wed,  6 Apr 2022 21:19:19 +1000
-Message-Id: <b86829347bc923c3b48487a941925292f103588d.1649210237.git.jamie.bainbridge@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 6 Apr 2022 09:49:57 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC3096D8DD2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:19:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 529C223A;
+        Wed,  6 Apr 2022 04:19:54 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.10.98])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 24FC43F718;
+        Wed,  6 Apr 2022 04:19:52 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 12:19:48 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [RFC PATCH -next V2 4/7] arm64: add copy_from_user to machine
+ check safe
+Message-ID: <Yk13VJwih44VsCGk@FVFF77S0Q05N>
+References: <20220406091311.3354723-1-tongtiangen@huawei.com>
+ <20220406091311.3354723-5-tongtiangen@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406091311.3354723-5-tongtiangen@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-qede_build_skb() assumes build_skb() always works and goes straight
-to skb_reserve(). However, build_skb() can fail under memory pressure.
-This results in a kernel panic because the skb to reserve is NULL.
+On Wed, Apr 06, 2022 at 09:13:08AM +0000, Tong Tiangen wrote:
+> Add scenarios copy_from_user to machine check safe.
+> 
+> The data copied is user data and is machine check safe, so just kill
+> the user process and isolate the error page, not necessary panic.
+> 
+> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+> ---
+>  arch/arm64/include/asm/asm-uaccess.h | 16 ++++++++++++++++
+>  arch/arm64/lib/copy_from_user.S      | 11 ++++++-----
+>  2 files changed, 22 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/asm-uaccess.h b/arch/arm64/include/asm/asm-uaccess.h
+> index 0557af834e03..f31c8978e1af 100644
+> --- a/arch/arm64/include/asm/asm-uaccess.h
+> +++ b/arch/arm64/include/asm/asm-uaccess.h
+> @@ -92,4 +92,20 @@ alternative_else_nop_endif
+>  
+>  		_asm_extable	8888b,\l;
+>  	.endm
+> +
+> +	.macro user_ldp_mc l, reg1, reg2, addr, post_inc
+> +8888:		ldtr	\reg1, [\addr];
+> +8889:		ldtr	\reg2, [\addr, #8];
+> +		add	\addr, \addr, \post_inc;
+> +
+> +		_asm_extable_mc	8888b, \l;
+> +		_asm_extable_mc	8889b, \l;
+> +	.endm
+> +
+> +	.macro user_ldst_mc l, inst, reg, addr, post_inc
+> +8888:		\inst		\reg, [\addr];
+> +		add		\addr, \addr, \post_inc;
+> +
+> +		_asm_extable_mc	8888b, \l;
+> +	.endm
+>  #endif
+> diff --git a/arch/arm64/lib/copy_from_user.S b/arch/arm64/lib/copy_from_user.S
+> index 34e317907524..d9d7c5291871 100644
+> --- a/arch/arm64/lib/copy_from_user.S
+> +++ b/arch/arm64/lib/copy_from_user.S
+> @@ -21,7 +21,7 @@
+>   */
+>  
+>  	.macro ldrb1 reg, ptr, val
+> -	user_ldst 9998f, ldtrb, \reg, \ptr, \val
+> +	user_ldst_mc 9998f, ldtrb, \reg, \ptr, \val
+>  	.endm
+>  
+>  	.macro strb1 reg, ptr, val
+> @@ -29,7 +29,7 @@
+>  	.endm
+>  
+>  	.macro ldrh1 reg, ptr, val
+> -	user_ldst 9997f, ldtrh, \reg, \ptr, \val
+> +	user_ldst_mc 9997f, ldtrh, \reg, \ptr, \val
+>  	.endm
+>  
+>  	.macro strh1 reg, ptr, val
+> @@ -37,7 +37,7 @@
+>  	.endm
+>  
+>  	.macro ldr1 reg, ptr, val
+> -	user_ldst 9997f, ldtr, \reg, \ptr, \val
+> +	user_ldst_mc 9997f, ldtr, \reg, \ptr, \val
+>  	.endm
+>  
+>  	.macro str1 reg, ptr, val
+> @@ -45,7 +45,7 @@
+>  	.endm
+>  
+>  	.macro ldp1 reg1, reg2, ptr, val
+> -	user_ldp 9997f, \reg1, \reg2, \ptr, \val
+> +	user_ldp_mc 9997f, \reg1, \reg2, \ptr, \val
+>  	.endm
+>  
+>  	.macro stp1 reg1, reg2, ptr, val
+> @@ -62,7 +62,8 @@ SYM_FUNC_START(__arch_copy_from_user)
+>  	ret
+>  
+>  	// Exception fixups
+> -9997:	cmp	dst, dstin
+> +9997:	cbz	x0, 9998f			// Check machine check exception
+> +	cmp	dst, dstin
+>  	b.ne	9998f
 
-Add a check in case build_skb() failed to allocate and return NULL.
+If you look at the copy template, you'd see that `dstin` *is* x0.
 
-The NULL return is handled correctly in callers to qede_build_skb().
+Consier if we took a non-SEA fault. The the fixup handler will overwrite x0,
+it's likely `dst` != `dstin`, and we'll branch to the byte-by-byte copy. Or if
+we're doing something odd and mmap_min_addr is 0, we can do the wrong thing the
+other way around and *not* branch to the byte-by-byte copy when we should.
 
-Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
-Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
----
- drivers/net/ethernet/qlogic/qede/qede_fp.c | 3 +++
- 1 file changed, 3 insertions(+)
+So this is at best confusing, but likely broken too.
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-index b242000a77fd8db322672e541df074be9b5ce9ef..b7cc36589f592e995e3a12bb80bc7c8e3af7dc42 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-@@ -748,6 +748,9 @@ qede_build_skb(struct qede_rx_queue *rxq,
- 	buf = page_address(bd->data) + bd->page_offset;
- 	skb = build_skb(buf, rxq->rx_buf_seg_size);
- 
-+	if (unlikely(!skb))
-+		return NULL;
-+
- 	skb_reserve(skb, pad);
- 	skb_put(skb, len);
- 
--- 
-2.35.1
+Thanks,
+Mark.
 
+>  	// Before being absolutely sure we couldn't copy anything, try harder
+>  USER(9998f, ldtrb tmp1w, [srcin])
+> -- 
+> 2.18.0.huawei.25
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
