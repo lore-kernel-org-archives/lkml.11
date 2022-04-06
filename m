@@ -2,102 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 833DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234556AbiDFO0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
+        id S234809AbiDFO1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234696AbiDFOZz (ORCPT
+        with ESMTP id S234682AbiDFO05 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:25:55 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0493534201C;
-        Wed,  6 Apr 2022 03:35:53 -0700 (PDT)
-X-UUID: e083e76070ff486d94d015fd75f891d4-20220406
-X-UUID: e083e76070ff486d94d015fd75f891d4-20220406
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 487573804; Wed, 06 Apr 2022 18:05:18 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 6 Apr 2022 18:05:16 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 18:05:16 +0800
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <nfraprado@collabora.com>, <tzungbi@google.com>
-CC:     <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
-        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
-        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>
-Subject: [v9 0/4] ASoC: mediatek: mt8192: support rt1015p_rt5682s
-Date:   Wed, 6 Apr 2022 18:05:10 +0800
-Message-ID: <20220406100514.11269-1-jiaxin.yu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 6 Apr 2022 10:26:57 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04BD44E5BC;
+        Tue,  5 Apr 2022 21:50:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649220617; x=1680756617;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JEHzGZUx8hYUK4MYh5P32wAhLE7c3yWf9l91nEbGSFw=;
+  b=VfzPQ2LaG8In1grZPBDmwZMfcosuYwV7ocloc3lEh1gNYlgbOLRP91m9
+   jH6ArEYOfTQw6MRHSJT791QwaPW5Ebgy8IPE7/UgOLVmzTZSDhcozy/YV
+   nhyOHo1EDr7MEf06olGtNSaIbvnSV3vsQ9C0z5rKWW/cKsifIzkz6QWys
+   oNGt2QYMn/v8+bzHcPZ5tgVezUUW7AxmjT/TfjEECa+ZfBuZU5hZxUlCd
+   qeD1wIeLe6EAeyx+hhEMvdpgABLI4AJtU8aTWf5v+lJyfGw4drpvm7yGW
+   hoJFzdbzOSR39jUJI7x5Cin0ep+m4PSEs7OkJTbvs7HX6jIIqdeddqyHV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089819"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="243089819"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:16 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="524302280"
+Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:12 -0700
+From:   Kai Huang <kai.huang@intel.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, kai.huang@intel.com
+Subject: [PATCH v3 08/21] x86/virt/tdx: Do logical-cpu scope TDX module initialization
+Date:   Wed,  6 Apr 2022 16:49:20 +1200
+Message-Id: <35081dba60ef61c313c2d7334815247248b8d1da.1649219184.git.kai.huang@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The series reuses mt8192-mt6359-rt1015-rt5682.c for supporting machine
-driver with rt1015p speaker amplifier and rt5682s headset codec.
+Logical-cpu scope initialization requires calling TDH.SYS.LP.INIT on all
+BIOS-enabled cpus, otherwise the TDH.SYS.CONFIG SEAMCALL will fail.
+TDH.SYS.LP.INIT can be called concurrently on all cpus.
 
-Changes from v8:
-  - fix typos.
+Following global initialization, do the logical-cpu scope initialization
+by calling TDH.SYS.LP.INIT on all online cpus.  Whether all BIOS-enabled
+cpus are online is not checked here for simplicity.  The caller of
+tdx_init() should guarantee all BIOS-enabled cpus are online.
 
-Changes from v7:
-  - "mediatek,hdmi-codec" is an optional property, the code and the
-    binding document should match.
+Signed-off-by: Kai Huang <kai.huang@intel.com>
+---
+ arch/x86/virt/vmx/tdx/tdx.c | 12 ++++++++++++
+ arch/x86/virt/vmx/tdx/tdx.h |  1 +
+ 2 files changed, 13 insertions(+)
 
-Changes from v6:
-  - "speaker-codec" changes to "speaker-codecs" due to there may be two
-    speaker codec.
-
-Changes from v5:
-  - "mediatek,headset-codec" and "mediatek,speaker-codec" drop prefix
-    and move to properties from patternProperties.
-
-Changes form v4:
-  - split a large patch into three small patches for easy reviewing
-  - correct coding style
-
-Changes from v3:
-  - fix build error: too many arguments for format
-    [-Werror-format-extra-args]
-
-Changes from v2:
-  - fix build warnings such as "data argument not used by format string"
-
-Changes from v1:
-  - uses the snd_soc_of_get_dai_link_codecs to complete the
-  configuration of dai_link's codecs
-  - uses definitions to simplifies card name and compatible name
-
-Jiaxin Yu (4):
-  ASoC: dt-bindings: mt8192-mt6359: add new compatible and new
-    properties
-  ASoC: mediatek: mt8192: refactor for I2S3 DAI link of speaker
-  ASoC: mediatek: mt8192: refactor for I2S8/I2S9 DAI links of headset
-  ASoC: mediatek: mt8192: support rt1015p_rt5682s
-
- .../sound/mt8192-mt6359-rt1015-rt5682.yaml    |  32 +++
- sound/soc/mediatek/Kconfig                    |   1 +
- .../mt8192/mt8192-mt6359-rt1015-rt5682.c      | 199 +++++++++++-------
- 3 files changed, 153 insertions(+), 79 deletions(-)
-
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index 5c2f3a30be2f..ef2718423f0f 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -461,6 +461,13 @@ static int __tdx_detect(void)
+ 	return -ENODEV;
+ }
+ 
++static int tdx_module_init_cpus(void)
++{
++	struct seamcall_ctx sc = { .fn = TDH_SYS_LP_INIT };
++
++	return seamcall_on_each_cpu(&sc);
++}
++
+ static int init_tdx_module(void)
+ {
+ 	int ret;
+@@ -470,6 +477,11 @@ static int init_tdx_module(void)
+ 	if (ret)
+ 		goto out;
+ 
++	/* Logical-cpu scope initialization */
++	ret = tdx_module_init_cpus();
++	if (ret)
++		goto out;
++
+ 	/*
+ 	 * Return -EFAULT until all steps of TDX module
+ 	 * initialization are done.
+diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+index f0983b1936d8..b8cfdd6e12f3 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.h
++++ b/arch/x86/virt/vmx/tdx/tdx.h
+@@ -39,6 +39,7 @@ struct p_seamldr_info {
+  * TDX module SEAMCALL leaf functions
+  */
+ #define TDH_SYS_INIT		33
++#define TDH_SYS_LP_INIT		35
+ #define TDH_SYS_LP_SHUTDOWN	44
+ 
+ struct tdx_module_output;
 -- 
-2.25.1
+2.35.1
 
