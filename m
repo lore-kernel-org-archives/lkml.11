@@ -2,113 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC898C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233428AbiDFNo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45484 "EHLO
+        id S233404AbiDFNoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233598AbiDFNoP (ORCPT
+        with ESMTP id S233988AbiDFNml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:44:15 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F9E6B07F6;
-        Wed,  6 Apr 2022 03:51:40 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 5357A1F40EEA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649242298;
-        bh=au3kCGpBvELGj1O6aCEDgSZw3PDmNnTwCgo2ZapgbJY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=k8lcVf8I9OjzL+Yob0GKMFrCpB3OMWOSdFSJ1vEdCc/3LPY7XhF7g1KGHrHyO7+Je
-         akVMl7CsoT5V5aCZINzeQhUH3RmtO9hQyQdMsksPUFuULZiaZVd7i/CI08Yx0999Qc
-         uKMhT0MPfHPsCxFNq3wbodLtSinV4mCnKSe+cwWmSz1Bi9RAIMl5ZoguOabgGmDeoM
-         W2tiM8+ihWlLanFyMB1oKFA3yGBon14UGi/jwC7d12ikEczIYrXo8dHHsAA2tPDWtP
-         zpSLlIDK0j0/ObDa8X5bXKRqjWkuXUbN+HivTzFDsR7F2AgbuzmpX2TksYqkyRS0Na
-         bv7dX0vBwdH1Q==
-Message-ID: <0e6d110d-0637-2be8-cab0-9d936668fa7b@collabora.com>
-Date:   Wed, 6 Apr 2022 12:51:34 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/3] dt-bindings: display: mediatek: Correct disp_aal
- binding for MT8192
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>
-Cc:     "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        =?UTF-8?B?WW9uZ3FpYW5nIE5pdSAo54mb5rC45by6KQ==?= 
-        <yongqiang.niu@mediatek.com>,
-        =?UTF-8?B?SmFzb24tSkggTGluICjmnpfnnb/npaUp?= 
-        <Jason-JH.Lin@mediatek.com>,
-        =?UTF-8?B?TmFuY3kgTGluICjmnpfmrKPonqIp?= <Nancy.Lin@mediatek.com>,
-        =?UTF-8?B?QWxsZW4tS0ggQ2hlbmcgKOeoi+WGoOWLsyk=?= 
-        <Allen-KH.Cheng@mediatek.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
+        Wed, 6 Apr 2022 09:42:41 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C83A2E930D;
+        Wed,  6 Apr 2022 03:50:11 -0700 (PDT)
+X-UUID: d710005dabbd42d68bdd942d31903cc9-20220406
+X-UUID: d710005dabbd42d68bdd942d31903cc9-20220406
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1297674620; Wed, 06 Apr 2022 18:50:01 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 6 Apr 2022 18:49:59 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 18:49:59 +0800
+Message-ID: <42e890bef5927f2c4854c146f9bab2f974b64a48.camel@mediatek.com>
+Subject: Re: [PATCH 1/3] dt-bindings: display: mediatek: Correct disp_aal
+ binding for MT8183
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <chunkuang.hu@kernel.org>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>
+CC:     <matthias.bgg@gmail.com>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <yongqiang.niu@mediatek.com>,
+        <jason-jh.lin@mediatek.com>, <nancy.lin@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        Project_Global_Chrome_Upstream_Group 
         <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 6 Apr 2022 18:49:59 +0800
+In-Reply-To: <19a1af29-19a7-a546-b565-a2cc973a7f28@collabora.com>
 References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
- <20220406094654.29722-4-rex-bc.chen@mediatek.com>
- <2449070b-d7e1-122f-abe6-4148855a9aba@collabora.com>
- <4ed2dc24d600fa73b91bb411391c98a5bf4f8d8b.camel@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <4ed2dc24d600fa73b91bb411391c98a5bf4f8d8b.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+         <20220406094654.29722-2-rex-bc.chen@mediatek.com>
+         <19a1af29-19a7-a546-b565-a2cc973a7f28@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 06/04/22 12:48, Rex-BC Chen ha scritto:
-> On Wed, 2022-04-06 at 18:40 +0800, AngeloGioacchino Del Regno wrote:
->> Il 06/04/22 11:46, Rex-BC Chen ha scritto:
->>> The driver data for MT8192 is the same with MT8183. Therefore, we
->>> correct it.
->>>
->>> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
->>
->> Reviewed-by: AngeloGioacchino Del Regno <
->> angelogioacchino.delregno@collabora.com>
->>
->> ...though, from what I know, you should also move MT8195 down there!
+On Wed, 2022-04-06 at 12:38 +0200, AngeloGioacchino Del Regno wrote:
+> Il 06/04/22 11:46, Rex-BC Chen ha scritto:
+> > The driver data of MT8183 and MT8173 are different.
+> > The value of has_gamma for MT8173 is true while the value of MT8183
+> > is
+> > false. Therefore, the compatible of disp_aal for MT8183 is not
+> > suitable
+> > for the compatible for MT8173.
+> > 
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 > 
-> Hello Angelo,
+> Hello!
+> Yes, I definitely agree with this change, it makes no sense to have
+> both
+> 8173 and 8183 compatibles for 8183 (and similar).
 > 
-> Thanks for your review.
-> But for MT8195, disp_aal is using the same compatible with MT8173.
+> Though, please, add a note in this commit message advertising that
+> the
+> mistake was only in the yaml binding, as the driver doesn't require
+> any
+> functional changes, so that things are clear for people with less
+> expertise
+> on MediaTek platforms.
 > 
->  From the MT8195 project DTS is using:
-> 
-> aal0: disp_aal@1c005000 {
-> 	compatible = "mediatek,mt8195-disp-aal",
-> 		     "mediatek,mt8173-disp-aal";
-> 	reg = <0 0x1c005000 0 0x1000>;
-> 	interrupts = <GIC_SPI 641 IRQ_TYPE_LEVEL_HIGH 0>;
-> 	power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> 	clocks = <&vdosys0 CLK_VDO0_DISP_AAL0>;
-> 	mediatek,gce-client-reg =
-> 		 <&gce0 SUBSYS_1c00XXXX 0x5000 0x1000>;
-> };
-> 
-> BRs,
-> Rex
-> 
+> After that:
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
 
-I'm sorry Rex, I've just realized - I was confusing this one with the
-8195 gamma binding instead!
+Hello Angelo,
 
-Cheers,
-Angelo
+Thanks for your review.
+I will add them to the commit message in next version.
+
+BRs,
+Rex
+
