@@ -2,74 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC318C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75018C4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355167AbiDFJC7 (ORCPT
+        id S1378990AbiDFJDi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55130 "EHLO
+        Wed, 6 Apr 2022 05:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444720AbiDFI4B (ORCPT
+        with ESMTP id S1454389AbiDFI7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:56:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667F9593A0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:20:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A5BF3CE1FE9
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:20:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E12E6C385A1;
-        Wed,  6 Apr 2022 01:20:34 +0000 (UTC)
-Date:   Tue, 5 Apr 2022 21:20:32 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, mbenes@suse.cz, x86@kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Subject: Re: drivers/gpu/drm/i915/i915.prelink.o: warning: objtool:
- __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR:
- vlv_allow_gt_wake.cold+0x0
-Message-ID: <20220405212032.3d858b31@gandalf.local.home>
-In-Reply-To: <87czhv11k1.ffs@tglx>
-References: <202204041241.Hw855BWm-lkp@intel.com>
-        <YkxLqznOz0ldTz5a@hirez.programming.kicks-ass.net>
-        <20220406000500.5hlaqy5zrdqsg5mg@treble>
-        <87czhv11k1.ffs@tglx>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 6 Apr 2022 04:59:16 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6155F217948;
+        Tue,  5 Apr 2022 21:00:05 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id A2EBF1C8114F;
+        Wed,  6 Apr 2022 12:00:04 +0800 (CST)
+Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 6 Apr
+ 2022 12:00:04 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS03.nuvoton.com
+ (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1847.3; Wed, 6 Apr 2022
+ 12:00:04 +0800
+Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Wed, 6 Apr 2022 12:00:04 +0800
+Message-ID: <724094ab-ed58-debd-8901-466540a66eab@nuvoton.com>
+Date:   Wed, 6 Apr 2022 12:00:04 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/3] dt-bindings: clock: add binding for MA35D1 clock
+ controller
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
+        "soc@kernel.org" <soc@kernel.org>, MS10 CFLi0 <CFLi0@nuvoton.com>
+References: <20220331024256.14762-1-ychuang3@nuvoton.com>
+ <20220331024256.14762-2-ychuang3@nuvoton.com>
+ <866c6b42-434d-e7db-5319-2256cd7003d7@linaro.org>
+ <cbe5c963-c727-0fe6-6e03-039c4334f7a9@linaro.org>
+From:   Jacky Huang <ychuang3@nuvoton.com>
+In-Reply-To: <cbe5c963-c727-0fe6-6e03-039c4334f7a9@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 06 Apr 2022 02:46:22 +0200
-Thomas Gleixner <tglx@linutronix.de> wrote:
-
-> This covers the trace_printk() case which uses do_trace_printk(), but
-> the same problem exists in trace_puts() and ftrace_vprintk()...., no?
-
-Hmm, I'm not even sure why ftrace_vprintk() is there. It seems redundant.
-
-Arnaldo,
-
-Was there a reason for it. The commit that added it isn't very descriptive.
-
-commit 9011262a37cb438f0fa9394b5e83840db8f9680a
-Author: Arnaldo Carvalho de Melo <acme@redhat.com>
-Date:   Fri Jan 23 12:06:23 2009 -0200
-
-    ftrace: add ftrace_vprintk
-    
-    Impact: new helper function
-    
-    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-    Signed-off-by: Ingo Molnar <mingo@elte.hu>
 
 
--- Steve
+On 2022/3/31 下午 02:34, Krzysztof Kozlowski wrote:
+> On 31/03/2022 08:29, Krzysztof Kozlowski wrote:
+>> On 31/03/2022 04:42, Jacky Huang wrote:
+>>> Add the dt-bindings header for Nuvoton MA35D1, that gets shared
+>>> between the clock controller and clock references in the dts.
+>>>
+>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>>> ---
+>>>   .../dt-bindings/clock/nuvoton,ma35d1-clk.h    | 262 ++++++++++++++++++
+>>>   1 file changed, 262 insertions(+)
+>>>   create mode 100644 include/dt-bindings/clock/nuvoton,ma35d1-clk.h
+>>>
+>>> diff --git a/include/dt-bindings/clock/nuvoton,ma35d1-clk.h b/include/dt-bindings/clock/nuvoton,ma35d1-clk.h
+>>> new file mode 100644
+>>> index 000000000000..3634e5edcac5
+>>> --- /dev/null
+>>> +++ b/include/dt-bindings/clock/nuvoton,ma35d1-clk.h
+>>> @@ -0,0 +1,262 @@
+>>> +/* SPDX-License-Identifier: GPL-2.0+ OR MIT */
+>> Can you make it the same license as bindings?
+>>
+>>> +/*
+>>> + * Copyright (c) 2022 Nuvoton Technology Corporation.
+>>> + */
+>>> +
+>>> +#ifndef __DT_BINDINGS_MA35D1_CLK_H
+>>> +#define __DT_BINDINGS_MA35D1_CLK_H
+>>> +
+>>> +/* Clock Sources */
+>>> +/* External and Internal oscillator clocks */
+>>> +#define	HXT		0
+>> One space after '#define'. Please do not introduce some non-Linux coding
+>> style.
+> You also ignored my comments from your v1 (because this is not v1...).
+> Do not resend without discussion or implementation.
+>
+> Best regards,
+> Krzysztof
+
+Hi Krzysztof,
+
+I am finding out the comments from all mails of this series and working 
+on them.
+I will fix all the issues before sending the next version.
+So, the next version should be V3, right?
+I will add modification history "V1 -> V2" and "V2 -> V3" to [PATCH V3 0/3].
+Is that OK?
+
+Sincerely,
+Jacky
+
+
+
+
