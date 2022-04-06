@@ -2,140 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE607C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233780AbiDFULo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
+        id S233906AbiDFUOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233313AbiDFULJ (ORCPT
+        with ESMTP id S234960AbiDFUNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:11:09 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1A732987
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:06:00 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id ch16-20020a17090af41000b001ca867ef52bso4766902pjb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:06:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nb6RuM1kQ3N1+wdD8MtdIAi3hVbOL3jme3zHG3d+zzY=;
-        b=Ax6btunV2GWM4qIC58kjn0rOZMU0+pEvioaMXdzKDhztkpzYIts0+adz+4TnJxKQrw
-         B3Z13q0QBt5g72zhD8eLKLqP9t1441t45A43Omp6GxCvRozvemOP9KEp5iE1sin1E0Kl
-         nehGTE1u2frFU+WfuL76n39et0FIdEIgB+uKiFF6DyiToiJLomGLW5GymGvM0M5VwSNK
-         cnVLLK+MYIoIru53z4eWJWVENC8kf1NVILOINWENWlr+TAkWaEtELVNugNKSjevRnCkB
-         EXu2Auy/ESyZq6ObI/+GXnjFScqup43IOVrXxnuAz0SpOGGIXKDgBKUTVKSu3Od+qmMj
-         HVRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nb6RuM1kQ3N1+wdD8MtdIAi3hVbOL3jme3zHG3d+zzY=;
-        b=iyjOWyAyI318MduY0y/zdseyO8CszXqWbu4Bdjd3jpOXu7XLqieZ4ug0eKS7bn2UF1
-         jiDs9WkwjsKviR9IZAqjj2s6a4//5kIr6soBf2h07GC7KwUXmGCULQnhE41/3xLGM3gM
-         RRauHZSqjlJAxvmrDXfPfGsGO/rTa8ZovIIdPDkgNvAiIRBFdiYPro4AQQ+RHIEoCxch
-         T5zjE1QMdzaYwP6iWepsno32qP9rzOu1xYM9/gjaqkbKMQnVxVPciZM9AEh3Sl7XsGjZ
-         19sRw/1RSYC/i8OwuN39/Hi6RJyKfEViwzFB0B2f+oByfXPvM8+QgonOiDcUiZyC23et
-         PQZg==
-X-Gm-Message-State: AOAM533WzID3EiGiM7kGf6ATDPw7xd9tDVHSmVLVXW8LnZAZyajjFn5w
-        O/DGVGvclbTEJIGLkmTq90FSCQ==
-X-Google-Smtp-Source: ABdhPJw0p+5J2gneCfqDwqAFCfqGhiieEpDsPCxk4p4DRvY8VKYeyeofjFLycg52d+QW1heqPFrqZA==
-X-Received: by 2002:a17:90a:e2c3:b0:1ca:75b7:63d5 with SMTP id fr3-20020a17090ae2c300b001ca75b763d5mr11183941pjb.111.1649268359396;
-        Wed, 06 Apr 2022 11:05:59 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id a11-20020a056a000c8b00b004fade889fb3sm21115809pfv.18.2022.04.06.11.05.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:05:58 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 18:05:55 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peter Gonda <pgonda@google.com>
-Cc:     kvm@vger.kernel.org, John Sperbeck <jsperbeck@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] KVM: SEV: Mark nested locking of vcpu->mutex
-Message-ID: <Yk3Wg3eZsGZKb3Wm@google.com>
-References: <20220405174637.2074319-1-pgonda@google.com>
+        Wed, 6 Apr 2022 16:13:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDB52EC506;
+        Wed,  6 Apr 2022 10:30:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F67DB824DF;
+        Wed,  6 Apr 2022 17:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18936C385A3;
+        Wed,  6 Apr 2022 17:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649266214;
+        bh=7lnEc/dVbTGKJwcO+vpl8TJuBka5jKqU+BsGyNZKjcQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AvWc6IzVyufeZxhslT9jaoj3tbw7OzPJAdI8asHAw+4zMLK7sXziQSy6RG1qKY6Te
+         GWZf5PjXZt4aUBkYWPibMXeNLXr1J/TqzoUoYBEA9G7CCqVmIG7Th6wugd5H58yAPh
+         SRO++MeGBOKkFxD9KpahDomQgA7xuN65YohsMMKPPzt2G9GHROPO4NSMbJQaNSOtHs
+         i+gOtIvzDu1RHXg71a5Yem0sCysOv0QBTfdfEd0sh1Mv/IMf1Vz/XgfM4yLKlljDBs
+         mSBr41cY8Zq4JMNztD/9bYsjbdivEkZjsc2H1p4PAS7ixEl4nPIV0gi3dNTDddDSSX
+         IIN3ZMj4EKdAQ==
+Received: by wens.tw (Postfix, from userid 1000)
+        id 3FD635FC39; Thu,  7 Apr 2022 01:30:11 +0800 (CST)
+From:   Chen-Yu Tsai <wens@kernel.org>
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] drm/ssd130x: Add support for SINO WEALTH SH1106
+Date:   Thu,  7 Apr 2022 01:29:52 +0800
+Message-Id: <20220406172956.3953-1-wens@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405174637.2074319-1-pgonda@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022, Peter Gonda wrote:
-> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> index 75fa6dd268f0..673e1ee2cfc9 100644
-> --- a/arch/x86/kvm/svm/sev.c
-> +++ b/arch/x86/kvm/svm/sev.c
-> @@ -1591,14 +1591,21 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
->  	atomic_set_release(&src_sev->migration_in_progress, 0);
->  }
->  
-> +#define SEV_MIGRATION_SOURCE 0
-> +#define SEV_MIGRATION_TARGET 1
->  
-> -static int sev_lock_vcpus_for_migration(struct kvm *kvm)
-> +/*
-> + * To avoid lockdep warnings callers should pass @vm argument with either
+From: Chen-Yu Tsai <wens@csie.org>
 
-I think it's important to call that these are false positives, saying "avoid
-lockdep warnings" suggests we're intentionally not fixing bugs :-)
+Hi everyone,
 
-> + * SEV_MIGRATION_SOURCE or SEV_MIGRATE_TARGET. This allows subclassing of all
-> + * vCPU mutex locks.
-> + */
+This series adds support for SH1106 to the ssd130x OLED display
+driver.
 
-If we use an enum, that'll make the param self-documenting.  And we can also use
-that to eliminate the remaining magic number '2'.  E.g. this as fixup.
+Changes since v1:
 
----
- arch/x86/kvm/svm/sev.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+- Fixed ordering of SINO WEALTH in vendor prefix list
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 673e1ee2cfc9..1e07d5d3f85a 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -1591,21 +1591,27 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
- 	atomic_set_release(&src_sev->migration_in_progress, 0);
- }
+- Updated allOf:if: blocks in DT binding, i.e. added default values for
+  solomon,dclk-{div,frq}
 
--#define SEV_MIGRATION_SOURCE 0
--#define SEV_MIGRATION_TARGET 1
+- Added SSD130X_PAGE_COL_START_{HIGH,LOW}_SET and used that to set the
+  bitfields for the two commands.
+  I didn't feel SSD130X_PAGE_COL_START_{HIGH,LOW}_MASK was needed, as
+  it was the same between both commands.
 
- /*
-- * To avoid lockdep warnings callers should pass @vm argument with either
-- * SEV_MIGRATION_SOURCE or SEV_MIGRATE_TARGET. This allows subclassing of all
-- * vCPU mutex locks.
-+ * To suppress lockdep false positives, subclass all vCPU mutex locks by
-+ * assigning even numbers to the source vCPUs and odd numbers to destination
-+ * vCPUs based on the vCPU's index.
-  */
--static int sev_lock_vcpus_for_migration(struct kvm *kvm, int vm)
-+enum sev_migration_role {
-+	SEV_MIGRATION_SOURCE = 0,
-+	SEV_MIGRATION_TARGET,
-+	SEV_NR_MIGRATION_ROLES,
-+};
-+
-+static int sev_lock_vcpus_for_migration(struct kvm *kvm,
-+					enum sev_migration_role role)
- {
- 	struct kvm_vcpu *vcpu;
- 	unsigned long i, j;
-
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
--		if (mutex_lock_killable_nested(&vcpu->mutex, i * 2 + vm))
-+		if (mutex_lock_killable_nested(&vcpu->mutex,
-+					       i * SEV_NR_MIGRATION_ROLES + role))
- 			goto out_unlock;
- 	}
+- Added SH110x to the SSD130X Kconfig help texts
+  There are SH110[789] as well, but they don't seem to be easy to find.
 
 
-base-commit: 6600ddafa53b35fd5c869aff4a5efb981ed06955
---
+The SINO WEALTH SH1106 is an OLED display driver that is somewhat
+compatible with the SSD1306. It supports a slightly wider display,
+at 132 instead of 128 pixels. The basic commands are the same, but
+the SH1106 doesn't support the horizontal or vertical address modes.
+
+This driver chip is found in some cheap 1.3" OLED panel modules. It
+acts as a substitute for the SSD1306.
+
+Patch 1 adds an entry to the vendor prefixes for SINO WEALTH
+Eletronics Ltd.
+
+Patch 2 adds an entry for SH1106 to the ssd1307fb binding.
+
+Patch 3 adds support for the base "page addressing mode" to the ssd130x
+driver.
+
+Patch 4 adds support for the SH1106 to the ssd130x driver.
+
+Please have a look.
+
+
+Thanks
+ChenYu
+
+
+Chen-Yu Tsai (4):
+  dt-bindings: vendor-prefixes: Add prefix for SINO WEALTH Eletronics
+    Ltd.
+  dt-bindings: display: ssd1307fb: Add entry for SINO WEALTH SH1106
+  drm/ssd130x: Support page addressing mode
+  drm/ssd130x: Add support for SINO WEALTH SH1106
+
+ .../bindings/display/solomon,ssd1307fb.yaml   | 13 ++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+ drivers/gpu/drm/solomon/Kconfig               |  9 ++-
+ drivers/gpu/drm/solomon/ssd130x-i2c.c         | 11 +++
+ drivers/gpu/drm/solomon/ssd130x.c             | 73 +++++++++++++++++--
+ drivers/gpu/drm/solomon/ssd130x.h             |  2 +
+ 6 files changed, 99 insertions(+), 11 deletions(-)
+
+-- 
+2.34.1
 
