@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230099AbiDFMNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:13:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57486 "EHLO
+        id S230360AbiDFMOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230354AbiDFMLx (ORCPT
+        with ESMTP id S231659AbiDFMNw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:11:53 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF216432D4C;
-        Wed,  6 Apr 2022 00:56:41 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9LC88e_1649231796;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9LC88e_1649231796)
+        Wed, 6 Apr 2022 08:13:52 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3348424F05;
+        Wed,  6 Apr 2022 00:56:19 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9Kyhod_1649231774;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9Kyhod_1649231774)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 15:56:37 +0800
+          Wed, 06 Apr 2022 15:56:15 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v8 15/20] erofs: register fscache context for extra data blobs
-Date:   Wed,  6 Apr 2022 15:56:07 +0800
-Message-Id: <20220406075612.60298-16-jefflexu@linux.alibaba.com>
+Subject: [PATCH v8 01/20] cachefiles: unmark inode in use in error path
+Date:   Wed,  6 Apr 2022 15:55:53 +0800
+Message-Id: <20220406075612.60298-2-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
 References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
@@ -41,110 +41,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to the multi device mode, erofs could be mounted from one
-primary data blob (mandatory) and multiple extra data blobs (optional).
+Unmark inode in use if error encountered. If the in-use flag leakage
+occurs in cachefiles_open_file(), Cachefiles will complain "Inode
+already in use" when later another cookie with the same index key is
+looked up.
 
-Register fscache context for each extra data blob.
+If the in-use flag leakage occurs in cachefiles_create_tmpfile(), though
+the "Inode already in use" warning won't be triggered, fix the leakage
+anyway.
 
+Reported-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/data.c     |  3 +++
- fs/erofs/internal.h |  2 ++
- fs/erofs/super.c    | 25 +++++++++++++++++--------
- 3 files changed, 22 insertions(+), 8 deletions(-)
+ fs/cachefiles/namei.c | 33 ++++++++++++++++++++++++---------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/fs/erofs/data.c b/fs/erofs/data.c
-index bc22642358ec..14b64d960541 100644
---- a/fs/erofs/data.c
-+++ b/fs/erofs/data.c
-@@ -199,6 +199,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
- 	map->m_bdev = sb->s_bdev;
- 	map->m_daxdev = EROFS_SB(sb)->dax_dev;
- 	map->m_dax_part_off = EROFS_SB(sb)->dax_part_off;
-+	map->m_fscache = EROFS_SB(sb)->s_fscache;
+diff --git a/fs/cachefiles/namei.c b/fs/cachefiles/namei.c
+index f256c8aff7bb..fe1bab0f36d4 100644
+--- a/fs/cachefiles/namei.c
++++ b/fs/cachefiles/namei.c
+@@ -57,6 +57,16 @@ static void __cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
+ 	trace_cachefiles_mark_inactive(object, inode);
+ }
  
- 	if (map->m_deviceid) {
- 		down_read(&devs->rwsem);
-@@ -210,6 +211,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
- 		map->m_bdev = dif->bdev;
- 		map->m_daxdev = dif->dax_dev;
- 		map->m_dax_part_off = dif->dax_part_off;
-+		map->m_fscache = dif->fscache;
- 		up_read(&devs->rwsem);
- 	} else if (devs->extra_devices) {
- 		down_read(&devs->rwsem);
-@@ -227,6 +229,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
- 				map->m_bdev = dif->bdev;
- 				map->m_daxdev = dif->dax_dev;
- 				map->m_dax_part_off = dif->dax_part_off;
-+				map->m_fscache = dif->fscache;
- 				break;
- 			}
- 		}
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index eb37b33bce37..90f7d6286a4f 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -49,6 +49,7 @@ typedef u32 erofs_blk_t;
- 
- struct erofs_device_info {
- 	char *path;
-+	struct erofs_fscache *fscache;
- 	struct block_device *bdev;
- 	struct dax_device *dax_dev;
- 	u64 dax_part_off;
-@@ -482,6 +483,7 @@ static inline int z_erofs_map_blocks_iter(struct inode *inode,
- #endif	/* !CONFIG_EROFS_FS_ZIP */
- 
- struct erofs_map_dev {
-+	struct erofs_fscache *m_fscache;
- 	struct block_device *m_bdev;
- 	struct dax_device *m_daxdev;
- 	u64 m_dax_part_off;
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 9498b899b73b..8c7181cd37e6 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -259,15 +259,23 @@ static int erofs_init_devices(struct super_block *sb,
- 		}
- 		dis = ptr + erofs_blkoff(pos);
- 
--		bdev = blkdev_get_by_path(dif->path,
--					  FMODE_READ | FMODE_EXCL,
--					  sb->s_type);
--		if (IS_ERR(bdev)) {
--			err = PTR_ERR(bdev);
--			break;
-+		if (erofs_is_fscache_mode(sb)) {
-+			err = erofs_fscache_register_cookie(sb, &dif->fscache,
-+							    dif->path, false);
-+			if (err)
-+				break;
-+		} else {
-+			bdev = blkdev_get_by_path(dif->path,
-+						  FMODE_READ | FMODE_EXCL,
-+						  sb->s_type);
-+			if (IS_ERR(bdev)) {
-+				err = PTR_ERR(bdev);
-+				break;
-+			}
-+			dif->bdev = bdev;
-+			dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
- 		}
--		dif->bdev = bdev;
--		dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
++static void cachefiles_do_unmark_inode_in_use(struct cachefiles_object *object,
++				       struct dentry *dentry)
++{
++	struct inode *inode = d_backing_inode(dentry);
 +
- 		dif->blocks = le32_to_cpu(dis->blocks);
- 		dif->mapped_blkaddr = le32_to_cpu(dis->mapped_blkaddr);
- 		sbi->total_blocks += dif->blocks;
-@@ -701,6 +709,7 @@ static int erofs_release_device_info(int id, void *ptr, void *data)
- 	fs_put_dax(dif->dax_dev);
- 	if (dif->bdev)
- 		blkdev_put(dif->bdev, FMODE_READ | FMODE_EXCL);
-+	erofs_fscache_unregister_cookie(&dif->fscache);
- 	kfree(dif->path);
- 	kfree(dif);
- 	return 0;
++	inode_lock(inode);
++	__cachefiles_unmark_inode_in_use(object, dentry);
++	inode_unlock(inode);
++}
++
+ /*
+  * Unmark a backing inode and tell cachefilesd that there's something that can
+  * be culled.
+@@ -68,9 +78,7 @@ void cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
+ 	struct inode *inode = file_inode(file);
+ 
+ 	if (inode) {
+-		inode_lock(inode);
+-		__cachefiles_unmark_inode_in_use(object, file->f_path.dentry);
+-		inode_unlock(inode);
++		cachefiles_do_unmark_inode_in_use(object, file->f_path.dentry);
+ 
+ 		if (!test_bit(CACHEFILES_OBJECT_USING_TMPFILE, &object->flags)) {
+ 			atomic_long_add(inode->i_blocks, &cache->b_released);
+@@ -484,7 +492,7 @@ struct file *cachefiles_create_tmpfile(struct cachefiles_object *object)
+ 				object, d_backing_inode(path.dentry), ret,
+ 				cachefiles_trace_trunc_error);
+ 			file = ERR_PTR(ret);
+-			goto out_dput;
++			goto out_unuse;
+ 		}
+ 	}
+ 
+@@ -494,15 +502,20 @@ struct file *cachefiles_create_tmpfile(struct cachefiles_object *object)
+ 		trace_cachefiles_vfs_error(object, d_backing_inode(path.dentry),
+ 					   PTR_ERR(file),
+ 					   cachefiles_trace_open_error);
+-		goto out_dput;
++		goto out_unuse;
+ 	}
+ 	if (unlikely(!file->f_op->read_iter) ||
+ 	    unlikely(!file->f_op->write_iter)) {
+ 		fput(file);
+ 		pr_notice("Cache does not support read_iter and write_iter\n");
+ 		file = ERR_PTR(-EINVAL);
++		goto out_unuse;
+ 	}
+ 
++	goto out_dput;
++
++out_unuse:
++	cachefiles_do_unmark_inode_in_use(object, path.dentry);
+ out_dput:
+ 	dput(path.dentry);
+ out:
+@@ -590,14 +603,16 @@ static bool cachefiles_open_file(struct cachefiles_object *object,
+ check_failed:
+ 	fscache_cookie_lookup_negative(object->cookie);
+ 	cachefiles_unmark_inode_in_use(object, file);
+-	if (ret == -ESTALE) {
+-		fput(file);
+-		dput(dentry);
++	fput(file);
++	dput(dentry);
++	if (ret == -ESTALE)
+ 		return cachefiles_create_file(object);
+-	}
++	return false;
++
+ error_fput:
+ 	fput(file);
+ error:
++	cachefiles_do_unmark_inode_in_use(object, dentry);
+ 	dput(dentry);
+ 	return false;
+ }
 -- 
 2.27.0
 
