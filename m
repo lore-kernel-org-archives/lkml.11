@@ -2,143 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2698C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC074C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiDFIka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 04:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
+        id S1345680AbiDFIqP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 04:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355881AbiDFIiQ (ORCPT
+        with ESMTP id S1384256AbiDFInx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:38:16 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B30DD39AA;
-        Tue,  5 Apr 2022 20:12:31 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 13A5E1C805DD;
-        Wed,  6 Apr 2022 11:12:31 +0800 (CST)
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Wed, 6 Apr 2022
- 11:12:30 +0800
-Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS01.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Wed, 6 Apr 2022 11:12:30 +0800
-Message-ID: <8ac80947-2f59-6eef-c6ac-2ad64628dfe6@nuvoton.com>
-Date:   Wed, 6 Apr 2022 11:12:30 +0800
+        Wed, 6 Apr 2022 04:43:53 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C7F488BE0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:57:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649224669; x=1680760669;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=p4KTYD1cbHmpuXeM6O/b0bKuIQXYEEKGc1VZKUXra3E=;
+  b=E+XpaqYp3MLZTsXBopD5Wai0o6wnEcm6nyKjBos145nRWMyCq3XeKiK4
+   56JjBX/DaoM/Fvz0OG/ZseMGz6WpIg2HP4j60lI66Sylhqtj944CIIk+5
+   /T1TphwkeN6Gti3dbXos8vfxcyXph9eutYBNhuVt3Na1vZONKBDxFeAuH
+   VgIhu2nHL8n48v+7NKxg5RUP+SJEml/d9+160wSOzVY+ahHfEz+65u9q2
+   nGx3GHX3bWIV4hJlb8yckbXL9hs4ehbwJt9QyyPCTiZGucnmTA5LkJzvS
+   A+i51SdH0yhC7Bv4pWiUCXWPpP/DSGWSg/ycJmVaVpGMKsx1kATnWkAd0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="347400666"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="347400666"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 22:56:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="549394922"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2022 22:56:50 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbyev-00047h-I9;
+        Wed, 06 Apr 2022 05:56:49 +0000
+Date:   Wed, 6 Apr 2022 13:56:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:robh/linux/dt/pop-pci-nodes 2/2]
+ drivers/pci/of.c:29:6: warning: no previous prototype for 'add_bus_props'
+Message-ID: <202204061333.cVi47HBi-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/3] dt-bindings: clock: Document MA35D1 clock controller
- bindings
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
-        "soc@kernel.org" <soc@kernel.org>, MS10 CFLi0 <CFLi0@nuvoton.com>
-References: <20220331024256.14762-1-ychuang3@nuvoton.com>
- <20220331024256.14762-3-ychuang3@nuvoton.com>
- <6be6ffd1-a303-f3f2-0424-0ce622de197f@linaro.org>
-From:   Jacky Huang <ychuang3@nuvoton.com>
-In-Reply-To: <6be6ffd1-a303-f3f2-0424-0ce622de197f@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/ammarfaizi2/linux-block robh/linux/dt/pop-pci-nodes
+head:   b9198a9525a97d05b0bb2a7282fede92d7d2d93d
+commit: b9198a9525a97d05b0bb2a7282fede92d7d2d93d [2/2] PCI: Create DT nodes if they don't exist
+config: ia64-buildonly-randconfig-r006-20220405 (https://download.01.org/0day-ci/archive/20220406/202204061333.cVi47HBi-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/b9198a9525a97d05b0bb2a7282fede92d7d2d93d
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block robh/linux/dt/pop-pci-nodes
+        git checkout b9198a9525a97d05b0bb2a7282fede92d7d2d93d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/pci/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from arch/ia64/include/asm/pgtable.h:153,
+                    from include/linux/pgtable.h:6,
+                    from arch/ia64/include/asm/uaccess.h:40,
+                    from include/linux/uaccess.h:11,
+                    from arch/ia64/include/asm/sections.h:11,
+                    from include/linux/interrupt.h:21,
+                    from include/linux/pci.h:38,
+                    from drivers/pci/of.c:11:
+   arch/ia64/include/asm/mmu_context.h: In function 'reload_context':
+   arch/ia64/include/asm/mmu_context.h:127:48: warning: variable 'old_rr4' set but not used [-Wunused-but-set-variable]
+     127 |         unsigned long rr0, rr1, rr2, rr3, rr4, old_rr4;
+         |                                                ^~~~~~~
+   drivers/pci/of.c: At top level:
+   drivers/pci/of.c:18:21: warning: no previous prototype for 'make_node' [-Wmissing-prototypes]
+      18 | struct device_node *make_node(void)
+         |                     ^~~~~~~~~
+>> drivers/pci/of.c:29:6: warning: no previous prototype for 'add_bus_props' [-Wmissing-prototypes]
+      29 | void add_bus_props(struct device_node *node)
+         |      ^~~~~~~~~~~~~
+   drivers/pci/of.c:60:6: warning: no previous prototype for 'make_dev_node' [-Wmissing-prototypes]
+      60 | void make_dev_node(struct pci_dev *dev)
+         |      ^~~~~~~~~~~~~
+   drivers/pci/of.c:88:21: warning: no previous prototype for 'make_bus_node' [-Wmissing-prototypes]
+      88 | struct device_node *make_bus_node(struct pci_bus *bus)
+         |                     ^~~~~~~~~~~~~
 
 
-On 2022/3/31 下午 02:27, Krzysztof Kozlowski wrote:
-> On 31/03/2022 04:42, Jacky Huang wrote:
->> Add documentation to describe Nuvoton MA35D1 clock driver bindings.
->>
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->> ---
->>   .../bindings/clock/nuvoton,ma35d1-clk.yaml    | 59 +++++++++++++++++++
->>   1 file changed, 59 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
->> new file mode 100644
->> index 000000000000..bf5474b10420
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
->> @@ -0,0 +1,59 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: https://apc01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fschemas%2Fclock%2Fnuvoton%2Cma35d1-clk.yaml%23&amp;data=04%7C01%7Cychuang3%40nuvoton.com%7C26d072d904854cb7c77308da12df8dd5%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637843048619482176%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=NgdR0%2F8%2BxsM4u%2BPuKtuniulNf%2BhMLJoYsjIPnR0iVec%3D&amp;reserved=0
->> +$schema: https://apc01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fmeta-schemas%2Fcore.yaml%23&amp;data=04%7C01%7Cychuang3%40nuvoton.com%7C26d072d904854cb7c77308da12df8dd5%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637843048619482176%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=Km%2Fawm8lT0IYN39tkE3lSrho9uCOd2Fgs8qb82pI7ec%3D&amp;reserved=0
->> +
->> +title: Nuvoton MA35D1 Clock Control Module Binding
->> +
->> +maintainers:
->> +  - Chi-Fang Li <cfli0@nuvoton.com>
->> +  - Jacky Huang <ychuang3@nuvoton.com>
->> +
->> +description: |
->> +  The MA35D1 clock controller generates clocks for the whole chip,
->> +  including system clocks and all peripheral clocks.
->> +
->> +  See also:
->> +    dt-bindings/clock/ma35d1-clk.h
-> Full path needed.
+vim +/add_bus_props +29 drivers/pci/of.c
 
-I will fix it as include/dt-bindings/clock/ma35d1-clk.h
->
->> +
->> +properties:
->> +  compatible:
->> +    const: nuvoton,ma35d1-clk
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  "#clock-cells":
->> +    const: 1
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +  assigned-clocks:
->> +    maxItems: 4
->> +
->> +  assigned-clock-rates:
->> +    maxItems: 4
->> +
->> +  clock-pll-mode:
->> +    maxItems: 4
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - "#clock-cells"
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  # clock control module node:
-> Useless comment, remove it.
+    28	
+  > 29	void add_bus_props(struct device_node *node)
+    30	{
+    31		struct property *prop;
+    32		__be32 *val;
+    33	
+    34		prop = kzalloc(sizeof(*prop), GFP_KERNEL);
+    35		prop->name = "ranges";
+    36		prop->value = prop + 1;
+    37		prop->next = node->properties;
+    38		node->properties = prop;
+    39	
+    40		prop = kzalloc(sizeof(*prop) + sizeof(__be32), GFP_KERNEL);
+    41		prop->name = "#address-cells";
+    42		prop->value = prop + 1;
+    43		prop->length = sizeof(__be32);
+    44		val = prop->value;
+    45		val[0] = __cpu_to_be32(3);
+    46		prop->next = node->properties;
+    47		node->properties = prop;
+    48	
+    49		prop = kzalloc(sizeof(*prop) + sizeof(__be32), GFP_KERNEL);
+    50		prop->name = "#size-cells";
+    51		prop->value = prop + 1;
+    52		prop->length = sizeof(__be32);
+    53		val = prop->value;
+    54		val[0] = __cpu_to_be32(2);
+    55		prop->next = node->properties;
+    56		node->properties = prop;
+    57	
 
-OK, I will remove it.
-
->
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->
-> Best regards,
-> Krzysztof
-
-Thanks for your review.
-
-Sincerely,
-Jacky
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
