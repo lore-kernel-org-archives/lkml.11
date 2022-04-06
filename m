@@ -2,158 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB24EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 628A3C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236163AbiDFVhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
+        id S236317AbiDFVjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235578AbiDFVgv (ORCPT
+        with ESMTP id S237713AbiDFViV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:36:51 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2CDDB2E3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 13:50:18 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id w134so6120267ybe.10
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 13:50:18 -0700 (PDT)
+        Wed, 6 Apr 2022 17:38:21 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D7B19E0BB;
+        Wed,  6 Apr 2022 13:57:21 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id n8so3064726plh.1;
+        Wed, 06 Apr 2022 13:57:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sFI0AJVTPwPw0LmwssqZcXake7SjDusjEH1aLxnOGrI=;
-        b=VBxmrMVPtydbsfRqsorjhKDoEdFwlfvFfHl7Qizy+qjuks/24gknLBbySdud//aBSz
-         /VIp99eQYHZthbGrg6IS/L7Tki5m7OmrvgsElS/LSuGKc8EW9EsTts4q2TrjGvC1kpLS
-         F6dWxsYSnhINwB7LUT7IScIlJE9XmXK+MEU/2bVJlTuyTLLNvfleTh9oQatKRCiOFMUC
-         JqeiuHH5nGVcXRsINrzUHb55PX5pAWTat0ZJLO5AZ3CTZTHy3rdXGWy8ZzLhFC6UZ7Uk
-         VxkYet4qNF6XpHSXucb4zSnR++/Ft6GeHGr1qW2JjZGgo8EhW+Ja6XVCIIQfcCCduf0J
-         K4AA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=M3MEvVhFzzQotX/HtGN33NXma/P1r5Q4BewBuovNpfY=;
+        b=XThIusyP5gQrtUaD6/zthwHE8c5RPOKm8a5sKlDsSfVlC3gBySFZCk8aB3u05C/ivD
+         rxv+JtND51CbSMLRJjT81jDR93ah53ZuuGD1RymF1mpBshKQnQLBFlvEkra2onYWqq+L
+         pUY59TCqy0MMb8vaA2mWAa164mXvybUnI2G/TsBLuioD1KXAgCOGBfVbCb+NGsFnVkpQ
+         Tv6pX+ytgvOs31+mPiQ7Jq48g5jbueAs16RkYXpYyuZyrUXdp6fg5+clPaHZ5gcsNS4p
+         0uh1yOutod6DU796aTgsFw++n0lg0W24wO13lXfCn6G/ABJdTPkvW+XycvNIdwe6eS3u
+         TQqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sFI0AJVTPwPw0LmwssqZcXake7SjDusjEH1aLxnOGrI=;
-        b=FYq9SbV2hOq2jY+XY1o9RDhjgdR4PF5lD3EYaEx2g5NtGV3dH8DeSulIEdED5rjikt
-         yeIxqxiCuWryr+r97lDIY6P+MUtA0PhSQMm32hhGl6vOorzPWJwcUv/FlZ7Ze5XMqjxD
-         N0NN91+IpeoVxbz3BNjHLt/HnKG5+ircfl4d6osidvjDfnGXq5avqQnaUeCZAcoiJuYE
-         nSuFkWAK928MR6/MpZ3gbhdhke/XE2dHjQznidvAeZWkPkmuTaYeAAjOwy8/ocwq+UN1
-         OZacyBIlfDgKFTDnOLd3So00d9X82O8y9W960vrnrKCw8IyT8zGYleKYUdVwCb8DgJoF
-         cjQQ==
-X-Gm-Message-State: AOAM533IPRQa+aBxzCbbN4Ky9+qvuCC/n5regNT67RGLGVEpwnelNarx
-        Pwg+6QaVzWCcXJVovvDEdEvw2WROMMJnHApS1U7qOw==
-X-Google-Smtp-Source: ABdhPJwR0QZVr+oFFiA9oRCRtbQSk240zhY0yqvRUudwSR5L5ZfE5RfF+mPIml8RimPr4f6xCim2REhriPS2GPtoRns=
-X-Received: by 2002:a25:d913:0:b0:634:23a5:7f68 with SMTP id
- q19-20020a25d913000000b0063423a57f68mr8044255ybg.40.1649278217564; Wed, 06
- Apr 2022 13:50:17 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=M3MEvVhFzzQotX/HtGN33NXma/P1r5Q4BewBuovNpfY=;
+        b=pb5w6NudaaqIH+GNXJPMCC8O5oJDm06DxT53ltpB99HoePSeaOXQhDDQSztHI9rq/3
+         U0NO7o7ToxaM9X92gBCP7Xssp99RaP/pWxYjEQV00z630xrKcTlzWh6FcN9FvNyjXW6I
+         obUfS0N/x6w9IYoicbEj5gU7mNigh6V1dBxiPlNxtZGAqxn5vhm8TVpLBq8Fwn56YAMO
+         8haZwkesYqPzuY6LgGk0D4BDpyi6NJ0Kn9JtUEvIrGhwbV25SCle5X+daPBfX83T4E6B
+         lR+J0VWAhPu91/siAC4UJNGzrf6TNbER/o/+DOGgtDZmtxQUsLk/GiO+a4rBQW+VY2ny
+         0qoQ==
+X-Gm-Message-State: AOAM5336gZOSoeKIXNBcGvE38GQLxezmJIgAWnFcSqIPNZzjodywyGQl
+        9F0/nokfO/VjK22w3jyuz12ACpUgGbM=
+X-Google-Smtp-Source: ABdhPJyc7wOVogs1ZMhi7IpPK+ws8sRGaM/8iHCg7kxdSQXEs5Vl5E+/v+8rkTWC2xtBzq/Fugxo/Q==
+X-Received: by 2002:a17:903:41c8:b0:154:7d05:9829 with SMTP id u8-20020a17090341c800b001547d059829mr10396053ple.41.1649278640617;
+        Wed, 06 Apr 2022 13:57:20 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id v13-20020a17090a088d00b001c64d30fa8bsm5257426pjc.1.2022.04.06.13.57.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 13:57:19 -0700 (PDT)
+Message-ID: <8b4692ca-7877-e086-3097-9835caee0735@gmail.com>
+Date:   Wed, 6 Apr 2022 13:57:16 -0700
 MIME-Version: 1.0
-References: <cover.1646422845.git.isaku.yamahata@intel.com> <1df5271baa641d9d189edb86f9ee0921ea3a83e0.1646422845.git.isaku.yamahata@intel.com>
-In-Reply-To: <1df5271baa641d9d189edb86f9ee0921ea3a83e0.1646422845.git.isaku.yamahata@intel.com>
-From:   Sagi Shahar <sagis@google.com>
-Date:   Wed, 6 Apr 2022 13:50:06 -0700
-Message-ID: <CAAhR5DEb+jRfGxK0nv4A_XEEnY4yrw1CzCcXU8HNw=CnHW27Gw@mail.gmail.com>
-Subject: Re: [RFC PATCH v5 086/104] KVM: TDX: handle ept violation/misconfig exit
-To:     "Yamahata, Isaku" <isaku.yamahata@intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Erdem Aktas <erdemaktas@google.com>,
-        Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 4.9 00/43] 4.9.310-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220406182436.675069715@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 12:23 PM <isaku.yamahata@intel.com> wrote:
->
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
->
-> On EPT violation, call a common function, __vmx_handle_ept_violation() to
-> trigger x86 MMU code.  On EPT misconfiguration, exit to ring 3 with
-> KVM_EXIT_UNKNOWN.  because EPT misconfiguration can't happen as MMIO is
-> trigged by TDG.VP.VMCALL. No point to set a misconfiguration value for the
-> fast path.
->
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->  arch/x86/kvm/vmx/tdx.c | 40 ++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 38 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-> index 6fbe89bcfe1e..2c35dcad077e 100644
-> --- a/arch/x86/kvm/vmx/tdx.c
-> +++ b/arch/x86/kvm/vmx/tdx.c
-> @@ -1081,6 +1081,40 @@ void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
->         __vmx_deliver_posted_interrupt(vcpu, &tdx->pi_desc, vector);
->  }
->
-> +#define TDX_SEPT_PFERR (PFERR_WRITE_MASK | PFERR_USER_MASK)
+On 4/6/22 11:26, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.310 release.
+> There are 43 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 08 Apr 2022 18:24:27 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.310-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-TDX_SEPT_PFERR is defined using PFERR_.* bitmask but
-__vmx_handle_ept_violation is accepting an EPT_VIOLATION_.* bitmask.
-so (PFERR_WRITE_MASK | PFERR_USER_MASK) will get interpreted as
-(EPT_VIOLATION_ACC_WRITE | EPT_VIOLATION_ACC_INSTR) which will get
-translated to (PFERR_WRITE_MASK | PFERR_FETCH_MASK). Was that the
-intention of this code?
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-> +
-> +static int tdx_handle_ept_violation(struct kvm_vcpu *vcpu)
-> +{
-> +       unsigned long exit_qual;
-> +
-> +       if (kvm_is_private_gpa(vcpu->kvm, tdexit_gpa(vcpu)))
-> +               exit_qual = TDX_SEPT_PFERR;
-> +       else {
-> +               exit_qual = tdexit_exit_qual(vcpu);
-> +               if (exit_qual & EPT_VIOLATION_ACC_INSTR) {
-> +                       pr_warn("kvm: TDX instr fetch to shared GPA = 0x%lx @ RIP = 0x%lx\n",
-> +                               tdexit_gpa(vcpu), kvm_rip_read(vcpu));
-> +                       vcpu->run->exit_reason = KVM_EXIT_EXCEPTION;
-> +                       vcpu->run->ex.exception = PF_VECTOR;
-> +                       vcpu->run->ex.error_code = exit_qual;
-> +                       return 0;
-> +               }
-> +       }
-> +
-> +       trace_kvm_page_fault(tdexit_gpa(vcpu), exit_qual);
-> +       return __vmx_handle_ept_violation(vcpu, tdexit_gpa(vcpu), exit_qual);
-> +}
-> +
-> +static int tdx_handle_ept_misconfig(struct kvm_vcpu *vcpu)
-> +{
-> +       WARN_ON(1);
-> +
-> +       vcpu->run->exit_reason = KVM_EXIT_UNKNOWN;
-> +       vcpu->run->hw.hardware_exit_reason = EXIT_REASON_EPT_MISCONFIG;
-> +
-> +       return 0;
-> +}
-> +
->  int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
->  {
->         union tdx_exit_reason exit_reason = to_tdx(vcpu)->exit_reason;
-> @@ -1097,6 +1131,10 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
->         WARN_ON_ONCE(fastpath != EXIT_FASTPATH_NONE);
->
->         switch (exit_reason.basic) {
-> +       case EXIT_REASON_EPT_VIOLATION:
-> +               return tdx_handle_ept_violation(vcpu);
-> +       case EXIT_REASON_EPT_MISCONFIG:
-> +               return tdx_handle_ept_misconfig(vcpu);
->         case EXIT_REASON_OTHER_SMI:
->                 /*
->                  * If reach here, it's not a MSMI.
-> @@ -1378,8 +1416,6 @@ void tdx_flush_tlb(struct kvm_vcpu *vcpu)
->                 cpu_relax();
->  }
->
-> -#define TDX_SEPT_PFERR (PFERR_WRITE_MASK | PFERR_USER_MASK)
-> -
->  static int tdx_init_mem_region(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
->  {
->         struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
-> --
-> 2.25.1
->
-
-Sagi
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
