@@ -2,270 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 891DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA87BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229507AbiDFUF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
+        id S233680AbiDFUGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233572AbiDFUEZ (ORCPT
+        with ESMTP id S233655AbiDFUEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:04:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BDF286F53;
-        Wed,  6 Apr 2022 11:28:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A38AD61B89;
-        Wed,  6 Apr 2022 18:28:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7FB5C385A3;
-        Wed,  6 Apr 2022 18:28:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269701;
-        bh=yaUyPPEw7sVJJEQquPNAOiyO1/DjZWJahlZiljRNwOQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1IbVv9RvMqbT0P1Pt1qTGj3xTw52sIbRrua/q3mgyRrukNczHa/OQXgYiuHOynGL9
-         knGakJxqwINXJG47ViPz3mNXHYa8lPTuh+ke9Pyib/CdjxkutaGg6ZMVj/VKjn2MbO
-         KgSjQUIJJONfTDgDkNVkd3s7Jmmd1avdp5x+rT9w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 39/43] KVM: arm64: Add templates for BHB mitigation sequences
-Date:   Wed,  6 Apr 2022 20:26:48 +0200
-Message-Id: <20220406182437.814721153@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 6 Apr 2022 16:04:41 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0401FAA25
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:16:10 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so3800436fac.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:16:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=W6QLU9dpsf8mc4939lySYzSPSw/dtTexZuzBHIuLUrg=;
+        b=EBTf1bBIiIG/kG0lhqJVTnNvF5u0I5Bml0AKBgrXKGQB/0qt+BtzLG+NBXiFyM1x8D
+         olDpNLvBJ790rjNjiYjgWvGsRpx8xFizHYfJ16SP9BmBooefqv5zWU3ErFPjkkz+knCA
+         rIsgx8howkxkhEF/ME5pJYrDyjSfoyrm1ECGk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=W6QLU9dpsf8mc4939lySYzSPSw/dtTexZuzBHIuLUrg=;
+        b=EcNZ5t5TB5yr0SsI0PFzx0U6Ujv2XHgwsR5uIQUG6g2e6np3X88CYB3cHR6O3kzaIU
+         SWAUnDA5zkD8yrvZARb9nNvsEbxBWKelYF/yNC5kWBtc0N+emNx2aiQoje6ReiFPK4uS
+         nrubyj9xQxAG/1kmlzJxnOkEXfpy6bIHyE39b7x3b92b4/4+7yEfJTV/xP+vrThhlTSR
+         xreqbKdYba1Jxq+D/rELpRYZoXWLwiEzxUJT6J/3Hrkci18j3g1U4vhVQ6aF7Hlpm1Re
+         j9sueCs3nXVuCK3q6nu+QyBDnc1UGNjc5zCS64Y/RUzFo498VYlIdTVjcS0AFNSMuU13
+         7ldA==
+X-Gm-Message-State: AOAM531GUQwY3Ww2y/KLz6CcmrG0r02AKiU5nue0Bgj302fovFS7VFRP
+        M+Zm82oEXjweWmpDFMvfsBsOCML+5OBXZgUF+CZlkA==
+X-Google-Smtp-Source: ABdhPJw1RdwYSbawGoUWfudSiGTBCjFseP6+LEsJiUEoEd7sXlF3awSAqT7Ef73IMxW5Sp5PVs4oa7X7vTackHPxJx4=
+X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
+ n14-20020a056870558e00b000e1db7c26aamr4580721oao.63.1649268969711; Wed, 06
+ Apr 2022 11:16:09 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 6 Apr 2022 11:16:09 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yk3NkNK3e+fgj4eG@sirena.org.uk>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
+ <Yk1B4f51WMGIV9WB@sirena.org.uk> <CAE-0n53Cv_bR92M64dhdnDge_=_jeOs4VZzDhUkksN90Y7rgog@mail.gmail.com>
+ <Yk21pdu16lyR8jXm@sirena.org.uk> <CAE-0n50C8khP2x4sgNP5xnfLVMRQj2=LChyWWx1BWL+Xgecgyw@mail.gmail.com>
+ <Yk3Bfnxe/meBYokp@sirena.org.uk> <CAE-0n53O23=N0zkZpg87Q3EyKquLe3WLNJT8qnZz4WEor6QK7A@mail.gmail.com>
+ <Yk3NkNK3e+fgj4eG@sirena.org.uk>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 6 Apr 2022 11:16:09 -0700
+Message-ID: <CAE-0n51DJyWQKG1AsMjD1wwxx=KCyvyp7-P9BGfiRX=EKjxfdw@mail.gmail.com>
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008 PMIC
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+Quoting Mark Brown (2022-04-06 10:27:44)
+> On Wed, Apr 06, 2022 at 10:21:01AM -0700, Stephen Boyd wrote:
+> > Quoting Mark Brown (2022-04-06 09:36:14)
+> > > On Wed, Apr 06, 2022 at 08:51:48AM -0700, Stephen Boyd wrote:
+>
+> > > > My guess is that this is one IC that responds to multiple i2c addresses.
+> > > > The "main" qcom,pm8008 address is 0x8 and that supports things like
+> > > > interrupts. Then there's an address for regulators at 0x9 which controls
+> > > > the handful of LDOs on the PMIC.
+>
+> > > So it's like the TI TWL4030 and Palmas - in which case it should
+> > > probably be handled similarly?
+>
+> > How did those work out? I wasn't involved and I don't know what you
+> > mean. Do they have multiple i2c addresses they respond to?
+>
+> Yes, exactly.  The main device uses i2c_new_dummy_device() to
+> instantiate the extras when it probes.  See twl-core.c
 
-KVM writes the Spectre-v2 mitigation template at the beginning of each
-vector when a CPU requires a specific sequence to run.
+Cool. That approach sounds good to me. Then the regulators can be child
+nodes of the qcom,pm8008 node at i2c address 0x8? It still feels like
+making a struct driver for each regulator node is overkill and will
+waste memory.
 
-Because the template is copied, it can not be modified by the alternatives
-at runtime. As the KVM template code is intertwined with the bp-hardening
-callbacks, all templates must have a bp-hardening callback.
+>
+> >
+> > > Note that the original sumbission was
+> > > *also* a MFD subfunction, but using a DT compatible to match the
+> > > platform device - this is the first I've heard of this being a separate
+> > > I2C function.
+>
+> > I'm mainly looking at the dts file now. It clearly has two i2c devices
+> > at 0x8 and 0x9. Maybe the regulator driver followed the mfd design
+> > because the first driver for this device is an mfd.
+>
+> I'm guessing from the naming that they're also externally described as
+> the same device - presumably it's two dies shoved together in the same
+> package for some reason without being otherwise joined up.  Is the
+> second device geniunely regulators only or does it have anything else
+> bundled in there?
 
-Add templates for calling ARCH_WORKAROUND_3 and one for each value of K
-in the brancy-loop. Identify these sequences by a new parameter
-template_start, and add a copy of install_bp_hardening_cb() that is able to
-install them.
-
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/include/asm/cpucaps.h |    3 +
- arch/arm64/include/asm/kvm_mmu.h |    2 -
- arch/arm64/include/asm/mmu.h     |    6 +++
- arch/arm64/kernel/bpi.S          |   50 +++++++++++++++++++++++++++
- arch/arm64/kernel/cpu_errata.c   |   71 +++++++++++++++++++++++++++++++++++++--
- 5 files changed, 128 insertions(+), 4 deletions(-)
-
---- a/arch/arm64/include/asm/cpucaps.h
-+++ b/arch/arm64/include/asm/cpucaps.h
-@@ -39,7 +39,8 @@
- #define ARM64_SSBD				18
- #define ARM64_MISMATCHED_CACHE_TYPE		19
- #define ARM64_WORKAROUND_1188873		20
-+#define ARM64_SPECTRE_BHB			21
- 
--#define ARM64_NCAPS				21
-+#define ARM64_NCAPS				22
- 
- #endif /* __ASM_CPUCAPS_H */
---- a/arch/arm64/include/asm/kvm_mmu.h
-+++ b/arch/arm64/include/asm/kvm_mmu.h
-@@ -362,7 +362,7 @@ static inline void *kvm_get_hyp_vector(v
- 	struct bp_hardening_data *data = arm64_get_bp_hardening_data();
- 	void *vect = kvm_ksym_ref(__kvm_hyp_vector);
- 
--	if (data->fn) {
-+	if (data->template_start) {
- 		vect = __bp_harden_hyp_vecs_start +
- 		       data->hyp_vectors_slot * SZ_2K;
- 
---- a/arch/arm64/include/asm/mmu.h
-+++ b/arch/arm64/include/asm/mmu.h
-@@ -45,6 +45,12 @@ typedef void (*bp_hardening_cb_t)(void);
- struct bp_hardening_data {
- 	int			hyp_vectors_slot;
- 	bp_hardening_cb_t	fn;
-+
-+	/*
-+	 * template_start is only used by the BHB mitigation to identify the
-+	 * hyp_vectors_slot sequence.
-+	 */
-+	const char *template_start;
- };
- 
- #ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
---- a/arch/arm64/kernel/bpi.S
-+++ b/arch/arm64/kernel/bpi.S
-@@ -73,3 +73,53 @@ ENTRY(__smccc_workaround_1_smc_end)
- ENTRY(__smccc_workaround_1_hvc_start)
- 	smccc_workaround_1	hvc
- ENTRY(__smccc_workaround_1_hvc_end)
-+
-+ENTRY(__smccc_workaround_3_smc_start)
-+	sub     sp, sp, #(8 * 4)
-+	stp     x2, x3, [sp, #(8 * 0)]
-+	stp     x0, x1, [sp, #(8 * 2)]
-+	mov     w0, #ARM_SMCCC_ARCH_WORKAROUND_3
-+	smc     #0
-+	ldp     x2, x3, [sp, #(8 * 0)]
-+	ldp     x0, x1, [sp, #(8 * 2)]
-+	add     sp, sp, #(8 * 4)
-+ENTRY(__smccc_workaround_3_smc_end)
-+
-+ENTRY(__spectre_bhb_loop_k8_start)
-+	sub     sp, sp, #(8 * 2)
-+	stp     x0, x1, [sp, #(8 * 0)]
-+	mov     x0, #8
-+2:	b       . + 4
-+	subs    x0, x0, #1
-+	b.ne    2b
-+	dsb     nsh
-+	isb
-+	ldp     x0, x1, [sp, #(8 * 0)]
-+	add     sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k8_end)
-+
-+ENTRY(__spectre_bhb_loop_k24_start)
-+	sub     sp, sp, #(8 * 2)
-+	stp     x0, x1, [sp, #(8 * 0)]
-+	mov     x0, #24
-+2:	b       . + 4
-+	subs    x0, x0, #1
-+	b.ne    2b
-+	dsb     nsh
-+	isb
-+	ldp     x0, x1, [sp, #(8 * 0)]
-+	add     sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k24_end)
-+
-+ENTRY(__spectre_bhb_loop_k32_start)
-+	sub     sp, sp, #(8 * 2)
-+	stp     x0, x1, [sp, #(8 * 0)]
-+	mov     x0, #32
-+2:	b       . + 4
-+	subs    x0, x0, #1
-+	b.ne    2b
-+	dsb     nsh
-+	isb
-+	ldp     x0, x1, [sp, #(8 * 0)]
-+	add     sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k32_end)
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -74,6 +74,14 @@ extern char __smccc_workaround_1_smc_sta
- extern char __smccc_workaround_1_smc_end[];
- extern char __smccc_workaround_1_hvc_start[];
- extern char __smccc_workaround_1_hvc_end[];
-+extern char __smccc_workaround_3_smc_start[];
-+extern char __smccc_workaround_3_smc_end[];
-+extern char __spectre_bhb_loop_k8_start[];
-+extern char __spectre_bhb_loop_k8_end[];
-+extern char __spectre_bhb_loop_k24_start[];
-+extern char __spectre_bhb_loop_k24_end[];
-+extern char __spectre_bhb_loop_k32_start[];
-+extern char __spectre_bhb_loop_k32_end[];
- 
- static void __copy_hyp_vect_bpi(int slot, const char *hyp_vecs_start,
- 				const char *hyp_vecs_end)
-@@ -87,12 +95,14 @@ static void __copy_hyp_vect_bpi(int slot
- 	flush_icache_range((uintptr_t)dst, (uintptr_t)dst + SZ_2K);
- }
- 
-+static DEFINE_SPINLOCK(bp_lock);
-+static int last_slot = -1;
-+
- static void __install_bp_hardening_cb(bp_hardening_cb_t fn,
- 				      const char *hyp_vecs_start,
- 				      const char *hyp_vecs_end)
- {
--	static int last_slot = -1;
--	static DEFINE_SPINLOCK(bp_lock);
-+
- 	int cpu, slot = -1;
- 
- 	spin_lock(&bp_lock);
-@@ -113,6 +123,7 @@ static void __install_bp_hardening_cb(bp
- 
- 	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
- 	__this_cpu_write(bp_hardening_data.fn, fn);
-+	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
- 	spin_unlock(&bp_lock);
- }
- #else
-@@ -544,3 +555,59 @@ const struct arm64_cpu_capabilities arm6
- 	{
- 	}
- };
-+
-+#ifdef CONFIG_KVM
-+static const char *kvm_bhb_get_vecs_end(const char *start)
-+{
-+	if (start == __smccc_workaround_3_smc_start)
-+		return __smccc_workaround_3_smc_end;
-+	else if (start == __spectre_bhb_loop_k8_start)
-+		return __spectre_bhb_loop_k8_end;
-+	else if (start == __spectre_bhb_loop_k24_start)
-+		return __spectre_bhb_loop_k24_end;
-+	else if (start == __spectre_bhb_loop_k32_start)
-+		return __spectre_bhb_loop_k32_end;
-+
-+	return NULL;
-+}
-+
-+void kvm_setup_bhb_slot(const char *hyp_vecs_start)
-+{
-+	int cpu, slot = -1;
-+	const char *hyp_vecs_end;
-+
-+	if (!IS_ENABLED(CONFIG_KVM) || !is_hyp_mode_available())
-+		return;
-+
-+	hyp_vecs_end = kvm_bhb_get_vecs_end(hyp_vecs_start);
-+	if (WARN_ON_ONCE(!hyp_vecs_start || !hyp_vecs_end))
-+		return;
-+
-+	spin_lock(&bp_lock);
-+	for_each_possible_cpu(cpu) {
-+		if (per_cpu(bp_hardening_data.template_start, cpu) == hyp_vecs_start) {
-+			slot = per_cpu(bp_hardening_data.hyp_vectors_slot, cpu);
-+			break;
-+		}
-+	}
-+
-+	if (slot == -1) {
-+		last_slot++;
-+		BUG_ON(((__bp_harden_hyp_vecs_end - __bp_harden_hyp_vecs_start)
-+			/ SZ_2K) <= last_slot);
-+		slot = last_slot;
-+		__copy_hyp_vect_bpi(slot, hyp_vecs_start, hyp_vecs_end);
-+	}
-+
-+	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
-+	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
-+	spin_unlock(&bp_lock);
-+}
-+#else
-+#define __smccc_workaround_3_smc_start NULL
-+#define __spectre_bhb_loop_k8_start NULL
-+#define __spectre_bhb_loop_k24_start NULL
-+#define __spectre_bhb_loop_k32_start NULL
-+
-+void kvm_setup_bhb_slot(const char *hyp_vecs_start) { };
-+#endif
-
-
+I think it's regulators only. Pretty sure I asked qcom this a round or
+two ago on this patch series and they said that. Let's wait for Satya to
+respond.
