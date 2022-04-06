@@ -2,113 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233294AbiDFT7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
+        id S231459AbiDFUAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233336AbiDFT7O (ORCPT
+        with ESMTP id S233387AbiDFT7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:59:14 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8685A184B41;
-        Wed,  6 Apr 2022 11:12:10 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id l26so6009579ejx.1;
-        Wed, 06 Apr 2022 11:12:10 -0700 (PDT)
+        Wed, 6 Apr 2022 15:59:32 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210322E1627
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:29:42 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id 2so3210023pjw.2
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:29:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=rXbbQCVhuhsoQHUcvprMC174QHX0agKLOmkRY9IDpdE=;
-        b=L2r2dk38UjYEmmQ6Zb889rsVtzKdkRW6mfhmbqlWGD+gzxr+uPHq8LAnvMl4I5ImOI
-         OZ4wE6nBgFz+dD+/lkCnD4jl9ltKkvzLMAyiFjnpeCw1KhwZ09pCIpuuMJiE425oLlFk
-         Zx6j3VI1DPJ1LpVEHrT6ghtUBRYIHNX5RunsVlKFK/dSnSzSoKU/RSnNKAHU3bWLUKtT
-         PhFGNm0cRB+n4l+zHG+Dh7Zpm6/uQ+oGN3rHI8vpfWXgd2RlVCiYBhgM+zplPiRhLYBr
-         yQ1bUfHmWwTrJF+wYtfolaGz8wuBY96lROeb+5E5/9ddpZ+H5aFr1+fY8ZZSHi9LivN+
-         BSLw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rr+xzlj7vxdfalta/rr/vaKILwxRPcQ5/NXkWgY8K0M=;
+        b=B1sq59hw7ckgQoFKnsvmJEAip8CSip0a3sLJR00RxPH+khENkQjAQh+kGzBFbqGjv8
+         citQ4qw67DSyfwtGlKNNuIWL2hIUe6J9qjHzgonZu6wuCG7dLAtC8e1IjtXwMAze0sDj
+         RLNQx0bJkjkiIxjwT0lKFRoFztKbmKj/m+Y+I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=rXbbQCVhuhsoQHUcvprMC174QHX0agKLOmkRY9IDpdE=;
-        b=0A8giAWBy6oJCWRNiQPGya19Tmfy6hIwjm3T/zdYa8CP5R6EQbgB0SIC8pox/WrjkO
-         VfggltCyglhEvIxd0YZdxqMs7PadcW6hZks5TOJujtuinCyypy3mMMJKLEwlGVqbzsrP
-         j/cUFMF9dJuNFWLhq1FKrXJBIqi1H8WNS6qvFaJPe6LHdRZFDRPgxHjIzWM8qXsKChYv
-         uzyAFOCfOGMM1kR1b1zm1Jork7utnjHd7DGdFh58EoOx6pQFaigsv6HquUJ+QngiQAbC
-         OHYYpxVAs+J3n9RAISDp9tCxLfsHh2j7dFt2MGgKcY/EfnTap3Skp3u4c8aTBwIUR7Yk
-         z2cw==
-X-Gm-Message-State: AOAM530WZWc6blwNakPlC3N3hq0YXPg/Xww8dobVWnamWG42gxIccVvY
-        5iWRq0qcJDYHPXKF8KuCNq5YjmDgcmg=
-X-Google-Smtp-Source: ABdhPJyH9XlY7jFrDCQzWHAwrBPcC67MWt7UOM/3j6QJrMSUpkz489pT0aMAcALwtywAOHYvRcig6A==
-X-Received: by 2002:a17:906:dc8e:b0:6e7:1713:5de9 with SMTP id cs14-20020a170906dc8e00b006e717135de9mr9678902ejc.71.1649268729074;
-        Wed, 06 Apr 2022 11:12:09 -0700 (PDT)
-Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
-        by smtp.googlemail.com with ESMTPSA id l11-20020a509dcb000000b0041cbaf0ce2asm6146675edk.6.2022.04.06.11.12.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:12:07 -0700 (PDT)
-Message-ID: <310d20a04bdaf40672592d9ffa950606d2ceaff7.camel@gmail.com>
-Subject: Re: [PATCH v2 0/4] rpmb subsystem, uapi and virtio-rpmb driver
-From:   Bean Huo <huobean@gmail.com>
-To:     Bart Van Assche <bvanassche@acm.org>,
-        Alex =?ISO-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, maxim.uvarov@linaro.org,
-        joakim.bech@linaro.org, ulf.hansson@linaro.org,
-        ilias.apalodimas@linaro.org, arnd@linaro.org,
-        ruchika.gupta@linaro.org, tomas.winkler@intel.com,
-        yang.huang@intel.com, bing.zhu@intel.com,
-        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
-        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org
-Date:   Wed, 06 Apr 2022 20:12:07 +0200
-In-Reply-To: <e72812a9-1e5b-a826-d490-62ed23d94116@acm.org>
-References: <20220405093759.1126835-1-alex.bennee@linaro.org>
-         <8b3ce88f65fd11523a4d2daab3c617f7089eb1ce.camel@gmail.com>
-         <87r16bk013.fsf@linaro.org>
-         <aeb64d1c4bbddfd8463c07a40ab1fc78be0d158d.camel@gmail.com>
-         <87ee2ajuky.fsf@linaro.org>
-         <c18a2b359046a14250cafa5a619dbe53f2872b5a.camel@gmail.com>
-         <e72812a9-1e5b-a826-d490-62ed23d94116@acm.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.0-1 
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rr+xzlj7vxdfalta/rr/vaKILwxRPcQ5/NXkWgY8K0M=;
+        b=6qOAGBQ6h2k6WIhqmrTo2WfMwKSy6wM/B+tgWoSZ8eO0dtHcR8WkyQ9BK+iEUNgouv
+         H7GZASEOjU+1rBtI9xtEKOIeank8TnHidLRHSfmIz690YlcW0afzw38+R9Z6Izstnelf
+         TmEBfmlStnYkWss8n0oe9I0pGCvy4U4xagm1lyheWJO6CgUEqFSqgUmLlISyqo9GBEdJ
+         3UU0kCyaX9DZFODo/c8CSI+brCbSKeznNbFqsyQusjTgra00LIIp06sJlY3+s/Ion3Zk
+         n/1PXZvLQZx3QkemlYvD4gUFPW04RobZz1amZxgOBCv11ILTQ85U8uJDpBlcW5+HsCQR
+         eMOA==
+X-Gm-Message-State: AOAM531FKtksUwkPNJQOCA/RUE7Xv/nrz64LZQfnheCQ6AIEt4XET+SP
+        Qw49wSZoF9TbBYWAYSNzNfq0XQ==
+X-Google-Smtp-Source: ABdhPJwdSFDwLNqsqc2vubhlC0RRxfBG/wKDtKr3C4VRsDexJML+RuUfa9a4Gqn1DJb+ZvQadwh34w==
+X-Received: by 2002:a17:902:da83:b0:156:aa83:8409 with SMTP id j3-20020a170902da8300b00156aa838409mr9949694plx.22.1649266181846;
+        Wed, 06 Apr 2022 10:29:41 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:dddf:7cc7:1261:9584])
+        by smtp.gmail.com with UTF8SMTPSA id z10-20020a17090a8b8a00b001ca7bafba51sm6126276pjn.0.2022.04.06.10.29.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 10:29:41 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 10:29:39 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_msavaliy@quicinc.com,
+        dianders@chromium.org
+Subject: Re: [V2] drivers/tty/serial/qcom-geni-serial: Do stop_rx in suspend
+ path for console if console_suspend is disabled
+Message-ID: <Yk3OA8CLoijOyDDf@google.com>
+References: <1649233612-30844-1-git-send-email-quic_vnivarth@quicinc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1649233612-30844-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gV2VkLCAyMDIyLTA0LTA2IGF0IDEwOjMyIC0wNzAwLCBCYXJ0IFZhbiBBc3NjaGUgd3JvdGU6
-Cj4gPiBJdCdzIHRoZSBTQ1NJIEJTRyBkcml2ZXIsIGluIGZhY3QsIHdlIGRvbid0IGhhdmUgYSBk
-ZWRpY2F0ZWQgVUZTCj4gPiBSUE1CCj4gPiBkcml2ZXIgaW4gdGhlIGtlcm5lbC4gUlBNQiBpcyBh
-IHdlbGwga25vd24gTFUsIHdlIGFyZSB1c2luZwo+ID4gdXNlcnNwYWNlCj4gPiB0b29scyB0byBp
-c3N1ZSBTQ1NJIGNvbW1hbmRzIGRpcmVjdGx5IHRvIHRoZSBVRlMgUlBNQiBMVSB2aWEKPiA+IGlv
-Y3RsKCkKPiA+IGZyb20gdGhlIEJTRyBkZXZpY2Ugbm9kZSBpbiB0aGUgL2Rldi9zZy8gZm9sZGVy
-Lgo+ID4gCj4gPiBIZXJlIGlzIHRoZSBCU0cgcGFydCBvZiB0aGUgY29kZSBpbiB0aGUgdXNlcnNw
-YWNlIHRvb2xzOgo+ID4gCj4gPiDCoMKgwqDCoMKgwqDCoMKgwqAgaW9faGRyX3Y0Lmd1YXJkID0g
-J1EnOwo+ID4gwqDCoMKgwqDCoMKgwqDCoMKgIGlvX2hkcl92NC5wcm90b2NvbCA9IEJTR19QUk9U
-T0NPTF9TQ1NJOwo+ID4gwqDCoMKgwqDCoMKgwqDCoMKgIGlvX2hkcl92NC5zdWJwcm90b2NvbCA9
-IEJTR19TVUJfUFJPVE9DT0xfU0NTSV9DTUQ7Cj4gPiDCoMKgwqDCoMKgwqDCoMKgwqAgaW9faGRy
-X3Y0LnJlc3BvbnNlID0gKF9fdTY0KXNlbnNlX2J1ZmZlcjsKPiA+IMKgwqDCoMKgwqDCoMKgwqDC
-oCBpb19oZHJfdjQubWF4X3Jlc3BvbnNlX2xlbiA9IFNFTlNFX0JVRkZfTEVOOwo+ID4gwqDCoMKg
-wqDCoMKgwqDCoMKgIGlvX2hkcl92NC5yZXF1ZXN0X2xlbiA9IGNtZF9sZW47Cj4gPiDCoMKgwqDC
-oMKgwqDCoMKgwqAgaW9faGRyX3Y0LnJlcXVlc3QgPSAoX191NjQpY2RiOwo+ID4gwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAKPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgCj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoAo+ID4gwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIAo+ID4gwqDCoMKgwqDCoMKgwqDCoMKgIGlvY3RsKGZkLCBTR19J
-TywgJmlvX2hkcl92NCkpCj4gCj4gSGkgQmVhbiwKPiAKPiBJJ20gbm90IHN1cmUgd2hlcmUgdGhl
-IGFib3ZlIGNvbWVzIGZyb20/IFRoZSBBbmRyb2lkIFJQTUIgY2xpZW50IHVzZXMKPiBzbGlnaHRs
-eSBkaWZmZXJlbnQgY29kZS4gQWRkaXRpb25hbGx5LCB0aGUgcmV0cnkgbG9vcCBhcm91bmQgdGhl
-IAo+IHN1Ym1pc3Npb24gb2YgU0cvSU8gY29tbWFuZHMgaXMgdmVyeSBpbXBvcnRhbnQuIFNlZSBh
-bHNvIHRoZSAKPiBjaGVja19zZ19pb19oZHIoKSBjYWxsIGluIHNlbmRfdWZzX3JwbWJfcmVxKCku
-IFNlZSBhbHNvIAo+IGh0dHBzOi8vY3MuYW5kcm9pZC5jb20vYW5kcm9pZC9wbGF0Zm9ybS9zdXBl
-cnByb2plY3QvKy9tYXN0ZXI6c3lzdGVtL2NvcmUvdHJ1c3R5L3N0b3JhZ2UvcHJveHkvcnBtYi5j
-Cj4gCj4gCkJhcnQsCgpJdCBpcyBmcm9tIHRoZSB1ZnMtdXRpbHMuCgpTbywgZG8geW91IHZvdGUg
-dG8gYWRkIHRoZSBVRlMgUlBNQiBkcml2ZXIgYmFzZWQgb24gdGhpcyBuZXcgZnJhbWV3b3JrCnRv
-IHJlc29sdmUgdGhpcyBjb25mbGljdD8KCgpLaW5kIHJlZ2FyZHMsCkJlYW4KCj4gVGhhbmtzLAo+
-IAoKCj4gQmFydC4KCg==
+On Wed, Apr 06, 2022 at 01:56:52PM +0530, Vijaya Krishna Nivarthi wrote:
+> For the case of console_suspend disabled, if back to back suspend/resume
+> test is executed, at the end of test, sometimes console would appear to
+> be frozen not responding to input. This would happen because, for
+> console_suspend disabled, suspend/resume routines only turn resources
+> off/on but don't do a port close/open.
+> As a result, during resume, some rx transactions come in before system is
+> ready, malfunction of rx happens in turn resulting in console appearing
+> to be stuck.
+> 
+> Do a stop_rx in suspend sequence to prevent this. start_rx is already
+> present in resume sequence as part of call to set_termios which does a
+> stop_rx/start_rx.
+> 
+> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 1543a60..6f767c7 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -1481,6 +1481,10 @@ static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
+>  	struct uart_port *uport = &port->uport;
+>  	struct qcom_geni_private_data *private_data = uport->private_data;
+>  
+> +	/* do a stop_rx here, start_rx is handled in uart_resume_port by call to setermios */
+> +	if (!console_suspend_enabled && uart_console(uport))
 
+nit: I think for a human reader would be slightly clearer to swap the order
+of the conditions, i.e.:
+
+	if (uart_console(uport) && !console_suspend_enabled)
+
+> +		uport->ops->stop_rx(uport);
+> +
+>  	/*
+>  	 * This is done so we can hit the lowest possible state in suspend
+>  	 * even with no_console_suspend
+
+v1 one had additional changes which weren't directly related with
+console_suspend. They looked worthwhile though, please make sure to
+send them in separate patches.
