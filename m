@@ -2,84 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF745C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiDFT0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48352 "EHLO
+        id S230425AbiDFT3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbiDFTZg (ORCPT
+        with ESMTP id S231419AbiDFT1C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:25:36 -0400
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9B01E7A55;
-        Wed,  6 Apr 2022 11:12:09 -0700 (PDT)
-Received: by mail-oi1-f170.google.com with SMTP id w127so3212752oig.10;
-        Wed, 06 Apr 2022 11:12:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rHx8DYluJ4kaShg551QjzvikhQaz62YjftzoTLZUGD0=;
-        b=ss1HUOv3FQCNYuLeoGDSm+cYFZi3eaZi18k8lx77Di00BQk2oQ/pjq6+U3Jo6A0snD
-         /GPv5Sn2iZcNDjmuCRciAfZQi3SnuTBOS8ONa1zCaYJTJASwzAsgWiGOYByG4N133Vlb
-         TV5YD3QuRFJ0Et6gtk3FsmTkAFMI+v1sPdjj9ZrJx39lJGMC/Qu7qQC0igYOc1SxZ6Zi
-         7+gslVHh9JwR4dCVWwtpsC3OPpMH3ept8icr+IuCSiw2/796r072mlZK0nbEKfRqXS7D
-         TubNmU/WMtjlvm/RV7LSeQx9u75tjUtFDEvQNIJds4hvLuxASpCLIMNDVNCsz1pdTM/e
-         nntA==
-X-Gm-Message-State: AOAM5327W6l8hrV+SF3BJ6kQNXQovnWbKboaHHhsPjlJrtwVTDC/FSP7
-        u99vnII8xEH7tE7GDsHKAQ==
-X-Google-Smtp-Source: ABdhPJyCevYeLyks6ifd963x0nEqiyqH12/VPQziDsd5gYIHmumRkZTptSxNrcMu3cJOGWA9Hsg7pQ==
-X-Received: by 2002:a05:6808:191a:b0:2ec:baa1:7b86 with SMTP id bf26-20020a056808191a00b002ecbaa17b86mr4105599oib.103.1649268728142;
-        Wed, 06 Apr 2022 11:12:08 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bc35-20020a05682016a300b00324e9bf46adsm380406oob.41.2022.04.06.11.12.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:12:07 -0700 (PDT)
-Received: (nullmailer pid 2520269 invoked by uid 1000);
-        Wed, 06 Apr 2022 18:12:07 -0000
-Date:   Wed, 6 Apr 2022 13:12:07 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>, linux-spi@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: qcom: update maintainers (drop Akash and
- Mukesh)
-Message-ID: <Yk3X94DwNR4AcPP4@robh.at.kernel.org>
-References: <20220405063724.12850-1-krzysztof.kozlowski@linaro.org>
+        Wed, 6 Apr 2022 15:27:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266722706C8;
+        Wed,  6 Apr 2022 11:27:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5CF1B8253D;
+        Wed,  6 Apr 2022 18:27:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15EEAC385A1;
+        Wed,  6 Apr 2022 18:27:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269665;
+        bh=D8VjMSLV7J+BhyvDpS/RzYuVt06tHFYRtIsaCv/TRl0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H1C9n8kuCwAMn+rqRALD+EYJXtSPB7tSmYYFIGctPu+bhYq5DGewgWrtZTEft3hgQ
+         GRVuvhtlbh8HJz5wcWRslR88t8ud73QOG1wHcoJkxRdw+ZziQaVzJW22Tg2hfiF0o1
+         /0zwhM4Kup1APOtUb0CaWIORGf7AyJI8T9VugIkE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 24/43] arm64: Add helper to decode register from instruction
+Date:   Wed,  6 Apr 2022 20:26:33 +0200
+Message-Id: <20220406182437.383541735@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405063724.12850-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Apr 2022 08:37:24 +0200, Krzysztof Kozlowski wrote:
-> Emails to Akash Asthana and Mukesh Savaliya bounce (550: Recipient
-> address rejected: User unknown in virtual alias table), so switch
-> maintainer to Bjorn (as active Qualcomm platform maintainer).
-> 
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Changes since v1:
-> 1. Add only Bjorn.
-> ---
->  Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml  | 3 +--
->  Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml | 3 +--
->  2 files changed, 2 insertions(+), 4 deletions(-)
-> 
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-Acked-by: Rob Herring <robh@kernel.org>
+commit 8c2dcbd2c4443bad0b4242fb62baa47b260b8f79 upstream.
 
-Let me know if you'd rather me pick this up (and the pile of other QCom 
-bindings).
+Add a helper to extract the register field from a given
+instruction.
+
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/include/asm/insn.h |    2 ++
+ arch/arm64/kernel/insn.c      |   29 +++++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
+
+--- a/arch/arm64/include/asm/insn.h
++++ b/arch/arm64/include/asm/insn.h
+@@ -332,6 +332,8 @@ bool aarch64_insn_is_branch(u32 insn);
+ u64 aarch64_insn_decode_immediate(enum aarch64_insn_imm_type type, u32 insn);
+ u32 aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
+ 				  u32 insn, u64 imm);
++u32 aarch64_insn_decode_register(enum aarch64_insn_register_type type,
++					 u32 insn);
+ u32 aarch64_insn_gen_branch_imm(unsigned long pc, unsigned long addr,
+ 				enum aarch64_insn_branch_type type);
+ u32 aarch64_insn_gen_comp_branch_imm(unsigned long pc, unsigned long addr,
+--- a/arch/arm64/kernel/insn.c
++++ b/arch/arm64/kernel/insn.c
+@@ -418,6 +418,35 @@ u32 __kprobes aarch64_insn_encode_immedi
+ 	return insn;
+ }
+ 
++u32 aarch64_insn_decode_register(enum aarch64_insn_register_type type,
++					u32 insn)
++{
++	int shift;
++
++	switch (type) {
++	case AARCH64_INSN_REGTYPE_RT:
++	case AARCH64_INSN_REGTYPE_RD:
++		shift = 0;
++		break;
++	case AARCH64_INSN_REGTYPE_RN:
++		shift = 5;
++		break;
++	case AARCH64_INSN_REGTYPE_RT2:
++	case AARCH64_INSN_REGTYPE_RA:
++		shift = 10;
++		break;
++	case AARCH64_INSN_REGTYPE_RM:
++		shift = 16;
++		break;
++	default:
++		pr_err("%s: unknown register type encoding %d\n", __func__,
++		       type);
++		return 0;
++	}
++
++	return (insn >> shift) & GENMASK(4, 0);
++}
++
+ static u32 aarch64_insn_encode_register(enum aarch64_insn_register_type type,
+ 					u32 insn,
+ 					enum aarch64_insn_register reg)
+
+
