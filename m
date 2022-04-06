@@ -2,72 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1732C4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF39C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356308AbiDFJcd (ORCPT
+        id S1386417AbiDFJdk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
+        Wed, 6 Apr 2022 05:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582881AbiDFJWM (ORCPT
+        with ESMTP id S244925AbiDFJPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:22:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7186A3A1423;
-        Tue,  5 Apr 2022 20:07:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAEA7B8200E;
-        Wed,  6 Apr 2022 03:07:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3483C385A0;
-        Wed,  6 Apr 2022 03:07:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649214467;
-        bh=eIlEQwsG6t17hOwXn8NqVS/jaWXyCYIUFSVCEzvWWTE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SOXe812cr3deZum/nx2E3cPdah6SKXLSX202QJbEA0BFO0C0dM7kZUCV9iZzGu5G+
-         Z4ApptDbZKcbz8T33brz3W9nG8hQzYIUby9aTTYnz94ENwVrhzOqjwfBY5D4Y0SyIW
-         7yUtF8b3ubaYN+5mA5jsvFU7TarTIRdRAotSSTL0cy7vUVn7pYEsUexvA0dpfHjSiU
-         TWT7AnpkI6ZsZHqFaUeNvNsWqcVHvzX+aZeFurWMxQtzvkqj1oiIBO2c5Y2jksyejQ
-         xfxM1fsMs8FOZ6iZ9ip/ZssmeNzIPvYkvfyPwZJ7gJaNOS353H6GwkGCl98jXsv9a9
-         IzRgad6jFe11w==
-Date:   Wed, 6 Apr 2022 03:07:43 +0000
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     Fabio Baltieri <fabiobaltieri@chromium.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] drivers: pwm: pwm-cros-ec: add channel type
- support
-Message-ID: <Yk0D/4vzOfR8H+YD@google.com>
-References: <20220331125818.3776912-1-fabiobaltieri@chromium.org>
- <20220331125818.3776912-3-fabiobaltieri@chromium.org>
+        Wed, 6 Apr 2022 05:15:00 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7505918CD12
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:21:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649208106; x=1680744106;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=lDmiDQtEEmXB0cb1YjRoZl6xlM1hhF0n4UWVWcsiDiw=;
+  b=ZQHwRL102EmfnE0+ZmTc3sTeexzVbDwRw9OCKqK4MQ/1XpAawCwq0TiS
+   HWQaG0IA/5lzAiXnlAh8Dd35B3nyC86SffT9lkQ/JIx/qN3zZpcFNnz1C
+   IBHksCIEDYuzpxXpNxd9azQlDdSkztgLW4YgzlXQheKUErQvnPfREdS+d
+   dtIlRIrDYrNgeFCPFPsmkS87EEL5Png2gLUX8CgEoDi5f3f/DHLRZSTZn
+   DoHDjSNs3z06GtcETpb7eoKwkc60ZtET96AMBFnXtqsLJ8AzlJcIyEGcM
+   TClKLRZ0AqHJAKWKRIfmt45ZfcwywZps/9M2XGQiSc4LOdm2HTz33xbbI
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240847686"
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="240847686"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 18:21:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="505516591"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2022 18:21:43 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbuMh-0003wi-6q;
+        Wed, 06 Apr 2022 01:21:43 +0000
+Date:   Wed, 6 Apr 2022 09:20:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 38/40] ERROR:
+ modpost: "__tracepoint_netfs_sreq" [fs/afs/kafs.ko] undefined!
+Message-ID: <202204060951.AmHlbl9O-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220331125818.3776912-3-fabiobaltieri@chromium.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 12:58:16PM +0000, Fabio Baltieri wrote:
-> Add support for EC_PWM_TYPE_DISPLAY_LIGHT and EC_PWM_TYPE_KB_LIGHT pwm
-> types to the PWM cros_ec_pwm driver. This allows specifying one of these
-> PWM channel by functionality, and let the EC firmware pick the correct
-> channel, thus abstracting the hardware implementation from the kernel
-> driver.
-> 
-> Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
+Hi David,
 
-Taking `git log --oneline drivers/pwm/pwm-cros-ec.c` as examples, suggest to
-remove "drivers: " prefix from the commit title.
+First bad commit (maybe != root cause):
 
-Otherwise,
-Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   674eea41fc70a740ff83ec590f9833f805852464
+commit: 2726127983997dfb5bb1bc83d69cec5baeea5694 [38/40] afs: Use the netfs write helpers
+config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220406/202204060951.AmHlbl9O-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/2726127983997dfb5bb1bc83d69cec5baeea5694
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout 2726127983997dfb5bb1bc83d69cec5baeea5694
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+ERROR: modpost: "netfs_put_subrequest" [fs/afs/kafs.ko] undefined!
+>> ERROR: modpost: "__tracepoint_netfs_sreq" [fs/afs/kafs.ko] undefined!
+>> ERROR: modpost: "__traceiter_netfs_sreq" [fs/afs/kafs.ko] undefined!
+ERROR: modpost: "netfs_page_mkwrite" [fs/afs/kafs.ko] undefined!
+ERROR: modpost: "mas_walk" [fs/netfs/netfs.ko] undefined!
+ERROR: modpost: "mas_destroy" [fs/netfs/netfs.ko] undefined!
+ERROR: modpost: "mas_expected_entries" [fs/netfs/netfs.ko] undefined!
+ERROR: modpost: "mas_store" [fs/netfs/netfs.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
