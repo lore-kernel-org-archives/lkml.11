@@ -2,234 +2,386 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75869C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C25FC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbiDFMxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45074 "EHLO
+        id S229823AbiDFMww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231532AbiDFMv5 (ORCPT
+        with ESMTP id S231524AbiDFMv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 08:51:57 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D2343ECA
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:54:38 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2368niKd017736;
-        Wed, 6 Apr 2022 08:54:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Kp8RoHD+XVt9u99MJh7zHcRBQ4EXYmIK0d74cb1v5vg=;
- b=A5ePbxivA1W0DU5AfTqpLd7ovdjjj+uZ3S68u3fgpPLdQDYWlbq13y2eHYKLSQwDvXIL
- 0wdQDdLZs0oPZJQ+HTg3kGcZgQrIF0kUAeYylymcMIitNvLv/YW+ulrZkdOfMXsm2AVu
- wsUohPCS8Nln62Luue7ouzMByWCCToaY8M0kudOy8rr8BagrAsme1wxJlbyAInnrOObg
- 2XUldOYNoUo/F5OPl+1Cqz/0spKneymBFHW/pLrmk4fm/EoSOn0PGmICvmaLKKZvtCHm
- gT8bNIcBKl3UQspi0AbE/BAmSQpF8Tmw0gwGFz+Wl+7uYtsyA+tDYZMLm20pmvabwWTq qQ== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f8twfww72-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 08:54:28 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2368hVA5019739;
-        Wed, 6 Apr 2022 08:54:26 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06ams.nl.ibm.com with ESMTP id 3f6drhqdjf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 08:54:25 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2368g8R529229350
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Apr 2022 08:42:08 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 93C784C044;
-        Wed,  6 Apr 2022 08:54:23 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 40E764C04E;
-        Wed,  6 Apr 2022 08:54:23 +0000 (GMT)
-Received: from [9.145.51.104] (unknown [9.145.51.104])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Apr 2022 08:54:23 +0000 (GMT)
-Message-ID: <f551db1b-4f32-2799-9424-15af0fb778c3@linux.ibm.com>
-Date:   Wed, 6 Apr 2022 10:54:22 +0200
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB54F11141
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:54:37 -0700 (PDT)
+Received: from kwepemi100003.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KYJDz4LY3zgYQg;
+        Wed,  6 Apr 2022 16:52:51 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100003.china.huawei.com (7.221.188.122) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 16:54:35 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 16:54:34 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [RFC PATCH -next V2 7/7] arm64: add pagecache reading to machine check safe
+Date:   Wed, 6 Apr 2022 09:13:11 +0000
+Message-ID: <20220406091311.3354723-8-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
+In-Reply-To: <20220406091311.3354723-1-tongtiangen@huawei.com>
+References: <20220406091311.3354723-1-tongtiangen@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] cxl/ocxl: Prepare cleanup of powerpc's asm/prom.h
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-References: <a2bae89b280e7a7cb87889635d9911d6a245e780.1648833388.git.christophe.leroy@csgroup.eu>
-From:   Frederic Barrat <fbarrat@linux.ibm.com>
-In-Reply-To: <a2bae89b280e7a7cb87889635d9911d6a245e780.1648833388.git.christophe.leroy@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: FqQdEy4hmhh8m4MFMDZapfnZH3zmLmRd
-X-Proofpoint-GUID: FqQdEy4hmhh8m4MFMDZapfnZH3zmLmRd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_03,2022-04-05_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 malwarescore=0 mlxscore=0
- bulkscore=0 lowpriorityscore=0 mlxlogscore=999 clxscore=1011 phishscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204060040
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When user process reading file, the data is cached in pagecache and
+the data belongs to the user process, When machine check error is
+encountered during pagecache reading, killing the user process and
+isolate the user page with hardware memory errors is a more reasonable
+choice than kernel panic.
 
+The __arch_copy_mc_to_user() in copy_to_user_mc.S is largely borrows
+from __arch_copy_to_user() in copy_to_user.S and the main difference
+is __arch_copy_mc_to_user() add the extable entry to support machine
+check safe.
 
-On 02/04/2022 11:52, Christophe Leroy wrote:
-> powerpc's asm/prom.h brings some headers that it doesn't
-> need itself.
-> 
-> In order to clean it up, first add missing headers in
-> users of asm/prom.h
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> ---
+In _copy_page_to_iter(), machine check safe only considered ITER_IOVEC
+which is used by pagecache reading.
 
-LGTM
-Acked-by: Frederic Barrat <fbarrat@linux.ibm.com>
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+---
+ arch/arm64/include/asm/uaccess.h | 15 ++++++
+ arch/arm64/lib/Makefile          |  2 +-
+ arch/arm64/lib/copy_to_user_mc.S | 78 +++++++++++++++++++++++++++++
+ include/linux/uio.h              |  9 +++-
+ lib/iov_iter.c                   | 85 +++++++++++++++++++++++++-------
+ 5 files changed, 170 insertions(+), 19 deletions(-)
+ create mode 100644 arch/arm64/lib/copy_to_user_mc.S
 
+diff --git a/arch/arm64/include/asm/uaccess.h b/arch/arm64/include/asm/uaccess.h
+index 24b662407fbd..f0d5e811165a 100644
+--- a/arch/arm64/include/asm/uaccess.h
++++ b/arch/arm64/include/asm/uaccess.h
+@@ -448,6 +448,21 @@ extern long strncpy_from_user(char *dest, const char __user *src, long count);
+ 
+ extern __must_check long strnlen_user(const char __user *str, long n);
+ 
++#ifdef CONFIG_ARCH_HAS_COPY_MC
++extern unsigned long __must_check __arch_copy_mc_to_user(void __user *to,
++							 const void *from, unsigned long n);
++static inline unsigned long __must_check
++copy_mc_to_user(void __user *to, const void *from, unsigned long n)
++{
++	uaccess_ttbr0_enable();
++	n = __arch_copy_mc_to_user(__uaccess_mask_ptr(to), from, n);
++	uaccess_ttbr0_disable();
++
++	return n;
++}
++#define copy_mc_to_user copy_mc_to_user
++#endif
++
+ #ifdef CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE
+ struct page;
+ void memcpy_page_flushcache(char *to, struct page *page, size_t offset, size_t len);
+diff --git a/arch/arm64/lib/Makefile b/arch/arm64/lib/Makefile
+index 29c578414b12..9b3571227fb4 100644
+--- a/arch/arm64/lib/Makefile
++++ b/arch/arm64/lib/Makefile
+@@ -23,4 +23,4 @@ obj-$(CONFIG_ARM64_MTE) += mte.o
+ 
+ obj-$(CONFIG_KASAN_SW_TAGS) += kasan_sw_tags.o
+ 
+-obj-$(CONFIG_ARCH_HAS_CPY_MC) += copy_page_mc.o
++obj-$(CONFIG_ARCH_HAS_COPY_MC) += copy_page_mc.o copy_to_user_mc.o
+diff --git a/arch/arm64/lib/copy_to_user_mc.S b/arch/arm64/lib/copy_to_user_mc.S
+new file mode 100644
+index 000000000000..9d228ff15446
+--- /dev/null
++++ b/arch/arm64/lib/copy_to_user_mc.S
+@@ -0,0 +1,78 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2012 ARM Ltd.
++ */
++
++#include <linux/linkage.h>
++
++#include <asm/asm-uaccess.h>
++#include <asm/assembler.h>
++#include <asm/cache.h>
++
++/*
++ * Copy to user space from a kernel buffer (alignment handled by the hardware)
++ *
++ * Parameters:
++ *	x0 - to
++ *	x1 - from
++ *	x2 - n
++ * Returns:
++ *	x0 - bytes not copied
++ */
++	.macro ldrb1 reg, ptr, val
++	1000: ldrb  \reg, [\ptr], \val;
++	_asm_extable_mc 1000b, 9998f;
++	.endm
++
++	.macro strb1 reg, ptr, val
++	user_ldst_mc 9998f, sttrb, \reg, \ptr, \val
++	.endm
++
++	.macro ldrh1 reg, ptr, val
++	1001: ldrh  \reg, [\ptr], \val;
++	_asm_extable_mc 1001b, 9998f;
++	.endm
++
++	.macro strh1 reg, ptr, val
++	user_ldst_mc 9997f, sttrh, \reg, \ptr, \val
++	.endm
++
++	.macro ldr1 reg, ptr, val
++	1002: ldr \reg, [\ptr], \val;
++	_asm_extable_mc 1002b, 9998f;
++	.endm
++
++	.macro str1 reg, ptr, val
++	user_ldst_mc 9997f, sttr, \reg, \ptr, \val
++	.endm
++
++	.macro ldp1 reg1, reg2, ptr, val
++	1003: ldp \reg1, \reg2, [\ptr], \val;
++	_asm_extable_mc 1003b, 9998f;
++	.endm
++
++	.macro stp1 reg1, reg2, ptr, val
++	user_stp 9997f, \reg1, \reg2, \ptr, \val
++	.endm
++
++end	.req	x5
++srcin	.req	x15
++SYM_FUNC_START(__arch_copy_mc_to_user)
++	add	end, x0, x2
++	mov	srcin, x1
++#include "copy_template.S"
++	mov	x0, #0
++	ret
++
++	// Exception fixups
++9997:	cbz	x0, 9998f			// Check machine check exception
++	cmp	dst, dstin
++	b.ne	9998f
++	// Before being absolutely sure we couldn't copy anything, try harder
++	ldrb	tmp1w, [srcin]
++USER(9998f, sttrb tmp1w, [dst])
++	add	dst, dst, #1
++9998:	sub	x0, end, dst			// bytes not copied
++	ret
++SYM_FUNC_END(__arch_copy_mc_to_user)
++EXPORT_SYMBOL(__arch_copy_mc_to_user)
+diff --git a/include/linux/uio.h b/include/linux/uio.h
+index 739285fe5a2f..539d9ee9b032 100644
+--- a/include/linux/uio.h
++++ b/include/linux/uio.h
+@@ -147,10 +147,17 @@ size_t _copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i);
+ size_t _copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
+ size_t _copy_from_iter_nocache(void *addr, size_t bytes, struct iov_iter *i);
+ 
++#ifdef CONFIG_ARCH_HAS_COPY_MC
++size_t copy_mc_page_to_iter(struct page *page, size_t offset, size_t bytes,
++			    struct iov_iter *i);
++#else
++#define copy_mc_page_to_iter copy_page_to_iter
++#endif
++
+ static inline size_t copy_folio_to_iter(struct folio *folio, size_t offset,
+ 		size_t bytes, struct iov_iter *i)
+ {
+-	return copy_page_to_iter(&folio->page, offset, bytes, i);
++	return copy_mc_page_to_iter(&folio->page, offset, bytes, i);
+ }
+ 
+ static __always_inline __must_check
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index 6dd5330f7a99..2c5f3bb6391d 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -157,6 +157,19 @@ static int copyout(void __user *to, const void *from, size_t n)
+ 	return n;
+ }
+ 
++#ifdef CONFIG_ARCH_HAS_COPY_MC
++static int copyout_mc(void __user *to, const void *from, size_t n)
++{
++	if (access_ok(to, n)) {
++		instrument_copy_to_user(to, from, n);
++		n = copy_mc_to_user((__force void *) to, from, n);
++	}
++	return n;
++}
++#else
++#define copyout_mc copyout
++#endif
++
+ static int copyin(void *to, const void __user *from, size_t n)
+ {
+ 	if (should_fail_usercopy())
+@@ -169,7 +182,7 @@ static int copyin(void *to, const void __user *from, size_t n)
+ }
+ 
+ static size_t copy_page_to_iter_iovec(struct page *page, size_t offset, size_t bytes,
+-			 struct iov_iter *i)
++			 struct iov_iter *i, bool mc_safe)
+ {
+ 	size_t skip, copy, left, wanted;
+ 	const struct iovec *iov;
+@@ -194,7 +207,10 @@ static size_t copy_page_to_iter_iovec(struct page *page, size_t offset, size_t b
+ 		from = kaddr + offset;
+ 
+ 		/* first chunk, usually the only one */
+-		left = copyout(buf, from, copy);
++		if (mc_safe)
++			left = copyout_mc(buf, from, copy);
++		else
++			left = copyout(buf, from, copy);
+ 		copy -= left;
+ 		skip += copy;
+ 		from += copy;
+@@ -204,7 +220,10 @@ static size_t copy_page_to_iter_iovec(struct page *page, size_t offset, size_t b
+ 			iov++;
+ 			buf = iov->iov_base;
+ 			copy = min(bytes, iov->iov_len);
+-			left = copyout(buf, from, copy);
++			if (mc_safe)
++				left = copyout_mc(buf, from, copy);
++			else
++				left = copyout(buf, from, copy);
+ 			copy -= left;
+ 			skip = copy;
+ 			from += copy;
+@@ -223,7 +242,10 @@ static size_t copy_page_to_iter_iovec(struct page *page, size_t offset, size_t b
+ 
+ 	kaddr = kmap(page);
+ 	from = kaddr + offset;
+-	left = copyout(buf, from, copy);
++	if (mc_safe)
++		left = copyout_mc(buf, from, copy);
++	else
++		left = copyout(buf, from, copy);
+ 	copy -= left;
+ 	skip += copy;
+ 	from += copy;
+@@ -232,7 +254,10 @@ static size_t copy_page_to_iter_iovec(struct page *page, size_t offset, size_t b
+ 		iov++;
+ 		buf = iov->iov_base;
+ 		copy = min(bytes, iov->iov_len);
+-		left = copyout(buf, from, copy);
++		if (mc_safe)
++			left = copyout_mc(buf, from, copy);
++		else
++			left = copyout(buf, from, copy);
+ 		copy -= left;
+ 		skip = copy;
+ 		from += copy;
+@@ -674,15 +699,6 @@ size_t _copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
+ EXPORT_SYMBOL(_copy_to_iter);
+ 
+ #ifdef CONFIG_ARCH_HAS_COPY_MC
+-static int copyout_mc(void __user *to, const void *from, size_t n)
+-{
+-	if (access_ok(to, n)) {
+-		instrument_copy_to_user(to, from, n);
+-		n = copy_mc_to_user((__force void *) to, from, n);
+-	}
+-	return n;
+-}
+-
+ static size_t copy_mc_pipe_to_iter(const void *addr, size_t bytes,
+ 				struct iov_iter *i)
+ {
+@@ -846,10 +862,10 @@ static inline bool page_copy_sane(struct page *page, size_t offset, size_t n)
+ }
+ 
+ static size_t __copy_page_to_iter(struct page *page, size_t offset, size_t bytes,
+-			 struct iov_iter *i)
++			 struct iov_iter *i, bool mc_safe)
+ {
+ 	if (likely(iter_is_iovec(i)))
+-		return copy_page_to_iter_iovec(page, offset, bytes, i);
++		return copy_page_to_iter_iovec(page, offset, bytes, i, mc_safe);
+ 	if (iov_iter_is_bvec(i) || iov_iter_is_kvec(i) || iov_iter_is_xarray(i)) {
+ 		void *kaddr = kmap_local_page(page);
+ 		size_t wanted = _copy_to_iter(kaddr + offset, bytes, i);
+@@ -878,7 +894,7 @@ size_t copy_page_to_iter(struct page *page, size_t offset, size_t bytes,
+ 	offset %= PAGE_SIZE;
+ 	while (1) {
+ 		size_t n = __copy_page_to_iter(page, offset,
+-				min(bytes, (size_t)PAGE_SIZE - offset), i);
++				min(bytes, (size_t)PAGE_SIZE - offset), i, false);
+ 		res += n;
+ 		bytes -= n;
+ 		if (!bytes || !n)
+@@ -893,6 +909,41 @@ size_t copy_page_to_iter(struct page *page, size_t offset, size_t bytes,
+ }
+ EXPORT_SYMBOL(copy_page_to_iter);
+ 
++#ifdef CONFIG_ARCH_HAS_COPY_MC
++/**
++ * copy_mc_page_to_iter - copy page to iter with source memory error exception handling.
++ *
++ * The filemap_read deploys this for pagecache reading and the main differences between
++ * this and typical copy_page_to_iter() is call __copy_page_to_iter with mc_safe true.
++ *
++ * Return: number of bytes copied (may be %0)
++ */
++size_t copy_mc_page_to_iter(struct page *page, size_t offset, size_t bytes,
++			 struct iov_iter *i)
++{
++	size_t res = 0;
++
++	if (unlikely(!page_copy_sane(page, offset, bytes)))
++		return 0;
++	page += offset / PAGE_SIZE; // first subpage
++	offset %= PAGE_SIZE;
++	while (1) {
++		size_t n = __copy_page_to_iter(page, offset,
++				min(bytes, (size_t)PAGE_SIZE - offset), i, true);
++		res += n;
++		bytes -= n;
++		if (!bytes || !n)
++			break;
++		offset += n;
++		if (offset == PAGE_SIZE) {
++			page++;
++			offset = 0;
++		}
++	}
++	return res;
++}
++#endif
++
+ size_t copy_page_from_iter(struct page *page, size_t offset, size_t bytes,
+ 			 struct iov_iter *i)
+ {
+-- 
+2.18.0.huawei.25
 
->   drivers/misc/cxl/api.c      | 1 +
->   drivers/misc/cxl/cxl.h      | 2 ++
->   drivers/misc/cxl/cxllib.c   | 1 +
->   drivers/misc/cxl/flash.c    | 1 +
->   drivers/misc/cxl/guest.c    | 2 ++
->   drivers/misc/cxl/irq.c      | 1 +
->   drivers/misc/cxl/main.c     | 1 +
->   drivers/misc/cxl/native.c   | 1 +
->   drivers/misc/ocxl/afu_irq.c | 1 +
->   drivers/misc/ocxl/link.c    | 1 +
->   10 files changed, 12 insertions(+)
-> 
-> diff --git a/drivers/misc/cxl/api.c b/drivers/misc/cxl/api.c
-> index b493de962153..d85c56530863 100644
-> --- a/drivers/misc/cxl/api.c
-> +++ b/drivers/misc/cxl/api.c
-> @@ -12,6 +12,7 @@
->   #include <linux/pseudo_fs.h>
->   #include <linux/sched/mm.h>
->   #include <linux/mmu_context.h>
-> +#include <linux/irqdomain.h>
->   
->   #include "cxl.h"
->   
-> diff --git a/drivers/misc/cxl/cxl.h b/drivers/misc/cxl/cxl.h
-> index 5dc0f6093f9d..7a6dd91987fd 100644
-> --- a/drivers/misc/cxl/cxl.h
-> +++ b/drivers/misc/cxl/cxl.h
-> @@ -25,6 +25,8 @@
->   
->   extern uint cxl_verbose;
->   
-> +struct property;
-> +
->   #define CXL_TIMEOUT 5
->   
->   /*
-> diff --git a/drivers/misc/cxl/cxllib.c b/drivers/misc/cxl/cxllib.c
-> index 53b919856426..e5fe0a171472 100644
-> --- a/drivers/misc/cxl/cxllib.c
-> +++ b/drivers/misc/cxl/cxllib.c
-> @@ -5,6 +5,7 @@
->   
->   #include <linux/hugetlb.h>
->   #include <linux/sched/mm.h>
-> +#include <asm/opal-api.h>
->   #include <asm/pnv-pci.h>
->   #include <misc/cxllib.h>
->   
-> diff --git a/drivers/misc/cxl/flash.c b/drivers/misc/cxl/flash.c
-> index 5b93ff51d82a..eee9decc121e 100644
-> --- a/drivers/misc/cxl/flash.c
-> +++ b/drivers/misc/cxl/flash.c
-> @@ -4,6 +4,7 @@
->   #include <linux/semaphore.h>
->   #include <linux/slab.h>
->   #include <linux/uaccess.h>
-> +#include <linux/of.h>
->   #include <asm/rtas.h>
->   
->   #include "cxl.h"
-> diff --git a/drivers/misc/cxl/guest.c b/drivers/misc/cxl/guest.c
-> index 9d485c9e3fff..3321c014913c 100644
-> --- a/drivers/misc/cxl/guest.c
-> +++ b/drivers/misc/cxl/guest.c
-> @@ -6,6 +6,8 @@
->   #include <linux/spinlock.h>
->   #include <linux/uaccess.h>
->   #include <linux/delay.h>
-> +#include <linux/irqdomain.h>
-> +#include <linux/platform_device.h>
->   
->   #include "cxl.h"
->   #include "hcalls.h"
-> diff --git a/drivers/misc/cxl/irq.c b/drivers/misc/cxl/irq.c
-> index 4cb829d5d873..5f0e2dcebb34 100644
-> --- a/drivers/misc/cxl/irq.c
-> +++ b/drivers/misc/cxl/irq.c
-> @@ -4,6 +4,7 @@
->    */
->   
->   #include <linux/interrupt.h>
-> +#include <linux/irqdomain.h>
->   #include <linux/workqueue.h>
->   #include <linux/sched.h>
->   #include <linux/wait.h>
-> diff --git a/drivers/misc/cxl/main.c b/drivers/misc/cxl/main.c
-> index 43b312d06e3e..c1fbf6f588f7 100644
-> --- a/drivers/misc/cxl/main.c
-> +++ b/drivers/misc/cxl/main.c
-> @@ -15,6 +15,7 @@
->   #include <linux/slab.h>
->   #include <linux/idr.h>
->   #include <linux/pci.h>
-> +#include <linux/platform_device.h>
->   #include <linux/sched/task.h>
->   
->   #include <asm/cputable.h>
-> diff --git a/drivers/misc/cxl/native.c b/drivers/misc/cxl/native.c
-> index 1a7f22836041..50b0c44bb8d7 100644
-> --- a/drivers/misc/cxl/native.c
-> +++ b/drivers/misc/cxl/native.c
-> @@ -11,6 +11,7 @@
->   #include <linux/mm.h>
->   #include <linux/uaccess.h>
->   #include <linux/delay.h>
-> +#include <linux/irqdomain.h>
->   #include <asm/synch.h>
->   #include <asm/switch_to.h>
->   #include <misc/cxl-base.h>
-> diff --git a/drivers/misc/ocxl/afu_irq.c b/drivers/misc/ocxl/afu_irq.c
-> index ecdcfae025b7..a06920b7e049 100644
-> --- a/drivers/misc/ocxl/afu_irq.c
-> +++ b/drivers/misc/ocxl/afu_irq.c
-> @@ -1,6 +1,7 @@
->   // SPDX-License-Identifier: GPL-2.0+
->   // Copyright 2017 IBM Corp.
->   #include <linux/interrupt.h>
-> +#include <linux/irqdomain.h>
->   #include <asm/pnv-ocxl.h>
->   #include <asm/xive.h>
->   #include "ocxl_internal.h"
-> diff --git a/drivers/misc/ocxl/link.c b/drivers/misc/ocxl/link.c
-> index 9670d02c927f..4cf4c55a5f00 100644
-> --- a/drivers/misc/ocxl/link.c
-> +++ b/drivers/misc/ocxl/link.c
-> @@ -6,6 +6,7 @@
->   #include <linux/mm_types.h>
->   #include <linux/mmu_context.h>
->   #include <linux/mmu_notifier.h>
-> +#include <linux/irqdomain.h>
->   #include <asm/copro.h>
->   #include <asm/pnv-ocxl.h>
->   #include <asm/xive.h>
