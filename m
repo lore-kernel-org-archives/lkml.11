@@ -2,70 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA79AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F148AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229557AbiDFKuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40222 "EHLO
+        id S1344901AbiDFKvm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359019AbiDFKsX (ORCPT
+        with ESMTP id S231843AbiDFKuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:48:23 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF07505E5F;
-        Wed,  6 Apr 2022 00:12:13 -0700 (PDT)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KYFym3T3lz683hj;
-        Wed,  6 Apr 2022 15:10:24 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 09:12:10 +0200
-Received: from [10.47.80.129] (10.47.80.129) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 08:12:09 +0100
-Message-ID: <ab6a13c1-90c4-63f0-c48d-c1faa0ae68fd@huawei.com>
-Date:   Wed, 6 Apr 2022 08:12:08 +0100
+        Wed, 6 Apr 2022 06:50:44 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFAB2B4599
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:15:09 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id a6so2445156ejk.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:15:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ItLT2iWRQ8MK455HPWYXz8o5FEVTFaa0PW9WN5W7PWQ=;
+        b=aljVglaiorKfLr8hIxisEour0ptMG48CK1Bco7fzAXebuy++7+j30VgUqeBNWNdapT
+         46/oBIK5ME7783f1qbqsbxF5x372/E+eU6rexLJ3siZ4UM45XdYoJ8n8w31/ArgK1aNk
+         uwAEQrHoYEM0WjRO1nd1VUEwecsGsuQ1oi5AAOjZiNcyShoav28NWybX7c8Oa+tJbMez
+         Mey+ABS6X67p4P5xSubdsTVUfYEFFabbavXous5101XE2chjMSSJAY5XDxyGP1N/xccQ
+         JHURGWS09J+gDo3OLTrPKlNqcW6azIrdVUp/cCMhfqs+syP26YHknSOBGxCrRJue8I7e
+         mA1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ItLT2iWRQ8MK455HPWYXz8o5FEVTFaa0PW9WN5W7PWQ=;
+        b=LK4YlAnBEimQxWlWfU4ey16A4Zm0dW9e35ZlmaFNsuqCaQWPaWB+Y4wzNOtmbL/+X/
+         qFyubGINkN6SaIJtJ/QbXr8diODEX4nW6hc77js9jyu/lXmjkM2ibZetXzkR1uBHUHYw
+         7+6hvyfCgoQms5oRekq1dnsfstCtsneHyNb8K5+lXvlGJWasD2DdvbGBNGje2pMGNfAZ
+         BmNWb960D22cd7cTRhhRjVbj/8kvgXRJlAu5XP2bv4mZJUXRsF2uNWDt1F2mfftUNVfk
+         95kdZgH6GNAkBdSWsbm3paNxBTMcXfrI7le3bgok1/gHQOtALLRNlGbyqsAj7CL4+fnF
+         syvg==
+X-Gm-Message-State: AOAM5311ndoOxH6B+deornog+5v6W1N6vEcS+VQOmeONU4n49dW+1rMQ
+        fPWuxNi/zK0eyw+Wu7xzeuqTQw==
+X-Google-Smtp-Source: ABdhPJxkVzG6YeLl1AHfVOPZW8vCgyulJy2IwvFDrOQZC3HKys5OOJ6wApTj/h6GZDOZpaKoaF2krQ==
+X-Received: by 2002:a17:906:dc92:b0:6e4:a93b:8958 with SMTP id cs18-20020a170906dc9200b006e4a93b8958mr7148361ejc.403.1649229298612;
+        Wed, 06 Apr 2022 00:14:58 -0700 (PDT)
+Received: from [192.168.0.182] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id n6-20020aa7c786000000b00410d2403ccfsm7531111eds.21.2022.04.06.00.14.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 00:14:58 -0700 (PDT)
+Message-ID: <bba99b9d-6960-f6e8-0ee4-0b5fe8a5601d@linaro.org>
+Date:   Wed, 6 Apr 2022 09:14:57 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2 1/2] libata: Use scsi cmnd budget token for qc tag for
- SAS host
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>, <hch@lst.de>
-CC:     <linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-scsi@vger.kernel.org>
-References: <1649083990-207133-1-git-send-email-john.garry@huawei.com>
- <1649083990-207133-2-git-send-email-john.garry@huawei.com>
- <a3cce73f-2e91-309d-bee0-a34a30335a18@opensource.wdc.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <a3cce73f-2e91-309d-bee0-a34a30335a18@opensource.wdc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.80.129]
-X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/3] arm64: dts: nuvoton: Add initial support for MA35D1
+Content-Language: en-US
+To:     Jacky Huang <ychuang3@nuvoton.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "soc@kernel.org" <soc@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220307091923.9909-1-ychuang3@nuvoton.com>
+ <20220307091923.9909-4-ychuang3@nuvoton.com>
+ <2669852c-5bb6-1edf-bf58-ea815f54d50f@kernel.org>
+ <ef8efda1-e985-0684-470f-7acf9b8a5e93@nuvoton.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <ef8efda1-e985-0684-470f-7acf9b8a5e93@nuvoton.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/2022 02:39, Damien Le Moal wrote:
-> On 4/4/22 23:53, John Garry wrote:
->> For attaining a qc tag for a SAS host we need to allocate a bit in
->> ata_port.sas_tag_allocated bitmap.
->>
->> However we already have a unique tag per device in range
->> [0, ATA_MAX_QUEUE) in the scsi cmnd budget token, so just use that
->> instead.
+On 06/04/2022 04:58, Jacky Huang wrote:
+>>> diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+>>> index 639e01a4d855..28e01442094f 100644
+>>> --- a/arch/arm64/boot/dts/Makefile
+>>> +++ b/arch/arm64/boot/dts/Makefile
+>>> @@ -30,3 +30,4 @@ subdir-y += synaptics
+>>>   subdir-y += ti
+>>>   subdir-y += toshiba
+>>>   subdir-y += xilinx
+>>> +subdir-y += nuvoton
+>>> diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuvoton/Makefile
+>>> new file mode 100644
+>>> index 000000000000..e1e0c466bf5e
+>>> --- /dev/null
+>>> +++ b/arch/arm64/boot/dts/nuvoton/Makefile
+>>> @@ -0,0 +1,2 @@
+>>> +# SPDX-License-Identifier: GPL-2.0
+>>> +dtb-$(CONFIG_ARCH_NUVOTON) += ma35d1-evb.dtb
+>> ARCH_NUVOTON does not exist.
 > 
-> The valid range is [0, ATA_MAX_QUEUE - 1]. Tag ATA_MAX_QUEUE is 
-> ATA_TAG_INTERNAL which is never allocated as a valid device tag but used 
-> directly in ata_exec_internal().
+> I would add the following to end of arch/arm64/Kconfig.platforms,
 
-But that is what I have in [0, ATA_MAX_QUEUE), which is same as [0, 
-ATA_MAX_QUEUE - 1].
+Don't add things at the end of files but rather in respective place
+without messing the order.
 
-Thanks,
-john
+> and 
+> add the
+> modification to this patch series.
+> 
+> config ARCH_MA35D1
+>      bool "Nuvoton MA35D1 SOC Family"
+
+We do not add options for specific SoCs, but for entire families, so
+ARCH_NUVOTON is correct.
+
+>      select PINCTRL
+>      select PINCTRL_MA35D1
+>      select PM
+>      select GPIOLIB
+>      select SOC_BUS
+>      select VIDEOMODE_HELPERS
+>      select FB_MODE_HELPERS
+>      help
+>        This enables support for Nuvoton MA35D1 SOC Family.
+> 
+> 
+>>> diff --git a/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts b/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
+>>> new file mode 100644
+>>> index 000000000000..38e4f734da0f
+>>> --- /dev/null
+>>> +++ b/arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
+>>> @@ -0,0 +1,23 @@
+>>> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+>>> +/*
+>>> + * Device Tree Source for MA35D1 Evaluation Board (EVB)
+>>> + *
+>>> + * Copyright (C) 2021 Nuvoton Technology Corp.
+>>> + */
+>>> +
+>>> +/dts-v1/;
+>>> +#include "ma35d1.dtsi"
+>>> +
+>>> +/ {
+>>> +       model = "Nuvoton MA35D1-EVB";
+>>> +
+>>> +       chosen {
+>>> +               bootargs = "console=ttyS0,115200n8";
+>> No bootargs. "chosen", please.
+> 
+> OK, I would modify it as:
+> 
+> chosen {
+>          stdout-path = "serial0:115200n8";
+>      };
+> 
+> 
+>>> +       };
+>> You need compatible and bindings.
+> 
+> I will add the compatible here
+> compatible = "nuvoton,ma35d1-evb", "nuvoton,ma35d1"
+> 
+> And, I should create a new binding file 
+> Documentation/devicetree/bindings/arm/nuvoton.yaml to this patch series.
+> And the property would be:
+> 
+> properties:
+>    compatible:
+>      description: Nuvoton MA35D1-EVB
+>      items:
+>        - const: nuvoton,ma35d1-evb
+>        - const: nuvoton,ma35d1
+> 
+> 
+> Is it OK?
+
+Yes
+
+
+
+Best regards,
+Krzysztof
