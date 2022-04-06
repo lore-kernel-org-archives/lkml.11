@@ -2,98 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:53:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C398C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbiDFSzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
+        id S230468AbiDFS4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiDFSwU (ORCPT
+        with ESMTP id S230425AbiDFSwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:52:20 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038972CCAF;
-        Wed,  6 Apr 2022 11:14:01 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id t21so3214371oie.11;
-        Wed, 06 Apr 2022 11:14:01 -0700 (PDT)
+        Wed, 6 Apr 2022 14:52:39 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346041B8FCB;
+        Wed,  6 Apr 2022 11:36:39 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id m12so4423393ljp.8;
+        Wed, 06 Apr 2022 11:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=MTXXhBg+FTagJspmijIFe2Eoza61RgpH2nZKIaqAxBo=;
+        b=m5KfhJDcvYaZq+SMyHRlozyi4aK9XzE9sGY198GkLb5v0PHpiaIk1+SFOo3D3yLQCT
+         LGKZZjXZiWBSa+8vgBE3XjAeDeOVkwkIKVL6qT63eW1fsmC7nSik2rfsiG+m5j5bWIFV
+         X5r6kO4k7AqSmfPO04I0epjb+8K1pdtxEir3HlPjfXNboaA3aUMpiPSn+FD4e8/2vzWn
+         0Qg9oK/GyV5mvCAWVB2UEd261/NYvDuic1Aw258anORoZ34JXgQN6AD2BnXPozV71egt
+         hsP3KxmrY98y+Eot9qn+ImfP+yIuXeq80iwWFCbCHEKc6CsQtwYOqihgP2hFCpPPcwGE
+         pqug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=H0QnhyvMcyeV2GoiwbyXURkXVFnwPb25uAf5GGlcDj8=;
-        b=yKEw84dgk95sVPIK6YmwK0pkGQdmw/v0sZr0CNdaN5JfFwktXkOw+uZf8ub+vO5IGr
-         vdkaQAjDFHFXZK2MlTF9Vy/zIpW6pM9nJubC4TOVEzSs6wyI2SHhIVX1qStZ3Og4Z90k
-         mTdxjga+eJXnsGHpdKLMS+VstKtzwMwvAPUOqmU1BamlMO7Y4yjRE3mLXuvYhVGJktwm
-         y6CuPJfsZawxYt72jpPXUJH4scEuJ11/Wnr08o2Ez5WZAFJJcJ3u+98yCTcVbS/Z5LPl
-         9VK247rKAEztBKQlWpZsPseKEBxkEXuFhtW5ic1sblWw4j2Xcbr+qm2NG7qlOpRVn+jg
-         vzwQ==
-X-Gm-Message-State: AOAM53089aNiK+pCilcBOSAAFJpiA7pXH0HnEmcOM/NGf/KDiJBgKuuW
-        qn1NML8Qe6xaj/FAsUec7w==
-X-Google-Smtp-Source: ABdhPJwOM1hhMXjwmrAos/oBCbAVRzpkNRe0dBmU8uisDOIEhohB6rSgPnkpQvD3BadEROZk3cMEuw==
-X-Received: by 2002:a05:6808:202:b0:2ef:8867:bffb with SMTP id l2-20020a056808020200b002ef8867bffbmr4315072oie.28.1649268841208;
-        Wed, 06 Apr 2022 11:14:01 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o18-20020a9d7652000000b005cbf6f5d7c5sm7110203otl.21.2022.04.06.11.14.00
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=MTXXhBg+FTagJspmijIFe2Eoza61RgpH2nZKIaqAxBo=;
+        b=XSvIQ3lNS4cbaEhDLvRYzATRXqaIDNO3CKyDN2iHehJEu2BzQzYWgAKfHcAbpwQR1S
+         7YEOF7e+L4QO1xKGVXsymZRAbE8A0A80WnM+plhWldJNN5mWpHIGOYX3SMdGinJDDB5U
+         M+YlJI0QI6/YCX8MdToP5yqk4ZeusVxUnNu9DzOmj9vnW0yNibqdWceVFkT7s0nSOWp1
+         KybZMxXm3j88ojS7SmkubVtLGUkzCxJOuStgD2Dswsy7H3DquX1gxL57T0JYTH028Nwa
+         6/Ur93WBawWpKPnO5fDPGClcYPeh+MhjJtGFNwynYHY/ygt3ZxTR8G8sAkudXkq95AjD
+         Ntuw==
+X-Gm-Message-State: AOAM533kM1HnxGBnuz76gJuiNXV8odvNhhWrmLnXRfkr+XY1baH2GsY6
+        0dmdl36IaDNA2DuOrzoyUyI=
+X-Google-Smtp-Source: ABdhPJw7qDfUNjQQxm/7WkFnUA2kpGQV5Yz1O7JPZNHsIhiQxnUF4d7sPtt0/vvICgEyb+rAdyWSJg==
+X-Received: by 2002:a2e:9e19:0:b0:247:deb7:cd9f with SMTP id e25-20020a2e9e19000000b00247deb7cd9fmr5998897ljk.261.1649270197298;
+        Wed, 06 Apr 2022 11:36:37 -0700 (PDT)
+Received: from reki (broadband-95-84-198-152.ip.moscow.rt.ru. [95.84.198.152])
+        by smtp.gmail.com with ESMTPSA id t17-20020a192d51000000b0044a5a9960f9sm1907346lft.236.2022.04.06.11.36.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:14:00 -0700 (PDT)
-Received: (nullmailer pid 2523072 invoked by uid 1000);
-        Wed, 06 Apr 2022 18:14:00 -0000
-Date:   Wed, 6 Apr 2022 13:14:00 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: PCI: designware-ep: Increase maxItems
- of reg and reg-names
-Message-ID: <Yk3YaAWPJ0bpLTHK@robh.at.kernel.org>
-References: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
- <1649145062-29833-2-git-send-email-hayashi.kunihiko@socionext.com>
+        Wed, 06 Apr 2022 11:36:35 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 21:36:34 +0300
+From:   Maxim Devaev <mdevaev@gmail.com>
+To:     Alan Stern <stern@rowland.harvard.edu>
+Cc:     linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] usb: gadget: f_mass_storage: break IO operations via
+ configfs
+Message-ID: <20220406213634.104cae45@reki>
+In-Reply-To: <Yk3TLPKyaQDsnuD4@rowland.harvard.edu>
+References: <20220406092445.215288-1-mdevaev@gmail.com>
+        <Yk2wvhSTMKTLFK6c@rowland.harvard.edu>
+        <20220406195234.4f63cb4a@reki>
+        <Yk3TLPKyaQDsnuD4@rowland.harvard.edu>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649145062-29833-2-git-send-email-hayashi.kunihiko@socionext.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 04:51:00PM +0900, Kunihiko Hayashi wrote:
-> UniPhier PCIe EP controller has 5 register mappings (dbi, dbi2, link,
-> config and atu), so maxItems of "reg" and "reg-names" should allow 5.
+=D0=92 Wed, 6 Apr 2022 13:51:40 -0400
+Alan Stern <stern@rowland.harvard.edu> wrote:
 
-Shouldn't that be 'addr_space' rather than 'config'? IIRC, 'config' is 
-only for the host.
+> On Wed, Apr 06, 2022 at 07:52:34PM +0300, Maxim Devaev wrote:
+> > > It's not clear to me how breaking I/O operations allows you to do a=20
+> > > "force eject".  It seems that what you would need is something like=20
+> > > fsg_store_file() that omits the curlun->prevent_medium_removal check.
+> > > Interrupting a lengthy I/O operation doesn't really have anything to =
+do=20
+> > > with this. =20
+> >=20
+> > Perhaps I chose the wrong path, it's just how my userspace code works n=
+ow.
+> > If the drive is connected to a Linux host, then in order to clear
+> > the "file" and extract the image, I sent a SIGUSR1 signal to the "file-=
+storage"
+> > thread. This interrupted long IO operations, reset curlun->prevent_medi=
+um_removal
+> > and I got the ability to extract. =20
+>=20
+> Oh, I see.  That's kind of an unintended side effect of not calling=20
+> raise_exception().
+>=20
+> And while it does interrupt long I/O operations, it does so in=20
+> non-sanctioned way.  To the host it will appear as though the gadget's=20
+> firmware has crashed, since the gadget will stop sending or receiving=20
+> data.  Eventually the host will time out and reset the gadget.
+>=20
+> Maybe that's the sort of thing you want, but I rather doubt it.
 
-> 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> ---
->  Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-> index e59059ab5be0..03f97e7c4089 100644
-> --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-> +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-> @@ -28,11 +28,11 @@ properties:
->        versions.
->        For designware core version >= 4.80, it may contain ATU address space.
->      minItems: 2
-> -    maxItems: 4
-> +    maxItems: 5
->  
->    reg-names:
->      minItems: 2
-> -    maxItems: 4
-> +    maxItems: 5
->      items:
->        enum: [dbi, dbi2, config, atu, addr_space, link, atu_dma, appl]
->  
-> -- 
-> 2.25.1
-> 
-> 
+It's hard to say how it actually should work in case of force removing.
+At least the currect approach with SIGUSR1 is really working on thousands
+systems and with Linux, Mac and Windows. I believe that the criterion
+of the experiment is quite important here. I know of several other utilities
+that use SIGUSR1 for similar purposes.
+
+> > Will masking the curlun->prevent_medium_removal flag be enough? =20
+>=20
+> I think so.  But it will be blocked to some extent by long-running I/O=20
+> operations, because those operations acquire the filesem rw-semaphore=20
+> for reading.
+>=20
+> More precisely, each individual command holds the rw-semaphore.  But the=
+=20
+> semaphore is dropped between commands, and a long-running I/O operation=20
+> typically consists of many separate commands.  So the blocking may be=20
+> acceptable.
+
+It is very important for KVM-over-IP to be able to command "turn it off imm=
+ediately".
+In this context, I would prefer "break_io" rather than "allow_force_remove".
+
+> > > You should not call send_sig_info() directly; instead call=20
+> > > raise_exception().  It already does the work you need (including some=
+=20
+> > > things you left out). =20
+> >=20
+> > raise_exception() assumes the setting of a new state, and I did not wan=
+t to do this,
+> > since the same does not happen when throwing a signal from userspace. =
+=20
+>=20
+> Userspace isn't supposed to send the USR1 signal, only the INT, TERM, or=
+=20
+> KILL signals.  USR1 is supposed to be reserved for the driver's internal=
+=20
+> use.  Unfortunately, AFAIK there's no way to allow the driver to send a=20
+> signal to itself without also allowing the signal to be sent by=20
+> userspace.  :-(
+
+It's funny that you actually helped me solve my problem thanks to this undo=
+cumented
+behavior. If it were not for the ability to send a signal, I would not be a=
+ble to make
+the necessary code, and my software would always be waiting for the complet=
+ion of IO.
+
+So here I am grateful to you - I didn't have to patch the kernel a few year=
+s ago,
+and now I just want to turn it into a clear feature :)
+
+Given the needs of the userspace code, maybe the suggested "break_io"
+would be the best choice?
+
+> And sending the signal _does_ set a new state, whether you intended to=20
+> or not.  Although in this case, the new state is always the same as the=20
+> old state, i.e., FSG_STATE_NORMAL.
+
+So I could call raise_exception(fsg->common, FSG_STATE_NORMAL) instead of s=
+ending
+the signal from break_io handler. There will be a slight difference
+in exception_req_tag and exception_arg, but it does not seem to cause any s=
+ide effects.
+Please correct me if I'm wrong.
+
