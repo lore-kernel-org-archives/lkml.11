@@ -2,100 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 342EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FCAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234303AbiDFOMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59596 "EHLO
+        id S234360AbiDFONc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234447AbiDFOMS (ORCPT
+        with ESMTP id S234765AbiDFOMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:12:18 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428CD12F6C2;
-        Wed,  6 Apr 2022 03:06:36 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id p189so1117736wmp.3;
-        Wed, 06 Apr 2022 03:06:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=47pi7dvQzwfLX3ainw4cotVpAlhqEnPPur28m2DBYnI=;
-        b=oyRzTjU9Y5vVWWhJlEXWBmqOttlu6Wt5erI3pvi3Fx5Be/D9iwtxpOKRdMqP8MSnvV
-         JBJGNCltub8U7JXIZ9M5AUptIBltfbxi4nu/ZZCi8tXkbjKvPp+Epc3VQSPe52ylIXpy
-         ubB2jEtugsabOsmsf+PzZzpWaaV/LpZUIhPFv72C1ChcXPk/o3VCBcXs7tjofJaVJpqA
-         yC3Gaaecl3i9SCS0y10GBJEn1wndI7ziUMRs9XbXmODOmMaV4YAdNfaPbtVNPnY7mDVq
-         xpvGUcS/BLncMrjceqSCIxgkHqp31zclZ1gtlHQTFDVsVq+1Lql1hC9hId/rA59BKViW
-         fJuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=47pi7dvQzwfLX3ainw4cotVpAlhqEnPPur28m2DBYnI=;
-        b=li/3TbjpWZHsrO+pbFpJmtXrij9rHnpV7KRyXW2Lz7jkUCar7FcAjsIc6tceNQsPN5
-         7TweOfbz2md+g3nTgA2JCOApSHNWfCYhQjcpw7h3/WG+/dFM8wCqBq1j0/Bfcf65mUx7
-         ssqDT066TvXeTQbgs7946m2i4ZTPiv9RFCamQn+TT8v17B5SHgeQ5MDwNy9QN4PkDyhK
-         EBV56EDNXSFbfHAwdgDJDcr51Of2fpycaevFq1CwNxQG3nZZlt+q6ps8zkocuT1ENZQ3
-         GvH7VbkgbbzdXk34swUil93BLj52npvhWg1HnINcoGFN7p+h0SxWssS/Aa8WbdB+C3Lm
-         ZsOA==
-X-Gm-Message-State: AOAM5327sjlCJ7E4ykCI0sLo8UfCfU7Hz54jC2GxxmXWSPiEhO/NEJRx
-        i2za2kx6msNbxP4PxR9Z3Dc=
-X-Google-Smtp-Source: ABdhPJwjEWxUDNSk8rXkcq9W0u0al0JkpQ7wIp2FGwbqxDUXcBGMVgOqvVjB2N3EDRLNfNHBWOY8ag==
-X-Received: by 2002:a05:600c:4f10:b0:38c:ae36:d305 with SMTP id l16-20020a05600c4f1000b0038cae36d305mr6818888wmq.34.1649239589575;
-        Wed, 06 Apr 2022 03:06:29 -0700 (PDT)
-Received: from debian ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id l2-20020a5d5602000000b00206120e0b0fsm10793032wrv.18.2022.04.06.03.06.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 03:06:29 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 11:06:27 +0100
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
-Message-ID: <Yk1mIxYRSDSsIOyq@debian>
-References: <20220405070258.802373272@linuxfoundation.org>
+        Wed, 6 Apr 2022 10:12:39 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB6E638186
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:10:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649239850; x=1680775850;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=F1zju/9kmX6n6dT8p0E7zyZ2nCVHgfYrynN7MVqmilQ=;
+  b=K4ImYtrsD9+VcJzk8gE709/onLqqkjzpLpVUntp/Ipf0JK5nUe8A82AU
+   OsVrhFEm5zFmPx4VoVj/OQJk0pEisIPTu/Lgt1SfkwsoMG8A5VxdAV34I
+   TxIqPl7B8/dILjyNIawQzc69N3gEhXkMjYHm3AHYqOAqHApWc/Qvu8X5u
+   P3Cz4Z7zCFTe3fUB6fBL5n8j2oP89nJ9tsZT7pWosE+3lybfkV0ldNHKr
+   6yxP4YCpMd2JeojsWhUEiheNkyN9hQxW0T7b6SJI8P14Z2U9SmAkoyGlT
+   SFGT8ip4A65mb2M8tsX6BNbKBxfkKfnJrAyAg4LFe9tfnKVB8NSnw7bKW
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260996160"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="260996160"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 03:02:26 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="570442421"
+Received: from huipengt-mobl1.ccr.corp.intel.com (HELO [10.254.215.82]) ([10.254.215.82])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 03:02:19 -0700
+Message-ID: <821dc298-47fb-6d06-ba75-de5d62a97b7a@linux.intel.com>
+Date:   Wed, 6 Apr 2022 18:02:16 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Cc:     baolu.lu@linux.intel.com,
+        "Alex Williamson (alex.williamson@redhat.com)" 
+        <alex.williamson@redhat.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
+ <20220329053800.3049561-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB52760F455B3319789BAB1E0E8C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220329114259.GB1716663@nvidia.com>
+ <BN9PR11MB5276239993592FF808726EF68C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220330115820.GE1716663@nvidia.com>
+ <BN9PR11MB527691E38BAC4F89FB17BDB98C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220330143008.GB2111031@nvidia.com>
+ <BL1PR11MB52718E663EF48C45D97FEEF38CE39@BL1PR11MB5271.namprd11.prod.outlook.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH RFC v2 02/11] iommu: Add iommu_group_singleton_lockdown()
+In-Reply-To: <BL1PR11MB52718E663EF48C45D97FEEF38CE39@BL1PR11MB5271.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+Hi Kevin,
 
-On Tue, Apr 05, 2022 at 09:24:54AM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.110 release.
-> There are 599 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 2022/4/2 15:12, Tian, Kevin wrote:
+>>>> Add a flag to the group that positively indicates the group can never
+>>>> have more than one member, even after hot plug. eg because it is
+>>>> impossible due to ACS, or lack of bridges, and so on.
+>>> OK, I see your point. It essentially refers to a singleton group which
+>>> is immutable to hotplug.
+>> Yes, known at creation time, not retroactively enforced because
+>> someone used SVA
+>>
+> We may check following conditions to set the immutable flag when
+> a new group is created for a device in pci_device_group():
 > 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
+> 1) ACS is enabled in the upstream path of the device;
+> 2) the device is single function or ACS is enabled on a multi-function device;
+> 3) the device type is PCI_EXP_TYPE_ENDPOINT (thus no hotplug);
+> 4) no 'dma aliasing' on this device;
+> 
+> The last one is a bit conservative as it also precludes a device which aliasing
+> dma due to quirks from being treated as a singleton group. But doing so
+> saves the effort on trying to separate different aliasing scenarios as defined
+> in pci_for_each_dma_alias(). Probably we can go this way as the first step.
+> 
+> Once the flag is set on a group no other event can change it. If a new
+> identified device hits an existing singleton group in pci_device_group()
+> then it's a bug.
 
-Build test:
-mips (gcc version 11.2.1 20220314): 63 configs -> no failure
-arm (gcc version 11.2.1 20220314): 105 configs -> no new failure
-arm64 (gcc version 11.2.1 20220314): 3 configs -> no failure
-x86_64 (gcc version 11.2.1 20220314): 4 configs -> no failure
+How about below implementation?
 
-Boot test:
-x86_64: fails to boot on my test laptop. Detailed report at: https://lore.kernel.org/stable/Yky7RmYZnPp9HgzT@debian/
-x86_64: Booted on qemu. No regression. [1]
-arm64: Booted on rpi4b (4GB model). No regression. [2]
+/* callback for pci_for_each_dma_alias() */
+static int has_pci_alias(struct pci_dev *pdev, u16 alias, void *opaque)
+{
+	return -EEXIST;
+}
 
-[1]. https://openqa.qa.codethink.co.uk/tests/978
-[2]. https://openqa.qa.codethink.co.uk/tests/981
+static bool pci_dev_is_immutably_isolated(struct pci_dev *pdev)
+{
+	/* Skip bridges. */
+	if (pci_is_bridge(pdev))
+		return false;
 
+	/* Either connect to root bridge or the ACS-enabled bridge. */
+	if (!pci_is_root_bus(pdev->bus) &&
+	    !pci_acs_enabled(pdev->bus->self, REQ_ACS_FLAGS))
+		return false;
 
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+	/* ACS is required for MFD. */
+	if (pdev->multifunction && !pci_acs_enabled(pdev, REQ_ACS_FLAGS))
+		return false;
 
---
-Regards
-Sudip
+	/* Make sure no PCI alias. */
+	if (pci_for_each_dma_alias(pdev, has_pci_alias, NULL))
+		return false;
 
+	return true;
+}
+
+I didn't get why do we need to check the PCI_EXP_TYPE_ENDPOINT device
+type. Can you please elaborate a bit more?
+
+Best regards,
+baolu
