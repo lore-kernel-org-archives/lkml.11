@@ -2,170 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A80C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D3D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232194AbiDFNIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
+        id S232184AbiDFNIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232650AbiDFNHg (ORCPT
+        with ESMTP id S232656AbiDFNHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 09:07:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901835E3C23;
-        Wed,  6 Apr 2022 02:41:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25755B821EE;
-        Wed,  6 Apr 2022 09:41:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6883AC385A1;
-        Wed,  6 Apr 2022 09:41:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649238094;
-        bh=wZn/e4sxHXSGTfbPNJYitmbYpHxKQIky6u4oMw7PM3k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V1W0Pq5VlxzT1vxIppRRRaQHjPiyd2+3GjHsfBtAWL2t2RGvPpA7SUYNfei7Dglei
-         z4KGysW/RSwx9pKhtTxoCmEpn7yn/Pefo9G8NGHMj7LdE9rynk4B4H0FN/NYmSyDlQ
-         e8F3HzNs5cYPvUlPCMznnzAJS2XFTekbsnHHIka8v+VoGy/BPtMib/GK5OQgUS2ATL
-         e09lQ4QumD5jYP4iAGT/2E5l2HcC21uMCjMt/HLXjy3YE4GHcV5gCOYOtdAPskahQb
-         b2TGAFfT/WyGpeNt28kY16lrhjIzn0RjNGArzfq7Thf9PV7U+8TlxvZMaa5T222Gjh
-         1wwCWYmpvOurw==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH v7 13/14] drm/msm: Update generated headers
-Date:   Wed,  6 Apr 2022 15:10:30 +0530
-Message-Id: <20220406094031.1027376-14-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220406094031.1027376-1-vkoul@kernel.org>
-References: <20220406094031.1027376-1-vkoul@kernel.org>
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665933B3F9B;
+        Wed,  6 Apr 2022 02:41:47 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KYKHv0kvvz1HBV6;
+        Wed,  6 Apr 2022 17:40:27 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 17:40:53 +0800
+Received: from [10.174.178.220] (10.174.178.220) by
+ dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 17:40:52 +0800
+From:   Wenchao Hao <haowenchao@huawei.com>
+Subject: Re: [REQUEST DISCUSS]: speed up SCSI error handle for host with
+ massive devices
+To:     Hannes Reinecke <hare@suse.de>,
+        Mike Christie <michael.christie@oracle.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        John Garry <john.garry@huawei.com>
+CC:     Wu Bo <wubo40@huawei.com>, Feilong Lin <linfeilong@huawei.com>,
+        <zhangjian013@huawei.com>
+References: <71e09bb4-ff0a-23fe-38b4-fe6425670efa@huawei.com>
+ <cd7bda98-2160-9271-9520-e98d1fe00ea5@linux.ibm.com>
+ <331aafe1-df9b-cae4-c958-9cf1800e389a@huawei.com>
+ <64d5a997-a1bf-7747-072d-711a8248874d@suse.de>
+ <c4baacf1-0e86-9660-45f7-50ebc853e6af@huawei.com>
+ <1dd69d03-b4f6-ab20-4923-0995b40f045d@suse.de>
+ <d2f2c89f-c048-4f04-4d95-27958f0fa46a@huawei.com>
+ <78d41ec1-b30c-f6d2-811c-e0e4adbc8f01@oracle.com>
+ <84b38f16-2a32-f361-43e5-34bce1012e71@oracle.com>
+ <769bcd36-4818-8470-2daa-49ac5c05b33a@suse.de>
+Message-ID: <e5f9e720-ddfd-ab8c-c8b9-18ba8ad266f0@huawei.com>
+Date:   Wed, 6 Apr 2022 17:40:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <769bcd36-4818-8470-2daa-49ac5c05b33a@suse.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.220]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update headers from mesa commit:
+On 2022/4/4 13:28, Hannes Reinecke wrote:
+> On 4/3/22 19:17, Mike Christie wrote:
+>> On 4/3/22 12:14 PM, Mike Christie wrote:
+>>> We could share code with scsi_ioctl_reset as well. Drivers that support
+>>> TMFs via that ioctl already expect queuecommand to be possibly in the
+>>> middle of a run and IO not yet timed out. For example, the code to
+>>> block a queue and reset the device could be used for the new EH and
+>>> SG_SCSI_RESET_DEVICE handling.
+>>>
+>>
+>> Hannes or others,
+>>
+>> How do parallel SCSI drivers support scsi_ioctl_reset? Is is not fully
+>> supported and more only used for controlled testing?
+> 
+> That's actually a problem in scsi_ioctl_reset(); it really should wait for all I/O to quiesce. Currently it just sets the 'tmf' flag and calls into the various reset functions.
+> 
+> But really, I'd rather get my EH rework in before we're start discussing modifying EH behaviour.
+> Let me repost it ...
+> 
 
-  commit 28ae397be111c37c6ced397e12d453a7695701bd
-  Author: Vinod Koul <vkoul@kernel.org>
-  Date:   Fri Apr 1 16:53:04 2022 +0530
+Would you take fast EH(such as single LUN reset) into consideration, maybe
+a second but lightweight EH? It means a lot.
 
-      freedreno/registers: update dsi registers to support dsc
-
-      Display Stream compression (DSC) compresses the display stream in
-      host which is later decoded by panel. This requires addition of 3 new
-      DSI registers to support DSC over DSI.
-
-      Signed-off-by: Vinod Koul <vkoul@kernel.org>
-      Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/14967>
-
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
----
- drivers/gpu/drm/msm/dsi/dsi.xml.h | 80 +++++++++++++++++++++++++++++++
- 1 file changed, 80 insertions(+)
-
-diff --git a/drivers/gpu/drm/msm/dsi/dsi.xml.h b/drivers/gpu/drm/msm/dsi/dsi.xml.h
-index 4dee6f0bdda6..d1b2a17b0a66 100644
---- a/drivers/gpu/drm/msm/dsi/dsi.xml.h
-+++ b/drivers/gpu/drm/msm/dsi/dsi.xml.h
-@@ -704,5 +704,85 @@ static inline uint32_t DSI_VERSION_MAJOR(uint32_t val)
- 
- #define REG_DSI_CPHY_MODE_CTRL					0x000002d4
- 
-+#define REG_DSI_VIDEO_COMPRESSION_MODE_CTRL			0x0000029c
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_WC__MASK		0xffff0000
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_WC__SHIFT		16
-+static inline uint32_t DSI_VIDEO_COMPRESSION_MODE_CTRL_WC(uint32_t val)
-+{
-+	return ((val) << DSI_VIDEO_COMPRESSION_MODE_CTRL_WC__SHIFT) & DSI_VIDEO_COMPRESSION_MODE_CTRL_WC__MASK;
-+}
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE__MASK		0x00003f00
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE__SHIFT		8
-+static inline uint32_t DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(uint32_t val)
-+{
-+	return ((val) << DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE__SHIFT) & DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE__MASK;
-+}
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE__MASK	0x000000c0
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE__SHIFT	6
-+static inline uint32_t DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(uint32_t val)
-+{
-+	return ((val) << DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE__SHIFT) & DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE__MASK;
-+}
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM__MASK	0x00000030
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM__SHIFT	4
-+static inline uint32_t DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(uint32_t val)
-+{
-+	return ((val) << DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM__SHIFT) & DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM__MASK;
-+}
-+#define DSI_VIDEO_COMPRESSION_MODE_CTRL_EN			0x00000001
-+
-+#define REG_DSI_COMMAND_COMPRESSION_MODE_CTRL			0x000002a4
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE__MASK	0x3f000000
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE__SHIFT	24
-+static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE(uint32_t val)
-+{
-+	return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_DATATYPE__MASK;
-+}
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE__MASK	0x00c00000
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE__SHIFT	22
-+static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE(uint32_t val)
-+{
-+	return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_PKT_PER_LINE__MASK;
-+}
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM__MASK	0x00300000
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM__SHIFT	20
-+static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM(uint32_t val)
-+{
-+	return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EOL_BYTE_NUM__MASK;
-+}
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM1_EN		0x00010000
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE__MASK	0x00003f00
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE__SHIFT	8
-+static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(uint32_t val)
-+{
-+	return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE__MASK;
-+}
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE__MASK	0x000000c0
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE__SHIFT	6
-+static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE(uint32_t val)
-+{
-+	return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_PKT_PER_LINE__MASK;
-+}
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM__MASK	0x00000030
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM__SHIFT	4
-+static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM(uint32_t val)
-+{
-+	return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EOL_BYTE_NUM__MASK;
-+}
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_EN		0x00000001
-+
-+#define REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2			0x000002a8
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH__MASK	0xffff0000
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH__SHIFT	16
-+static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH(uint32_t val)
-+{
-+	return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM1_SLICE_WIDTH__MASK;
-+}
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH__MASK	0x0000ffff
-+#define DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH__SHIFT	0
-+static inline uint32_t DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(uint32_t val)
-+{
-+	return ((val) << DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH__SHIFT) & DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH__MASK;
-+}
- 
- #endif /* DSI_XML */
--- 
-2.34.1
-
+Or give a way drivers can branch out the general timeout and EH handle logic?
