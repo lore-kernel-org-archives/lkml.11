@@ -2,158 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31415C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C801C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232658AbiDFVQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50978 "EHLO
+        id S234952AbiDFVQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235196AbiDFVPv (ORCPT
+        with ESMTP id S235518AbiDFVP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:15:51 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28EE19B06D;
-        Wed,  6 Apr 2022 12:59:51 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id bu29so6066711lfb.0;
-        Wed, 06 Apr 2022 12:59:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UsV1ITimuhURq05XOE0qRsHZpUCDSsJJ67E/Znzm550=;
-        b=ldznlsYntX697YHfppKvxltReRjb4PF626sqTcBzNAv2c3S+3/FUwRaU6EAZT/k6th
-         Fu3pQ/khq3bN/fPm4/3V3Q2emn1AFsvSvrJ/kjHs8sfbo+HbHIq7/aM8iLvYCQ0S3PXm
-         fA8FmfSCMT48DbnVYIfPfKtR1TSxartPcZrxnUTUdMh54EN9B1uPY0xm93jympGQZjaB
-         4/CPIJ2lcWXMy3QFlp3Rw2MtkqR1xKdB8FRlwfR1rmgk3xh26pcjNNH2Uu54y+FUKIkv
-         UjXspNdE8G7Yan4NF0zeLJaW182lbhJrqDdjFDU2K4z7co74R/rXYmfLkbKtCif9I3fv
-         tbvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UsV1ITimuhURq05XOE0qRsHZpUCDSsJJ67E/Znzm550=;
-        b=D+xwQkQ3ffUOxAVTL9TZLyQK6w1zSMVqnay3SmqIvfwBrFoc/TpRWlse2vwGJbazFi
-         n9tHmeiSNwtpsbveB+PZ+ifExsZ3xoyUg1JoZoI/c3wI3m9spN2MSQYJjBQu64dNUF+J
-         AQyne2yoyqRNIOKmEC8uElHUgN+yFbGquaoDuTBG42/ddC23lSKTMwA5srHOcaue+ls1
-         V34bMH4wtJO/yDQrbloDgmIthX1EVc7fpwwWvy9IOgMamrXcu73yeBHgeeb+hWWHsr7h
-         OyLqp7kIO/OUVQcjwz3szIh4TQxJ4cMOoQdJ3bhjQN8r5t2mFCoIbo/Vf2w7n/lLZJUD
-         YbYQ==
-X-Gm-Message-State: AOAM530cQM3cy0EqZrzux2teZcelJDMlYTd36c1b34Am68o++oPb8J0n
-        kjCdERL2DYGylB1L6pTA8aQ=
-X-Google-Smtp-Source: ABdhPJyvqgx4F/WKNa5aYwdfb36cRFg+7qpkiAIyoClFgG90ziZXADFI6QbV/PFH3Ao9GtmEc90L8w==
-X-Received: by 2002:a05:6512:c03:b0:447:7912:7e6b with SMTP id z3-20020a0565120c0300b0044779127e6bmr7163436lfu.508.1649275190202;
-        Wed, 06 Apr 2022 12:59:50 -0700 (PDT)
-Received: from vmu1804.lan ([2a09:bac0:87::815:6e3d])
-        by smtp.googlemail.com with ESMTPSA id q4-20020a2eb4a4000000b0024985ed51cdsm1772295ljm.114.2022.04.06.12.59.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 12:59:49 -0700 (PDT)
-From:   Mikhail Zhilkin <csharper2005@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     NOGUCHI Hiroshi <drvlabo@gmail.com>, Karim <Karimdplay@gmail.com>,
-        M <x1@disroot.org>, Mikhail Zhilkin <csharper2005@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v2 1/2] dt-bindings: mtd: partitions: Add binding for Sercomm parser
-Date:   Wed,  6 Apr 2022 19:59:46 +0000
-Message-Id: <20220406195946.2019-1-csharper2005@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220406195557.1956-1-csharper2005@gmail.com>
-References: <20220406195557.1956-1-csharper2005@gmail.com>
+        Wed, 6 Apr 2022 17:15:56 -0400
+X-Greylist: delayed 23900 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 13:00:15 PDT
+Received: from lahtoruutu.iki.fi (lahtoruutu.iki.fi [185.185.170.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633192467DF;
+        Wed,  6 Apr 2022 13:00:14 -0700 (PDT)
+Received: from darkstar.musicnaut.iki.fi (85-76-76-218-nat.elisa-mobile.fi [85.76.76.218])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: aaro.koskinen)
+        by lahtoruutu.iki.fi (Postfix) with ESMTPSA id C3DA61B000E0;
+        Wed,  6 Apr 2022 23:00:11 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=lahtoruutu;
+        t=1649275212;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HF/OS3JAtoNKv3AksoUVmxtqiwmaGXqNkeVyB7AYT2k=;
+        b=Nn4RAbFbzK4bwfg86ykyMmwZil9SKibzGCF6IqPtA9woskWkPm0Qpo8xHB6DmiuFZCDabl
+        hKhYB7cTF1pnQmfdEueduNI+Bie9rxrrlv4+Ae9YdogxoZPaT+AnKd36njOcJfii/ZG9el
+        NXeQ9cJa9eyyADZvMify5l3g3e6/9P6d54WrG6RxGfxgsqDX4gklm2g60np78Z2iAK4H5W
+        MYGDa3g/ettQmzEK/GGe/dgnxSa0+JfQVzn6IDHYnDPuqAhZ29ChrVGrIXEk6e+gIQp/ZO
+        YsKxpOTuJMbZKTk6UgFqwopmBrXCz1Q8WLvlxfzJ2EFoML4ykS+CJaqZAs9ITA==
+Date:   Wed, 6 Apr 2022 23:00:10 +0300
+From:   Aaro Koskinen <aaro.koskinen@iki.fi>
+To:     Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Cc:     Tony Lindgren <tony@atomide.com>, Paul Walmsley <paul@pwsan.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helge Deller <deller@gmx.de>, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Felipe Balbi <balbi@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-mmc@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH v2] ARM: OMAP1: Prepare for conversion of OMAP1 clocks to
+ CCF
+Message-ID: <20220406200010.GE594699@darkstar.musicnaut.iki.fi>
+References: <20220310233307.99220-3-jmkrzyszt@gmail.com>
+ <1810824.tdWV9SEqCh@dell>
+ <20220406132149.GC594699@darkstar.musicnaut.iki.fi>
+ <1888452.PYKUYFuaPT@dell>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1888452.PYKUYFuaPT@dell>
+ARC-Seal: i=1; s=lahtoruutu; d=iki.fi; t=1649275212; a=rsa-sha256;
+        cv=none;
+        b=Ol1GS9eE8NlyDUV0WcHY2VWATp+nj58s0051qvEeumo7NtBnjXas42R78yzG70ifyC61w1
+        uNejgjj5y2u/lipXR8kWDr6uohk/Qlt2RTi7GBtSFq/B72+3ebibY0TmKGFTacwnLE/Q0Q
+        tPyBaa+IGUVAVry4W3pdajUy4YfXuZPAbe7qOV2W6PWhvFy5/u1KlaqNZJsnjYrRO5D9dj
+        xoCq4TSeoGt+wWudWLGQwD7h83OmvjLmmnHe1ciL+J2iNX7wi6z6XTcYeQ2dMUgmsEzE7h
+        UOG82BaXJw2nJuLhTmns2woVednPtANIIzueIdMPzqje3Y1nqQ/oFewmJr60ng==
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=aaro.koskinen smtp.mailfrom=aaro.koskinen@iki.fi
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=lahtoruutu; t=1649275212;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HF/OS3JAtoNKv3AksoUVmxtqiwmaGXqNkeVyB7AYT2k=;
+        b=amTI0JvrXmyzyX8Uf2XnSz1hRH/n+rrTw1Nz41uGo9Db4A+x3UljqHgdkWZ+xZMSMFXmqF
+        NpqoT7DqPS10usMauUwiurnKUVrlRou9YOW5adeY4I5ejE8YptoMDaRUt5BlI5ya6Tsir4
+        ZQ9EwOXwkara1rof7KYZYYBUaJHXP873LqWCguWgum+N5SNiM6cE8BjG6+lCLdr+Og6l7/
+        02uNTNywsqyZ7r97elJ/MoCN+w2VWTRKFSv18b2pTuPihEhiQNuhWhqeAlpXg+nqf5Nq92
+        42iC+aDWXKVc7nuF531otS5HSwey0rL0Z+4eYJWSaqI9TJ0RCC9yORLMK37McA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add YAML binding for Sercomm partition parser.
+Hi,
 
-Signed-off-by: Mikhail Zhilkin <csharper2005@gmail.com>
----
- .../mtd/partitions/sercomm,sc-partitions.yaml | 70 +++++++++++++++++++
- 1 file changed, 70 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mtd/partitions/sercomm,sc-partitions.yaml
+On Wed, Apr 06, 2022 at 08:48:14PM +0200, Janusz Krzysztofik wrote:
+> Dnia środa, 6 kwietnia 2022 15:21:49 CEST Aaro Koskinen pisze:
+> > On Sat, Mar 26, 2022 at 10:17:49PM +0100, Janusz Krzysztofik wrote:
+> > > Dnia wtorek, 22 marca 2022 20:07:53 CET Aaro Koskinen pisze:
+> > > > On Tue, Mar 22, 2022 at 06:36:48PM +0200, Aaro Koskinen wrote:
+> > > > > Something is still broken. When doing kexec (using CCF kernel), the
+> > > > > kexec'ed kernel now hangs early (on 770):
+> > > > [...]
+> > > > > [    0.928863] calling  omap1_init_devices+0x0/0x2c @ 1
+> > > > 
+> > > > It hangs in omap_sram_reprogram_clock() (<- omap1_select_table_rate()
+> > > > <- omap1_clk_late_init()).
+> > > 
+> > > I've reviewed my changes but haven't found anything suspicious.
+> > 
+> > The below change is fixing the kexec boot. Based on the comment in the
+> > code, it seems this clock is needed for the SRAM to work.
+> > 
+> > diff --git a/arch/arm/mach-omap1/clock_data.c b/arch/arm/mach-omap1/clock_data.c
+> > index e33e11f826af..b8b4876ff935 100644
+> > --- a/arch/arm/mach-omap1/clock_data.c
+> > +++ b/arch/arm/mach-omap1/clock_data.c
+> > @@ -285,7 +285,7 @@ static struct omap1_clk tc1_ck = {
+> >   */
+> >  
+> >  static struct omap1_clk tc2_ck = {
+> > -	.hw.init	= CLK_HW_INIT("tc2_ck", "tc_ck", &omap1_clk_gate_ops, 0),
+> > +	.hw.init	= CLK_HW_INIT("tc2_ck", "tc_ck", &omap1_clk_gate_ops, CLK_IS_CRITICAL),
+> >  	.ops		= &clkops_generic,
+> >  	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT3),
+> >  	.enable_bit	= EN_TC2_CK,
+> > 
+> > A.
+> > 
+> 
+> Thank you Aaro.  Will you submit this as a separate fix, or should I submit 
+> v2 of my patch 4/4 with your fix included?
 
-diff --git a/Documentation/devicetree/bindings/mtd/partitions/sercomm,sc-partitions.yaml b/Documentation/devicetree/bindings/mtd/partitions/sercomm,sc-partitions.yaml
-new file mode 100644
-index 000000000000..07ea5596200c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mtd/partitions/sercomm,sc-partitions.yaml
-@@ -0,0 +1,70 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mtd/partitions/sercomm,sc-partitions.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sercomm Partitions
-+
-+description: |
-+  Sercomm is one of hardware manufacturers providing SoCs used in home routers.
-+  The Sercomm partition map table contains information about non-standard
-+  partition offsets and sizes (depending on the bad blocks presence and their
-+  locations). Partition map is used by many Sercomm-based Ralink devices
-+  (e.g. Beeline, Netgear).
-+
-+maintainers:
-+  - Mikhail Zhilkin <csharper2005@gmail.com>
-+
-+properties:
-+  compatible:
-+    const: sercomm,sc-partitions
-+
-+  scpart-id:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Partition id in Sercomm partition map
-+
-+required:
-+  - compatible
-+  - scpart-id
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    partitions
-+        compatible = "sercomm,sc-partitions", "fixed-partitions";
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+
-+        partition@0 {
-+            label = "u-boot";
-+            reg = <0x0 0x100000>;
-+            scpart-id = <0>;
-+            read-only;
-+        };
-+
-+        partition@100000 {
-+            label = "dynamic partition map";
-+            reg = <0x100000 0x100000>;
-+            scpart-id = <1>;
-+        };
-+
-+        factory: partition@200000 {
-+            label = "Factory";
-+            reg = <0x200000 0x100000>;
-+            scpart-id = <2>;
-+            read-only;
-+
-+            compatible = "nvmem-cells";
-+            #address-cells = <1>;
-+            #size-cells = <1>;
-+
-+            macaddr_factory_21000: macaddr@21000 {
-+                reg = <0x21000 0x6>;
-+            };
-+        };
-+
-+        /* ... */
-+
-+    };
--- 
-2.25.1
+Please send a new version with the fix included.
 
+A.
