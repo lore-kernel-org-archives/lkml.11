@@ -2,121 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B11B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:56:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E22C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236444AbiDFP6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
+        id S236580AbiDFP6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237592AbiDFP6T (ORCPT
+        with ESMTP id S237533AbiDFP6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:58:19 -0400
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8F63682F1;
-        Wed,  6 Apr 2022 06:26:22 -0700 (PDT)
-Received: by mail-oi1-f175.google.com with SMTP id e189so2347932oia.8;
-        Wed, 06 Apr 2022 06:26:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=1zwzlI7cDrUzx3niiG9DPxuZXhYhVpti1uJIhGlGfYY=;
-        b=BVSJ8J0OM0HgsNezJy9eJIOp66aZeOHqkFqd0EjYfsOwibtO41hrzFWXLs6ytTz7+D
-         lYvev3oJunZpL+aIqqev/II4GgGfEsqrUXnh+1G/LaDXRH7VdGRYaiUSYE+mcuWO7Yja
-         BUnCrjwXGfFuh7js99qGO+VKi4c6/tFFklBl6hB4b3UdqIIbH1p3VIFSTNRYjAJrDL/6
-         j65/6z58KEnWaN6TpMrgA3Y3g15hHWBm9KQLrFLxOAiDOJUdugpuXzuwzUMULm1b9sty
-         G33PFaDG/CRqJLXvbBtsLBzmcf4Zn4NQKsMI5//SNHNz76Q8Mmpi3Af2bzQKScTC9FWr
-         Nfjw==
-X-Gm-Message-State: AOAM530UWtcak+PPu+JRYHdE20EQuKGsYqthspbeaNnHQ7nc3jtWcnaC
-        m+GkBD6IQk3lqeFVczydww==
-X-Google-Smtp-Source: ABdhPJxRu/8yUMGQBmDRWK9rgvz5VsTpRYrAT/ZBZZqPkpqxXBOa3HIPT9w7lInfRN59KLNvMwy4/A==
-X-Received: by 2002:aca:4b50:0:b0:2ef:b47:294a with SMTP id y77-20020aca4b50000000b002ef0b47294amr3479270oia.69.1649251582202;
-        Wed, 06 Apr 2022 06:26:22 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:20d6:52b3:6546:933d:31a7:672c])
-        by smtp.gmail.com with ESMTPSA id a17-20020a056870b31100b000e1fc4e696esm3454144oao.28.2022.04.06.06.26.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 06:26:21 -0700 (PDT)
-Received: (nullmailer pid 2091366 invoked by uid 1000);
-        Wed, 06 Apr 2022 13:04:35 -0000
-Date:   Wed, 6 Apr 2022 08:04:35 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Lizhi Hou <lizhi.hou@xilinx.com>,
-        Sonal Santan <sonal.santan@xilinx.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
-Message-ID: <Yk2P4zgKP8dVYUWm@robh.at.kernel.org>
-References: <20220324141237.297207-1-clement.leger@bootlin.com>
- <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
- <20220405092434.6e424ed4@fixe.home>
- <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
- <20220405175120.23fc6b2a@fixe.home>
- <CAL_JsqLdBcAw1KPnrATHqEngRWkx6moxDODH1xV67EKAufc6_w@mail.gmail.com>
- <CAL_JsqL4xY-k4ZsJDuxX6Wbevv+aNRki4WfeiXg0R-4NkqPC1w@mail.gmail.com>
- <20220406095213.21cf3ffb@fixe.home>
+        Wed, 6 Apr 2022 11:58:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D102AA18D;
+        Wed,  6 Apr 2022 06:25:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F50B60BBC;
+        Wed,  6 Apr 2022 13:25:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 185FAC385A1;
+        Wed,  6 Apr 2022 13:25:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649251523;
+        bh=QGkEFEefYTEXkBMQJmoYFoH64Owk00x5HUyX9UzaMs8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TwpYw6Fg0t6V8g3Y7nVZRVWV8NiF+3mdJQYWFirzVZ4t+NhlaKECJ3JtqEhRg8ktS
+         Gq60nyUvTUKVGCu8Fr5ISHt5ArbWDbdaTXwyrTRLUeiZ+TBf1YrDCSf4vYUyiYpy25
+         9KfXhv2PzqvtCB/Xiv1Gus4I82LFALzoLrwETJmc6eqB4ZJlFi7YtDHb/WvlIDVfqA
+         dlMYd43CgZOk/+1b7zjWOgPizhaLY587A2LsD45zBzb1HbHsPe0ASSRZpjWJ82Z35Y
+         D8WiAPxLT4iwfiatsghZPzA+MzynRuupSb8cHIleMmFvveK8tlC9q4aoUMWiBGbxd4
+         Nh+3Ypkh8Up1w==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] dmaengine: qcom: gpi: set chain and link flag for duplex
+Date:   Wed,  6 Apr 2022 18:55:06 +0530
+Message-Id: <20220406132508.1029348-1-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220406095213.21cf3ffb@fixe.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 09:52:13AM +0200, Clément Léger wrote:
-> Le Tue, 5 Apr 2022 16:28:02 -0500,
-> Rob Herring <robh@kernel.org> a écrit :
-> 
-> 
-> > >
-> > > No, the kernel already maintains its own tree of devices. You just
-> > > need to use that to generate the tree. That's really not much more
-> > > than nodes with a 'reg' property encoding the device and function
-> > > numbers.
-> > >
-> > > We already support matching a PCI device to a DT node. The PCI
-> > > subsystem checks if there is a corresponding DT node for each PCI
-> > > device created and sets the of_node pointer if there is. For
-> > > OpenFirmware systems (PPC), there always is a node. For FDT, we
-> > > generally don't have a node unless there are additional
-> > > non-discoverable properties. Hikey960 is an example with PCI device
-> > > nodes in the DT as it has a soldered down PCIe switch with downstream
-> > > devices and non-discoverable properties (e.g. reset GPIO for each
-> > > port).  
-> > 
-> > Here's a quick and dirty implementation creating DT nodes for PCI devices:
-> > 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git dt/pop-pci-nodes
-> 
-> Ok, thanks, after looking at the branch, it appears that you expect the
-> PCI nodes matching the probed PCI devices should be created by the PCI
-> subsystem itself. My previous comment saying that the node would be
-> created by the PCI driver itself is then wrong and I understand what
-> you meant.
+Newer platforms seem to have strict requirement for TRE flags which
+causes transaction to timeout. This was resolved to missing chain and
+link flag for duplex spi transaction.
 
-As I said before, the driver could create its node and all the parents. 
-I went with the other option partly because I didn't have a particular 
-driver. That has the advantage of only creating necessary nodes and 
-provides a way to trigger doing so. The issue with it is the timing of 
-when the node gets set (after parent devices have probed).
+So add these two flags.
 
-> Then, there is still a bit of magic to do to correctly fill the ranges
-> for translation and then the driver "simply" have to load the dtbo and
-> apply it with of_overlay_fdt_apply().
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ drivers/dma/qcom/gpi.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-The host bridge resource list should have all the information needed.
+diff --git a/drivers/dma/qcom/gpi.c b/drivers/dma/qcom/gpi.c
+index 94f3648f7483..3429ceccd13b 100644
+--- a/drivers/dma/qcom/gpi.c
++++ b/drivers/dma/qcom/gpi.c
+@@ -1754,10 +1754,14 @@ static int gpi_create_spi_tre(struct gchan *chan, struct gpi_desc *desc,
+ 		tre->dword[2] = u32_encode_bits(spi->rx_len, TRE_RX_LEN);
+ 
+ 		tre->dword[3] = u32_encode_bits(TRE_TYPE_GO, TRE_FLAGS_TYPE);
+-		if (spi->cmd == SPI_RX)
++		if (spi->cmd == SPI_RX) {
+ 			tre->dword[3] |= u32_encode_bits(1, TRE_FLAGS_IEOB);
+-		else
++		} else if (spi->cmd == SPI_TX) {
++			tre->dword[3] |= u32_encode_bits(1, TRE_FLAGS_CHAIN);
++		} else { /* SPI_DUPLEX */
+ 			tre->dword[3] |= u32_encode_bits(1, TRE_FLAGS_CHAIN);
++			tre->dword[3] |= u32_encode_bits(1, TRE_FLAGS_LINK);
++		}
+ 	}
+ 
+ 	/* create the dma tre */
+-- 
+2.34.1
 
-Rob
