@@ -2,116 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F111C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40661C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:05:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230434AbiDFMHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:07:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42410 "EHLO
+        id S230347AbiDFMHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232161AbiDFMGh (ORCPT
+        with ESMTP id S232463AbiDFMGz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:06:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B9E72F2F19
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:48:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649231280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tnMN3pUaj7lJGkHw7ZLvt0aTt3QjufyLZHnTLczmUJE=;
-        b=ZHD3RBHYJUhUtxjgM2rMOgpE09EHsaF1eOMsiBtvDX/SSYJFGN22Fzm5NezPq3o+Punulu
-        sotrBOKgiuyO8ZK4JxbHUAlHn+otnFWi/lu0DZg7IcusWLTgfcYjWD6QvAz5gkNYnXgT7x
-        lg2Sx4nxTUHPIi3JHjNuwhe3H1namck=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-73-xF_iw_bAOcuQmyPsaDbJZQ-1; Wed, 06 Apr 2022 03:47:59 -0400
-X-MC-Unique: xF_iw_bAOcuQmyPsaDbJZQ-1
-Received: by mail-ej1-f69.google.com with SMTP id nd34-20020a17090762a200b006e0ef16745cso727853ejc.20
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:47:59 -0700 (PDT)
+        Wed, 6 Apr 2022 08:06:55 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6381E2220DA
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:46:57 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id l26so2533297ejx.1
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:46:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KmxEJzWVtAPtT0hHJKYkYT+MKJ5FKhKIUSiktqCv3H0=;
+        b=FTwM4mW7Uk8wlU0y17I9NC3iOW9d3uTv7LnOyLd+urZwYIj4tdPV6Zf7Sb8CC92yuI
+         WycSjTVsqfFPfulEQS1WWVrpihU6LDNZofWNUFMhX5Kr89oM6wSe+X7UKK5BiHHKOpCm
+         wSWgqlQybRaPxjM9aEF059CgvzrzMCMLa6aWzlqWaugml52gVv1puQYh9xhyqYyEVVPM
+         Zf351ZPxXApZKClS3Fb1gMUw62rea/lC0Z4p6HUMl2LhOxgLJdBtcnSRFo58AFJArklC
+         w6X7nCd7JAlb9hWt5DW+TJwYQtOZ7UDwcixBtfUcT8HF7WZrqCgMVc05AlMXm/W8erCY
+         rfpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tnMN3pUaj7lJGkHw7ZLvt0aTt3QjufyLZHnTLczmUJE=;
-        b=eV6n6fMFcIVPQiCslR9SNUdmHjNiD+/ilbIzNN4OgXgi5V8Ston1T/8HbCrkq3l/HW
-         2m0P/KZbVI3K7ydnQ5brj++Rde7BMILyBviCsr7+B4dKMOUrJBXKsMV9DVr9eFfnynNl
-         YumK6fbcY4bjYJOd3aG9vVgHuRNY0yDn2BzUdVnIIPJp1UY/xiHir2BHHam1jdebMkUi
-         oxMIn5goPonF6298zxBGVgE3Nue1FrhWMtQ4/Otx9KVBLM+v01bQcEMs6cdWEUkiz1ko
-         VCcY89GAm3YWoLGPWHP3/ZME/cEaPXPHA0Fr1GWoW/4NH2QcBHBKtAJD1n71Bno/fAgy
-         YWHw==
-X-Gm-Message-State: AOAM531u7gFWHyU1EKCSQux2G8wsTxblB7dRAorlpcW3rvCw3Mynuj/v
-        ORyqWBPP8/iq/6kAnOKUEIh7zlweHvF+gAAURXLK+eu7RTbRI37RHk5mejswPkJatgYlSY/+9vd
-        GsjBjOdN9q6jotsYNT4oL7wf5
-X-Received: by 2002:a05:6402:183:b0:410:fde:887a with SMTP id r3-20020a056402018300b004100fde887amr7228689edv.243.1649231278380;
-        Wed, 06 Apr 2022 00:47:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyLcLipZLH882pfJA3h0lLGi++W3jsGhKM/fA7YIjyDbCflYB4XnGKFeaNybu/dm01/9LLhtA==
-X-Received: by 2002:a05:6402:183:b0:410:fde:887a with SMTP id r3-20020a056402018300b004100fde887amr7228671edv.243.1649231278152;
-        Wed, 06 Apr 2022 00:47:58 -0700 (PDT)
-Received: from redhat.com ([2.53.144.12])
-        by smtp.gmail.com with ESMTPSA id k23-20020a1709062a5700b006ccd8fdc300sm6132409eje.180.2022.04.06.00.47.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 00:47:57 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 03:47:53 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     zhenwei pi <pizhenwei@bytedance.com>, arei.gonglei@huawei.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        herbert@gondor.apana.org.au, helei.sig11@bytedance.com
-Subject: Re: [PATCH v3 0/4] Introduce akcipher service for virtio-crypto
-Message-ID: <20220406034721-mutt-send-email-mst@kernel.org>
-References: <20220302033917.1295334-1-pizhenwei@bytedance.com>
- <a9d1dfc1-080e-fba2-8fbb-28718b067e0d@bytedance.com>
- <20220307040431-mutt-send-email-mst@kernel.org>
- <87h778g8nn.fsf@redhat.com>
- <20220405012015-mutt-send-email-mst@kernel.org>
- <87ee2cexp5.fsf@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KmxEJzWVtAPtT0hHJKYkYT+MKJ5FKhKIUSiktqCv3H0=;
+        b=jHPkYDYbZlh6Nqdpr67x/Qxzkn+3mzztgQkR0nni0gRfuhL27K7j0c3pMaXsjVdOpS
+         jul+gxvoGHTd/QWISXBj/JkdpuAGrifvOjorfqe8aA2gM2tdKqoObm6+MXREYsyyuDLp
+         tfspFgIZc3s+blPUZPmzoUt/PyVyjhDnu5ESm2UbC40xbdyvCPw9YvGve8lbVfaaDOm0
+         iO6reWC3o548JP92AX8FvPmcdzP1gHHJu053A2xYDhmCUrgTBms8OgAaEl5OMp9nf6T6
+         VZKAslADbW0jdKUCAc/be6haULE6D9x024zYEYEKwqrSMkF+bu61NqDlCbIk3B6bZ3UN
+         B3TA==
+X-Gm-Message-State: AOAM533IdH/vli0baZmRns1R9zaq6/HENZPH+TgKpZOxjC+q+cRrQeGZ
+        9mZZphAyZDMUXUPUznegHwBV87zStRarIsou
+X-Google-Smtp-Source: ABdhPJyLX+kJl66+LI5ZU/LOjINI9y85HnNQVRa6f1zZCdvyKyniSugFb2Co7cWo++WiAQK3v1vv7A==
+X-Received: by 2002:a17:907:7d9e:b0:6df:9fe8:856a with SMTP id oz30-20020a1709077d9e00b006df9fe8856amr6996138ejc.373.1649231215957;
+        Wed, 06 Apr 2022 00:46:55 -0700 (PDT)
+Received: from [192.168.0.182] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id p22-20020a17090653d600b006e7eb81d0b6sm3717673ejo.29.2022.04.06.00.46.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 00:46:55 -0700 (PDT)
+Message-ID: <d94ffddf-8bec-fecd-1eb1-a873966e60a0@linaro.org>
+Date:   Wed, 6 Apr 2022 09:46:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ee2cexp5.fsf@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/3] dt-bindings: clock: add binding for MA35D1 clock
+ controller
+Content-Language: en-US
+To:     Jacky Huang <ychuang3@nuvoton.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
+        "soc@kernel.org" <soc@kernel.org>, MS10 CFLi0 <CFLi0@nuvoton.com>
+References: <20220331024256.14762-1-ychuang3@nuvoton.com>
+ <20220331024256.14762-2-ychuang3@nuvoton.com>
+ <866c6b42-434d-e7db-5319-2256cd7003d7@linaro.org>
+ <cbe5c963-c727-0fe6-6e03-039c4334f7a9@linaro.org>
+ <724094ab-ed58-debd-8901-466540a66eab@nuvoton.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <724094ab-ed58-debd-8901-466540a66eab@nuvoton.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:33:42AM +0200, Cornelia Huck wrote:
-> On Tue, Apr 05 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+On 06/04/2022 06:00, Jacky Huang wrote:
+>> You also ignored my comments from your v1 (because this is not v1...).
+>> Do not resend without discussion or implementation.
+>>
+>> Best regards,
+>> Krzysztof
 > 
-> > On Mon, Apr 04, 2022 at 05:39:24PM +0200, Cornelia Huck wrote:
-> >> On Mon, Mar 07 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >> 
-> >> > On Mon, Mar 07, 2022 at 10:42:30AM +0800, zhenwei pi wrote:
-> >> >> Hi, Michael & Lei
-> >> >> 
-> >> >> The full patchset has been reviewed by Gonglei, thanks to Gonglei.
-> >> >> Should I modify the virtio crypto specification(use "__le32 akcipher_algo;"
-> >> >> instead of "__le32 reserve;" only, see v1->v2 change), and start a new issue
-> >> >> for a revoting procedure?
-> >> >
-> >> > You can but not it probably will be deferred to 1.3. OK with you?
-> >> >
-> >> >> Also cc Cornelia Huck.
-> >> 
-> >> [Apologies, I'm horribly behind on my email backlog, and on virtio
-> >> things in general :(]
-> >> 
-> >> The akcipher update had been deferred for 1.2, so I think it will be 1.3
-> >> material. However, I just noticed while browsing the fine lwn.net merge
-> >> window summary that this seems to have been merged already. That
-> >> situation is less than ideal, although I don't expect any really bad
-> >> problems, given that there had not been any negative feedback for the
-> >> spec proposal that I remember.
-> >
-> > Let's open a 1.3 branch? What do you think?
+> Hi Krzysztof,
 > 
-> Yes, that's probably best, before things start piling up.
+> I am finding out the comments from all mails of this series and working 
+> on them.
+> I will fix all the issues before sending the next version.
+> So, the next version should be V3, right?
+> I will add modification history "V1 -> V2" and "V2 -> V3" to [PATCH V3 0/3].
+> Is that OK?
 
-OK, want to do it? And we can then start voting on 1.3 things
-straight away.
+Yes
 
--- 
-MST
 
+Best regards,
+Krzysztof
