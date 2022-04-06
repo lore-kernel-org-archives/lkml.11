@@ -2,104 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66750C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF875C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237223AbiDFJow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
+        id S243431AbiDFJra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 05:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376358AbiDFJlp (ORCPT
+        with ESMTP id S239440AbiDFJqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:41:45 -0400
+        Wed, 6 Apr 2022 05:46:17 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8981F132E8A;
-        Tue,  5 Apr 2022 20:02:02 -0700 (PDT)
-X-UUID: b04ca12b9a994c618484c9721c598ed3-20220406
-X-UUID: b04ca12b9a994c618484c9721c598ed3-20220406
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 656686267; Wed, 06 Apr 2022 11:01:41 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 6 Apr 2022 11:00:14 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 Apr
- 2022 11:00:13 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8D3334123;
+        Tue,  5 Apr 2022 20:29:12 -0700 (PDT)
+X-UUID: 5086c79da67943cfa6bcfb5a68627ddb-20220406
+X-UUID: 5086c79da67943cfa6bcfb5a68627ddb-20220406
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 456243619; Wed, 06 Apr 2022 11:29:06 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 6 Apr 2022 11:29:04 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 11:00:13 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
-        <robh+dt@kernel.org>
-CC:     <krzysztof.kozlowski@canonical.com>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <jassisinghbrar@gmail.com>,
-        <fparent@baylibre.com>, <yongqiang.niu@mediatek.com>,
-        <hsinyi@chromium.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
+ Transport; Wed, 6 Apr 2022 11:29:04 +0800
+Message-ID: <751374a287a70831c09da51daef1ee286285359b.camel@mediatek.com>
+Subject: Re: [PATCH v10 2/4] dt-bindings: display: mediatek: change to use
+ enum for mutex
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>
+CC:     <devicetree@vger.kernel.org>, <krzysztof.kozlowski@canonical.com>,
+        <airlied@linux.ie>, <jassisinghbrar@gmail.com>,
         <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <yongqiang.niu@mediatek.com>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v10 2/4] dt-bindings: display: mediatek: change to use enum for mutex
-Date:   Wed, 6 Apr 2022 11:00:07 +0800
-Message-ID: <20220406030009.2357-3-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220406030009.2357-1-rex-bc.chen@mediatek.com>
+        <fparent@baylibre.com>, <linux-mediatek@lists.infradead.org>,
+        <hsinyi@chromium.org>, <linux-arm-kernel@lists.infradead.org>
+Date:   Wed, 6 Apr 2022 11:29:04 +0800
+In-Reply-To: <20220406030009.2357-3-rex-bc.chen@mediatek.com>
 References: <20220406030009.2357-1-rex-bc.chen@mediatek.com>
+         <20220406030009.2357-3-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All single entry cases in mutex can be merged as a single enum.
+Hi, Rex:
 
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../display/mediatek/mediatek,mutex.yaml      | 24 +++++++------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
+On Wed, 2022-04-06 at 11:00 +0800, Rex-BC Chen wrote:
+> All single entry cases in mutex can be merged as a single enum.
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
-index 00e6a1041a9b..b470fbb1b40a 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
-@@ -23,21 +23,15 @@ description: |
- 
- properties:
-   compatible:
--    oneOf:
--      - items:
--          - const: mediatek,mt2701-disp-mutex
--      - items:
--          - const: mediatek,mt2712-disp-mutex
--      - items:
--          - const: mediatek,mt8167-disp-mutex
--      - items:
--          - const: mediatek,mt8173-disp-mutex
--      - items:
--          - const: mediatek,mt8183-disp-mutex
--      - items:
--          - const: mediatek,mt8192-disp-mutex
--      - items:
--          - const: mediatek,mt8195-disp-mutex
-+    enum:
-+      - mediatek,mt2701-disp-mutex
-+      - mediatek,mt2712-disp-mutex
-+      - mediatek,mt8167-disp-mutex
-+      - mediatek,mt8173-disp-mutex
-+      - mediatek,mt8183-disp-mutex
-+      - mediatek,mt8192-disp-mutex
-+      - mediatek,mt8195-disp-mutex
-+
-   reg:
-     maxItems: 1
- 
--- 
-2.18.0
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
+
+> 
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> ---
+>  .../display/mediatek/mediatek,mutex.yaml      | 24 +++++++--------
+> ----
+>  1 file changed, 9 insertions(+), 15 deletions(-)
+> 
+> diff --git
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y
+> aml
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y
+> aml
+> index 00e6a1041a9b..b470fbb1b40a 100644
+> ---
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y
+> aml
+> +++
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y
+> aml
+> @@ -23,21 +23,15 @@ description: |
+>  
+>  properties:
+>    compatible:
+> -    oneOf:
+> -      - items:
+> -          - const: mediatek,mt2701-disp-mutex
+> -      - items:
+> -          - const: mediatek,mt2712-disp-mutex
+> -      - items:
+> -          - const: mediatek,mt8167-disp-mutex
+> -      - items:
+> -          - const: mediatek,mt8173-disp-mutex
+> -      - items:
+> -          - const: mediatek,mt8183-disp-mutex
+> -      - items:
+> -          - const: mediatek,mt8192-disp-mutex
+> -      - items:
+> -          - const: mediatek,mt8195-disp-mutex
+> +    enum:
+> +      - mediatek,mt2701-disp-mutex
+> +      - mediatek,mt2712-disp-mutex
+> +      - mediatek,mt8167-disp-mutex
+> +      - mediatek,mt8173-disp-mutex
+> +      - mediatek,mt8183-disp-mutex
+> +      - mediatek,mt8192-disp-mutex
+> +      - mediatek,mt8195-disp-mutex
+> +
+>    reg:
+>      maxItems: 1
+>  
 
