@@ -2,82 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B165C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD09CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346646AbiDFK6l (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
+        id S240568AbiDFK6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351229AbiDFK5g (ORCPT
+        with ESMTP id S1348349AbiDFK5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:57:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0380635C05F;
-        Wed,  6 Apr 2022 00:19:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 930C661B07;
-        Wed,  6 Apr 2022 07:19:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A23C385A3;
-        Wed,  6 Apr 2022 07:19:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649229561;
-        bh=Cz6TDzs+jZOWZjAc5HjVcIh2AZntniGosREgoBaLQnc=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=BCuqDE3dUreTJ570sFvl187t+R8w+yJTzRMfxnfED3xUvlqgWcERMWuolZJxJJwjv
-         7RKQIiy6oPlQXky50+7ipd6Q3B4DPt/y+7HqZl0oj1ZSZG2IpgN2TNla4YnOlEWoyS
-         zG9R4Nswt6z9eTM/nTp9XGCQ4XDp0fkotQ5F8msq0uIv6l23IZgaANhZzDi89nqUke
-         UxzWThZ3MEFakzK0YM1XeZ1pJWSLIfAps0+lncQehGUd5i217srChgNCdxkAMC5IkR
-         4cZ6N/kcWdoVWClbCjlonGVum9vItz8sSOkZy4UvSfhAT5fEk76OvtuHkHsFiJLuRt
-         B+jZlFNK570vQ==
-Content-Type: text/plain; charset="utf-8"
+        Wed, 6 Apr 2022 06:57:08 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C62519D40;
+        Wed,  6 Apr 2022 00:18:30 -0700 (PDT)
+X-UUID: e222855c284d4624a897c4833d159510-20220406
+X-UUID: e222855c284d4624a897c4833d159510-20220406
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 340841123; Wed, 06 Apr 2022 15:13:19 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 6 Apr 2022 15:13:19 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 Apr
+ 2022 15:13:18 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 15:13:18 +0800
+Message-ID: <8e3db8a1285e43dcd397eee444b15957074106ab.camel@mediatek.com>
+Subject: Re: [PATCH v2,2/2] drm/mediatek: Add mt8186 dpi compatible to
+ mtk_dpi.c
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <robh+dt@kernel.org>, <matthias.bgg@gmail.com>
+CC:     <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <jitao.shi@mediatek.com>
+Date:   Wed, 6 Apr 2022 15:13:18 +0800
+In-Reply-To: <1648727917-3099-3-git-send-email-xinlei.lee@mediatek.com>
+References: <1648727917-3099-1-git-send-email-xinlei.lee@mediatek.com>
+         <1648727917-3099-3-git-send-email-xinlei.lee@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][next] iwlwifi: mei: Replace zero-length array with
- flexible-array member
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220216195030.GA904170@embeddedor>
-References: <20220216195030.GA904170@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164922955689.27650.1046956549336676737.kvalo@kernel.org>
-Date:   Wed,  6 Apr 2022 07:19:18 +0000 (UTC)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
-
-> There is a regular need in the kernel to provide a way to declare
-> having a dynamically sized set of trailing elements in a structure.
-> Kernel code should always use “flexible array members”[1] for these
-> cases. The older style of one-element or zero-length arrays should
-> no longer be used[2].
+On Thu, 2022-03-31 at 19:58 +0800, xinlei.lee@mediatek.com wrote:
+> From: Xinlei Lee <xinlei.lee@mediatek.com>
 > 
-> [1] https://en.wikipedia.org/wiki/Flexible_array_member
-> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> Add the compatible because use different .data in mt8186.
 > 
-> Link: https://github.com/KSPP/linux/issues/78
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> Acked-by: Luca Coelho <luciano.coelho@intel.com>
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 4554e2de1430..6fac146cf1fb 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -823,6 +823,14 @@ static const struct mtk_dpi_conf mt8192_conf = {
+>  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+>  };
+>  
+> +static const struct mtk_dpi_conf mt8186_conf = {
+> +	.cal_factor =  mt8183_calculate_factor,
+> +	.reg_h_fre_con = 0xe0,
+> +	.max_clock_khz = 150000,
+> +	.output_fmts = mt8183_output_fmts,
+> +	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+> +};
+> +
 
-Patch applied to wireless-next.git, thanks.
+Hello Xinlei,
 
-c5f675748cf0 iwlwifi: mei: Replace zero-length array with flexible-array member
+Could you move 8186 between 8183 and 8192?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220216195030.GA904170@embeddedor/
+>  static int mtk_dpi_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> @@ -945,6 +953,9 @@ static const struct of_device_id mtk_dpi_of_ids[]
+> = {
+>  	{ .compatible = "mediatek,mt8192-dpi",
+>  	  .data = &mt8192_conf,
+>  	},
+> +	{ .compatible = "mediatek,mt8186-dpi",
+> +	  .data = &mt8186_conf,
+> +	},
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+ditto
+
+BRs,
+Rex
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(of, mtk_dpi_of_ids);
 
