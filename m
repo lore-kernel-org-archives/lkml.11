@@ -2,237 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8707C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C59C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232919AbiDFTvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46144 "EHLO
+        id S233183AbiDFTw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232785AbiDFTvU (ORCPT
+        with ESMTP id S232999AbiDFTwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:51:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3E32EC4E9;
-        Wed,  6 Apr 2022 10:30:15 -0700 (PDT)
+        Wed, 6 Apr 2022 15:52:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95923D59A7;
+        Wed,  6 Apr 2022 11:27:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBF8D61A97;
-        Wed,  6 Apr 2022 17:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 208BDC385A6;
-        Wed,  6 Apr 2022 17:30:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649266214;
-        bh=kx10uHVY26ckRcwECa6MjiojP3WVqmzi3kWJLSQqtFM=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5FFBB8252B;
+        Wed,  6 Apr 2022 18:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C8A0C385A1;
+        Wed,  6 Apr 2022 18:27:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269626;
+        bh=yaFSwr6UkAll0jCbZ5UWX0sSGtIjIVOicKtUiDtXaLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kxMu4PutC4dDwqhZ7SdiV574Mh98fdV2T7xjh1ZMn2asjOlRuzgcxrKM5sa7MyZ0t
-         6Ryd5qnGeLctycurtIWYVw4syI44r7/LvstlLMyLFcuqnK/RgdvPckSoWqICwv6C1i
-         MurZ2xprNeX1erhNowmi/F2GlbWYDNycdSutRMK7a2rj5LtWIi2Au6P+PXwrNRu8Ns
-         +sQANeuu6FHNROn/HWmXfTI8NdXtQg/sf95W8tNjnNuKcVeYhrEmoMVGDds+2bf4Ey
-         CLQRgUoI0JwoQ9KuL7tM/j1CAG02pXcT8ZEb08F5tVgymxAgwjYl4SagarEde3MvYe
-         x+W9vuCaxmYFA==
-Received: by wens.tw (Postfix, from userid 1000)
-        id 58CDF5FD30; Thu,  7 Apr 2022 01:30:11 +0800 (CST)
-From:   Chen-Yu Tsai <wens@kernel.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/4] drm/ssd130x: Support page addressing mode
-Date:   Thu,  7 Apr 2022 01:29:55 +0800
-Message-Id: <20220406172956.3953-4-wens@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220406172956.3953-1-wens@kernel.org>
-References: <20220406172956.3953-1-wens@kernel.org>
+        b=ycB2VVS+lklS8cONZo075HgXct/t1vnPTJkmGwT8Ul3T+sWDyu0Tj5UjUdri5HRND
+         hHTqRQyM5fcSPNDctBesMU9jWIApiv05sSArWgofh5ajtI5AZaCiKOCs7VKhmawCXY
+         jqzmNgbl45L2MAWrZaNtAIc10qdFE3BAEx89ceaU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Dave Martin <dave.martin@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 11/43] arm64: capabilities: Add support for checks based on a list of MIDRs
+Date:   Wed,  6 Apr 2022 20:26:20 +0200
+Message-Id: <20220406182437.013073878@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wens@csie.org>
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-On the SINO WEALTH SH1106, which is mostly compatible with the SSD1306,
-only the basic page addressing mode is supported. This addressing mode
-is not as easy to use compared to the currently supported horizontal
-addressing mode, as the page address has to be set prior to writing
-out each page, and each page must be written out separately as a result.
-Also, there is no way to force the column address to wrap around early,
-thus the column address must also be reset for each page to be accurate.
+[ Upstream commit be5b299830c63ed76e0357473c4218c85fb388b3 ]
 
-Add support for this addressing mode, with a flag to choose it. This
-flag is designed to be set from the device info data structure, but
-can be extended to be explicitly forced on through a device tree
-property if such a need arises.
+Add helpers for detecting an errata on list of midr ranges
+of affected CPUs, with the same work around.
 
-Signed-off-by: Chen-Yu Tsai <wens@csie.org>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Reviewed-by: Dave Martin <dave.martin@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+[ardb: add Cortex-A35 to kpti_safe_list[] as well]
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/solomon/ssd130x.c | 73 ++++++++++++++++++++++++++++---
- drivers/gpu/drm/solomon/ssd130x.h |  2 +
- 2 files changed, 68 insertions(+), 7 deletions(-)
+ arch/arm64/include/asm/cpufeature.h |    1 
+ arch/arm64/include/asm/cputype.h    |    9 +++++
+ arch/arm64/kernel/cpu_errata.c      |   62 ++++++++++++++++++++----------------
+ arch/arm64/kernel/cpufeature.c      |   21 ++++++------
+ 4 files changed, 58 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
-index 38b6c2c14f53..a7e784518c69 100644
---- a/drivers/gpu/drm/solomon/ssd130x.c
-+++ b/drivers/gpu/drm/solomon/ssd130x.c
-@@ -42,6 +42,8 @@
- #define SSD130X_DATA				0x40
- #define SSD130X_COMMAND				0x80
+--- a/arch/arm64/include/asm/cpufeature.h
++++ b/arch/arm64/include/asm/cpufeature.h
+@@ -233,6 +233,7 @@ struct arm64_cpu_capabilities {
+ 			struct midr_range midr_range;
+ 		};
  
-+#define SSD130X_PAGE_COL_START_LOW		0x00
-+#define SSD130X_PAGE_COL_START_HIGH		0x10
- #define SSD130X_SET_ADDRESS_MODE		0x20
- #define SSD130X_SET_COL_RANGE			0x21
- #define SSD130X_SET_PAGE_RANGE			0x22
-@@ -61,6 +63,11 @@
- #define SSD130X_SET_COM_PINS_CONFIG		0xda
- #define SSD130X_SET_VCOMH			0xdb
- 
-+#define SSD130X_PAGE_COL_START_MASK		GENMASK(3, 0)
-+#define SSD130X_PAGE_COL_START_HIGH_SET(val)	FIELD_PREP(SSD130X_PAGE_COL_START_MASK, (val) >> 4)
-+#define SSD130X_PAGE_COL_START_LOW_SET(val)	FIELD_PREP(SSD130X_PAGE_COL_START_MASK, (val))
-+#define SSD130X_START_PAGE_ADDRESS_MASK		GENMASK(2, 0)
-+#define SSD130X_START_PAGE_ADDRESS_SET(val)	FIELD_PREP(SSD130X_START_PAGE_ADDRESS_MASK, (val))
- #define SSD130X_SET_SEG_REMAP_MASK		GENMASK(0, 0)
- #define SSD130X_SET_SEG_REMAP_SET(val)		FIELD_PREP(SSD130X_SET_SEG_REMAP_MASK, (val))
- #define SSD130X_SET_COM_SCAN_DIR_MASK		GENMASK(3, 3)
-@@ -130,6 +137,7 @@ static int ssd130x_write_cmd(struct ssd130x_device *ssd130x, int count,
- 	return ret;
++		const struct midr_range *midr_range_list;
+ 		struct {	/* Feature register checking */
+ 			u32 sys_reg;
+ 			u8 field_pos;
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -143,6 +143,15 @@ static inline bool is_midr_in_range(u32
+ 				 range->rv_min, range->rv_max);
  }
  
-+/* Set address range for horizontal/vertical addressing modes */
- static int ssd130x_set_col_range(struct ssd130x_device *ssd130x,
- 				 u8 col_start, u8 cols)
- {
-@@ -166,6 +174,26 @@ static int ssd130x_set_page_range(struct ssd130x_device *ssd130x,
- 	return 0;
- }
- 
-+/* Set page and column start address for page addressing mode */
-+static int ssd130x_set_page_pos(struct ssd130x_device *ssd130x,
-+				u8 page_start, u8 col_start)
++static inline bool
++is_midr_in_range_list(u32 midr, struct midr_range const *ranges)
 +{
-+	int ret;
-+	u32 page, col_low, col_high;
-+
-+	page = SSD130X_START_PAGE_ADDRESS |
-+	       SSD130X_START_PAGE_ADDRESS_SET(page_start);
-+	col_low = SSD130X_PAGE_COL_START_LOW |
-+		  SSD130X_PAGE_COL_START_LOW_SET(col_start);
-+	col_high = SSD130X_PAGE_COL_START_HIGH |
-+		   SSD130X_PAGE_COL_START_HIGH_SET(col_start);
-+	ret = ssd130x_write_cmd(ssd130x, 3, page, col_low, col_high);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
++	while (ranges->model)
++		if (is_midr_in_range(midr, ranges++))
++			return true;
++	return false;
 +}
 +
- static int ssd130x_pwm_enable(struct ssd130x_device *ssd130x)
+ /*
+  * The CPU ID never changes at run time, so we might as well tell the
+  * compiler that it's constant.  Use this function to read the CPU ID
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -33,6 +33,14 @@ is_affected_midr_range(const struct arm6
+ 	return is_midr_in_range(midr, &entry->midr_range);
+ }
+ 
++static bool __maybe_unused
++is_affected_midr_range_list(const struct arm64_cpu_capabilities *entry,
++			    int scope)
++{
++	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
++	return is_midr_in_range_list(read_cpuid_id(), entry->midr_range_list);
++}
++
+ static bool
+ has_mismatched_cache_type(const struct arm64_cpu_capabilities *entry,
+ 			  int scope)
+@@ -383,6 +391,10 @@ static bool has_ssbd_mitigation(const st
+ 	.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,				\
+ 	CAP_MIDR_RANGE(model, v_min, r_min, v_max, r_max)
+ 
++#define CAP_MIDR_RANGE_LIST(list)				\
++	.matches = is_affected_midr_range_list,			\
++	.midr_range_list = list
++
+ /* Errata affecting a range of revisions of  given model variant */
+ #define ERRATA_MIDR_REV_RANGE(m, var, r_min, r_max)	 \
+ 	ERRATA_MIDR_RANGE(m, var, r_min, var, r_max)
+@@ -396,6 +408,29 @@ static bool has_ssbd_mitigation(const st
+ 	.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,			\
+ 	CAP_MIDR_ALL_VERSIONS(model)
+ 
++/* Errata affecting a list of midr ranges, with same work around */
++#define ERRATA_MIDR_RANGE_LIST(midr_list)			\
++	.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,			\
++	CAP_MIDR_RANGE_LIST(midr_list)
++
++#ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
++
++/*
++ * List of CPUs where we need to issue a psci call to
++ * harden the branch predictor.
++ */
++static const struct midr_range arm64_bp_harden_smccc_cpus[] = {
++	MIDR_ALL_VERSIONS(MIDR_CORTEX_A57),
++	MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
++	MIDR_ALL_VERSIONS(MIDR_CORTEX_A73),
++	MIDR_ALL_VERSIONS(MIDR_CORTEX_A75),
++	MIDR_ALL_VERSIONS(MIDR_BRCM_VULCAN),
++	MIDR_ALL_VERSIONS(MIDR_CAVIUM_THUNDERX2),
++	{},
++};
++
++#endif
++
+ const struct arm64_cpu_capabilities arm64_errata[] = {
+ #if	defined(CONFIG_ARM64_ERRATUM_826319) || \
+ 	defined(CONFIG_ARM64_ERRATUM_827319) || \
+@@ -486,32 +521,7 @@ const struct arm64_cpu_capabilities arm6
+ #ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
+ 	{
+ 		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
+-		ERRATA_MIDR_ALL_VERSIONS(MIDR_CORTEX_A57),
+-		.cpu_enable = enable_smccc_arch_workaround_1,
+-	},
+-	{
+-		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
+-		ERRATA_MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
+-		.cpu_enable = enable_smccc_arch_workaround_1,
+-	},
+-	{
+-		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
+-		ERRATA_MIDR_ALL_VERSIONS(MIDR_CORTEX_A73),
+-		.cpu_enable = enable_smccc_arch_workaround_1,
+-	},
+-	{
+-		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
+-		ERRATA_MIDR_ALL_VERSIONS(MIDR_CORTEX_A75),
+-		.cpu_enable = enable_smccc_arch_workaround_1,
+-	},
+-	{
+-		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
+-		ERRATA_MIDR_ALL_VERSIONS(MIDR_BRCM_VULCAN),
+-		.cpu_enable = enable_smccc_arch_workaround_1,
+-	},
+-	{
+-		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
+-		ERRATA_MIDR_ALL_VERSIONS(MIDR_CAVIUM_THUNDERX2),
++		ERRATA_MIDR_RANGE_LIST(arm64_bp_harden_smccc_cpus),
+ 		.cpu_enable = enable_smccc_arch_workaround_1,
+ 	},
+ #endif
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -767,6 +767,17 @@ static int __kpti_forced; /* 0: not forc
+ static bool unmap_kernel_at_el0(const struct arm64_cpu_capabilities *entry,
+ 				int __unused)
  {
- 	struct device *dev = ssd130x->dev;
-@@ -342,6 +370,11 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
- 		}
- 	}
++	/* List of CPUs that are not vulnerable and don't need KPTI */
++	static const struct midr_range kpti_safe_list[] = {
++		MIDR_ALL_VERSIONS(MIDR_CAVIUM_THUNDERX2),
++		MIDR_ALL_VERSIONS(MIDR_BRCM_VULCAN),
++		MIDR_ALL_VERSIONS(MIDR_CORTEX_A35),
++		MIDR_ALL_VERSIONS(MIDR_CORTEX_A53),
++		MIDR_ALL_VERSIONS(MIDR_CORTEX_A55),
++		MIDR_ALL_VERSIONS(MIDR_CORTEX_A57),
++		MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
++		MIDR_ALL_VERSIONS(MIDR_CORTEX_A73),
++	};
+ 	char const *str = "command line option";
+ 	u64 pfr0 = read_system_reg(SYS_ID_AA64PFR0_EL1);
  
-+	/* Switch to page addressing mode */
-+	if (ssd130x->page_address_mode)
-+		return ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_ADDRESS_MODE,
-+					 SSD130X_SET_ADDRESS_MODE_PAGE);
-+
- 	/* Switch to horizontal addressing mode */
- 	return ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_ADDRESS_MODE,
- 				 SSD130X_SET_ADDRESS_MODE_HORIZONTAL);
-@@ -396,13 +429,16 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 	 *  (5) A4 B4 C4 D4 E4 F4 G4 H4
- 	 */
+@@ -792,16 +803,8 @@ static bool unmap_kernel_at_el0(const st
+ 		return true;
  
--	ret = ssd130x_set_col_range(ssd130x, ssd130x->col_offset + x, width);
--	if (ret < 0)
--		goto out_free;
-+	if (!ssd130x->page_address_mode) {
-+		/* Set address range for horizontal addressing mode */
-+		ret = ssd130x_set_col_range(ssd130x, ssd130x->col_offset + x, width);
-+		if (ret < 0)
-+			goto out_free;
+ 	/* Don't force KPTI for CPUs that are not vulnerable */
+-	switch (read_cpuid_id() & MIDR_CPU_MODEL_MASK) {
+-	case MIDR_CAVIUM_THUNDERX2:
+-	case MIDR_BRCM_VULCAN:
+-	case MIDR_CORTEX_A53:
+-	case MIDR_CORTEX_A55:
+-	case MIDR_CORTEX_A57:
+-	case MIDR_CORTEX_A72:
+-	case MIDR_CORTEX_A73:
++	if (is_midr_in_range_list(read_cpuid_id(), kpti_safe_list))
+ 		return false;
+-	}
  
--	ret = ssd130x_set_page_range(ssd130x, ssd130x->page_offset + y / 8, pages);
--	if (ret < 0)
--		goto out_free;
-+		ret = ssd130x_set_page_range(ssd130x, ssd130x->page_offset + y / 8, pages);
-+		if (ret < 0)
-+			goto out_free;
-+	}
- 
- 	for (i = 0; i < pages; i++) {
- 		int m = 8;
-@@ -421,9 +457,29 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 			}
- 			data_array[array_idx++] = data;
- 		}
-+
-+		/*
-+		 * In page addressing mode, the start address needs to be reset,
-+		 * and each page then needs to be written out separately.
-+		 */
-+		if (ssd130x->page_address_mode) {
-+			ret = ssd130x_set_page_pos(ssd130x,
-+						   ssd130x->page_offset + i,
-+						   ssd130x->col_offset + x);
-+			if (ret < 0)
-+				goto out_free;
-+
-+			ret = ssd130x_write_data(ssd130x, data_array, width);
-+			if (ret < 0)
-+				goto out_free;
-+
-+			array_idx = 0;
-+		}
- 	}
- 
--	ret = ssd130x_write_data(ssd130x, data_array, width * pages);
-+	/* Write out update in one go if we aren't using page addressing mode */
-+	if (!ssd130x->page_address_mode)
-+		ret = ssd130x_write_data(ssd130x, data_array, width * pages);
- 
- out_free:
- 	kfree(data_array);
-@@ -806,6 +862,9 @@ struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
- 	ssd130x->regmap = regmap;
- 	ssd130x->device_info = device_get_match_data(dev);
- 
-+	if (ssd130x->device_info->page_mode_only)
-+		ssd130x->page_address_mode = 1;
-+
- 	ssd130x_parse_properties(ssd130x);
- 
- 	ret = ssd130x_get_resources(ssd130x);
-diff --git a/drivers/gpu/drm/solomon/ssd130x.h b/drivers/gpu/drm/solomon/ssd130x.h
-index cd21cdccb566..f5b062576fdf 100644
---- a/drivers/gpu/drm/solomon/ssd130x.h
-+++ b/drivers/gpu/drm/solomon/ssd130x.h
-@@ -24,6 +24,7 @@ struct ssd130x_deviceinfo {
- 	u32 default_dclk_frq;
- 	int need_pwm;
- 	int need_chargepump;
-+	bool page_mode_only;
- };
- 
- struct ssd130x_device {
-@@ -38,6 +39,7 @@ struct ssd130x_device {
- 
- 	const struct ssd130x_deviceinfo *device_info;
- 
-+	unsigned page_address_mode : 1;
- 	unsigned area_color_enable : 1;
- 	unsigned com_invdir : 1;
- 	unsigned com_lrremap : 1;
--- 
-2.34.1
+ 	/* Defer to CPU feature registers */
+ 	return !cpuid_feature_extract_unsigned_field(pfr0,
+
 
