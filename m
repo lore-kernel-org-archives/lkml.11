@@ -2,131 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF20C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348264AbiDFKKu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
+        id S245060AbiDFKLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352973AbiDFKJM (ORCPT
+        with ESMTP id S1356704AbiDFKJb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:09:12 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ADA22FD8C;
-        Tue,  5 Apr 2022 23:38:48 -0700 (PDT)
-X-UUID: d4e1b5a7c4674690ba3742875695fc36-20220406
-X-UUID: d4e1b5a7c4674690ba3742875695fc36-20220406
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 322571076; Wed, 06 Apr 2022 14:38:42 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 6 Apr 2022 14:38:41 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 Apr
- 2022 14:38:40 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 14:38:40 +0800
-Message-ID: <4940e2e4ecb5f9f6857dc960ea5dbe43c551df77.camel@mediatek.com>
-Subject: Re: [PATCH v2,1/2] dt-bindings: display: mediatek: dpi: Add
- compatible for MediaTek MT8186
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, <xinlei.lee@mediatek.com>,
-        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <jitao.shi@mediatek.com>
-Date:   Wed, 6 Apr 2022 14:38:40 +0800
-In-Reply-To: <e0d5a344c8ec1f92357bd9d5b8782dded862c549.camel@mediatek.com>
-References: <1648727917-3099-1-git-send-email-xinlei.lee@mediatek.com>
-         <1648727917-3099-2-git-send-email-xinlei.lee@mediatek.com>
-         <e0d5a344c8ec1f92357bd9d5b8782dded862c549.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 6 Apr 2022 06:09:31 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A412321CC67;
+        Tue,  5 Apr 2022 23:38:39 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KYFFZ4T46z1HBPX;
+        Wed,  6 Apr 2022 14:38:10 +0800 (CST)
+Received: from huawei.com (10.67.175.31) by dggpemm500024.china.huawei.com
+ (7.185.36.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 6 Apr
+ 2022 14:38:36 +0800
+From:   GUO Zihua <guozihua@huawei.com>
+To:     <linux-integrity@vger.kernel.org>
+CC:     <zohar@linux.ibm.com>, <dmitry.kasatkin@gmail.com>,
+        <roberto.sassu@huawei.com>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 1/1] ima: remove the IMA_TEMPLATE Kconfig option
+Date:   Wed, 6 Apr 2022 14:37:27 +0800
+Message-ID: <20220406063727.178522-2-guozihua@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220406063727.178522-1-guozihua@huawei.com>
+References: <20220406063727.178522-1-guozihua@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.31]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500024.china.huawei.com (7.185.36.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+It is discovered that allowing template "ima" as the compiled default
+would cause the following issue: the boot command line option
+"ima_hash=" must be behind "ima_template=", otherwise "ima_hash=" might
+be rejected.
 
-On Fri, 2022-04-01 at 09:38 +0800, Rex-BC Chen wrote:
-> On Thu, 2022-03-31 at 19:58 +0800, xinlei.lee@mediatek.com wrote:
-> > From: Xinlei Lee <xinlei.lee@mediatek.com>
-> > 
-> > Add dt-binding documentation of dpi for MediaTek MT8186 SoC.
-> > 
-> > Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> > ---
-> >  .../devicetree/bindings/display/mediatek/mediatek,dpi.yaml       |
-> > 1
-> > +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.y
-> > am
-> > l
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.y
-> > am
-> > l
-> > index dd2896a40ff0..a73044c50b5f 100644
-> > ---
-> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.y
-> > am
-> > l
-> > +++
-> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.y
-> > am
-> > l
-> > @@ -22,6 +22,7 @@ properties:
-> >        - mediatek,mt7623-dpi
-> >        - mediatek,mt8173-dpi
-> >        - mediatek,mt8183-dpi
-> > +      - mediatek,mt8186-dpi
-> >        - mediatek,mt8192-dpi
-> >  
-> >    reg:
-> 
-> Hello Xinlei,
-> 
-> From the dts we use, the dpi node needs other properties for MT8186.
-> Please send another patch and add these properties to binding.
-> 
-> assigned-clocks = <&topckgen CLK_TOP_DPI>;
-> assigned-clock-parents = <&topckgen CLK_TOP_TVDPLL_D2>;
+The root cause of this issue is that during the processing of ima_hash,
+we would try to check whether the hash algorithm is compatible with the
+template. If the template is not set at the moment we do the check, we
+check the algorithm against the compiled default template. If the
+complied default template is "ima", then we reject any hash algorithm
+other than sha1 and md5.
 
-According to [1], the assigned-clocks is initial value. Without this
-initial value, I think driver would set this clock again, wouldn't it?
+For example, if the compiled default template is "ima", and the default
+algorithm is sha1 (which is the current default). In the cmdline, we put
+in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
+that ima starts with ima-ng as the template and sha256 as the hash
+algorithm. However, during the processing of "ima_hash=",
+"ima_template=" has not been processed yet, and hash_setup would check
+the configured hash algorithm against the compiled default: ima, and
+reject sha256. So at the end, the hash algorithm that is actually used
+will be sha1.
 
-[1] 
-https://www.kernel.org/doc/Documentation/devicetree/bindings/clock/clock-bindings.txt
+With template "ima" removed from the compiled default, we ensure that
+the default tempalte would at least be "ima-ng" which allows for
+basically any hash algorithm. Users who needs to use "ima" template
+could still do it by specifying "ima_template=ima" in boot command line.
 
-Regards,
-CK
+This change would not break the algorithm compatibility checking for
+IMA.
 
-> 
-> Thanks
-> 
-> BRs,
-> Rex
-> 
-> 
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> 
-https://urldefense.com/v3/__http://lists.infradead.org/mailman/listinfo/linux-mediatek__;!!CTRNKA9wMg0ARbw!wtF15QZZTCzWfRpxNLjZ1VQQ54i40D8STuOo0h18dtz3es-ksLfYQGTEFlb7lg$
->  
+Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+---
+ security/integrity/ima/Kconfig | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
+
+diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
+index f3a9cc201c8c..f392cac7a7d1 100644
+--- a/security/integrity/ima/Kconfig
++++ b/security/integrity/ima/Kconfig
+@@ -65,14 +65,11 @@ choice
+ 	help
+ 	  Select the default IMA measurement template.
+ 
+-	  The original 'ima' measurement list template contains a
+-	  hash, defined as 20 bytes, and a null terminated pathname,
+-	  limited to 255 characters.  The 'ima-ng' measurement list
+-	  template permits both larger hash digests and longer
+-	  pathnames.
+-
+-	config IMA_TEMPLATE
+-		bool "ima"
++	  The 'ima-ng' measurement list template permits various hash
++	  digests and long pathnames. The compiled default template
++	  can be overwritten using the kernel command line
++	  'ima_template=' option.
++
+ 	config IMA_NG_TEMPLATE
+ 		bool "ima-ng (default)"
+ 	config IMA_SIG_TEMPLATE
+@@ -82,7 +79,6 @@ endchoice
+ config IMA_DEFAULT_TEMPLATE
+ 	string
+ 	depends on IMA
+-	default "ima" if IMA_TEMPLATE
+ 	default "ima-ng" if IMA_NG_TEMPLATE
+ 	default "ima-sig" if IMA_SIG_TEMPLATE
+ 
+@@ -102,19 +98,19 @@ choice
+ 
+ 	config IMA_DEFAULT_HASH_SHA256
+ 		bool "SHA256"
+-		depends on CRYPTO_SHA256=y && !IMA_TEMPLATE
++		depends on CRYPTO_SHA256=y
+ 
+ 	config IMA_DEFAULT_HASH_SHA512
+ 		bool "SHA512"
+-		depends on CRYPTO_SHA512=y && !IMA_TEMPLATE
++		depends on CRYPTO_SHA512=y
+ 
+ 	config IMA_DEFAULT_HASH_WP512
+ 		bool "WP512"
+-		depends on CRYPTO_WP512=y && !IMA_TEMPLATE
++		depends on CRYPTO_WP512=y
+ 
+ 	config IMA_DEFAULT_HASH_SM3
+ 		bool "SM3"
+-		depends on CRYPTO_SM3=y && !IMA_TEMPLATE
++		depends on CRYPTO_SM3=y
+ endchoice
+ 
+ config IMA_DEFAULT_HASH
+-- 
+2.17.1
 
