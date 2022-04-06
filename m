@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2796C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EAEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbiDFTJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
+        id S229808AbiDFTKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230379AbiDFTHh (ORCPT
+        with ESMTP id S229896AbiDFTJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:07:37 -0400
-Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F29B2AF242
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:58:41 -0700 (PDT)
-Received: from omf13.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay10.hostedemail.com (Postfix) with ESMTP id C613E35D0;
-        Wed,  6 Apr 2022 17:58:39 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf13.hostedemail.com (Postfix) with ESMTPA id AA85120011;
-        Wed,  6 Apr 2022 17:58:37 +0000 (UTC)
-Message-ID: <1064228a2bb8a5fbdcb483295c641c100dd08c9f.camel@perches.com>
-Subject: Re: [PATCH v4 1/2] ray_cs: Improve card_status[]
-From:   Joe Perches <joe@perches.com>
-To:     Benjamin =?ISO-8859-1?Q?St=FCrz?= <benni@stuerz.xyz>,
-        kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 06 Apr 2022 10:58:35 -0700
-In-Reply-To: <20220406152247.386267-2-benni@stuerz.xyz>
-References: <20220406152247.386267-1-benni@stuerz.xyz>
-         <20220406152247.386267-2-benni@stuerz.xyz>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Wed, 6 Apr 2022 15:09:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A604E29689F;
+        Wed,  6 Apr 2022 11:28:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E9F661B89;
+        Wed,  6 Apr 2022 18:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A997C385A1;
+        Wed,  6 Apr 2022 18:28:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269717;
+        bh=Goa4g0zbim0vnm+bp9tRkQHl3Ukj/fLPgZH3yx7JRis=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aY9rEclhdfGKOVE0tftOjd2sX7USGbu7+jRNAPuPeqAbIQc6ofGRFA089KrAzwsYB
+         ks1TH2a0BXN/acW/kEmrzLNMvRlX5w/buCTU5owr3nelDFrHlOFZqeztvZJlQXAwp3
+         pgMGiRq91eT5S3P5i7L/PLVGgaQiCm1deLszKnSo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 31/43] arm64: entry: Move trampoline macros out of ifdefd section
+Date:   Wed,  6 Apr 2022 20:26:40 +0200
+Message-Id: <20220406182437.585030542@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Stat-Signature: 4x93hygzkp67pzsimy8pxrem6idwkheg
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: AA85120011
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18okezJojRz1U2N98r1sNAPyIQfCdYT8Jw=
-X-HE-Tag: 1649267917-578212
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-06 at 17:22 +0200, Benjamin Stürz wrote:
-> Replace comments with C99's designated initializers to improve
-> readability and maintainability.
-[]
-> diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-[]
-> @@ -2529,20 +2529,23 @@ static void clear_interrupt(ray_dev_t *local)
->  #define MAXDATA (PAGE_SIZE - 80)
->  
->  static const char *card_status[] = {
-> -	"Card inserted - uninitialized",	/* 0 */
-> -	"Card not downloaded",			/* 1 */
-> -	"Waiting for download parameters",	/* 2 */
-> -	"Card doing acquisition",		/* 3 */
-> -	"Acquisition complete",			/* 4 */
-> -	"Authentication complete",		/* 5 */
-> -	"Association complete",			/* 6 */
-> -	"???", "???", "???", "???",		/* 7 8 9 10 undefined */
-> -	"Card init error",			/* 11 */
-> -	"Download parameters error",		/* 12 */
-> -	"???",					/* 13 */
-> -	"Acquisition failed",			/* 14 */
-> -	"Authentication refused",		/* 15 */
-> -	"Association failed"			/* 16 */
-> +	[CARD_INSERTED]		= "Card inserted - uninitialized",
-> +	[CARD_AWAITING_PARAM]	= "Card not downloaded",
-> +	[CARD_DL_PARAM]		= "Waiting for download parameters",
-> +	[CARD_DOING_ACQ]	= "Card doing acquisition",
-> +	[CARD_ACQ_COMPLETE]	= "Acquisition complete",
-> +	[CARD_AUTH_COMPLETE]	= "Authentication complete",
-> +	[CARD_ASSOC_COMPLETE]	= "Association complete",
-> +	[7]			= "???",
-> +	[8]			= "???",
-> +	[9]			= "???",
-> +	[10]			= "???",
+From: James Morse <james.morse@arm.com>
 
-Rather than using specific numbers and "???"
-it's probably better to use no initialization at all
-and change the output call to test the array index
-ao all of the [number] = "???" could be removed.
+commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
 
+The macros for building the kpti trampoline are all behind
+CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
+.entry.tramp.text section.
+
+Move the macros out so they can be used to generate other kinds of
+trampoline. Only the symbols need to be guarded by
+CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ray_cs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kernel/entry.S |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-index 87e98ab068ed..29451cd0a22a 100644
---- a/drivers/net/wireless/ray_cs.c
-+++ b/drivers/net/wireless/ray_cs.c
-@@ -2600,7 +2600,7 @@ static int ray_cs_proc_show(struct seq_file *m, void *v)
- 		i = 10;
- 	if (i > 16)
- 		i = 10;
--	seq_printf(m, "Card status          = %s\n", card_status[i]);
-+	seq_printf(m, "Card status          = %s\n", card_status[i] ?: "???");
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -896,12 +896,7 @@ __ni_sys_trace:
  
- 	seq_printf(m, "Framing mode         = %s\n", framing[translate]);
+ 	.popsection				// .entry.text
  
+-#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-/*
+- * Exception vectors trampoline.
+- */
+-	.pushsection ".entry.tramp.text", "ax"
+-
++	// Move from tramp_pg_dir to swapper_pg_dir
+ 	.macro tramp_map_kernel, tmp
+ 	mrs	\tmp, ttbr1_el1
+ 	sub	\tmp, \tmp, #SWAPPER_DIR_SIZE
+@@ -980,6 +975,11 @@ __ni_sys_trace:
+ 	.endr
+ 	.endm
+ 
++#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
++/*
++ * Exception vectors trampoline.
++ */
++	.pushsection ".entry.tramp.text", "ax"
+ 	.align	11
+ ENTRY(tramp_vectors)
+ 	generate_tramp_vector
+
 
