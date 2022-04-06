@@ -2,241 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C76DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240319AbiDFKXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
+        id S236892AbiDFKXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243496AbiDFKWD (ORCPT
+        with ESMTP id S1357288AbiDFKWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:22:03 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9445216249F;
-        Tue,  5 Apr 2022 21:50:57 -0700 (PDT)
+        Wed, 6 Apr 2022 06:22:43 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C6917AB3;
+        Tue,  5 Apr 2022 23:47:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649220657; x=1680756657;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PxZ+GxynIkoMLEUiFgS85yx4Qd2Ez7/qEzRgLcnxHFY=;
-  b=ev6BxZpAiHMSpmj7Bemzw9NgL/mYTQdHLJDqKaZgTdrhgPecD5v6vX2N
-   AQtCwWZZdwitVHpuyX9lJgoiuaSXrqo4hWTSShr4Qv5VbmprRzULupuXG
-   ugCdqfg3Q2J+InpP7rWMHirv+DastwUQmXGZR1/fgkJqO7PdyGCyk/tmO
-   285ngxAmRlQXArQbiyL+ewW+sQlxJVDH2uUdBfQ1NpudF8Npo/mu0uV9A
-   DkRmrme5qpxDQo5CSIxftfT/Yv+gyz+lYZoaAm/UDngHPOX+YGxm3CZTV
-   VkPhrkVZ3qjKc+Ke6EiVRTwyEqgqx1rLmVKJJkBGRY0IlJ2a2ddmTbvNg
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089893"
+  t=1649227625; x=1680763625;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JRb3SzOQESj6NEoJIznEzSTJmuuLPgnO38vSPHZXK34=;
+  b=VQNeVav8WhLbRDu6n+sxEPXljbYva9FqwFJOjY54tHMoOHWklA1xJiqI
+   OAwNZZtrYqupTpffVbEUHKppu1Wt3x6J9GP2536B4wt7/MmUKN0V6WWvB
+   8fxHh+TKUycRuD9X6GZRCYoElh3SH054WmgoeCY1VX9wx9l2UIAUzwm0i
+   oTahWijIXigBbrlMHuifG0uE4h3OOS5cLWF5TqAFYu3XVW7PdLS3RrGSw
+   TT5CAGkljg1uS+TKH8jSW900aSpreiIwOCB5LRDpn/spWeKt7/E4Pmgru
+   fGW4NgAnfR7Ym+BUl7czWyNBz8yS8a7UvrnO5WNdbYCt1aZCLmKDeMtJC
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260959912"
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="243089893"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:52 -0700
+   d="scan'208";a="260959912"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 23:47:04 -0700
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="524302458"
-Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:48 -0700
-From:   Kai Huang <kai.huang@intel.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
-        len.brown@intel.com, tony.luck@intel.com,
-        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
-        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v3 17/21] x86/virt/tdx: Configure global KeyID on all packages
-Date:   Wed,  6 Apr 2022 16:49:29 +1200
-Message-Id: <ccf14e7fef0a3eab6ad877204ddc1113763c8a63.1649219184.git.kai.huang@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
-References: <cover.1649219184.git.kai.huang@intel.com>
+   d="scan'208";a="549413737"
+Received: from cqiang-mobl.ccr.corp.intel.com (HELO [10.249.170.41]) ([10.249.170.41])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 23:47:02 -0700
+Message-ID: <9b45d2bc-9bb3-53a1-3eb3-4b1bf6987268@intel.com>
+Date:   Wed, 6 Apr 2022 14:46:59 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v5 1/3] KVM: X86: Save&restore the triple fault request
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220318074955.22428-1-chenyi.qiang@intel.com>
+ <20220318074955.22428-2-chenyi.qiang@intel.com> <YkzRSHHDMaVBQrxd@google.com>
+From:   Chenyi Qiang <chenyi.qiang@intel.com>
+In-Reply-To: <YkzRSHHDMaVBQrxd@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before TDX module can use the global KeyID to access TDX metadata, the
-key of the global KeyID must be configured on all physical packages via
-TDH.SYS.KEY.CONFIG.  This SEAMCALL cannot run concurrently on different
-cpus since it exclusively acquires the TDX module.
 
-Implement a helper to run SEAMCALL on one (any) cpu for all packages in
-serialized way, and run TDH.SYS.KEY.CONFIG on all packages using the
-helper.
 
-The TDX module uses the global KeyID to initialize its metadata (PAMTs).
-Before TDX module can do that, all cachelines of PAMTs must be flushed.
-Otherwise, they may silently corrupt the PAMTs later initialized by the
-TDX module.
+On 4/6/2022 7:31 AM, Sean Christopherson wrote:
+> On Fri, Mar 18, 2022, Chenyi Qiang wrote:
+>> For the triple fault sythesized by KVM, e.g. the RSM path or
+>> nested_vmx_abort(), if KVM exits to userspace before the request is
+>> serviced, userspace could migrate the VM and lose the triple fault.
+>> Fix this issue by adding a new event KVM_VCPUEVENT_TRIPLE_FAULT in
+>> get/set_vcpu_events() to track the triple fault request.
+>>
+>> Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
+>> ---
+>>   Documentation/virt/kvm/api.rst  | 6 ++++++
+>>   arch/x86/include/uapi/asm/kvm.h | 1 +
+>>   arch/x86/kvm/x86.c              | 9 ++++++++-
+>>   3 files changed, 15 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+>> index 691ff84444bd..9682b0a438bd 100644
+>> --- a/Documentation/virt/kvm/api.rst
+>> +++ b/Documentation/virt/kvm/api.rst
+>> @@ -1146,6 +1146,9 @@ The following bits are defined in the flags field:
+>>     fields contain a valid state. This bit will be set whenever
+>>     KVM_CAP_EXCEPTION_PAYLOAD is enabled.
+>>   
+>> +- KVM_VCPUEVENT_TRIPLE_FAULT may be set to signal that there's a
+>> +  triple fault request waiting to be serviced.
+> 
+> Please avoid "request" in the docs, as before, that's a KVM implemenation detail.
+> For this one, maybe "there's a pending triple fault event"?
+> 
+>> +
+>>   ARM/ARM64:
+>>   ^^^^^^^^^^
+>>   
+>> @@ -1241,6 +1244,9 @@ can be set in the flags field to signal that the
+>>   exception_has_payload, exception_payload, and exception.pending fields
+>>   contain a valid state and shall be written into the VCPU.
+>>   
+>> +KVM_VCPUEVENT_TRIPLE_FAULT can be set in flags field to signal that a
+>> +triple fault request should be made.
+> 
+> 
+> And here, "to signal that KVM should synthesize a triple fault for the guest"?
+> 
+>> +
+>>   ARM/ARM64:
+>>   ^^^^^^^^^^
+>>   
+>> diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+>> index bf6e96011dfe..d8ef0d993e86 100644
+>> --- a/arch/x86/include/uapi/asm/kvm.h
+>> +++ b/arch/x86/include/uapi/asm/kvm.h
+>> @@ -325,6 +325,7 @@ struct kvm_reinject_control {
+>>   #define KVM_VCPUEVENT_VALID_SHADOW	0x00000004
+>>   #define KVM_VCPUEVENT_VALID_SMM		0x00000008
+>>   #define KVM_VCPUEVENT_VALID_PAYLOAD	0x00000010
+>> +#define KVM_VCPUEVENT_TRIPLE_FAULT	0x00000020
+>>   
+>>   /* Interrupt shadow states */
+>>   #define KVM_X86_SHADOW_INT_MOV_SS	0x01
+>> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+>> index 4fa4d8269e5b..fee402a700df 100644
+>> --- a/arch/x86/kvm/x86.c
+>> +++ b/arch/x86/kvm/x86.c
+>> @@ -4891,6 +4891,9 @@ static void kvm_vcpu_ioctl_x86_get_vcpu_events(struct kvm_vcpu *vcpu,
+>>   	if (vcpu->kvm->arch.exception_payload_enabled)
+>>   		events->flags |= KVM_VCPUEVENT_VALID_PAYLOAD;
+>>   
+>> +	if (kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu))
+>> +		events->flags |= KVM_VCPUEVENT_TRIPLE_FAULT;
+>> +
+>>   	memset(&events->reserved, 0, sizeof(events->reserved));
+>>   }
+>>   
+>> @@ -4903,7 +4906,8 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
+>>   			      | KVM_VCPUEVENT_VALID_SIPI_VECTOR
+>>   			      | KVM_VCPUEVENT_VALID_SHADOW
+>>   			      | KVM_VCPUEVENT_VALID_SMM
+>> -			      | KVM_VCPUEVENT_VALID_PAYLOAD))
+>> +			      | KVM_VCPUEVENT_VALID_PAYLOAD
+>> +			      | KVM_VCPUEVENT_TRIPLE_FAULT))
+>>   		return -EINVAL;
+>>   
+>>   	if (events->flags & KVM_VCPUEVENT_VALID_PAYLOAD) {
+>> @@ -4976,6 +4980,9 @@ static int kvm_vcpu_ioctl_x86_set_vcpu_events(struct kvm_vcpu *vcpu,
+>>   		}
+>>   	}
+>>   
+>> +	if (events->flags & KVM_VCPUEVENT_TRIPLE_FAULT)
+>> +		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
+>> +
+>>   	kvm_make_request(KVM_REQ_EVENT, vcpu);
+> 
+> Looks correct, but this really needs a selftest, at least for the SET path since
+> the intent is to use that for the NOTIFY handling.  Doesn't need to be super fancy,
+> e.g. do port I/O from L2, inject a triple fault, and verify L1 sees the appropriate
+> exit.
+> 
+> Aha!  And for the GET path, abuse KVM_X86_SET_MCE with CR4.MCE=0 to coerce KVM into
+> making a KVM_REQ_TRIPLE_FAULT, that way there's no need to try and hit a timing
+> window to intercept the request.
 
-Use wbinvd to flush cache as PAMTs can be potentially large (~1/256th of
-system RAM).
-
-Flush cache before configuring the global KeyID on all packages, as
-suggested by TDX specification.  In practice, the current generation of
-TDX doesn't use the global KeyID in TDH.SYS.KEY.CONFIG.  Therefore in
-practice flushing cache can be done after configuring the global KeyID
-is done on all packages.  But the future generation of TDX may change
-this behaviour, so just follow TDX specification's suggestion to flush
-cache before configuring the global KeyID on all packages.
-
-Signed-off-by: Kai Huang <kai.huang@intel.com>
----
- arch/x86/virt/vmx/tdx/tdx.c | 96 ++++++++++++++++++++++++++++++++++++-
- arch/x86/virt/vmx/tdx/tdx.h |  1 +
- 2 files changed, 96 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index 2bf49d3d7cfe..bb15122fb8bd 100644
---- a/arch/x86/virt/vmx/tdx/tdx.c
-+++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -23,6 +23,7 @@
- #include <asm/virtext.h>
- #include <asm/e820/api.h>
- #include <asm/pgtable.h>
-+#include <asm/smp.h>
- #include <asm/tdx.h>
- #include "tdx.h"
- 
-@@ -398,6 +399,46 @@ static int seamcall_on_each_cpu(struct seamcall_ctx *sc)
- 	return atomic_read(&sc->err);
- }
- 
-+/*
-+ * Call the SEAMCALL on one (any) cpu for each physical package in
-+ * serialized way.  Return immediately in case of any error while
-+ * calling SEAMCALL on any cpu.
-+ *
-+ * Note for serialized calls 'struct seamcall_ctx::err' doesn't have
-+ * to be atomic, but for simplicity just reuse it instead of adding
-+ * a new one.
-+ */
-+static int seamcall_on_each_package_serialized(struct seamcall_ctx *sc)
-+{
-+	cpumask_var_t packages;
-+	int cpu, ret = 0;
-+
-+	if (!zalloc_cpumask_var(&packages, GFP_KERNEL))
-+		return -ENOMEM;
-+
-+	for_each_online_cpu(cpu) {
-+		if (cpumask_test_and_set_cpu(topology_physical_package_id(cpu),
-+					packages))
-+			continue;
-+
-+		ret = smp_call_function_single(cpu, seamcall_smp_call_function,
-+				sc, true);
-+		if (ret)
-+			break;
-+
-+		/*
-+		 * Doesn't have to use atomic_read(), but it doesn't
-+		 * hurt either.
-+		 */
-+		ret = atomic_read(&sc->err);
-+		if (ret)
-+			break;
-+	}
-+
-+	free_cpumask_var(packages);
-+	return ret;
-+}
-+
- static inline bool p_seamldr_ready(void)
- {
- 	return !!p_seamldr_info.p_seamldr_ready;
-@@ -1320,6 +1361,21 @@ static int config_tdx_module(struct tdmr_info **tdmr_array, int tdmr_num,
- 	return ret;
- }
- 
-+static int config_global_keyid(void)
-+{
-+	struct seamcall_ctx sc = { .fn = TDH_SYS_KEY_CONFIG };
-+
-+	/*
-+	 * Configure the key of the global KeyID on all packages by
-+	 * calling TDH.SYS.KEY.CONFIG on all packages.
-+	 *
-+	 * TDH.SYS.KEY.CONFIG may fail with entropy error (which is
-+	 * a recoverable error).  Assume this is exceedingly rare and
-+	 * just return error if encountered instead of retrying.
-+	 */
-+	return seamcall_on_each_package_serialized(&sc);
-+}
-+
- static int init_tdx_module(void)
- {
- 	struct tdmr_info **tdmr_array;
-@@ -1370,6 +1426,37 @@ static int init_tdx_module(void)
- 	if (ret)
- 		goto out_free_pamts;
- 
-+	/*
-+	 * The same physical address associated with different KeyIDs
-+	 * has separate cachelines.  Before using the new KeyID to access
-+	 * some memory, the cachelines associated with the old KeyID must
-+	 * be flushed, otherwise they may later silently corrupt the data
-+	 * written with the new KeyID.  After cachelines associated with
-+	 * the old KeyID are flushed, CPU speculative fetch using the old
-+	 * KeyID is OK since the prefetched cachelines won't be consumed
-+	 * by CPU core.
-+	 *
-+	 * TDX module initializes PAMTs using the global KeyID to crypto
-+	 * protect them from malicious host.  Before that, the PAMTs are
-+	 * used by kernel (with KeyID 0) and the cachelines associated
-+	 * with the PAMTs must be flushed.  Given PAMTs are potentially
-+	 * large (~1/256th of system RAM), just use WBINVD on all cpus to
-+	 * flush the cache.
-+	 *
-+	 * In practice, the current generation of TDX doesn't use the
-+	 * global KeyID in TDH.SYS.KEY.CONFIG.  Therefore in practice,
-+	 * the cachelines can be flushed after configuring the global
-+	 * KeyID on all pkgs is done.  But the future generation of TDX
-+	 * may change this, so just follow the suggestion of TDX spec to
-+	 * flush cache before TDH.SYS.KEY.CONFIG.
-+	 */
-+	wbinvd_on_all_cpus();
-+
-+	/* Config the key of global KeyID on all packages */
-+	ret = config_global_keyid();
-+	if (ret)
-+		goto out_free_pamts;
-+
- 	/*
- 	 * Return -EFAULT until all steps of TDX module
- 	 * initialization are done.
-@@ -1380,8 +1467,15 @@ static int init_tdx_module(void)
- 	 * Free PAMTs allocated in construct_tdmrs() when TDX module
- 	 * initialization fails.
- 	 */
--	if (ret)
-+	if (ret) {
-+		/*
-+		 * Part of PAMTs may already have been initialized by
-+		 * TDX module.  Flush cache before returning them back
-+		 * to kernel.
-+		 */
-+		wbinvd_on_all_cpus();
- 		tdmrs_free_pamt_all(tdmr_array, tdmr_num);
-+	}
- out_free_tdmrs:
- 	/*
- 	 * TDMRs are only used during initializing TDX module.  Always
-diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-index d8e2800397af..bba8cabea4bb 100644
---- a/arch/x86/virt/vmx/tdx/tdx.h
-+++ b/arch/x86/virt/vmx/tdx/tdx.h
-@@ -122,6 +122,7 @@ struct tdmr_info {
- /*
-  * TDX module SEAMCALL leaf functions
-  */
-+#define TDH_SYS_KEY_CONFIG	31
- #define TDH_SYS_INFO		32
- #define TDH_SYS_INIT		33
- #define TDH_SYS_LP_INIT		35
--- 
-2.35.1
+OK, will cook a selftest to verify it.
 
