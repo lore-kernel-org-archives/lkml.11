@@ -2,132 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:43:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F32C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiDFMpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
+        id S230329AbiDFMp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231772AbiDFMoW (ORCPT
+        with ESMTP id S231908AbiDFMoq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:44:22 -0400
-X-Greylist: delayed 347 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 01:46:10 PDT
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F7744A4C7
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:46:09 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 05802201FAA;
-        Wed,  6 Apr 2022 10:40:17 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 69486201E9B;
-        Wed,  6 Apr 2022 10:40:16 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 4E5FA183AC8A;
-        Wed,  6 Apr 2022 16:40:14 +0800 (+08)
-From:   Sandor.yu@nxp.com
-To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        andrzej.hajda@intel.com, narmstrong@baylibre.com,
-        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com
-Cc:     Sandor.yu@nxp.com, shengjiu.wang@nxp.com, cai.huoqing@linux.dev,
-        maxime@cerno.tech, harry.wentland@amd.com,
-        hverkuil-cisco@xs4all.nl, amuel@sholland.org
-Subject: [PATCH v1 4/5] drm: bridge: dw_hdmi: add reset function for PHY GEN1
-Date:   Wed,  6 Apr 2022 16:48:36 +0800
-Message-Id: <800262112191a720639ba321be18f0926d4e1d2a.1649230434.git.Sandor.yu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1649230434.git.Sandor.yu@nxp.com>
-References: <cover.1649230434.git.Sandor.yu@nxp.com>
-In-Reply-To: <cover.1649230434.git.Sandor.yu@nxp.com>
-References: <cover.1649230434.git.Sandor.yu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 6 Apr 2022 08:44:46 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7304F58967D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:47:55 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYJ5F57xNzgYR6;
+        Wed,  6 Apr 2022 16:46:09 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 16:47:53 +0800
+Subject: Re: [PATCH] mm/swapfile: unuse_pte can map random data if swap read
+ fails
+To:     Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>
+CC:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220401072926.45051-1-linmiaohe@huawei.com>
+ <ac13a529-5000-19c9-bbd8-3ee634a923cc@redhat.com>
+ <Ykr8l0sUOtAa3yUY@casper.infradead.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <23943d63-1fc4-68ce-938f-0f9b53950710@huawei.com>
+Date:   Wed, 6 Apr 2022 16:47:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <Ykr8l0sUOtAa3yUY@casper.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sandor Yu <Sandor.yu@nxp.com>
+On 2022/4/4 22:11, Matthew Wilcox wrote:
+> On Mon, Apr 04, 2022 at 03:37:36PM +0200, David Hildenbrand wrote:
+>> On 01.04.22 09:29, Miaohe Lin wrote:
+>>> There is a bug in unuse_pte(): when swap page happens to be unreadable,
+>>> page filled with random data is mapped into user address space. The fix
+>>> is to check for PageUptodate and fail swapoff in case of error.
+>>>
+>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>> ---
+>>>  mm/swapfile.c | 4 ++++
+>>>  1 file changed, 4 insertions(+)
+>>>
+>>> diff --git a/mm/swapfile.c b/mm/swapfile.c
+>>> index 63c61f8b2611..e72a35de7a0f 100644
+>>> --- a/mm/swapfile.c
+>>> +++ b/mm/swapfile.c
+>>> @@ -1795,6 +1795,10 @@ static int unuse_pte(struct vm_area_struct *vma, pmd_t *pmd,
+>>>  		ret = 0;
+>>>  		goto out;
+>>>  	}
+>>> +	if (unlikely(!PageUptodate(page))) {
+>>> +		ret = -EIO;
+>>> +		goto out;
+>>> +	}
+>>
+>> Yeah, we have the same handling in do_swap_page(), whereby we send a
+>> SIGBUS because we're dealing with an actual access.
+>>
+>> Interestingly, folio_test_uptodate() states:
+>>
+>> "Anonymous and CoW folios are always uptodate."
+>>
+>> @Willy, is that true or is the swapin case not documented there?
+> 
+> Why do we keep a !Uptodate page in the swap cache?  If it can't be
+> read in from swap, I thought we just freed the page.  Since Miaohe
 
-PHY reset register(MC_PHYRSTZ) active high reset control for PHY GEN2,
-and active low reset control for PHY GEN1.
+We could free the bad page. But we still need a way to prevent user from
+accessing the wrong data.
 
-Rename function dw_hdmi_phy_reset to dw_hdmi_phy_gen2_reset.
-Add dw_hdmi_phy_gen1_reset function for PHY GEN1.
+> has observed that not happening, I guess it doesn't work that way,
+> but why not make it work that way?
 
-Signed-off-by: Sandor Yu <Sandor.yu@nxp.com>
----
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 14 +++++++++++---
- drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c    |  2 +-
- include/drm/bridge/dw_hdmi.h              |  4 +++-
- 3 files changed, 15 insertions(+), 5 deletions(-)
+How could we make it work that way? Could you please tell me in more detail?
+Or any suggestions?
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index c7b11582529e..c6e701acd416 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -1365,13 +1365,21 @@ static void dw_hdmi_phy_sel_interface_control(struct dw_hdmi *hdmi, u8 enable)
- 			 HDMI_PHY_CONF0_SELDIPIF_MASK);
- }
- 
--void dw_hdmi_phy_reset(struct dw_hdmi *hdmi)
-+void dw_hdmi_phy_gen1_reset(struct dw_hdmi *hdmi)
-+{
-+	/* PHY reset. The reset signal is active low on Gen1 PHYs. */
-+	hdmi_writeb(hdmi, 0, HDMI_MC_PHYRSTZ);
-+	hdmi_writeb(hdmi, HDMI_MC_PHYRSTZ_PHYRSTZ, HDMI_MC_PHYRSTZ);
-+}
-+EXPORT_SYMBOL_GPL(dw_hdmi_phy_gen1_reset);
-+
-+void dw_hdmi_phy_gen2_reset(struct dw_hdmi *hdmi)
- {
- 	/* PHY reset. The reset signal is active high on Gen2 PHYs. */
- 	hdmi_writeb(hdmi, HDMI_MC_PHYRSTZ_PHYRSTZ, HDMI_MC_PHYRSTZ);
- 	hdmi_writeb(hdmi, 0, HDMI_MC_PHYRSTZ);
- }
--EXPORT_SYMBOL_GPL(dw_hdmi_phy_reset);
-+EXPORT_SYMBOL_GPL(dw_hdmi_phy_gen2_reset);
- 
- void dw_hdmi_phy_i2c_set_addr(struct dw_hdmi *hdmi, u8 address)
- {
-@@ -1525,7 +1533,7 @@ static int hdmi_phy_configure(struct dw_hdmi *hdmi,
- 	if (phy->has_svsret)
- 		dw_hdmi_phy_enable_svsret(hdmi, 1);
- 
--	dw_hdmi_phy_reset(hdmi);
-+	dw_hdmi_phy_gen2_reset(hdmi);
- 
- 	hdmi_writeb(hdmi, HDMI_MC_HEACPHY_RST_ASSERT, HDMI_MC_HEACPHY_RST);
- 
-diff --git a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-index 5e2b0175df36..2860e6bff8b7 100644
---- a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-+++ b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-@@ -135,7 +135,7 @@ static int sun8i_hdmi_phy_config_a83t(struct dw_hdmi *hdmi,
- 	dw_hdmi_phy_gen2_txpwron(hdmi, 0);
- 	dw_hdmi_phy_gen2_pddq(hdmi, 1);
- 
--	dw_hdmi_phy_reset(hdmi);
-+	dw_hdmi_phy_gen2_reset(hdmi);
- 
- 	dw_hdmi_phy_gen2_pddq(hdmi, 0);
- 
-diff --git a/include/drm/bridge/dw_hdmi.h b/include/drm/bridge/dw_hdmi.h
-index 2a1f85f9a8a3..70082f80a8c8 100644
---- a/include/drm/bridge/dw_hdmi.h
-+++ b/include/drm/bridge/dw_hdmi.h
-@@ -187,9 +187,11 @@ void dw_hdmi_phy_i2c_set_addr(struct dw_hdmi *hdmi, u8 address);
- void dw_hdmi_phy_i2c_write(struct dw_hdmi *hdmi, unsigned short data,
- 			   unsigned char addr);
- 
-+void dw_hdmi_phy_gen1_reset(struct dw_hdmi *hdmi);
-+
- void dw_hdmi_phy_gen2_pddq(struct dw_hdmi *hdmi, u8 enable);
- void dw_hdmi_phy_gen2_txpwron(struct dw_hdmi *hdmi, u8 enable);
--void dw_hdmi_phy_reset(struct dw_hdmi *hdmi);
-+void dw_hdmi_phy_gen2_reset(struct dw_hdmi *hdmi);
- 
- enum drm_connector_status dw_hdmi_phy_read_hpd(struct dw_hdmi *hdmi,
- 					       void *data);
--- 
-2.25.1
+Many thanks!
+
+> 
+> .
+> 
 
