@@ -2,71 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 062D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:38:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbiDFJkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:40:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
+        id S1344673AbiDFJky (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 05:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1585398AbiDFJgZ (ORCPT
+        with ESMTP id S1585582AbiDFJgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:36:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CF42713BF;
-        Tue,  5 Apr 2022 19:14:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9136B80E2C;
-        Wed,  6 Apr 2022 02:14:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B35C385A0;
-        Wed,  6 Apr 2022 02:14:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649211255;
-        bh=XdBZej03OeBo+18/e4QPeg0/pTn8quJVETWrS97Y3p4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aHVGKhLClKU8O/mFZSXbm7xTBh3CmgQY4VZWWiSDOcxogHlQAywMkXPb7i34nRtSl
-         FBJIOKGDhcLJImcv8RdqY7bPWDNDctLrida+bdHOutqMoXs57lAj3x0VaNWREmZX2S
-         W6NtPit5fHKwr34To8KVGQSUPvERqurU6CcVc7UkabiJgY1dBoexQ54mhWMml693HH
-         oNI17MN5uQHYJv9+WzCdcOBKo+Buw8zPm9/Mq1OlZUr+qM2A4vysK5z3amP/2RKcnv
-         bSkyoLd260aHUDwpHQOKNOR0Punw6nnxXpMbqxOMDZkrZ30ZH2K3hXCxlRypo+oyBu
-         TiHXG/0yi4unA==
-Date:   Wed, 6 Apr 2022 10:14:07 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Jander <david@protonic.nl>, devicetree@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v1 1/8] ARM: dts: imx6qdl-vicut1/vicutgo: Set default
- backlight brightness to maximum
-Message-ID: <20220406021407.GG129381@dragon>
-References: <20220221095312.3692669-1-o.rempel@pengutronix.de>
+        Wed, 6 Apr 2022 05:36:32 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E9213A1CA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:26:38 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id q26so950057edc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:26:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L0kN2mvmwQNNtvPp2RShdfNb1tA7tCIbp7VBq6LYez4=;
+        b=iPWy6+0V6Z7cYgmmqI81g4OAUUB8MRCno8hqy8BW/l7BT+hJFxKv+kJ1Pp2pI2iqOi
+         zZHGQFsQesezNZsU4vTt3FAJeWqK8SEJaV27yBct6SWfpbWOQyF5AlxEeWean9Zu1Mxe
+         pQBKHHykj8FBi66czv7qJa4Lf7zoYv5WNgJc0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L0kN2mvmwQNNtvPp2RShdfNb1tA7tCIbp7VBq6LYez4=;
+        b=3cDOF1yPFpNoOVHZGobMZNnPBlz89WFBZqw1FjIpZ0wHrKnYd5pcKSeKJuXSkPCKiO
+         Aul+SJiwcCmMkgQvXhP5lssGlhEzB9TGSatG6Gmv++gLt+3A2v6/tEMQaMlDNUPtZY1g
+         mMaNFbJR+myd8I4irin3OMv/GzaGA/QeNTpPfdo2o2Aebqar4qI1tL6ii8O76kbR26tb
+         kQS6d/WFlfO/if5JiJBtSGL3QxiFfQpJcidJ+fN7rrxl7tKSIA8r5QGj62zeULq6busS
+         6YOim0YXvQ55EHISlS5LwO4Y0qIcrIY1TKU0c3/CKNR65fo9wss6j/oIt3IpvXAK7eR3
+         HhiA==
+X-Gm-Message-State: AOAM532U0AOG/SmBTFG6N4YqMCFRKwvu0v4vrAJp8awFuYn113ZeB2e8
+        oFaDwUr6EG3gnvr7W/Y8rEM9OsKI1LVTYSC8iTc=
+X-Google-Smtp-Source: ABdhPJwwIq69RiUxwpvcJftYcufQruEPcSIumVjf071rkCoRNNwsw57USVVq4LNSPdljtTHTBv+DkQ==
+X-Received: by 2002:aa7:cc82:0:b0:410:d2b0:1a07 with SMTP id p2-20020aa7cc82000000b00410d2b01a07mr6499152edt.359.1649211996777;
+        Tue, 05 Apr 2022 19:26:36 -0700 (PDT)
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
+        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006d2a835ac33sm6026342ejc.197.2022.04.05.19.26.35
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 19:26:35 -0700 (PDT)
+Received: by mail-wm1-f50.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so2724045wmb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:26:35 -0700 (PDT)
+X-Received: by 2002:a1c:7518:0:b0:37c:7eb:f255 with SMTP id
+ o24-20020a1c7518000000b0037c07ebf255mr5314285wmc.29.1649211994685; Tue, 05
+ Apr 2022 19:26:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221095312.3692669-1-o.rempel@pengutronix.de>
+References: <20220406014842.2771799-1-briannorris@chromium.org> <20220405184816.RFC.1.Ib865f199d15221eab4ff77f70bd7e9e2eb04d32f@changeid>
+In-Reply-To: <20220405184816.RFC.1.Ib865f199d15221eab4ff77f70bd7e9e2eb04d32f@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 5 Apr 2022 19:26:22 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Xz+KLySeUBHe1CXEbMrjeT97HvCOdiRRG7wGcwbjQX8A@mail.gmail.com>
+Message-ID: <CAD=FV=Xz+KLySeUBHe1CXEbMrjeT97HvCOdiRRG7wGcwbjQX8A@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/2] soc: rockchip: power-domain: Manage resource
+ conflicts with firmware
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Elaine Zhang <zhangqing@rock-chips.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:53:05AM +0100, Oleksij Rempel wrote:
-> From: David Jander <david@protonic.nl>
-> 
-> Recover default behavior of the device and set maximal brightness
-> 
-> Signed-off-by: David Jander <david@protonic.nl>
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Hi,
 
-Applied, thanks!
+On Tue, Apr 5, 2022 at 6:49 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> On RK3399 platforms, power domains are managed mostly by the kernel
+> (drivers/soc/rockchip/pm_domains.c), but there are a few exceptions
+> where ARM Trusted Firmware has to be involved:
+>
+> (1) system suspend/resume
+> (2) DRAM DVFS (a.k.a., "ddrfreq")
+>
+> Exception (1) does not cause much conflict, since the kernel has
+> quiesced itself by the time we make the relevant PSCI call.
+>
+> Exception (2) can cause conflict, because of two actions:
+>
+> (a) ARM Trusted Firmware needs to read/modify/write the PMU_BUS_IDLE_REQ
+>     register to idle the memory controller domain; the kernel driver
+>     also has to touch this register for other domains.
+> (b) ARM Trusted Firmware needs to manage the clocks associated with
+>     these domains.
+>
+> To elaborate on (b): idling a power domain has always required ungating
+> an array of clocks; see this old explanation from Rockchip:
+> https://lore.kernel.org/linux-arm-kernel/54503C19.9060607@rock-chips.com/
+>
+> Historically, ARM Trusted Firmware has avoided this issue by using a
+> special PMU_CRU_GATEDIS_CON0 register -- this register ungates all the
+> necessary clocks -- when idling the memory controller. Unfortunately,
+> we've found that this register is not 100% sufficient; it does not turn
+> the relevant PLLs on [0].
+>
+> So it's possible to trigger issues with something like the following:
+>
+> 1. enable a power domain (e.g., RK3399_PD_VDU) -- kernel will
+>    temporarily enable relevant clocks/PLLs, then turn them back off
+>    2. a PLL (e.g., PLL_NPLL) is part of the clock tree for
+>       RK3399_PD_VDU's clocks but otherwise unused; NPLL is disabled
+> 3. perform a ddrfreq transition (rk3399_dmcfreq_target() -> ...
+>    drivers/clk/rockchip/clk-ddr.c / ROCKCHIP_SIP_DRAM_FREQ)
+>    4. ARM Trusted Firmware unagates VDU clocks (via PMU_CRU_GATEDIS_CON0)
+>    5. ARM Trusted firmware idles the memory controller domain
+>    6. Step 5 waits on the VDU domain/clocks, but NPLL is still off
+>
+> i.e., we hang the system.
+>
+> So for (b), we need to at a minimum manage the relevant PLLs on behalf
+> of firmware. It's easier to simply manage the whole clock tree, in a
+> similar way we do in rockchip_pd_power().
+>
+> For (a), we need to provide mutual exclusion betwen rockchip_pd_power()
+> and firmware. To resolve that, we simply grab the PMU mutex and release
+> it when ddrfreq is done.
+>
+> The Chromium OS kernel has been carrying versions of part of this hack
+> for a while, based on some new custom notifiers [1]. I've rewritten as a
+> simple function call between the drivers, which is OK because:
+>
+>  * the PMU driver isn't enabled, and we don't have this problem at all
+>    (the firmware should have left us in an OK state, and there are no
+>    runtime conflicts); or
+>  * the PMU driver is present, and is a single instance.
+>
+> And the power-domain driver cannot be removed, so there's no lifetime
+> management to worry about.
+>
+> For completeness, there's a 'dmc_pmu_mutex' to guard (likely
+> theoretical?) probe()-time races. It's OK for the memory controller
+> driver to start running before the PMU, because the PMU will avoid any
+> critical actions during the block() sequence.
+>
+> [0] The RK3399 TRM for PMU_CRU_GATEDIS_CON0 only talks about ungating
+>     clocks. Based on experimentation, we've found that it does not power
+>     up the necessary PLLs.
+>
+> [1] CHROMIUM: soc: rockchip: power-domain: Add notifier to dmc driver
+>     https://chromium-review.googlesource.com/q/I242dbd706d352f74ff706f5cbf42ebb92f9bcc60
+>     Notably, the Chromium solution only handled conflict (a), not (b).
+>     In practice, item (b) wasn't a problem in many cases because we
+>     never managed to fully power off PLLs. Now that the (upstream) video
+>     decoder driver performs runtime clock management, we often power off
+>     NPLL.
+>
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+>
+>  drivers/soc/rockchip/pm_domains.c | 118 ++++++++++++++++++++++++++++++
+>  include/soc/rockchip/pm_domains.h |  25 +++++++
+>  2 files changed, 143 insertions(+)
+
+I've already done several pre-review of a few versions of this, so at
+this point I'm pretty happy with where things are. Feel free to add:
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
