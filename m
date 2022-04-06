@@ -2,232 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC03C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:06:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7603EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:07:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238135AbiDFRIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42564 "EHLO
+        id S238470AbiDFRJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238365AbiDFRII (ORCPT
+        with ESMTP id S238025AbiDFRI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:08:08 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1C423B3FA
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:44:10 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id w4so3522342wrg.12
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:44:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Q7tTbUPj80zQFrsreVSfIyDmqBy9SR/9Gbp8AYxxfBQ=;
-        b=QeNOqhK6B2CXR8G/hrFhDjbWjL1lx7JCOEk3CHVDMkgvFSBTGaM2Mg+fj2Nm1zo8Ey
-         SyAtjm8ke72MI/W/IETggJqBL/Ht5+gD/vb8YoTbnxp2Ya8SVoV8oWklM0TgP2O88WO0
-         NMEFNI2hUIDHZXrTXl5S5wRHohvOgI5C9/gVX8U4+ZSdqPusTi5A0UfVskscfSdKrhAf
-         yAnVr3qSFXmJ67PzUiDzxftUEucttojSRWQZlUNG4AeyPHXDMNm4JXR1q2mMR/RiQaLQ
-         fwSBn+nSCXH60hduajUDRB2MkMX7Cc1Q2OKgKLXITnp8LQf+Jp/+NjPd0LP472JUoVw7
-         f/Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Q7tTbUPj80zQFrsreVSfIyDmqBy9SR/9Gbp8AYxxfBQ=;
-        b=cBlHbDB/t28bMl9agUlm94cN4kspsH1jFVuEuwgen/LWQ7daqpNG7s6IgsppPziY3l
-         nF5ZAeDRfDc7St15Q7CmmeRvzvK+ZyIEVI52vAhm5bOw/ZpLUaPxXV7mlhslDY9Cl8LJ
-         6pupjbU8dqRj8FiYt4MQOyNdeU2j46hRnT7xpJHbPNViF+Yrk2jQVdlEUSGSuyhv5CKN
-         F/n1xxVTpTr3kg5mYqlGxdDonRJI6YhGLyLZ12KPMjl9/asUJGCE4ncPpjEhiZvvS582
-         3ghm+X/VAKFy8YZoL6inmmNxlpuG8AuZmV2CnVwNLEe0WCYXApp+JhyIlKsFdfGsev4b
-         yanw==
-X-Gm-Message-State: AOAM530sCpRB3gvMEW/ErG7CVNIlgA/v3HYhJqT65Jg0Q7+HB/E9jjiV
-        hZRofXUH0/fdXmHFCZyxcCvMrQ==
-X-Google-Smtp-Source: ABdhPJyX2H6+/xrddJqBK7sgjp1Of7OvV2pwupg2yuPXedmLBl5N4VGH82cdf/FI6si47PLAHHoKHw==
-X-Received: by 2002:a05:6000:10cf:b0:206:1d1c:5480 with SMTP id b15-20020a05600010cf00b002061d1c5480mr7051977wrx.546.1649256249144;
-        Wed, 06 Apr 2022 07:44:09 -0700 (PDT)
-Received: from ?IPV6:2a01:e34:ed2f:f020:261f:c14c:d23b:d177? ([2a01:e34:ed2f:f020:261f:c14c:d23b:d177])
-        by smtp.googlemail.com with ESMTPSA id l20-20020a05600c1d1400b0038cba2f88c0sm7191217wms.26.2022.04.06.07.44.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 07:44:07 -0700 (PDT)
-Message-ID: <9ccb342b-2f20-6efd-a668-96d593aa921e@linaro.org>
-Date:   Wed, 6 Apr 2022 16:44:06 +0200
-MIME-Version: 1.0
+        Wed, 6 Apr 2022 13:08:56 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2059.outbound.protection.outlook.com [40.107.220.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734E43C095D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:43:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BSGJMO60M+Lf2VaP57q14fE9kFvazq/+scgjEkiMrOPtw1KXupFfjF3lJURacBkLkyrTqlE3UPubHn7TcnHS4r/zOY331MblcGOxb6CFAR3iDsnSh34+C+nIFXCFKpLQ+UYuNvMYl2ElSHJuP0PwUAwJqVS9htO4pp0QtmQ0iB7FGtOgPTYVrMnT8I0COSGNQZZu2wNKYV7cnILPKotgL1HmkiGYD0AWOSpiJvMf+QtV76EswisjzG4Gdgd9/xBLzOc7nUNLjSc2CHjCZxKmRef4jg7GJHI3puyIJ9gKukqMVq0OEZBEeMw9noURgTDcWQ0II0f5gYiMNpiXwWLjGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e0tG722rojWuzBmjzfN/8GxYdGBqBp6+3mapqtEfS9E=;
+ b=D+m74p7pyw+V/k//MIHZV9qn0Ap7RnE/RLRA5OYHw30flhHP3B0NjVz2PKP1eMTmXXPA7Uhs2Ye+Tt6H+0/UB3iIv0szqaGrVFWbSBJ0e9Ia4he9hthbhfygvF7tyLqiHMjs83CQ/5XPmd5+PMzrDrK0rbC/X5/Z4rorydu6sMEiBSPvxhvxSILvdDmzaB3cjegkv99xq226tx+VDREJpWGYiNEF24iqBkKuaIkiLKHRBm2Vx2g8cOCqLZYXRujgz1OT3Sfsw01t8VOTEZrid5DEbqrceLAJeYgvrf21ZmsTBn8wRJw2uGME24gMF8nP9IZeJGmy3caijxpLRUsOKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e0tG722rojWuzBmjzfN/8GxYdGBqBp6+3mapqtEfS9E=;
+ b=wrblmX0U68Mgm+v/swwjy5+rMJOpu83DVb6DMyTa+UjrJ/5bHIWzVQXYFymiLuQ8dNg3J1YqrHSiheFJeoHqm8H0WEz/WlcsQo35rqVUI3dPcKLn/PpbZRQNY215KEpuojifL+kUVvIT9G+JxdKaugp2CAFPNppmEzu81QpI59g=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by BN8PR12MB2899.namprd12.prod.outlook.com (2603:10b6:408:6b::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 14:43:25 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::a5fb:7137:5e64:cf8]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::a5fb:7137:5e64:cf8%5]) with mapi id 15.20.5144.021; Wed, 6 Apr 2022
+ 14:43:24 +0000
+Message-ID: <f742b6b8-4056-543c-17a5-ae373ca71b45@amd.com>
+Date:   Wed, 6 Apr 2022 16:43:15 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/4] tools/thermal: thermal library and tools
+Subject: Re: [PATCH] drm/amdgpu: Senseless code and unnecessary memset
 Content-Language: en-US
-To:     srinivas pandruvada <srinivas.pandruvada@linux.intel.com>,
-        rafael@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-References: <20220330100444.3846661-1-daniel.lezcano@linaro.org>
- <f526d227-ffbb-4ac0-ceb6-c793ab912559@linaro.org>
- <5380fef6d45f2f7a0b8a5f681934f02943d5e138.camel@linux.intel.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <5380fef6d45f2f7a0b8a5f681934f02943d5e138.camel@linux.intel.com>
+To:     Jani Nikula <jani.nikula@intel.com>,
+        Grigory Vasilyev <h0tc0d3@gmail.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Melissa Wen <mwen@igalia.com>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Jiawei Gu <Jiawei.Gu@amd.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220405173632.2663-1-h0tc0d3@gmail.com>
+ <614a4844-fa5d-8b8e-0628-894394f31608@amd.com> <874k3670ez.fsf@intel.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <874k3670ez.fsf@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AM5PR0301CA0021.eurprd03.prod.outlook.com
+ (2603:10a6:206:14::34) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b64d9cd4-eb2a-41fc-294c-08da17dbcd81
+X-MS-TrafficTypeDiagnostic: BN8PR12MB2899:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB28994460BE369E524CA2AC6883E79@BN8PR12MB2899.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NY/PPDxst2sIfjtAeVDsHQ0hYdgHyjPnBTloWEVu1wb2xFCxG4AKNDO27IljUVUh0secik4Eq/PG8/SZumPcT6RucvLIs17RbI4VS9P0AQ2cVTwR7Jf3iKRg4X3/qeOvSLyuLRtViwUGk6EJXaDtv5MPYA4p5Ot40W+HT9dZVZxu2S+GQefVKeIx7ynntoi3Wzp/rLhzEiiozbGIWpo4EfwFen/oKDWuwrOmEaohWKEiB/Hes+C50iZ/loBNosUXTR3JSSN6lC1uZ3SFEfcRFRPcIwenIjiX4q+twErh5xnoGte8w66RFnNZw5nDkVTKELhM6NdS9WK0SkJSA7ExiQRt5qHj2DyUGNEoH6RgV8/kIAVMFipSX9Z17qeiobE6disWdbymccw2caQJ/CpSx8JteYnJvx0XMaNxtKQE3Fl800ljs6NYnvl22U9JrA4hYfupUTOzCl12R3MA+Um9rqa1sHYATCIjp6AjkTZ6F/2k2lxW/j5zL08QMS4+2U9exi+1vn6CD3pwbsOZAqLJfbfnbJ8QkoWB+TD0HHMlodH3IC77n3iORTUvOhiivlPYoTooDRFTj3H9sJQhF3Hfs/PcT27kVXS7TGmMbo9+HuETdVOKmUZ+jT8ivjbEXk5cbobbHhLmvOW8Ir3hUAttb4IbFsY5r/KohQhrvzBTwVnoIZ0Inwe9EGVuGnx7usNltx9ecqAs4QqV2f06T1jClF9CZN5bTLyj/XW5lnSpP+w=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(54906003)(110136005)(38100700002)(83380400001)(2906002)(8676002)(4326008)(2616005)(66476007)(66946007)(316002)(186003)(31686004)(6486002)(6506007)(31696002)(8936002)(36756003)(508600001)(6666004)(86362001)(5660300002)(6512007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dXVaM2FKdmdib2IrTSt4a2VBcSt0ZDJjOHZiTDJuYWowazBnaXVwTmhPcmVU?=
+ =?utf-8?B?NHhsSVJneVczcFhUdkFqaDF2RWlyLzYwMHhCSmk1cmNUQTY3NTM5ZXNSdUpI?=
+ =?utf-8?B?MU1TTTNxQTIvTzRHZnpIQVk0NTMya05VOHJiQm8wR29FRG9jRDRIVVJlMWNs?=
+ =?utf-8?B?eWFJYWZZalUvRzJWVnJVaGZjSnNRZDVPcm1UNXErRytQRmo0RmNPNlpDV1ZX?=
+ =?utf-8?B?SmNXS25ZVVZzaDlvajR2ZDhxSlEwQ1hLUUpuV3RVZVJLa1pUUVUxU2xFaEI1?=
+ =?utf-8?B?TXE3Y29iWlFkWEswQWJnUloxUHdiV010dXFUOEtiL0F1ZGtZbnQ4Q2dwTUdS?=
+ =?utf-8?B?VksycmQxdDhFOHllZDA0WlZjMElwVndYeEVMMXNPU3ZEdUxJNHorVXNiQnJX?=
+ =?utf-8?B?dmw0dFgzdDJoeG0xS2hJTFNMSUM5bE9qR1ZVdXA3NkhhUWR0OGtCdThQVklq?=
+ =?utf-8?B?RXBDMjJhK1lPYzdxQm9kMk9PTy9sT1crN3FsWXRrU3luSzF4ek42L3B1K2pr?=
+ =?utf-8?B?QVBEbkdaaGo2ZTBQSjU1VVkwdmowNUROK1FvUkNpZ2ZhcXJsRHJnTzFHMW5V?=
+ =?utf-8?B?UEZ4Q0liMFhWWmVVdU9WbklqVzBUcTNiNWx6K2V6MEFEdEZ4MEFaQkU1WkEr?=
+ =?utf-8?B?OVB0OTVqVmRqVXFzVFFjK0pXQWlob1dWVHY2NmhxSUE3d3c4S2I2VU5wMk0z?=
+ =?utf-8?B?K2lxeTdQUWI0dldmdW1KS0U0cmtad2VqMDFKRWJUcmNFY3FoZWNRWHp1eUFx?=
+ =?utf-8?B?b1UwRUxqWUFja3Uvb09vWTNsalA2OEJTZW5DNG9VSFB4WjdSc2RQTXBEdUpz?=
+ =?utf-8?B?d3hlZVlSenV5WUVmZkg2Sjhkc3QwWnlDYXNpYkRsbUIzeUM0cGZwUkwzRlBo?=
+ =?utf-8?B?cWlTY2J3d1NCRCtMWFQxOUt4eHo3cFVNblVmZ1pUSkpqNWFBMzlpUm04MU9h?=
+ =?utf-8?B?NitjN0FHUmFJeURvazdPRHpyVVoxZ04rWWFKQ2Z1OTRlYk4va2pSMzJVVkpY?=
+ =?utf-8?B?OTVDWmVKaG1ab0FmaFNsU3dYeTZ0blNMVE5SeWZhWXg0anB2NVh6VTNMeGNs?=
+ =?utf-8?B?RTdzcmtDU29xR0w3aDJMOXFPNHVTUXVXLzdjZ2kvMW9RWlp2S09yS2lnY0Qy?=
+ =?utf-8?B?c0tKMVZTZ3F5UXFicGw4ZloxbEdnMGZmck9mTnc1TlF2U29rSjdaMXordGZ2?=
+ =?utf-8?B?dXM5dW5melZSVmhaeHJCTzBpek5HaWZMV2d1d3RaMXZoMmpnYSsva3BlNElT?=
+ =?utf-8?B?WXAyNlpzTEp5WFVIUjB6Q2FNVDJCaHRCaGxvRjlvN0lyNGFnSHZWZTQvTkhK?=
+ =?utf-8?B?VVYrakI5UVE1a2UyaEZVU3NJQUVjaW9nUmx5VjFTejB0TnZrTXVoVWZ5aW4w?=
+ =?utf-8?B?OUUrSE5ZdTYvQmtRQnI4dzZvSllpS1prRUVsaDZzVkcrR1B4UkxLYXExVW9R?=
+ =?utf-8?B?bTlWTkNFd3h6TTRHckNIbGdvSjM4Qzl6aC9MZ2x1ZTlFRnNtNE9yMUxIZktQ?=
+ =?utf-8?B?bjFaU0FIRmxZQ2YrNmxyT0VCSTZHKzlZVzlaUGhacWdoY2tyY21tSHIvb292?=
+ =?utf-8?B?MGp1MDlmcmNvUjRmeTNLSkIwSDhhK0RHWHBGYWp4UUk1UDZaOGREQm5Wenlr?=
+ =?utf-8?B?eUFUMEtCWE1oM0ZMWWpqcEpTakZZRTFudWtodVl6TExOYzR3YzFxeitXUTg0?=
+ =?utf-8?B?bkdQNnR5OFZzRG90dko2OUpadUNRWjBkSnI0bFg4Z1Jsc1VxNmp4dmRMWDQv?=
+ =?utf-8?B?RlB3QjFRN1pKK3pmS2RTNGs0Zk0xOXErZU12eFdGYkpjdVJ3Q20wbmozQTdT?=
+ =?utf-8?B?ZnI3Z1VrMXJlSjY2dGt4REF5UkFKNW9KN0pLUDhoYlFlaDVRODhBS21kY0Ry?=
+ =?utf-8?B?dkVlSWU5NHZjODBaMjRqcThCcVUxbUhLT2hsU21yQi8vcWlIU1B3T0tZQ0Vt?=
+ =?utf-8?B?NGJlSTNGOVVVaXlldW9zMmI4Tk40MUNQVlNhR3Rxd1ROTk5mODYzWTNMcHdT?=
+ =?utf-8?B?a3pUTWpKQ1pBZkVHcUZDUGVPbFhiTytkNkNwc2dEWHYzQ2o4Y1FYTkhVTUpQ?=
+ =?utf-8?B?c2tHbVBLQUJOWFcrNDYrVVJYejJ0MVpRT0F5VkwzZzNqSXNQNXZGZkc1RzMz?=
+ =?utf-8?B?bjBNQk1QQ2RBbW1icDBvekY0aGJqaUtDanprODZhdC9QVXlhTXBEMkttWWdT?=
+ =?utf-8?B?VkxFdHh4TmhiOWFCeW5sc2ZOVlNMUnRIa20wNGtrQzN1QldmVXN5VHRnYkg2?=
+ =?utf-8?B?MURrNnhjUVM1R0JLWlB3QVYxWnhIZURMU1I3UzRLSEdWbEQyeG5FWU1VWktI?=
+ =?utf-8?B?NjFxM0hCemtacDl6L3lDRGQ0dGZvTlZvT1YxdVhMVUJsaGE5WTJmUkFqSU1v?=
+ =?utf-8?Q?mxhMGpsu7cDruUCQ4H9jec/5f9Ez5RktyXuxsrZPXeEMf?=
+X-MS-Exchange-AntiSpam-MessageData-1: ICfeOWufZuN4Mw==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b64d9cd4-eb2a-41fc-294c-08da17dbcd81
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 14:43:24.7854
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wdIZNZoeGt9ZRnm4kZAgfdKBJh7/7oKuQqwQ2pkIxpl7bIp3untvG6Tq4s9daiup
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2899
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/2022 16:28, srinivas pandruvada wrote:
-> Hi Daniel,
-> 
-> On Wed, 2022-04-06 at 10:00 +0200, Daniel Lezcano wrote:
->>
->> Hi,
->>
->> if there is no comment for the series, shall I pick it so we can go
->> forward ?
-> Didn't get time to check yet. It will still be for the next merge
-> window, correct?
+Am 06.04.22 um 16:26 schrieb Jani Nikula:
+> On Tue, 05 Apr 2022, Christian König <christian.koenig@amd.com> wrote:
+>> Am 05.04.22 um 19:36 schrieb Grigory Vasilyev:
+>>> Using memset on local arrays before exiting the function is pointless.
+>>> Compilator will remove this code. Also for local arrays is preferable to
+>>> use {0} instead of memset. Mistakes are often made when working with
+>>> memset.
+>> Well actually memset is preferred when working with structures which are
+>> given to the hardware parser because {0} won't initialize paddings.
+> Not that I'd know anything that's going on here... but it sure seems
+> strange to me to be passing unpacked structures where the padding might
+> matter to a "hardware parser".
 
-Right, but I would like to continue adding more features, scripts and 
-tests. Iteratively.
+Well to me it is an absolute miracle why the heck compilers don't 
+initialize paddings.
 
+We had so many ups moments over the years and I really don't see why it 
+should be more optimal to do this.
+
+Anyway, the memset() is used intentionally here and I don't really want 
+to change it. What we could do is removing the second superfluous memset 
+and use sizeof() instead of hard coding the size.
+
+Regards,
+Christian.
+
+>
+> *shrug*
+>
+>
+> BR,
+> Jani.
+>
+>
+>> So please don't use {0} in any of the atom bios code.
 >>
->> On 30/03/2022 12:04, Daniel Lezcano wrote:
->>> These changes are providing the following tools and library:
->>>
->>>    - A thermal library doing the netlink abstraction from the kernel
->>> in
->>>      order to make the userspace thermal implementation easier.
->>> Having
->>>      the library integrated with the kernel tree is also a guarantee
->>> to
->>>      keep the message format and their encoding/decoding aligned
->>>                                                                     
->>>                                                                     
->>>                                                                     
->>>                                                                     
->>>     
->>>    - A thermal tools library providing a set of functions to deal
->>> with
->>>      usual features like the log, the mainloop and the time. This
->>>      library is used by the provided tools below
->>>
->>>    - An data acquisition program to capture the temperature of the
->>>      different thermal zone during an amount of time or during the
->>>      execution of an application. The output is formated to be
->>> easily
->>>      parsed by gnuplot, a spreadsheet program or a statistical
->>> command
->>>      line utility. The timestamp is based on the system uptime, thus
->>>      giving an indication of when a thermal event happened, that can
->>>      help to spot or reproduce thermal issue in the long run
->>>
->>>    - A thermal monitoring program based on the thermal library. It
->>> gives
->>>      a skeleton to build any logic on top of it and shows how to use
->>> the
->>>      thermal library. It does nothing except discovering the thermal
->>>      zones, their trip points and listening for events like cooling
->>>      devices state changes or trip point crossed
->>>
->>>    Changelog:
->>>
->>>    v1: Initial post after a RFC
->>>
->>>    v2:
->>>
->>>     - Fixed all trailing whitespaces and some other checkpatch
->>>       warnings. Some warnings remain but they can be considered as
->>> false
->>>       positive
->>>
->>>     - Added in the thermometer tool:
->>>       - Usage/help option as well as a man page
->>>       - The ability to execute a program
->>>       - The capture duration
->>>       - Create the output directory if it does not exist
->>>
->>>     - Add in the thermal-engine tool:
->>>       - A usage/help option
->>>       - A message telling the userspace it is waiting for events
->>>       - A daemonize option
->>>
->>>     - Minor bug fixes here and there, as well as typos
->>>
->>> Daniel Lezcano (4):
->>>     tools/lib/thermal: Add a thermal library
->>>     tools/thermal: Add util library
->>>     tools/thermal: A temperature capture tool
->>>     tools/thermal: Add thermal daemon skeleton
->>>
->>>    MAINTAINERS                                   |   1 +
->>>    tools/Makefile                                |  36 +-
->>>    tools/lib/thermal/.gitignore                  |   2 +
->>>    tools/lib/thermal/Build                       |   5 +
->>>    tools/lib/thermal/Makefile                    | 165 ++++++
->>>    tools/lib/thermal/commands.c                  | 349 +++++++++++
->>>    tools/lib/thermal/events.c                    | 164 +++++
->>>    tools/lib/thermal/include/thermal.h           | 142 +++++
->>>    tools/lib/thermal/libthermal.map              |  25 +
->>>    tools/lib/thermal/libthermal.pc.template      |  12 +
->>>    tools/lib/thermal/sampling.c                  |  75 +++
->>>    tools/lib/thermal/thermal.c                   | 126 ++++
->>>    tools/lib/thermal/thermal_nl.c                | 215 +++++++
->>>    tools/lib/thermal/thermal_nl.h                |  46 ++
->>>    tools/thermal/lib/Build                       |   3 +
->>>    tools/thermal/lib/Makefile                    | 158 +++++
->>>    .../thermal/lib/libthermal_tools.pc.template  |  12 +
->>>    tools/thermal/lib/log.c                       |  77 +++
->>>    tools/thermal/lib/log.h                       |  31 +
->>>    tools/thermal/lib/mainloop.c                  | 120 ++++
->>>    tools/thermal/lib/mainloop.h                  |  15 +
->>>    tools/thermal/lib/thermal-tools.h             |  10 +
->>>    tools/thermal/lib/uptimeofday.c               |  40 ++
->>>    tools/thermal/lib/uptimeofday.h               |  12 +
->>>    tools/thermal/thermal-engine/Build            |   2 +
->>>    tools/thermal/thermal-engine/Makefile         |  28 +
->>>    tools/thermal/thermal-engine/thermal-engine.c | 326 ++++++++++
->>>    tools/thermal/thermometer/Build               |   2 +
->>>    tools/thermal/thermometer/Makefile            |  26 +
->>>    tools/thermal/thermometer/thermometer.8       |  93 +++
->>>    tools/thermal/thermometer/thermometer.c       | 558
->>> ++++++++++++++++++
->>>    tools/thermal/thermometer/thermometer.conf    |   5 +
->>>    32 files changed, 2878 insertions(+), 3 deletions(-)
->>>    create mode 100644 tools/lib/thermal/.gitignore
->>>    create mode 100644 tools/lib/thermal/Build
->>>    create mode 100644 tools/lib/thermal/Makefile
->>>    create mode 100644 tools/lib/thermal/commands.c
->>>    create mode 100644 tools/lib/thermal/events.c
->>>    create mode 100644 tools/lib/thermal/include/thermal.h
->>>    create mode 100644 tools/lib/thermal/libthermal.map
->>>    create mode 100644 tools/lib/thermal/libthermal.pc.template
->>>    create mode 100644 tools/lib/thermal/sampling.c
->>>    create mode 100644 tools/lib/thermal/thermal.c
->>>    create mode 100644 tools/lib/thermal/thermal_nl.c
->>>    create mode 100644 tools/lib/thermal/thermal_nl.h
->>>    create mode 100644 tools/thermal/lib/Build
->>>    create mode 100644 tools/thermal/lib/Makefile
->>>    create mode 100644 tools/thermal/lib/libthermal_tools.pc.template
->>>    create mode 100644 tools/thermal/lib/log.c
->>>    create mode 100644 tools/thermal/lib/log.h
->>>    create mode 100644 tools/thermal/lib/mainloop.c
->>>    create mode 100644 tools/thermal/lib/mainloop.h
->>>    create mode 100644 tools/thermal/lib/thermal-tools.h
->>>    create mode 100644 tools/thermal/lib/uptimeofday.c
->>>    create mode 100644 tools/thermal/lib/uptimeofday.h
->>>    create mode 100644 tools/thermal/thermal-engine/Build
->>>    create mode 100644 tools/thermal/thermal-engine/Makefile
->>>    create mode 100644 tools/thermal/thermal-engine/thermal-engine.c
->>>    create mode 100644 tools/thermal/thermometer/Build
->>>    create mode 100644 tools/thermal/thermometer/Makefile
->>>    create mode 100644 tools/thermal/thermometer/thermometer.8
->>>    create mode 100644 tools/thermal/thermometer/thermometer.c
->>>    create mode 100644 tools/thermal/thermometer/thermometer.conf
->>>
+>> Regards,
+>> Christian.
 >>
->>
-> 
-> 
+>>> Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
+>>> ---
+>>>    drivers/gpu/drm/amd/amdgpu/atom.c | 8 +-------
+>>>    1 file changed, 1 insertion(+), 7 deletions(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/amd/amdgpu/atom.c b/drivers/gpu/drm/amd/amdgpu/atom.c
+>>> index be9d61bcb8ae..537e48fbbe6b 100644
+>>> --- a/drivers/gpu/drm/amd/amdgpu/atom.c
+>>> +++ b/drivers/gpu/drm/amd/amdgpu/atom.c
+>>> @@ -1538,11 +1538,9 @@ struct atom_context *amdgpu_atom_parse(struct card_info *card, void *bios)
+>>>    int amdgpu_atom_asic_init(struct atom_context *ctx)
+>>>    {
+>>>    	int hwi = CU16(ctx->data_table + ATOM_DATA_FWI_PTR);
+>>> -	uint32_t ps[16];
+>>> +	uint32_t ps[16] = {0};
+>>>    	int ret;
+>>>    
+>>> -	memset(ps, 0, 64);
+>>> -
+>>>    	ps[0] = cpu_to_le32(CU32(hwi + ATOM_FWI_DEFSCLK_PTR));
+>>>    	ps[1] = cpu_to_le32(CU32(hwi + ATOM_FWI_DEFMCLK_PTR));
+>>>    	if (!ps[0] || !ps[1])
+>>> @@ -1551,10 +1549,6 @@ int amdgpu_atom_asic_init(struct atom_context *ctx)
+>>>    	if (!CU16(ctx->cmd_table + 4 + 2 * ATOM_CMD_INIT))
+>>>    		return 1;
+>>>    	ret = amdgpu_atom_execute_table(ctx, ATOM_CMD_INIT, ps);
+>>> -	if (ret)
+>>> -		return ret;
+>>> -
+>>> -	memset(ps, 0, 64);
+>>>    
+>>>    	return ret;
+>>>    }
 
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
