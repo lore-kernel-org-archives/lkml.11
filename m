@@ -2,80 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 373F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D71AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376810AbiDFJdE (ORCPT
+        id S1381507AbiDFJdV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54896 "EHLO
+        Wed, 6 Apr 2022 05:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583813AbiDFJWl (ORCPT
+        with ESMTP id S1579852AbiDFJUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:22:41 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7719F23DE98;
-        Tue,  5 Apr 2022 21:14:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649218449;
-        bh=lQZC9KF3fkpp3qkV+BLTCo7NkUkmtr0bB09V3SZnVCY=;
-        h=X-UI-Sender-Class:Date:From:Subject:To:Cc;
-        b=WxAkk5vVbIYeVLSfcSDDriM6nT8jvg61gMDeXcY/Rqoq1/Gj9+wFh4Pxl2I2cc7zm
-         vm4ssRPryKFKRsqFQTPpDuCBTvqZLmP3ax3Pjac+1Q0+UzdWBHkWrX6DX6M1AXKyDv
-         FGn+cy4x/URLABgo00V1xCzTCWHHPqXMKTM+Jg4I=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.34.239]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1Msq6M-1nrZ6G3VpA-00tCzq; Wed, 06
- Apr 2022 06:14:08 +0200
-Message-ID: <f215f26a-2320-f15e-0532-cf79cc80dc62@gmx.de>
-Date:   Wed, 6 Apr 2022 06:14:08 +0200
+        Wed, 6 Apr 2022 05:20:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EED31B2C46;
+        Tue,  5 Apr 2022 19:14:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BFAFB81FB5;
+        Wed,  6 Apr 2022 02:14:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 478D5C385A0;
+        Wed,  6 Apr 2022 02:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649211284;
+        bh=7oxtU6dReocTjrAPtmbWJeUxLA98brvJonekBTXb0r8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pglIEobHodK+J/xTI/lixv4yCnW3MqVBTFnJgba4A4VhII6Y06FqiyubCK0sOnIOH
+         McKjnnN9eT9TDs2PFrrqJVuGdMjZiMwkYwU4rSX6pRy2N0VasXk4BkhB+408IWIzRR
+         EFsu/3EMzxbXtwIkxGPyhYqBwEQNKk0OEP/EhG3Qkedsn7V/q8kjMeaKjGdHEQE+6w
+         49qrJ9N3TR6OKitMwIP7aYT/FHaDpHp4ogIy6kc1MPd2aqPhzDPb1h7bIfkgTOTYeK
+         +9hdF4FwdtTZUdAIOs6v+pWuCGWYpE6RkLeMaULPbcalB6lEFAvwQRVIy9MfhLv08V
+         SDagjTCxDyt+g==
+Date:   Wed, 6 Apr 2022 10:14:37 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v1 2/8] ARM: dts: imx6qdl-vicut1/vicutgo: Rename
+ backlight to backlight_lcd
+Message-ID: <20220406021437.GH129381@dragon>
+References: <20220221095312.3692669-1-o.rempel@pengutronix.de>
+ <20220221095312.3692669-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:HmIw9au0YIQSfrke29iZ3EK/Oiky1EykBzKTqjFQU9eYuxep+8P
- oWzCk5zC0vWb1C9MJEx3vwYFgMoZIUOCvM8AYynfzH9pyLx4ZbWMexvQD9nm+dLQ0NiOH0u
- OhdmBgD9Ij+lpLN/13RRyRy3bmcZJ3uu/ExmqMe03JoNRsvTg4/DJu2ruB+RGabugLMUuL2
- w2Z0sAvornoyeEY224EpA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:k9G7SOtBuvQ=:nM5c1KX6HmDiq01tJjLQ36
- BzoLHUS9iaBz1iIipl7F6ddHN/nLu+QgSttXpIAhK4Sx6mMpkoOPZmHOz6gj8eQvMb6jOpzYH
- XwTC2DCswwMHlj/5qXfRYCgd5ePeIOosIVQPJjzWB9LrkP3rVe0T1r7gvjD7f0rBUHV+m5c3Y
- +Phz0XAXmxLvXnUp46l3G5owTdpZQ/oKemjzHEeNnYkw8MbfNKkswDzMoObYFvizfEC+CJKII
- 5hy46YqkAVmrGt/Qk71uXNW5r4ZYVY/C480pmeCCdVuP5WMVJbrAVBa8gLsusArLWg0iZEIlV
- lTSdd2cTHmyK24zLxXQocqPvU1KaSRnGjgxlctZ75+RnbYAESiqtEwYzm6WCpphHgWC30mHuu
- UThrvLaI9X3be0KPsH03TyGjDIfrq2NVcK12J+YjigJeloMoGkNz79v3zr4yCfyYw1dDDFL6v
- 2vdt0eWuR0rAX1+emtS0o0St4KnRisnR+7n6jQPFfWRUlb7Dx8ddZy73PKbVHYnbHaT5uyPCS
- oGcvCBBlm/cApbPCpSmbU1knBgxnLJAJX4X5dY/U+xDxcDvmxQ9VNmJGrO/Cq/yhq+uBcQKJu
- wuq4fy7S+Ogg6Jw0/6IkNQ26Xw8AWGxRquF6eS6ZpjUqMmFkdR73y4RbMo+yvD2fMvIcGAv0Q
- N7VkszAF5IgSYrJi14wDkNOmsOXPxdBEQVKmd2JOP1hXQLU6doHUNQbD3AiGjzZuAc+O0BuhA
- 7tStwhb1ao3S8sbSylKnzqgsaLBKPB+MHtyXi4sDD/zPpg27Pc7FlKBPI8iXtuXpZjG3pieAf
- pL/+ZG7yb3aFBA4YLE8fCmsykXwM/C98xBcfpFkmLmGKWtaRF/zK/XzXUFbcqYGAai4YRP4FX
- xwyemtnp54Uzl4thG5qOjEQqAEW8YEvSljivWiLAwxqJveS2IEOAJHmEJ8WlLFg0q1530cchY
- 8ebbX/mfniV3BH4uYPcVd7RGqV6IG3sVAz4wBkoth/KgZRNM2MEPQ8LUWxSnw56i8O9SFtFVy
- r5Ix5CbCEWBPvYtQU93UbVmuZ3/TQL1TFw2ewnJZA9iySR55SbLj6mVlSAOgp0qPNeyN4V/qU
- 9XRzN2jWKTdauc=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221095312.3692669-2-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+On Mon, Feb 21, 2022 at 10:53:06AM +0100, Oleksij Rempel wrote:
+> From: David Jander <david@protonic.nl>
+> 
+> We have two backlight sources on this boards. Use more specific name for
+> the LCD backlight to see the difference.
+> 
+> Signed-off-by: David Jander <david@protonic.nl>
+> Signed-off-by: Robin van der Gracht <robin@protonic.nl>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-5.17.2-rc1
-
-compiles, boots and runs on my x86_64
-(Intel i5-11400, Fedora 36 Beta)
-
-Thanks
-
-Tested-by: Ronald Warsow <rwarsow@gmx.de>
-
-
-Ronald
-
-
+Applied, thanks!
