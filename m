@@ -2,95 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26123C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235441AbiDFOzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33078 "EHLO
+        id S235126AbiDFOzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235252AbiDFOzS (ORCPT
+        with ESMTP id S235352AbiDFOzf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:55:18 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFEB60290E
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:31:50 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id t4so1975578pgc.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 04:31:50 -0700 (PDT)
+        Wed, 6 Apr 2022 10:55:35 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030BF27CE2E
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:19:11 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id p8so1186576pfh.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=xl6VVCAajevFuRJS9yPa1nlDbDqEUfMrrJAAj8Ufl7w=;
-        b=Jm/MEaVSKPLAgcL0eRNOvFXKLkxCSUlelHrlNGJGE8zKGxd3mPDoOYmNNAr/PX2oZf
-         RI56ezt7I/hXAiPJq0vjNGAcQdWuTdVWA/7HJ+WZ3/B7mbSna+w1YFowR0TTEWY06fIF
-         WfJU0pApHvsua2/YXeuoXGx+e7I4ebchnLVYYnj8iygztCYswVz7jr7Dibf3ufK1ndcA
-         mxmOxppTuxX3dtjyhVfSyWcNRIDUo0Z//arZ/poeXhMUaF3BOLjZy0EWeqKe8I2MeObe
-         /A1vlRRhDQfVjwsZ3tA5TLRSHymZFcUXPpi8ktcYdFJDGzQe+HSYGq8JR+rxkv4chhPM
-         MB5w==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=XgjMEhLjRT4MPAMhsdcS0Ym9ucVGsbeQUnv8qRyOX2I=;
+        b=GG33N9hgu+eD/ebEhy3Uqtw42T1KOy4AZNx8zMiQ8RNnMqDR3MrKJ0yJbDK9/zahZX
+         XtmX82g9WyruU473qtdYCzzuJtiRU5bvSltOqdS8XpnjIMfFtqtndkOjetDeT6d5nICG
+         ArTrqu2AeWHeYKaQse/8jm14/6N+2jzKs9HxS/F2IvH4VALeAE+SZsPvFjFWefv/ScOF
+         ayWSL1CW+OxpZgkOU3exCbNpR1e+35NzKgm/gbzNwD10kDdU8yuS+TO6hIXiw7MLqE54
+         kPh636J/zKiCfcJsVnKkcLXxcasLEiRxsOcCxgZ7jiYVfAOpTmBtoCYkwg2cNjdc/9fT
+         mN1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xl6VVCAajevFuRJS9yPa1nlDbDqEUfMrrJAAj8Ufl7w=;
-        b=TIP0xqWBiyVWcTs++J+fPq2uQWEmzC3YQoylCeFjOkG45N5j7n87Pd9hLkt+y/Zi4m
-         vWDvQovj7RBWZkNcXKMWUrdW6y646B1WtEukm5M5iVA6fvlHEHoSIXPiSTOXIw1moyvR
-         0hbrSDCSjITYT5M38l9cPtvyQgPoJy+RHgsRV+wa+eMZkhopi2t7x+WwQVnQ0mq7x1ud
-         5aUgEd9k5omlyghitR8khysSl4Yq8B7TIYvDo5w+WzuRLcuM5HxHPLKZaYPFYLS511RS
-         CjTLGTrJaw6vU1gM1M77JeDz6YGXukQa3LZsAFmheI7XQOBJ5gEMhmXI5TzXrM8/ljnV
-         YHdA==
-X-Gm-Message-State: AOAM532H3EFehPAdc+LEw8uTi0zWbXWgLhTNaRdJS50RDmhCx3/ccTR3
-        VYkIuhVyGAinrWad12xvo6mTUwu6bWmWeA==
-X-Google-Smtp-Source: ABdhPJx3gTn89KY6+7NY2fQ+ZYGvPyx47HtqtU3a9MIUqtNVPY4y3m/hrg/EmUaMM3x0fmQTiwagag==
-X-Received: by 2002:a63:221f:0:b0:374:7286:446a with SMTP id i31-20020a63221f000000b003747286446amr6759359pgi.538.1649244709835;
-        Wed, 06 Apr 2022 04:31:49 -0700 (PDT)
-Received: from localhost.localdomain ([119.3.119.18])
-        by smtp.gmail.com with ESMTPSA id f19-20020a056a00229300b004fb157f136asm19760516pfe.153.2022.04.06.04.31.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 04:31:49 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     patrik.r.jakobsson@gmail.com, airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: [PATCH v2] drm/gma500: fix a potential repeat execution in psb_driver_load
-Date:   Wed,  6 Apr 2022 19:31:43 +0800
-Message-Id: <20220406113143.10699-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XgjMEhLjRT4MPAMhsdcS0Ym9ucVGsbeQUnv8qRyOX2I=;
+        b=00iEp3MZ5nW1nb1Z2PmmYjp9p35mXJ2IwRKGrRBh/JUT0FM+O5/0er90MWIKko1GlE
+         L4+GYgkxfNVvQwBytPnQG280RQZ3EMP8RgZpn+9gXqZkOIk0DYqTkmxmLRu/FaPQ1BO8
+         5AoXbJsR8XJriZ0hdsXwiYfyfb/xBu6L1UEyraBmbjCrBesDWC7Pt+Z6hknvmHeAWveS
+         mKxla4KSky8jXYkjR0R5HUWNla0qJPM3dXBSqcgGAqt36L91ZpVSx1gWzEqGuu9Zh2oF
+         wZE/ojg5koD3WEjA1M4Zfz91E9UWaNnuTcXFSp3NIN/YEUkOpy4X891PmHnyxJeBwaJM
+         uOzA==
+X-Gm-Message-State: AOAM531Wck32YaDdz8ycXXvUIFEn+qb5yZ+VThk5q3u3JunGd4AgwS3D
+        Zs7stFFOFJcNqtjAh/4cbQ0=
+X-Google-Smtp-Source: ABdhPJy0fFKiZnX55XY/d/G2Ja2u/Qng8hE6zvoqwunWU73cDOoodFxoYjkYZp4ZogLD3xT/xr2xew==
+X-Received: by 2002:a63:d454:0:b0:386:86:6aaa with SMTP id i20-20020a63d454000000b0038600866aaamr5248075pgj.60.1649211550460;
+        Tue, 05 Apr 2022 19:19:10 -0700 (PDT)
+Received: from 8345e2a12d0c ([159.226.95.43])
+        by smtp.gmail.com with ESMTPSA id f16-20020a056a00229000b004fabe756ba6sm18627715pfe.54.2022.04.05.19.19.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 05 Apr 2022 19:19:10 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 02:19:05 +0000
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Stefano Stabellini <sstabellini@kernel.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Shannon Zhao <shannon.zhao@linaro.org>,
+        Julien Grall <julien.grall@arm.com>,
+        xen-devel@lists.xenproject.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm/xen: Fix refcount leak in xen_dt_guest_init
+Message-ID: <20220406021905.GA30436@8345e2a12d0c>
+References: <20220309102442.14726-1-linmq006@gmail.com>
+ <alpine.DEB.2.22.394.2203111756000.3497@ubuntu-linux-20-04-desktop>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2203111756000.3497@ubuntu-linux-20-04-desktop>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of exiting the loop as expected when an entry is found, the
-list_for_each_entry() continues until the traversal is complete. To
-avoid potential executing 'ret = gma_backlight_init(dev);' repeatly,
-goto outside the loop when the entry is found.
+Hi,
 
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
----
+On Fri, Mar 11, 2022 at 06:01:11PM -0800, Stefano Stabellini wrote:
+> On Wed, 9 Mar 2022, Miaoqian Lin wrote:
+> > The of_find_compatible_node() function returns a node pointer with
+> > refcount incremented, We should use of_node_put() on it when done
+> > Add the missing of_node_put() to release the refcount.
+> > 
+> > Fixes: 9b08aaa3199a ("ARM: XEN: Move xen_early_init() before efi_init()")
+> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> 
+> Thanks for the patch!
+> 
+> 
+> > ---
+> >  arch/arm/xen/enlighten.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/arch/arm/xen/enlighten.c b/arch/arm/xen/enlighten.c
+> > index ec5b082f3de6..262f45f686b6 100644
+> > --- a/arch/arm/xen/enlighten.c
+> > +++ b/arch/arm/xen/enlighten.c
+> > @@ -424,6 +424,7 @@ static void __init xen_dt_guest_init(void)
+> >  
+> >  	if (of_address_to_resource(xen_node, GRANT_TABLE_INDEX, &res)) {
+> >  		pr_err("Xen grant table region is not found\n");
+> > +		of_node_put(xen_node);
+> >  		return;
+> >  	}
+> 
+> This is adding a call to of_node_put on the error path. Shouldn't it
+> be called also in the non-error path?
 
-changes since v1:
- - goto outside the loop (Xiaomeng Tong)
+You're right. It should be called also in the non-error path.
+I made a mistake.
 
-v1: https://lore.kernel.org/lkml/20220401115811.9656-1-xiam0nd.tong@gmail.com/
+> Also, there is another instance of of_address_to_resource being called
+> in this file (in arch_xen_unpopulated_init), does it make sense to call
+> of_node_put there too?
 
----
- drivers/gpu/drm/gma500/psb_drv.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I think so, becase device node pointer np is a local variable.
+So the reference it taken should be released in the scope.
 
-diff --git a/drivers/gpu/drm/gma500/psb_drv.c b/drivers/gpu/drm/gma500/psb_drv.c
-index 2aff54d505e2..929fd47548b4 100644
---- a/drivers/gpu/drm/gma500/psb_drv.c
-+++ b/drivers/gpu/drm/gma500/psb_drv.c
-@@ -400,9 +400,10 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
- 		case INTEL_OUTPUT_LVDS:
- 		case INTEL_OUTPUT_MIPI:
- 			ret = gma_backlight_init(dev);
--			break;
-+			goto out;
- 		}
- 	}
-+out:
- 	drm_connector_list_iter_end(&conn_iter);
- 
- 	if (ret)
--- 
-2.17.1
+I look into the whole codebase for this kind of usage pattern
+($ret=of_find_compatible_node();of_address_to_resource($ret,_,_), 
+$ret is a local variable), Most of them call of_node_put() when done. 
+And document of of_find_compatible_node() also mentions
+> Return: A node pointer with refcount incremented, use
+> of_node_put() on it when done.
 
+But I am not sure, Since I am unfamiliar with other code logic.
+It better if the developers could double check. I found some 
+similar cases in arch/arm. 
