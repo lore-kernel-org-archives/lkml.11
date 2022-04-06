@@ -2,99 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7236C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:39:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233687AbiDFNj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
+        id S233803AbiDFNl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233498AbiDFNjG (ORCPT
+        with ESMTP id S233549AbiDFNlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:39:06 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730976984C2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:40:46 -0700 (PDT)
-Received: from kwepemi500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KYKmb0ZQpz1HBYK;
-        Wed,  6 Apr 2022 18:01:51 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500002.china.huawei.com (7.221.188.171) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 18:02:17 +0800
-Received: from [10.174.179.234] (10.174.179.234) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 18:02:16 +0800
-Message-ID: <99acc7d2-a11b-250b-f614-18077fb76cc0@huawei.com>
-Date:   Wed, 6 Apr 2022 18:02:15 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [RFC PATCH -next V2 1/7] x86: fix copy_mc_to_user compile error
-To:     Borislav Petkov <bp@alien8.de>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
+        Wed, 6 Apr 2022 09:41:45 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4DD26A4920;
+        Wed,  6 Apr 2022 03:48:52 -0700 (PDT)
+X-UUID: fd052d13cf3b4bf3a48b595c441a8d01-20220406
+X-UUID: fd052d13cf3b4bf3a48b595c441a8d01-20220406
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 352717976; Wed, 06 Apr 2022 18:48:46 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 6 Apr 2022 18:48:44 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 18:48:45 +0800
+Message-ID: <4ed2dc24d600fa73b91bb411391c98a5bf4f8d8b.camel@mediatek.com>
+Subject: Re: [PATCH 3/3] dt-bindings: display: mediatek: Correct disp_aal
+ binding for MT8192
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>
+CC:     "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        Yongqiang Niu =?UTF-8?Q?=28=E7=89=9B=E6=B0=B8=E5=BC=BA=29?= 
+        <yongqiang.niu@mediatek.com>,
+        Jason-JH Lin =?UTF-8?Q?=28=E6=9E=97=E7=9D=BF=E7=A5=A5=29?= 
+        <Jason-JH.Lin@mediatek.com>,
+        Nancy Lin =?UTF-8?Q?=28=E6=9E=97=E6=AC=A3=E8=9E=A2=29?= 
+        <Nancy.Lin@mediatek.com>,
+        Allen-KH Cheng =?UTF-8?Q?=28=E7=A8=8B=E5=86=A0=E5=8B=B3=29?= 
+        <Allen-KH.Cheng@mediatek.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
-References: <20220406091311.3354723-1-tongtiangen@huawei.com>
- <20220406091311.3354723-2-tongtiangen@huawei.com> <Yk1bu88TcjXw/iU4@zn.tnic>
-From:   Tong Tiangen <tongtiangen@huawei.com>
-In-Reply-To: <Yk1bu88TcjXw/iU4@zn.tnic>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.234]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 6 Apr 2022 18:48:45 +0800
+In-Reply-To: <2449070b-d7e1-122f-abe6-4148855a9aba@collabora.com>
+References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+         <20220406094654.29722-4-rex-bc.chen@mediatek.com>
+         <2449070b-d7e1-122f-abe6-4148855a9aba@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-在 2022/4/6 17:22, Borislav Petkov 写道:
-> On Wed, Apr 06, 2022 at 09:13:05AM +0000, Tong Tiangen wrote:
->> The follow patch
+On Wed, 2022-04-06 at 18:40 +0800, AngeloGioacchino Del Regno wrote:
+> Il 06/04/22 11:46, Rex-BC Chen ha scritto:
+> > The driver data for MT8192 is the same with MT8183. Therefore, we
+> > correct it.
+> > 
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 > 
-> There's no concept of "follow patch" in git - you need to explain this
-> differently.
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
 > 
->> will add copy_mc_to_user to include/linux/uaccess.h, X86
->> must declare Implemented to avoid compile error.
-> 
-> I don't know what that means. Try again pls.
-> 
+> ...though, from what I know, you should also move MT8195 down there!
 
-This description is not good, will redescribe it in next version.
+Hello Angelo,
 
-Here I describe the reasons for this:
+Thanks for your review.
+But for MT8195, disp_aal is using the same compatible with MT8173.
 
-Patch 3/7 in patchset[1] introduce copy_mc_to_user() in 
-include/linux/uaccess.h and the prototype is:
+From the MT8195 project DTS is using:
 
-     static inline unsigned long __must_check
-     copy_mc_to_user(void *dst, const void *src, size_t cnt)
+aal0: disp_aal@1c005000 {
+	compatible = "mediatek,mt8195-disp-aal",
+		     "mediatek,mt8173-disp-aal";
+	reg = <0 0x1c005000 0 0x1000>;
+	interrupts = <GIC_SPI 641 IRQ_TYPE_LEVEL_HIGH 0>;
+	power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
+	clocks = <&vdosys0 CLK_VDO0_DISP_AAL0>;
+	mediatek,gce-client-reg =
+		 <&gce0 SUBSYS_1c00XXXX 0x5000 0x1000>;
+};
 
-The prototype in x86 is:
+BRs,
+Rex
 
-     unsigned long __must_check
-     copy_mc_to_user(void *to, const void *from, unsigned len);
-
-This two are a little different, so I added the follow code to x86 to
-avoid prototype conflict compile error.
-
-     #define copy_mc_to_user copy_mc_to_user
-
-In addition, I think this #define should be added here.
-
-[1]https://patchwork.kernel.org/project/linux-mm/cover/20220406091311.3354723-1-tongtiangen@huawei.com/
-
-Thanks.
-Tong.
