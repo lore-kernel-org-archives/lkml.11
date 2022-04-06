@@ -2,101 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D943C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:46:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232415AbiDFTsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        id S232808AbiDFTsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232786AbiDFTrg (ORCPT
+        with ESMTP id S232521AbiDFTsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:47:36 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4B526E747
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:26:59 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id e16so5517487lfc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:26:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s9MSEQiGX4w+Gj5Hnf9X/GdnyPnaA8vq0dsZaIRkOhs=;
-        b=UQCbCU83Jyh/KNEJVyGoQ+9c4hJBtLu8phhkHqJDRycLQLAI2EyeA25FYBmbQRHO2Y
-         Z0ZxINFDbMU88OM8HgA68CT46ralIOVViXkjujP7Gon1Vr0UQ4MZeRbxAMxMy3aKjVU9
-         f/c0n7+QwKFXLQMBCLViGPD7mwTswWu90kSvz4Kr6DLBKJpW5bPBizRw3t9WGeS29uq5
-         2h7JAYAF/e9RewvUQbkKLZQIdeJ9vatIp7QgY1474dQwPlMqP/ixDG7FiOR93P5bWcxJ
-         wM2ESOMcH+4h0rVav4WDSWTk6h+P287KoTQJlOe1fOR2nIyPPZYtdw2kMtE6DZN+kC2X
-         uL4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s9MSEQiGX4w+Gj5Hnf9X/GdnyPnaA8vq0dsZaIRkOhs=;
-        b=gRZxBUQ3qcmyKMi5GmQwOk13tk9EFB7F0+3+r7Ot8RNaKdxfCYPXsfGhanx961a3JQ
-         AcCNIYC+3F89ttKYJoSIuNuxxdDxKWq/22R1lL8Cvg7QdEqzQGOsbzCVvqrk3/ZfQfFi
-         wUZEgNxToEKPJe6wV6Yh53aARaEZ7n9VDbrlH2Q4NAAQ49rJSodQ/Cjo816oO670VlNV
-         Bd+9a6TQLN9KskD8cyEchE8aNrP5MO0BmSW8Nsm9qBYsTEyROp2WW3Qa79cKdX7RGdZ4
-         0f6f4Apr5f/2NkyMbDEWV+BVFbd5cfxG0fWGrP6/DzYPeDuASFo36PiE/XYGqKijJCQp
-         iaMg==
-X-Gm-Message-State: AOAM5333/L0Hhyy5dlIKRy31KnfwS4HGgh6pSC7xxNOzg/cAx8NGEzFY
-        GFWxPRm08N+cmy1pLlnT0/GyoTzV0PN3AEXYxLOiFQ==
-X-Google-Smtp-Source: ABdhPJyaBCLeg4EwMtCtiJce4VSVnmDIgx5OuJNHxvpobGEbby9DmFxO6zVAqFq14QJEfG8XCrb7qg3gzewMjUTWhyQ=
-X-Received: by 2002:ac2:5dee:0:b0:464:f074:ba73 with SMTP id
- z14-20020ac25dee000000b00464f074ba73mr129429lfq.392.1649269617073; Wed, 06
- Apr 2022 11:26:57 -0700 (PDT)
+        Wed, 6 Apr 2022 15:48:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC8B2BE95A;
+        Wed,  6 Apr 2022 10:27:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28E8E619B0;
+        Wed,  6 Apr 2022 17:27:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F3A0C385A3;
+        Wed,  6 Apr 2022 17:27:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649266070;
+        bh=KkbMhLobN1kUPbYF3z6kvOiUl+FffGQ29J+yE6RzbfE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KpOqj/1sc8kVfifET6SQ+laj1UNM5oR9gU7nJO8IZecB3y9chc9k7RSuHPvHf4Oa8
+         weuLl/40Cer9aqaBip8lU19AfVifuiUbLIMJTke2I86xckNhCqaKY38HoZegEdVcHN
+         4SI09GeOgWj8ljB5tS1phi+NEuldGIJu+biGg01FJns73NDJ05xtJdS3qz5Sti7SFU
+         r6w1dY/TRs/UXk+1U34lBW9yhdlmy+eIiNf1ZNdbFo+fKZsrZHpA0mLLqagAHo49bQ
+         DnZKdqHQOekVYmq0dDmOnoso3I/iiGS7P4YHgDau1fIPAzNenLwFCLgB4W1i5quJgY
+         M+QsqS3bu429g==
+Date:   Wed, 6 Apr 2022 18:27:44 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008
+ PMIC
+Message-ID: <Yk3NkNK3e+fgj4eG@sirena.org.uk>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
+ <Yk1B4f51WMGIV9WB@sirena.org.uk>
+ <CAE-0n53Cv_bR92M64dhdnDge_=_jeOs4VZzDhUkksN90Y7rgog@mail.gmail.com>
+ <Yk21pdu16lyR8jXm@sirena.org.uk>
+ <CAE-0n50C8khP2x4sgNP5xnfLVMRQj2=LChyWWx1BWL+Xgecgyw@mail.gmail.com>
+ <Yk3Bfnxe/meBYokp@sirena.org.uk>
+ <CAE-0n53O23=N0zkZpg87Q3EyKquLe3WLNJT8qnZz4WEor6QK7A@mail.gmail.com>
 MIME-Version: 1.0
-References: <000000000000008dae05dbfebd85@google.com> <7108f263-5cda-d91d-792b-d3f18b63c6d7@redhat.com>
-In-Reply-To: <7108f263-5cda-d91d-792b-d3f18b63c6d7@redhat.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 6 Apr 2022 11:26:45 -0700
-Message-ID: <CAKwvOd=-4S1nV=qa3CGNPTAMOv9fGYZsh8hQPXDH1MpowYDX=w@mail.gmail.com>
-Subject: Re: [syzbot] upstream build error (17)
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>
-Cc:     syzbot <syzbot+6b36bab98e240873fd5a@syzkaller.appspotmail.com>,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        mingo@redhat.com, seanjc@google.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="004SQJl7509giZyq"
+Content-Disposition: inline
+In-Reply-To: <CAE-0n53O23=N0zkZpg87Q3EyKquLe3WLNJT8qnZz4WEor6QK7A@mail.gmail.com>
+X-Cookie: Look ere ye leap.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 10:33 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 4/6/22 18:20, syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    3e732ebf7316 Merge tag 'for_linus' of git://git.kernel.org..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=10ca0687700000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=eba855fbe3373b4f
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=6b36bab98e240873fd5a
-> > compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+6b36bab98e240873fd5a@syzkaller.appspotmail.com
-> >
-> > arch/x86/kvm/emulate.c:3332:5: error: stack frame size (2552) exceeds limit (2048) in function 'emulator_task_switch' [-Werror,-Wframe-larger-than]
-> > drivers/block/loop.c:1524:12: error: stack frame size (2648) exceeds limit (2048) in function 'lo_ioctl' [-Werror,-Wframe-larger-than]
->
-> I spot-checked these two and the stack frame is just 144 and 320 bytes
-> respectively on a normal compile.  This is probably just the effect of
-> some of the sanitizer options.
 
-Yep.
-$ wget -q https://syzkaller.appspot.com/x/.config\?x\=eba855fbe3373b4f
--O - | grep CONFIG_KASAN=y
-CONFIG_KASAN=y
-https://github.com/ClangBuiltLinux/linux/issues/39 (our oldest still-open issue)
--- 
-Thanks,
-~Nick Desaulniers
+--004SQJl7509giZyq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Apr 06, 2022 at 10:21:01AM -0700, Stephen Boyd wrote:
+> Quoting Mark Brown (2022-04-06 09:36:14)
+> > On Wed, Apr 06, 2022 at 08:51:48AM -0700, Stephen Boyd wrote:
+
+> > > My guess is that this is one IC that responds to multiple i2c address=
+es.
+> > > The "main" qcom,pm8008 address is 0x8 and that supports things like
+> > > interrupts. Then there's an address for regulators at 0x9 which contr=
+ols
+> > > the handful of LDOs on the PMIC.
+
+> > So it's like the TI TWL4030 and Palmas - in which case it should
+> > probably be handled similarly?
+
+> How did those work out? I wasn't involved and I don't know what you
+> mean. Do they have multiple i2c addresses they respond to?
+
+Yes, exactly.  The main device uses i2c_new_dummy_device() to
+instantiate the extras when it probes.  See twl-core.c
+
+>=20
+> > Note that the original sumbission was
+> > *also* a MFD subfunction, but using a DT compatible to match the
+> > platform device - this is the first I've heard of this being a separate
+> > I2C function.
+
+> I'm mainly looking at the dts file now. It clearly has two i2c devices
+> at 0x8 and 0x9. Maybe the regulator driver followed the mfd design
+> because the first driver for this device is an mfd.
+
+I'm guessing from the naming that they're also externally described as
+the same device - presumably it's two dies shoved together in the same
+package for some reason without being otherwise joined up.  Is the
+second device geniunely regulators only or does it have anything else
+bundled in there?
+
+--004SQJl7509giZyq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJNzY8ACgkQJNaLcl1U
+h9BXDQf9HHPmN8O2BxmVgWl0924qhTw/rou4mgZ3GdP/YtQLxAe7A2e6GzabQjKE
+M/82tK6k4zp0QJtXTHsqRgdpAYintpwbabCQKzku1DHfNTFSivLhouIiFPqO+qlT
+3X6zsi8OwWHjJs7CZxJ4SeFNQ1Nwn63W+BMqeGl6K775QQ2JgRc1Qit42PZl/6SA
+nLAnL5p7F4a0WfKdw/HOWjhmjhwdI1OauB8lYVBgOWrZburTbeR9sWmnrLRYtoyI
+FHDIxwhCcM1YEj1tqxpoNuaYzWxbBY3afPPNLsGJgM20OPUlD+kDmhunV7LyidxW
+FW5Yp0vrMvbtBr9VGmtDahPoxpdO8Q==
+=qZSa
+-----END PGP SIGNATURE-----
+
+--004SQJl7509giZyq--
