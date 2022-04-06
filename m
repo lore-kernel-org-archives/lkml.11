@@ -2,73 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54972C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234447AbiDFOTo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34758 "EHLO
+        id S234624AbiDFOT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbiDFOSC (ORCPT
+        with ESMTP id S235620AbiDFOS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:18:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAFF194AA4;
-        Tue,  5 Apr 2022 19:15:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB1CBB81FB2;
-        Wed,  6 Apr 2022 02:15:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A4C4C385A1;
-        Wed,  6 Apr 2022 02:15:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649211331;
-        bh=aiGeeVTGnN8zGL5U5c5Yc8F67GA9MLx7+zRzZUbqfWw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TZ1Sh5SobwI1WfmoEINwRldz9HBH8Zzrs1hWiTrmg/h2kja/2rPhecWSLUhwD0Pry
-         zPCNv+TOGm9OjGUxWd8bORtuqDc00NybEboBvQgHTa/5OqqYSQMJ+tPhPdawrLK9hl
-         WEFQzduKC8o7JV+opAyYA3DUnHpCQMzKMQJ7/EUN+KlY/ViVKmZCej9DtXM++i0kYi
-         vZjMy9VPx1XFKBVfeZzhqEH/r9lWL/jZ+KnGui0arUFAp+Jk6g89j0Ff7j26GwDvZ1
-         z241MhZZfj7IfDLYoY3kPSX/0F44T7tKv94ZMSnvGNUQcKQ0vLPHBy9oiV+CNX6roc
-         M53qoh0wN6w+w==
-Date:   Wed, 6 Apr 2022 10:15:24 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Jander <david@protonic.nl>, devicetree@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v1 4/8] ARM: dts: imx6qdl-vicut1: update gpio-line-names
- for some GPIOs
-Message-ID: <20220406021524.GJ129381@dragon>
-References: <20220221095312.3692669-1-o.rempel@pengutronix.de>
- <20220221095312.3692669-4-o.rempel@pengutronix.de>
+        Wed, 6 Apr 2022 10:18:57 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08341A3945
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:38:05 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KY7tX03bwzgYLw;
+        Wed,  6 Apr 2022 10:36:20 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 10:38:03 +0800
+Subject: Re: [PATCH] mm/slab: remove some unused functions
+To:     Vlastimil Babka <vbabka@suse.cz>
+CC:     <roman.gushchin@linux.dev>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <cl@linux.com>,
+        <penberg@kernel.org>, <rientjes@google.com>,
+        <iamjoonsoo.kim@lge.com>, <akpm@linux-foundation.org>
+References: <20220322091421.25285-1-linmiaohe@huawei.com>
+ <b7871192-8c93-e478-e93f-be9e4150dd1f@suse.cz>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <3fc79634-da36-88c5-0e5d-10be704f9fb5@huawei.com>
+Date:   Wed, 6 Apr 2022 10:38:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221095312.3692669-4-o.rempel@pengutronix.de>
+In-Reply-To: <b7871192-8c93-e478-e93f-be9e4150dd1f@suse.cz>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:53:08AM +0100, Oleksij Rempel wrote:
-> From: David Jander <david@protonic.nl>
+On 2022/4/4 20:49, Vlastimil Babka wrote:
+> On 3/22/22 10:14, Miaohe Lin wrote:
+>> alternate_node_alloc and ____cache_alloc_node are always called when
+>> CONFIG_NUMA. So we can remove the unused !CONFIG_NUMA variant. Also
+>> forward declaration for alternate_node_alloc is unnecessary. Remove
+>> it too.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
 > 
-> countedX lines have different board names (YACO_x). And REV_ and BOARD_ pins
-> have multiple functions. So, use names exposed to the OS.
+> Adding to the slab tree, thanks.
 > 
-> Signed-off-by: David Jander <david@protonic.nl>
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Included also this move of declaration closer to its users:
 
-Applied, thanks!
+Many thanks for doing this. :)
+
+> 
+> diff --git a/mm/slab.c b/mm/slab.c
+> index 4ea12ddaa7db..90b16c7ae01a 100644
+> --- a/mm/slab.c
+> +++ b/mm/slab.c
+> @@ -626,8 +626,6 @@ static inline gfp_t gfp_exact_node(gfp_t flags)
+>  
+>  #else  /* CONFIG_NUMA */
+>  
+> -static void *____cache_alloc_node(struct kmem_cache *, gfp_t, int);
+> -
+>  static struct alien_cache *__alloc_alien_cache(int node, int entries,
+>                                                 int batch, gfp_t gfp)
+>  {
+> @@ -3043,6 +3041,8 @@ static inline void *____cache_alloc(struct kmem_cache *cachep, gfp_t flags)
+>  }
+>  
+>  #ifdef CONFIG_NUMA
+> +static void *____cache_alloc_node(struct kmem_cache *, gfp_t, int);
+> +
+>  /*
+>   * Try allocating on another node if PFA_SPREAD_SLAB is a mempolicy is set.
+>   *
+> 
+> .
+> 
+
