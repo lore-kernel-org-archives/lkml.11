@@ -2,88 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7961EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52141C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236881AbiDFQEp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
+        id S236513AbiDFQF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237068AbiDFQEN (ORCPT
+        with ESMTP id S236985AbiDFQFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:04:13 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDA32C49A6;
-        Wed,  6 Apr 2022 06:36:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649252172; x=1680788172;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dY3I42F8Fmle57bb/MnsyT2f27MUv242lzfRVo6wB7E=;
-  b=DFbiJEB7eNaoTE/Lgo+Bgf/RfQsYjJzHTwBizdkH1lxu39d0KvF2r7H2
-   ck4YMUbulwdKGpUqAN+J0fMLs+kQL1VdvTNj6+jCt1Kvsvrtel2qaMdAa
-   oOGjRd5r9M5TFrXkmZC6Ti2tVfXnFw5zXTAhXGcQECY861VY6M0Xq+HMl
-   smJhR9i6eSvwCJw2zdyJN3mLiGCPkxNCOg9OX/d1b4vmeWs74xq5R7kED
-   k3w78+40A4pUyrrflMa7F4Y8RmmX+9CRtxrLqVUEvbCU1LXRHeynLt9Yx
-   MzFRY7i7Czt3JA9J9Vw6xtVeYCYnfWMNIRn+MT1YN2MN4k2pGaPfIFqRO
+        Wed, 6 Apr 2022 12:05:17 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6533504A4;
+        Wed,  6 Apr 2022 06:37:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649252220; x=1680788220;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZiYtCewVoMnuD9HBEc2prs7oXG1sMa5YDmnUqewHYuc=;
+  b=kL7e0vPoeLy7UcfluqY24vYc+X42Ph85Mwpwu8BoyIUw4PLzHGCLev0B
+   Z/VJLaHJ/Zc5SvwB5dh/WkEhVTXFTfqDxb8YW3OxQh42QznWYryQWKCMV
+   w31EpaooGbMpdaSAeP9E7M+AxqSsHPOpM1t5GLBu8UwGoEGLOJys4wy/K
+   ZKn8DujOgd4ab6in8Glshj5X0AQpeJDrc6jsCxVyCyJ/VCVR21uO86+2E
+   mVuLMj+skDmA4Zd6sPJ/rGZCluqku6WKXRnnqz7lfhBy1kKqDR/aD+7LE
+   x2UeXBSmP8dv8e3N651RVPWWHN7UO3JdT/OT0cQ+PQbyLbWYRtdwO3yGf
    A==;
-X-IronPort-AV: E=Sophos;i="5.90,239,1643698800"; 
-   d="scan'208";a="151734981"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Apr 2022 06:36:12 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 6 Apr 2022 06:36:11 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 6 Apr 2022 06:36:09 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <broonie@kernel.org>
-CC:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>, <linux-spi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Tudor Ambarus" <tudor.ambarus@microchip.com>,
-        <stable@vger.kernel.org>
-Subject: [PATCH v2 1/2] spi: atmel-quadspi: Fix the buswidth adjustment between spi-mem and controller
-Date:   Wed, 6 Apr 2022 16:36:03 +0300
-Message-ID: <20220406133604.455356-1-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="241630778"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="241630778"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:36:59 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="523926538"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:36:56 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nc5oi-000Ee5-UH;
+        Wed, 06 Apr 2022 16:35:24 +0300
+Date:   Wed, 6 Apr 2022 16:35:24 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     djrscally@gmail.com, gregkh@linuxfoundation.org,
+        heikki.krogerus@linux.intel.com, lenb@kernel.org,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        nuno.sa@analog.com, rafael@kernel.org,
+        sakari.ailus@linux.intel.com, Russell King <linux@armlinux.org.uk>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH v4 1/1] device property: Allow error pointer to be passed
+ to fwnode APIs
+Message-ID: <Yk2XHJccym/DpU4i@smile.fi.intel.com>
+References: <20220308123712.18613-1-andriy.shevchenko@linux.intel.com>
+ <20220314195138.20036-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314195138.20036-1-michael@walle.cc>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the spi_mem_default_supports_op() core helper in order to take into
-account the buswidth specified by the user in device tree.
+On Mon, Mar 14, 2022 at 08:51:37PM +0100, Michael Walle wrote:
 
-Cc: <stable@vger.kernel.org>
-Fixes: 0e6aae08e9ae ("spi: Add QuadSPI driver for Atmel SAMA5D2")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
----
-v2: amend patch's subject, s/"spi: atmel-quadspi.c:"/"spi: atmel-quadspi:"
+> This breaks SFP/phylink (using the lan966x switch) on my board. See below
+> for more details.
 
- drivers/spi/atmel-quadspi.c | 3 +++
- 1 file changed, 3 insertions(+)
+I have just sent v5 (it's now a series of patches where the first one is
+the fixed version of this patch), please (re-)test.
 
-diff --git a/drivers/spi/atmel-quadspi.c b/drivers/spi/atmel-quadspi.c
-index 92d9610df1fd..938017a60c8e 100644
---- a/drivers/spi/atmel-quadspi.c
-+++ b/drivers/spi/atmel-quadspi.c
-@@ -277,6 +277,9 @@ static int atmel_qspi_find_mode(const struct spi_mem_op *op)
- static bool atmel_qspi_supports_op(struct spi_mem *mem,
- 				   const struct spi_mem_op *op)
- {
-+	if (!spi_mem_default_supports_op(mem, op))
-+		return false;
-+
- 	if (atmel_qspi_find_mode(op) < 0)
- 		return false;
- 
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
