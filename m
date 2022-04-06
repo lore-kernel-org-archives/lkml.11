@@ -2,70 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C18C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE135C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236585AbiDFPye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
+        id S236891AbiDFP4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236612AbiDFPyJ (ORCPT
+        with ESMTP id S236730AbiDFP4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:54:09 -0400
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83EF4E83C7;
-        Wed,  6 Apr 2022 06:16:14 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id b19so3130498wrh.11;
-        Wed, 06 Apr 2022 06:16:14 -0700 (PDT)
+        Wed, 6 Apr 2022 11:56:14 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FEB24A12A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:20:01 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id e189so2329754oia.8
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 06:20:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nR+sDilSKYVfN9qDJ/g98wvIu+WPZhJinVPgYGsVVDE=;
+        b=iprevJ6Fyj+Zg9sDtMftRf78BwUL9DqO4cEkI/ScLzlTDexBgwMjru/ra3o0B7l1gu
+         OJ20vYFsppHRlvKzZC28kzKR1hMyQwEsq9luV9cffZWeNE3vD+xf2WJv0Ca0dXadfQlj
+         953oj+T6OUBOFGr+ot77RkmEcJoYJLsVMzPoMCP3RjNP7dekojnm6Fk8nu37iGq0duT8
+         e08lmohwbasaykFFyW0Y/V5gQmgMHRDYdkmMKNwiglGCPR+86ugUxeRMo0SxI3b4z3Wx
+         D+4wb3YcZzZLkr6ytY77qTmzkcgBjeoIIkpuRsjLV7h5+4hL294JmkK+1N9vxQ5eNgOf
+         joTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XackL+WLlGuGuj2h9oRi+3NQ/yFqIkV4Wc+UFjwvBBc=;
-        b=uZDgSnLO8jXoGP7lLvS4f7p77ZcGpnSQqhiJViys7Z/oQnn8p0uZ/zQJg2Cb0ua1+1
-         BfUu7EdqSZMG9pRYPE9AUSLV4IdTDcHuHFUpQpSFggnd6Q/2bZBuQ51m0cH+Ycp5c7Oy
-         F3hcVqc8GG92ew5er7RUD8UIkNok1gX/dEt3wA59Ht7GBhHFLotDzuhYr91e7HAnGsdr
-         u7fYfjPdbCw+2XDnlGxIjCBV732k2w74R5OxgVCfOVz2352+uY8CvwGyp95hk2FrgF00
-         uezWfpcPt4xjuJr2zZEANA8DM/x1VKZRJElYrNFfxsuoXeZtGF7eYAfWPlkfcYAgFKOY
-         8iQg==
-X-Gm-Message-State: AOAM531vi3PK6hq++oGJjs0NBxTTCFH15zdLsT2s+cSB6lH3+kil1XrP
-        oDwHEMSqkhj6b4HjuLobqj4=
-X-Google-Smtp-Source: ABdhPJzfTh43mvodajOKzJRynF7Wkr53y8/yq1kEUtt9kVH3x2nUdU43TIQod50mWPGT8qCNKjNS/g==
-X-Received: by 2002:a5d:5886:0:b0:206:db4:f12b with SMTP id n6-20020a5d5886000000b002060db4f12bmr6856930wrf.455.1649250973190;
-        Wed, 06 Apr 2022 06:16:13 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id q16-20020adff950000000b00205aa05fa03sm14679587wrr.58.2022.04.06.06.16.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 06:16:12 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 13:16:10 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Boqun Feng <boqun.feng@gmail.com>
-Cc:     Wei Liu <wei.liu@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        linux-hyperv@vger.kernel.org,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        David Hildenbrand <david@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] Drivers: hv: balloon: Temporary fixes for ARM64
-Message-ID: <20220406131610.7qbzlhqxkbxktrqs@liuwe-devbox-debian-v2>
-References: <20220325023212.1570049-1-boqun.feng@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nR+sDilSKYVfN9qDJ/g98wvIu+WPZhJinVPgYGsVVDE=;
+        b=rCGQlgvVnzUO5PlxpMkStYfk6tmE5W+VJbQ3xGsPEFuKhexSY9rfqexS65EErrJykT
+         bFKmSPCOkwuZlg6eTC5Fe+smXhzxSJbhf+dkKbEp+hW852RGsiQgfhQ2vxbpe64iNXPv
+         io4sqlosvIQqHVSyMjSMect8haTt6HOZ/Oj6PBY5I1jvSYrGsg5ETBA55zbMgbKObNaF
+         7NTAVy0W5Wgz1cHDVqm1O9Bmu1TYjMLhq6PGO2l1mzPwQprqC59ubXaGn5xNiAcb84V2
+         MFM6IRyzppABmekl78w3XoI5Raq5Sij6JXyyZ2aOntNTsjOxereVwbiHtPlZ5FFuVBbD
+         0z0g==
+X-Gm-Message-State: AOAM530ijTQLCpeeBHDwSZxVr1FqA5xj6Qt0/IQhwpDRdO0BGXrEeFQn
+        LL4Ne2nEhBL7yEh5ii3BoPcXPKD+N5SsoDHPZtA=
+X-Google-Smtp-Source: ABdhPJxyBFYsPElegdy6BaOXxjV6Kp33EHLXtBFktwHpS2gGqYGmZq94oWBFPsv+aCywyMrwUMjhsjcBBwjHvTN7c2g=
+X-Received: by 2002:aca:d04:0:b0:2ef:8b45:d235 with SMTP id
+ 4-20020aca0d04000000b002ef8b45d235mr3630825oin.253.1649251200316; Wed, 06 Apr
+ 2022 06:20:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325023212.1570049-1-boqun.feng@gmail.com>
+References: <20220405213800.90205-1-h0tc0d3@gmail.com>
+In-Reply-To: <20220405213800.90205-1-h0tc0d3@gmail.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed, 6 Apr 2022 09:19:49 -0400
+Message-ID: <CADnq5_PXDyOXX2p4FswWWyY6sw8nXmajhUzx-=ke+6jiZn3ZPA@mail.gmail.com>
+Subject: Re: [PATCH] drm/amdgpu: Unnecessary code in gfx_v7_0.c
+To:     Grigory Vasilyev <h0tc0d3@gmail.com>
+Cc:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Melissa Wen <mwen@igalia.com>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Joseph Greathouse <Joseph.Greathouse@amd.com>,
+        Guchun Chen <guchun.chen@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        David Airlie <airlied@linux.ie>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Evan Quan <evan.quan@amd.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 10:32:10AM +0800, Boqun Feng wrote:
-> v1: https://lore.kernel.org/lkml/20220223131548.2234326-1-boqun.feng@gmail.com/
-> Boqun Feng (2):
->   Drivers: hv: balloon: Support status report for larger page sizes
->   Drivers: hv: balloon: Disable balloon and hot-add accordingly
-> 
+On Wed, Apr 6, 2022 at 4:00 AM Grigory Vasilyev <h0tc0d3@gmail.com> wrote:
+>
+> The code is useless and doesn't change the value.
+>
+> (0 << GB_ADDR_CONFIG__ROW_SIZE__SHIFT) = 0
+> gb_addr_config | 0 = gb_addr_config
+>
+> Perhaps there could be 1 instead of 0, but this does not correspond with
+> the logic of the switch.
 
-Applied to hyperv-fixes. Thanks!
+It doesn't do anything, but it helps the developer to understand how
+the driver state maps to hardware state.
+
+Alex
+
+>
+> Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
+> ---
+>  drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c
+> index 1cb5db17d2b9..5ed84a6467ee 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c
+> @@ -4409,16 +4409,14 @@ static void gfx_v7_0_gpu_early_init(struct amdgpu_device *adev)
+>         /* fix up row size */
+>         gb_addr_config &= ~GB_ADDR_CONFIG__ROW_SIZE_MASK;
+>         switch (adev->gfx.config.mem_row_size_in_kb) {
+> -       case 1:
+> -       default:
+> -               gb_addr_config |= (0 << GB_ADDR_CONFIG__ROW_SIZE__SHIFT);
+> -               break;
+>         case 2:
+>                 gb_addr_config |= (1 << GB_ADDR_CONFIG__ROW_SIZE__SHIFT);
+>                 break;
+>         case 4:
+>                 gb_addr_config |= (2 << GB_ADDR_CONFIG__ROW_SIZE__SHIFT);
+>                 break;
+> +       default:
+> +               break;
+>         }
+>         adev->gfx.config.gb_addr_config = gb_addr_config;
+>  }
+> --
+> 2.35.1
+>
