@@ -2,77 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB3AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE77BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235401AbiDFVyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
+        id S235881AbiDFVy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236781AbiDFVwf (ORCPT
+        with ESMTP id S236767AbiDFVwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:52:35 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20682AD4;
-        Wed,  6 Apr 2022 14:46:31 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id y6so3165239plg.2;
-        Wed, 06 Apr 2022 14:46:31 -0700 (PDT)
+        Wed, 6 Apr 2022 17:52:34 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7A213E3F;
+        Wed,  6 Apr 2022 14:46:22 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id l4-20020a17090a49c400b001c6840df4a3so4224151pjm.0;
+        Wed, 06 Apr 2022 14:46:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=g43LRxOPnuHcbyfQfDVoT6M8d2laa4QFWkHWb/Yu4qg=;
-        b=cC++/7iikgLl+TlbToW62IbL+eLLrvQvapq1zNrxD5/+8s/GbJTo3cvVyLJQaVBi4L
-         d6/BUYS7CVX33I69jsTcxOSjnUXstEUUrcpRYrgPC8OPYBTLXazETCclzSM1cNVKQSrj
-         I4rUvPfMXV0AC+zxAyaPrqCXjq7i7KFu86DCHIs0+Hiww6vOtmix7P0zRMfLAKKb/8v4
-         gD+SgXYsfw0XGzBT1BJtCgECQ1Dm57FMXqRMpeOxurvAXSdXQpraJ9iZuznvnRnDvZBH
-         qp+/izm2cQfU6XtR4J17qBMpxpjRYuSi+pUZZyznLjvJ/Dn9UlEHmqQ1NV8t+iX8AyG+
-         LzMQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CkfyiKrfymnOnK0EWh7i1INSgOHYBA/tWH69CgASpO0=;
+        b=SWGT0CpR2h+e8t/dq9fbCqwGiZLLkh7/LSkWSszvAoyz0gM2C2Mn4NR0XNtKO3jIHO
+         6MI6LH6EKtxhfhBx3V9nRKR2EKKptHiUN5tkesiycFAGO1N5BlAgoNLb/cEOvbhFG4nB
+         QqZpr39h5HdBjq6KeKrcyBrFN3T6woSB/O2M3EjW4KIbcwjxnMe+QgQPuU9T53el1cpr
+         T8m+53Zdl5eI67t+dtfwmYexj6zIN1okpyIan7MUost9AMd5/te5wkHHkV4xB1EKZnc5
+         swZFiki4Ogxqnipn5wfa3VvG1jvboEMltJuAObAiAirDVyBmCe6bpblQfVICSp4Oja1n
+         SVbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=g43LRxOPnuHcbyfQfDVoT6M8d2laa4QFWkHWb/Yu4qg=;
-        b=Mhx7aQ2Y+LjofFsyoD/42SIZR1MgZnCMBO1uNzMRxGkDHiYY3hP7R/gqY1t7NbGQRG
-         2U6dH8SAijDNSIByxuaVoxps95sqJNFywXkUbnRH5v/uyqnWUrD0JMyfx2jyW0vEDraN
-         4ZsNFJIUQ+8zM39FKMGvgUkeRmzHCqLS49zAy0b7ZP7BIOJx7U63hG7w2RYe9NlQ2D2Y
-         nLfzFDaJ+Ue4ygzBZSmylOrZtPM35xEP/Y74TYO7S4jfrYCbISqHnAwRRDsnqkj4+M37
-         IBVtdTZkyVV3lAz23pqixWkqoXcFC3samzzU3UpRupV1NyGES9fgT3VzhNX5vKe4Ox+m
-         oenw==
-X-Gm-Message-State: AOAM533dROG1S5m0E4XtwZTj4eSlHkOHOPQVEe9j/uWxFffKxu7RHVjW
-        ZQMBzopP2H+7fnSCkWytT+g=
-X-Google-Smtp-Source: ABdhPJwS7xjVi2P9Nvb1pvAJY4RpS03oEFr6/hTLDnbpKf4JHfZ+vpuqNvAJneLCYK6QWR2bLkFdJQ==
-X-Received: by 2002:a17:90a:3486:b0:1ca:c6a0:3f8f with SMTP id p6-20020a17090a348600b001cac6a03f8fmr12410889pjb.6.1649281591139;
-        Wed, 06 Apr 2022 14:46:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CkfyiKrfymnOnK0EWh7i1INSgOHYBA/tWH69CgASpO0=;
+        b=0+WXrh1koy2OCpyLM/UZx9Qq4kwKr7L/dgRyDurJAkULtdEBkPjb863ch0edEVm9ge
+         0FDfwQ+MAb+nAGpvQwGjGTXIhDZsWcS7+iWR559qGw2EeSAk8wxMl67TUKhAARHjcT2/
+         YYGkvIQgDXGvdfDMLgRpfQE1r+5EK9Tm8oPuYjqIIjH/wbrw1Pncfkqax5EOSe+V43Ch
+         on5EYl/YnVQ4gcfZS/kA0w1iK3bPWFvPs+lprOEefLOYLZwR5+Oo171uNR/LURATwnjw
+         /RQUiQSdEbmRKj6dvd1H5X/pLEwfh3hKXi+18gsEa5NaOpX1Dfmvw0TFzsDoOY1FHeBD
+         +l0w==
+X-Gm-Message-State: AOAM531RUNAsIhzUoyepe1gvtTsY4h5HEmsMp0QT8eW5KCtr3xWTMTKG
+        ACI8Y5OUlmtOADZqxfOwpKE=
+X-Google-Smtp-Source: ABdhPJxwUPsOIMPEeUMSDmd1Dismd7EZeSiKJZLKwwpOnWoiIlPLX8vmG2SjQh+6tbo+/dcs4XrTCg==
+X-Received: by 2002:a17:903:2452:b0:157:69d:744f with SMTP id l18-20020a170903245200b00157069d744fmr54104pls.47.1649281581862;
+        Wed, 06 Apr 2022 14:46:21 -0700 (PDT)
 Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
-        by smtp.gmail.com with ESMTPSA id f31-20020a17090a702200b001ca996866b5sm6514598pjk.12.2022.04.06.14.46.29
+        by smtp.gmail.com with ESMTPSA id rm5-20020a17090b3ec500b001c7559762e9sm6536425pjb.20.2022.04.06.14.46.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 14:46:30 -0700 (PDT)
+        Wed, 06 Apr 2022 14:46:20 -0700 (PDT)
 From:   Rob Clark <robdclark@gmail.com>
 To:     dri-devel@lists.freedesktop.org
 Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Dmitry Osipenko <dmitry.osipenko@collabora.com>,
         Rob Clark <robdclark@chromium.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
         Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
         Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Emma Anholt <emma@anholt.net>,
         Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3 02/10] drm/msm/gpu: Drop duplicate fence counter
-Date:   Wed,  6 Apr 2022 14:46:18 -0700
-Message-Id: <20220406214636.1156978-3-robdclark@gmail.com>
+        Dmitry Osipenko <digetx@gmail.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        linux-kernel@vger.kernel.org (open list),
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Wang Qing <wangqing@vivo.com>,
+        Yangtao Li <tiny.windzz@gmail.com>
+Subject: [PATCH v3 00/10] drm/msm: Userspace allocated GPU addresses
+Date:   Wed,  6 Apr 2022 14:46:16 -0700
+Message-Id: <20220406214636.1156978-1-robdclark@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406214636.1156978-1-robdclark@gmail.com>
-References: <20220406214636.1156978-1-robdclark@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -81,131 +77,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rob Clark <robdclark@chromium.org>
 
-The ring seqno counter duplicates the fence-context last_fence counter.
-They end up getting incremented in lock-step, on the same scheduler
-thread, but the split just makes things less obvious.
+The first six paches are various cleanups and simplifications.  The
+next two get rid of redundant vma lookups in the submit and retire
+paths.  Following that, fenced vma lets us indicate a fence value
+following which the vma is no longer used, which is needed because
+otherwise userspace could observe the signaled fence prior to
+retire_submits() finishing.  (With userspace allocated GPU addresses
+userspace is tracking when a buffer is no longer used and it's vma can
+be deleted.)  And finally the last patch adds the new uabi for user-
+space allocated iova.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/adreno/a5xx_gpu.c   | 2 +-
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c   | 2 +-
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 4 ++--
- drivers/gpu/drm/msm/msm_gpu.c           | 8 ++++----
- drivers/gpu/drm/msm/msm_gpu.h           | 2 +-
- drivers/gpu/drm/msm/msm_ringbuffer.h    | 1 -
- 6 files changed, 9 insertions(+), 10 deletions(-)
+v2: Fix inuse check in last patch, split GEM_WARN_ON() conversion to
+    separate patch, and nits
+v3: Fix nested fb prepares in 06/10, return -EBUSY if trying to set
+    iova on buffer that already has one in 10/10
 
-diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-index 407f50a15faa..d31aa87c6c8d 100644
---- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-@@ -1235,7 +1235,7 @@ static void a5xx_fault_detect_irq(struct msm_gpu *gpu)
- 		return;
- 
- 	DRM_DEV_ERROR(dev->dev, "gpu fault ring %d fence %x status %8.8X rb %4.4x/%4.4x ib1 %16.16llX/%4.4x ib2 %16.16llX/%4.4x\n",
--		ring ? ring->id : -1, ring ? ring->seqno : 0,
-+		ring ? ring->id : -1, ring ? ring->fctx->last_fence : 0,
- 		gpu_read(gpu, REG_A5XX_RBBM_STATUS),
- 		gpu_read(gpu, REG_A5XX_CP_RB_RPTR),
- 		gpu_read(gpu, REG_A5XX_CP_RB_WPTR),
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 83c31b2ad865..17de46fc4bf2 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1390,7 +1390,7 @@ static void a6xx_fault_detect_irq(struct msm_gpu *gpu)
- 
- 	DRM_DEV_ERROR(&gpu->pdev->dev,
- 		"gpu fault ring %d fence %x status %8.8X rb %4.4x/%4.4x ib1 %16.16llX/%4.4x ib2 %16.16llX/%4.4x\n",
--		ring ? ring->id : -1, ring ? ring->seqno : 0,
-+		ring ? ring->id : -1, ring ? ring->fctx->last_fence : 0,
- 		gpu_read(gpu, REG_A6XX_RBBM_STATUS),
- 		gpu_read(gpu, REG_A6XX_CP_RB_RPTR),
- 		gpu_read(gpu, REG_A6XX_CP_RB_WPTR),
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 45f2c6084aa7..6385ab06632f 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -578,7 +578,7 @@ int adreno_gpu_state_get(struct msm_gpu *gpu, struct msm_gpu_state *state)
- 
- 		state->ring[i].fence = gpu->rb[i]->memptrs->fence;
- 		state->ring[i].iova = gpu->rb[i]->iova;
--		state->ring[i].seqno = gpu->rb[i]->seqno;
-+		state->ring[i].seqno = gpu->rb[i]->fctx->last_fence;
- 		state->ring[i].rptr = get_rptr(adreno_gpu, gpu->rb[i]);
- 		state->ring[i].wptr = get_wptr(gpu->rb[i]);
- 
-@@ -828,7 +828,7 @@ void adreno_dump_info(struct msm_gpu *gpu)
- 
- 		printk("rb %d: fence:    %d/%d\n", i,
- 			ring->memptrs->fence,
--			ring->seqno);
-+			ring->fctx->last_fence);
- 
- 		printk("rptr:     %d\n", get_rptr(adreno_gpu, ring));
- 		printk("rb wptr:  %d\n", get_wptr(ring));
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 747b89aa9d13..9480bdf875db 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -534,7 +534,7 @@ static void hangcheck_handler(struct timer_list *t)
- 	if (fence != ring->hangcheck_fence) {
- 		/* some progress has been made.. ya! */
- 		ring->hangcheck_fence = fence;
--	} else if (fence_before(fence, ring->seqno)) {
-+	} else if (fence_before(fence, ring->fctx->last_fence)) {
- 		/* no progress and not done.. hung! */
- 		ring->hangcheck_fence = fence;
- 		DRM_DEV_ERROR(dev->dev, "%s: hangcheck detected gpu lockup rb %d!\n",
-@@ -542,13 +542,13 @@ static void hangcheck_handler(struct timer_list *t)
- 		DRM_DEV_ERROR(dev->dev, "%s:     completed fence: %u\n",
- 				gpu->name, fence);
- 		DRM_DEV_ERROR(dev->dev, "%s:     submitted fence: %u\n",
--				gpu->name, ring->seqno);
-+				gpu->name, ring->fctx->last_fence);
- 
- 		kthread_queue_work(gpu->worker, &gpu->recover_work);
- 	}
- 
- 	/* if still more pending work, reset the hangcheck timer: */
--	if (fence_after(ring->seqno, ring->hangcheck_fence))
-+	if (fence_after(ring->fctx->last_fence, ring->hangcheck_fence))
- 		hangcheck_timer_reset(gpu);
- 
- 	/* workaround for missing irq: */
-@@ -770,7 +770,7 @@ void msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
- 
- 	msm_gpu_hw_init(gpu);
- 
--	submit->seqno = ++ring->seqno;
-+	submit->seqno = submit->hw_fence->seqno;
- 
- 	msm_rd_dump_submit(priv->rd, submit, NULL);
- 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 2c0203fd6ce3..e47a42b1244a 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -291,7 +291,7 @@ static inline bool msm_gpu_active(struct msm_gpu *gpu)
- 	for (i = 0; i < gpu->nr_rings; i++) {
- 		struct msm_ringbuffer *ring = gpu->rb[i];
- 
--		if (fence_after(ring->seqno, ring->memptrs->fence))
-+		if (fence_after(ring->fctx->last_fence, ring->memptrs->fence))
- 			return true;
- 	}
- 
-diff --git a/drivers/gpu/drm/msm/msm_ringbuffer.h b/drivers/gpu/drm/msm/msm_ringbuffer.h
-index d8c63df4e9ca..2a5045abe46e 100644
---- a/drivers/gpu/drm/msm/msm_ringbuffer.h
-+++ b/drivers/gpu/drm/msm/msm_ringbuffer.h
-@@ -59,7 +59,6 @@ struct msm_ringbuffer {
- 	spinlock_t submit_lock;
- 
- 	uint64_t iova;
--	uint32_t seqno;
- 	uint32_t hangcheck_fence;
- 	struct msm_rbmemptrs *memptrs;
- 	uint64_t memptrs_iova;
+Rob Clark (10):
+  drm/msm/gem: Move prototypes
+  drm/msm/gpu: Drop duplicate fence counter
+  drm/msm/gem: Convert some missed GEM_WARN_ON()s
+  drm/msm/gem: Split out inuse helper
+  drm/msm/gem: Drop PAGE_SHIFT for address space mm
+  drm/msm: Drop msm_gem_iova()
+  drm/msm/gem: Rework vma lookup and pin
+  drm/msm/gem: Split vma lookup and pin
+  drm/msm/gem: Add fenced vma unpin
+  drm/msm: Add a way for userspace to allocate GPU iova
+
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c   |   2 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c   |   2 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c   |   2 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c |  14 ++-
+ drivers/gpu/drm/msm/msm_drv.c           |  21 ++++
+ drivers/gpu/drm/msm/msm_drv.h           |  23 ----
+ drivers/gpu/drm/msm/msm_fb.c            |  20 +++-
+ drivers/gpu/drm/msm/msm_fence.c         |   6 +-
+ drivers/gpu/drm/msm/msm_fence.h         |   3 +
+ drivers/gpu/drm/msm/msm_gem.c           | 151 ++++++++++++++----------
+ drivers/gpu/drm/msm/msm_gem.h           |  47 +++++++-
+ drivers/gpu/drm/msm/msm_gem_submit.c    |  17 ++-
+ drivers/gpu/drm/msm/msm_gem_vma.c       |  59 ++++++---
+ drivers/gpu/drm/msm/msm_gpu.c           |   8 +-
+ drivers/gpu/drm/msm/msm_gpu.h           |   2 +-
+ drivers/gpu/drm/msm/msm_ringbuffer.c    |  12 +-
+ drivers/gpu/drm/msm/msm_ringbuffer.h    |   1 -
+ include/uapi/drm/msm_drm.h              |   3 +
+ 18 files changed, 262 insertions(+), 131 deletions(-)
+
 -- 
 2.35.1
 
