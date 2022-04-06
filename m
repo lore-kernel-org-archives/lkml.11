@@ -2,102 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33077C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235587AbiDFPCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41692 "EHLO
+        id S235331AbiDFPDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235443AbiDFPBt (ORCPT
+        with ESMTP id S235328AbiDFPC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:01:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54BA2102A8;
-        Wed,  6 Apr 2022 04:46:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 078E6B8225B;
-        Wed,  6 Apr 2022 11:44:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC284C385A3;
-        Wed,  6 Apr 2022 11:44:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649245443;
-        bh=NxeimgFKXbpME/i8GbhGeyomnmNXOaXJQCJ3je+GzkE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Ib9hdNGGYkrCQaXv+Wa1skJOD2XxfidXfz1pqcxFsyXCCzxmlx4Q3Iv3zMczs0oKa
-         FQe0DNtq44xqgLu38lKgQlYFw3Ij795WPlkExr4Ro8+jAkTyioR9A9BMIhk91q9J+R
-         QabboGRB4qGh2cnlhPER2Onwrw5Q/VSEu3RqX41pc3se7y9sXoIwT3O2RDYpgi6Z8l
-         CNg8ObMUpX+4Zv4u9Bk/mM3AAvhsbWPbeyNFTQSoXvExtLE6vXtR5ciAv6Yh1XrMBw
-         O1wSUjRp0lg0zIDtO2k54+FomdDRCXHT/n5i7rQLiEC8H5aU6PZ2AIaF9+r4Ajgm4Q
-         iJs2PmQtEfQ7A==
-Received: by mail-ot1-f52.google.com with SMTP id x8-20020a9d6288000000b005b22c373759so1519896otk.8;
-        Wed, 06 Apr 2022 04:44:03 -0700 (PDT)
-X-Gm-Message-State: AOAM533HDRs+1aVPN4Log4NvSw4lyrz6mEWkVlB0UFC7qu6e/WVj85nf
-        l1xJEwSD2btu6yqjLqvrcQk+d5RhKHpwj0Adn7Q=
-X-Google-Smtp-Source: ABdhPJwgIpRNFG6qcoAVBzxDEl4cLier8VLEXG9sCYAAHpDzoTvzxVWsFwYD+jTe+LzI54KUubxiebLt/6VhtToTqKA=
-X-Received: by 2002:a05:6830:2e7:b0:5b2:68c1:182a with SMTP id
- r7-20020a05683002e700b005b268c1182amr2838747ote.71.1649245442897; Wed, 06 Apr
- 2022 04:44:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220405070339.801210740@linuxfoundation.org> <20220405070402.195698649@linuxfoundation.org>
- <CAMj1kXFL4abn9xg1ZrNpFg54Pmw1Kw8OPbDpMevSjQDNg0r5Pg@mail.gmail.com> <Yk14LhswMSlPGrmJ@sashalap>
-In-Reply-To: <Yk14LhswMSlPGrmJ@sashalap>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 6 Apr 2022 13:43:51 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHxGjO9ctZ5kSd0MZztOTZz8j02rTPJgPdANODqUH5JGg@mail.gmail.com>
-Message-ID: <CAMj1kXHxGjO9ctZ5kSd0MZztOTZz8j02rTPJgPdANODqUH5JGg@mail.gmail.com>
-Subject: Re: [PATCH 5.15 746/913] ARM: ftrace: avoid redundant loads or
- clobbering IP
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 6 Apr 2022 11:02:27 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509F6AAB5B
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:46:41 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id n18so1723067plg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 04:46:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id;
+        bh=hWie3mJTAnfpzOXhn4Z/4uIgwysiFcrooHT60DVzybQ=;
+        b=CE9K9MT+Rt2kpApicMQngJo7nwda7ou2DtrFamdUZFxlh3kP15ZFuCURNlqhkQmCGY
+         2AT2p7oDzXmGjNJgBhxofiTlVwbGL2bESAobC4pPZiIEqg605SXXcDgFou2T6Acy3uno
+         QJnZeOHUhwImxP4AKwaD8eEC9R8AntNoAFKgRLD+1PiQikFBcA9KHKWkZ6x8RBW71ddk
+         xQpQaYU+zmm7wYRMe0eufz5huUYwBj5SjrudLWccRPZbmsG2S3Rjahtutr9ZdVYLEvHi
+         ectsA3dd8F3ivzbXM0WBgO0uM3BnScI145ZmiaJQMxHhcubB6TcTzGgRh4Yh5+26x18B
+         Ngdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=hWie3mJTAnfpzOXhn4Z/4uIgwysiFcrooHT60DVzybQ=;
+        b=A1Q+IloOcKOt2ZPOxXCMvFolA+uygHHTsMnZh3M358jUwPZ3M8kajgpqjsvziiKS64
+         mCYsraTStAdveNJjYktr+hJnYel64dy8O3eK3JZB3rkIhQZzE7W4VVexJRS7eRXQTWz3
+         mNFoVMQBfKterKIKfHOoht5tLKVqJIvkstrSTYDD22jraw3+qJwty999A7BrDmJvvoqQ
+         7A/8Sf1EquAn6/I8dIdoJOjS/n3tTAaWrKqJn9BFRSSb+jwYltcj8rAOnfCXxb312TJw
+         Zxu3LxR9MkK2/rC9i2/NDgOJv3NejRI3HF1wFQmI6QXHA0rb/Vzd6tf4bG7j3pss6LZH
+         0uWg==
+X-Gm-Message-State: AOAM531txUZ9p3OfgtiRaemFICciSHko4ZskLz4Jq+6Ms+GAskIgLa+k
+        XvZp7gGPfc9/2wh0tIYAYoY=
+X-Google-Smtp-Source: ABdhPJwNMvr7Ye7f8HN6k8CSNZ1+X2QyzDqvWOQk6MAWcVPOo0giQ96XUCTWCwbkum8M+/VAdkJAhQ==
+X-Received: by 2002:a17:902:c40e:b0:154:80a7:95c9 with SMTP id k14-20020a170902c40e00b0015480a795c9mr8546529plk.28.1649245585441;
+        Wed, 06 Apr 2022 04:46:25 -0700 (PDT)
+Received: from localhost.localdomain ([150.109.127.35])
+        by smtp.gmail.com with ESMTPSA id br2-20020a17090b0f0200b001caa0db90d3sm5578684pjb.13.2022.04.06.04.46.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Apr 2022 04:46:24 -0700 (PDT)
+From:   zgpeng <zgpeng.linux@gmail.com>
+X-Google-Original-From: zgpeng <zgpeng@tencent.com>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org
+Subject: [PATCH] sched/fair: Simplify the scene where both local and busiest are group_fully_busy
+Date:   Wed,  6 Apr 2022 19:46:20 +0800
+Message-Id: <1649245580-27256-1-git-send-email-zgpeng@tencent.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022 at 13:23, Sasha Levin <sashal@kernel.org> wrote:
->
-> On Tue, Apr 05, 2022 at 12:01:19PM +0200, Ard Biesheuvel wrote:
-> >On Tue, 5 Apr 2022 at 11:54, Greg Kroah-Hartman
-> ><gregkh@linuxfoundation.org> wrote:
-> >>
-> >> From: Ard Biesheuvel <ardb@kernel.org>
-> >>
-> >> [ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
-> >>
-> >> Tweak the ftrace return paths to avoid redundant loads of SP, as well as
-> >> unnecessary clobbering of IP.
-> >>
-> >> This also fixes the inconsistency of using MOV to perform a function
-> >> return, which is sub-optimal on recent micro-architectures but more
-> >> importantly, does not perform an interworking return, unlike compiler
-> >> generated function returns in Thumb2 builds.
-> >>
-> >> Let's fix this by popping PC from the stack like most ordinary code
-> >> does.
-> >>
-> >> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> >> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> >> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> >
-> >Please drop all the 32-bit ARM patches authored by me from the stable
-> >queues except the ones that have fixes tags. These are highly likely
->
-> I can drop you from future selections as well.
->
+When both local and busiest group are group_fully_busy type, because
+the avg_load of the group of type group_fully_busy is not calculated, the
+avg_load value is equal to 0. In this case, load balancing will not actually 
+done, because after a series of calculations in the calculate_imbalance, it 
+will be considered that load balance is not required. Therefore,it is not
+necessary to enter calculate_imbalance to do some useless work.
 
-Yes, please. Just disregard all of my patches, unless they have a
-fixes or cc:stable, or someone suggests them explicitly.
+Signed-off-by: zgpeng <zgpeng@tencent.com>
+Reviewed-by: Samuel Liao <samuelliao@tencent.com>
+---
+ kernel/sched/fair.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-> >to cause an explosion of regressions, and they should have never been
-> >selected, as I don't remember anyone proposing these for stable.
->
-> They were proposed by the bot last week
-> (https://lore.kernel.org/lkml/20220330115005.1671090-22-sashal@kernel.org/).
->
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 9f75303..cc1d6c4 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -9634,6 +9634,18 @@ static struct sched_group *find_busiest_group(struct lb_env *env)
+ 			 * busiest doesn't have any tasks waiting to run
+ 			 */
+ 			goto out_balanced;
++
++		if (local->group_type == group_fully_busy)
++			/*
++			 * If local group is group_fully_busy, the code goes here,
++			 * the type of busiest group must also be group_fully_busy.
++			 * Because the avg_load of the group_fully_busy type is not
++			 * calculated at present, it is actually equal to 0. In this
++			 * scenario, load balance is not performed. therefore, it can
++			 * be returned directly here, and there is no need to do some
++			 * useless work in calculate_imbalance.
++			 */
++			goto out_balanced;
+ 	}
+ 
+ force_balance:
+-- 
+2.9.5
 
-Yeah, we should really not be using a bot for that.
