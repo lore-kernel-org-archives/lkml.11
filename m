@@ -2,79 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C20BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233087AbiDFT6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
+        id S230249AbiDFT7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233195AbiDFT4e (ORCPT
+        with ESMTP id S233999AbiDFT62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:56:34 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CD9619C80A
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:26:10 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0399612FC;
-        Wed,  6 Apr 2022 10:26:10 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 890FA3F5A1;
-        Wed,  6 Apr 2022 10:26:08 -0700 (PDT)
-Message-ID: <44ca58cf-3daa-bec5-2c52-eb5a6dd305b9@arm.com>
-Date:   Wed, 6 Apr 2022 19:25:46 +0200
+        Wed, 6 Apr 2022 15:58:28 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5029EB0A5
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:14:00 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id 125so3913461iov.10
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0OCy6LDYOIaS0T1WcEa+rwDReqz2SxY3oGp8Y6a/ndc=;
+        b=fUL21+aV9GSqoqJkETQjlSLoHe+M9P2mRn+vKYS1qWwmVQrbKUlsMi1coUdwgaFQkZ
+         WnX4p9HYOr5jPZ2YJRw/G4PrtQQqR7OCaHeROXcO0Di2ozo/ZoxCl4KtEn1UInHPGIAd
+         Eu4o4NFOCIRaTAgpNSW1rCVz/FZL4C4/20pYw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0OCy6LDYOIaS0T1WcEa+rwDReqz2SxY3oGp8Y6a/ndc=;
+        b=8MZylkvp5zDV3CURkv8nEAGhjoym6vLeRhGDuqc70e/KUgQM86XAYgmvZil1Cfo75J
+         vVTYecwuv+30CZR/EvOXRXkyWL3gdszJZ0NXtz2Wk9VJPHoANFy1QUb5dHL+x+c9Sv2Z
+         FPkxOwp80oNZ0QXtsuWS1K2MKVGho925+OKaxe96HSr13uBYpERrq4KpH95pWA66j/vb
+         YKELOgx94UCz3LqihNEc4OLJVjDLqm4Zn5K6s5wH25SamPB1umwyOvidqG4woaRX1+Mz
+         TWpg2wHETKi4/mGkQp/E/mOaIzX2uh84GKpCjymAXabtu7H1uS/QnxSadrTxdqmvibKH
+         LC+g==
+X-Gm-Message-State: AOAM5329cVP9uXCGO7PiKncv82kH5xuOoGLj/mFm2Ny4JMPGyCDE3JMS
+        Biv4X93CKyu/DJX3Q25aFC+m3w==
+X-Google-Smtp-Source: ABdhPJy+pe5o48OnBlUAWmG9tMdvl9j+ZgBFPO9RgRnitcES25uJqa3ZAi7AwksabLAclXno5xxLqg==
+X-Received: by 2002:a05:6602:2aca:b0:646:a866:9fd4 with SMTP id m10-20020a0566022aca00b00646a8669fd4mr4829331iov.92.1649268838737;
+        Wed, 06 Apr 2022 11:13:58 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id f20-20020a6be814000000b00649d9a4db2asm11145251ioh.27.2022.04.06.11.13.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 11:13:58 -0700 (PDT)
+Subject: Re: [PATCH] usb: usbip: fix a refcount leak in stub_probe()
+To:     Hangyu Hua <hbh25y@gmail.com>, valentina.manea.m@gmail.com,
+        shuah@kernel.org, gregkh@linuxfoundation.org, khoroshilov@ispras.ru
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220406061713.18938-1-hbh25y@gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <4341150b-195c-a896-1f6a-8715bbb539e2@linuxfoundation.org>
+Date:   Wed, 6 Apr 2022 12:13:57 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-Subject: Re: [PATCH] sched/fair: Return the busiest group only if imbalance is
- meaningful
-To:     Vincent Guittot <vincent.guittot@linaro.org>,
-        =?UTF-8?B?5b2t5b+X5Yia?= <zgpeng.linux@gmail.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        rostedt@goodmis.org, Benjamin Segall <bsegall@google.com>,
-        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org
-References: <1649244204-23471-1-git-send-email-zgpeng@tencent.com>
- <CAKfTPtDh7qFpdjsEBvT34WEgW8uGbdwsZnyXjq4KpAcOse9Pew@mail.gmail.com>
- <CAE5vP3=ZPGV=PuYb-WJsoQ8tX4yDAjajT_WRU+7gAiW54XgX_g@mail.gmail.com>
- <CAKfTPtA8VjZ-F3vdiKJtpij6PUxu_OR7-54cG6NcS_K7guHF6g@mail.gmail.com>
+In-Reply-To: <20220406061713.18938-1-hbh25y@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-In-Reply-To: <CAKfTPtA8VjZ-F3vdiKJtpij6PUxu_OR7-54cG6NcS_K7guHF6g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/2022 17:33, Vincent Guittot wrote:
-> On Wed, 6 Apr 2022 at 17:07, 彭志刚 <zgpeng.linux@gmail.com> wrote:
-
-[...]
-
-> I think that this case should be covered by an additional test in
-> calculate_imbalance because we should not try to pull load in groupA
-> if it's already above  the average load. Something like below should
-> cover this
+On 4/6/22 12:17 AM, Hangyu Hua wrote:
+> usb_get_dev is called in stub_device_alloc. When stub_probe fails after
+> that, usb_put_dev needs to be used.
 > 
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -9469,6 +9469,16 @@ static inline void calculate_imbalance(struct
-> lb_env *env, struct sd_lb_stats *s
+
+Thank you for the patch. Please include details on how you found
+this problem.
+
+Nit: Change this to:
+
+usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
+after that, usb_put_dev() needs to be called to release the reference.
+
+> Fix this by moving usb_put_dev() to sdev_free
 > 
->                 sds->avg_load = (sds->total_load * SCHED_CAPACITY_SCALE) /
->                                 sds->total_capacity;
-> +
-> +               /*
-> +                * Don't pull any tasks if this group is already above the
-> +                * domain average load.
-> +                */
-> +               if (local->avg_load >= sds->avg_load) {
-> +                       env->imbalance = 0;
-> +                       return;
-> +               }
-> +
 
-LGTM. Like for the `local->group_type == group_overloaded` case in
-find_busiest_group() where we force `goto out_balanced`.
+Nit: Change this to:
 
-[...]
+Fix this by moving usb_put_dev() to sdev_free error path handling.
+
+> Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
+>   drivers/usb/usbip/stub_dev.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
+> index d8d3892e5a69..3c6d452e3bf4 100644
+> --- a/drivers/usb/usbip/stub_dev.c
+> +++ b/drivers/usb/usbip/stub_dev.c
+> @@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
+>   
+>   err_port:
+>   	dev_set_drvdata(&udev->dev, NULL);
+> -	usb_put_dev(udev);
+>   
+>   	/* we already have busid_priv, just lock busid_lock */
+>   	spin_lock(&busid_priv->busid_lock);
+> @@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
+>   	put_busid_priv(busid_priv);
+>   
+>   sdev_free:
+> +	usb_put_dev(udev);
+>   	stub_device_free(sdev);
+>   
+>   	return rc;
+> 
+
+With the above addressed:
+
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
