@@ -2,341 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B64AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E32C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236921AbiDFPyY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        id S236821AbiDFPwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236808AbiDFPxj (ORCPT
+        with ESMTP id S236601AbiDFPwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:53:39 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1D9165E52
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:16:09 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id bc9-20020a056402204900b0041cc2b0bff3so1220615edb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 06:16:09 -0700 (PDT)
+        Wed, 6 Apr 2022 11:52:14 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A4152750A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:13:00 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso1654255otf.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 06:13:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=EHYoTVl+gP3yMHYun3dql2NLB7u3fhlJOn8FiiSfr2I=;
-        b=Noky0cu7xqpjnpqu6STFHmJfFpJZg/VVn1f3blFr8T21WVfQoZuJ/vXdE/kc32iSKB
-         cfBw6Z34aHcDIAvdYm145qkK200hwyTp9lCzLI+aZlNylMwhrUKfs4bcmgvf3lYpiirW
-         /TyLAmBJEpBfJR6AmA3LBIBXu03EUT82wuWaW7xK97+HpLyzfL69cPvE+19FERKZ8/B5
-         WLqMrw9pc4EHRm9KuKBCfOt30GHtUBs8RNxo/MRoOeTXCDfb4KoGT57ZBZdSu2c7az5d
-         qOXGtRcCQjv6Vqw7pQSoDGyjPPRdRnLd+paCJtir/AwRD7ksiHq2dLG0/EywRbrtXzlL
-         Mg8A==
+        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=s4UyoymKo0MiCMqo3D+Ez+F5rfIje+Ebwuy8rUwudOc=;
+        b=5AgWHpt/wFkkkhRVPiGRh2h5NWqz7wgeP6+v9hoeFWMimCKpOvsFJj/TJ1hH7xyr0s
+         mHCIbT5UCrP0c1G238A06Tm63Yx4XF5XpXtIEmsuagWRRg4kp9dhxP0EVmasUMY5KYl1
+         hNsMM8PO6ckRIPVFYodk/Dd53TQTCFKNjMBvdavRBFyplW1GGROcvUW/Ah0ERVsoK50F
+         O4Tx1iP/trhe7bJwoOzsPokuj1yAKbuDvlm4Up6eJjTvcFayUTnISLPemlEEteKjHo+S
+         xGjwj1CHR6VMGK2CXMk5mwLMm6+ZAzoxWEUpDOS+Fm3+mQK86lNpEltD3k+bpnHx2oYg
+         a41Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=EHYoTVl+gP3yMHYun3dql2NLB7u3fhlJOn8FiiSfr2I=;
-        b=HCgZSEOqoQ+kTrEan+KYbI9vIHZtHmm6OP7IGDKDUBErOSU51t95gmHG50GhB58fMW
-         y0fnJMsiC0rvQ2M0MmL8FxmIjPz9hjTFXQN0PRwbow6XmA2buhz2g9lj2AAFoUDnkmI4
-         DOdDE1KW3Ay7+WmK/v3YVhDmGwJclNeqWQR8hW+vZm2eh12ZWWkyY5YqMuBfMVZN6Jkw
-         iM5cBarlYOpPp0UlJYechQM0K61Ocfw5nuYmGcAPHjtqQv78wL43OyDjGauFAMd7+5NS
-         h6oHW9FUgZpEPlgFCGH1qxcXOghWoIhCFLeR8sSEqUOzaMIKwov8168D2UR16pU7GPFx
-         LmWw==
-X-Gm-Message-State: AOAM532jTGixe6M7jFhH0e6bSE+El7BnBrCu+c6NvVFFzIjpvkLgTazx
-        wefXuwmFlYBXT9+F9wt2tks2eJ6yEg==
-X-Google-Smtp-Source: ABdhPJxkorYlqzFdoIXmJO8KBXp7IoSQI/nJRYgHcIrtFXHH99aJnuWpTmsdSjcX9uQKspVen/k4u5uvPg==
-X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:5d29:f2b6:6b0b:ac46])
- (user=elver job=sendgmr) by 2002:a50:fe0d:0:b0:415:e2ee:65af with SMTP id
- f13-20020a50fe0d000000b00415e2ee65afmr8642207edt.383.1649250968143; Wed, 06
- Apr 2022 06:16:08 -0700 (PDT)
-Date:   Wed,  6 Apr 2022 15:15:58 +0200
-Message-Id: <20220406131558.3558585-1-elver@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH] mm, kfence: support kmem_dump_obj() for KFENCE objects
-From:   Marco Elver <elver@google.com>
-To:     elver@google.com, Andrew Morton <akpm@linux-foundation.org>
-Cc:     Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, kernel test robot <oliver.sang@intel.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=s4UyoymKo0MiCMqo3D+Ez+F5rfIje+Ebwuy8rUwudOc=;
+        b=buIvJF+dc4i3a/ZDfOU6yUTGIYMfa66yG/hHyMGsuIipIwx61wL5UG6rFsw8qHieCl
+         Vf2VKMG1IvnCEiWeopjKEb+xd9YZWy/3muPpnstVEfPcRhTct2SSkESwG+wVnkKAa2LI
+         1V88+EUXmQUwu6FPJwsLBGNLMWX9B1FcTv8fjUybdcCVf0COjgBjNeAnaCgjgKFqTOK1
+         YxCIQhul90NnGQOG0eO/BkrQHycuek1Syf24LZ0j+eLDAhHgRveQ4ja+CSGIerTbI/C5
+         58hTgBay1vErXb9362wONFO4a179ejcuFNw+EnKSyDfUh2dW8fEuKNo1BzcrtyebicXg
+         rcmA==
+X-Gm-Message-State: AOAM531SpxsyWraXvJZbX9mO+VS6vhj7tw0TMr72EWwKrkkqk4v4e8V3
+        du3EETuSQweGcFsHnQ+C+FBcOg==
+X-Google-Smtp-Source: ABdhPJzjVmDCX/NGQsNm7peF0uT2TgG0ug/jXOoWpZ33ZfKWn24G5Q30lQrniT8uYl9jb0xZ58UTWQ==
+X-Received: by 2002:a05:6830:241d:b0:5ce:94f4:203a with SMTP id j29-20020a056830241d00b005ce94f4203amr2900784ots.241.1649250773502;
+        Wed, 06 Apr 2022 06:12:53 -0700 (PDT)
+Received: from eze-laptop ([2803:9800:98c2:8470:9f4:8e2a:88e5:ec01])
+        by smtp.gmail.com with ESMTPSA id y18-20020a056871011200b000e1f5910d45sm3894141oab.7.2022.04.06.06.12.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 06:12:52 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 10:12:47 -0300
+From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@collabora.com, linux-kernel@vger.kernel.org,
+        Jonas Karlman <jonas@kwiboo.se>, linux-media@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev
+Subject: Re: [PATCH v3 16/24] media: rkvdec: h264: Validate and use pic width
+ and height in mbs
+Message-ID: <Yk2Rzzpye8KUodmu@eze-laptop>
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+ <20220405204426.259074-17-nicolas.dufresne@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405204426.259074-17-nicolas.dufresne@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Calling kmem_obj_info() via kmem_dump_obj() on KFENCE objects has been
-producing garbage data due to the object not actually being maintained
-by SLAB or SLUB.
+On Tue, Apr 05, 2022 at 04:44:17PM -0400, Nicolas Dufresne wrote:
+> From: Jonas Karlman <jonas@kwiboo.se>
+> 
+> The width and height in macroblocks is currently configured based on OUTPUT
+> buffer resolution, this works for frame pictures but can cause issues for
+> field pictures.
+> 
+> When frame_mbs_only_flag is 0 the height in mbs should be height of
+> the field instead of height of frame.
+> 
+> Validate pic_width_in_mbs_minus1 and pic_height_in_map_units_minus1
+> against OUTPUT buffer resolution and use these values to configure HW.
+> The validation is happening in both try_ctrt() and start() since it is
+> otherwise possible to trick the driver during initialization by changing
+> the OUTPUT format after having set a valid control.
+> 
+> Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 
-Fix this by implementing __kfence_obj_info() that copies relevant
-information to struct kmem_obj_info when the object was allocated by
-KFENCE; this is called by a common kmem_obj_info(), which also calls the
-slab/slub/slob specific variant now called __kmem_obj_info().
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 
-For completeness, kmem_dump_obj() now displays if the object was
-allocated by KFENCE.
-
-Link: https://lore.kernel.org/all/20220323090520.GG16885@xsang-OptiPlex-9020/
-Fixes: b89fb5ef0ce6 ("mm, kfence: insert KFENCE hooks for SLUB")
-Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Marco Elver <elver@google.com>
-Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
- include/linux/kfence.h | 24 +++++++++++++++++++++
- mm/kfence/core.c       | 21 -------------------
- mm/kfence/kfence.h     | 21 +++++++++++++++++++
- mm/kfence/report.c     | 47 ++++++++++++++++++++++++++++++++++++++++++
- mm/slab.c              |  2 +-
- mm/slab.h              |  2 +-
- mm/slab_common.c       |  9 ++++++++
- mm/slob.c              |  2 +-
- mm/slub.c              |  2 +-
- 9 files changed, 105 insertions(+), 25 deletions(-)
-
-diff --git a/include/linux/kfence.h b/include/linux/kfence.h
-index f49e64222628..726857a4b680 100644
---- a/include/linux/kfence.h
-+++ b/include/linux/kfence.h
-@@ -204,6 +204,22 @@ static __always_inline __must_check bool kfence_free(void *addr)
-  */
- bool __must_check kfence_handle_page_fault(unsigned long addr, bool is_write, struct pt_regs *regs);
- 
-+#ifdef CONFIG_PRINTK
-+struct kmem_obj_info;
-+/**
-+ * __kfence_obj_info() - fill kmem_obj_info struct
-+ * @kpp: kmem_obj_info to be filled
-+ * @object: the object
-+ *
-+ * Return:
-+ * * false - not a KFENCE object
-+ * * true - a KFENCE object, filled @kpp
-+ *
-+ * Copies information to @kpp for KFENCE objects.
-+ */
-+bool __kfence_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab);
-+#endif
-+
- #else /* CONFIG_KFENCE */
- 
- static inline bool is_kfence_address(const void *addr) { return false; }
-@@ -221,6 +237,14 @@ static inline bool __must_check kfence_handle_page_fault(unsigned long addr, boo
- 	return false;
- }
- 
-+#ifdef CONFIG_PRINTK
-+struct kmem_obj_info;
-+static inline bool __kfence_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
-+{
-+	return false;
-+}
-+#endif
-+
- #endif
- 
- #endif /* _LINUX_KFENCE_H */
-diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-index a203747ad2c0..9b2b5f56f4ae 100644
---- a/mm/kfence/core.c
-+++ b/mm/kfence/core.c
-@@ -231,27 +231,6 @@ static bool kfence_unprotect(unsigned long addr)
- 	return !KFENCE_WARN_ON(!kfence_protect_page(ALIGN_DOWN(addr, PAGE_SIZE), false));
- }
- 
--static inline struct kfence_metadata *addr_to_metadata(unsigned long addr)
--{
--	long index;
--
--	/* The checks do not affect performance; only called from slow-paths. */
--
--	if (!is_kfence_address((void *)addr))
--		return NULL;
--
--	/*
--	 * May be an invalid index if called with an address at the edge of
--	 * __kfence_pool, in which case we would report an "invalid access"
--	 * error.
--	 */
--	index = (addr - (unsigned long)__kfence_pool) / (PAGE_SIZE * 2) - 1;
--	if (index < 0 || index >= CONFIG_KFENCE_NUM_OBJECTS)
--		return NULL;
--
--	return &kfence_metadata[index];
--}
--
- static inline unsigned long metadata_to_pageaddr(const struct kfence_metadata *meta)
- {
- 	unsigned long offset = (meta - kfence_metadata + 1) * PAGE_SIZE * 2;
-diff --git a/mm/kfence/kfence.h b/mm/kfence/kfence.h
-index 9a6c4b1b12a8..600f2e2431d6 100644
---- a/mm/kfence/kfence.h
-+++ b/mm/kfence/kfence.h
-@@ -96,6 +96,27 @@ struct kfence_metadata {
- 
- extern struct kfence_metadata kfence_metadata[CONFIG_KFENCE_NUM_OBJECTS];
- 
-+static inline struct kfence_metadata *addr_to_metadata(unsigned long addr)
-+{
-+	long index;
-+
-+	/* The checks do not affect performance; only called from slow-paths. */
-+
-+	if (!is_kfence_address((void *)addr))
-+		return NULL;
-+
-+	/*
-+	 * May be an invalid index if called with an address at the edge of
-+	 * __kfence_pool, in which case we would report an "invalid access"
-+	 * error.
-+	 */
-+	index = (addr - (unsigned long)__kfence_pool) / (PAGE_SIZE * 2) - 1;
-+	if (index < 0 || index >= CONFIG_KFENCE_NUM_OBJECTS)
-+		return NULL;
-+
-+	return &kfence_metadata[index];
-+}
-+
- /* KFENCE error types for report generation. */
- enum kfence_error_type {
- 	KFENCE_ERROR_OOB,		/* Detected a out-of-bounds access. */
-diff --git a/mm/kfence/report.c b/mm/kfence/report.c
-index f93a7b2a338b..f5a6d8ba3e21 100644
---- a/mm/kfence/report.c
-+++ b/mm/kfence/report.c
-@@ -273,3 +273,50 @@ void kfence_report_error(unsigned long address, bool is_write, struct pt_regs *r
- 	/* We encountered a memory safety error, taint the kernel! */
- 	add_taint(TAINT_BAD_PAGE, LOCKDEP_STILL_OK);
- }
-+
-+#ifdef CONFIG_PRINTK
-+static void kfence_to_kp_stack(const struct kfence_track *track, void **kp_stack)
-+{
-+	int i, j;
-+
-+	i = get_stack_skipnr(track->stack_entries, track->num_stack_entries, NULL);
-+	for (j = 0; i < track->num_stack_entries && j < KS_ADDRS_COUNT; ++i, ++j)
-+		kp_stack[j] = (void *)track->stack_entries[i];
-+	if (j < KS_ADDRS_COUNT)
-+		kp_stack[j] = NULL;
-+}
-+
-+bool __kfence_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
-+{
-+	struct kfence_metadata *meta = addr_to_metadata((unsigned long)object);
-+	unsigned long flags;
-+
-+	if (!meta)
-+		return false;
-+
-+	/*
-+	 * If state is UNUSED at least show the pointer requested; the rest
-+	 * would be garbage data.
-+	 */
-+	kpp->kp_ptr = object;
-+
-+	/* Requesting info an a never-used object is almost certainly a bug. */
-+	if (WARN_ON(meta->state == KFENCE_OBJECT_UNUSED))
-+		return true;
-+
-+	raw_spin_lock_irqsave(&meta->lock, flags);
-+
-+	kpp->kp_slab = slab;
-+	kpp->kp_slab_cache = meta->cache;
-+	kpp->kp_objp = (void *)meta->addr;
-+	kfence_to_kp_stack(&meta->alloc_track, kpp->kp_stack);
-+	if (meta->state == KFENCE_OBJECT_FREED)
-+		kfence_to_kp_stack(&meta->free_track, kpp->kp_free_stack);
-+	/* get_stack_skipnr() ensures the first entry is outside allocator. */
-+	kpp->kp_ret = kpp->kp_stack[0];
-+
-+	raw_spin_unlock_irqrestore(&meta->lock, flags);
-+
-+	return true;
-+}
-+#endif
-diff --git a/mm/slab.c b/mm/slab.c
-index b04e40078bdf..0edb474edef1 100644
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -3665,7 +3665,7 @@ EXPORT_SYMBOL(__kmalloc_node_track_caller);
- #endif /* CONFIG_NUMA */
- 
- #ifdef CONFIG_PRINTK
--void kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
-+void __kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
- {
- 	struct kmem_cache *cachep;
- 	unsigned int objnr;
-diff --git a/mm/slab.h b/mm/slab.h
-index fd7ae2024897..95eb34174c1b 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -868,7 +868,7 @@ struct kmem_obj_info {
- 	void *kp_stack[KS_ADDRS_COUNT];
- 	void *kp_free_stack[KS_ADDRS_COUNT];
- };
--void kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab);
-+void __kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab);
- #endif
- 
- #ifdef CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 6ee64d6208b3..2b3206a2c3b5 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -555,6 +555,13 @@ bool kmem_valid_obj(void *object)
- }
- EXPORT_SYMBOL_GPL(kmem_valid_obj);
- 
-+static void kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
-+{
-+	if (__kfence_obj_info(kpp, object, slab))
-+		return;
-+	__kmem_obj_info(kpp, object, slab);
-+}
-+
- /**
-  * kmem_dump_obj - Print available slab provenance information
-  * @object: slab object for which to find provenance information.
-@@ -590,6 +597,8 @@ void kmem_dump_obj(void *object)
- 		pr_cont(" slab%s %s", cp, kp.kp_slab_cache->name);
- 	else
- 		pr_cont(" slab%s", cp);
-+	if (is_kfence_address(object))
-+		pr_cont(" (kfence)");
- 	if (kp.kp_objp)
- 		pr_cont(" start %px", kp.kp_objp);
- 	if (kp.kp_data_offset)
-diff --git a/mm/slob.c b/mm/slob.c
-index dfa6808dff36..40ea6e2d4ccd 100644
---- a/mm/slob.c
-+++ b/mm/slob.c
-@@ -463,7 +463,7 @@ static void slob_free(void *block, int size)
- }
- 
- #ifdef CONFIG_PRINTK
--void kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
-+void __kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
- {
- 	kpp->kp_ptr = object;
- 	kpp->kp_slab = slab;
-diff --git a/mm/slub.c b/mm/slub.c
-index 74d92aa4a3a2..ed5c2c03a47a 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -4312,7 +4312,7 @@ int __kmem_cache_shutdown(struct kmem_cache *s)
- }
- 
- #ifdef CONFIG_PRINTK
--void kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
-+void __kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
- {
- 	void *base;
- 	int __maybe_unused i;
--- 
-2.35.1.1094.g7c7d902a7c-goog
-
+> ---
+>  drivers/staging/media/rkvdec/rkvdec-h264.c | 78 ++++++++++++++++------
+>  1 file changed, 59 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+> index 0dcbcb1bac80..f081b476340f 100644
+> --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
+> +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+> @@ -672,8 +672,16 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+>  		  LOG2_MAX_PIC_ORDER_CNT_LSB_MINUS4);
+>  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_DELTA_PIC_ORDER_ALWAYS_ZERO),
+>  		  DELTA_PIC_ORDER_ALWAYS_ZERO_FLAG);
+> -	WRITE_PPS(DIV_ROUND_UP(ctx->coded_fmt.fmt.pix_mp.width, 16), PIC_WIDTH_IN_MBS);
+> -	WRITE_PPS(DIV_ROUND_UP(ctx->coded_fmt.fmt.pix_mp.height, 16), PIC_HEIGHT_IN_MBS);
+> +
+> +	/* Use the SPS values since they are already in macroblocks
+> +	 * dimensions, height can be field height (halved) if
+> +	 * V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY is not set and also it allows
+> +	 * decoding smaller images into larger allocation which can be used
+> +	 * to implementing SVC spatial layer support.
+> +	 */
+> +	WRITE_PPS(sps->pic_width_in_mbs_minus1 + 1, PIC_WIDTH_IN_MBS);
+> +	WRITE_PPS(sps->pic_height_in_map_units_minus1 + 1, PIC_HEIGHT_IN_MBS);
+> +
+>  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY),
+>  		  FRAME_MBS_ONLY_FLAG);
+>  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD),
+> @@ -1035,13 +1043,59 @@ static int rkvdec_h264_adjust_fmt(struct rkvdec_ctx *ctx,
+>  	return 0;
+>  }
+>  
+> +static int rkvdec_h264_validate_sps(struct rkvdec_ctx *ctx,
+> +				    const struct v4l2_ctrl_h264_sps *sps)
+> +{
+> +	unsigned int width, height;
+> +	/*
+> +	 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
+> +	 * but it's currently broken in the driver.
+> +	 * Reject them for now, until it's fixed.
+> +	 */
+> +	if (sps->chroma_format_idc > 1)
+> +		/* Only 4:0:0 and 4:2:0 are supported */
+> +		return -EINVAL;
+> +	if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+> +		/* Luma and chroma bit depth mismatch */
+> +		return -EINVAL;
+> +	if (sps->bit_depth_luma_minus8 != 0)
+> +		/* Only 8-bit is supported */
+> +		return -EINVAL;
+> +
+> +	width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
+> +	height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
+> +
+> +	/* when frame_mbs_only_flag is not set, this is field height,
+> +	 * which is half the final height (see (7-18) in the
+> +	 * specification)
+> +	 */
+> +	if (!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY))
+> +		height *= 2;
+> +
+> +	if (width > ctx->coded_fmt.fmt.pix_mp.width ||
+> +	    height > ctx->coded_fmt.fmt.pix_mp.height)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+>  static int rkvdec_h264_start(struct rkvdec_ctx *ctx)
+>  {
+>  	struct rkvdec_dev *rkvdec = ctx->dev;
+>  	struct rkvdec_h264_priv_tbl *priv_tbl;
+>  	struct rkvdec_h264_ctx *h264_ctx;
+> +	struct v4l2_ctrl *ctrl;
+>  	int ret;
+>  
+> +	ctrl = v4l2_ctrl_find(&ctx->ctrl_hdl,
+> +			      V4L2_CID_STATELESS_H264_SPS);
+> +	if (!ctrl)
+> +		return -EINVAL;
+> +
+> +	ret = rkvdec_h264_validate_sps(ctx, ctrl->p_new.p_h264_sps);
+> +	if (ret)
+> +		return ret;
+> +
+>  	h264_ctx = kzalloc(sizeof(*h264_ctx), GFP_KERNEL);
+>  	if (!h264_ctx)
+>  		return -ENOMEM;
+> @@ -1139,23 +1193,9 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
+>  
+>  static int rkvdec_h264_try_ctrl(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl)
+>  {
+> -	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
+> -		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
+> -		/*
+> -		 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
+> -		 * but it's currently broken in the driver.
+> -		 * Reject them for now, until it's fixed.
+> -		 */
+> -		if (sps->chroma_format_idc > 1)
+> -			/* Only 4:0:0 and 4:2:0 are supported */
+> -			return -EINVAL;
+> -		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+> -			/* Luma and chroma bit depth mismatch */
+> -			return -EINVAL;
+> -		if (sps->bit_depth_luma_minus8 != 0)
+> -			/* Only 8-bit is supported */
+> -			return -EINVAL;
+> -	}
+> +	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS)
+> +		return rkvdec_h264_validate_sps(ctx, ctrl->p_new.p_h264_sps);
+> +
+>  	return 0;
+>  }
+>  
+> -- 
+> 2.34.1
+> 
