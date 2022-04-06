@@ -2,165 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 698BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70097C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbiDFPLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46524 "EHLO
+        id S235798AbiDFPL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235650AbiDFPKr (ORCPT
+        with ESMTP id S235534AbiDFPLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:10:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98FAB26B0BD
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:10:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649246610;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ze2TWxpmAqqDUL49E+XcPJ1705fMWUsu9cAskjBwj0E=;
-        b=RacFOQEcat13njQY1H5G4z9iwYtTTpW7qA+RG83eY2InK2bkrVrVV9B6t6xWlmqUwR5Poo
-        2Z1Sv6beARq6B4zM/cQwMtruxYW6tRlKAQQsqvjtVTU3MiME6zrBJmPK026S2ZbI0V4SpB
-        nk6zmP1xB1TiauxgATnci00L+wCQFR4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-183-3j_ILxw9Pe2DH7h12y0k-g-1; Wed, 06 Apr 2022 08:00:18 -0400
-X-MC-Unique: 3j_ILxw9Pe2DH7h12y0k-g-1
-Received: by mail-wm1-f69.google.com with SMTP id c19-20020a05600c4a1300b0038e6b4a104cso2863181wmp.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:00:18 -0700 (PDT)
+        Wed, 6 Apr 2022 11:11:19 -0400
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D963B19E3A9
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:11:07 -0700 (PDT)
+Received: by mail-pj1-f53.google.com with SMTP id l4-20020a17090a49c400b001c6840df4a3so2537248pjm.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:11:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VxvVdkfuigSD3d66lzCfSLqAWuJHzoxORHDZPeqJF20=;
+        b=gk7I0dlOY5WPCoG3b9ssw9G/zUZAVZVhKwSj1GQpWxKfK4U/SDf5qRArFLruvhHAG4
+         4P1l76QSu5NHDh9jGLhDyx1w35dD+1nqtkDyymhGzVwPNqvb8PxF9M9xpcaosAJI11N0
+         ypXPXx5KRUjx49Da7bbuyh0RROCxksK7lvw8TELhxxuV3kT+1ntAHCT5gcV3h1I7tJwM
+         ChrTm6lFfbaWqxVJjoo+pazTLkvB1CA6tm/OeELa5I5BaZdB9jbeefQAbPfs/FqLY/Fp
+         nhV0qRCEHZScFi3sqXQhLIbe6K0JnF8xY7aLMbcNL+Qu021bl86o6ln0jXdBUkPkvB0K
+         Z7cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Ze2TWxpmAqqDUL49E+XcPJ1705fMWUsu9cAskjBwj0E=;
-        b=YKiTDlw22i4LnmUwM+qAsYuD+X7tg7j8Na/jnWx5hQVpbL6lE9mCu6LVSY1PCCCMEq
-         tXzTErKIrl3xzsurH5Nv1uSFQr8yKVuphSkoc7vc3wtcnts8fO3U+wpFN/JMLy5o6h6v
-         hyxDiYw2Uch7Py5kSEssoTzrnIEQ91HUnIKBZwbL1dWCV4CY8MICong/WyzlRPIQ39Jz
-         vMQ3XdfL+RrxDynbySbupeSE1DY4G92CNu8sx1NP3gB6xmpjRz6sO0hQ2bef6Xgbg6S1
-         fLRMef99NmOrKY3haPZxbtSCCCG4bw1Ize3F6AN05MoECeMFWT9JifhhrQ8VOyxabqoA
-         ikqw==
-X-Gm-Message-State: AOAM530K9Yo7uB2AgyyO4qbgg6eBG3toZZmYVN2GijNgvnQduTWWFKSO
-        SlYKRX+vKZgNSP7yGB3fofC2JaKXQfDsm6jJWjZZcvY3jRuOKdTNtVCQ/Vrxa2knijzOxhsQo1V
-        NQT+ufDS3HU7se7kR+CwmBWQM
-X-Received: by 2002:adf:f10e:0:b0:206:1837:b5a9 with SMTP id r14-20020adff10e000000b002061837b5a9mr6235217wro.347.1649246417777;
-        Wed, 06 Apr 2022 05:00:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwAufotzexY7Jj8FBhbUyN69cKdArXStk+wlr/BcYVa/P4zN5BWio7QBwNF1ollNyzQV0IO1w==
-X-Received: by 2002:adf:f10e:0:b0:206:1837:b5a9 with SMTP id r14-20020adff10e000000b002061837b5a9mr6235196wro.347.1649246417519;
-        Wed, 06 Apr 2022 05:00:17 -0700 (PDT)
-Received: from redhat.com ([2.55.179.195])
-        by smtp.gmail.com with ESMTPSA id r12-20020a5d6c6c000000b00203ec2b1255sm18278692wrz.60.2022.04.06.05.00.15
+        bh=VxvVdkfuigSD3d66lzCfSLqAWuJHzoxORHDZPeqJF20=;
+        b=dv2cDVqGsrcdpUThobHjC+9UpjTFuZTOltanR+LDohJdNWD4zZzJVHVIMr1Q2qX/nn
+         u2TklEnWTmgWDTp8Q8yna84A7f3s6oUb/HWv+fg0Or2cM7R/lJvpNS4tpYG5ZNDa8MV+
+         y5TuoQsD028zbB4uMpe8raz4pzda77eAW3x1nafqhi9X1lTPlou7juP/DHUem21FaFOE
+         rhJ8MRahDZRYo1iJ+vx1KUmS/3xl5gLrfCK0gJJ3OsOLZhN9PV3sfL5Q7+ZaJqBTURgJ
+         O0I6UUJewuKfwcWS9RDzMhxvpEDTkeUKvkJ5uZ0RZyRSlMEYtZ8eIUGHkp/uqRhP7Lt5
+         5UYQ==
+X-Gm-Message-State: AOAM533Bbf03wpT70ZzB4l8j46o3E6Llw3pXTpHAdLbyabea+vZPpCxV
+        3G8gktX3U2a0dhg6xZW/DwM=
+X-Google-Smtp-Source: ABdhPJzPv/0s/hoXyGUY/9nqEVuptmFoaFod8nip9pDQC/6pHYBrhMCyczDafCZIp0OrrjUqAMCzgw==
+X-Received: by 2002:a17:902:7296:b0:151:62b1:e2b0 with SMTP id d22-20020a170902729600b0015162b1e2b0mr8189883pll.165.1649246964817;
+        Wed, 06 Apr 2022 05:09:24 -0700 (PDT)
+Received: from hyeyoo ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id j8-20020a17090a060800b001c7936791d1sm5417690pjj.7.2022.04.06.05.09.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 05:00:17 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 08:00:13 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, sgarzare@redhat.com,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
-Message-ID: <20220406075952-mutt-send-email-mst@kernel.org>
-References: <20220406083538.16274-1-jasowang@redhat.com>
- <20220406083538.16274-5-jasowang@redhat.com>
+        Wed, 06 Apr 2022 05:09:23 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 21:09:14 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Pekka Enberg <penberg@kernel.org>, roman.gushchin@linux.dev
+Subject: Re: [PATCH 01/10] mm/slab: Decouple ARCH_KMALLOC_MINALIGN from
+ ARCH_DMA_MINALIGN
+Message-ID: <Yk2C6jLR8BSeHRkm@hyeyoo>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
+ <20220405135758.774016-2-catalin.marinas@arm.com>
+ <YkzX1nM0Ca7apVBt@hyeyoo>
+ <CAK8P3a1K0=jwYEHVu=X7oAWk9dzaOYAdFsidwVRKCJVReSV3+g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220406083538.16274-5-jasowang@redhat.com>
+In-Reply-To: <CAK8P3a1K0=jwYEHVu=X7oAWk9dzaOYAdFsidwVRKCJVReSV3+g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 04:35:37PM +0800, Jason Wang wrote:
-> This patch implements PCI version of synchronize_vqs().
+On Wed, Apr 06, 2022 at 09:29:19AM +0200, Arnd Bergmann wrote:
+> On Wed, Apr 6, 2022 at 1:59 AM Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+> >
+> > On Tue, Apr 05, 2022 at 02:57:49PM +0100, Catalin Marinas wrote:
+> > > In preparation for supporting a dynamic kmalloc() minimum alignment,
+> > > allow architectures to define ARCH_KMALLOC_MINALIGN independently of
+> > > ARCH_DMA_MINALIGN. In addition, always define ARCH_DMA_MINALIGN even if
+> > > an architecture does not override it.
+> > >
+> >
+> > [ +Cc slab maintainer/reviewers ]
+> >
+> > I get why you want to set minimum alignment of kmalloc() dynamically.
+> > That's because cache line size can be different and we cannot statically
+> > know that, right?
+> >
+> > But I don't get why you are trying to decouple ARCH_KMALLOC_MINALIGN
+> > from ARCH_DMA_MINALIGN. kmalloc'ed buffer is always supposed to be DMA-safe.
+> >
+> > I'm afraid this series may break some archs/drivers.
+> >
+> > in Documentation/dma-api-howto.rst:
+> > > 2) ARCH_DMA_MINALIGN
+> > >
+> > >   Architectures must ensure that kmalloc'ed buffer is
+> > >   DMA-safe. Drivers and subsystems depend on it. If an architecture
+> > >   isn't fully DMA-coherent (i.e. hardware doesn't ensure that data in
+> > >   the CPU cache is identical to data in main memory),
+> > >   ARCH_DMA_MINALIGN must be set so that the memory allocator
+> > >   makes sure that kmalloc'ed buffer doesn't share a cache line with
+> > >   the others. See arch/arm/include/asm/cache.h as an example.
+> > >
+> > >   Note that ARCH_DMA_MINALIGN is about DMA memory alignment
+> > >   constraints. You don't need to worry about the architecture data
+> > >   alignment constraints (e.g. the alignment constraints about 64-bit
+> > >   objects).
+> >
+> > If I'm missing something, please let me know :)
 > 
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-
-Please add implementations at least for ccw and mmio.
-
-> ---
->  drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
->  drivers/virtio/virtio_pci_common.h |  2 ++
->  drivers/virtio/virtio_pci_legacy.c |  1 +
->  drivers/virtio/virtio_pci_modern.c |  2 ++
->  4 files changed, 19 insertions(+)
+> It helps in two ways:
 > 
-> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-> index d724f676608b..b78c8bc93a97 100644
-> --- a/drivers/virtio/virtio_pci_common.c
-> +++ b/drivers/virtio/virtio_pci_common.c
-> @@ -37,6 +37,20 @@ void vp_synchronize_vectors(struct virtio_device *vdev)
->  		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
->  }
->  
-> +void vp_synchronize_vqs(struct virtio_device *vdev)
-> +{
-> +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> +	int i;
-> +
-> +	if (vp_dev->intx_enabled) {
-> +		synchronize_irq(vp_dev->pci_dev->irq);
-> +		return;
-> +	}
-> +
-> +	for (i = 0; i < vp_dev->msix_vectors; ++i)
-> +		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
-> +}
-> +
->  /* the notify function used when creating a virt queue */
->  bool vp_notify(struct virtqueue *vq)
->  {
-> diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virtio/virtio_pci_common.h
-> index eb17a29fc7ef..2b84d5c1b5bc 100644
-> --- a/drivers/virtio/virtio_pci_common.h
-> +++ b/drivers/virtio/virtio_pci_common.h
-> @@ -105,6 +105,8 @@ static struct virtio_pci_device *to_vp_device(struct virtio_device *vdev)
->  void vp_synchronize_vectors(struct virtio_device *vdev);
->  /* the notify function used when creating a virt queue */
->  bool vp_notify(struct virtqueue *vq);
-> +/* synchronize with callbacks */
-> +void vp_synchronize_vqs(struct virtio_device *vdev);
->  /* the config->del_vqs() implementation */
->  void vp_del_vqs(struct virtio_device *vdev);
->  /* the config->find_vqs() implementation */
-> diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
-> index 6f4e34ce96b8..5a9e62320edc 100644
-> --- a/drivers/virtio/virtio_pci_legacy.c
-> +++ b/drivers/virtio/virtio_pci_legacy.c
-> @@ -192,6 +192,7 @@ static const struct virtio_config_ops virtio_pci_config_ops = {
->  	.reset		= vp_reset,
->  	.find_vqs	= vp_find_vqs,
->  	.del_vqs	= vp_del_vqs,
-> +	.synchronize_vqs = vp_synchronize_vqs,
->  	.get_features	= vp_get_features,
->  	.finalize_features = vp_finalize_features,
->  	.bus_name	= vp_bus_name,
-> diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-> index a2671a20ef77..584850389855 100644
-> --- a/drivers/virtio/virtio_pci_modern.c
-> +++ b/drivers/virtio/virtio_pci_modern.c
-> @@ -394,6 +394,7 @@ static const struct virtio_config_ops virtio_pci_config_nodev_ops = {
->  	.reset		= vp_reset,
->  	.find_vqs	= vp_modern_find_vqs,
->  	.del_vqs	= vp_del_vqs,
-> +	.synchronize_vqs = vp_synchronize_vqs,
->  	.get_features	= vp_get_features,
->  	.finalize_features = vp_finalize_features,
->  	.bus_name	= vp_bus_name,
-> @@ -411,6 +412,7 @@ static const struct virtio_config_ops virtio_pci_config_ops = {
->  	.reset		= vp_reset,
->  	.find_vqs	= vp_modern_find_vqs,
->  	.del_vqs	= vp_del_vqs,
-> +	.synchronize_vqs = vp_synchronize_vqs,
->  	.get_features	= vp_get_features,
->  	.finalize_features = vp_finalize_features,
->  	.bus_name	= vp_bus_name,
-> -- 
-> 2.25.1
+> - you can start with a relatively large hardcoded ARCH_DMA_MINALIGN
+>   of 128 or 256 bytes, depending on what the largest possible line size
+>   is for any machine you want to support, and then drop that down to
+>   32 or 64 bytes based on runtime detection. This should always be safe,
+>   and it means a very sizable chunk of wasted memory can be recovered.
+>
 
+I agree this part.
+
+> - On systems that are fully cache coherent, there is no need to align
+>   kmallloc() allocations for DMA safety at all, on these, we can drop the
+>   size even below the cache line. This does not apply on most of the
+>   cheaper embedded or mobile SoCs, but it helps a lot on the machines
+>   you'd find in a data center.
+
+Now I get the point. Thank you for explanation!
+Going to review this series soon.
+
+> 
+>         Arnd
+
+-- 
+Thanks,
+Hyeonggon
