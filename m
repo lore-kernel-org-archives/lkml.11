@@ -2,93 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA49C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB289C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238327AbiDFRF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
+        id S238448AbiDFRGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238414AbiDFRF2 (ORCPT
+        with ESMTP id S238316AbiDFRGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:05:28 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC094961EF;
-        Wed,  6 Apr 2022 07:28:24 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id x131so4288564ybe.11;
-        Wed, 06 Apr 2022 07:28:24 -0700 (PDT)
+        Wed, 6 Apr 2022 13:06:42 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BFE37DEA2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:46:07 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a6so4875998ejk.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:46:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uWGBhe0y17ZGKEMMFNK4TgCxFrYuz+yYjVH0ivmesbU=;
-        b=Wewxm6kuaQIIestTyYJsbvHlcSb+EuQogSkWQmGy6MRpVAa8WEkbwxjWnr6qT+UHZv
-         Cux7NeoLhdkGwELAm2mXZhTmlpMHioecxgBnEt3jVaqN5f8PQr6mi/p2Rqks5oyqZYEw
-         hTw18/z9rjRRvDEpNKSIpHmRTUDjfW0YYgb7UxQkwvmbwQzbl+IGapyTKNTqhKzpG6Vg
-         /QanJOfjpviprgYMTt3U7d0myoKf2Xoch6711oe4KvipoeNONnBssYAa7LD6LtgrB2Il
-         caYnpRDfJl5t/j4LS7cQZfU6alCZp8tR4nZFjQ14wzHuSq2eLelHzJogFkKTBt5G00jc
-         1j6A==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xDSVxXfePuzg5H9akSGpqrt3EQAyFHRkATzzbCmNu4Q=;
+        b=oc7fYa5LKG8ufWeEnZcEwfzJ5lpIHj9hFl2tWq7M6SBzlHKjff+4zqdYGau4afQ26F
+         VJFIPUlzbtvqtStHIl7vAupTJduZuMrIsJj5WFVX4t80pT+CgEQTb4aFQB4K0LZQK+oT
+         AQ4TlPPJLxK6pu+alTOr5MjlbijZ3I9iNnIEibjRn8AF9McXK56gvy6w4igQZbA7SlKN
+         WQGYLfPg2A9mHkoqM/+Mg770Lid0eOx9+FqqS2uTdj1D1np0eBXZ4RZnxHuQMLlBt+v+
+         Zp2doRxa3UpevU/5tcKXAvy0PamPFu6QEyUhrfRlC5l4/RwCKGfFiHr/9/pIs9/+WxTD
+         9QAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uWGBhe0y17ZGKEMMFNK4TgCxFrYuz+yYjVH0ivmesbU=;
-        b=2x5OWmTtKe3v5YKQr95s69+Xt7kiVfu4j6UUZmw2ELmZz7lSHTvzGs/FemMLBnYlKt
-         3pRVAMFSd3kgFWBl9TLJzG+gn6FHN2EBYUw2tCQBIexSpV88dwrOuiv5IrRQvOUXqGB0
-         AhmWREuJF+WI1dhR2FNwk74GdF87vjgrvIw2V3b5kqwU89TXmGoUVUmtLjMkyM0ePdAP
-         LLSRsErWCe8wIn6+N/HCSDZpDXc8JYxOlr/HEH+Tk3QoCmPjMYiAbhCFk04k5qIRU6f+
-         /z15X0/iY7r5+SFrOurAkicSjw6aT40Jlb3S4QlNhUAnrJ6B5w50PVTeS/Y4MMYRkv//
-         VvVg==
-X-Gm-Message-State: AOAM531hmah1OhgScHJIvp/qTn7d2UkE7AxtW0sRJHhUbTZWz/DgwS7Y
-        zF2Pp+BG9in6Uj9HLuOKdSSJ+TFBlEdQvcsByik=
-X-Google-Smtp-Source: ABdhPJyWQNHD73IT3aENCY5tKAld09c6yDrZ28pv5REeDfxmLHeRzcyKqxmfC++2g6okN8GwbFf5rlsa4iY1JMxiroo=
-X-Received: by 2002:a25:374d:0:b0:63d:84a2:237d with SMTP id
- e74-20020a25374d000000b0063d84a2237dmr6699654yba.417.1649255303691; Wed, 06
- Apr 2022 07:28:23 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xDSVxXfePuzg5H9akSGpqrt3EQAyFHRkATzzbCmNu4Q=;
+        b=rS2WWgBevcxycdZbbGPx6vEdsYFBQ/cvG2NJi2lrHsvDTRiyHPSngdXmIOVDN4fUVx
+         CB8dv764wh+PDGJpVv8fDP6Lnlen0fx0HlZu2WKHYWCfM8Q0Iuqisl2coU5b/I/WQb15
+         H+jlb9GjtQS1a/tnC2G/ngWD+Yt89QG3HOV6LP8cPUCFC5y2eTxHuCRKfPepedGB80tr
+         8QltzsGa9vG9/nPoR5r0GuRf2aZ6WpC9sqZrwL2RbNvVjaz3xl6tfgfKVEmI4H/dpekh
+         Zkxi1iB+Gtpn08QZlxEoDIw+EKvEvj3tOKixR0x77rO+UYuaZa6VFw7KlbD7rC/puVCu
+         fGKg==
+X-Gm-Message-State: AOAM532VKhShz1dN3zgqImHH0Ahsoa8ZxIsviPBmOF3d9Tbz004EuJAR
+        hrtJttISlON6jWzeGRa+P5RbHA==
+X-Google-Smtp-Source: ABdhPJw4gXYqy583VI6CGvVJfLyOfsByKyXlBbza+dyYyC5ApRWjpBZCtEODLtt59+/ES2G6ddhfaQ==
+X-Received: by 2002:a17:906:7945:b0:6e0:19:5f7c with SMTP id l5-20020a170906794500b006e000195f7cmr8956964ejo.458.1649256366005;
+        Wed, 06 Apr 2022 07:46:06 -0700 (PDT)
+Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id lb4-20020a170907784400b006e0d13f65e5sm6606684ejc.167.2022.04.06.07.46.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 07:46:05 -0700 (PDT)
+Message-ID: <e7face88-5069-c560-ad2b-a0a658fb8cef@linaro.org>
+Date:   Wed, 6 Apr 2022 16:46:04 +0200
 MIME-Version: 1.0
-References: <20220316200633.28974-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <Yk2cTwmYqAZf4sCz@robh.at.kernel.org>
-In-Reply-To: <Yk2cTwmYqAZf4sCz@robh.at.kernel.org>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 6 Apr 2022 15:27:57 +0100
-Message-ID: <CA+V-a8sVSsO8MArj6gcBhktB-Bi=oFUOoBVk86TZKjn357V02g@mail.gmail.com>
-Subject: Re: [RFC PATCH] of/platform: Drop static setup of IRQ resource from
- DT core
-To:     Rob Herring <robh@kernel.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/3] dt-bindings: display: mediatek: Correct disp_aal
+ binding for MT8192
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de, airlied@linux.ie,
+        yongqiang.niu@mediatek.com, jason-jh.lin@mediatek.com,
+        nancy.lin@mediatek.com, allen-kh.cheng@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+ <20220406094654.29722-4-rex-bc.chen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220406094654.29722-4-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 2:57 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Wed, Mar 16, 2022 at 08:06:33PM +0000, Lad Prabhakar wrote:
-> > Now that all the DT drivers have switched to platform_get_irq() we can now
-> > safely drop the static setup of IRQ resource from DT core code.
-> >
-> > With the above change hierarchical setup of irq domains is no longer
-> > bypassed and thus allowing hierarchical interrupt domains to describe
-> > interrupts using "interrupts" DT property.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> > Hi All,
-> >
-> > Sending this as RFC as couple of more drivers need to hit -rc yet with
-> > the platform_get_irq() change while that is in progress I wanted to get
-> > some feedback on this patch.
->
-> I've applied this now and it is in today's linux-next. Keep an eye out
-> for any regression reports. There's one for i.MX8 in kernel-ci, but I
-> don't think it is related.
->
-Thanks for the heads up, sure I will keep an eye on it.
+On 06/04/2022 11:46, Rex-BC Chen wrote:
+> The driver data for MT8192 is the same with MT8183. Therefore, we
+> correct it.
 
-Cheers,
-Prabhakar
+Driver data is Linux implementation specific so does not really matter
+for bindings. Probably you want to say here that devices are fully
+compatible? If so, please rephrase it. Also remove the wording "correct
+it" in subject and here because there is no mistake here (at least you
+did not describe it) and otherwise AUTOSEL might pick it up...
+
+Best regards,
+Krzysztof
