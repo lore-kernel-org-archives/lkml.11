@@ -2,180 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC44AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233506AbiDFUEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52068 "EHLO
+        id S233459AbiDFUEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234313AbiDFUDC (ORCPT
+        with ESMTP id S235185AbiDFUDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:03:02 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3290140F0;
-        Wed,  6 Apr 2022 10:26:06 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id s11so2546434pla.8;
-        Wed, 06 Apr 2022 10:26:06 -0700 (PDT)
+        Wed, 6 Apr 2022 16:03:45 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27337E5A3
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:21:02 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-e1dcc0a327so3670868fac.1
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:21:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OpRrPrj0hVGfYMwxf5Njm8JCzZaHH6cAIbe6DteGsDY=;
-        b=Q3noOigSRWCUt3Sn1T0KaLFQwubfl/RXMDlGut9K9uWvUKnJScaPQpDT1pXWG8Acx4
-         tgOMUYEAR74LvDAEQ4TBM2J1H0bZxRRRf7fCwKGIsotvdFY9bgnhNxNMLCfSjchBRbaY
-         USb+sAB3TH0IbNWDLT/kHeL9cACLbRiTItaxbwfMc+HyPL7EruitIeDqSmddGm0i6aAy
-         tcnZ6q07F5DXkFdoRS2sTgAXloOreXd67Y1l6XyEwBYQzwdDZKlDx1BewqATmxiZtPdr
-         Gczr4obOne+6XFVgP7HnNUqwzsJdzo/6JXpfQ9J6AhVOS9jPcbxYLibu8nFRuKo1vMk7
-         uSPg==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=RUU1F0wpujC7WhqVwBC+2pTO1HYEQ6X5S3p8UJ+PTMc=;
+        b=iE0ztCXOiYH9yto1ZKUgnifI908erHLqfQyguoCUhqSjQjwBN3nHvyPzvdgfKblAaC
+         txVXePDctGgXJNraMQvZ1ugNcw3UiGH/2MPqUDn0HFb+eDuEfcQNXfzBHDL837S8x2df
+         tSfN2hzVdetG7C75UtpGguKAqnkdia10CyhDQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OpRrPrj0hVGfYMwxf5Njm8JCzZaHH6cAIbe6DteGsDY=;
-        b=HX051TabEmTzVUenAaXwZEDDPwLqCdBKZVhMgc7+/rzIavEpDciKcKYzw9JaG5Fpaz
-         /8OUQMTDBZFUfEXyWR/CnbwS7Y+4WjnxTbSyKesLr4RavHg0yeLnIMngqwZMl3KD1U5l
-         ys0C6KAhY3hCzSIO7dsDzqTUyOKRJKJcaDWobq/7VM7i08NVOgtQXQBCKDMO/nyMYVo/
-         RDXRU3hoY437Wprp1O7LoAZINmY6UsKgv/dxHeq+ypxWtCaAJqdTmNQaYvLWugIWvSwX
-         CI/6a15iyv62Eo/AKj7IRxB7Cc1bhPn15P3dvoKxiGx8/eWxRl0faKSAdy0lg2jhGHtr
-         uy8g==
-X-Gm-Message-State: AOAM532WCr3N6MNLwW1rCdSeA2O6M7kq7HXjUuv7+r7Py9Y8+RKWfM74
-        2npGY8BeqssG7aGhX6ce7mU=
-X-Google-Smtp-Source: ABdhPJyuAn1ofLtL6gk+Bn7fzyGJkS9OnhmFYuQZlGUMIJSqFCazgZgRNODa8zyTv+hQDvikQKK/Vw==
-X-Received: by 2002:a17:902:ea52:b0:153:fd04:c158 with SMTP id r18-20020a170902ea5200b00153fd04c158mr9387286plg.83.1649265966314;
-        Wed, 06 Apr 2022 10:26:06 -0700 (PDT)
-Received: from jeffreyji1.c.googlers.com.com (180.145.227.35.bc.googleusercontent.com. [35.227.145.180])
-        by smtp.gmail.com with ESMTPSA id 132-20020a62168a000000b004f40e8b3133sm20222468pfw.188.2022.04.06.10.26.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:26:05 -0700 (PDT)
-From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
-To:     Brian Vazquez <brianvv@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jeffrey Ji <jeffreyji@google.com>
-Subject: [PATCH net-next] net-core: rx_otherhost_dropped to core_stats
-Date:   Wed,  6 Apr 2022 17:26:00 +0000
-Message-Id: <20220406172600.1141083-1-jeffreyjilinux@gmail.com>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=RUU1F0wpujC7WhqVwBC+2pTO1HYEQ6X5S3p8UJ+PTMc=;
+        b=sfVXgv8YGujp0b3LU05uz0gc2ePkouRCHA7akILfhc818bfe6uyqPSRUUCgVm5oQER
+         olmcN9CyIHIrQGi1HVOw9sy0n3KBXdNWP8aOkHFDVi4h+UF82kUg4Zhv3LXOGpBnEe2U
+         XWlIhd1YdTwMUYWOMpqEF1WWTcT4Ky0KQ2JPvXYxSpGQQRnmnkCAU5og/guYMw43yhGF
+         JMPH8/l/psMMieuSIZUYUpigXlFDPjzarNy9idqPwGBMuiEEAJzoJVKlm6o1FmO3w/1U
+         5jGrrkROmBYmumEOqPcI/JO0eJD7TnjvrIFH4ko9Q0H9DOfWAKpD9RZRXsr1Qga/zGhX
+         RiMw==
+X-Gm-Message-State: AOAM533yJ80LZ1b5nRelgZhpVwVx/FNc8tU4T8Z/JBoLaN9Yh/Dr0K3y
+        53hPdjSB5X4oKwoCZVJYn08wXvCjF0PWjdNWEsB3Mg==
+X-Google-Smtp-Source: ABdhPJyZQyu/K5x1uJUUL3GjBmaiHMZMMBfeE1A4A4cNNBRKCil6XVdMRFMtXJn+fZcA2z3NkLK8jXc2zoN5xcSGrbU=
+X-Received: by 2002:a05:6870:e314:b0:e1:e5f0:d777 with SMTP id
+ z20-20020a056870e31400b000e1e5f0d777mr4254311oad.193.1649265661935; Wed, 06
+ Apr 2022 10:21:01 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 6 Apr 2022 10:21:01 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yk3Bfnxe/meBYokp@sirena.org.uk>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
+ <Yk1B4f51WMGIV9WB@sirena.org.uk> <CAE-0n53Cv_bR92M64dhdnDge_=_jeOs4VZzDhUkksN90Y7rgog@mail.gmail.com>
+ <Yk21pdu16lyR8jXm@sirena.org.uk> <CAE-0n50C8khP2x4sgNP5xnfLVMRQj2=LChyWWx1BWL+Xgecgyw@mail.gmail.com>
+ <Yk3Bfnxe/meBYokp@sirena.org.uk>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 6 Apr 2022 10:21:01 -0700
+Message-ID: <CAE-0n53O23=N0zkZpg87Q3EyKquLe3WLNJT8qnZz4WEor6QK7A@mail.gmail.com>
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008 PMIC
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Ji <jeffreyji@google.com>
+Quoting Mark Brown (2022-04-06 09:36:14)
+> On Wed, Apr 06, 2022 at 08:51:48AM -0700, Stephen Boyd wrote:
+> > Quoting Mark Brown (2022-04-06 08:45:41)
+>
+> > > There's a MFD parent for it, and if it's for an I2C device for a pm8008
+> > > why would it have a -regulators in the name?
+>
+> > There are two i2c devices. One is pm8008 at i2c address 0x8 and one is
+> > pm8008-regulators at i2c address 0x9. Earlier revisions of this patch
+> > series were making it very confusing by redoing the pm8008 binding and
+> > adding the pm8008-regulator i2c address device to the same binding and
+> > driver.
+>
+> > My guess is that this is one IC that responds to multiple i2c addresses.
+> > The "main" qcom,pm8008 address is 0x8 and that supports things like
+> > interrupts. Then there's an address for regulators at 0x9 which controls
+> > the handful of LDOs on the PMIC.
+>
+> So it's like the TI TWL4030 and Palmas - in which case it should
+> probably be handled similarly?
 
-Increment rx_otherhost_dropped counter when packet dropped due to
-mismatched dest MAC addr.
+How did those work out? I wasn't involved and I don't know what you
+mean. Do they have multiple i2c addresses they respond to?
 
-An example when this drop can occur is when manually crafting raw
-packets that will be consumed by a user space application via a tap
-device. For testing purposes local traffic was generated using trafgen
-for the client and netcat to start a server
+> Note that the original sumbission was
+> *also* a MFD subfunction, but using a DT compatible to match the
+> platform device - this is the first I've heard of this being a separate
+> I2C function.
 
-Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
-with "{eth(daddr=$INCORRECT_MAC...}", verified that iproute2 showed the
-counter was incremented. (Also had to modify iproute2 to show the stat,
-additional patch for that coming next.)
-
-Signed-off-by: Jeffrey Ji <jeffreyji@google.com>
----
- include/linux/netdevice.h    | 2 ++
- include/uapi/linux/if_link.h | 5 +++++
- net/core/dev.c               | 1 +
- net/ipv4/ip_input.c          | 1 +
- net/ipv6/ip6_input.c         | 1 +
- 5 files changed, 10 insertions(+)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 7b2a0b739684..9b2b9457e70f 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -202,6 +202,7 @@ struct net_device_core_stats {
- 	local_t		rx_dropped;
- 	local_t		tx_dropped;
- 	local_t		rx_nohandler;
-+	local_t		rx_otherhost_dropped;
- } __aligned(4 * sizeof(local_t));
- 
- #include <linux/cache.h>
-@@ -3878,6 +3879,7 @@ static inline void dev_core_stats_##FIELD##_inc(struct net_device *dev)		\
- DEV_CORE_STATS_INC(rx_dropped)
- DEV_CORE_STATS_INC(tx_dropped)
- DEV_CORE_STATS_INC(rx_nohandler)
-+DEV_CORE_STATS_INC(rx_otherhost_dropped)
- 
- static __always_inline int ____dev_forward_skb(struct net_device *dev,
- 					       struct sk_buff *skb,
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index cc284c048e69..d1e600816b82 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -211,6 +211,9 @@ struct rtnl_link_stats {
-  * @rx_nohandler: Number of packets received on the interface
-  *   but dropped by the networking stack because the device is
-  *   not designated to receive packets (e.g. backup link in a bond).
-+ *
-+ * @rx_otherhost_dropped: Number of packets dropped due to mismatch
-+ *   in destination MAC address.
-  */
- struct rtnl_link_stats64 {
- 	__u64	rx_packets;
-@@ -243,6 +246,8 @@ struct rtnl_link_stats64 {
- 	__u64	rx_compressed;
- 	__u64	tx_compressed;
- 	__u64	rx_nohandler;
-+
-+	__u64	rx_otherhost_dropped;
- };
- 
- /* Subset of link stats useful for in-HW collection. Meaning of the fields is as
-diff --git a/net/core/dev.c b/net/core/dev.c
-index d5a362d53b34..68680d8474c7 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10363,6 +10363,7 @@ struct rtnl_link_stats64 *dev_get_stats(struct net_device *dev,
- 			storage->rx_dropped += local_read(&core_stats->rx_dropped);
- 			storage->tx_dropped += local_read(&core_stats->tx_dropped);
- 			storage->rx_nohandler += local_read(&core_stats->rx_nohandler);
-+			storage->rx_otherhost_dropped += local_read(&core_stats->rx_otherhost_dropped);
- 		}
- 	}
- 	return storage;
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 95f7bb052784..b1165f717cd1 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -451,6 +451,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
- 	 * that it receives, do not try to analyse it.
- 	 */
- 	if (skb->pkt_type == PACKET_OTHERHOST) {
-+		dev_core_stats_rx_otherhost_dropped_inc(skb->dev);
- 		drop_reason = SKB_DROP_REASON_OTHERHOST;
- 		goto drop;
- 	}
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 5b5ea35635f9..b4880c7c84eb 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -150,6 +150,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 	struct inet6_dev *idev;
- 
- 	if (skb->pkt_type == PACKET_OTHERHOST) {
-+		dev_core_stats_rx_otherhost_dropped_inc(skb->dev);
- 		kfree_skb(skb);
- 		return NULL;
- 	}
--- 
-2.35.1.1094.g7c7d902a7c-goog
-
+I'm mainly looking at the dts file now. It clearly has two i2c devices
+at 0x8 and 0x9. Maybe the regulator driver followed the mfd design
+because the first driver for this device is an mfd.
