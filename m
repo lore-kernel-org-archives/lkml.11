@@ -2,102 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F32C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:43:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5281C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:44:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230329AbiDFMp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55044 "EHLO
+        id S230306AbiDFMqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231908AbiDFMoq (ORCPT
+        with ESMTP id S230523AbiDFMpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:44:46 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7304F58967D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:47:55 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYJ5F57xNzgYR6;
-        Wed,  6 Apr 2022 16:46:09 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 16:47:53 +0800
-Subject: Re: [PATCH] mm/swapfile: unuse_pte can map random data if swap read
- fails
-To:     Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>
-CC:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220401072926.45051-1-linmiaohe@huawei.com>
- <ac13a529-5000-19c9-bbd8-3ee634a923cc@redhat.com>
- <Ykr8l0sUOtAa3yUY@casper.infradead.org>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <23943d63-1fc4-68ce-938f-0f9b53950710@huawei.com>
-Date:   Wed, 6 Apr 2022 16:47:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Wed, 6 Apr 2022 08:45:31 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C443A58E558;
+        Wed,  6 Apr 2022 01:49:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649234967; x=1680770967;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=jD+7cgE98PQmYfE6TYFpIJfwzOpPcHAKULKiD5IVELY=;
+  b=W0Rhim8zFb6tRr4IO3YVNXQYhOazp011fsZk+w3+4dYHDs4F/8/2Xmpz
+   +YfUpMSNvNIqVFBAMEv9miWnfh8VNCCipDOZTO3mOOtndgQuAMkKhHIQp
+   uXqKkovaHVQUG2p7VqQlHVb+iWA8RKy/3KGW/iIb3Fr6kQO/3ylPlmvIu
+   Dtiqld6Qbzw7NqE+bVL7C4W6cI8Z/p2IZSuWxMv8ZnQqv/Qowv6CGqh6n
+   FHVSog09e7GZy5SRn4F30Zl9gIwhtWNadNA3YE2xl/jyt1Vwe4hGnhTKz
+   8xEiOHYe3fpC4QmwxzWI5NoGAUBf8EoEhaY2ZOUskxos+WFKkbk9Q3bYd
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258578296"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="258578296"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:49:27 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="570417999"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:49:22 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Wei Xu <weixugc@google.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Cgroups <cgroups@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Thelen <gthelen@google.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+        <YkcEMdsi9G5y8mX4@dhcp22.suse.cz>
+        <CAAPL-u_i-Mp-Bo7LtP_4aJscY=1JHG_y1H_-A7N_HRAgtz+arg@mail.gmail.com>
+        <87y20nzyw4.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u8wjtBRE7KZyZjoQ0eTJecnW35uEXAE3KU0M+AvL=5-ug@mail.gmail.com>
+        <87o81fujdc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u_6XqQYtLAMNFvEo+0XU2VR=XYm0T9btL=g6rVVW2h93w@mail.gmail.com>
+        <87bkxfudrk.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u_FVEVE+wTBNYfDibLVKsRuOwEnpigYYRiZ2MbeUs1u8w@mail.gmail.com>
+        <877d82vi13.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u8u77yazFpc2R216j6ObAiANb0Lfxt7DcT9P=3eg60u9Q@mail.gmail.com>
+Date:   Wed, 06 Apr 2022 16:49:20 +0800
+In-Reply-To: <CAAPL-u8u77yazFpc2R216j6ObAiANb0Lfxt7DcT9P=3eg60u9Q@mail.gmail.com>
+        (Wei Xu's message of "Wed, 6 Apr 2022 00:05:03 -0700")
+Message-ID: <8735iqvbov.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <Ykr8l0sUOtAa3yUY@casper.infradead.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/4 22:11, Matthew Wilcox wrote:
-> On Mon, Apr 04, 2022 at 03:37:36PM +0200, David Hildenbrand wrote:
->> On 01.04.22 09:29, Miaohe Lin wrote:
->>> There is a bug in unuse_pte(): when swap page happens to be unreadable,
->>> page filled with random data is mapped into user address space. The fix
->>> is to check for PageUptodate and fail swapoff in case of error.
->>>
->>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>> ---
->>>  mm/swapfile.c | 4 ++++
->>>  1 file changed, 4 insertions(+)
->>>
->>> diff --git a/mm/swapfile.c b/mm/swapfile.c
->>> index 63c61f8b2611..e72a35de7a0f 100644
->>> --- a/mm/swapfile.c
->>> +++ b/mm/swapfile.c
->>> @@ -1795,6 +1795,10 @@ static int unuse_pte(struct vm_area_struct *vma, pmd_t *pmd,
->>>  		ret = 0;
->>>  		goto out;
->>>  	}
->>> +	if (unlikely(!PageUptodate(page))) {
->>> +		ret = -EIO;
->>> +		goto out;
->>> +	}
+Wei Xu <weixugc@google.com> writes:
+
+> On Tue, Apr 5, 2022 at 11:32 PM Huang, Ying <ying.huang@intel.com> wrote:
 >>
->> Yeah, we have the same handling in do_swap_page(), whereby we send a
->> SIGBUS because we're dealing with an actual access.
+>> Wei Xu <weixugc@google.com> writes:
 >>
->> Interestingly, folio_test_uptodate() states:
+>> > On Tue, Apr 5, 2022 at 7:50 PM Huang, Ying <ying.huang@intel.com> wrote:
+>> >>
+>> >> Wei Xu <weixugc@google.com> writes:
+>> >>
+>> >> > On Tue, Apr 5, 2022 at 5:49 PM Huang, Ying <ying.huang@intel.com> wrote:
+>> >> >>
+>> >> >> Wei Xu <weixugc@google.com> writes:
+>> >> >>
+>> >> >> > On Sat, Apr 2, 2022 at 1:13 AM Huang, Ying <ying.huang@intel.com> wrote:
+>> >> >> >>
+>> >> >> >> Wei Xu <weixugc@google.com> writes:
+>> >> >> >>
+>> >> >> >> > On Fri, Apr 1, 2022 at 6:54 AM Michal Hocko <mhocko@suse.com> wrote:
+>> >> >> >> >>
+>> >> >> >> >> On Thu 31-03-22 08:41:51, Yosry Ahmed wrote:
+>> >> >> >> >> > From: Shakeel Butt <shakeelb@google.com>
+>> >> >> >> >> >
+>> >> >> >>
+>> >> >> >> [snip]
+>> >> >> >>
+>> >> >> >> >> > Possible Extensions:
+>> >> >> >> >> > --------------------
+>> >> >> >> >> >
+>> >> >> >> >> > - This interface can be extended with an additional parameter or flags
+>> >> >> >> >> >   to allow specifying one or more types of memory to reclaim from (e.g.
+>> >> >> >> >> >   file, anon, ..).
+>> >> >> >> >> >
+>> >> >> >> >> > - The interface can also be extended with a node mask to reclaim from
+>> >> >> >> >> >   specific nodes. This has use cases for reclaim-based demotion in memory
+>> >> >> >> >> >   tiering systens.
+>> >> >> >> >> >
+>> >> >> >> >> > - A similar per-node interface can also be added to support proactive
+>> >> >> >> >> >   reclaim and reclaim-based demotion in systems without memcg.
+>> >> >> >> >> >
+>> >> >> >> >> > For now, let's keep things simple by adding the basic functionality.
+>> >> >> >> >>
+>> >> >> >> >> Yes, I am for the simplicity and this really looks like a bare minumum
+>> >> >> >> >> interface. But it is not really clear who do you want to add flags on
+>> >> >> >> >> top of it?
+>> >> >> >> >>
+>> >> >> >> >> I am not really sure we really need a node aware interface for memcg.
+>> >> >> >> >> The global reclaim interface will likely need a different node because
+>> >> >> >> >> we do not want to make this CONFIG_MEMCG constrained.
+>> >> >> >> >
+>> >> >> >> > A nodemask argument for memory.reclaim can be useful for memory
+>> >> >> >> > tiering between NUMA nodes with different performance.  Similar to
+>> >> >> >> > proactive reclaim, it can allow a userspace daemon to drive
+>> >> >> >> > memcg-based proactive demotion via the reclaim-based demotion
+>> >> >> >> > mechanism in the kernel.
+>> >> >> >>
+>> >> >> >> I am not sure whether nodemask is a good way for demoting pages between
+>> >> >> >> different types of memory.  For example, for a system with DRAM and
+>> >> >> >> PMEM, if specifying DRAM node in nodemask means demoting to PMEM, what
+>> >> >> >> is the meaning of specifying PMEM node? reclaiming to disk?
+>> >> >> >>
+>> >> >> >> In general, I have no objection to the idea in general.  But we should
+>> >> >> >> have a clear and consistent interface.  Per my understanding the default
+>> >> >> >> memcg interface is for memory, regardless of memory types.  The memory
+>> >> >> >> reclaiming means reduce the memory usage, regardless of memory types.
+>> >> >> >> We need to either extending the semantics of memory reclaiming (to
+>> >> >> >> include memory demoting too), or add another interface for memory
+>> >> >> >> demoting.
+>> >> >> >
+>> >> >> > Good point.  With the "demote pages during reclaim" patch series,
+>> >> >> > reclaim is already extended to demote pages as well.  For example,
+>> >> >> > can_reclaim_anon_pages() returns true if demotion is allowed and
+>> >> >> > shrink_page_list() can demote pages instead of reclaiming pages.
+>> >> >>
+>> >> >> These are in-kernel implementation, not the ABI.  So we still have
+>> >> >> the opportunity to define the ABI now.
+>> >> >>
+>> >> >> > Currently, demotion is disabled for memcg reclaim, which I think can
+>> >> >> > be relaxed and also necessary for memcg-based proactive demotion.  I'd
+>> >> >> > like to suggest that we extend the semantics of memory.reclaim to
+>> >> >> > cover memory demotion as well.  A flag can be used to enable/disable
+>> >> >> > the demotion behavior.
+>> >> >>
+>> >> >> If so,
+>> >> >>
+>> >> >> # echo A > memory.reclaim
+>> >> >>
+>> >> >> means
+>> >> >>
+>> >> >> a) "A" bytes memory are freed from the memcg, regardless demoting is
+>> >> >>    used or not.
+>> >> >>
+>> >> >> or
+>> >> >>
+>> >> >> b) "A" bytes memory are reclaimed from the memcg, some of them may be
+>> >> >>    freed, some of them may be just demoted from DRAM to PMEM.  The total
+>> >> >>    number is "A".
+>> >> >>
+>> >> >> For me, a) looks more reasonable.
+>> >> >>
+>> >> >
+>> >> > We can use a DEMOTE flag to control the demotion behavior for
+>> >> > memory.reclaim.  If the flag is not set (the default), then
+>> >> > no_demotion of scan_control can be set to 1, similar to
+>> >> > reclaim_pages().
+>> >>
+>> >> If we have to use a flag to control the behavior, I think it's better to
+>> >> have a separate interface (e.g. memory.demote).  But do we really need b)?
+>> >>
+>> >
+>> > I am fine with either approach: a separate interface similar to
+>> > memory.reclaim, but dedicated to demotion, or multiplexing
+>> > memory.reclaim for demotion with a flag.
+>> >
+>> > My understanding is that with the "demote pages during reclaim"
+>> > support, b) is the expected behavior, or more precisely, pages that
+>> > cannot be demoted may be freed or swapped out.  This is reasonable.
+>> > Demotion-only can also be supported via some arguments to the
+>> > interface and changes to demotion code in the kernel.  After all, this
+>> > interface is being designed to be extensible based on the discussions
+>> > so far.
 >>
->> "Anonymous and CoW folios are always uptodate."
+>> I think we should define the interface not from the current
+>> implementation point of view, but from the requirement point of view.
+>> For proactive reclaim, per my understanding, the requirement is,
 >>
->> @Willy, is that true or is the swapin case not documented there?
-> 
-> Why do we keep a !Uptodate page in the swap cache?  If it can't be
-> read in from swap, I thought we just freed the page.  Since Miaohe
+>>   we found that there's some cold pages in some workloads, so we can
+>>   take advantage of the proactive reclaim to reclaim some pages so that
+>>   other workload can use the freed memory.
+>>
+>> For proactive demotion, per my understanding, the requirement could be,
+>>
+>>   We found that there's some cold pages in fast memory (e.g. DRAM) in
+>>   some workloads, so we can take advantage of the proactive demotion to
+>>   demote some pages so that other workload can use the freed fast
+>>   memory.  Given the DRAM partition support Tim (Cced) is working on.
+>>
+>> Why do we need something in the middle?
+>
+> Maybe there is some misunderstanding.  As you said, demotion is to
+> free up fast memory.  If pages on fast memory cannot be demoted, but
+> can still be reclaimed to free some fast memory, it is useful, too.
+> Certainly, we can also add the support and configure the policy to
+> only demote, not reclaim, from fast memory in such cases.
 
-We could free the bad page. But we still need a way to prevent user from
-accessing the wrong data.
+Yes.  I think it may be better to demote from fast memory nodes only in
+such cases.  We just free some fast memory proactively.  But we may
+reclaim from the slow memory node (which are demotion targets) if
+necessary.
 
-> has observed that not happening, I guess it doesn't work that way,
-> but why not make it work that way?
+> In any case, we will not reclaim from slow memory for demotion,
 
-How could we make it work that way? Could you please tell me in more detail?
-Or any suggestions?
+If there's no free pages in the slow memory to accommodate the demoted
+pages, why not just reclaim some pages in the slow memory?  What are the
+disadvantages to do that?
 
-Many thanks!
+> if that is the middle thing you refer to.
 
-> 
-> .
-> 
+No.  I mean,
 
+If we reclaim "A" pages proactively, we will free "A" pages, maybe from
+slow memory firstly.  The target is the total memory size of a memcg.
+
+If we demote "A" pages proactively, we will demote "A" pages from fast
+memory to slow memory.  The target is the fast memory size of a memcg.
+In the process, some slow memory may be reclaimed to accommodate the
+demoted pages.
+
+For me, the middle thing is,
+
+If we demote some pages from fast memory to slow memory proactively and
+free some pages from slow memory at the same time, the total number
+(demote + free) is "A".  There's no clear target.  I think this is
+confusing.  Per my understanding, you don't suggest this too.
+
+> This is why nodemask is
+> proposed for memory.reclaim to support the demotion use case.  With a
+> separate memory.demote interface and memory tiering topology among
+> NUMA nodes being well defined by the kernel and shared with the
+> userspace, we can omit the nodemask argument.
+
+Yes.  Both seems work.
+
+Best Regards,
+Huang, Ying
+
+>>
+>> >> > The question is then whether we want to rename memory.reclaim to
+>> >> > something more general.  I think this name is fine if reclaim-based
+>> >> > demotion is an accepted concept.
+>> >>
+>> >> Best Regards,
+>> >> Huang, Ying
