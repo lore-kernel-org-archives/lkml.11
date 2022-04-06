@@ -2,110 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19DC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDBDC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238041AbiDFQxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
+        id S238188AbiDFQyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238132AbiDFQx3 (ORCPT
+        with ESMTP id S238133AbiDFQxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:53:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51294274E7B
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649254648;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=l/rlayWAz6LIN8DHFEn/JZ+tDFeU/OUyuaiK0vcp1d4=;
-        b=e6G65m0XPvSRBL/rCF8GqURdpgmBoah63Msx1fVZvv1O5MQG4ooD5MLbiCMsK5SdnCdeEP
-        FRrbZRVF+baX8eepk9x4701YqDGueAni4jLmTbehO9qHvL2Dh9TesO+l0IpU56LZXw6lKb
-        laM8V1i3QzvI9LzgnsItNyDQ9LcdVaM=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-30YfP4Y9OFePOAkLyjFK9w-1; Wed, 06 Apr 2022 10:17:27 -0400
-X-MC-Unique: 30YfP4Y9OFePOAkLyjFK9w-1
-Received: by mail-lf1-f71.google.com with SMTP id e15-20020ac24e0f000000b0044a8b775985so886219lfr.19
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:17:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=l/rlayWAz6LIN8DHFEn/JZ+tDFeU/OUyuaiK0vcp1d4=;
-        b=M9N9c1MTibcA146Fu2c5UEOGlfGBBDvYb6fOjW33YhYSbm82YmZeyWD4P84C0aeVbC
-         7qlid4kSy6+5yxNeQaQo3s3WFutNw4BIk+VDqytkFLtXMEdafzj0q6s9zFf1t3FIm7/M
-         DBfyRb4SXEie/vTDF/cMNvLdQ4ikCpJwgFngS2ZlZcTofdQr4w4BLKbeMcsSZxDHHKsL
-         30T9BS27KJ8NAW5OESmuYJnpEZiTWorZVl/6meFtp6DNDP89KbQHgdJAc/VsejliHxu3
-         l5tAmdk8EeDUggVMBCwzLoYsU/9zsSMOm/kez3NDPwaQs6uzhZCQkD8RuB2eJdTXIRfh
-         WOww==
-X-Gm-Message-State: AOAM530xAjvz9bVin47lRyDgAHV3cnBgXREZNQjPleQw8bF29iH+8Soz
-        CqBrSQyaBNLdNxq1G0x1EKbBhHCPICskp+yoMvI4OOdk0cyP5HMWuJn8TFI/F8zoTZgqh7ykru0
-        Trfi7zzvAaVSp2BWc9lWN4AWCvERjC2GkMm93TJzv
-X-Received: by 2002:a05:6512:b92:b0:44b:36d:27e0 with SMTP id b18-20020a0565120b9200b0044b036d27e0mr6199615lfv.537.1649254645246;
-        Wed, 06 Apr 2022 07:17:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwULjqchBcfxtC/ML8Q9nEv0WuwPD5Jvo5RUPMEfprUIeVSvIf6Th+CwqiwMRk9yvgXvAH43CYwCtwQitBMo/M=
-X-Received: by 2002:a05:6512:b92:b0:44b:36d:27e0 with SMTP id
- b18-20020a0565120b9200b0044b036d27e0mr6199560lfv.537.1649254644042; Wed, 06
- Apr 2022 07:17:24 -0700 (PDT)
+        Wed, 6 Apr 2022 12:53:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014DF21799B;
+        Wed,  6 Apr 2022 07:17:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3B44B82426;
+        Wed,  6 Apr 2022 14:17:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE8C6C385A3;
+        Wed,  6 Apr 2022 14:17:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649254625;
+        bh=OMfx41/031A0MP+RHm+KFwlRg5XT4Op6fvW1GZ75ZuQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ie+v5zV3XbfY5P59UHcq+VjkI8jYwX+M798YCErKW4mWwv0QnMTzYY0jffAZsFU3G
+         NlvREmST3Mo+7tk9Vp8tFVLhFCiuSyJIkSpUxz6C4lQp7KkFTVq4pylTTO7CbyOB8b
+         qQtOHKG+zvk0IRBtTWkeqALBoUjyzccmtfUr63v+sODqL7mIXCl97wfuhgbOegKmjx
+         SrKL4NSIwcwdfxICNvyal+YIFKmN+GtAtnmrPXerskHsKWm1LUkZ7REub0s/5tBAkg
+         paiu7LCYgtynayD8d832/BWLmBKdP9cKgoHq5Bdon9dXOufgzpTLpqeIsn36OZqjYH
+         /rQKYtCcfkKVg==
+From:   guoren@kernel.org
+To:     guoren@kernel.org, arnd@arndb.de, palmer@dabbelt.com
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org,
+        Guo Ren <guoren@linux.alibaba.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH V3] riscv: patch_text: Fixup last cpu should be master
+Date:   Wed,  6 Apr 2022 22:16:49 +0800
+Message-Id: <20220406141649.728971-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-From:   Bruno Goncalves <bgoncalv@redhat.com>
-Date:   Wed, 6 Apr 2022 16:17:13 +0200
-Message-ID: <CA+QYu4omi2irqUpDi_3POT8djdgg3q0ZVujdE1jfLPwsTxjB5w@mail.gmail.com>
-Subject: =?UTF-8?Q?special=5Finsns=2Eh=3A36=3A9=3A_error=3A_array_subscript_0_is_ou?=
-        =?UTF-8?Q?tside_array_bounds_of_=E2=80=98unsigned_int=5B0=5D=E2=80=99_=5B=2DWerror=3Darray=2Db?=
-        =?UTF-8?Q?ounds=5D?=
-To:     linux-kselftest@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     CKI Project <cki-project@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Guo Ren <guoren@linux.alibaba.com>
 
-Trying to build mainline kernel with gcc12 and selftests we get the
-following error:
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-00:01:22 In function =E2=80=98native_read_cr2=E2=80=99,
-00:01:22     inlined from =E2=80=98vmx_vcpu_enter_exit=E2=80=99 at
-arch/x86/kvm/vmx/vmx.c:6772:24:
-00:01:22 ./arch/x86/include/asm/special_insns.h:36:9: error: array
-subscript 0 is outside array bounds of =E2=80=98unsigned int[0]=E2=80=99
-[-Werror=3Darray-bounds]
-00:01:22    36 |         asm volatile("mov %%cr2,%0\n\t" : "=3Dr" (val)
-: __FORCE_ORDER);
-00:01:22       |         ^~~
-00:01:22 In function =E2=80=98native_read_cr2=E2=80=99,
-00:01:22     inlined from =E2=80=98vmx_vcpu_enter_exit=E2=80=99 at
-arch/x86/kvm/vmx/vmx.c:6778:19:
-00:01:22 ./arch/x86/include/asm/special_insns.h:36:9: error: array
-subscript 0 is outside array bounds of =E2=80=98unsigned int[0]=E2=80=99
-[-Werror=3Darray-bounds]
-00:01:22    36 |         asm volatile("mov %%cr2,%0\n\t" : "=3Dr" (val)
-: __FORCE_ORDER);
-00:01:22       |         ^~~
-00:01:22 cc1: all warnings being treated as errors
-00:01:22 make[4]: *** [scripts/Makefile.build:288:
-arch/x86/kvm/vmx/vmx.o] Error 1
-00:01:22 make[3]: *** [scripts/Makefile.build:550: arch/x86/kvm] Error 2
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+---
+ arch/riscv/kernel/patch.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Full build log:
-https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawa=
-rehouse-public/2022/04/05/509694021/build_x86_64_redhat:2295283495/build.lo=
-g
-
-build config: https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse=
--public/datawarehouse-public/2022/04/05/509694021/build_x86_64_redhat:22952=
-83495/kernel-mainline.kernel.org-x86_64-3e732ebf7316ac83e8562db7e64cc68aec3=
-90a18.config
-
-Thanks,
-Bruno Goncalves
+diff --git a/arch/riscv/kernel/patch.c b/arch/riscv/kernel/patch.c
+index 0b552873a577..765004b60513 100644
+--- a/arch/riscv/kernel/patch.c
++++ b/arch/riscv/kernel/patch.c
+@@ -104,7 +104,7 @@ static int patch_text_cb(void *data)
+ 	struct patch_insn *patch = data;
+ 	int ret = 0;
+ 
+-	if (atomic_inc_return(&patch->cpu_count) == 1) {
++	if (atomic_inc_return(&patch->cpu_count) == num_online_cpus()) {
+ 		ret =
+ 		    patch_text_nosync(patch->addr, &patch->insn,
+ 					    GET_INSN_LENGTH(patch->insn));
+-- 
+2.25.1
 
