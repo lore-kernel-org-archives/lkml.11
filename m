@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69963C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234349AbiDFUUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36460 "EHLO
+        id S234197AbiDFUVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbiDFUUA (ORCPT
+        with ESMTP id S233807AbiDFUUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:20:00 -0400
+        Wed, 6 Apr 2022 16:20:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1D1274E41;
-        Wed,  6 Apr 2022 11:27:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6414160479;
+        Wed,  6 Apr 2022 11:27:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC2E3B8253D;
-        Wed,  6 Apr 2022 18:27:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39390C385A1;
-        Wed,  6 Apr 2022 18:27:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DB83B8252B;
+        Wed,  6 Apr 2022 18:27:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB5EBC385A3;
+        Wed,  6 Apr 2022 18:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269673;
-        bh=Xq7EH7iSEgU+tAkN5ctw2qcn2E6EM6pyEbMVP9TNox0=;
+        s=korg; t=1649269668;
+        bh=ms8DKPPccNuD/4jD9tYlkCtvQOsvj2iMy99LDZoFne0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iHf/ZqLhL8h4UKUTC/Q/QNWzDRa6/xxe8rD5k9QoaD/uHj+9GnCyQZiUeNjXC0amU
-         0rnZa41qd3QE1cGrGeshgh+EmVXM/aaxEfWfR/TmnEsaPPgganKIKUmre+esAs9ZuH
-         O1LXsCB9pmX2Sxf5H1SYl+UYszNkWv1yvpgMZZ2I=
+        b=tECjaeMWJVhvD1ZrPngkjdOpHGVI3P0deLy3p/SIN1L6nsdIeFIRg5vwa2uZOby7m
+         pd9juI/Gol2JmljNxVQVY31bL1m6My/IA344q2loFh5udMp5xR9mKePBoMyNweBYTg
+         95n66KAyckyEOY5vZIgoOgMP8e3v1/1FIcwxVW1Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 27/43] arm64: entry: Free up another register on kptis tramp_exit path
-Date:   Wed,  6 Apr 2022 20:26:36 +0200
-Message-Id: <20220406182437.470448070@linuxfoundation.org>
+Subject: [PATCH 4.9 25/43] arm64: entry.S: Add ventry overflow sanity checks
+Date:   Wed,  6 Apr 2022 20:26:34 +0200
+Message-Id: <20220406182437.412264208@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
 References: <20220406182436.675069715@linuxfoundation.org>
@@ -52,70 +52,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 03aff3a77a58b5b52a77e00537a42090ad57b80b upstream.
+commit 4330e2c5c04c27bebf89d34e0bc14e6943413067 upstream.
 
-Kpti stashes x30 in far_el1 while it uses x30 for all its work.
-
-Making the vectors a per-cpu data structure will require a second
-register.
-
-Allow tramp_exit two registers before it unmaps the kernel, by
-leaving x30 on the stack, and stashing x29 in far_el1.
+Subsequent patches add even more code to the ventry slots.
+Ensure kernels that overflow a ventry slot don't get built.
 
 Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ arch/arm64/kernel/entry.S |    3 +++
+ 1 file changed, 3 insertions(+)
 
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -244,14 +244,16 @@ alternative_else_nop_endif
- 	ldp	x24, x25, [sp, #16 * 12]
- 	ldp	x26, x27, [sp, #16 * 13]
- 	ldp	x28, x29, [sp, #16 * 14]
--	ldr	lr, [sp, #S_LR]
--	add	sp, sp, #S_FRAME_SIZE		// restore sp
+@@ -74,6 +74,7 @@
  
- 	.if	\el == 0
--alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
-+alternative_if_not ARM64_UNMAP_KERNEL_AT_EL0
-+	ldr	lr, [sp, #S_LR]
-+	add	sp, sp, #S_FRAME_SIZE		// restore sp
-+	eret
-+alternative_else_nop_endif
+ 	.macro kernel_ventry, el, label, regsize = 64
+ 	.align 7
++.Lventry_start\@:
  #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	bne	4f
--	msr	far_el1, x30
-+	msr	far_el1, x29
- 	tramp_alias	x30, tramp_exit_native
- 	br	x30
- 4:
-@@ -259,6 +261,8 @@ alternative_insn eret, nop, ARM64_UNMAP_
- 	br	x30
- #endif
- 	.else
-+	ldr	lr, [sp, #S_LR]
-+	add	sp, sp, #S_FRAME_SIZE		// restore sp
- 	eret
- 	.endif
- 	.endm
-@@ -947,10 +951,12 @@ __ni_sys_trace:
- 	.macro tramp_exit, regsize = 64
- 	adr	x30, tramp_vectors
- 	msr	vbar_el1, x30
--	tramp_unmap_kernel	x30
-+	ldr	lr, [sp, #S_LR]
-+	tramp_unmap_kernel	x29
- 	.if	\regsize == 64
--	mrs	x30, far_el1
-+	mrs	x29, far_el1
- 	.endif
-+	add	sp, sp, #S_FRAME_SIZE		// restore sp
- 	eret
+ alternative_if ARM64_UNMAP_KERNEL_AT_EL0
+ 	.if	\el == 0
+@@ -89,6 +90,7 @@ alternative_else_nop_endif
+ 
+ 	sub	sp, sp, #S_FRAME_SIZE
+ 	b	el\()\el\()_\label
++.org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
  	.endm
  
+ 	.macro tramp_alias, dst, sym
+@@ -935,6 +937,7 @@ __ni_sys_trace:
+ 	add	x30, x30, #(1b - tramp_vectors)
+ 	isb
+ 	ret
++.org 1b + 128	// Did we overflow the ventry slot?
+ 	.endm
+ 
+ 	.macro tramp_exit, regsize = 64
 
 
