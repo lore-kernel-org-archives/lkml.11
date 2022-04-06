@@ -2,129 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47297C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235415AbiDFPEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
+        id S235574AbiDFPHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235551AbiDFPD5 (ORCPT
+        with ESMTP id S235613AbiDFPHI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:03:57 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB27E59CD5C;
-        Wed,  6 Apr 2022 05:35:44 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Wed, 6 Apr 2022 11:07:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA2D71BE10A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:00:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649246140;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=AcjzWGcdu18BMqkfmj4vFQYOWEOKNr12Idy3vAbhIVw=;
+        b=FabKE2qtVtaeuYCqImD47zLRflpoUocZUB8PIeRq0yXZt3hI38eMxyvJE4FR0+WUQVmQ47
+        6EXAYp38llV9I/uJviHfcnvuqDkBrt+EghEAAhi4neM1rZ5wxDkYIoADWEqOr+RaX+Y3t7
+        Zo8hK7OSLMzsxEiChjeXGraM6CY2seI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-502-Bbd3XBGAPq2BPBjOc-j5Dg-1; Wed, 06 Apr 2022 07:55:37 -0400
+X-MC-Unique: Bbd3XBGAPq2BPBjOc-j5Dg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id E4D871F38A;
-        Wed,  6 Apr 2022 12:34:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649248445; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0nalfo9aZQbfkaPJuevJGokBEgQRD+uQYrkQD6gB7I4=;
-        b=KnYKVlfeHPMyilOcIFdUGMPu9r3dGgiiP6b6g3iqYs7P7z+HApBHhX+dBKa+rAxMwoCzk/
-        dg98WZO0/vINblwwOMXnut2d/CPTwuTqw0PAWBlxnu68NY1RuP6utcWIooPP0isFIo5fMH
-        1UEtmSKuTwYCuXqAX4V4tq+60L3rCPk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649248445;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0nalfo9aZQbfkaPJuevJGokBEgQRD+uQYrkQD6gB7I4=;
-        b=rXRGROhunSQ1f00/MAy/JciTOqeqeqi5VvnJSxZLPFwLoZqZnbqthl3seAY5aFOiN+kJc7
-        NyXvBabuFn1PdVAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7816413A8E;
-        Wed,  6 Apr 2022 12:34:05 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id OXpFGr2ITWLcZQAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Wed, 06 Apr 2022 12:34:05 +0000
-Message-ID: <857f3f9c-abc3-779e-d03b-76c23f6e13af@suse.de>
-Date:   Wed, 6 Apr 2022 15:33:49 +0300
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4375F824072;
+        Wed,  6 Apr 2022 11:55:37 +0000 (UTC)
+Received: from asgard.redhat.com (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0219140CF905;
+        Wed,  6 Apr 2022 11:55:35 +0000 (UTC)
+Date:   Wed, 6 Apr 2022 13:55:33 +0200
+From:   Eugene Syromiatnikov <esyr@redhat.com>
+To:     Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Artem Savkov <asavkov@redhat.com>
+Subject: [PATCH] io_uring: implement compat handling for
+ IORING_REGISTER_IOWQ_AFF
+Message-ID: <20220406115533.GA5165@asgard.redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3] myri10ge: fix an incorrect free for skb in
- myri10ge_sw_tso
-Content-Language: ru
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, christopher.lee@cspi.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220406035556.730-1-xiam0nd.tong@gmail.com>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-In-Reply-To: <20220406035556.730-1-xiam0nd.tong@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Similarly to the way it is done im mbind syscall.
 
+Cc: stable@vger.kernel.org # 5.14
+Fixes: fe76421d1da1dcdb ("io_uring: allow user configurable IO thread CPU affinity")
+Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+---
+ fs/io_uring.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-4/6/22 06:55, Xiaomeng Tong пишет:
-> All remaining skbs should be released when myri10ge_xmit fails to
-> transmit a packet. Fix it within another skb_list_walk_safe.
-> 
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
-> 
-> changes since v2:
->   - free all remaining skbs. (Xiaomeng Tong)
-> 
-> changes since v1:
->   - remove the unneeded assignmnets. (Xiaomeng Tong)
-> 
-> v2:https://lore.kernel.org/lkml/20220405000553.21856-1-xiam0nd.tong@gmail.com/
-> v1:https://lore.kernel.org/lkml/20220319052350.26535-1-xiam0nd.tong@gmail.com/
-> 
-> ---
->   drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 6 ++----
->   1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> index 50ac3ee2577a..21d2645885ce 100644
-> --- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> +++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> @@ -2903,11 +2903,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
->   		status = myri10ge_xmit(curr, dev);
->   		if (status != 0) {
->   			dev_kfree_skb_any(curr);
-> -			if (segs != NULL) {
-> -				curr = segs;
-> -				segs = next;
-> +			skb_list_walk_safe(next, curr, next) {
->   				curr->next = NULL;
-> -				dev_kfree_skb_any(segs);
-> +				dev_kfree_skb_any(curr);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index de9c9de..83e194f 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -10803,7 +10803,15 @@ static __cold int io_register_iowq_aff(struct io_ring_ctx *ctx,
+ 	if (len > cpumask_size())
+ 		len = cpumask_size();
+ 
+-	if (copy_from_user(new_mask, arg, len)) {
++	if (in_compat_syscall()) {
++		ret = compat_get_bitmap(cpumask_bits(new_mask),
++					(const compat_ulong_t __user *)arg,
++					len * 8 /* CHAR_BIT */);
++	} else {
++		ret = copy_from_user(new_mask, arg, len);
++	}
++
++	if (ret) {
+ 		free_cpumask_var(new_mask);
+ 		return -EFAULT;
+ 	}
+-- 
+2.1.4
 
-why can't we just do the following?
-         skb_list_walk_safe(segs, skb, nskb) {
-                 status = myri10ge_xmit(curr, dev);
-                 if (err)
-                         break;
-
-         }
-
-         /* Free all of the segments. */
-         skb_list_walk_safe(segs, skb, nskb) {
-                 if (err)
-                         kfree_skb(skb);
-                 else
-                         consume_skb(skb);
-         }
-         return err;
-
-
->   			}
->   			goto drop;
->   		}
