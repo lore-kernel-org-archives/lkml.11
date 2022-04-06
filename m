@@ -2,96 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACD2C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA665C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380535AbiDFFwm (ORCPT
+        id S1359371AbiDFFvg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
+        Wed, 6 Apr 2022 01:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2361378AbiDFE3r (ORCPT
+        with ESMTP id S1447167AbiDFE5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 00:29:47 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3E626AEC
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:35:39 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id b188so821082oia.13
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 17:35:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mWFuKJuXH3JpCWyGBa6xx2LmvwEnKcbXduTsw7Z7YIU=;
-        b=MoK0YPGtjdXPrEZkSIakvUvOkhjS8gFgVHjaXfyedLGWqCMMWcU91qZsRHV/h9d791
-         sx/VPcDjdNXlb6E2kw+w0SchCneFkGqcrRzFje8O3lmg5zK/Du2gF4ky2iPmmUSThLAL
-         lM4rEnMOotds5JL+QC1zcz5Y0IOYwjHBDMN1U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=mWFuKJuXH3JpCWyGBa6xx2LmvwEnKcbXduTsw7Z7YIU=;
-        b=Wcs7uxG9Qef67bfc4IqT8lbW+FJTIHJs5k7Waml5XUVqS3ZaH5rEC3Yf5B6HlsTxom
-         oBFVYEKIUvWazmFcn3GXe95X6CbUQGTD7Vt9HleMUCfqHMszuHw5Hl1GROUsJ3x6DhRu
-         ZcnPbu6/TaCOl4mkoN875MET3zEiTCpZ7HqfjPFzz9Lc09mWW70XphmFWbxUeuph+uuv
-         PP/Ip400zrORP9kOQahsLdounFki62UQDzOPhRUS8Sok5sloHR7X9tPdR6YxWlGnorad
-         jkqqwTPDnGlpoZthUdBCjmj7uEn8b1j4Jtn1wIXq/8ZoJBG5rZebyx72WFoNhBq6Mq8z
-         4NOQ==
-X-Gm-Message-State: AOAM532anWS4lQor6oKfhNKdD65F9bWKqddgKJT2RTIhcIQ8fe7dpbqh
-        uc9ny+acZoVSe33HXx5sCT9gxw==
-X-Google-Smtp-Source: ABdhPJwliHIC9NE7w1F7CKSJlSP+1lFiaaLewtPfqwixit7GxL6/WB3UnFvvPC9MtZEUbujO4o8ANQ==
-X-Received: by 2002:aca:61c1:0:b0:2ec:d091:ff53 with SMTP id v184-20020aca61c1000000b002ecd091ff53mr2617124oib.235.1649205339029;
-        Tue, 05 Apr 2022 17:35:39 -0700 (PDT)
-Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
-        by smtp.gmail.com with ESMTPSA id r19-20020a056830121300b005cdb11a7b85sm6385572otp.29.2022.04.05.17.35.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 17:35:38 -0700 (PDT)
-Sender: Justin Forbes <jmforbes@linuxtx.org>
-Date:   Tue, 5 Apr 2022 19:35:36 -0500
-From:   Justin Forbes <jforbes@fedoraproject.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
-Message-ID: <YkzgWEyDZXFrCbju@fedora64.linuxtx.org>
-References: <20220405070407.513532867@linuxfoundation.org>
+        Wed, 6 Apr 2022 00:57:49 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72EC731C094;
+        Tue,  5 Apr 2022 17:48:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649206134; x=1680742134;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=JVq/0q1U8J0tjQQNcPkukCTp/eQviHcDu+kC6AMz/cE=;
+  b=HPGRRLp4tR/ry/OLh+j36AyaN/1iKfQZ7peezzax2zeFm+qeXjaTYIsr
+   1kP0MjoA0pgxla7EPRJNL725H0kQDtjrDse+OAoF9AkkYm9FUjp/KiWsL
+   6U3LtmwLSBsL2TcUPexWaGukl6fNfQBTpojry7PjoKjIMJpGOsTJv35nv
+   MYCPUS9ctizUosSQOHjeKK+oZrbuNOnFqAOb50if1U3euXsga7HIqN+4t
+   IP+vHmP3j2712HgE4dMk7MZc0Q/Y/gcUTM5c5kfa+bp3Md4Bym8VHyY6M
+   +fdE53QucJbPfETX/NbtONMreqtO6qxXjny7NacfgloW8HbD4AcuEZcF3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="347351964"
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="347351964"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 17:48:54 -0700
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="549302253"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 17:48:49 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Wei Xu <weixugc@google.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Thelen <gthelen@google.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+        <YkcEMdsi9G5y8mX4@dhcp22.suse.cz>
+        <CAAPL-u_i-Mp-Bo7LtP_4aJscY=1JHG_y1H_-A7N_HRAgtz+arg@mail.gmail.com>
+        <87y20nzyw4.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u8wjtBRE7KZyZjoQ0eTJecnW35uEXAE3KU0M+AvL=5-ug@mail.gmail.com>
+Date:   Wed, 06 Apr 2022 08:48:47 +0800
+In-Reply-To: <CAAPL-u8wjtBRE7KZyZjoQ0eTJecnW35uEXAE3KU0M+AvL=5-ug@mail.gmail.com>
+        (Wei Xu's message of "Sat, 2 Apr 2022 23:56:19 -0700")
+Message-ID: <87o81fujdc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 09:12:27AM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.2 release.
-> There are 1126 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.2-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+Wei Xu <weixugc@google.com> writes:
 
-This fails to build on x86_64, but builds on all other architectures for
-Fedora using the fedora configs. Specifically 
-[PATCH 5.17 0943/1126] ASoC: Intel: sof_es8336: use NHLT information to set dmic and SSP
-is missing a dependent patch, upstream commit 679aa83a0fb70dcbf9e97cbdfd573e6fc8bf9b1a
-ASoC: soc-acpi: add information on I2S/TDM link mask.  Applying this
-patch makes x86_64 build again.
+> On Sat, Apr 2, 2022 at 1:13 AM Huang, Ying <ying.huang@intel.com> wrote:
+>>
+>> Wei Xu <weixugc@google.com> writes:
+>>
+>> > On Fri, Apr 1, 2022 at 6:54 AM Michal Hocko <mhocko@suse.com> wrote:
+>> >>
+>> >> On Thu 31-03-22 08:41:51, Yosry Ahmed wrote:
+>> >> > From: Shakeel Butt <shakeelb@google.com>
+>> >> >
+>>
+>> [snip]
+>>
+>> >> > Possible Extensions:
+>> >> > --------------------
+>> >> >
+>> >> > - This interface can be extended with an additional parameter or flags
+>> >> >   to allow specifying one or more types of memory to reclaim from (e.g.
+>> >> >   file, anon, ..).
+>> >> >
+>> >> > - The interface can also be extended with a node mask to reclaim from
+>> >> >   specific nodes. This has use cases for reclaim-based demotion in memory
+>> >> >   tiering systens.
+>> >> >
+>> >> > - A similar per-node interface can also be added to support proactive
+>> >> >   reclaim and reclaim-based demotion in systems without memcg.
+>> >> >
+>> >> > For now, let's keep things simple by adding the basic functionality.
+>> >>
+>> >> Yes, I am for the simplicity and this really looks like a bare minumum
+>> >> interface. But it is not really clear who do you want to add flags on
+>> >> top of it?
+>> >>
+>> >> I am not really sure we really need a node aware interface for memcg.
+>> >> The global reclaim interface will likely need a different node because
+>> >> we do not want to make this CONFIG_MEMCG constrained.
+>> >
+>> > A nodemask argument for memory.reclaim can be useful for memory
+>> > tiering between NUMA nodes with different performance.  Similar to
+>> > proactive reclaim, it can allow a userspace daemon to drive
+>> > memcg-based proactive demotion via the reclaim-based demotion
+>> > mechanism in the kernel.
+>>
+>> I am not sure whether nodemask is a good way for demoting pages between
+>> different types of memory.  For example, for a system with DRAM and
+>> PMEM, if specifying DRAM node in nodemask means demoting to PMEM, what
+>> is the meaning of specifying PMEM node? reclaiming to disk?
+>>
+>> In general, I have no objection to the idea in general.  But we should
+>> have a clear and consistent interface.  Per my understanding the default
+>> memcg interface is for memory, regardless of memory types.  The memory
+>> reclaiming means reduce the memory usage, regardless of memory types.
+>> We need to either extending the semantics of memory reclaiming (to
+>> include memory demoting too), or add another interface for memory
+>> demoting.
+>
+> Good point.  With the "demote pages during reclaim" patch series,
+> reclaim is already extended to demote pages as well.  For example,
+> can_reclaim_anon_pages() returns true if demotion is allowed and
+> shrink_page_list() can demote pages instead of reclaiming pages.
 
-Justin
+These are in-kernel implementation, not the ABI.  So we still have
+the opportunity to define the ABI now.
+
+> Currently, demotion is disabled for memcg reclaim, which I think can
+> be relaxed and also necessary for memcg-based proactive demotion.  I'd
+> like to suggest that we extend the semantics of memory.reclaim to
+> cover memory demotion as well.  A flag can be used to enable/disable
+> the demotion behavior.
+
+If so,
+
+# echo A > memory.reclaim
+
+means
+
+a) "A" bytes memory are freed from the memcg, regardless demoting is
+   used or not.
+
+or
+
+b) "A" bytes memory are reclaimed from the memcg, some of them may be
+   freed, some of them may be just demoted from DRAM to PMEM.  The total
+   number is "A".
+
+For me, a) looks more reasonable.
+
+Best Regards,
+Huang, Ying
 
