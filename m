@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32701C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD64C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238340AbiDFRHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
+        id S238506AbiDFRHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238506AbiDFRGu (ORCPT
+        with ESMTP id S238381AbiDFRGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:06:50 -0400
+        Wed, 6 Apr 2022 13:06:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B308B2493FE;
-        Wed,  6 Apr 2022 07:30:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DC74BEF19;
+        Wed,  6 Apr 2022 07:30:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ABF6619C2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16E2761A35;
+        Wed,  6 Apr 2022 14:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C203C385A9;
         Wed,  6 Apr 2022 14:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 91871C385A9;
-        Wed,  6 Apr 2022 14:30:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649255412;
-        bh=jzQGgDHxcsZyxDhbb/BjvyBbxR3qUFsjUhdFsWW7KSI=;
+        s=k20201202; t=1649255413;
+        bh=b+Jn04l7J+92NIm/oLXywT4M2+LZAPg9gjG3dxBRhAc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RF94RMtDsUFAmpuEN92cGKf51LtRXf6gwz+/FHEBnzgr8qOuAX/RfhcHxpuTogfF7
-         OLb/tebhFjl0TuQ9F2x6v2UqjTybmGSu2+DTuN3w9JAgOtrHC1Zc/sdtVhOBQDYgBK
-         nCkoxzpacus07BKGjBNr2w9LJwU/eFC66T/o9GEjjNcBsW2XU6SkXnfqgu5j5qmi0/
-         4pzT5fmtajQjkbMUtB/nkNVi6kCpKxM6CxklmVI8m09H9R/mp5sLTa79YJASpzZgDq
-         C4RGs2/jLioOyD86K7liRu3OqIIIRdSofjwaWEjvxorhCyx033hLCH4Szk/IEUGknw
-         9Jhklnlr7FLug==
+        b=FNtLxxWtrEPrA0lRhvpokbYAVdtth3ABiOwFLmVQdT6iioShyLzf1gjf2M3Geeu7B
+         7mLSvsQ62gUa4mGQ4F5opq153IYHFBm4k2S+MOcL72dJo/S1OSNHYwOVT/mU0PlZve
+         i2AuEROItMLB6xhWZdk3Atp0KrkNBEH5N3y2sTylV/snVLSHKB8wzBnw1CY4dLFDL4
+         OBxb81qUQjDro6w3XPzOLEKa78VAOegm9AB4XO/ZcIky/H0DkdncyQ1uLNQuwMhBCQ
+         CI4b34Mks3eVX9f9epfp4pwhPLn9MpcMNjgTZ0HX/BSpSOUia7aS5wjTiltjnryQBP
+         UBW4hica35p2w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6A3FEE8DBDD;
-        Wed,  6 Apr 2022 14:30:12 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6495DE8DBDD;
+        Wed,  6 Apr 2022 14:30:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
+Subject: Re: [PATCH RESEND] net: usb: remove duplicate assignment
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164925541243.21938.8143288324519460216.git-patchwork-notify@kernel.org>
-Date:   Wed, 06 Apr 2022 14:30:12 +0000
-References: <20220406035556.730-1-xiam0nd.tong@gmail.com>
-In-Reply-To: <20220406035556.730-1-xiam0nd.tong@gmail.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
+Message-Id: <164925541340.21938.4564814458141656979.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Apr 2022 14:30:13 +0000
+References: <1649236624-4208-1-git-send-email-wangqing@vivo.com>
+In-Reply-To: <1649236624-4208-1-git-send-email-wangqing@vivo.com>
+To:     Qing Wang <wangqing@vivo.com>
+Cc:     bjorn@mork.no, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -54,24 +54,22 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed,  6 Apr 2022 11:55:56 +0800 you wrote:
-> All remaining skbs should be released when myri10ge_xmit fails to
-> transmit a packet. Fix it within another skb_list_walk_safe.
+On Wed,  6 Apr 2022 02:17:03 -0700 you wrote:
+> From: Wang Qing <wangqing@vivo.com>
 > 
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
+> netdev_alloc_skb() has assigned ssi->netdev to skb->dev if successed,
+> no need to repeat assignment.
 > 
-> changes since v2:
->  - free all remaining skbs. (Xiaomeng Tong)
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [v3] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
-    https://git.kernel.org/netdev/net/c/b423e54ba965
+  - [RESEND] net: usb: remove duplicate assignment
+    https://git.kernel.org/netdev/net-next/c/207d924dcf32
 
 You are awesome, thank you!
 -- 
