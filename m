@@ -2,352 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 942B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237583AbiDFQ1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
+        id S237400AbiDFQ1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237734AbiDFQ06 (ORCPT
+        with ESMTP id S237125AbiDFQ1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:26:58 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8F91AF7CB
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:15:56 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id s72so986221pgc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:15:56 -0700 (PDT)
+        Wed, 6 Apr 2022 12:27:22 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C8624F517;
+        Tue,  5 Apr 2022 19:11:47 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id kd21so1244338qvb.6;
+        Tue, 05 Apr 2022 19:11:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=p+/JljknQMw8XcaBWsgixj9umqk5+DiaogKeytdkVos=;
-        b=Gfr4nEj+95ViBM7QBzuL4YUTuNGg3zJNjfqKZQcjWytKE3qpaNx2nTyIYl8cLOUpAn
-         ztA05KhFvw8oL7Iqe/XzFOIQSTO6GNaAtzIcGrg0dhj5WswJ56DpP/aOpuexPZByH17Y
-         4a0AneA0chnYOxFNjE++clig/VN4lo//nuQ7U=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wf8pQwHnRNmaHjWr1ZOvrwWsnNuIT93e+BIdPY7Vuuo=;
+        b=eR2P6EjBqwGm0I3XlightluFGFW6/4Q1Fk0IBFVv0J7whG/+EutaNF17I/sCk8/LEf
+         JkTfcbbNvUq52C1a5meMMepcUHtv/+Y3VUv4b4qaz+VXEQshKicKgiNOzSNV+CRAZotn
+         ydZwRQKutAFaqxcZem8W/v46M/8z998iLTS2BguFC0O7aE4d7u6pC4J1nxyntWDQlgzu
+         9/2x6HcSRhN3lEc5TW3hexP8tzYak8NdWbYTPUUowbw2PGXJe4x0J2dfZpCsMrmmAoBc
+         gc96Y2Eu3GR0Y3I8E8r2dfVQTP2SJct6y2F5NnnR6aMK8wq6UnA0xDVBbs9bnYbRPvP1
+         bsPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=p+/JljknQMw8XcaBWsgixj9umqk5+DiaogKeytdkVos=;
-        b=sUuxMk5SMl6MNFzcLkfgdmg54QjpDToT6dqbYKbb4NggwJRiFsATUfETAVQeirPpar
-         DigoYGNJvzIzf0Wqs2rgfoqQIihHcoICXDa0vi1TRIEkGruZF+gfR0noGboKKYAFc/Bh
-         YneviTdx+AbDug/R3rzkY64R7TNLS2TPQTnxyt4kO2FBgyC66zfcAtIVnfR2F9/i3Twu
-         Y8CKTPGEjBMz8+IGyHmsCyv5VgNRBMYR9uGHkVhMAgtXudldzOwcctBxKbBv3gQvYC7c
-         Hj5GruH+l0npTUQZWcdVHDjHwOozJ0oLyGGmRBMbuk/JK8THJ6cFBAGHMAUbMpHlvcz0
-         O4/A==
-X-Gm-Message-State: AOAM532VR4xLeUvLLZlRJMgdPf/Ahzkehquy39NXDN0nf6XVTfD8IdBu
-        9YzfKxZcgEGqnGOrnvwdSuPUbA==
-X-Google-Smtp-Source: ABdhPJwbRb3OJuCGiMt66+NRuG+xEgZDPyRbFkqYOfW6pu+kNIq7dYqMaCrpJnztt3UbP5q827JN3A==
-X-Received: by 2002:aa7:9e0f:0:b0:4fd:fb27:a42 with SMTP id y15-20020aa79e0f000000b004fdfb270a42mr6736930pfq.13.1649211355504;
-        Tue, 05 Apr 2022 19:15:55 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:6b63:d403:e31b:da39])
-        by smtp.gmail.com with UTF8SMTPSA id d21-20020a056a0024d500b004fb0e7c7c3bsm18115245pfv.161.2022.04.05.19.15.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 19:15:54 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 19:15:53 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohitkr@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v6 2/2] arm64: dts: qcom: sc7280: add lpass lpi pin
- controller node
-Message-ID: <Ykz32cMNG8PhN2c+@google.com>
-References: <1649157167-29106-1-git-send-email-quic_srivasam@quicinc.com>
- <1649157167-29106-3-git-send-email-quic_srivasam@quicinc.com>
- <Ykx47AlGYa8s5FTa@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wf8pQwHnRNmaHjWr1ZOvrwWsnNuIT93e+BIdPY7Vuuo=;
+        b=1bNAyoqrpL7CUYhvFVWCTDlk1oIVwHuIOQdBBKG4rpLaLEZAwj0QmTFzA5V3vRW+5q
+         AAB8Nn+7H0CcRg+7pr79AqevoRD6aaV6wu8Az82bzTPGn5XriEnFyIfxoW9j4ffGrgoh
+         t2v+7dgW+dZBpIOhmaGiQfBYXGHBnIA6OfNJsV02MEBaJ88AMJcLHnEyU0sDDKMq31Iu
+         p5UJR71som4D2l5C6Yp/YA0toVB4Zt3x52eE0Sm/sSMfOVIJZ917mENrmrX9hZOwAidY
+         V4MVlHjByMG3DXzby+n0TR05F1AKba13dtofL38toWXnzN79d7obb+4b23ba2sKeCZf4
+         H28Q==
+X-Gm-Message-State: AOAM531p8qQ+Jr32xXDGDH91FghfsVrmFhd3mktfLs9YlEpnFwwH4UBF
+        igsITjpQEYVAzqJ1mftOvKm76XSoFj8lLX1rYD4=
+X-Google-Smtp-Source: ABdhPJyy8x2mhTh2XDHSLA1p4xRwU3HMsrpCGyBfNfZ7krWKUNrMGTDCa9f9Xg715cZmJkdqtqzN0Wgck4yDuNSHeqQ=
+X-Received: by 2002:a05:6214:238b:b0:430:842c:1863 with SMTP id
+ fw11-20020a056214238b00b00430842c1863mr5428680qvb.105.1649211106952; Tue, 05
+ Apr 2022 19:11:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Ykx47AlGYa8s5FTa@google.com>
+References: <CAGWkznF7cSyPU0ceYwH6zweJzf-X1bQnS6AJ2-J+WEL0u8jzng@mail.gmail.com>
+ <CAJuCfpHneDZMXO_MmQDPA+igAOdAPRUChiq+zftFXGfDzPHNhQ@mail.gmail.com>
+ <CAGWkznFTQCm0cusVxA_55fu2WfT-w2coVHrT=JA1D_9_2728mQ@mail.gmail.com>
+ <YkqxpEW4m6iU3zMq@dhcp22.suse.cz> <CAGWkznG4L3w=9bpZp8TjyWHmqFyZQk-3m4xCZ96zhHCLPawBgQ@mail.gmail.com>
+ <CAGWkznGMRohE2_at4Qh8KbwSqNmNqOAG2N1EM+7uE9wKqzRm0A@mail.gmail.com>
+ <Ykq7KUleuAg5QnNU@dhcp22.suse.cz> <CAGWkznGbd5TOTHZE8uUhak3SnHqEWx_9QCJVtUFUSg9rk3xYEQ@mail.gmail.com>
+ <Ykrkx4JML4c81gBV@dhcp22.suse.cz> <CAGWkznEaEavCz9GeiYuTqsox2qZK43iQKevt8njkzaHv6KiW-A@mail.gmail.com>
+ <YkwxNaJIg6ptJOYT@dhcp22.suse.cz>
+In-Reply-To: <YkwxNaJIg6ptJOYT@dhcp22.suse.cz>
+From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
+Date:   Wed, 6 Apr 2022 10:11:19 +0800
+Message-ID: <CAGWkznG=QH3HRSzgum0sQBkyQAahqgiWf8nXCv1qXstxrn7e8w@mail.gmail.com>
+Subject: Re: [RFC PATCH] cgroup: introduce dynamic protection for memcg
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Suren Baghdasaryan <surenb@google.com>,
+        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        cgroups mailinglist <cgroups@vger.kernel.org>,
+        Ke Wang <ke.wang@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:14:20AM -0700, Matthias Kaehlcke wrote:
-> On Tue, Apr 05, 2022 at 04:42:47PM +0530, Srinivasa Rao Mandadapu wrote:
-> > Add LPASS LPI pinctrl node required for Audio functionality on sc7280
-> > based platforms.
-> > 
-> > Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> > Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> > Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> > ---
-> >  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  98 ++++++++++++++++++++++++++++
-> >  arch/arm64/boot/dts/qcom/sc7280.dtsi     | 107 +++++++++++++++++++++++++++++++
-> >  2 files changed, 205 insertions(+)
-> > 
-> > diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> > index 2afbbe3..f912a89 100644
-> > --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> > +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> > @@ -238,6 +238,104 @@
-> >  	modem-init;
-> >  };
-> >  
-> > +&lpass_tlmm {
-> > +	dmic01_active: dmic01-active {
-> > +		clk {
-> > +			drive-strength = <8>;
-> > +		};
-> > +
-> > +		data {
-> > +			drive-strength = <8>;
-> 
-> The DMIC data pins are input pins, right? Why does an input pin need a drive
-> strength? Same for other input pins.
-> 
-> > +		};
-> > +	};
-> 
-> There's no need to reference 'lpass_tlmm' nor to repeat $label: $node.
-> Instead just use phandles:
-> 
-> &dmic01_active {
-> 	clk {
-> 		drive-strength = <8>;
-> 	};
-> 
-> 	data {
-> 		drive-strength = <8>;
-> 	};
-> };
-> 
-> Rather than replicating the node hierarchy you could also just give each pin a
-> label, and then:
-> 
-> &dmic01_clk_active {
-> 	drive-strength = <8>;
-> };
-> 
-> &dmic01_data_active {
-> 	drive-strength = <8>;
-> };
-> 
-> I don't have a strong preference, but wonder if the grouping adds any value.
-
-One more thing: please also drop the '_active' suffix, it is not needed. With
-that I think it's clearer to get rid of the grouping.
-
-> > +
-> > +	dmic01_sleep: dmic01-sleep {
-> > +		clk {
-> > +			drive-strength = <2>;
-> > +			bias-disable;
-> > +		};
-> > +
-> > +		data {
-> > +			drive-strength = <2>;
-> > +			pull-down;
-> > +		};
-> > +	};
-> > +
-> > +	dmic23_active: dmic02-active {
-> > +		clk {
-> > +			drive-strength = <8>;
-> > +		};
-> > +
-> > +		data {
-> > +			drive-strength = <8>;
-> > +		};
-> > +	};
-> > +
-> > +	dmic23_sleep: dmic02-sleep {
-> > +		clk {
-> > +			drive-strength = <2>;
-> > +			bias-disable;
-> > +		};
-> > +
-> > +		data {
-> > +			drive-strength = <2>;
-> > +			pull-down;
-> > +		};
-> > +	};
-> > +
-> > +	rx_swr_active: rx-swr-active {
-> > +		clk {
-> > +			drive-strength = <2>;
-> > +			slew-rate = <1>;
-> > +			bias-disable;
-> > +		};
-> > +
-> > +		data {
-> > +			drive-strength = <2>;
-> > +			slew-rate = <1>;
-> > +			bias-bus-hold;
-> > +		};
-> > +	};
-> > +
-> > +	rx_swr_sleep: rx-swr-sleep {
-> > +		clk {
-> > +			drive-strength = <2>;
-> > +			bias-pull-down;
-> > +		};
-> > +
-> > +		data {
-> > +			drive-strength = <2>;
-> > +			bias-pull-down;
-> > +		};
-> > +	};
-> > +
-> > +	tx_swr_active: tx-swr-active {
-> > +		clk {
-> > +			drive-strength = <2>;
-> > +			slew-rate = <1>;
-> > +			bias-disable;
-> > +		};
-> > +
-> > +		data {
-> > +			drive-strength = <2>;
-> > +			slew-rate = <1>;
-> > +			bias-bus-hold;
-> > +		};
-> > +	};
-> > +
-> > +	tx_swr_sleep: tx-swr-sleep {
-> > +		clk {
-> > +			drive-strength = <2>;
-> > +			bias-pull-down;
-> > +		};
-> > +
-> > +		data {
-> > +			drive-strength = <2>;
-> > +			bias-bus-hold;
-> > +		};
-> > +	};
-> > +};
-> > +
-> >  &pcie1 {
-> >  	status = "okay";
-> >  	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
-> > diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > index 8d8cec5..db74fc3 100644
-> > --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > @@ -1987,6 +1987,113 @@
-> >  			qcom,bcm-voters = <&apps_bcm_voter>;
-> >  		};
-> >  
-> > +		lpass_tlmm: pinctrl@33c0000 {
-> > +			compatible = "qcom,sc7280-lpass-lpi-pinctrl";
-> > +			reg = <0 0x33c0000 0x0 0x20000>,
-> > +				<0 0x3550000 0x0 0x10000>;
-> 
-> Pad addresses to 8 digits.
-> 
-> > +			gpio-controller;
-> > +			#gpio-cells = <2>;
-> > +			gpio-ranges = <&lpass_tlmm 0 0 15>;
-> > +
-> > +			#clock-cells = <1>;
-> > +
-> > +			dmic01_active: dmic01-active {
-> > +				clk {
-> > +					pins = "gpio6";
-> > +					function = "dmic1_clk";
-> > +				};
-> > +
-> > +				data {
-> > +					pins = "gpio7";
-> > +					function = "dmic1_data";
-> > +				};
-> > +			};
-> > +
-> > +			dmic01_sleep: dmic01-sleep {
-> > +				clk {
-> > +					pins = "gpio6";
-> > +					function = "dmic1_clk";
-> > +				};
-> > +
-> > +				data {
-> > +					pins = "gpio7";
-> > +					function = "dmic1_data";
-> > +				};
-> > +			};
-> > +
-> > +			dmic23_active: dmic02-active {
-> 
-> is it intentional that the node name is 'dmic02*', but the label 'dmic23*'?
-> 
-> > +				clk {
-> > +					pins = "gpio8";
-> > +					function = "dmic2_clk";
-> > +				};
-> > +
-> > +				data {
-> > +					pins = "gpio9";
-> > +					function = "dmic2_data";
-> > +				};
-> > +			};
-> > +
-> > +			dmic23_sleep: dmic02-sleep {
-> 
-> ditto
-> 
-> > +				clk {
-> > +					pins = "gpio8";
-> > +					function = "dmic2_clk";
-> > +				};
-> > +
-> > +				data {
-> > +					pins = "gpio9";
-> > +					function = "dmic2_data";
-> > +				};
-> > +			};
-> > +
-> > +			rx_swr_active: rx-swr-active {
-> > +				clk {
-> > +					pins = "gpio3";
-> > +					function = "swr_rx_clk";
-> > +				};
-> > +
-> > +				data {
-> > +					pins = "gpio4", "gpio5";
-> > +					function = "swr_rx_data";
-> > +				};
-> > +			};
-> > +
-> > +			rx_swr_sleep: rx-swr-sleep {
-> > +				clk {
-> > +					pins = "gpio3";
-> > +					function = "swr_rx_clk";
-> > +				};
-> > +
-> > +				data {
-> > +					pins = "gpio4", "gpio5";
-> > +					function = "swr_rx_data";
-> > +				};
-> > +			};
-> > +
-> > +			tx_swr_active: tx-swr-active {
-> > +				clk {
-> > +					pins = "gpio0";
-> > +					function = "swr_tx_clk";
-> > +				};
-> > +
-> > +				data {
-> > +					pins = "gpio1", "gpio2", "gpio14";
-> > +					function = "swr_tx_data";
-> > +				};
-> > +			};
-> > +
-> > +			tx_swr_sleep: tx-swr-sleep {
-> > +				clk {
-> > +					pins = "gpio0";
-> > +					function = "swr_tx_clk";
-> > +				};
-> > +
-> > +				data {
-> > +					pins = "gpio1", "gpio2", "gpio14";
-> > +					function = "swr_tx_data";
-> > +				};
-> > +			};
-> > +		};
-> > +
-> >  		gpu: gpu@3d00000 {
-> >  			compatible = "qcom,adreno-635.0", "qcom,adreno";
-> >  			reg = <0 0x03d00000 0 0x40000>,
+On Tue, Apr 5, 2022 at 8:08 PM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Mon 04-04-22 21:14:40, Zhaoyang Huang wrote:
+> [...]
+> > Please be noticed that this patch DOES protect the memcg when external
+> > pressure is 1GB as fixed low does.
+>
+> This is getting more and more confusing (at least to me). Could you
+> describe the behavior of the reclaim for the following setups/situations?
+>
+> a) mostly reclaiming a clean page cache - via kswapd
+> b) same as above but the direct reclaim is necessary but very
+>    lightweight
+> c) direct reclaim makes fwd progress but not enough to satisfy the
+>    allocation request (so the reclaim has to be retried)
+> d) direct reclaim not making progress and low limit protection is
+>    ignored.
+>
+> Say we have several memcgs and only some have low memory protection
+> configured. What is the user observable state of the protected group and
+> when and how much the protection can be updated?
+I am not sure if I understand you right. Do you have suspicions on the
+test result as you think protected memcg has no chance to update the
+protection or the global reclaim should have been satisfied with the
+reclaiming(step d is hard to reach?). Let me try to answer it under my
+understanding, please give me feedback if you need more info. The
+protection is updated while mem_cgroup_calculate_protection is called
+during either kswapd or direct reclaim for each round of the priority
+reclaiming and then the memcg's lruvec will be reached in step d.
+>
+> I think it would be also helpful to describe the high level semantic of
+> this feature.
+>
+> > Besides, how does the admin decide
+> > the exact number of low/min if it expand from small to even xGB in a
+> > quick changing scenario?
+>
+> This is not really related, is it? There are different ways to tune for
+> the protection.
+I don't think so. IMO, it is hard to protect when memcg has a wide and
+random range of its usage especially when depending on scenarios. Does
+the example of EAS on scheduler make more sense? When comparing with
+the legacy CFS, EAS does be against to some original design as load
+balance etc, while it will keep some small tasks into one CORE.
+>
+> [...]
+> --
+> Michal Hocko
+> SUSE Labs
