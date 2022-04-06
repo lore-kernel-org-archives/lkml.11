@@ -2,258 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73282C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D17D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239050AbiDFR2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45040 "EHLO
+        id S239115AbiDFR31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239679AbiDFR2M (ORCPT
+        with ESMTP id S239051AbiDFR2o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:28:12 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C95CC90D9;
-        Wed,  6 Apr 2022 08:29:45 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 85B8A1F4136D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649258984;
-        bh=1NhAchyfhmSmpQJUfImxIt/WQmIDi6gHQsa7Fft+Rks=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OQDpeJ1CvB/HRIMKBLggLHHm4RAqWhHYwby3rUsfvR/bfVO5vAKJnmfn+oetuspeA
-         440NJiHS1nRDY07b8iuW/cgnQ86eDw/Ep1UI7RrYdICUUUbnsUbD5O9bf2+fmI+q5u
-         1MeOw3e4oce3zdG5Q8JpghmoV2KJ52Mmn7EzvBeNK6kGFB2lfDVqG8wyP+ny1F+qXv
-         fTi264g+xqUm+bT+LBUSkuGpshloy4JN3SfdmWV2yJKNYPDiTZDMDpctL5WU1/OVc4
-         nJEerUftYKTv3EKDQBivUgtjHy3JS1J6Q9r0/WcAWVX9KK2EJteMRcYhLSHSttOQV3
-         Qp6xHefrUW6aw==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     robh+dt@kernel.org
-Cc:     krzk+dt@kernel.org, matthias.bgg@gmail.com, qii.wang@mediatek.com,
-        wsa@kernel.org, kewei.xu@mediatek.com,
-        angelogioacchino.delregno@collabora.com, hsinyi@chromium.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: i2c: convert i2c-mt65xx to json-schema
-Date:   Wed,  6 Apr 2022 17:29:40 +0200
-Message-Id: <20220406152940.140224-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 6 Apr 2022 13:28:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3AFB42487BB
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:31:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649259086;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SXqsmr5lOmq1DC0O01EgBHNJ75YfihYQ9afQo8lccGQ=;
+        b=TZq4ajl5Qj9CFq1SOFgMmgLLV2hlFvybOXtVkgh+q4r0y+xruxvNgNy+5zQhyzexPyT8iu
+        3WFlZnjdw6zHGhYBKVsVpMVFVYbSTlaLOCHhknhca6iiDD9P7PjKkfyAt56D86KZujEXnV
+        1I/megxU+RCHn3q4MOt4pTqV+qz40NI=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-379-xBqnpCVCO7uZ7-6CbIkFvA-1; Wed, 06 Apr 2022 11:31:25 -0400
+X-MC-Unique: xBqnpCVCO7uZ7-6CbIkFvA-1
+Received: by mail-wm1-f72.google.com with SMTP id j6-20020a05600c1c0600b0038e7d07ebcaso766314wms.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 08:31:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SXqsmr5lOmq1DC0O01EgBHNJ75YfihYQ9afQo8lccGQ=;
+        b=pJ6SuWNH0FYm1GNE1MUeNUVhrU/Mb1u3zWGsyMjFGaw4/Z3BswgfW0IX1o4nOzjTY8
+         g9iFvVjyfVh4tXViaH6qZG2p1fjjGmfKcezIlt+Yp3tLd6XlOsOH5gzZqKiqBEBAMODG
+         yzjBnowjPp3e31zrp9errGm3AgCaWi+JKqrm++H6NULYr1Z5oROlhRiwdG71wCHvRoTg
+         l25xqG8mG3pUCU//IgIY3lu4a9n+OlCykIPypOqZ6Q/2GWbKOF6jjwjfjgI0yVKi2r7V
+         c79FtptrnDKChQemfj9bvqF185tOZ/gQA+rxEr8JliOuabNAIxSo8ymR0H//ECij3slR
+         pQiA==
+X-Gm-Message-State: AOAM531XIEhf5Wn3bkR0sEGvhhtjaOTWuk98JZlI7VeWtNgbJl2ui5DI
+        pbyqzF99uz2xVC6ufNtDAMe1hmeR1IXs4QC5ClgJGKO+9VN1WEJOfefPpf3HOc3ULunKk4GkdpW
+        9BQVkm5f1obAJ6rLKt8gT2OLb
+X-Received: by 2002:a05:600c:3511:b0:38c:d035:cddb with SMTP id h17-20020a05600c351100b0038cd035cddbmr8039413wmq.74.1649259084176;
+        Wed, 06 Apr 2022 08:31:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzMJUIuOfCAWCV1KjhYntMj29VSsQUoSZ2t6duktlX1OxSHrnPzc0hHgltLl0oDc5ne7fB2BQ==
+X-Received: by 2002:a05:600c:3511:b0:38c:d035:cddb with SMTP id h17-20020a05600c351100b0038cd035cddbmr8039392wmq.74.1649259083924;
+        Wed, 06 Apr 2022 08:31:23 -0700 (PDT)
+Received: from redhat.com ([2.55.156.253])
+        by smtp.gmail.com with ESMTPSA id 14-20020a056000154e00b00203f8adde0csm18525600wry.32.2022.04.06.08.31.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 08:31:22 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 11:31:19 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>, peterz@infradead.org,
+        maz@kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, tglx@linutronix.de,
+        Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
+Message-ID: <20220406112858-mutt-send-email-mst@kernel.org>
+References: <20220406083538.16274-1-jasowang@redhat.com>
+ <20220406083538.16274-5-jasowang@redhat.com>
+ <20220406075952-mutt-send-email-mst@kernel.org>
+ <87wng2e527.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87wng2e527.fsf@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert I2C binding for MediaTek SoCs to Devicetree schema.
+On Wed, Apr 06, 2022 at 03:04:32PM +0200, Cornelia Huck wrote:
+> On Wed, Apr 06 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> 
+> > On Wed, Apr 06, 2022 at 04:35:37PM +0800, Jason Wang wrote:
+> >> This patch implements PCI version of synchronize_vqs().
+> >> 
+> >> Cc: Thomas Gleixner <tglx@linutronix.de>
+> >> Cc: Peter Zijlstra <peterz@infradead.org>
+> >> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> >> Cc: Marc Zyngier <maz@kernel.org>
+> >> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> >
+> > Please add implementations at least for ccw and mmio.
+> 
+> I'm not sure what (if anything) can/should be done for ccw...
+> 
+> >
+> >> ---
+> >>  drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
+> >>  drivers/virtio/virtio_pci_common.h |  2 ++
+> >>  drivers/virtio/virtio_pci_legacy.c |  1 +
+> >>  drivers/virtio/virtio_pci_modern.c |  2 ++
+> >>  4 files changed, 19 insertions(+)
+> >> 
+> >> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+> >> index d724f676608b..b78c8bc93a97 100644
+> >> --- a/drivers/virtio/virtio_pci_common.c
+> >> +++ b/drivers/virtio/virtio_pci_common.c
+> >> @@ -37,6 +37,20 @@ void vp_synchronize_vectors(struct virtio_device *vdev)
+> >>  		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+> >>  }
+> >>  
+> >> +void vp_synchronize_vqs(struct virtio_device *vdev)
+> >> +{
+> >> +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+> >> +	int i;
+> >> +
+> >> +	if (vp_dev->intx_enabled) {
+> >> +		synchronize_irq(vp_dev->pci_dev->irq);
+> >> +		return;
+> >> +	}
+> >> +
+> >> +	for (i = 0; i < vp_dev->msix_vectors; ++i)
+> >> +		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+> >> +}
+> >> +
+> 
+> ...given that this seems to synchronize threaded interrupt handlers?
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../devicetree/bindings/i2c/i2c-mt65xx.txt    |  53 --------
- .../devicetree/bindings/i2c/i2c-mt65xx.yaml   | 118 ++++++++++++++++++
- MAINTAINERS                                   |   2 +-
- 3 files changed, 119 insertions(+), 54 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
- create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
+No, any handlers at all. The point is to make sure any memory changes
+made prior to this op are visible to callbacks.
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-deleted file mode 100644
-index 026985b8f61a..000000000000
---- a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-+++ /dev/null
-@@ -1,53 +0,0 @@
--* MediaTek's I2C controller
--
--The MediaTek's I2C controller is used to interface with I2C devices.
--
--Required properties:
--  - compatible: value should be either of the following.
--      "mediatek,mt2701-i2c", "mediatek,mt6577-i2c": for MediaTek MT2701
--      "mediatek,mt2712-i2c": for MediaTek MT2712
--      "mediatek,mt6577-i2c": for MediaTek MT6577
--      "mediatek,mt6589-i2c": for MediaTek MT6589
--      "mediatek,mt6797-i2c", "mediatek,mt6577-i2c": for MediaTek MT6797
--      "mediatek,mt7622-i2c": for MediaTek MT7622
--      "mediatek,mt7623-i2c", "mediatek,mt6577-i2c": for MediaTek MT7623
--      "mediatek,mt7629-i2c", "mediatek,mt2712-i2c": for MediaTek MT7629
--      "mediatek,mt8168-i2c": for MediaTek MT8168
--      "mediatek,mt8173-i2c": for MediaTek MT8173
--      "mediatek,mt8183-i2c": for MediaTek MT8183
--      "mediatek,mt8186-i2c": for MediaTek MT8186
--      "mediatek,mt8192-i2c": for MediaTek MT8192
--      "mediatek,mt8195-i2c", "mediatek,mt8192-i2c": for MediaTek MT8195
--      "mediatek,mt8516-i2c", "mediatek,mt2712-i2c": for MediaTek MT8516
--  - reg: physical base address of the controller and dma base, length of memory
--    mapped region.
--  - interrupts: interrupt number to the cpu.
--  - clock-div: the fixed value for frequency divider of clock source in i2c
--    module. Each IC may be different.
--  - clocks: clock name from clock manager
--  - clock-names: Must include "main" and "dma", "arb" is for multi-master that
--    one bus has more than two i2c controllers, if enable have-pmic need include
--    "pmic" extra.
--
--Optional properties:
--  - clock-frequency: Frequency in Hz of the bus when transfer, the default value
--    is 100000.
--  - mediatek,have-pmic: platform can control i2c form special pmic side.
--    Only mt6589 and mt8135 support this feature.
--  - mediatek,use-push-pull: IO config use push-pull mode.
--  - vbus-supply: phandle to the regulator that provides power to SCL/SDA.
--
--Example:
--
--	i2c0: i2c@1100d000 {
--			compatible = "mediatek,mt6577-i2c";
--			reg = <0x1100d000 0x70>,
--			      <0x11000300 0x80>;
--			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_LOW>;
--			clock-frequency = <400000>;
--			mediatek,have-pmic;
--			clock-div = <16>;
--			clocks = <&i2c0_ck>, <&ap_dma_ck>;
--			clock-names = "main", "dma";
--	};
--
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
-new file mode 100644
-index 000000000000..889064f24a8c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
-@@ -0,0 +1,118 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/i2c/i2c-mt65xx.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek I2C controller
-+
-+description:
-+  This driver interfaces with the native I2C controller present in
-+  various MediaTek SoCs.
-+
-+allOf:
-+  - $ref: /schemas/i2c/i2c-controller.yaml#
-+
-+maintainers:
-+  - Qii Wang <qii.wang@mediatek.com>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: mediatek,mt2712-i2c
-+      - const: mediatek,mt6577-i2c
-+      - const: mediatek,mt6589-i2c
-+      - const: mediatek,mt7622-i2c
-+      - const: mediatek,mt8168-i2c
-+      - const: mediatek,mt8173-i2c
-+      - const: mediatek,mt8183-i2c
-+      - const: mediatek,mt8186-i2c
-+      - const: mediatek,mt8192-i2c
-+      - items:
-+          - enum:
-+              - mediatek,mt7629-i2c
-+              - mediatek,mt8516-i2c
-+          - const: mediatek,mt2712-i2c
-+      - items:
-+          - enum:
-+              - mediatek,mt2701-i2c
-+              - mediatek,mt6797-i2c
-+              - mediatek,mt7623-i2c
-+          - const: mediatek,mt6577-i2c
-+      - items:
-+          - enum:
-+              - mediatek,mt8195-i2c
-+          - const: mediatek,mt8192-i2c
-+
-+  reg:
-+    items:
-+      - description: Physical base address
-+      - description: DMA base address
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 1
-+    items:
-+      - description: Main clock for I2C bus
-+      - description: Clock for I2C via DMA
-+      - description: Bus arbitrator clock
-+      - description: Clock for I2C from PMIC
-+
-+  clock-names:
-+    minItems: 1
-+    items:
-+      - const: main
-+      - const: dma
-+      - const: arb
-+      - const: pmic
-+
-+  clock-div:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Frequency divider of clock source in I2C module
-+
-+  clock-frequency:
-+    default: 100000
-+    description:
-+      SCL frequency to use (in Hz). If omitted, 100kHz is used.
-+
-+  mediatek,have-pmic:
-+    description: Platform controls I2C from PMIC side
-+    type: boolean
-+
-+  mediatek,use-push-pull:
-+    description: Use push-pull mode I/O config
-+    type: boolean
-+
-+  vbus-supply:
-+    description: Phandle to the regulator providing power to SCL/SDA
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - clock-div
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c0: i2c@1100d000 {
-+      compatible = "mediatek,mt6577-i2c";
-+      reg = <0x1100d000 0x70>, <0x11000300 0x80>;
-+      interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_LOW>;
-+      clocks = <&i2c0_ck>, <&ap_dma_ck>;
-+      clock-names = "main", "dma";
-+      clock-div = <16>;
-+      clock-frequency = <400000>;
-+      mediatek,have-pmic;
-+
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ee0b5a70aff1..28a17d4c8d12 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12361,7 +12361,7 @@ MEDIATEK I2C CONTROLLER DRIVER
- M:	Qii Wang <qii.wang@mediatek.com>
- L:	linux-i2c@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-+F:	Documentation/devicetree/bindings/i2c/i2c-mt65xx.yaml
- F:	drivers/i2c/busses/i2c-mt65xx.c
- 
- MEDIATEK IOMMU DRIVER
--- 
-2.35.1
+Jason, maybe add that to the documentation?
+
+> Halil, do you think ccw needs to do anything? (AFAICS, we only have one
+> 'irq' for channel devices anyway, and the handler just calls the
+> relevant callbacks directly.)
+
+Then you need to synchronize with that.
+
+> >>  /* the notify function used when creating a virt queue */
+> >>  bool vp_notify(struct virtqueue *vq)
+> >>  {
 
