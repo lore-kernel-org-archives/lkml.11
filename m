@@ -2,90 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F39C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B943C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235013AbiDFOvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
+        id S235346AbiDFOv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235334AbiDFOuo (ORCPT
+        with ESMTP id S235065AbiDFOva (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:50:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2212B5E9860;
-        Wed,  6 Apr 2022 04:23:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 767D8B82014;
-        Wed,  6 Apr 2022 11:23:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2FBC385A3;
-        Wed,  6 Apr 2022 11:23:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649244208;
-        bh=SjcaJJhx4BXe6tnaJctHdMtT1mA4dYXjywpMRbdjPeA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N7tchrJdtzp4jeVjHtb9aLdDQoEL3gt3zjKdL4UzSzCFF6Xg1mW9TB0tAtjFWMIS5
-         IhpmUGk3sd9JLznarD+6dgCgpH7XT7sVQdm4RhxCGAhJH+16lwkCgGybxONSSm8CJb
-         ckrFdnTXxqUt7zLrcesjQ84WLYHk5LNKM02HG2k8SAfob4vwZQXmW2sOqE4jvprXR3
-         tWPBPCRUhaCU2jW5ALDmWFhWMq+rCxzWci8pH90PnV+Ewr+aRRMlYvisbpWrKO8NiL
-         rPTbLAfl954xdZM5ROBWBtHjd1Bg+qAatC8RsixNgzPhN7vTv7Qc3l2N2QU5sLwRkG
-         6n/g3YaDEFlQw==
-Date:   Wed, 6 Apr 2022 07:23:26 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: Re: [PATCH 5.15 746/913] ARM: ftrace: avoid redundant loads or
- clobbering IP
-Message-ID: <Yk14LhswMSlPGrmJ@sashalap>
-References: <20220405070339.801210740@linuxfoundation.org>
- <20220405070402.195698649@linuxfoundation.org>
- <CAMj1kXFL4abn9xg1ZrNpFg54Pmw1Kw8OPbDpMevSjQDNg0r5Pg@mail.gmail.com>
+        Wed, 6 Apr 2022 10:51:30 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69BDE55A9B2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:25:16 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id p8so2185814pfh.8
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 04:25:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qyk8xTMjH/DJBXZpWSm5gtyrwHKcY5V7aOEPyHINN9g=;
+        b=ck3vGGzD0sLUD0SfXv3dreaZ1Ek4bWn8ZNESDidGGpY3eEz6RL5o4wfc4LUNWWmi58
+         GmfiX58B6ouw4Mb3vM83PjEpxT67WlJ3LYvpRCodMHsLS1kIYRZjz5k+R1HDVSykewob
+         svjCgJF8KLM+YrBmaLHWjjfWspx0wBVyqdyyR+AA2ybE9TfZ3YakwfqNlThu2F4WuXSD
+         EvKmFfHCFxrBHbnL+pgxNcBlbtLTdwTiPVo6eeFJmbGJnGNpY4qQIGUvS7kDwobXQr+Q
+         bYM8ZW7ji5dpc6lpM04+0tKJZqtPcoO6vtNIXGvWhYuCf6BFY3Mk0V8UAAQU7G/1DWfl
+         jIyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qyk8xTMjH/DJBXZpWSm5gtyrwHKcY5V7aOEPyHINN9g=;
+        b=VXu4mj4t+9wM7KdJqWWxWm3/FxM5JXBhS/yu75JcjsLXwavJDLvDnw9zwPT0uW6FOg
+         YKoPl802+3LMz9RO08ipJd5oW0T/ZTU7c/2fjpunzLxPLFTRMe0JqrqFs1qtY84+9a6P
+         I2p5AmwFrLu1a3CLH7WAwDJgxCxF7r5ukofc9FvQgWSDns04qvNyJ6fBPozW6qnBcn02
+         +PBppPmmSR8UGI4Ln8wL8j9FyOJqsnrPGhNgV8yZyGPOx1L+yyS7k6J1gkXviPPsZBVI
+         sh3ye2ECln1Den34NsbdFaDObf5SeH9eyb9tlLIAKV8H7IZ3QNCVV66zJ/SFRaeKRKqc
+         RNYA==
+X-Gm-Message-State: AOAM532XLY3TKdWfE3UQNSDnXvb0PfKixlnBK54Ao+aPNeP7OZUksCiG
+        CUgPcyrwy2xwwDJF8JwaPMrztYM/MyYQCWv5Pg==
+X-Google-Smtp-Source: ABdhPJykyT9QZJZh5h36/jePZDuYOCk2rqWs/F/99ioWJhe8a3s1By+H10Z5SxwZHrOCLmPCHB72bj6AE04Kg/qpQYA=
+X-Received: by 2002:a63:ce45:0:b0:399:1124:fbfe with SMTP id
+ r5-20020a63ce45000000b003991124fbfemr6795871pgi.542.1649244315566; Wed, 06
+ Apr 2022 04:25:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXFL4abn9xg1ZrNpFg54Pmw1Kw8OPbDpMevSjQDNg0r5Pg@mail.gmail.com>
+References: <20220405121038.4094051-1-zheyuma97@gmail.com> <20220406100121.GV38351@ediswmail.ad.cirrus.com>
+In-Reply-To: <20220406100121.GV38351@ediswmail.ad.cirrus.com>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Wed, 6 Apr 2022 19:25:04 +0800
+Message-ID: <CAMhUBj=RMT_jOkzsET2jx3Opihz6P+sNczZrNK+efkWr0SN2LQ@mail.gmail.com>
+Subject: Re: [PATCH] ASoC: wm8731: Disable the regulator when probing fails
+To:     Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, patches@opensource.cirrus.com,
+        alsa-devel@alsa-project.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 12:01:19PM +0200, Ard Biesheuvel wrote:
->On Tue, 5 Apr 2022 at 11:54, Greg Kroah-Hartman
-><gregkh@linuxfoundation.org> wrote:
->>
->> From: Ard Biesheuvel <ardb@kernel.org>
->>
->> [ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
->>
->> Tweak the ftrace return paths to avoid redundant loads of SP, as well as
->> unnecessary clobbering of IP.
->>
->> This also fixes the inconsistency of using MOV to perform a function
->> return, which is sub-optimal on recent micro-architectures but more
->> importantly, does not perform an interworking return, unlike compiler
->> generated function returns in Thumb2 builds.
->>
->> Let's fix this by popping PC from the stack like most ordinary code
->> does.
->>
->> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
->> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
+Hi Charles,
+
+On Wed, Apr 6, 2022 at 6:01 PM Charles Keepax
+<ckeepax@opensource.cirrus.com> wrote:
 >
->Please drop all the 32-bit ARM patches authored by me from the stable
->queues except the ones that have fixes tags. These are highly likely
+> On Tue, Apr 05, 2022 at 08:10:38PM +0800, Zheyu Ma wrote:
+> > When the driver fails during probing, the driver should disable the
+> > regulator, not just handle it in wm8731_hw_init().
+> >
+> > The following log reveals it:
+> >
+> > [   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+> > [   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
+> > [   17.824467] Call Trace:
+> > [   17.824774]  <TASK>
+> > [   17.825040]  regulator_bulk_free+0x82/0xe0
+> > [   17.825514]  devres_release_group+0x319/0x3d0
+> > [   17.825882]  i2c_device_probe+0x766/0x940
+> > [   17.829198]  i2c_register_driver+0xb5/0x130
+> >
+> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> > ---
+>
+> Mark just merged a big chain overhauling a lot of this driver, at
+> the very least this patch is going to require a rebase on top of
+> that lot.
 
-I can drop you from future selections as well.
+Thanks for your reminder, this bug has been fixed in the latest code.
 
->to cause an explosion of regressions, and they should have never been
->selected, as I don't remember anyone proposing these for stable.
-
-They were proposed by the bot last week
-(https://lore.kernel.org/lkml/20220330115005.1671090-22-sashal@kernel.org/).
-
--- 
-Thanks,
-Sasha
+Regards,
+Zheyu Ma
