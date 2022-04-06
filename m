@@ -2,119 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB01CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0308C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356601AbiDFFvK (ORCPT
+        id S1378099AbiDFFwJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
+        Wed, 6 Apr 2022 01:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353968AbiDFEmS (ORCPT
+        with ESMTP id S2360982AbiDFDoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 00:42:18 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AC91B84CD
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:41:31 -0700 (PDT)
-Received: from kwepemi100020.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KY5HK6msSz4wqT;
-        Wed,  6 Apr 2022 08:39:09 +0800 (CST)
-Received: from kwepemm600004.china.huawei.com (7.193.23.242) by
- kwepemi100020.china.huawei.com (7.221.188.48) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 08:41:28 +0800
-Received: from [10.174.177.238] (10.174.177.238) by
- kwepemm600004.china.huawei.com (7.193.23.242) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 08:41:27 +0800
-Message-ID: <36ac1182-36d3-d6fa-6954-c7c6a2e1d968@huawei.com>
-Date:   Wed, 6 Apr 2022 08:41:27 +0800
+        Tue, 5 Apr 2022 23:44:06 -0400
+Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D12296D2F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:12:14 -0700 (PDT)
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 1616156A6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:12:14 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id btHRnRHiaXvvJbtHSnS7gB; Tue, 05 Apr 2022 19:12:14 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=V34eNda++WlmGe+ZWCeqNhmRnpIlO8Tl6u7MFmXbztQ=; b=EbiyndnK4uoLFl5VhRQPS09z1S
+        /yRo1ynqYNlThAxczGu1FqKJTEXcc6AlPe6vEEB8L3UVFwZAS9dtqH7Jnyvy/mwSfokN2SkZGR/WH
+        A9JnbadYt3+rk4viOgIydnS0VTdSrBCt1CQFKo+FlZTvhcxjmneFzuATMeBe2BP4IpqDXacIFqK3W
+        lzKjDTRgLJaD+jht1thLujSL4f3L5cH29a1ZqfO6TsXeNhqkAMo1tfbdhxVkjzJ5Bs4XamjDKoC4G
+        QJzf5JMTZ9GE9dR2FWF4iun9VTKFbPPCAGFbHWTKAHHkNrt0BqRy2St1XGwRQlzmHx6Xr01d9Jpev
+        Ot3jyP4A==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54732)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nbtHR-000mos-4N; Wed, 06 Apr 2022 00:12:13 +0000
+Message-ID: <53e24114-fe48-91aa-1b76-78b12dfcdf4e@roeck-us.net>
+Date:   Tue, 5 Apr 2022 17:12:10 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.0.2
-Subject: Re: [PATCH v3] lz4: fix LZ4_decompress_safe_partial read out of bound
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     Nick Terrell <terrelln@fb.com>, Chengyang Fan <cy.fan@huawei.com>,
-        "Yann Collet" <cyan@fb.com>,
-        "fangwei1@huawei.com" <fangwei1@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com" 
-        <syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com>,
-        "wangli74@huawei.com" <wangli74@huawei.com>
-References: <20211111085058.1940591-1-guoxuenan@huawei.com>
- <20211111105048.2006070-1-guoxuenan@huawei.com>
- <CCE83845-DC40-4E14-9105-6319C048FACB@fb.com>
- <YkfXSzePVEhlajCU@B-P7TQMD6M-0146.local>
- <20220404142123.7de8d3a291d6484e7fb4c8a0@linux-foundation.org>
- <YktxATidpH2A1QJu@B-P7TQMD6M-0146.local>
-From:   Guo Xuenan <guoxuenan@huawei.com>
-In-Reply-To: <YktxATidpH2A1QJu@B-P7TQMD6M-0146.local>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.238]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600004.china.huawei.com (7.193.23.242)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, Max Filippov <jcmvbkbc@gmail.com>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+References: <Yib9F5SqKda/nH9c@infradead.org>
+ <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
+ <YkmWh2tss8nXKqc5@infradead.org>
+ <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+ <20220405212653.GA2482665@roeck-us.net>
+ <CAK8P3a396EkfQtmkwo80eB9i7F37S=mvrHtCLXhGDhHBczYK3g@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [RFC PULL] remove arch/h8300
+In-Reply-To: <CAK8P3a396EkfQtmkwo80eB9i7F37S=mvrHtCLXhGDhHBczYK3g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nbtHR-000mos-4N
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54732
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 10
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all，
+On 4/5/22 15:01, Arnd Bergmann wrote:
+> On Tue, Apr 5, 2022 at 11:26 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>> On Mon, Apr 04, 2022 at 03:07:06PM +0200, Arnd Bergmann wrote:
+>>>
+>>> Should we garbage-collect some of the other nommu platforms where
+>>> we're here? Some of them are just as stale:
+>>>
+>>> 1. xtensa nommu has does not compile in mainline and as far as I can
+>>> tell never did
+>>>     (there was https://github.com/jcmvbkbc/linux-xtensa/tree/xtensa-5.6-esp32,
+>>> which
+>>>     worked at some point, but I don't think there was enough interest
+>>> to get in merged)
+>>
+>> Hmm, I build and test nommu_kc705_defconfig in my test system.
+> 
+> What toolchain do you use for this? Max already pointed out my mistake
+> regarding xtensa, which I thought does not build at all, but just needs
+> a toolchain specific to the cpu.
+> 
 
-在 2022/4/5 6:28, Gao Xiang Write:
-> On Mon, Apr 04, 2022 at 02:21:23PM -0700, Andrew Morton wrote:
->> On Sat, 2 Apr 2022 12:55:39 +0800 Gao Xiang <hsiangkao@linux.alibaba.com> wrote:
->>
->>> On Fri, Nov 19, 2021 at 06:23:24PM +0000, Nick Terrell wrote:
->>>>
->>>>> On Nov 11, 2021, at 2:50 AM, Guo Xuenan <guoxuenan@huawei.com> wrote:
->>>>>
->>>>> When partialDecoding, it is EOF if we've either, filled the output
->>>>> buffer or can't proceed with reading an offset for following match.
->>>>>
->>>>> In some extreme corner cases when compressed data is crusted corrupted,
->>>>> UAF will occur. As reported by KASAN [1], LZ4_decompress_safe_partial
->>>>> may lead to read out of bound problem during decoding. lz4 upstream has
->>>>> fixed it [2] and this issue has been disscussed here [3] before.
->>>>>
->>>>> current decompression routine was ported from lz4 v1.8.3, bumping lib/lz4
->>>>> to v1.9.+ is certainly a huge work to be done later, so, we'd better fix
->>>>> it first.
->>>>>
->>>>> [1] https://lore.kernel.org/all/000000000000830d1205cf7f0477@google.com/
->>>>> [2] https://github.com/lz4/lz4/commit/c5d6f8a8be3927c0bec91bcc58667a6cfad244ad#
->>>>> [3] https://lore.kernel.org/all/CC666AE8-4CA4-4951-B6FB-A2EFDE3AC03B@fb.com/
->>>>>
->>>>> Reported-by: syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com
->>>>> Cc: hsiangkao@linux.alibaba.com
->>>>> Cc: terrelln@fb.com
->>>>> Cc: cyan@fb.com
->>>>> Cc: cy.fan@huawei.com
->>>>> Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
->>>> Sorry I’m a bit late to the party, but this looks good to me!
->>>>
->>>> Reviewed-by: Nick Terrell <terrelln@fb.com>
->>> Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
->>>
->>> Hi Andrew,
->>>
->>> This patch has already been pending for 2 release cycles.. Would you
->>> mind submitting it upstream? Or are there other concerns about this?
->> Sorry, I'd not noticed that this was from lz4 upstream.
->>
->> I'll put a cc:stable in there and shall send it upstream this week.
->>
->> In the changelog, can someone please explain what "crusted corrupted"
->> is saying?
-Sorry for my missspelling, Gao Xiang is right, i mean "well-designed 
-corrupted".
-> Er.. It sounds like "well-designed corrupted". I think it was a typo
-> though.
->
-> Thanks,
-> Gao Xiang
-> .
-Thanks,
-Guo Xuenan
-.
+Home-built using buildroot. I have three different xtensa toolchains
+(de212, dc232b, and dc233c). The toolchain for kc705_nommu needs the
+de212 overlay; I think Max pointed to to the information needed
+to build the compiler. Buildroot has the "XTENSA_OVERLAY_FILE"
+option to specify the compiler overlay file for the target.
+
+Guenter
