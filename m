@@ -2,112 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB1CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbiDFMfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
+        id S230327AbiDFMfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233622AbiDFMdS (ORCPT
+        with ESMTP id S233407AbiDFMdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:33:18 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283B92DCC87;
-        Wed,  6 Apr 2022 01:31:48 -0700 (PDT)
-Received: from canpemm500005.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KYHjz45tKzDqMd;
-        Wed,  6 Apr 2022 16:29:27 +0800 (CST)
-Received: from [10.174.178.134] (10.174.178.134) by
- canpemm500005.china.huawei.com (7.192.104.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 16:31:46 +0800
-Subject: Re: [PATCH -next] ext4: Fix symlink file size not match to file
- content
-To:     Jan Kara <jack@suse.cz>
-CC:     Ye Bin <yebin10@huawei.com>, <tytso@mit.edu>,
-        <adilger.kernel@dilger.ca>, <linux-ext4@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lczerner@redhat.com>
-References: <20220321113408.4112428-1-yebin10@huawei.com>
- <20220321113703.cibgeac5ipslg3df@quack3.lan>
- <5b3e0bb7-370b-a950-1d2f-b0e31357cc01@huawei.com>
- <20220321151141.hypnhr6o4vng2sa6@quack3.lan>
-From:   Zhang Yi <yi.zhang@huawei.com>
-Message-ID: <75227a4a-2e32-463a-ade7-57c37a3fbf4b@huawei.com>
-Date:   Wed, 6 Apr 2022 16:31:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Wed, 6 Apr 2022 08:33:09 -0400
+Received: from mail-oa1-x42.google.com (mail-oa1-x42.google.com [IPv6:2001:4860:4864:20::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0686B286A4F
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:31:19 -0700 (PDT)
+Received: by mail-oa1-x42.google.com with SMTP id 586e51a60fabf-de3ca1efbaso2148376fac.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 01:31:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CbQxzsG90z/JAl+WL+UN3YQnw6GKHPn4W6/z3zTcYNI=;
+        b=bDK9rgrwMdYaTfZncsYLB1OVeHWvUHfcWrQ29VZ53/xLdP9LJ/OUGh0tLfPFxFFQai
+         2xffbgBMJ0tckWZWmopgZS1PXHBHn8STAgZA4Hs0m3IGNqNDPd9u7tIzJ0mC3gVtrzbT
+         yU6RIx91qw4kbbOcSni4Vy8hOCVbyKPnQZx5v1PghB8gkpf9A5z1WK7ZZOrOCNeeu2nS
+         AolCaBhaYTvWEJOOVNa0ifJGteo17plWdV8adfWQGFzOq9ko1ZrnmYlwUuUxDZpdIEEo
+         3AXQaLsqUVQwvNpxFVFLasmTbCIasrvyxMa/B9iwL+tZXrCyHXqYdc5456WvTaQx1T+V
+         +o8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CbQxzsG90z/JAl+WL+UN3YQnw6GKHPn4W6/z3zTcYNI=;
+        b=JAvmB04k+34K2KMfB4MYxNGs/MbG0qHR9QAETrUcDbU0QF2V9LtyrNDlEcuaynhOP/
+         +cy+qnM6O68kqFj0LfdbMKyFsBEvNwFuzzNNotT1v1LsUk6QgCcGLErkhqdMqGQOYOVE
+         JIEPXegyhDUMCyKhd5SoCqUiVc2C3E73D1/zqbO0rVYXd3FXX4UpVeIRau2Cn1l3AsBX
+         Cv8lcRawZ6uaRyNknwh8DWIQlUzsWflpryc5Q2O5lhsa1ksUsUSM/i5dKOcsWZP8nar/
+         qvzCb6LtENnN+82BxAoD7ov8o8hK8Ex1X0GfV82qwkaFcL/+dK6M3N7L3XpzFS+sV2xf
+         xWlw==
+X-Gm-Message-State: AOAM530A9xp8IyRvY+B+8c6Yp6n44w3nJqSNiXZbBnj9AeO05ATtzyzL
+        Ta4ZR0YwCEP6mvl37Lt26XKc5WzIBO9yPw==
+X-Google-Smtp-Source: ABdhPJzeu6rL8xM16P/CSl2BL/IvijdU41KyHbFI7UbHBlymYBFyb1IXHhHDomzTCEjCCDRTNA5u6Q==
+X-Received: by 2002:a05:6870:610d:b0:e1:f70a:9e8a with SMTP id s13-20020a056870610d00b000e1f70a9e8amr3517070oae.120.1649233878429;
+        Wed, 06 Apr 2022 01:31:18 -0700 (PDT)
+Received: from bertie ([172.58.102.145])
+        by smtp.gmail.com with ESMTPSA id n6-20020a9d6f06000000b005b266e43c92sm6534725otq.73.2022.04.06.01.31.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 01:31:18 -0700 (PDT)
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     outreachy@lists.linux.dev
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Rebecca Mckeever <remckee0@gmail.com>
+Subject: [PATCH 1/4] staging: r8188eu: format comments in drivers/net style
+Date:   Wed,  6 Apr 2022 03:30:57 -0500
+Message-Id: <bd7960acafb871c17ef733cd98b37294f38ad3fb.1649233201.git.remckee0@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <cover.1649233201.git.remckee0@gmail.com>
+References: <cover.1649233201.git.remckee0@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220321151141.hypnhr6o4vng2sa6@quack3.lan>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.134]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500005.china.huawei.com (7.192.104.229)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/21 23:11, Jan Kara wrote:
-> Hello Yi!
-> 
-> On Mon 21-03-22 22:38:49, Zhang Yi wrote:
->> On 2022/3/21 19:37, Jan Kara wrote:
->>> On Mon 21-03-22 19:34:08, Ye Bin wrote:
->>>> We got issue as follows:
->>>> [home]# fsck.ext4  -fn  ram0yb
->>>> e2fsck 1.45.6 (20-Mar-2020)
->>>> Pass 1: Checking inodes, blocks, and sizes
->>>> Pass 2: Checking directory structure
->>>> Symlink /p3/d14/d1a/l3d (inode #3494) is invalid.
->>>> Clear? no
->>>> Entry 'l3d' in /p3/d14/d1a (3383) has an incorrect filetype (was 7, should be 0).
->>>> Fix? no
->>>>
->>>> As symlink file size not match to file content. If symlink data block
->>>> writback failed, will call ext4_finish_bio to end io. In this path don't
->>>> mark buffer error. When umount do checkpoint can't detect buffer error,
->>>> then will cleanup jounral. Actually, correct data maybe in journal area.
->>>> To solve this issue, mark buffer error when detect bio error in
->>>> ext4_finish_bio.
->>>
->>> Thanks for the patch! Let me rephrase the text a bit:
->>>
->>> As the symlink file size does not match the file content. If the writeback
->>> of the symlink data block failed, ext4_finish_bio() handles the end of IO.
->>> However this function fails to mark the buffer with BH_write_io_error and
->>> so when unmount does journal checkpoint it cannot detect the writeback
->>> error and will cleanup the journal. Thus we've lost the correct data in the
->>> journal area. To solve this issue, mark the buffer as BH_write_io_error in
->>> ext4_finish_bio().
->>>
->>
->> Thinking about this issue in depth, the symlink data block is one kind of
->> metadata, but the page mapping of such block is belongs to the ext4 inode,
->> it's not coordinate to other metadata blocks, e.g. directory block and extents
->> block. This is why we have already fix the same issue of other metadata blocks
->> in commit fcf37549ae19e9 "jbd2: ensure abort the journal if detect IO error
->> when writing original buffer back" but missing the case of symlink data block.
->> So, after Ye Bin's fix, I think it's worth to unify the symlink data block
->> mapping to bdev, any suggestions?
-> 
-> Well, symlink with external block is essentially a case of data=journal
-> data block. So even if we would handle symlinks, we would still need to
-> deal with other inodes with journalled data. Also we need to keep the> symlink contents in the page cache to make it simple for generic VFS code
-> handling symlinks. So I don't see how we could substantially unify
-> things...
-> 
+Format comments according to the Linux kernerl coding style
+for drivers/net so they do not need to be reformatted after
+this driver is accepted into the drivers/net tree.
 
-Yeah, this fix is still needed for other regular file's journalled data when we
-mounted filesystem with data=jouranl mode. But if we just consider whether if we
-could unify the journal mode of ext4's metadata blocks, it seems that using
-data=journal mode for symlink's external data block is also complicated and
-confused in the creating procedure. Instead, if we use ext4_bread(), it make
-things clear, and it seems also has no side effect of reading symlinks. I write
-a RFC patch to do this, please take a look at my latest mail "[RFC PATCH] ext4:
-convert symlink external data block mapping to bdev".
+Suggested-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_cmd.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-Thanks,
-Yi.
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index 9b53b92c6795..9f5ece52bd39 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -11,8 +11,7 @@
+ #include "../include/rtw_mlme_ext.h"
+ #include "../include/rtl8188e_dm.h"
+ 
+-/*
+- * Caller and the rtw_cmd_thread can protect cmd_q by spin_lock.
++/* Caller and the rtw_cmd_thread can protect cmd_q by spin_lock.
+  * No irqsave is necessary.
+  */
+ 
+@@ -96,8 +95,7 @@ static void _rtw_free_cmd_priv(struct cmd_priv *pcmdpriv)
+ 	}
+ }
+ 
+-/*
+- * Calling Context:
++/* Calling Context:
+  *
+  * rtw_enqueue_cmd can only be called between kernel thread,
+  * since only spin_lock is used.
+@@ -317,8 +315,7 @@ int rtw_cmd_thread(void *context)
+ 	return 0;
+ }
+ 
+-/*
+- * rtw_sitesurvey_cmd(~)
++/* rtw_sitesurvey_cmd(~)
+  *	### NOTE:#### (!!!!)
+  *	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
+  */
+-- 
+2.32.0
+
