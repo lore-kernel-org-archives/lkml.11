@@ -2,87 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 131FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC78C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbiDFL4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
+        id S231523AbiDFL4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231222AbiDFLzW (ORCPT
+        with ESMTP id S230261AbiDFLzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 07:55:22 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70335190B6B;
-        Wed,  6 Apr 2022 00:19:05 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYG8D6JgTzdZb2;
-        Wed,  6 Apr 2022 15:18:36 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 15:19:03 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
-        <joro@8bytes.org>, <john.garry@huawei.com>,
-        <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
-        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>
-CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
-        <yangyicong@hisilicon.com>
-Subject: [PATCH v6 7/7] MAINTAINERS: Add maintainer for HiSilicon PTT driver
-Date:   Wed, 6 Apr 2022 15:17:30 +0800
-Message-ID: <20220406071730.41031-8-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220406071730.41031-1-yangyicong@hisilicon.com>
-References: <20220406071730.41031-1-yangyicong@hisilicon.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82307B0A6F;
+        Wed,  6 Apr 2022 00:18:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF60561B03;
+        Wed,  6 Apr 2022 07:18:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B81BC385A1;
+        Wed,  6 Apr 2022 07:18:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649229527;
+        bh=UR4JAaBQa61qlZC04TBcieCdJUeGJ8gH4nQ8PLOLCUU=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=QwGs9sdihyVKnkQlY11TgpnX3p/Plv2QgabFyIta3ksfqmFjgU71HGGdmD4BdlRNn
+         OQSzPea02kxgVo/oiFAP9Uglk8qo6hjrnTsJAOtq7g+iiid+StjMBzxpj/y2l1HaDM
+         iyNpvNZ3U3po2kiTCbUxMO7A0gFZg6PuS2EtPnZwqYusoEwR94dsW25egfh4gUu4KH
+         qvmbYOrdATnYmr+hss0VY3k/AoY9lVEPd3czSHdtQcpbw3p+/hvrKGrFRwbYQanXNP
+         AH2DY87QceGJEMNo6GrYwMLFuR+xMd73G2533wKkUvTdAE6QaK3WbgqrWjQVD5dwab
+         n++l92b1/vw5w==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH][next] iwlwifi: fw: Replace zero-length arrays with
+ flexible-array members
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220216195015.GA904148@embeddedor>
+References: <20220216195015.GA904148@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164922952168.27650.118624078658922574.kvalo@kernel.org>
+Date:   Wed,  6 Apr 2022 07:18:45 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add maintainer for driver and documentation of HiSilicon PTT device.
+"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+> There is a regular need in the kernel to provide a way to declare
+> having a dynamically sized set of trailing elements in a structure.
+> Kernel code should always use “flexible array members”[1] for these
+> cases. The older style of one-element or zero-length arrays should
+> no longer be used[2].
+> 
+> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> 
+> Link: https://github.com/KSPP/linux/issues/78
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Acked-by: Luca Coelho <luciano.coelho@intel.com>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fd768d43e048..d30a1698251c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8858,6 +8858,13 @@ F:	Documentation/admin-guide/perf/hisi-pcie-pmu.rst
- F:	Documentation/admin-guide/perf/hisi-pmu.rst
- F:	drivers/perf/hisilicon
- 
-+HISILICON PTT DRIVER
-+M:	Yicong Yang <yangyicong@hisilicon.com>
-+L:	linux-kernel@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/trace/hisi-ptt.rst
-+F:	drivers/hwtracing/ptt/
-+
- HISILICON QM AND ZIP Controller DRIVER
- M:	Zhou Wang <wangzhou1@hisilicon.com>
- L:	linux-crypto@vger.kernel.org
+Patch applied to wireless-next.git, thanks.
+
+34e63cd5ba29 iwlwifi: fw: Replace zero-length arrays with flexible-array members
+
 -- 
-2.24.0
+https://patchwork.kernel.org/project/linux-wireless/patch/20220216195015.GA904148@embeddedor/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
