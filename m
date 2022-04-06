@@ -2,155 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE03C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC1E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232243AbiDFMia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
+        id S230006AbiDFMjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232338AbiDFMhm (ORCPT
+        with ESMTP id S230281AbiDFMiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:37:42 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE6E44099C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:39:19 -0700 (PDT)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220406083917epoutp0495958e598f2470045cc0ec855b997c16~jQej7dhA92115321153epoutp04X
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:39:17 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220406083917epoutp0495958e598f2470045cc0ec855b997c16~jQej7dhA92115321153epoutp04X
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1649234357;
-        bh=c54J3bp3plJLsFTEsC6S4PiShdQ+U2ETlWezGJ5k9AU=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=GgTfNlu/DqsW/v+kbvyZhMvnMFBp5HWny63eXhyVnqMLhKd3js+qYF4bNEfrZ/8iS
-         bEp+IuGhQD6P7HdWvt9cni8OkC7PMITCDWx3HPvQurjl7rFTAYp2vDxTP97PFBjN2O
-         ldpuBFkdyWLlso/B45mIxtzs7n1gzItl8zjVeBzY=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20220406083916epcas2p30ee3bd4de04a7094344cb5b8d505cf97~jQejeaHxI1105711057epcas2p3L;
-        Wed,  6 Apr 2022 08:39:16 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.88]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KYHxG5LbKz4x9QP; Wed,  6 Apr
-        2022 08:39:14 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        7D.73.25540.1B15D426; Wed,  6 Apr 2022 17:39:13 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220406083912epcas2p4aa5946cfaf84e6bac9c56dd25e1dedba~jQefHh_or1577715777epcas2p4a;
-        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220406083912epsmtrp26b4cbfbb2728036861c67c2a23586fa8~jQefDrx8S0804408044epsmtrp2T;
-        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
-X-AuditID: b6c32a47-831ff700000063c4-3b-624d51b12991
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        AE.2E.03370.0B15D426; Wed,  6 Apr 2022 17:39:12 +0900 (KST)
-Received: from KORCO006858 (unknown [10.229.18.72]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220406083912epsmtip27e9c3fce16ef8727cfd6495a3dde8d86~jQee38F521809018090epsmtip2r;
-        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
-From:   "Jaewon Kim" <jaewon02.kim@samsung.com>
-To:     "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>
-Cc:     "'Krzysztof Kozlowski'" <krzk@kernel.org>,
-        "'Alim Akhtar'" <alim.akhtar@samsung.com>,
-        "'Jiri Slaby'" <jirislaby@kernel.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "'Chanho Park'" <chanho61.park@samsung.com>
-In-Reply-To: <Yk1NmTdUgMcSIq1O@kroah.com>
-Subject: RE: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt
- and console_write
-Date:   Wed, 6 Apr 2022 17:39:11 +0900
-Message-ID: <042701d84991$ca50d410$5ef27c30$@samsung.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: ko
-Thread-Index: AQKAReulhVQQuLhL7TJZSLDDSdoOSgMPy/dDAfNn9KQCezrJxqtWoyVQ
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHJsWRmVeSWpSXmKPExsWy7bCmme7GQN8kg7l93BYP5m1js7i8X9ui
-        efF6Not3c2Uszp/fwG6x6fE1VovLu+awWcw4v4/J4sziXnYHTo9NqzrZPPbPXcPusXlJvUff
-        llWMHp83yQWwRmXbZKQmpqQWKaTmJeenZOal2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE
-        6Lpl5gBdo6RQlphTChQKSCwuVtK3synKLy1JVcjILy6xVUotSMkpMC/QK07MLS7NS9fLSy2x
-        MjQwMDIFKkzIzug895Gl4DFHxeTetywNjL/Yuhg5OSQETCQ2TvrH3sXIxSEksINRYsXXrUwQ
-        zidGiXXfzkM5nxklpu/uZIVpOdY7ESqxi1Hi4aTDYLOEBF4wSuzbzA1iswnoSuzc+IodxBYR
-        MJeY+/A4mM0scJBJ4lQvD4jNKaAp8XTeebBeYYE4iRm7toPZLAIqEtPebgar5xWwlNg+eRIr
-        hC0ocXLmExaIOfIS29/OYYY4SEHi59NlrBBxEYnZnW3MEHvdJF49uMoIcqiEwFIOiU3bF0E9
-        7SJxbu1xRghbWOLV8S3sELaUxOd3e6FqiiWO93xngmhuYJQ4e+cA1PvGErOetQM1cwBt05RY
-        v0sfxJQQUJY4cgvqNj6JjsN/2SHCvBIdbUIQjWoS96eeg5ouIzHpyEqmCYxKs5B8NgvJZ7OQ
-        fDMLYdcCRpZVjGKpBcW56anFRgXG8MhOzs/dxAhOqFruOxhnvP2gd4iRiYPxEKMEB7OSCG9V
-        rk+SEG9KYmVValF+fFFpTmrxIUZTYFhPZJYSTc4HpvS8knhDE0sDEzMzQ3MjUwNzJXFer5QN
-        iUIC6YklqdmpqQWpRTB9TBycUg1MG6/3WbELlrQV85xfxOKWnv94vU+bR8LiUx650ZL+pjvj
-        hIIvCHT+ZNG+r2dsXZx2cGdZr3bh+atS6h1nVTdNkQsPizqlnKnCs+Lan/OM+7b8MLyxq84g
-        0p3Fy42JU4TDdU3i9KIF6Zm8B/pe5xQ9+7PQi3fbg445l8w3/X3+V3Dq4n063HuMivrPXZd+
-        uTQjTv3cCoN7Ob4TLGKMqzbcVP26Sch46gJviwtzVPY/fMYnnyTd4STLNenzQ5sZJ0UrEyc3
-        6d49en7RpJ9L0nOPRFbsXhaY+/v28nnxtlVLhBX2JmZqPNLtEi/7FvzgKVs321QnwUPPdVW2
-        zlr5wESh4Mo8Vruy9vyd63oaVvcqsRRnJBpqMRcVJwIAGb05bDEEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupkkeLIzCtJLcpLzFFi42LZdlhJXndDoG+SwcILHBYP5m1js7i8X9ui
-        efF6Not3c2Uszp/fwG6x6fE1VovLu+awWcw4v4/J4sziXnYHTo9NqzrZPPbPXcPusXlJvUff
-        llWMHp83yQWwRnHZpKTmZJalFunbJXBldJ77yFLwmKNicu9blgbGX2xdjJwcEgImEsd6JzJ1
-        MXJxCAnsYJS4Nm0NO0RCRmL5sz6oImGJ+y1HWCGKnjFK3P6yiAUkwSagK7Fz4yuwBhEBc4m5
-        D4+zgxQxCxxnklj2pgUsISRwj1FiRbc2iM0poCnxdN55sKnCAjEStyeeBhvEIqAiMe3tZrB6
-        XgFLie2TJ7FC2IISJ2c+AarhABqqJ9G2kREkzCwgL7H97RxmiOMUJH4+XcYKEReRmN3Zxgxx
-        j5vEqwdXGScwCs9CMmkWwqRZSCbNQtK9gJFlFaNkakFxbnpusWGBUV5quV5xYm5xaV66XnJ+
-        7iZGcGxpae1g3LPqg94hRiYOxkOMEhzMSiK8Vbk+SUK8KYmVValF+fFFpTmpxYcYpTlYlMR5
-        L3SdjBcSSE8sSc1OTS1ILYLJMnFwSjUwMfiFy7peerY+xVShfG8K70KZ2xNEl+9OuRxYq+fL
-        MkUrLPfLTJMpRfP2/rG2uCFxXzfw5AQuxcZrrhuYtq3dlhIoxXw4qCRx6y3HvN6ZgiaNTZss
-        bp9bIX7o8RyZ9x5nj3luaj7/qOjcUl3f2mMaNtoJ4Vsn3Dt9+1nF4ll/yp/pBkl959qy/fw6
-        oUdFjOL7+udMFNrW6dQTt+FS06ffa8rqE7s+PAmLWTB7adSEYoaTAQFnF1n9Mvu9d9vWzVz7
-        Dzv5ZX+aM+sIV+6cDVLi3FovhWdo7lrT/U55xr7mtwwyYfPV+VksM87KSYV/eZ81VdBu4eEK
-        ya+Hvgjq3bln0b9MZjeX6au6eVsTvaVOJymxFGckGmoxFxUnAgCFkTMMHAMAAA==
-X-CMS-MailID: 20220406083912epcas2p4aa5946cfaf84e6bac9c56dd25e1dedba
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f
-References: <20220406082216.11206-1-jaewon02.kim@samsung.com>
-        <CGME20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f@epcas2p2.samsung.com>
-        <20220406082216.11206-2-jaewon02.kim@samsung.com>
-        <Yk1NmTdUgMcSIq1O@kroah.com>
+        Wed, 6 Apr 2022 08:38:14 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337B85A1143
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:40:29 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id DB4771A1E84;
+        Wed,  6 Apr 2022 10:40:11 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 914A81A1784;
+        Wed,  6 Apr 2022 10:40:11 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id AE8E8183AC4F;
+        Wed,  6 Apr 2022 16:40:09 +0800 (+08)
+From:   Sandor.yu@nxp.com
+To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        andrzej.hajda@intel.com, narmstrong@baylibre.com,
+        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, jernej.skrabec@gmail.com
+Cc:     Sandor.yu@nxp.com, shengjiu.wang@nxp.com, cai.huoqing@linux.dev,
+        maxime@cerno.tech, harry.wentland@amd.com,
+        hverkuil-cisco@xs4all.nl, amuel@sholland.org
+Subject: [PATCH v1 1/5] drm: bridge: dw_hdmi: cec: Add cec suspend/resume function
+Date:   Wed,  6 Apr 2022 16:48:33 +0800
+Message-Id: <27380b83a1b17419a35a13e29a86a1989204d1c3.1649230434.git.Sandor.yu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1649230434.git.Sandor.yu@nxp.com>
+References: <cover.1649230434.git.Sandor.yu@nxp.com>
+In-Reply-To: <cover.1649230434.git.Sandor.yu@nxp.com>
+References: <cover.1649230434.git.Sandor.yu@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello 
+From: Sandor Yu <Sandor.yu@nxp.com>
 
-On 22. 4. 6. 17:21, Greg Kroah-Hartman wrote: 
-> On Wed, Apr 06, 2022 at 05:22:16PM +0900, Jaewon Kim wrote:
-> > The console_write and IRQ handler can run concurrently.
-> > Problems may occurs console_write is continuously executed while the
-> > IRQ handler is running.
-> >
-> > Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
-> > ---
-> >  drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/samsung_tty.c
-> > b/drivers/tty/serial/samsung_tty.c
-> > index e1585fbae909..9db479d728b5 100644
-> > --- a/drivers/tty/serial/samsung_tty.c
-> > +++ b/drivers/tty/serial/samsung_tty.c
-> > @@ -2480,12 +2480,24 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
-> >  			     unsigned int count)
-> >  {
-> >  	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-> > +	unsigned long flags;
-> > +	bool locked = 1;
-> 
-> "1" is not a boolean :)
+CEC interrupt status/mask and logical address registers
+will be reset when device enter suspend.
+It will cause cec fail to work after device resume.
+Add CEC suspend/resume functions, save these registers status
+when suspend and restore them when resume.
 
-return value of spin_trylock() is 1 or 0.
-It seems better to keep it as an int than to change it to bool.
-I will return it to int.
+Signed-off-by: Sandor Yu <Sandor.yu@nxp.com>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c | 35 +++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-
-Thanks
-Jaewon Kim
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
+index c8f44bcb298a..ceb619b32fde 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c
+@@ -18,6 +18,8 @@
+ 
+ #include "dw-hdmi-cec.h"
+ 
++static u8 cec_saved_regs[5];
++
+ enum {
+ 	HDMI_IH_CEC_STAT0	= 0x0106,
+ 	HDMI_IH_MUTE_CEC_STAT0	= 0x0186,
+@@ -306,11 +308,44 @@ static int dw_hdmi_cec_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static int __maybe_unused dw_hdmi_cec_resume(struct device *dev)
++{
++	struct dw_hdmi_cec *cec = dev_get_drvdata(dev);
++
++	/* Restore logical address and interrupt status/mask register */
++	dw_hdmi_write(cec, cec_saved_regs[0], HDMI_CEC_ADDR_L);
++	dw_hdmi_write(cec, cec_saved_regs[1], HDMI_CEC_ADDR_H);
++	dw_hdmi_write(cec, cec_saved_regs[2], HDMI_CEC_POLARITY);
++	dw_hdmi_write(cec, cec_saved_regs[3], HDMI_CEC_MASK);
++	dw_hdmi_write(cec, cec_saved_regs[4], HDMI_IH_MUTE_CEC_STAT0);
++
++	return 0;
++}
++
++static int __maybe_unused dw_hdmi_cec_suspend(struct device *dev)
++{
++	struct dw_hdmi_cec *cec = dev_get_drvdata(dev);
++
++	/* store logical address and interrupt status/mask register */
++	cec_saved_regs[0] = dw_hdmi_read(cec, HDMI_CEC_ADDR_L);
++	cec_saved_regs[1] = dw_hdmi_read(cec, HDMI_CEC_ADDR_H);
++	cec_saved_regs[2] = dw_hdmi_read(cec, HDMI_CEC_POLARITY);
++	cec_saved_regs[3] = dw_hdmi_read(cec, HDMI_CEC_MASK);
++	cec_saved_regs[4] = dw_hdmi_read(cec, HDMI_IH_MUTE_CEC_STAT0);
++
++	return 0;
++}
++
++static const struct dev_pm_ops dw_hdmi_cec_pm = {
++	SET_SYSTEM_SLEEP_PM_OPS(dw_hdmi_cec_suspend, dw_hdmi_cec_resume)
++};
++
+ static struct platform_driver dw_hdmi_cec_driver = {
+ 	.probe	= dw_hdmi_cec_probe,
+ 	.remove	= dw_hdmi_cec_remove,
+ 	.driver = {
+ 		.name = "dw-hdmi-cec",
++		.pm = &dw_hdmi_cec_pm,
+ 	},
+ };
+ module_platform_driver(dw_hdmi_cec_driver);
+-- 
+2.25.1
 
