@@ -2,28 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1419C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40679C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234495AbiDFOKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
+        id S234315AbiDFOKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234384AbiDFOH2 (ORCPT
+        with ESMTP id S234368AbiDFOHY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:07:28 -0400
+        Wed, 6 Apr 2022 10:07:24 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBCC2E1959;
-        Wed,  6 Apr 2022 02:46:59 -0700 (PDT)
-X-UUID: 0a38c940db9e494ea16a9483d4e7e7f1-20220406
-X-UUID: 0a38c940db9e494ea16a9483d4e7e7f1-20220406
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B428D2EDF1B;
+        Wed,  6 Apr 2022 02:47:00 -0700 (PDT)
+X-UUID: 6b8ba9073710429e8d1c1ce77ca9a217-20220406
+X-UUID: 6b8ba9073710429e8d1c1ce77ca9a217-20220406
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1412427719; Wed, 06 Apr 2022 17:46:56 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 6 Apr 2022 17:46:55 +0800
+        with ESMTP id 838298534; Wed, 06 Apr 2022 17:46:57 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 6 Apr 2022 17:46:56 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 Apr
+ 2022 17:46:55 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
  Transport; Wed, 6 Apr 2022 17:46:55 +0800
@@ -39,10 +43,12 @@ CC:     <matthias.bgg@gmail.com>, <p.zabel@pengutronix.de>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH 0/3] Correct disp_aal dt-binding
-Date:   Wed, 6 Apr 2022 17:46:51 +0800
-Message-ID: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+Subject: [PATCH 2/3] arm64: dts: mt8183: Correct disp_aal node compatible
+Date:   Wed, 6 Apr 2022 17:46:53 +0800
+Message-ID: <20220406094654.29722-3-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -50,24 +56,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several dt-binding error for MT8183 and MT8192. Therefore,
-we send this series to correct them.
-1. Correct dt-binding and dts for MT8183.
-2. Correct dt-binding for MT8192.
+The driver data of MT8183 and MT8173 are different.
+The value of has_gamma for MT8173 is true while the value of MT8183 is
+false. Therefore, the compatible of disp_aal for MT8183 is not suitable
+for the compatible for MT8173.
 
-This series is based on this series:
-"add display support for MediaTek SoC MT8186":
-Message id: 20220406030009.2357-1-rex-bc.chen@mediatek.com
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Rex-BC Chen (3):
-  dt-bindings: display: mediatek: Correct disp_aal binding for MT8183
-  arm64: dts: mt8183: Correct disp_aal node compatible
-  dt-bindings: display: mediatek: Correct disp_aal binding for MT8192
-
- .../bindings/display/mediatek/mediatek,aal.yaml           | 8 ++++----
- arch/arm64/boot/dts/mediatek/mt8183.dtsi                  | 3 +--
- 2 files changed, 5 insertions(+), 6 deletions(-)
-
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index 4b08691ed39e..a3616005d65c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -1466,8 +1466,7 @@
+ 		};
+ 
+ 		aal0: aal@14010000 {
+-			compatible = "mediatek,mt8183-disp-aal",
+-				     "mediatek,mt8173-disp-aal";
++			compatible = "mediatek,mt8183-disp-aal";
+ 			reg = <0 0x14010000 0 0x1000>;
+ 			interrupts = <GIC_SPI 233 IRQ_TYPE_LEVEL_LOW>;
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
 -- 
 2.18.0
 
