@@ -2,155 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C139CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF04C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233921AbiDFUPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
+        id S233971AbiDFUP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236178AbiDFUNg (ORCPT
+        with ESMTP id S236982AbiDFUNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:13:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A33A264C03;
-        Wed,  6 Apr 2022 11:09:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22E8DB8253C;
-        Wed,  6 Apr 2022 18:09:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7968CC385A1;
-        Wed,  6 Apr 2022 18:09:30 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Josef Bacik <josef@toxicpanda.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>,
-        Will Deacon <will@kernel.org>, linux-fsdevel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/3] arm64: Add support for user sub-page fault probing
-Date:   Wed,  6 Apr 2022 19:09:21 +0100
-Message-Id: <20220406180922.1522433-3-catalin.marinas@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220406180922.1522433-1-catalin.marinas@arm.com>
-References: <20220406180922.1522433-1-catalin.marinas@arm.com>
+        Wed, 6 Apr 2022 16:13:55 -0400
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3131140A1;
+        Wed,  6 Apr 2022 10:44:59 -0700 (PDT)
+Received: by mail-ot1-f42.google.com with SMTP id a17-20020a9d3e11000000b005cb483c500dso2205336otd.6;
+        Wed, 06 Apr 2022 10:44:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UQGAhVkoMVchgmtJMVhAtK7JRG3UaGk6gAi1FHksJok=;
+        b=CxQ0tfR/V0mUHbcjblolrvkLrAtOuBoAnQSQ9ujIar9o8fprzjeQkvLC6lTvTlxSi3
+         aH0gqT9y4k3T9r8rDk7LBi5FS6ImS1jEw7AO/Jfbl/23gFYCdNYYaY79Or+wZxKs1Ibd
+         KjS12E7UQ5/3ZtUZK4wV0fwuKLhzpET28ovQ28EAXCLPkaM8YqtfUNMw724ic/Jqd+md
+         mxzn9VBcicTAUW44xqPREQwA/WLcvOxpJP/DBADaqK7//GpMZlbnkFN1JEjiGpyTgh+L
+         u4lt8ZhbFfegDDjNsysJ7k3g9VtwE/xkWpL1h2d4s0oiGXhpQi2Ms/cBZny5u5TqyRdp
+         fvpg==
+X-Gm-Message-State: AOAM530EAr7Xcj9g6P8BdZpRKKk7zk4Pybo5vE0vQSn/EpTJkQ3+3CJJ
+        oyvKF2CdpEyaygGwjUB2zg==
+X-Google-Smtp-Source: ABdhPJxmVkSyx43KIty/v1EZpatUCR4dvx3Ts6J5KNstYq0qO+8+CbAh29CaRQszr4r5SfRUiJs+4A==
+X-Received: by 2002:a05:6830:82a:b0:5b2:36d5:1603 with SMTP id t10-20020a056830082a00b005b236d51603mr3472144ots.240.1649267098688;
+        Wed, 06 Apr 2022 10:44:58 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id e4-20020a056870920400b000e1bdf90ba5sm6236468oaf.22.2022.04.06.10.44.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 10:44:58 -0700 (PDT)
+Received: (nullmailer pid 2481314 invoked by uid 1000);
+        Wed, 06 Apr 2022 17:44:57 -0000
+Date:   Wed, 6 Apr 2022 12:44:57 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Subject: Re: [PATCH v3 1/2] spi: dt-bindings: qcom,spi-geni-qcom: convert to
+ dtschema
+Message-ID: <Yk3RmTJD5XHX1hIM@robh.at.kernel.org>
+References: <20220404064017.68634-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404064017.68634-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With MTE, even if the pte allows an access, a mismatched tag somewhere
-within a page can still cause a fault. Select ARCH_HAS_SUBPAGE_FAULTS if
-MTE is enabled and implement the probe_subpage_writeable() function.
-Note that get_user() is sufficient for the writeable MTE check since the
-same tag mismatch fault would be triggered by a read. The caller of
-probe_subpage_writeable() will need to check the pte permissions
-(put_user, GUP).
+On Mon, 04 Apr 2022 08:40:16 +0200, Krzysztof Kozlowski wrote:
+> Convert the GENI based Qualcomm Universal Peripheral (QUP) Serial
+> Peripheral Interface (SPI) bindings to DT Schema.
+> 
+> The original bindings in TXT were not complete, so add during conversion
+> properties already used in DTS and/or in the driver: dmas,
+> interconnects, operating points and power-domains.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> ---
+> 
+> Changes since v2:
+> 1. Drop reg-names.
+> 
+> Changes since v1:
+> 1. Correct $ref path and remove interconnect minItems (Kuldeep).
+> 2. Remove child tpm device from example.
+> 3. Pad reg hex addresses with 00.
+> ---
+>  .../bindings/spi/qcom,spi-geni-qcom.txt       |  39 ------
+>  .../bindings/spi/qcom,spi-geni-qcom.yaml      | 116 ++++++++++++++++++
+>  2 files changed, 116 insertions(+), 39 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
+>  create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
+> 
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
----
- arch/arm64/Kconfig               |  1 +
- arch/arm64/include/asm/mte.h     |  1 +
- arch/arm64/include/asm/uaccess.h | 15 +++++++++++++++
- arch/arm64/kernel/mte.c          | 30 ++++++++++++++++++++++++++++++
- 4 files changed, 47 insertions(+)
-
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 57c4c995965f..290b88238103 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -1871,6 +1871,7 @@ config ARM64_MTE
- 	depends on AS_HAS_LSE_ATOMICS
- 	# Required for tag checking in the uaccess routines
- 	depends on ARM64_PAN
-+	select ARCH_HAS_SUBPAGE_FAULTS
- 	select ARCH_USES_HIGH_VMA_FLAGS
- 	help
- 	  Memory Tagging (part of the ARMv8.5 Extensions) provides
-diff --git a/arch/arm64/include/asm/mte.h b/arch/arm64/include/asm/mte.h
-index adcb937342f1..aa523591a44e 100644
---- a/arch/arm64/include/asm/mte.h
-+++ b/arch/arm64/include/asm/mte.h
-@@ -47,6 +47,7 @@ long set_mte_ctrl(struct task_struct *task, unsigned long arg);
- long get_mte_ctrl(struct task_struct *task);
- int mte_ptrace_copy_tags(struct task_struct *child, long request,
- 			 unsigned long addr, unsigned long data);
-+size_t mte_probe_user_range(const char __user *uaddr, size_t size);
- 
- #else /* CONFIG_ARM64_MTE */
- 
-diff --git a/arch/arm64/include/asm/uaccess.h b/arch/arm64/include/asm/uaccess.h
-index e8dce0cc5eaa..6677aa7e9993 100644
---- a/arch/arm64/include/asm/uaccess.h
-+++ b/arch/arm64/include/asm/uaccess.h
-@@ -460,4 +460,19 @@ static inline int __copy_from_user_flushcache(void *dst, const void __user *src,
- }
- #endif
- 
-+#ifdef CONFIG_ARCH_HAS_SUBPAGE_FAULTS
-+
-+/*
-+ * Return 0 on success, the number of bytes not probed otherwise.
-+ */
-+static inline size_t probe_subpage_writeable(const void __user *uaddr,
-+					     size_t size)
-+{
-+	if (!system_supports_mte())
-+		return 0;
-+	return mte_probe_user_range(uaddr, size);
-+}
-+
-+#endif /* CONFIG_ARCH_HAS_SUBPAGE_FAULTS */
-+
- #endif /* __ASM_UACCESS_H */
-diff --git a/arch/arm64/kernel/mte.c b/arch/arm64/kernel/mte.c
-index 78b3e0f8e997..35697a09926f 100644
---- a/arch/arm64/kernel/mte.c
-+++ b/arch/arm64/kernel/mte.c
-@@ -15,6 +15,7 @@
- #include <linux/swapops.h>
- #include <linux/thread_info.h>
- #include <linux/types.h>
-+#include <linux/uaccess.h>
- #include <linux/uio.h>
- 
- #include <asm/barrier.h>
-@@ -543,3 +544,32 @@ static int register_mte_tcf_preferred_sysctl(void)
- 	return 0;
- }
- subsys_initcall(register_mte_tcf_preferred_sysctl);
-+
-+/*
-+ * Return 0 on success, the number of bytes not probed otherwise.
-+ */
-+size_t mte_probe_user_range(const char __user *uaddr, size_t size)
-+{
-+	const char __user *end = uaddr + size;
-+	int err = 0;
-+	char val;
-+
-+	__raw_get_user(val, uaddr, err);
-+	if (err)
-+		return size;
-+
-+	uaddr = PTR_ALIGN(uaddr, MTE_GRANULE_SIZE);
-+	while (uaddr < end) {
-+		/*
-+		 * A read is sufficient for mte, the caller should have probed
-+		 * for the pte write permission if required.
-+		 */
-+		__raw_get_user(val, uaddr, err);
-+		if (err)
-+			return end - uaddr;
-+		uaddr += MTE_GRANULE_SIZE;
-+	}
-+	(void)val;
-+
-+	return 0;
-+}
+Reviewed-by: Rob Herring <robh@kernel.org>
