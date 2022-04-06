@@ -2,348 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB34C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C315C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239822AbiDFR6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60896 "EHLO
+        id S239992AbiDFR5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239942AbiDFR5m (ORCPT
+        with ESMTP id S239693AbiDFR5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:57:42 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3DA1578F8;
-        Wed,  6 Apr 2022 09:08:18 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E86941EC0531;
-        Wed,  6 Apr 2022 18:08:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649261293;
+        Wed, 6 Apr 2022 13:57:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1DD641A771E
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:06:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649261211;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=LaD6kLx2lHmaoJGZnze6BBGNKdyNqLYnWL7U7Z2JqwU=;
-        b=rBJn66aefcq4wxaoMV8nYj8XwS/L+1kwr4ULrnEWk0Eg3vhCa4j2q9kyiEVbVmSGYuH5np
-        2UwoLiIwH1R8aXC6em5E9vgPpY7xJhTtdVIKC1r3WvLkuIeiYUd3UY5OVWwSOK9E7YaphK
-        YuQHn4GLYxz8AZ3N/jI5VSYeNAL+hoo=
-Date:   Wed, 6 Apr 2022 18:08:12 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Cc:     x86@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Yazen Ghannam <yazen.ghannam@amd.com>
-Subject: Re: [PATCH v4 1/2] x86/mce: Check for writes ignored in MCA_STATUS
- register
-Message-ID: <Yk267A1MKOo2AlXQ@zn.tnic>
-References: <20220214233640.70510-1-Smita.KoralahalliChannabasappa@amd.com>
- <20220214233640.70510-2-Smita.KoralahalliChannabasappa@amd.com>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=U2QzSBkwn7Yafa/16sbGGbBUM4FbySeU5GGeHJm/Jx0=;
+        b=env1f3IYLBLUN0bDvO5fF8B61UkIhGpjGygidOmSM6sNxq2RRqUQk+b68iXXTSj+PrM2/k
+        2MtvZZsFpN9JPSFJ1ntmxscdtgciLV6J5p6g7Yrv/z+9R/fDWeJuxc1hQKjCEvvhkRmNRn
+        H5eZjl4EoDk/wgCQafJPX5DP5sAAZ5k=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-12-l_pP4vIKNVOfLT1dI12TEQ-1; Wed, 06 Apr 2022 12:06:50 -0400
+X-MC-Unique: l_pP4vIKNVOfLT1dI12TEQ-1
+Received: by mail-wm1-f72.google.com with SMTP id x8-20020a7bc768000000b0038e73173886so1513826wmk.6
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:06:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=U2QzSBkwn7Yafa/16sbGGbBUM4FbySeU5GGeHJm/Jx0=;
+        b=2PPqW6vIRgiq9mbuj3sIoRDtAlTyLOF6YXX7RXtCNOJi+dtUgwp5yvC0dZlK8bDLN5
+         kOf8UT0gqmEw86AntuLOJ3pZ/bUob0+AjwWqE8SMzJtKFHBO9+zVSfB8ZHi8y0bZcJH0
+         Q0LykdKqt2Tmn8Doj21VFZ26jy1Aug9rPyFweHXKfiv586P0iPqoDJeTYVlIYMoUOwsm
+         ZPPCjSr4q0h4i9hbCabzO8fNolrerwazY3clwSJJR4R+twaKy9oaeXPF3qW9Z8FoPhm0
+         MX2znxhmxIjJRzIqgH4useh38gb3dV3g8sOSiHOXTN6Mj4Xmmyg4vI6bTAL1WaVhXvU5
+         erVA==
+X-Gm-Message-State: AOAM533PESef2Z8vZhno9DV97xVnbF5F0RzcJj2YhhAYV2AELR+CVyxM
+        vhNemvABmA2SZnXMY618kYcjoZ5eXnho8qLZuHJ+A3e83/cCUSsTmcYtfcuTenmzCbzRNSHqd+O
+        qCbibKsw3hKvhQgrh33/rHUzKZx7gLwK5qb5A+dmi171AbIRsklzWcKB11PrqJ7JhweVdO5uGc2
+        M=
+X-Received: by 2002:a05:600c:3b26:b0:38c:8358:4b84 with SMTP id m38-20020a05600c3b2600b0038c83584b84mr8262645wms.185.1649261208783;
+        Wed, 06 Apr 2022 09:06:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwrWRPcdVNxxa0OQoFxVtMgEvN6P53Xni3VcPZinWUwk/8XrPqG2DL56DBxegaE9MICKK7T2Q==
+X-Received: by 2002:a05:600c:3b26:b0:38c:8358:4b84 with SMTP id m38-20020a05600c3b2600b0038c83584b84mr8262596wms.185.1649261208370;
+        Wed, 06 Apr 2022 09:06:48 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id f1-20020a1c6a01000000b0038c9f6a3634sm5038899wmc.7.2022.04.06.09.06.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 09:06:48 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Helge Deller <deller@gmx.de>, Sam Ravnborg <sam@ravnborg.org>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Zheyu Ma <zheyuma97@gmail.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Subject: [RFC PATCH 4/5] fbdev: Fix some race conditions between fbmem and sysfb
+Date:   Wed,  6 Apr 2022 18:06:31 +0200
+Message-Id: <20220406160632.496684-5-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406160632.496684-1-javierm@redhat.com>
+References: <20220406160632.496684-1-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220214233640.70510-2-Smita.KoralahalliChannabasappa@amd.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 05:36:39PM -0600, Smita Koralahalli wrote:
-> diff --git a/arch/x86/kernel/cpu/mce/inject.c b/arch/x86/kernel/cpu/mce/inject.c
-> index 5fbd7ffb3233..43ba63b7dc73 100644
-> --- a/arch/x86/kernel/cpu/mce/inject.c
-> +++ b/arch/x86/kernel/cpu/mce/inject.c
-> @@ -470,11 +470,36 @@ static void toggle_nb_mca_mst_cpu(u16 nid)
->  		       __func__, PCI_FUNC(F3->devfn), NBCFG);
->  }
->  
-> +struct mce_err_handler {
-> +	struct mce *mce;
-> +	int err;
-> +};
+The platform devices registered in sysfb match with a firmware-based fbdev
+or DRM driver, that are used to have early graphics using framebuffers set
+up by the system firmware.
 
-Well, we already have a struct mce i_mce which serves as a sort-of
-global container for injection data which gets dumped into the hardware
-upon injection time.
+Real DRM drivers later are probed and remove all conflicting framebuffers,
+leading to these platform devices for generic drivers to be unregistered.
 
-Now you're adding another struct which contains additional info and are
-adding a pointer to that i_mce.
+But the current solution has two issues that this patch fixes:
 
-But this is not a clean design - when you do stuff like that you need to
-unify all those global-info-containing structs and make the code dealing
-with them straight-forward . I.e., if you don't look at the big picture
-of a design, it soon grows into an unwieldy mess which some poor sod
-would need to clean up afterwards and that poor sod is in most cases the
-maintainer.
+1) It is a layering violation for the fbdev core to unregister a device
+   that was registered by sysfb.
 
-So I went and did that ontop of your patch, this is one possible way to
-do it but it.
+   Instead, the sysfb_try_unregister() helper function can be called for
+   sysfb to attempt unregistering the device if is the one registered.
 
-Here it is, a combined diff ontop of tip:ras/core. Please split it into
-patches: first patch converts to the new descriptor and then a second
-one adds the MCA_STATUS checking bits.
+2) The sysfb_init() function could be called after a DRM driver is probed
+   and requested to unregister devices for drivers with a conflicting fb.
 
-There are a couple of other changes in there, if they're not clear, feel
-free to ask.
+   To prevent this, disable any future sysfb platform device registration
+   by calling sysfb_disable(), if a driver requested to remove conflicting
+   framebuffers with remove_conflicting_framebuffers().
 
-Thx.
-
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
-diff --git a/arch/x86/kernel/cpu/mce/inject.c b/arch/x86/kernel/cpu/mce/inject.c
-index 43ba63b7dc73..0fd1eea2f754 100644
---- a/arch/x86/kernel/cpu/mce/inject.c
-+++ b/arch/x86/kernel/cpu/mce/inject.c
-@@ -33,10 +33,14 @@
- 
- #include "internal.h"
- 
--/*
-- * Collect all the MCi_XXX settings
-- */
--static struct mce i_mce;
-+static bool hw_injection_possible = true;
-+
-+/* Collect all the MCi_XXX settings */
-+static struct inject_desc {
-+	struct mce m;
-+	int err;
-+} inj_desc;
-+
- static struct dentry *dfs_inj;
- 
- #define MAX_FLAG_OPT_SIZE	4
-@@ -110,9 +114,11 @@ static int inj_ipid_set(void *data, u64 val)
- 
- DEFINE_SIMPLE_ATTRIBUTE(ipid_fops, inj_ipid_get, inj_ipid_set, "%llx\n");
- 
--static void setup_inj_struct(struct mce *m)
-+static void setup_inj_struct(void)
- {
--	memset(m, 0, sizeof(struct mce));
-+	struct mce *m = &inj_desc.m;
-+
-+	memset(&inj_desc, 0, sizeof(struct inject_desc));
- 
- 	m->cpuvendor = boot_cpu_data.x86_vendor;
- 	m->time	     = ktime_get_real_seconds();
-@@ -470,84 +476,78 @@ static void toggle_nb_mca_mst_cpu(u16 nid)
- 		       __func__, PCI_FUNC(F3->devfn), NBCFG);
- }
- 
--struct mce_err_handler {
--	struct mce *mce;
--	int err;
--};
--
--static struct mce_err_handler mce_err;
--
--static bool prepare_mca_status(struct mce *m)
-+static bool prepare_mca_status(void)
- {
--	u32 status_reg = mca_msr_reg(m->bank, MCA_STATUS);
--	u64 status_val = m->status;
-+	u32 status_reg = mca_msr_reg(inj_desc.m.bank, MCA_STATUS);
-+	u64 status_val = inj_desc.m.status;
- 
- 	wrmsrl(status_reg, status_val);
- 	rdmsrl(status_reg, status_val);
- 
--	return status_val;
-+	return status_val == inj_desc.m.status;
- }
- 
--static void prepare_msrs(void *info)
-+static void prepare_msrs(void *unused)
- {
--	struct mce_err_handler *i_mce_err = ((struct mce_err_handler *)info);
--	struct mce m = *i_mce_err->mce;
--	u8 b = m.bank;
-+	struct mce *m = &inj_desc.m;
-+	u8 b = inj_desc.m.bank;
- 
--	if (!prepare_mca_status(&m)) {
-+	if (!prepare_mca_status()) {
- 		pr_err("Platform does not allow error injection, try using APEI EINJ instead.\n");
--		i_mce_err->err = -EINVAL;
-+		inj_desc.err = -EINVAL;
-+		hw_injection_possible = false;
- 		return;
- 	}
- 
--	wrmsrl(MSR_IA32_MCG_STATUS, m.mcgstatus);
-+	wrmsrl(MSR_IA32_MCG_STATUS, m->mcgstatus);
- 
- 	if (boot_cpu_has(X86_FEATURE_SMCA)) {
--		if (m.inject_flags == DFR_INT_INJ) {
--			wrmsrl(MSR_AMD64_SMCA_MCx_DESTAT(b), m.status);
--			wrmsrl(MSR_AMD64_SMCA_MCx_DEADDR(b), m.addr);
-+		if (m->inject_flags == DFR_INT_INJ) {
-+			wrmsrl(MSR_AMD64_SMCA_MCx_DESTAT(b), m->status);
-+			wrmsrl(MSR_AMD64_SMCA_MCx_DEADDR(b), m->addr);
- 		} else {
--			wrmsrl(MSR_AMD64_SMCA_MCx_STATUS(b), m.status);
--			wrmsrl(MSR_AMD64_SMCA_MCx_ADDR(b), m.addr);
-+			wrmsrl(MSR_AMD64_SMCA_MCx_STATUS(b), m->status);
-+			wrmsrl(MSR_AMD64_SMCA_MCx_ADDR(b), m->addr);
- 		}
- 
--		wrmsrl(MSR_AMD64_SMCA_MCx_MISC(b), m.misc);
--		wrmsrl(MSR_AMD64_SMCA_MCx_SYND(b), m.synd);
-+		wrmsrl(MSR_AMD64_SMCA_MCx_MISC(b), m->misc);
-+		wrmsrl(MSR_AMD64_SMCA_MCx_SYND(b), m->synd);
- 	} else {
--		wrmsrl(MSR_IA32_MCx_STATUS(b), m.status);
--		wrmsrl(MSR_IA32_MCx_ADDR(b), m.addr);
--		wrmsrl(MSR_IA32_MCx_MISC(b), m.misc);
-+		wrmsrl(MSR_IA32_MCx_STATUS(b), m->status);
-+		wrmsrl(MSR_IA32_MCx_ADDR(b), m->addr);
-+		wrmsrl(MSR_IA32_MCx_MISC(b), m->misc);
- 	}
- }
- 
--static void do_inject(void)
-+static int do_inject(void)
- {
-+	struct mce *m = &inj_desc.m;
-+	unsigned int cpu = m->extcpu;
- 	u64 mcg_status = 0;
--	unsigned int cpu = i_mce.extcpu;
--	u8 b = i_mce.bank;
-+	u8 b = m->bank;
- 
--	mce_err.mce = &i_mce;
--	mce_err.err = 0;
-+	m->tsc = rdtsc_ordered();
- 
--	i_mce.tsc = rdtsc_ordered();
-+	m->status |= MCI_STATUS_VAL;
- 
--	i_mce.status |= MCI_STATUS_VAL;
-+	if (m->misc)
-+		m->status |= MCI_STATUS_MISCV;
- 
--	if (i_mce.misc)
--		i_mce.status |= MCI_STATUS_MISCV;
--
--	if (i_mce.synd)
--		i_mce.status |= MCI_STATUS_SYNDV;
-+	if (m->synd)
-+		m->status |= MCI_STATUS_SYNDV;
- 
- 	if (inj_type == SW_INJ) {
--		mce_log(&i_mce);
--		return;
-+		mce_log(m);
-+		return 0;
- 	}
- 
-+	if (!hw_injection_possible)
-+		return -EINVAL;
-+
- 	/* prep MCE global settings for the injection */
- 	mcg_status = MCG_STATUS_MCIP | MCG_STATUS_EIPV;
- 
--	if (!(i_mce.status & MCI_STATUS_PCC))
-+	if (!(m->status & MCI_STATUS_PCC))
- 		mcg_status |= MCG_STATUS_RIPV;
- 
- 	/*
-@@ -556,8 +556,8 @@ static void do_inject(void)
- 	 * - MCx_STATUS[UC] cleared: deferred errors are _not_ UC
- 	 */
- 	if (inj_type == DFR_INT_INJ) {
--		i_mce.status |= MCI_STATUS_DEFERRED;
--		i_mce.status &= ~MCI_STATUS_UC;
-+		m->status |= MCI_STATUS_DEFERRED;
-+		m->status &= ~MCI_STATUS_UC;
- 	}
- 
- 	/*
-@@ -578,13 +578,13 @@ static void do_inject(void)
- 
- 	toggle_hw_mce_inject(cpu, true);
- 
--	i_mce.mcgstatus = mcg_status;
--	i_mce.inject_flags = inj_type;
--	smp_call_function_single(cpu, prepare_msrs, &mce_err, 0);
-+	m->mcgstatus = mcg_status;
-+	m->inject_flags = inj_type;
-+	smp_call_function_single(cpu, prepare_msrs, NULL, 0);
- 
- 	toggle_hw_mce_inject(cpu, false);
- 
--	if (mce_err.err)
-+	if (inj_desc.err)
- 		goto err;
- 
- 	switch (inj_type) {
-@@ -601,6 +601,7 @@ static void do_inject(void)
- err:
- 	cpus_read_unlock();
- 
-+	return inj_desc.err;
- }
- 
- /*
-@@ -611,6 +612,7 @@ static int inj_bank_set(void *data, u64 val)
- {
- 	struct mce *m = (struct mce *)data;
- 	u8 n_banks;
-+	int err;
- 	u64 cap;
- 
- 	/* Get bank count on target CPU so we can handle non-uniform values. */
-@@ -650,12 +652,12 @@ static int inj_bank_set(void *data, u64 val)
- 	}
- 
- inject:
--	do_inject();
-+	err = do_inject();
- 
- 	/* Reset injection struct */
--	setup_inj_struct(&i_mce);
-+	setup_inj_struct();
- 
--	return mce_err.err;
-+	return err;
- }
- 
- MCE_INJECT_GET(bank);
-@@ -745,7 +747,7 @@ static void __init debugfs_init(void)
- 
- 	for (i = 0; i < ARRAY_SIZE(dfs_fls); i++)
- 		debugfs_create_file(dfs_fls[i].name, dfs_fls[i].perm, dfs_inj,
--				    &i_mce, dfs_fls[i].fops);
-+				    &inj_desc.m, dfs_fls[i].fops);
- }
- 
- static int __init inject_init(void)
-@@ -758,7 +760,7 @@ static int __init inject_init(void)
- 	register_nmi_handler(NMI_LOCAL, mce_raise_notify, 0, "mce_notify");
- 	mce_register_injector_chain(&inject_nb);
- 
--	setup_inj_struct(&i_mce);
-+	setup_inj_struct();
- 
- 	pr_info("Machine check injector initialized\n");
- 
-diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
-index 4ae0e603f7fa..7e03f5b7f6bd 100644
---- a/arch/x86/kernel/cpu/mce/internal.h
-+++ b/arch/x86/kernel/cpu/mce/internal.h
-@@ -211,7 +211,7 @@ noinstr u64 mce_rdmsrl(u32 msr);
- 
- static __always_inline u32 mca_msr_reg(int bank, enum mca_msr reg)
- {
--	if (mce_flags.smca) {
-+	if (cpu_feature_enabled(X86_FEATURE_SMCA)) {
- 		switch (reg) {
- 		case MCA_CTL:	 return MSR_AMD64_SMCA_MCx_CTL(bank);
- 		case MCA_ADDR:	 return MSR_AMD64_SMCA_MCx_ADDR(bank);
 
+ drivers/video/fbdev/core/fbmem.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index c1bfb8df9cba..acf641b05d11 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -19,6 +19,7 @@
+ #include <linux/kernel.h>
+ #include <linux/major.h>
+ #include <linux/slab.h>
++#include <linux/sysfb.h>
+ #include <linux/mm.h>
+ #include <linux/mman.h>
+ #include <linux/vt.h>
+@@ -1588,7 +1589,10 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
+ 				 * unregister_framebuffer() function that takes it.
+ 				 */
+ 				mutex_unlock(&registration_lock);
+-				platform_device_unregister(to_platform_device(device));
++				if (!sysfb_try_unregister(device)) {
++					/* sysfb didn't register this device, unregister it */
++					platform_device_unregister(to_platform_device(device));
++				}
+ 				mutex_lock(&registration_lock);
+ 				/*
+ 				 * Restart the removal now that the platform device
+@@ -1781,6 +1785,17 @@ int remove_conflicting_framebuffers(struct apertures_struct *a,
+ 		do_free = true;
+ 	}
+ 
++	/*
++	 * If a driver asked to unregister a platform device registered by
++	 * sysfb, then can be assumed that this is a driver for a display
++	 * that is set up by the system firmware and has a generic driver.
++	 *
++	 * Drivers for devices that don't have a generic driver will never
++	 * ask for this, so let's assume that a real driver for the display
++	 * was already probed and prevent sysfb to register devices later.
++	 */
++	sysfb_disable();
++
+ 	mutex_lock(&registration_lock);
+ 	do_remove_conflicting_framebuffers(a, name, primary);
+ 	mutex_unlock(&registration_lock);
 -- 
-Regards/Gruss,
-    Boris.
+2.35.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
