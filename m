@@ -2,112 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3900C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5026C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349771AbiDFFtv (ORCPT
+        id S1346686AbiDFFsw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55948 "EHLO
+        Wed, 6 Apr 2022 01:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2361726AbiDFEb7 (ORCPT
+        with ESMTP id S2361243AbiDFEZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 00:31:59 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB40B264F68;
-        Tue,  5 Apr 2022 17:36:30 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id n9so574315plc.4;
-        Tue, 05 Apr 2022 17:36:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FGwusd761ZZmZCn6Lx1iBjIKmRJjAIBS+Tn3Y7KvQk4=;
-        b=ogCxh//SGlbIZda9y8AAuQpajUpqX7pWroQr5OGfPAfgwVA0OEonu5uJ7pLurDzlQU
-         VC1fBekbyF/svKWuIsGA1yIhxv389X+jGpjtGjQND8Udf8NVpTQPkACELsMUOpUeqJIu
-         NgSRZv144GI3Ry/Oh+Vbn6mSlXbjwdr2MeHrsxzErbIdWd42brCBDooAI1lsyDROZ8xZ
-         w1mnsPBhRr/Z74YzIPsPuCI73vOKEr+DVuZfS3qzuZyslX+oz8We8AryP44s8oMswyT9
-         J5PsX7xHBWmHLwiwMBDikCzMRAp/OJPTy/acb1t27gu/3W7eolYvRwgt/81kxjTF1Gqr
-         xSHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FGwusd761ZZmZCn6Lx1iBjIKmRJjAIBS+Tn3Y7KvQk4=;
-        b=5v4ORP3y7qbj94znYIL8nA0zQlvhRAubAUVcCaHzX1n9VYDLX0Qm1XrKj0GEVwritc
-         U7Voupq4WeXjnxSFL5JkGdqDod0AzQmmfmEhs8xJODiSsDR9ZC2NKY1th9vb+iJXwZ0t
-         safN6fjY3eyBEHnDvsBsWrycknsI9ZxVKfgczVXY0tIO/ilov60FD1waXpcC+LLudsBv
-         kIMIYXbFqgzADfmMR06p/AwCjaNl2tEm4syyBF5E71p3xZpJBes6V0Arz+z0EnWx+lBv
-         8UUK0jlBojaZaf1d2OX1fjPdW9L2Av3/MO42qTJQ+p2j8015LLoNvNJPtWFNeFaCzw+l
-         BEKA==
-X-Gm-Message-State: AOAM531RepU54F0BAQ6/FgHfkyxm3CAB5UZdy7/LIX79GJZwyioXzCQy
-        m7jr208jbUQOKVWWmNEkVMa9QicVgT3rtbeD
-X-Google-Smtp-Source: ABdhPJzhqcBz/L8csTyTr7EEuoSCzaq9l0LNoKzELJvL4PkwN+jL3oaMn7PW7LlTGSzU9vU5JdDqZw==
-X-Received: by 2002:a17:902:8644:b0:153:9f01:2090 with SMTP id y4-20020a170902864400b001539f012090mr5925967plt.101.1649205390463;
-        Tue, 05 Apr 2022 17:36:30 -0700 (PDT)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id t15-20020a63b70f000000b00381510608e9sm14387946pgf.14.2022.04.05.17.36.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 17:36:29 -0700 (PDT)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next v3] selftests/bpf: Fix issues in parse_num_list()
-Date:   Wed,  6 Apr 2022 08:36:22 +0800
-Message-Id: <20220406003622.73539-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <CAEf4BzbSbMMoZM-3fkhZnbxk0bu5ySDO782WGbgcKUzs-u6N_Q@mail.gmail.com>
-References: <CAEf4BzbSbMMoZM-3fkhZnbxk0bu5ySDO782WGbgcKUzs-u6N_Q@mail.gmail.com>
+        Wed, 6 Apr 2022 00:25:42 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D64B2C;
+        Tue,  5 Apr 2022 17:34:08 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KY59V1grWz4xY1;
+        Wed,  6 Apr 2022 10:34:06 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649205247;
+        bh=QqgDmsFvSYcgWUESimdJ8L2VbsOjXioSTdWO5yoK+sc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=rLk73Ha/H0NukY3HR2rCuYtPehs1SnGxxMUO12TO+iC+BdxvU/NtX8VODTKI18Ire
+         dHn7QTHafzv+jbWMpLJlUZW559uyF6T8bxANz9yOXmvZhQnnieKsvog0Yys9f37AV6
+         ARfxov3RnOGAke0TatW4FcMNxZ1IxleoVEnMXdUtoH16ANL0VUGWOqQqFzYXUNdgQf
+         Zd3BTmfgxZAySLkJQH5lguNtOANau84S6KSV0Q0/tLWu5CyQp+Dt2e/QA6b54ftK+n
+         aRwNLOLNGQFl6iNBdRCX87QQBsorL/n5ayAPweM5ytoWpHA6Df0xQkmwnn4qKaM/jq
+         uQYTsVdfTZPig==
+Date:   Wed, 6 Apr 2022 10:34:05 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alex Deucher <alexdeucher@gmail.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the amdgpu tree with the drm-misc tree
+Message-ID: <20220406103405.299c06b9@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/HS+hEAkeP/V.TjBE.IFp.s9";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function does not check that parsing_end is false after parsing
-argument. Thus, if the final part of the argument is something like '4-',
-which is invalid, parse_num_list() will discard it instead of returning
--EINVAL.
+--Sig_/HS+hEAkeP/V.TjBE.IFp.s9
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Before:
+Hi all,
 
- $ ./test_progs -n 2,4-
- #2 atomic_bounds:OK
- Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+Today's linux-next merge of the amdgpu tree got a conflict in:
 
-After:
+  drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
 
- $ ./test_progs -n 2,4-
- Failed to parse test numbers.
+between commit:
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+  fee2ede15542 ("drm/ttm: rework bulk move handling v5")
+
+from the drm-misc tree and commit:
+
+  184a69ca4d41 ("drm/amdgpu: separate VM PT handling into amdgpu_vm_pt.c")
+
+from the amdgpu tree.
+
+I fixed it up (I used this file from the latter and added the following
+patch) and can carry the fix as necessary. This is now fixed as far as
+linux-next is concerned, but any non trivial conflicts should be mentioned
+to your upstream maintainer when your tree is submitted for merging.
+You may also want to consider cooperating with the maintainer of the
+conflicting tree to minimise any particularly complex conflicts.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Wed, 6 Apr 2022 10:28:53 +1000
+Subject: [PATCH] fix up for "drm/ttm: rework bulk move handling v5"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
-v1 -> v2: add more details to commit message
-v2 -> v3: remove the first part of the patch
+ drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
- tools/testing/selftests/bpf/testing_helpers.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/bpf/testing_helpers.c b/tools/testing/selftests/bpf/testing_helpers.c
-index 795b6798ccee..87867f7a78c3 100644
---- a/tools/testing/selftests/bpf/testing_helpers.c
-+++ b/tools/testing/selftests/bpf/testing_helpers.c
-@@ -60,7 +60,7 @@ int parse_num_list(const char *s, bool **num_set, int *num_set_len)
- 			set[i] = true;
- 	}
- 
--	if (!set)
-+	if (!set || parsing_end)
- 		return -EINVAL;
- 
- 	*num_set = set;
--- 
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c b/drivers/gpu/drm/am=
+d/amdgpu/amdgpu_vm_pt.c
+index 958d7ed97882..a29933fa001f 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c
+@@ -630,7 +630,14 @@ static void amdgpu_vm_pt_free(struct amdgpu_vm_bo_base=
+ *entry)
+=20
+ 	if (!entry->bo)
+ 		return;
++
+ 	shadow =3D amdgpu_bo_shadowed(entry->bo);
++	if (shadow) {
++		ttm_bo_set_bulk_move(&shadow->tbo, NULL);
++		amdgpu_bo_unref(&shadow);
++	}
++
++	ttm_bo_set_bulk_move(&entry->bo->tbo, NULL);
+ 	entry->bo->vm_bo =3D NULL;
+ 	list_del(&entry->vm_status);
+ 	amdgpu_bo_unref(&shadow);
+@@ -653,8 +660,6 @@ static void amdgpu_vm_pt_free_dfs(struct amdgpu_device =
+*adev,
+ 	struct amdgpu_vm_pt_cursor cursor;
+ 	struct amdgpu_vm_bo_base *entry;
+=20
+-	vm->bulk_moveable =3D false;
+-
+ 	for_each_amdgpu_vm_pt_dfs_safe(adev, vm, start, cursor, entry)
+ 		amdgpu_vm_pt_free(entry);
+=20
+--=20
 2.35.1
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/HS+hEAkeP/V.TjBE.IFp.s9
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJM3/0ACgkQAVBC80lX
+0Gxogwf/exk2DdA1yDjnxFuGFmWqyrQlc0z7MS+nraBxW/sGxr0WCISIaq3m71tn
+cB46hEIgHt/Ob0BtV+gDLmTHihgasmCZ4xCdmo7MY9XmG7xcs8+VSwk7OPL1B4RN
+Bx32107zw/Qa0wce1GPJQbnGOznqqG+AfYUvLkc9LBBaKNM4pfhpnqKLfcKvil2Z
+HVSqiVinejMJNHI14fJhhFJDKAkbS8sLhDXBnTYaiEvyHMILz2fDQ/j19cxEwBre
+ac1rWzhYvCsQz4dc3J+Z8pvXL/BV3mdQ2jKDVGerrh6hiX6oyUZ7TcRNi6QU1tyk
+RWI2Sk04O8v1VBB0T2uEgLmrmCIKFA==
+=7nog
+-----END PGP SIGNATURE-----
+
+--Sig_/HS+hEAkeP/V.TjBE.IFp.s9--
