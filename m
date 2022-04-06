@@ -2,97 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B30EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF50C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236220AbiDFPnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53716 "EHLO
+        id S236331AbiDFPn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236459AbiDFPmX (ORCPT
+        with ESMTP id S236556AbiDFPmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:42:23 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471A0383A31
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:59:18 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id k21so3964133lfe.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:59:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BYXa8PFombRep9engE5rxdSOyyjwdVOdpF8aMt9fJa4=;
-        b=M59yDwO2o4yzklFtm1AMD2UQOlXvO3HNwryTxlWbl7F02YmLU8T5zlClxUwOc2LvWU
-         mTtElYRwMaTfqO1YKDeXCg3rxMzLc+MnJYO0fd5NDA9oko+X+n1IcXHnWIxXhTayWSLK
-         am2xSnSC1UAkXkUFu/IO2iBZKUEjC719BEFcq+JxjP0iJjn04b5tPrXsBhtvn/Po6RxZ
-         qfjJiJQCkcfyiDANBAH1RxIp52GBWosM9qR78rDD6C33D/MkmSNb2JcBiLzPpTamqfyU
-         L1jgRJnQ/5RBYofUF5ZuF0PLgUSNuEY0Jqb1NNrPYLSSivPFLTQU0VfaR+QNpd2dW9Xs
-         NBtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BYXa8PFombRep9engE5rxdSOyyjwdVOdpF8aMt9fJa4=;
-        b=vhCoqKXH+dghoxd8u1I4jfLN1eaFfAggYJ/KEH4EZ19MWx5UuXU6DSQwTC0r/U5Sl7
-         7JlofAA943F8kU0cyLHa+Hqhe2IDXv1qJayJc8ZUiWrZM4qjRPTdD5lc2tHDkjZpO3yJ
-         jsza4eDG+c8hXOxEGdX3vtBB10h6NwnD5SSmZ0G3zXyaorkpOmY2AtvowyHhek/0X6/M
-         TbKlQpgCrG/i5jmLZsniC7zUFkIhMe4+3UlAu/EVboSqvZoVbcROgOk2/t9xfY8dZNin
-         StX7ez51U8mI0Sx1loSSIo+xqxXnrnnkE0/iDL3rlkTD5e4zpZ8q/vRQ+h3rYNFh/KZO
-         9UUg==
-X-Gm-Message-State: AOAM531Q0xot2K/1MEQ1WeUCVHyZvp5L7ZMndFKtgwYSV9/jrCyXF4r7
-        aL7fAnRrmGUCsihi36/bdrVY2m3YUikNpNfHDxa56g==
-X-Google-Smtp-Source: ABdhPJw48YGXp2udx4i6v8NHf4/QDTBgScbw2w19gAG/EarGScJwWfKy9eKhX0mne5GSqPHsxp0AIQIYSEtf4+WPRsA=
-X-Received: by 2002:a05:6512:3f86:b0:44a:f5bf:ec9a with SMTP id
- x6-20020a0565123f8600b0044af5bfec9amr5958675lfa.490.1649249956530; Wed, 06
- Apr 2022 05:59:16 -0700 (PDT)
+        Wed, 6 Apr 2022 11:42:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A94D540763;
+        Wed,  6 Apr 2022 06:13:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE5ED60B91;
+        Wed,  6 Apr 2022 13:13:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DFFAC385A3;
+        Wed,  6 Apr 2022 13:13:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649250784;
+        bh=du2IJejuR196O731zDdWn4d1/Liadb9cNsloiQHCs+E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ri9OitEHNHWdhn5HG54c1l8SnRIksGktPa60KFxtITrmjRyVjETFe0oepSHCpEl3O
+         o6WKOjxVBFXnIj/OMJ48zZPLZzTX1Fr38vghfPBCnmr5pC7X3QAiXqAvpGvdttzey7
+         11FgdbZ6ZoI0y7Fgb15UpXIndx3B4NVY4gYHXBE1jHzyb/b1QMV0LfCQ1mrBZy/Wu2
+         TW+IX7n7T3+Y7dQZafgVBOFgA2Z0wjLxp2ncoao2qGv4YQM8JF77Ezr+fDkSn7Lg4N
+         6IowXA5cgaGbbAVFLd2ry98p3DfAB4dXXX6vyPtofcX+6WWEdhTpuy/lIZq1LwfBfP
+         slQ8GQZ6gw24A==
+Received: by pali.im (Postfix)
+        id 0EDEA775; Wed,  6 Apr 2022 15:13:01 +0200 (CEST)
+Date:   Wed, 6 Apr 2022 15:13:00 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     David Stevens <stevensd@chromium.org>, linux-pci@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC] PCI: sysfs: add bypass for config read admin check
+Message-ID: <20220406131300.7pgdcpdhexwvczsb@pali>
+References: <20220406071131.2930035-1-stevensd@google.com>
+ <Yk1KveOnYfSrUJLD@kroah.com>
 MIME-Version: 1.0
-References: <1649244204-23471-1-git-send-email-zgpeng@tencent.com>
-In-Reply-To: <1649244204-23471-1-git-send-email-zgpeng@tencent.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Wed, 6 Apr 2022 14:59:05 +0200
-Message-ID: <CAKfTPtDh7qFpdjsEBvT34WEgW8uGbdwsZnyXjq4KpAcOse9Pew@mail.gmail.com>
-Subject: Re: [PATCH] sched/fair: Return the busiest group only if imbalance is meaningful
-To:     zgpeng <zgpeng.linux@gmail.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk1KveOnYfSrUJLD@kroah.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022 at 13:23, zgpeng <zgpeng.linux@gmail.com> wrote:
->
-> When calculate_imbalance function calculate the imbalance, it may
-> actually get a negative number. In this case, it is meaningless to
+On Wednesday 06 April 2022 10:09:33 Greg Kroah-Hartman wrote:
+> On Wed, Apr 06, 2022 at 04:11:31PM +0900, David Stevens wrote:
+> > From: David Stevens <stevensd@chromium.org>
+> > 
+> > Add a moduleparam that can be set to bypass the check that limits users
+> > without CAP_SYS_ADMIN to only being able to read the first 64 bytes of
+> > the config space. This allows systems without problematic hardware to be
+> > configured to allow users without CAP_SYS_ADMIN to read PCI
+> > capabilities.
+> > 
+> > Signed-off-by: David Stevens <stevensd@chromium.org>
+> > ---
+> >  drivers/pci/pci-sysfs.c | 10 +++++++++-
+> >  1 file changed, 9 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+> > index 602f0fb0b007..162423b3c052 100644
+> > --- a/drivers/pci/pci-sysfs.c
+> > +++ b/drivers/pci/pci-sysfs.c
+> > @@ -28,10 +28,17 @@
+> >  #include <linux/pm_runtime.h>
+> >  #include <linux/msi.h>
+> >  #include <linux/of.h>
+> > +#include <linux/moduleparam.h>
+> >  #include "pci.h"
+> >  
+> >  static int sysfs_initialized;	/* = 0 */
+> >  
+> > +static bool allow_unsafe_config_reads;
+> > +module_param_named(allow_unsafe_config_reads,
+> > +		   allow_unsafe_config_reads, bool, 0644);
+> > +MODULE_PARM_DESC(allow_unsafe_config_reads,
+> > +		 "Enable full read access to config space without CAP_SYS_ADMIN.");
+> 
+> No, this is not the 1990's, please do not add system-wide module
+> parameters like this.  Especially ones that circumvent security
+> protections.
+> 
+> Also, where did you document this new option?
+> 
+> Why not just add this to a LSM instead?
+> 
+> >  /* show configuration fields */
+> >  #define pci_config_attr(field, format_string)				\
+> >  static ssize_t								\
+> > @@ -696,7 +703,8 @@ static ssize_t pci_read_config(struct file *filp, struct kobject *kobj,
+> >  	u8 *data = (u8 *) buf;
+> >  
+> >  	/* Several chips lock up trying to read undefined config space */
+> > -	if (file_ns_capable(filp, &init_user_ns, CAP_SYS_ADMIN))
+> > +	if (allow_unsafe_config_reads ||
+> > +	    file_ns_capable(filp, &init_user_ns, CAP_SYS_ADMIN))
+> 
+> This feels really dangerous.  What benifit are you getting here by
+> allowing an unpriviliged user to read this information?
 
-We should not return a negative imbalance but I suppose this can
-happen when we are using the avg_load metrics to calculate imbalance.
-Have you faced a use case where imbalance is negative ?
+Hello! This is really dangerous.
 
-> return the so-called busiest group and continue to search for the
-> busiest cpu later. Therefore, only when the imbalance is greater
-> than 0 should return the busiest group, otherwise return NULL.
->
-> Signed-off-by: zgpeng <zgpeng@tencent.com>
-> Reviewed-by: Samuel Liao <samuelliao@tencent.com>
-> ---
->  kernel/sched/fair.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 601f8bd..9f75303 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -9639,7 +9639,7 @@ static struct sched_group *find_busiest_group(struct lb_env *env)
->  force_balance:
->         /* Looks like there is an imbalance. Compute it */
->         calculate_imbalance(env, &sds);
-> -       return env->imbalance ? sds.busiest : NULL;
-> +       return env->imbalance > 0 ? sds.busiest : NULL;
->
->  out_balanced:
->         env->imbalance = 0;
-> --
-> 2.9.5
->
+Nowadays operating systems are in progress to completely disallow PCI
+config space access from userspace. So doing opposite thing and even
+enable it for unprivileged users in Linux is hazard.
+
+For example NT kernel in Windows 11 already completely disallowed access
+to PCI config space from userspace unless NT kernel is booted in mode
+for local debugging with disabled UEFI secure boot. And access in this
+case is only for highly privileged processes (debug privilege in access
+token).
+
+So... should not we move into same direction like other operating system
+and start disallowing access to PCI config space from userspace
+completely too? For example when kernel lockdown feature is enabled?
+
+In PCI config space of some devices are stored also non-PCI registers
+and accessing them was not really mean for userspace and for sure not
+for unprivileged users. On AMD x86 platforms is into PCI config space of
+some device mapped for example CPU MSR registers (at fixed offset, after
+linked listed of capabilities). Probably in Intel x86 is something
+similar too. On Synopsis Designware based PCIe HW is into PCI config
+space of Root Port mapped large range of IP configuration registers.
+
+So "This allows systems without problematic hardware" means that such
+system must be non-AMD, non-Designware and probably also non-Intel.
+
+> What userspace problem are you trying to solve here that deserves this
+> change?
+> 
+> thanks,
+> 
+> greg k-h
