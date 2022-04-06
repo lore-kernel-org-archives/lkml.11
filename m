@@ -2,76 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2648C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:45:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87CFFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiDFPrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:47:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
+        id S236653AbiDFPse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236329AbiDFPqu (ORCPT
+        with ESMTP id S236881AbiDFPrv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:46:50 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD9D219AE3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:03:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649250207; x=1680786207;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iTWnY1k7bbh1/b+9WL07ilkWgLIQ46sXRa4zPnKXvHw=;
-  b=Q4HDE74FLPEMHJsE9HCcJeZPC/rXNtJ5lW4jq1KQr1lC5VmZm5S4s4EO
-   mmmDKHoQI8yjJpTQ6AwNPtmccIZZW3zfdmNP91n/s5EztxK7jS2hHDAKo
-   ly0z6nSMf85y1koEdO40DeXVZDT5k8ses2aviXlZpUeoO2N9hLFoR6F8c
-   BzttIlSYd1/0LVMIZ2clx/QKbybxmQbAROzjvolly1MFIij1PQx6W0Nos
-   ol2uiAjNFrM1evnJwzMQgUo22erg2UjStZv60501TV47VZMY98jM7umNZ
-   tHlpvAPe0gnA11SI5MaJBahwUZsiG/4MXQANcrw9/rjZcPPE5qsPwMMa3
+        Wed, 6 Apr 2022 11:47:51 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CB03B6647;
+        Wed,  6 Apr 2022 06:05:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649250311; x=1680786311;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=zjf7X0lVKs4SoEyMp3osHnKJa+EJjosbh+q7mblHMAE=;
+  b=DAn5I6sNtpKkbG9r/NAjWptVjxqPznJQk2IGaRuOx8XyCAAxwVml7NnM
+   ySqWn8fcWul+ESpIyYStfmXsRc9RMWOIsxl+fqMG+xqSKMLkvgulQxBKB
+   V8bgX9JZmaemRRrzWEhZOFTWWdoWe8+mLYxh4C/6KF/OUryHm3isx+zjT
+   xt+4J3jbdzUO9N+Tsszc7cppVWse9wjOiNSbGm04RZzphMp+gav2sKAWI
+   SZfteNR/au4Bhy8MjD1VKB0iAd/HuxZc5aqjJuDwmF7kfbxNFQcYsQXzE
+   KuV3iIyFpgXn3Y4wvjyNZgb4XfCUlahaB/Heh3gK+9Hl8pMCdtBb2q1iy
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="324206892"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="324206892"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:03:17 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="588361010"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:03:13 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nc5I5-000EGZ-94;
-        Wed, 06 Apr 2022 16:01:41 +0300
-Date:   Wed, 6 Apr 2022 16:01:41 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Detlev Casanova <detlev.casanova@collabora.com>,
-        Mark Brown <broonie@kernel.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH v1 1/1] regulator/rpi-panel-attiny: Get rid of duplicate
- of_node assignment
-Message-ID: <Yk2PNas3YIGQLZ04@smile.fi.intel.com>
-References: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
+X-IronPort-AV: E=Sophos;i="5.90,239,1643698800"; 
+   d="scan'208";a="151730482"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Apr 2022 06:05:10 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 6 Apr 2022 06:05:09 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 6 Apr 2022 06:05:06 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>
+CC:     <alexandre.belloni@bootlin.com>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Tudor Ambarus" <tudor.ambarus@microchip.com>,
+        Mihai Sain <mihai.sain@microchip.com>
+Subject: [PATCH] ARM: dts: at91: sama7g5ek: Align the impedance of the QSPI0's HSIO and PCB lines
+Date:   Wed, 6 Apr 2022 16:05:05 +0300
+Message-ID: <20220406130505.422042-1-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 08:45:08PM +0200, Andy Shevchenko wrote:
-> GPIO library does copy the of_node from the parent device of
-> the GPIO chip, there is no need to repeat this in the individual
-> drivers. Remove these assignment all at once.
-> 
-> For the details one may look into the of_gpio_dev_init() implementation.
+The impedance of the QSPI PCB lines on the sama7g5ek is 50 Ohms.
+Align the output impedance of the QSPI0 HSIOs by setting a medium drive
+strength which corresponds to an impedance of 56 Ohms when VDD is in the
+3.0V - 3.6V range. The high drive strength setting corresponds to an
+output impedance of 42 Ohms on the QSPI0 HSIOs.
 
-Any comments on this? Can it be applied now?
+Suggested-by: Mihai Sain <mihai.sain@microchip.com>
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+---
+ arch/arm/boot/dts/at91-sama7g5ek.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/arch/arm/boot/dts/at91-sama7g5ek.dts b/arch/arm/boot/dts/at91-sama7g5ek.dts
+index 08685a10eda1..8f9643170ba3 100644
+--- a/arch/arm/boot/dts/at91-sama7g5ek.dts
++++ b/arch/arm/boot/dts/at91-sama7g5ek.dts
+@@ -655,7 +655,7 @@ pinctrl_qspi: qspi {
+ 			 <PIN_PB21__QSPI0_INT>;
+ 		bias-disable;
+ 		slew-rate = <0>;
+-		atmel,drive-strength = <ATMEL_PIO_DRVSTR_HI>;
++		atmel,drive-strength = <ATMEL_PIO_DRVSTR_ME>;
+ 	};
+ 
+ 	pinctrl_sdmmc0_default: sdmmc0_default {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
