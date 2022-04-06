@@ -2,217 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 270C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE353C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232837AbiDFTvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
+        id S233035AbiDFTvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232849AbiDFTu2 (ORCPT
+        with ESMTP id S232774AbiDFTup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:50:28 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25147127BCF
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:10:20 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id y10so3027695pfa.7
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:10:20 -0700 (PDT)
+        Wed, 6 Apr 2022 15:50:45 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD1C18649C
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:34:32 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id h11so4445540ljb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:34:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7LtKSzkUnN8oqI99/lZipJjXqpkcAstNhdyBktayhLU=;
-        b=szyYYejNiRJ9KPBM4F/rUVAjpTskMrE9UtUPw6chSBquxFQy2rNV4WB6FBFTREc2PM
-         yCvC3xibLom8551y6ZqowtIEtDorpHSETyiAWhWBNS01oCD044+A+bm4esUo9IcMQpYK
-         99qhJtMw7bRljfL8WnZqnC6QYMF1osRRMpKOdoZVQb8L4JBkhQ5lVd6jQrYU9GO3SGPS
-         LEnsaDsSTG3pMbalYhqWDfFaQd1N6cEdIVPFIb3IY0W9je9D0gyb26C/6XxDat0ek2Nh
-         6aasrKc3W6Y1/qfAiWCjaGNc9fdWkiYLYjCeJ9jazocZd9/j2jVEEytDBLimAiX97QCo
-         GSkA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HSwp1BDG0k7X/+K+RwJOW/sVCMMxMSEnJISgNBGi2bg=;
+        b=Ys/1WSnGhYSt2OK9wL+F2ZyDI0KN3bD3nkQ7cSEAfHt1sAJ+3HACDKvwFqmgSO0McZ
+         QFScanM5uUJaQB9Dg7NYmvPo2C65E+TWz5N6SYM8r9Roi/wG86Rh7LzBhbgvInT42DFQ
+         7Qn1qPwmokjVsWFL7xBCD7dR5M2pNWfz9LutvoFMBLrdy9yPU0pbuHgbnhyGep2+PxlF
+         B+WXQTlzC15jmupuOPCyOclnMpoFIGqpDpOFln7aOg1ado+Q4UuO8F1YYm+el0+4BD9G
+         8Afv9mb1mWYGKWv/eaktdDgf0tWjnHCB0QK0RS14sBPVGz+3igXdnZum3nr2wGmSxHnv
+         Op4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7LtKSzkUnN8oqI99/lZipJjXqpkcAstNhdyBktayhLU=;
-        b=4nJV4HGoC/6NXuv0O7JcE9l1/7gnkId+qUEo+3nn9UtB0MuNX3ll7PanEIDWZ0/tj6
-         g1ZFf2WxL78up7JU4jh+PuGkDechFGOgl5kD2QLZ4MO4+063TuHQiky0A0L3kZjv9nVg
-         /O05ca2VmljjnwE0L5UhUH8v6Xz2rrlO4lV926AGNVgHMYrGylF6vO+XUUTUN8v/KU52
-         cV3SYNfG8tQVG2cejv8mja/i70SIOCXZJfv9G1Q/biC+4LYjrMiIlBrIJ+Wv9woFI0/B
-         goTVBcwpODNvhTWBfANfA6Eo8EcH9jQLUfnOAxf3fWv0bf13L3AE0o6kRysrOwq2SmdM
-         Fg2Q==
-X-Gm-Message-State: AOAM533b7XGXs8idGtSgPpY32Qn0UuJs6W+ayt6X2md+m2TtcyEEv88a
-        lLqu3ELctxD6OZlEwfb39VgI0g==
-X-Google-Smtp-Source: ABdhPJwcnYR09PCjCTXsOMwrWEfpikUVJwf7Z7hTmU+S5NLdqIB/dPizVC6lvjacF7n4gg7NLQMtzg==
-X-Received: by 2002:a63:e30a:0:b0:385:fcae:d4a9 with SMTP id f10-20020a63e30a000000b00385fcaed4a9mr8191931pgh.85.1649265019331;
-        Wed, 06 Apr 2022 10:10:19 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id z2-20020aa79902000000b004fb05c04b53sm21035334pff.103.2022.04.06.10.10.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:10:18 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 17:10:15 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying
- the instruction
-Message-ID: <Yk3Jd6xAfgVoFgLc@google.com>
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-6-seanjc@google.com>
- <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
- <YkshgrUaF4+MrrXf@google.com>
- <7caee33a-da0f-00be-3195-82c3d1cd4cb4@maciej.szmigiero.name>
- <YkzxXw1Aznv4zX0a@google.com>
- <eed1cea4-409a-f03e-5c31-e82d49bb2101@maciej.szmigiero.name>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HSwp1BDG0k7X/+K+RwJOW/sVCMMxMSEnJISgNBGi2bg=;
+        b=N7PzB23zjc33DdUsb9uHBosKwona8noknznFzxjbSp+6ZodjTCKgrRA7jPNSmm81lC
+         tkBcfNffmh3T4MSUuC/53QxngKpulVsOuad3WZm4FzGNRPezEq2iFwy22BdzaSalfy4x
+         Dlu8rQr7IOcg6wstTYdel5jYf3OWJDFG7xFwnLJoGvf52umhQAsN2Rf1+XTML00vyL5J
+         mJeb2aEUXVMLFXNzJP4NHtF1hq4GzYteJ5CSPxVViEHeLSUm0MsLufb3X/GxysD0VNhJ
+         KIgRAGhmAEXnp+K2917v7NdyvXterBZFQCWIaOxFQPOGKgpeiG3jPpQbS8jnA7sd9xZO
+         8GHw==
+X-Gm-Message-State: AOAM532paex0uAPA6IdGxisHF5+lfI7v0eEg7X+unEuSonFQ6VjXjIr9
+        Q5jL9rfVTkj4VbLn3axJpTu35d16ke4B3XfXhB8wKw==
+X-Google-Smtp-Source: ABdhPJwumCsczWpIy24fNgQlHvwaiW2/ShuvoT5gCcoB1T6IdJSpe3MINoXCfDWffgbKbUzSewBdIR9qz3k8q2Uxfpw=
+X-Received: by 2002:a05:651c:b1e:b0:249:95d3:7832 with SMTP id
+ b30-20020a05651c0b1e00b0024995d37832mr6253661ljr.426.1649270070676; Wed, 06
+ Apr 2022 11:34:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eed1cea4-409a-f03e-5c31-e82d49bb2101@maciej.szmigiero.name>
+References: <20220330164306.2376085-1-pgonda@google.com> <CAL715W+S-SJwXBhYO=_T-9uAPLt6cQ-Hn+_+ehefAh6+kQ_zOA@mail.gmail.com>
+ <YkYdlfYM/FWlMqMg@google.com> <CAL715WLhy7EkJCyO7vzak3O8iw8GDRHkPF8aRtDedPXO1vx_Qw@mail.gmail.com>
+ <Yk3bSmQTspjZHUZf@google.com>
+In-Reply-To: <Yk3bSmQTspjZHUZf@google.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Wed, 6 Apr 2022 12:34:19 -0600
+Message-ID: <CAMkAt6obVDW_LFvQzUYw6v7okiNq1KAbUOMoM3bN6zeJUGg6Xw@mail.gmail.com>
+Subject: Re: [PATCH] KVM: SEV: Add cond_resched() to loop in sev_clflush_pages()
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Mingwei Zhang <mizhang@google.com>, kvm <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022, Maciej S. Szmigiero wrote:
-> On 6.04.2022 03:48, Sean Christopherson wrote:
-> > On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
-> (..)
-> > > Also, I'm not sure that even the proposed updated code above will
-> > > actually restore the L1-requested next_rip correctly on L1 -> L2
-> > > re-injection (will review once the full version is available).
-> > 
-> > Spoiler alert, it doesn't.  Save yourself the review time.  :-)
-> > 
-> > The missing piece is stashing away the injected event on nested VMRUN.  Those
-> > events don't get routed through the normal interrupt/exception injection code and
-> > so the next_rip info is lost on the subsequent #NPF.
-> > 
-> > Treating soft interrupts/exceptions like they were injected by KVM (which they
-> > are, technically) works and doesn't seem too gross.  E.g. when prepping vmcb02
-> > 
-> > 	if (svm->nrips_enabled)
-> > 		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
-> > 	else if (boot_cpu_has(X86_FEATURE_NRIPS))
-> > 		vmcb02->control.next_rip    = vmcb12_rip;
-> > 
-> > 	if (is_evtinj_soft(vmcb02->control.event_inj)) {
-> > 		svm->soft_int_injected = true;
-> > 		svm->soft_int_csbase = svm->vmcb->save.cs.base;
-> > 		svm->soft_int_old_rip = vmcb12_rip;
-> > 		if (svm->nrips_enabled)
-> > 			svm->soft_int_next_rip = svm->nested.ctl.next_rip;
-> > 		else
-> > 			svm->soft_int_next_rip = vmcb12_rip;
-> > 	}
-> > 
-> > And then the VMRUN error path just needs to clear soft_int_injected.
-> 
-> I am also a fan of parsing EVENTINJ from VMCB12 into relevant KVM
-> injection structures (much like EXITINTINFO is parsed), as I said to
-> Maxim two days ago [1].
-> Not only for software {interrupts,exceptions} but for all incoming
-> events (again, just like EXITINTINFO).
+On Wed, Apr 6, 2022 at 12:26 PM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Wed, Apr 06, 2022, Mingwei Zhang wrote:
+> > Hi Sean,
+> >
+> > > > > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> > > > > index 75fa6dd268f0..c2fe89ecdb2d 100644
+> > > > > --- a/arch/x86/kvm/svm/sev.c
+> > > > > +++ b/arch/x86/kvm/svm/sev.c
+> > > > > @@ -465,6 +465,7 @@ static void sev_clflush_pages(struct page *pages[], unsigned long npages)
+> > > > >                 page_virtual = kmap_atomic(pages[i]);
+> > > > >                 clflush_cache_range(page_virtual, PAGE_SIZE);
+> > > > >                 kunmap_atomic(page_virtual);
+> > > > > +               cond_resched();
+> > > >
+> > > > If you add cond_resched() here, the frequency (once per 4K) might be
+> > > > too high. You may want to do it once per X pages, where X could be
+> > > > something like 1G/4K?
+> > >
+> > > No, every iteration is perfectly ok.  The "cond"itional part means that this will
+> > > reschedule if and only if it actually needs to be rescheduled, e.g. if the task's
+> > > timeslice as expired.  The check for a needed reschedule is cheap, using
+> > > cond_resched() in tight-ish loops is ok and intended, e.g. KVM does a reched
+> > > check prior to enterring the guest.
+> >
+> > Double check on the code again. I think the point is not about flag
+> > checking. Obviously branch prediction could really help. The point I
+> > think is the 'call' to cond_resched(). Depending on the kernel
+> > configuration, cond_resched() may not always be inlined, at least this
+> > is my understanding so far? So if that is true, then it still might
+> > not always be the best to call cond_resched() that often.
+>
+> Eh, compared to the cost of 64 back-to-back CLFLUSHOPTs, the cost of __cond_resched()
+> is peanuts.  Even accounting for the rcu_all_qs() work, it's still dwarfed by the
+> cost of flushing data from the cache.  E.g. based on Agner Fog's wonderful uop
+> latencies[*], the actual flush time for a single page is going to be upwards of
+> 10k cycles, whereas __cond_resched() is going to well under 100 cycles in the happy
+> case of no work.  Even if those throughput numbers are off by an order of magnitude,
+> e.g. CLFLUSHOPT can complete in 15 cycles, that's still ~1k cycles.
+>
+> Peter, don't we also theoretically need cond_resched() in the loops in
+> sev_launch_update_data()?  AFAICT, there's no articifical restriction on the size
+> of the payload, i.e. the kernel is effectively relying on userspace to not update
+> large swaths of memory.
 
-Ahh, I saw that fly by, but somehow I managed to misread what you intended.
+Yea we probably do want to cond_resched() in the for loop inside of
+sev_launch_update_data(). Ithink in  sev_dbg_crypt() userspace could
+request a large number of pages to be decrypted/encrypted for
+debugging but se have a call to sev_pin_memory() in the loop so that
+will have a cond_resded() inside of __get_users_pages(). Or should we
+have a cond_resded() inside of the loop in sev_dbg_crypt() too?
 
-I like the idea of populating vcpu->arch.interrupt/exception as "injected" events.
-KVM prioritizes "injected" over other nested events, so in theory it should work
-without too much fuss.  I've ran through a variety of edge cases in my head and
-haven't found anything that would be fundamentally broken.  I think even live
-migration would work.
-
-I think I'd prefer to do that in a follow-up series so that nVMX can be converted
-at the same time?  It's a bit absurd to add the above soft int code knowing that,
-at least in theory, simply populating the right software structs would automagically
-fix the bug.  But manually handling the soft int case first would be safer in the
-sense that we'd still have a fix for the soft int case if it turns out that populating
-vcpu->arch.interrupt/exception isn't as straightfoward as it seems.
-
-> However, there is another issue related to L1 -> L2 event re-injection
-> using standard KVM event injection mechanism: it mixes the L1 injection
-> state with the L2 one.
-> 
-> Specifically for SVM:
-> * When re-injecting a NMI into L2 NMI-blocking is enabled in
-> vcpu->arch.hflags (shared between L1 and L2) and IRET intercept is
-> enabled.
-> 
-> This is incorrect, since it is L1 that is responsible for enforcing NMI
-> blocking for NMIs that it injects into its L2.
-
-Ah, I see what you're saying.  I think :-)  IIUC, we can fix this bug without any
-new flags, just skip the side effects if the NMI is being injected into L2.
-
-@@ -3420,6 +3424,10 @@ static void svm_inject_nmi(struct kvm_vcpu *vcpu)
-        struct vcpu_svm *svm = to_svm(vcpu);
-
-        svm->vmcb->control.event_inj = SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_NMI;
-+
-+       if (is_guest_mode(vcpu))
-+               return;
-+
-        vcpu->arch.hflags |= HF_NMI_MASK;
-        if (!sev_es_guest(vcpu->kvm))
-                svm_set_intercept(svm, INTERCEPT_IRET);
-
-and for nVMX:
-
-@@ -4598,6 +4598,9 @@ static void vmx_inject_nmi(struct kvm_vcpu *vcpu)
- {
-        struct vcpu_vmx *vmx = to_vmx(vcpu);
-
-+       if (is_guest_mode(vcpu))
-+               goto inject_nmi;
-+
-        if (!enable_vnmi) {
-                /*
-                 * Tracking the NMI-blocked state in software is built upon
-@@ -4619,6 +4622,7 @@ static void vmx_inject_nmi(struct kvm_vcpu *vcpu)
-                return;
-        }
-
-+inject_nmi:
-        vmcs_write32(VM_ENTRY_INTR_INFO_FIELD,
-                        INTR_TYPE_NMI_INTR | INTR_INFO_VALID_MASK | NMI_VECTOR);
-
-
-> Also, *L2* being the target of such injection definitely should not block
-> further NMIs for *L1*.
-
-Actually, it should block NMIs for L1.  From L1's perspective, the injection is
-part of VM-Entry.  That's a single gigantic instruction, thus there is no NMI window
-until VM-Entry completes from L1's perspetive.  Any exit that occurs on vectoring
-an injected event and is handled by L0 should not be visible to L1, because from
-L1's perspective it's all part of VMRUN/VMLAUNCH/VMRESUME.  So blocking new events
-because an NMI (or any event) needs to be reinjected for L2 is correct.
-
-> * When re-injecting a *hardware* IRQ into L2 GIF is checked (previously
-> even on the BUG_ON() level), while L1 should be able to inject even when
-> L2 GIF is off,
-
-Isn't that just a matter of tweaking the assertion to ignore GIF if L2 is
-active?  Hmm, or deleting the assertion altogether, it's likely doing more harm
-than good at this point.
-
-> With the code in my previous patch set I planned to use
-> exit_during_event_injection() to detect such case, but if we implement
-> VMCB12 EVENTINJ parsing we can simply add a flag that the relevant event
-> comes from L1, so its normal injection side-effects should be skipped.
-
-Do we still need a flag based on the above?  Honest question... I've been staring
-at all this for the better part of an hour and may have lost track of things.
-
-> By the way, the relevant VMX code also looks rather suspicious,
-> especially for the !enable_vnmi case.
-
-I think it's safe to say we can ignore edge cases for !enable_vnmi.  It might even
-be worth trying to remove that support again (Paolo tried years ago), IIRC the
-only Intel CPUs that don't support virtual NMIs are some funky Yonah SKUs.
-
-> Thanks,
-> Maciej
-> 
-> [1]: https://lore.kernel.org/kvm/7d67bc6f-00ac-7c07-f6c2-c41b2f0d35a1@maciej.szmigiero.name/
+>
+> [*] https://www.agner.org/optimize/instruction_tables.pdf
