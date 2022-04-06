@@ -2,79 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D028C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19CC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236356AbiDFPga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:36:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47110 "EHLO
+        id S236389AbiDFPgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236364AbiDFPgK (ORCPT
+        with ESMTP id S236342AbiDFPgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:36:10 -0400
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E1C11141
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:50:12 -0700 (PDT)
-Received: by mail-pl1-f178.google.com with SMTP id n8so1864444plh.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aPPsZoyEXy9EAC2N5qG3x7kPyndDAP9GgwcMMI/+/zg=;
-        b=yPKyjFG+pRyoMpVw0irL0ZYiN+FH3aspIwhFJEkEraHCnf6dro4sRYgPZux/bqBRV3
-         WdNXiG9XfExo+Vur5TOIQiiAH4HDBP76Z3qJ5j/UA8Gb3Id/e4zn7s7mW2aAxrZ298J7
-         UJ/l/hPDp1qDw9rf5R1oJ47Ms0iNCZuJ/+vNPLdKWU0Fd1Bb3cHmAfedjqotfupqmyj9
-         +wwex2ovMk+maTQDgzHSmBaplqIh0LZzxsG3ocv64NUUWqd4Mh5D83tBNAdh9vbYNlm1
-         FL2bDSfAmPMrf/G3OTBb9J1I9KKo0Ikv2mRI1QjQ/yEMk3jm/o729sb3N9RE+RhUvCfr
-         rRkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aPPsZoyEXy9EAC2N5qG3x7kPyndDAP9GgwcMMI/+/zg=;
-        b=eyDBPSCsPEPZ/zSTh5kpiWZ4ddsi4RMwpOvlXBIM7RdpAM/1ZmET4vzjLLg81XdbxS
-         D4svOeO9nxX9pjdlQq4JOjsqd7C5hBbjasJ8MZYtL4KanLmXu+csEKpbXY91ezJEff1F
-         FbIOa2w9jCDeAI2Y6oXu9Y1voR0RCGxZAmlDsly6KYkDmbnl6QEqmWGBKSgoYzDNYgiY
-         EXQ39/RB37Jflk4NFjWyaUi0QhTcc9k8CzFWNDNjeDxOMPvsci4OJt4mlJEEmdo21QMS
-         zDLQnsjYpTMFlCEUuzngyaop84eRHS993HQ5u1GynWTSRorK4ELafyx+bjJTdRW7af4X
-         OxMQ==
-X-Gm-Message-State: AOAM530O0RF/xwaROilrQoMNivpxtea9Z/T7IjL36vKmQ+E+IXHx1aya
-        Al581VSCYLLT8X8VwdRP53wfBQ==
-X-Google-Smtp-Source: ABdhPJwsHnAf9g/k8zv+l6CsgXyrm9yUcEPll30bEgr9FsWB6khxifAB4uf/jcBQ/NXwxScuCLooTQ==
-X-Received: by 2002:a17:90b:38d2:b0:1c6:fa94:96bb with SMTP id nn18-20020a17090b38d200b001c6fa9496bbmr9726947pjb.206.1649249289572;
-        Wed, 06 Apr 2022 05:48:09 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id na6-20020a17090b4c0600b001cac43b549esm5901496pjb.43.2022.04.06.05.48.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 05:48:08 -0700 (PDT)
-Message-ID: <edc53d1c-bdea-f070-34bf-33eefb715356@kernel.dk>
-Date:   Wed, 6 Apr 2022 06:48:07 -0600
+        Wed, 6 Apr 2022 11:36:12 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6596C44A4D2;
+        Wed,  6 Apr 2022 05:50:27 -0700 (PDT)
+X-UUID: 3e7fdf788b5b4bceaaa07a2a1ac9796e-20220406
+X-UUID: 3e7fdf788b5b4bceaaa07a2a1ac9796e-20220406
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <jia-wei.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1457013016; Wed, 06 Apr 2022 20:49:33 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 6 Apr 2022 20:49:32 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 20:49:32 +0800
+Message-ID: <bf6d645d9c8d0cc0ada530d9a3ebf27df838cc52.camel@mediatek.com>
+Subject: Re: [PATCH 2/4] dt-bindings: cpufreq: mediatek: add mt8186 cpufreq
+ dt-bindings
+From:   Jia-Wei Chang <jia-wei.chang@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <fan.chen@mediatek.com>,
+        <louis.yu@mediatek.com>, <roger.lu@mediatek.com>,
+        <Allen-yy.Lin@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <hsinyi@google.com>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
+Date:   Wed, 6 Apr 2022 20:49:32 +0800
+In-Reply-To: <YipjOXdCNUxdy+ey@robh.at.kernel.org>
+References: <20220307122151.11666-1-jia-wei.chang@mediatek.com>
+         <20220307122151.11666-3-jia-wei.chang@mediatek.com>
+         <YipjOXdCNUxdy+ey@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] io_uring: implement compat handling for
- IORING_REGISTER_IOWQ_AFF
-Content-Language: en-US
-To:     Eugene Syromiatnikov <esyr@redhat.com>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Artem Savkov <asavkov@redhat.com>
-References: <20220406115533.GA5165@asgard.redhat.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220406115533.GA5165@asgard.redhat.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/6/22 5:55 AM, Eugene Syromiatnikov wrote:
-> Similarly to the way it is done im mbind syscall.
+On Thu, 2022-03-10 at 14:44 -0600, Rob Herring wrote:
+> On Mon, Mar 07, 2022 at 08:21:49PM +0800, Tim Chang wrote:
+> > 1. add cci property.
+> > 2. add example of MT8186.
+> > 
+> > Signed-off-by: Jia-Wei Chang <
+> > jia-wei.chang@mediatek.corp-partner.google.com>
+> > ---
+> >  .../bindings/cpufreq/cpufreq-mediatek.yaml    | 41
+> > +++++++++++++++++++
+> >  1 file changed, 41 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-
+> > mediatek.yaml b/Documentation/devicetree/bindings/cpufreq/cpufreq-
+> > mediatek.yaml
+> > index 584946eb3790..d3ce17fd8fcf 100644
+> > --- a/Documentation/devicetree/bindings/cpufreq/cpufreq-
+> > mediatek.yaml
+> > +++ b/Documentation/devicetree/bindings/cpufreq/cpufreq-
+> > mediatek.yaml
+> > @@ -48,6 +48,10 @@ properties:
+> >        When absent, the voltage scaling flow is handled by
+> > hardware, hence no
+> >        software "voltage tracking" is needed.
+> >  
+> > +  cci:
+> > +    description:
+> > +      Phandle of the cci to be linked with the phandle of CPU if
+> > present.
+> 
+> We already have a binding for this. See cci-control-port.
 
-Thanks, applied.
+Hi Rob,
 
--- 
-Jens Axboe
+Pardon me for my late reply.
+
+It seems that "cci-control-port" is hardware IP from ARM.
+But mediatek-cpufreq uses MTK internal CCI hardware IP.
+I think I should keep this change here.
+
+Thanks.
+
+> 
+> > +
+> >    "#cooling-cells":
+> >      description:
+> >        For details, please refer to
 
