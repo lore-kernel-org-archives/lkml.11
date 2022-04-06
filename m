@@ -2,87 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D797C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D27C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:55:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236539AbiDFP4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43204 "EHLO
+        id S236901AbiDFP5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236819AbiDFP4V (ORCPT
+        with ESMTP id S236662AbiDFP4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:56:21 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31B25AE69C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:23:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649251396; x=1680787396;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=D/2p8w7LqfpUhFjPcN1odO+2muCpehswAzNgoS39MJw=;
-  b=Lm1soxImFAsHC9PmiZMCloU4cdO2LvyP5ac0VrpCoOO0Hdk5Sxcv4and
-   o/okgQAJvr2i79n24OP/q37BWmU3578qJmpsHiTmCT5dwVjdK0A2+jc/j
-   nJFQCqaNUfNzSzLkrHphsbKEzlr+5UFZ8DZXfH6mAAv7S2pGvnlNIWnNz
-   ZA4TRCT3WDira1eV6898Jhp2ZmllvbexYRNBBQ/zvSrUKimr9Lpl+SWCO
-   OGZkSPKh3aqnMJNttvVtO24wvQFLz+51etczq5H3m8fv5xMvRPzqgunEt
-   rXwmhoVvOBTRpadFLi4eSaNMDfIrSkn6b1BrTkYGur6W/E+aVlJCvX7nb
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="248564684"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="248564684"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:23:15 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="722511594"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:23:13 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nc5bS-000EVg-Am;
-        Wed, 06 Apr 2022 16:21:42 +0300
-Date:   Wed, 6 Apr 2022 16:21:42 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Detlev Casanova <detlev.casanova@collabora.com>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-kernel@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH v1 1/1] regulator/rpi-panel-attiny: Get rid of duplicate
- of_node assignment
-Message-ID: <Yk2T5rjR6Qn0nEFx@smile.fi.intel.com>
-References: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
- <Yk2PNas3YIGQLZ04@smile.fi.intel.com>
- <Yk2R5el6fUm4FQo5@sirena.org.uk>
+        Wed, 6 Apr 2022 11:56:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43B25A62A9;
+        Wed,  6 Apr 2022 06:22:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 563A5B823BF;
+        Wed,  6 Apr 2022 13:22:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C2DC385A7;
+        Wed,  6 Apr 2022 13:22:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649251356;
+        bh=TLyvTgiqSYYjMHPC+UQMx0cLGBFAbPTGSNIZDD5qmEE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BRcBrf+6Ca4lrZIXmPFpnu3aoqjnUw8Z6cGxpjYO6fDettqwmZVCSZOBIDjbNq5YO
+         i5dzuDYR466yR9B0fywX8ZLS4PfkvRVA3d5dgswxve5JR04uo5sl6q1eF5FS8iRgbt
+         GwlSaGapzZSML6khLQC38qPSgzf4Vcu6K0tQvETDYD/0PA4/4eAakoulI0mdHDq+UM
+         E9gaEVbSo/U0Ob/Nj1VCvMzAms8bYJaOpLrryGksX2erF/kPMQhBcBmkF5A4NqPuoz
+         Qw94e16voGukyrwBeUu708IJvfk0MmtInmz6xMhBXUBoPGp45bobwDs9thZs76CmOW
+         M53nCiiglPPcQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nc5cH-002AfU-Jz; Wed, 06 Apr 2022 14:22:33 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     alexandru.elisei@arm.com, suzuki.poulose@arm.com,
+        Yu Zhe <yuzhe@nfschina.com>, james.morse@arm.com
+Cc:     keescook@chromium.org, ricarkol@google.com, justin.he@arm.com,
+        linux-arm-kernel@lists.infradead.org, samitolvanen@google.com,
+        kernel-janitors@vger.kernel.org, catalin.marinas@arm.com,
+        kvmarm@lists.cs.columbia.edu, will@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: arm64: vgic: remove unnecessary type castings
+Date:   Wed,  6 Apr 2022 14:22:31 +0100
+Message-Id: <164925133306.3716042.8666897986559310118.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220329102059.268983-1-yuzhe@nfschina.com>
+References: <20220328103836.2829-1-yuzhe@nfschina.com> <20220329102059.268983-1-yuzhe@nfschina.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yk2R5el6fUm4FQo5@sirena.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: alexandru.elisei@arm.com, suzuki.poulose@arm.com, yuzhe@nfschina.com, james.morse@arm.com, keescook@chromium.org, ricarkol@google.com, justin.he@arm.com, linux-arm-kernel@lists.infradead.org, samitolvanen@google.com, kernel-janitors@vger.kernel.org, catalin.marinas@arm.com, kvmarm@lists.cs.columbia.edu, will@kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 02:13:09PM +0100, Mark Brown wrote:
-> On Wed, Apr 06, 2022 at 04:01:41PM +0300, Andy Shevchenko wrote:
-> > On Fri, Mar 25, 2022 at 08:45:08PM +0200, Andy Shevchenko wrote:
-> > > GPIO library does copy the of_node from the parent device of
-> > > the GPIO chip, there is no need to repeat this in the individual
-> > > drivers. Remove these assignment all at once.
-> > > 
-> > > For the details one may look into the of_gpio_dev_init() implementation.
-> > 
-> > Any comments on this? Can it be applied now?
-> 
-> Please don't send content free pings and please allow a reasonable time
-> for review.  People get busy, go on holiday, attend conferences and so 
-> on so unless there is some reason for urgency (like critical bug fixes)
-> please allow at least a couple of weeks for review.  If there have been
-> review comments then people may be waiting for those to be addressed.
+On Tue, 29 Mar 2022 03:20:59 -0700, Yu Zhe wrote:
+> remove unnecessary casts.
 
-Oops, indeed, it has been only 12 days passed with no nothing :-)
+Applied to fixes, thanks!
 
+[1/1] KVM: arm64: vgic: remove unnecessary type castings
+      commit: c707663e81ef48d279719e97fd86acef835a2671
+
+Cheers,
+
+	M.
 -- 
-With Best Regards,
-Andy Shevchenko
+Without deviation from the norm, progress is not possible.
 
 
