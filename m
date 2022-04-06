@@ -2,95 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 535EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234595AbiDFOQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50980 "EHLO
+        id S234242AbiDFORJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234600AbiDFOQf (ORCPT
+        with ESMTP id S234453AbiDFOQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:16:35 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFEE942BBA3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:49:21 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso1259276pjh.3
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 18:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/YAk+fWUU+ETvZMAahO94+Nmhx8ga8SOKFjIYbyRo2A=;
-        b=TdiuHKaZORaWPGQTvEUC06LmhEQ2Hv4BGNuu+2WWjop40q0AwxKFUcVd+SuxV1iC2f
-         fqTGkOvq2So+26pvLbXOPbG++jhun+FsmlEBb7ZVx0joMcOhwx6tONZKnOGOSWcLcAfc
-         /hqRG+wM3LeeAcZ6vYUV1vNuR2rb/C7Aet6wY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/YAk+fWUU+ETvZMAahO94+Nmhx8ga8SOKFjIYbyRo2A=;
-        b=io3wni3UFXlhh+FBegAIdj35BjEihWdWho/MozR6o97dyMd3F2/LUCaWJ7w1YpGHOO
-         VMFEJ019qthkT8XvQfGGyMLuTGcxy8yjn5JOM88OZ/4R1f5xRVhwmZknfRRQc0WPWG3X
-         bRfxFoPGngUX0GhQa8yJ7CpD1aajirBopWg38GVLLJktLc5EAVB0s0VXowrIrZ2WLDJ6
-         VljGbFPHX7cJ05g5coHZCVTHllvrBtYtPsd0b0or/2M7UuFUdcgdXy5CFhAc1mdFG++8
-         IinMCeggmLeycwUmlsLNPNZ5lnOxIhAmMgbQnmyR8ayDVlfuHhBmaEwM/vPJXbpwiXrQ
-         XZbw==
-X-Gm-Message-State: AOAM530j6DLyJpdf7FbrlcRtqzWoTaX6rp0ShSfJQj4fgFc7QBj0NixG
-        M19usrEEAUnIhRvjllAHG2WtkQ==
-X-Google-Smtp-Source: ABdhPJxRiO+aF5ru+VVliawznjkQgTfqyIcNS4jn2oAT5iUCxwlpZhGj0CMVfVLc/UCVkgor6cxH+g==
-X-Received: by 2002:a17:90a:c253:b0:1c9:ada2:f28d with SMTP id d19-20020a17090ac25300b001c9ada2f28dmr7240326pjx.17.1649209761200;
-        Tue, 05 Apr 2022 18:49:21 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:6903:769c:e1f5:9c25])
-        by smtp.gmail.com with UTF8SMTPSA id t69-20020a638148000000b0039822f39a40sm13620410pgd.25.2022.04.05.18.49.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 18:49:20 -0700 (PDT)
-From:   Brian Norris <briannorris@chromium.org>
-To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Elaine Zhang <zhangqing@rock-chips.com>,
-        linux-pm@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Brian Norris <briannorris@chromium.org>
-Subject: [RFC PATCH 0/2] rockchip / devfreq: Coordinate DRAM controller resources between ATF and kernel
-Date:   Tue,  5 Apr 2022 18:48:40 -0700
-Message-Id: <20220406014842.2771799-1-briannorris@chromium.org>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+        Wed, 6 Apr 2022 10:16:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3FA164F0C8
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:18:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649240220;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Gl9lzH2B8iXtNv+PmQrHe3XVaVHAWUpzZOHHKPgN0ss=;
+        b=IO/1qyTj1T/w+bQmj+3MHKoYKvtP7/Mebo85xQBeHeyg3rlxleORzomutqAKfGtx5UhGn8
+        QMv5OOBl7YpDb1C1H0Ra1CWFnLc+16WcZjQmFM4WX6B4Cm+eCjdrXOO2mfgYvSyop4z+BL
+        0LmAestc0sW+PKyqZ0MVjsNlFcYMYw8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-595-GKo8ae7zNg6o77SSGIC75Q-1; Wed, 06 Apr 2022 06:13:33 -0400
+X-MC-Unique: GKo8ae7zNg6o77SSGIC75Q-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 976FC1C068E6;
+        Wed,  6 Apr 2022 10:13:32 +0000 (UTC)
+Received: from tucnak.zalov.cz (unknown [10.39.195.172])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5743540316C;
+        Wed,  6 Apr 2022 10:13:32 +0000 (UTC)
+Received: from tucnak.zalov.cz (localhost [127.0.0.1])
+        by tucnak.zalov.cz (8.16.1/8.16.1) with ESMTPS id 236ADTpr1580645
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 6 Apr 2022 12:13:29 +0200
+Received: (from jakub@localhost)
+        by tucnak.zalov.cz (8.16.1/8.16.1/Submit) id 236ADSnS1580644;
+        Wed, 6 Apr 2022 12:13:28 +0200
+Date:   Wed, 6 Apr 2022 12:13:27 +0200
+From:   Jakub Jelinek <jakub@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Borislav Petkov <bp@alien8.de>, linux-toolchains@vger.kernel.org,
+        Michael Matz <matz@suse.de>,
+        Richard Biener <rguenther@suse.de>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: older gccs and case labels producing integer constants
+Message-ID: <Yk1nx2dwh6e3YFHu@tucnak>
+Reply-To: Jakub Jelinek <jakub@redhat.com>
+References: <YkwQ6+tIH8GQpuct@zn.tnic>
+ <Ykw0wzdab0ICUFvy@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <Ykw0wzdab0ICUFvy@hirez.programming.kicks-ass.net>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Rockchip RK3399, there are a few hardware resources that are shared
-between firmware (ARM Trusted Firmware) and kernel (power domain
-driver) that need to be coordinated properly for DRAM DVFS to work
-reliably. See patch 1 for plenty more description.
+On Tue, Apr 05, 2022 at 02:23:31PM +0200, Peter Zijlstra wrote:
+> On Tue, Apr 05, 2022 at 11:50:35AM +0200, Borislav Petkov wrote:
+> > Hi folks,
+> > 
+> > I'm starting to see failures like this on allmodconfig builds:
+> > 
+> > sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
+> > sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
+> >   case (((0xfc08) << 16) | (0x0101)):
+> >   ^~~~
+> > 
+> > (The case statement is a macro but it evaluates to what I have there)
+> > 
+> > and that thing fails with
+> > 
+> > $ gcc --version
+> > gcc (SUSE Linux) 7.5.0
+> > 
+> > although it doesn't have any problems building with newer compilers.
+> > 
+> > I'm presuming older gccs consider those case statements signed ints and
+> > the following fixes it:
+> > 
+> >   case ((((unsigned int)0xfc08) << 16) | (0x0101)):
+> > 
+> > and I guess we can whack the couple of occurrences but what I'm
+> > wondering is why does this work with newer gccs?
+> 
+> IIRC GCC-8 fixed a bunch of -wrapv issues. Could be this is one of them
+> I suppose.
 
-These fixes are based in part on the specification in the RK3399, and in
-part based on extrapolation and observation. Any confirmation about the
-behavior of PMU_CRU_GATEDIS_CON0, etc., is welcome.
+If we are talking about -fsanitize=shift -fwrapv, then that is
+https://gcc.gnu.org/PR68418 , i.e. it was fixed already for GCC 6.
 
-Otherwise, see the patches.
-
-Regards,
-Brian
-
-
-Brian Norris (2):
-  soc: rockchip: power-domain: Manage resource conflicts with firmware
-  PM / devfreq: rk3399_dmc: Block PMU during transitions
-
- drivers/devfreq/rk3399_dmc.c      |  13 ++++
- drivers/soc/rockchip/pm_domains.c | 118 ++++++++++++++++++++++++++++++
- include/soc/rockchip/pm_domains.h |  25 +++++++
- 3 files changed, 156 insertions(+)
- create mode 100644 include/soc/rockchip/pm_domains.h
-
--- 
-2.35.1.1094.g7c7d902a7c-goog
+	Jakub
 
