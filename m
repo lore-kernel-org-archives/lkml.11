@@ -2,75 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 414E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237236AbiDFQYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55212 "EHLO
+        id S237283AbiDFQY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231922AbiDFQYH (ORCPT
+        with ESMTP id S237641AbiDFQX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:24:07 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9758627D22E;
-        Wed,  6 Apr 2022 06:46:13 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KYN1j2jSLzBrvb;
-        Wed,  6 Apr 2022 19:43:21 +0800 (CST)
-Received: from dggpemm500016.china.huawei.com (7.185.36.25) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 19:47:32 +0800
-Received: from huawei.com (10.67.174.102) by dggpemm500016.china.huawei.com
- (7.185.36.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 6 Apr
- 2022 19:47:31 +0800
-From:   "GONG, Ruiqi" <gongruiqi1@huawei.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Wang Weiyang <wangweiyang2@huawei.com>
-Subject: [PATCH] net: mpls: fix memdup.cocci warning
-Date:   Wed, 6 Apr 2022 19:46:29 +0800
-Message-ID: <20220406114629.182833-1-gongruiqi1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 6 Apr 2022 12:23:29 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341AF3C8D6A;
+        Wed,  6 Apr 2022 06:46:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649252795; x=1680788795;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Ly37bf7KE1/2e2jYQWJyGiJWGtDdYuEz5soj2EbR73k=;
+  b=cPJE0XNvEiehtOo4xJ4VgzTbmDjbCma9rGl2XgVXg3BYYViPvBWu0IF2
+   oUVu0D1Gsjw4mBL21E+5PhNvT+NX9BIMgFi5w7XJdCY/o0j5CSRr21iLl
+   C0BKfCqsXJvQN7brp0RmUH9KqJpE998XbhvIZmoMXPYCpae7Qj5oisldb
+   TeptIGpmJ4bq7wdd06oMSQPkBCUdf687pCFRmVah+jjwx65vQiiixtGBX
+   hAKefV8E9LdqCWjRyevxOp4akwx1HqEvufmAspBDprrWj7YaRxi6nmqV5
+   mg+0lNrCfzmARlsK/mxn9iC5G12iVY/XVZcClo+nvvC3UWLhZQJHHG6BQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259873395"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="259873395"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:09:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="556951803"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 06 Apr 2022 06:09:54 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 6DDA212B; Wed,  6 Apr 2022 16:05:55 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Michael Walle <michael@walle.cc>
+Subject: [PATCH v5 2/4] device property: Introduce fwnode_for_each_parent_node()
+Date:   Wed,  6 Apr 2022 16:05:50 +0300
+Message-Id: <20220406130552.30930-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
+References: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.102]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500016.china.huawei.com (7.185.36.25)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simply use kmemdup instead of explicitly allocating and copying memory.
+In a few cases the functionality of fwnode_for_each_parent_node()
+is already in use. Introduce a common helper macro for it.
 
-Generated by: scripts/coccinelle/api/memdup.cocci
+It may be used by others as well in the future.
 
-Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- net/mpls/af_mpls.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+v5: new patch
+ drivers/base/property.c  | 56 +++++++++++++++++++++-------------------
+ include/linux/property.h |  9 +++++--
+ 2 files changed, 36 insertions(+), 29 deletions(-)
 
-diff --git a/net/mpls/af_mpls.c b/net/mpls/af_mpls.c
-index d6fdc5782d33..35b5f806fdda 100644
---- a/net/mpls/af_mpls.c
-+++ b/net/mpls/af_mpls.c
-@@ -1527,10 +1527,9 @@ static int mpls_ifdown(struct net_device *dev, int event)
- 					rt->rt_nh_size;
- 				struct mpls_route *orig = rt;
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index 3376d3971a93..bca9a28ce271 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -596,17 +596,17 @@ EXPORT_SYMBOL_GPL(fwnode_get_next_parent);
+  */
+ struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode)
+ {
++	struct fwnode_handle *parent;
+ 	struct device *dev;
  
--				rt = kmalloc(size, GFP_KERNEL);
-+				rt = kmemdup(orig, size, GFP_KERNEL);
- 				if (!rt)
- 					return -ENOMEM;
--				memcpy(rt, orig, size);
- 			}
+-	fwnode_handle_get(fwnode);
+-	do {
+-		fwnode = fwnode_get_next_parent(fwnode);
+-		if (!fwnode)
+-			return NULL;
++	fwnode_for_each_parent_node(fwnode, parent) {
+ 		dev = get_dev_from_fwnode(fwnode);
+-	} while (!dev);
+-	fwnode_handle_put(fwnode);
+-	return dev;
++		if (dev) {
++			fwnode_handle_put(parent);
++			return dev;
++		}
++	}
++	return NULL;
+ }
+ 
+ /**
+@@ -617,13 +617,11 @@ struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode)
+  */
+ unsigned int fwnode_count_parents(const struct fwnode_handle *fwnode)
+ {
+-	struct fwnode_handle *__fwnode;
+-	unsigned int count;
+-
+-	__fwnode = fwnode_get_parent(fwnode);
++	struct fwnode_handle *parent;
++	unsigned int count = 0;
+ 
+-	for (count = 0; __fwnode; count++)
+-		__fwnode = fwnode_get_next_parent(__fwnode);
++	fwnode_for_each_parent_node(fwnode, parent)
++		count++;
+ 
+ 	return count;
+ }
+@@ -644,15 +642,16 @@ EXPORT_SYMBOL_GPL(fwnode_count_parents);
+ struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
+ 					    unsigned int depth)
+ {
+-	fwnode_handle_get(fwnode);
++	struct fwnode_handle *parent;
+ 
+-	do {
+-		if (depth-- == 0)
+-			break;
+-		fwnode = fwnode_get_next_parent(fwnode);
+-	} while (fwnode);
++	if (depth == 0)
++		return fwnode_handle_get(fwnode);
+ 
+-	return fwnode;
++	fwnode_for_each_parent_node(fwnode, parent) {
++		if (--depth == 0)
++			return parent;
++	}
++	return NULL;
+ }
+ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
+ 
+@@ -669,17 +668,20 @@ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
+ bool fwnode_is_ancestor_of(struct fwnode_handle *test_ancestor,
+ 				  struct fwnode_handle *test_child)
+ {
++	struct fwnode_handle *parent;
++
+ 	if (IS_ERR_OR_NULL(test_ancestor))
+ 		return false;
+ 
+-	fwnode_handle_get(test_child);
+-	do {
+-		if (test_child == test_ancestor) {
+-			fwnode_handle_put(test_child);
++	if (test_child == test_ancestor)
++		return true;
++
++	fwnode_for_each_parent_node(test_child, parent) {
++		if (parent == test_ancestor) {
++			fwnode_handle_put(parent);
+ 			return true;
  		}
+-		test_child = fwnode_get_next_parent(test_child);
+-	} while (test_child);
++	}
+ 	return false;
+ }
  
+diff --git a/include/linux/property.h b/include/linux/property.h
+index 4cd4b326941f..15d6863ae962 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -83,9 +83,14 @@ struct fwnode_handle *fwnode_find_reference(const struct fwnode_handle *fwnode,
+ 
+ const char *fwnode_get_name(const struct fwnode_handle *fwnode);
+ const char *fwnode_get_name_prefix(const struct fwnode_handle *fwnode);
++
+ struct fwnode_handle *fwnode_get_parent(const struct fwnode_handle *fwnode);
+-struct fwnode_handle *fwnode_get_next_parent(
+-	struct fwnode_handle *fwnode);
++struct fwnode_handle *fwnode_get_next_parent(struct fwnode_handle *fwnode);
++
++#define fwnode_for_each_parent_node(fwnode, parent)		\
++	for (parent = fwnode_get_parent(fwnode); parent;	\
++	     parent = fwnode_get_next_parent(parent))
++
+ struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode);
+ unsigned int fwnode_count_parents(const struct fwnode_handle *fwn);
+ struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwn,
 -- 
-2.17.1
+2.35.1
 
