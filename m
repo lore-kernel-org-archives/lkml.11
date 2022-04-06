@@ -2,89 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E30FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 703F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231901AbiDFTrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51146 "EHLO
+        id S232715AbiDFTra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231789AbiDFTpx (ORCPT
+        with ESMTP id S232445AbiDFTqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:45:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4CB1DE59B;
-        Wed,  6 Apr 2022 11:09:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B891461C4B;
-        Wed,  6 Apr 2022 18:09:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B317FC385A3;
-        Wed,  6 Apr 2022 18:09:24 +0000 (UTC)
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Josef Bacik <josef@toxicpanda.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>,
-        Will Deacon <will@kernel.org>, linux-fsdevel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] Avoid live-lock in btrfs fault-in+uaccess loop
-Date:   Wed,  6 Apr 2022 19:09:19 +0100
-Message-Id: <20220406180922.1522433-1-catalin.marinas@arm.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 6 Apr 2022 15:46:31 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB16255140
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:26:23 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso3602138pjh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:26:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pwVDMj/ZX1WG0fUD7lJ3zryiamzy9jGNovg+lKD/C/M=;
+        b=C6YrU9mYfOcQyhqLWy4lavHHbqdo8FGR9wJFW/4SxXtrorfCltRsee/diqEnAVoiau
+         1/SxeNIcwKvrIfKmpMg8v/7wUedVq85YT0hwjJdbSa75IN0xvkND/ZHoqA+M5t6Q8JiK
+         gUPduAK9F0l4n2O0LC6vbisG61VXkCy7p6hB41NPARLJNEfm4wRol2riIjodg4mSUFjy
+         HB33lIVlkuYgVkFRQWtP5o+fcGVtG0aYtKkxDE1btGSm+QJ6eRAxhrjBV4NNHS5exfGu
+         Xxt4sDDP84MQfr2BhCEYIJ2kYzIF/QjyLw7QWlsmUyTlrdXvqESHBab2zmk8jSI6VTFO
+         2QAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pwVDMj/ZX1WG0fUD7lJ3zryiamzy9jGNovg+lKD/C/M=;
+        b=VYoLAU5TIRZR7LiqP+xrlcfJmFeiI2rTN5E9djNvJJPK/2vKLA2z+xPotZFvyFAWLA
+         0VprC+RlH9pExHW6oy8/aJ9BMhV7ZGz4IbRPvuk4vRIoKoyxiS2YJ0swUYlA9aptnXyV
+         n/d+YVrJ5rodEv7VPt4DZ5vhN2QlOAPGwZMxiBJ/N2iyGT3hRqQDS8+ZcP/yQp38rFM6
+         /EVdHuyss+XEtxhSqwRVNzlb65CVdbR1Ca5nSGUH3qA1PzZ7Q751NinJV9KKV9a0kOL2
+         CuDf9xb9fouusi3utLbh7/uprRtuuQZdd23DA9gJHk1iSQWkZxtaPbBesDD1K8OLwDZH
+         3TdQ==
+X-Gm-Message-State: AOAM532JLxyhU0Ehar904gjduq9Hy3aDv1VT5ri+4qoFlAimtlgQdY3y
+        fPX5gqlkWK99EXBUYTesLMRgog==
+X-Google-Smtp-Source: ABdhPJzmrogoa7gduQA1mANYSU+x/UrLrzi0hme/oj0ojF0PBDxjUArC86VBJsLd9qPAawCiLhVkDg==
+X-Received: by 2002:a17:90b:1803:b0:1c7:24c4:ab52 with SMTP id lw3-20020a17090b180300b001c724c4ab52mr11333797pjb.240.1649269582585;
+        Wed, 06 Apr 2022 11:26:22 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id v15-20020a637a0f000000b003994e32c368sm6573684pgc.1.2022.04.06.11.26.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 11:26:21 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 18:26:18 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Mingwei Zhang <mizhang@google.com>
+Cc:     Peter Gonda <pgonda@google.com>, kvm <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] KVM: SEV: Add cond_resched() to loop in
+ sev_clflush_pages()
+Message-ID: <Yk3bSmQTspjZHUZf@google.com>
+References: <20220330164306.2376085-1-pgonda@google.com>
+ <CAL715W+S-SJwXBhYO=_T-9uAPLt6cQ-Hn+_+ehefAh6+kQ_zOA@mail.gmail.com>
+ <YkYdlfYM/FWlMqMg@google.com>
+ <CAL715WLhy7EkJCyO7vzak3O8iw8GDRHkPF8aRtDedPXO1vx_Qw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL715WLhy7EkJCyO7vzak3O8iw8GDRHkPF8aRtDedPXO1vx_Qw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Apr 06, 2022, Mingwei Zhang wrote:
+> Hi Sean,
+> 
+> > > > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> > > > index 75fa6dd268f0..c2fe89ecdb2d 100644
+> > > > --- a/arch/x86/kvm/svm/sev.c
+> > > > +++ b/arch/x86/kvm/svm/sev.c
+> > > > @@ -465,6 +465,7 @@ static void sev_clflush_pages(struct page *pages[], unsigned long npages)
+> > > >                 page_virtual = kmap_atomic(pages[i]);
+> > > >                 clflush_cache_range(page_virtual, PAGE_SIZE);
+> > > >                 kunmap_atomic(page_virtual);
+> > > > +               cond_resched();
+> > >
+> > > If you add cond_resched() here, the frequency (once per 4K) might be
+> > > too high. You may want to do it once per X pages, where X could be
+> > > something like 1G/4K?
+> >
+> > No, every iteration is perfectly ok.  The "cond"itional part means that this will
+> > reschedule if and only if it actually needs to be rescheduled, e.g. if the task's
+> > timeslice as expired.  The check for a needed reschedule is cheap, using
+> > cond_resched() in tight-ish loops is ok and intended, e.g. KVM does a reched
+> > check prior to enterring the guest.
+> 
+> Double check on the code again. I think the point is not about flag
+> checking. Obviously branch prediction could really help. The point I
+> think is the 'call' to cond_resched(). Depending on the kernel
+> configuration, cond_resched() may not always be inlined, at least this
+> is my understanding so far? So if that is true, then it still might
+> not always be the best to call cond_resched() that often.
 
-I finally got around to reviving this series. However, I simplified it
-from v2 and focussed on solving the btrfs search_ioctl() problem only:
+Eh, compared to the cost of 64 back-to-back CLFLUSHOPTs, the cost of __cond_resched()
+is peanuts.  Even accounting for the rcu_all_qs() work, it's still dwarfed by the
+cost of flushing data from the cache.  E.g. based on Agner Fog's wonderful uop
+latencies[*], the actual flush time for a single page is going to be upwards of
+10k cycles, whereas __cond_resched() is going to well under 100 cycles in the happy
+case of no work.  Even if those throughput numbers are off by an order of magnitude,
+e.g. CLFLUSHOPT can complete in 15 cycles, that's still ~1k cycles.
 
-https://lore.kernel.org/r/20211201193750.2097885-1-catalin.marinas@arm.com
+Peter, don't we also theoretically need cond_resched() in the loops in
+sev_launch_update_data()?  AFAICT, there's no articifical restriction on the size
+of the payload, i.e. the kernel is effectively relying on userspace to not update
+large swaths of memory.
 
-The btrfs search_ioctl() function can potentially live-lock on arm64
-with MTE enabled due to a fault_in_writeable() + copy_to_user_nofault()
-unbounded loop. The uaccess can fault in the middle of a page (MTE tag
-check fault) even if a prior fault_in_writeable() successfully wrote to
-the beginning of that page. The btrfs loop always restarts the fault-in
-loop from the beginning of the user buffer, hence the live-lock.
-
-The series introduces fault_in_subpage_writeable() together with the
-arm64 probing counterpart and the btrfs fix.
-
-I don't think with the current kernel anything other than btrfs
-search_ioctl() can live-lock. The buffered file I/O can already cope
-with current fault_in_*() + copy_*_user() loops (the uaccess makes
-progress). Direct I/O either goes via GUP + kernel mapping access (and
-memcpy() can't fault) or, if the user buffer is not PAGE aligned, it may
-fall back to buffered I/O. So we really only care about
-fault_in_writeable(), hence this simplified series. If at some point
-we'll need to address other places, we can expand the sub-page probing
-to the other fault_in_*() functions.
-
-Thanks.
-
-Catalin Marinas (3):
-  mm: Add fault_in_subpage_writeable() to probe at sub-page granularity
-  arm64: Add support for user sub-page fault probing
-  btrfs: Avoid live-lock in search_ioctl() on hardware with sub-page
-    faults
-
- arch/Kconfig                     |  7 +++++++
- arch/arm64/Kconfig               |  1 +
- arch/arm64/include/asm/mte.h     |  1 +
- arch/arm64/include/asm/uaccess.h | 15 +++++++++++++++
- arch/arm64/kernel/mte.c          | 30 ++++++++++++++++++++++++++++++
- fs/btrfs/ioctl.c                 |  7 ++++++-
- include/linux/pagemap.h          |  1 +
- include/linux/uaccess.h          | 22 ++++++++++++++++++++++
- mm/gup.c                         | 29 +++++++++++++++++++++++++++++
- 9 files changed, 112 insertions(+), 1 deletion(-)
-
+[*] https://www.agner.org/optimize/instruction_tables.pdf
