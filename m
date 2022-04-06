@@ -2,124 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26123C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235126AbiDFOzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48652 "EHLO
+        id S235155AbiDFO41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235352AbiDFOzf (ORCPT
+        with ESMTP id S235326AbiDFO4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:55:35 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030BF27CE2E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:19:11 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id p8so1186576pfh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:19:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XgjMEhLjRT4MPAMhsdcS0Ym9ucVGsbeQUnv8qRyOX2I=;
-        b=GG33N9hgu+eD/ebEhy3Uqtw42T1KOy4AZNx8zMiQ8RNnMqDR3MrKJ0yJbDK9/zahZX
-         XtmX82g9WyruU473qtdYCzzuJtiRU5bvSltOqdS8XpnjIMfFtqtndkOjetDeT6d5nICG
-         ArTrqu2AeWHeYKaQse/8jm14/6N+2jzKs9HxS/F2IvH4VALeAE+SZsPvFjFWefv/ScOF
-         ayWSL1CW+OxpZgkOU3exCbNpR1e+35NzKgm/gbzNwD10kDdU8yuS+TO6hIXiw7MLqE54
-         kPh636J/zKiCfcJsVnKkcLXxcasLEiRxsOcCxgZ7jiYVfAOpTmBtoCYkwg2cNjdc/9fT
-         mN1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XgjMEhLjRT4MPAMhsdcS0Ym9ucVGsbeQUnv8qRyOX2I=;
-        b=00iEp3MZ5nW1nb1Z2PmmYjp9p35mXJ2IwRKGrRBh/JUT0FM+O5/0er90MWIKko1GlE
-         L4+GYgkxfNVvQwBytPnQG280RQZ3EMP8RgZpn+9gXqZkOIk0DYqTkmxmLRu/FaPQ1BO8
-         5AoXbJsR8XJriZ0hdsXwiYfyfb/xBu6L1UEyraBmbjCrBesDWC7Pt+Z6hknvmHeAWveS
-         mKxla4KSky8jXYkjR0R5HUWNla0qJPM3dXBSqcgGAqt36L91ZpVSx1gWzEqGuu9Zh2oF
-         wZE/ojg5koD3WEjA1M4Zfz91E9UWaNnuTcXFSp3NIN/YEUkOpy4X891PmHnyxJeBwaJM
-         uOzA==
-X-Gm-Message-State: AOAM531Wck32YaDdz8ycXXvUIFEn+qb5yZ+VThk5q3u3JunGd4AgwS3D
-        Zs7stFFOFJcNqtjAh/4cbQ0=
-X-Google-Smtp-Source: ABdhPJy0fFKiZnX55XY/d/G2Ja2u/Qng8hE6zvoqwunWU73cDOoodFxoYjkYZp4ZogLD3xT/xr2xew==
-X-Received: by 2002:a63:d454:0:b0:386:86:6aaa with SMTP id i20-20020a63d454000000b0038600866aaamr5248075pgj.60.1649211550460;
-        Tue, 05 Apr 2022 19:19:10 -0700 (PDT)
-Received: from 8345e2a12d0c ([159.226.95.43])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056a00229000b004fabe756ba6sm18627715pfe.54.2022.04.05.19.19.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 05 Apr 2022 19:19:10 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 02:19:05 +0000
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Stefano Stabellini <sstabellini@kernel.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Shannon Zhao <shannon.zhao@linaro.org>,
-        Julien Grall <julien.grall@arm.com>,
-        xen-devel@lists.xenproject.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm/xen: Fix refcount leak in xen_dt_guest_init
-Message-ID: <20220406021905.GA30436@8345e2a12d0c>
-References: <20220309102442.14726-1-linmq006@gmail.com>
- <alpine.DEB.2.22.394.2203111756000.3497@ubuntu-linux-20-04-desktop>
+        Wed, 6 Apr 2022 10:56:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0092A607705;
+        Wed,  6 Apr 2022 04:32:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41CB76179A;
+        Wed,  6 Apr 2022 11:32:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4941CC385A3;
+        Wed,  6 Apr 2022 11:32:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649244760;
+        bh=IQBcwFj9MqsdsNJ0kqmRqwox5Bmr/ngz6SEfMkZ1JJ4=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=Sa4xdPObrnpMA40mL0TTMsIa4EDjSiv9e/fDS6eSD2oeV87/LFHcESGSJSklK/66y
+         yFb08/DutTekWoY137FmUEIYGBRUEdkcyt2WSj7sw8UwsIEs4IoXoiwwD1Hlqb+W8d
+         eyu7iE8J1dsDC64m4rR1wJZk0ys6eDdMpCS67L3Ag3y2sHjcKwVHYLwBdgWhYkJth8
+         mSPBLazQCWGqMzBWA7Wq+VkkjG1uhISdV3WkXN8BCyxpt/io/4mSIrHsCYkrDpi6cy
+         I3FOCsSsdh3f90Eel7B2M9Y+FIs1C4FCcSI8oIg3i1bE9M9/Vqk/X5ezwUdFVwrgc8
+         UhW2DbvYUaLfA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2203111756000.3497@ubuntu-linux-20-04-desktop>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] cw1200: fix incorrect check to determine if no element
+ is
+ found in list
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220320035436.11293-1-xiam0nd.tong@gmail.com>
+References: <20220320035436.11293-1-xiam0nd.tong@gmail.com>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     pizza@shaftnet.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linville@tuxdriver.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jakobkoschel@gmail.com,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164924475461.19026.8095141212129340061.kvalo@kernel.org>
+Date:   Wed,  6 Apr 2022 11:32:38 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
 
-On Fri, Mar 11, 2022 at 06:01:11PM -0800, Stefano Stabellini wrote:
-> On Wed, 9 Mar 2022, Miaoqian Lin wrote:
-> > The of_find_compatible_node() function returns a node pointer with
-> > refcount incremented, We should use of_node_put() on it when done
-> > Add the missing of_node_put() to release the refcount.
-> > 
-> > Fixes: 9b08aaa3199a ("ARM: XEN: Move xen_early_init() before efi_init()")
-> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> The bug is here: "} else if (item) {".
 > 
-> Thanks for the patch!
+> The list iterator value will *always* be set and non-NULL by
+> list_for_each_entry(), so it is incorrect to assume that the iterator
+> value will be NULL if the list is empty or no element is found in list.
 > 
+> Use a new value 'iter' as the list iterator, while use the old value
+> 'item' as a dedicated pointer to point to the found element, which
+> 1. can fix this bug, due to now 'item' is NULL only if it's not found.
+> 2. do not need to change all the uses of 'item' after the loop.
+> 3. can also limit the scope of the list iterator 'iter' *only inside*
+>    the traversal loop by simply declaring 'iter' inside the loop in the
+>    future, as usage of the iterator outside of the list_for_each_entry
+>    is considered harmful. https://lkml.org/lkml/2022/2/17/1032
 > 
-> > ---
-> >  arch/arm/xen/enlighten.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/arch/arm/xen/enlighten.c b/arch/arm/xen/enlighten.c
-> > index ec5b082f3de6..262f45f686b6 100644
-> > --- a/arch/arm/xen/enlighten.c
-> > +++ b/arch/arm/xen/enlighten.c
-> > @@ -424,6 +424,7 @@ static void __init xen_dt_guest_init(void)
-> >  
-> >  	if (of_address_to_resource(xen_node, GRANT_TABLE_INDEX, &res)) {
-> >  		pr_err("Xen grant table region is not found\n");
-> > +		of_node_put(xen_node);
-> >  		return;
-> >  	}
-> 
-> This is adding a call to of_node_put on the error path. Shouldn't it
-> be called also in the non-error path?
+> Fixes: a910e4a94f692 ("cw1200: add driver for the ST-E CW1100 & CW1200 WLAN chipsets")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-You're right. It should be called also in the non-error path.
-I made a mistake.
+Can someone review this, please?
 
-> Also, there is another instance of of_address_to_resource being called
-> in this file (in arch_xen_unpopulated_init), does it make sense to call
-> of_node_put there too?
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220320035436.11293-1-xiam0nd.tong@gmail.com/
 
-I think so, becase device node pointer np is a local variable.
-So the reference it taken should be released in the scope.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-I look into the whole codebase for this kind of usage pattern
-($ret=of_find_compatible_node();of_address_to_resource($ret,_,_), 
-$ret is a local variable), Most of them call of_node_put() when done. 
-And document of of_find_compatible_node() also mentions
-> Return: A node pointer with refcount incremented, use
-> of_node_put() on it when done.
-
-But I am not sure, Since I am unfamiliar with other code logic.
-It better if the developers could double check. I found some 
-similar cases in arch/arm. 
