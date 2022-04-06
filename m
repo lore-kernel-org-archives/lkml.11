@@ -2,73 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F71C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 044FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232058AbiDFTim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
+        id S229935AbiDFTiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232549AbiDFThj (ORCPT
+        with ESMTP id S231926AbiDFTg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:37:39 -0400
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7638DEF793;
-        Wed,  6 Apr 2022 11:18:02 -0700 (PDT)
-Received: by mail-oi1-f172.google.com with SMTP id e189so3243939oia.8;
-        Wed, 06 Apr 2022 11:18:02 -0700 (PDT)
+        Wed, 6 Apr 2022 15:36:59 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760B71CD7C8;
+        Wed,  6 Apr 2022 10:37:43 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id j83so3129242oih.6;
+        Wed, 06 Apr 2022 10:37:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=2yVQ2J4c2VWHwJ0B/X8jXLgF6GbJE3tf471KObA5vHk=;
-        b=NzvOZtbR4boKOvMVeF3JPwcJHPU+XnXVU5sB3kfU2Si7BTFWwd6UngeYHxtd/jAhl6
-         Xt++q75rJJEJdlIWCRp2iwZmXoX0Tkx47e+yhW0JOco0e6nDFo4zz4skQxaH9VZwZnKx
-         ifvuMq+KSNivwqHAqUv1FG4VN8FSZ4yt/LDcgwba1jvx2we5wKqROWhtxYYFZJJcUyQD
-         PfpI3EtwC13Ukb5B7885GxjhbHRB9MN0Rkf8mKdmbIxe69I8nupb+ITOPXOD4YUximiX
-         xb8YocVNeaH/2tz9cnWzBqDMdDc3QQeHegdnBd5d0Ir5XyeZ8yZDNYLJbaSv/ggcg0Kv
-         heQA==
-X-Gm-Message-State: AOAM530oanjGdL7sqDEKSRRpDmlFNybb//8wdHqrrX2C2eq05Cyi2vSo
-        URE5yENM+T8obP8bmPyFiw==
-X-Google-Smtp-Source: ABdhPJyCcrX550X5kHn4yyhHay12s23rJTOjmXniu90yHWq2OuGi3MAmBp+k3YVN0ThvPyumKI1Tvg==
-X-Received: by 2002:a05:6808:2008:b0:2da:5b12:83ff with SMTP id q8-20020a056808200800b002da5b1283ffmr4036695oiw.216.1649269081713;
-        Wed, 06 Apr 2022 11:18:01 -0700 (PDT)
+        bh=bWQxY5qyzsRtNQUVZiKXQsEQFjbMtJVPZxjBRNS4c44=;
+        b=tu9pAKPhJmXFM+fWqdsFCValc43P9KWfM7AT2a6ckxloUTaHgxcM84PjJXvsl/D4jw
+         wQF0lMGbgpSYysNniqoh5hSFu8F2mb/okXPehU2c0eiTmnGrMFAEPJ6S9tb384kpVt/0
+         v/OtglcBlB5aMKFPLiBkj3js6z+pOIA+SU6aYc5igtqD5Bxcldz/48ifuG0jwt0NniEj
+         PyzAWqVRGbcKT4OUcWnPnbZDgbirOg1OyhvEyPOaTWr9iClOCun6R+Fazs8W3opdcO2s
+         61DLV9lGo38vyNz1uuw+kPbnnhN5Yo5lP+AXZ4twTLZ9SJhJz+ugdyLV7ixcT5Vv+wBN
+         JyZw==
+X-Gm-Message-State: AOAM530+xk1uG5MvvMnrUxVahhNWL71lEvzF10v9u/bkvhGsUBDfcPad
+        6pvMPwr0Cek2prx7e5VISw==
+X-Google-Smtp-Source: ABdhPJyzi7wqXV7P6dcUFRdbsbYuHW2em5UAKJdXRpZAl/Zz7UV2IAa4hpbuDLSTquX/lfirapIvOA==
+X-Received: by 2002:a05:6808:218d:b0:2da:7a2e:8607 with SMTP id be13-20020a056808218d00b002da7a2e8607mr4070817oib.145.1649266662694;
+        Wed, 06 Apr 2022 10:37:42 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id t3-20020a05680800c300b002f935a7daa9sm6676425oic.19.2022.04.06.11.18.00
+        by smtp.gmail.com with ESMTPSA id l1-20020a056830268100b005c93e625b9dsm7901393otu.46.2022.04.06.10.37.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:18:01 -0700 (PDT)
-Received: (nullmailer pid 2529145 invoked by uid 1000);
-        Wed, 06 Apr 2022 18:18:00 -0000
-Date:   Wed, 6 Apr 2022 13:18:00 -0500
+        Wed, 06 Apr 2022 10:37:42 -0700 (PDT)
+Received: (nullmailer pid 2470965 invoked by uid 1000);
+        Wed, 06 Apr 2022 17:37:41 -0000
+Date:   Wed, 6 Apr 2022 12:37:41 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [PATCH] dt-bindings: reset: uniphier-glue: Clean up clocks,
- resets, and their names using compatible string
-Message-ID: <Yk3ZWK3kazy2MD1E@robh.at.kernel.org>
-References: <1649145378-30358-1-git-send-email-hayashi.kunihiko@socionext.com>
+To:     Dongjin Yang <dj76.yang@samsung.com>
+Cc:     Moon-Ki Jun <moonki.jun@samsung.com>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: net: snps: remove duplicate name
+Message-ID: <Yk3P5b1uNln8TK60@robh.at.kernel.org>
+References: <CGME20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6>
+ <20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1649145378-30358-1-git-send-email-hayashi.kunihiko@socionext.com>
+In-Reply-To: <20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Apr 2022 16:56:18 +0900, Kunihiko Hayashi wrote:
-> Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
-> resets, and their names that can be taken by the compatible string.
+On Mon, 04 Apr 2022 11:28:57 +0900, Dongjin Yang wrote:
+> snps,dwmac has duplicated name for loongson,ls2k-dwmac and
+> loongson,ls7a-dwmac.
 > 
-> The order of clock-names and reset-names doesn't change here.
-> 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> Signed-off-by: Dongjin Yang <dj76.yang@samsung.com>
 > ---
->  .../reset/socionext,uniphier-glue-reset.yaml  | 52 ++++++++++++++-----
->  1 file changed, 38 insertions(+), 14 deletions(-)
+>  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Applied, thanks!
