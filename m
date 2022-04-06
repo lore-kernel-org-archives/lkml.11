@@ -2,102 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1778BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E17C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238298AbiDFRDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
+        id S238437AbiDFRE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238132AbiDFRDo (ORCPT
+        with ESMTP id S239042AbiDFRC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:03:44 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FD247F000
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:26:59 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id b15so2610726pfm.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:26:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BlaHLYunH8lWogXwwfxKssKzGVm1nfRpO2uSQYLbmK4=;
-        b=AycY1YVxDa54nJpBch0AKnr4fQqh/ofZJHis8/uZ7wWJOSQexNGu/TkhQXKuTapuXC
-         Oe0RTNTVoKpp9diugvrz243dFZbkcxw/T8tMGwStdU+fCK+j2Ng2TYLu1+PiyS/gV1Wv
-         pPHe7/3wW0TWlMBi2i4VpHd/+8ByOIIEpavuN48UycUL5rHNxoliDoxgMBz0j5xkeUby
-         u/USPSXfwuWum/duFYlfBDvSJTNM8tLjjX+o3LNlFaLkBgY9VeFNWY5BslVxu2rjmiln
-         9DUlBRuW4kl95PYl2NIQkQk0dmE9KaAMyNbVThROAJEVvAq7eOeUYsRJFkfyJywlASMs
-         oN7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BlaHLYunH8lWogXwwfxKssKzGVm1nfRpO2uSQYLbmK4=;
-        b=2OW4m6xPnDyZLy2CB4K24r66wf1lC4H6R+bRrrxCNP6KccTvka6ZVrsfAcWF9vgvhu
-         nXnZ598FHFcFEsGylg8rM5qzCxOMTbX6fLDyLB/LpzknGwgRFkIPoE5em5JjBXsXpctc
-         MJymjrOGHPUZQ5f6kf2nSFMPt1JfpIf2o+LB1Fpa+jLapEmTwyc2WxBHxDbLDLQxKqlN
-         r7n8GMZ4eQ/PTVALaLUyyHRWDRYLnK6VFuU+LncUXdt5W5hT11gDg80I+HsPGF6yexuR
-         t/ntDcMMa9iXD5y7rVnLoXsmSmjhr5DZjwdT2HwCEaWi1XG41mo9h1W5JEumF5KfWSOo
-         k6yg==
-X-Gm-Message-State: AOAM5322ei7SAKX8hiOaxcAubz/9DueDQmeMaamxm8mQcOD6+nAXK20T
-        1JfTphjIkOS+xLeuBrIIOJMIxQ==
-X-Google-Smtp-Source: ABdhPJwaAJtnGiRN+5RAf/ZIeJzHbeGqbgF7hWd3RWch1tryvglddvyOCvMokwbAKr+NAy0lWkH8pw==
-X-Received: by 2002:a63:f10c:0:b0:382:623b:3bb9 with SMTP id f12-20020a63f10c000000b00382623b3bb9mr7287904pgi.97.1649255218336;
-        Wed, 06 Apr 2022 07:26:58 -0700 (PDT)
-Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id k137-20020a633d8f000000b0039800918b00sm16424151pga.77.2022.04.06.07.26.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 07:26:57 -0700 (PDT)
-From:   Eric Lin <eric.lin@sifive.com>
-To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, iii@linux.ibm.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
-        Eric Lin <eric.lin@sifive.com>
-Subject: [PATCH 1/1] perf jitdump: Add riscv64 support.
-Date:   Wed,  6 Apr 2022 22:26:06 +0800
-Message-Id: <20220406142606.18464-2-eric.lin@sifive.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406142606.18464-1-eric.lin@sifive.com>
-References: <20220406142606.18464-1-eric.lin@sifive.com>
+        Wed, 6 Apr 2022 13:02:58 -0400
+Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C872E3CBC;
+        Wed,  6 Apr 2022 07:50:19 -0700 (PDT)
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 236Eo6Eu013696;
+        Wed, 6 Apr 2022 23:50:06 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 236Eo6Eu013696
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649256606;
+        bh=aJtWq7m2T0/+3KJgorXCTf2UFkplPYxZGc852IFsbgA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=uXq6RrQrwVcwoPCimSVtNVYxbuBWdZUJf3qKuZELt6GhA7lzgPa3XTHRJRQJnSPh7
+         cofzTrqc+MNVmRFZeRYkQlDA5T61630tPebbAdZUqT5gkFnEnRSgOfv/iHzrN8S9EK
+         3jpmO+6RDejwH/RFwGriDIuleSdhUxXW1Tz4l6ReI33F2md0PrmyQhohNjrE1Mr47b
+         J6Jr/74KXOm7mRGlwZ7hZAcQVfVO3sjaKh6HHAW6d3NeqsLwnkIw9ObAVOsoBiNrFr
+         4T5sk/6xYHuX62ol4OcHuxb4fawt/Rq050FcE/VzHyR+jUbNJHrPe7XqvjiLmaMBF/
+         8J1l7XQLSkBIQ==
+X-Nifty-SrcIP: [209.85.210.172]
+Received: by mail-pf1-f172.google.com with SMTP id s2so2669303pfh.6;
+        Wed, 06 Apr 2022 07:50:06 -0700 (PDT)
+X-Gm-Message-State: AOAM5339KhjgVNSHW/pUWA6InudNE6mnzl7uAfyfwr+MrJCm2JQ3Lj2V
+        Li8YX2pLAorbi5+2BYjkxApFKRD1Ic0tHOgXLmk=
+X-Google-Smtp-Source: ABdhPJzu9DVaBTPJLv31xmASpFadfhtH5LcW85UY2Jql+SNKJ10n7waejSRW7TByuFyw9dxLVG1/XYjaQ2PdOI325xs=
+X-Received: by 2002:a05:6a00:a02:b0:4fd:f9dd:5494 with SMTP id
+ p2-20020a056a000a0200b004fdf9dd5494mr9431657pfh.68.1649256605549; Wed, 06 Apr
+ 2022 07:50:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220405113359.2880241-1-masahiroy@kernel.org>
+ <20220405113359.2880241-8-masahiroy@kernel.org> <YkyjkAWb56wqL3iK@fjasle.eu> <CAK7LNATUZesT6JsyrQu-ryU+PahwSwX3UVdxnJhyYDetnR_s1A@mail.gmail.com>
+In-Reply-To: <CAK7LNATUZesT6JsyrQu-ryU+PahwSwX3UVdxnJhyYDetnR_s1A@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 6 Apr 2022 23:49:15 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASvibpEkFGJQ5MZS6O9rLpOn+RakbwKqOJwO_MqDOzbjA@mail.gmail.com>
+Message-ID: <CAK7LNASvibpEkFGJQ5MZS6O9rLpOn+RakbwKqOJwO_MqDOzbjA@mail.gmail.com>
+Subject: Re: [PATCH v2 07/10] kbuild: get rid of duplication in the first line
+ of *.mod files
+To:     Nicolas Schier <nicolas@fjasle.eu>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Eric Lin <eric.lin@sifive.com>
----
- tools/perf/arch/riscv/Makefile | 1 +
- tools/perf/util/genelf.h       | 3 +++
- 2 files changed, 4 insertions(+)
+On Wed, Apr 6, 2022 at 2:28 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> On Wed, Apr 6, 2022 at 5:16 AM Nicolas Schier <nicolas@fjasle.eu> wrote:
+> >
+> > On Tue, Apr 05, 2022 at 08:33:55PM +0900 Masahiro Yamada wrote:
+> > > The first line of *.mod lists the member objects of the module.
+> > > This list may contain duplication if the same object is added multiple
+> > > times, like this:
+> > >
+> > >   obj-m := foo.o
+> > >   foo-$(CONFIG_FOO1_X) += foo1.o
+> > >   foo-$(CONFIG_FOO1_Y) += foo1.o
+> > >   foo-$(CONFIG_FOO2_X) += foo2.o
+> > >   foo-$(CONFIG_FOO2_Y) += foo2.o
+> > >
+> > > This is probably not a big deal. As far as I know, the only small
+> > > problem is scripts/mod/sumversion.c parses the same file over again.
+> > > This can be avoided by adding $(sort ...). It has a side-effect that
+> > > sorts the objects alphabetically, but it is not a big deal, either.
+> > >
+> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > > ---
+> > >
+> > > Changes in v2:
+> > >   - new
+> > >
+> > >  scripts/Makefile.build | 4 +++-
+> > >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> > > index 3ef2373f0a57..63625877aeae 100644
+> > > --- a/scripts/Makefile.build
+> > > +++ b/scripts/Makefile.build
+> > > @@ -307,8 +307,10 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
+> > >       $(call if_changed,cc_prelink_modules)
+> > >  endif
+> > >
+> > > +multi-m-prereqs = $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)))
+> > > +
+> > >  cmd_mod = { \
+> > > -     echo $(if $($*-objs)$($*-y)$($*-m), $(addprefix $(obj)/, $($*-objs) $($*-y) $($*-m)), $(@:.mod=.o)); \
+> > > +     echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=.o)); \
+> >
+> > I'd rather expected to see $(or) here, too, as in commit 5c8166419acf ("kbuild:
+> > replace $(if A,A,B) with $(or A,B)").
+>
+> Ah, good catch.
+>
+> I fixed it up locally.
 
-diff --git a/tools/perf/arch/riscv/Makefile b/tools/perf/arch/riscv/Makefile
-index 1aa9dd772489..a8d25d005207 100644
---- a/tools/perf/arch/riscv/Makefile
-+++ b/tools/perf/arch/riscv/Makefile
-@@ -2,3 +2,4 @@ ifndef NO_DWARF
- PERF_HAVE_DWARF_REGS := 1
- endif
- PERF_HAVE_ARCH_REGS_QUERY_REGISTER_OFFSET := 1
-+PERF_HAVE_JITDUMP := 1
-diff --git a/tools/perf/util/genelf.h b/tools/perf/util/genelf.h
-index 3db3293213a9..ae138afe6c56 100644
---- a/tools/perf/util/genelf.h
-+++ b/tools/perf/util/genelf.h
-@@ -38,6 +38,9 @@ int jit_add_debug_info(Elf *e, uint64_t code_addr, void *debug, int nr_debug_ent
- #elif defined(__s390x__)
- #define GEN_ELF_ARCH	EM_S390
- #define GEN_ELF_CLASS	ELFCLASS64
-+#elif defined(__riscv) && __riscv_xlen == 64
-+#define GEN_ELF_ARCH	EM_RISCV
-+#define GEN_ELF_CLASS	ELFCLASS64
- #else
- #error "unsupported architecture"
- #endif
+
+I changed my mind.
+I will throw away 07 and 08.
+
+I will send different patches later.
+
+
+
+
+>
+> Thanks for the review.
+
+
 -- 
-2.35.1
-
+Best Regards
+Masahiro Yamada
