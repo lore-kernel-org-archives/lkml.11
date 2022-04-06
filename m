@@ -2,74 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94378C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA858C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233374AbiDFN3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
+        id S233280AbiDFNaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234419AbiDFN2h (ORCPT
+        with ESMTP id S233291AbiDFN3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:28:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6B3165A8E;
-        Tue,  5 Apr 2022 19:18:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8000BB80EEB;
-        Wed,  6 Apr 2022 02:18:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 416D7C385A0;
-        Wed,  6 Apr 2022 02:18:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649211499;
-        bh=3G8zBGA3k02iW2vlIOk2MDsWENaPWSPkarGi0setVns=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DUwdtI7jWnMPOeNTRXjeO8J+M6yKUb5QuUQiDdVXN09GKgoJCM62Na7NvzGBKRHjc
-         Vw07aOQzE/tXGK3qd+D8toUq7flwOiwA3AOcxCqMiFtIeZk/BpY9ihC2OPE+2k3Pnc
-         /m20o96RXMu4hWmukDTa3rYlYoknHxDHMRHha0f6AunOQ3xpMkODJISmccL3A6RQZR
-         ZX12u3A0vIsAORQvo2Gmep+2+3HNYq01pmmt/mzB3sUJdtk74SkoSGfNB5pMyX0SnI
-         NQwiv32LMoYOnznDzaKw6slv5csAOAaan14nwKJeORd+eoYNDqDxPyty77hRFZ8O06
-         JZ03yrXvHcDyQ==
-Date:   Wed, 6 Apr 2022 10:18:12 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Jander <david@protonic.nl>, devicetree@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v1 8/8] ARM: dts: imx6qdl-victgo: add CAN termination
- support
-Message-ID: <20220406021812.GM129381@dragon>
-References: <20220221095312.3692669-1-o.rempel@pengutronix.de>
- <20220221095312.3692669-8-o.rempel@pengutronix.de>
+        Wed, 6 Apr 2022 09:29:21 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA29E137B08
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:45:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V9JmdQB_1649213146;
+Received: from 30.225.24.86(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9JmdQB_1649213146)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 06 Apr 2022 10:45:47 +0800
+Message-ID: <1c6b191b-4a2e-0333-b0a3-f76bcd6b6515@linux.alibaba.com>
+Date:   Wed, 6 Apr 2022 10:45:46 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221095312.3692669-8-o.rempel@pengutronix.de>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [Linux-cachefs] [PATCH] fscache: Move fscache_cookies_seq_ops
+ specific code under CONFIG_PROC_FS
+Content-Language: en-US
+To:     Yue Hu <huyue2@coolpad.com>, dhowells@redhat.com,
+        linux-cachefs@redhat.com
+Cc:     linux-kernel@vger.kernel.org, zbestahu@163.com, zbestahu@gmail.com
+References: <20220402044728.9669-1-huyue2@coolpad.com>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <20220402044728.9669-1-huyue2@coolpad.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:53:12AM +0100, Oleksij Rempel wrote:
-> From: David Jander <david@protonic.nl>
-> 
-> The gpio1 0 pin is controlling CAN termination, not USB H1 VBUS. So,
-> remove wrong regulator and assign this gpio to new DT CAN termination
-> property.
-> 
-> Signed-off-by: David Jander <david@protonic.nl>
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Applied, thanks!
+
+On 4/2/22 12:47 PM, Yue Hu wrote:
+> fscache_cookies_seq_ops is only used in proc.c that is compiled under
+> enabled CONFIG_PROC_FS, so move related code under this config. The
+> same case exsits in internal.h.
+> 
+> Also, make fscache_lru_cookie_timeout static due to no user outside
+> of cookie.c.
+> 
+> Signed-off-by: Yue Hu <huyue2@coolpad.com>
+> ---
+>  fs/fscache/cookie.c   | 4 +++-
+>  fs/fscache/internal.h | 4 ++++
+>  2 files changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/fs/fscache/cookie.c b/fs/fscache/cookie.c
+> index 9bb1ab5fe5ed..9d3cf0111709 100644
+> --- a/fs/fscache/cookie.c
+> +++ b/fs/fscache/cookie.c
+> @@ -30,7 +30,7 @@ static DEFINE_SPINLOCK(fscache_cookie_lru_lock);
+>  DEFINE_TIMER(fscache_cookie_lru_timer, fscache_cookie_lru_timed_out);
+>  static DECLARE_WORK(fscache_cookie_lru_work, fscache_cookie_lru_worker);
+>  static const char fscache_cookie_states[FSCACHE_COOKIE_STATE__NR] = "-LCAIFUWRD";
+> -unsigned int fscache_lru_cookie_timeout = 10 * HZ;
+> +static unsigned int fscache_lru_cookie_timeout = 10 * HZ;
+>  
+>  void fscache_print_cookie(struct fscache_cookie *cookie, char prefix)
+>  {
+> @@ -1069,6 +1069,7 @@ void __fscache_invalidate(struct fscache_cookie *cookie,
+>  }
+>  EXPORT_SYMBOL(__fscache_invalidate);
+>  
+> +#ifdef CONFIG_PROC_FS
+>  /*
+>   * Generate a list of extant cookies in /proc/fs/fscache/cookies
+>   */
+> @@ -1145,3 +1146,4 @@ const struct seq_operations fscache_cookies_seq_ops = {
+>  	.stop   = fscache_cookies_seq_stop,
+>  	.show   = fscache_cookies_seq_show,
+>  };
+> +#endif
+
+Then I'm afraid fscache_cookies_seq_stop() and
+fscache_cookies_seq_show() also need to be wrapped with "#ifdef
+CONFIG_PROC_F" ...
+
+-- 
+Thanks,
+Jeffle
