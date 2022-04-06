@@ -2,47 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2A66C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 891DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233806AbiDFUFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
+        id S229507AbiDFUF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235839AbiDFUD4 (ORCPT
+        with ESMTP id S233572AbiDFUEZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:03:56 -0400
+        Wed, 6 Apr 2022 16:04:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC1C27C587;
-        Wed,  6 Apr 2022 11:28:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BDF286F53;
+        Wed,  6 Apr 2022 11:28:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3927761B89;
-        Wed,  6 Apr 2022 18:28:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4776AC385A3;
-        Wed,  6 Apr 2022 18:28:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A38AD61B89;
+        Wed,  6 Apr 2022 18:28:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7FB5C385A3;
+        Wed,  6 Apr 2022 18:28:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269684;
-        bh=D7zWcree4wrkW9PxMZGiVr2Pt1StTq4M2uLNQXZ56w8=;
+        s=korg; t=1649269701;
+        bh=yaUyPPEw7sVJJEQquPNAOiyO1/DjZWJahlZiljRNwOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d3p6VZdeYObSIbhadP3kuqwbWKYWMBn2Evvwf9CI3epOouLbLLOz9TeTkkCa5cMfJ
-         VHLVR98aTamVVmJLenjMdqfb43J9kFIpj7ydswexnj7AzV/KpP6pSMwGTM/CyWJiIN
-         bWOuloK2qj4v9tFCYk1ygkMBoCZEj44KS6czbi6s=
+        b=1IbVv9RvMqbT0P1Pt1qTGj3xTw52sIbRrua/q3mgyRrukNczHa/OQXgYiuHOynGL9
+         knGakJxqwINXJG47ViPz3mNXHYa8lPTuh+ke9Pyib/CdjxkutaGg6ZMVj/VKjn2MbO
+         KgSjQUIJJONfTDgDkNVkd3s7Jmmd1avdp5x+rT9w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Dave Martin <dave.martin@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 06/43] arm64: capabilities: Move errata processing code
-Date:   Wed,  6 Apr 2022 20:26:15 +0200
-Message-Id: <20220406182436.864812555@linuxfoundation.org>
+        stable@vger.kernel.org, James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 39/43] KVM: arm64: Add templates for BHB mitigation sequences
+Date:   Wed,  6 Apr 2022 20:26:48 +0200
+Message-Id: <20220406182437.814721153@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
 References: <20220406182436.675069715@linuxfoundation.org>
@@ -54,163 +47,225 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
+From: James Morse <james.morse@arm.com>
 
-[ Upstream commit 1e89baed5d50d2b8d9fd420830902570270703f1 ]
+KVM writes the Spectre-v2 mitigation template at the beginning of each
+vector when a CPU requires a specific sequence to run.
 
-We have errata work around processing code in cpu_errata.c,
-which calls back into helpers defined in cpufeature.c. Now
-that we are going to make the handling of capabilities
-generic, by adding the information to each capability,
-move the errata work around specific processing code.
-No functional changes.
+Because the template is copied, it can not be modified by the alternatives
+at runtime. As the KVM template code is intertwined with the bp-hardening
+callbacks, all templates must have a bp-hardening callback.
 
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Marc Zyngier <marc.zyngier@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Dave Martin <dave.martin@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Add templates for calling ARCH_WORKAROUND_3 and one for each value of K
+in the brancy-loop. Identify these sequences by a new parameter
+template_start, and add a copy of install_bp_hardening_cb() that is able to
+install them.
+
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/cpufeature.h |    7 -----
- arch/arm64/kernel/cpu_errata.c      |   33 ---------------------------
- arch/arm64/kernel/cpufeature.c      |   43 +++++++++++++++++++++++++++++++++---
- 3 files changed, 40 insertions(+), 43 deletions(-)
+ arch/arm64/include/asm/cpucaps.h |    3 +
+ arch/arm64/include/asm/kvm_mmu.h |    2 -
+ arch/arm64/include/asm/mmu.h     |    6 +++
+ arch/arm64/kernel/bpi.S          |   50 +++++++++++++++++++++++++++
+ arch/arm64/kernel/cpu_errata.c   |   71 +++++++++++++++++++++++++++++++++++++--
+ 5 files changed, 128 insertions(+), 4 deletions(-)
 
---- a/arch/arm64/include/asm/cpufeature.h
-+++ b/arch/arm64/include/asm/cpufeature.h
-@@ -200,15 +200,8 @@ static inline bool id_aa64pfr0_32bit_el0
- }
+--- a/arch/arm64/include/asm/cpucaps.h
++++ b/arch/arm64/include/asm/cpucaps.h
+@@ -39,7 +39,8 @@
+ #define ARM64_SSBD				18
+ #define ARM64_MISMATCHED_CACHE_TYPE		19
+ #define ARM64_WORKAROUND_1188873		20
++#define ARM64_SPECTRE_BHB			21
  
- void __init setup_cpu_features(void);
--
--void update_cpu_capabilities(const struct arm64_cpu_capabilities *caps,
--			    const char *info);
--void enable_cpu_capabilities(const struct arm64_cpu_capabilities *caps);
- void check_local_cpu_capabilities(void);
+-#define ARM64_NCAPS				21
++#define ARM64_NCAPS				22
  
--void update_cpu_errata_workarounds(void);
--void __init enable_errata_workarounds(void);
--void verify_local_cpu_errata_workarounds(void);
+ #endif /* __ASM_CPUCAPS_H */
+--- a/arch/arm64/include/asm/kvm_mmu.h
++++ b/arch/arm64/include/asm/kvm_mmu.h
+@@ -362,7 +362,7 @@ static inline void *kvm_get_hyp_vector(v
+ 	struct bp_hardening_data *data = arm64_get_bp_hardening_data();
+ 	void *vect = kvm_ksym_ref(__kvm_hyp_vector);
  
- u64 read_system_reg(u32 id);
+-	if (data->fn) {
++	if (data->template_start) {
+ 		vect = __bp_harden_hyp_vecs_start +
+ 		       data->hyp_vectors_slot * SZ_2K;
  
+--- a/arch/arm64/include/asm/mmu.h
++++ b/arch/arm64/include/asm/mmu.h
+@@ -45,6 +45,12 @@ typedef void (*bp_hardening_cb_t)(void);
+ struct bp_hardening_data {
+ 	int			hyp_vectors_slot;
+ 	bp_hardening_cb_t	fn;
++
++	/*
++	 * template_start is only used by the BHB mitigation to identify the
++	 * hyp_vectors_slot sequence.
++	 */
++	const char *template_start;
+ };
+ 
+ #ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
+--- a/arch/arm64/kernel/bpi.S
++++ b/arch/arm64/kernel/bpi.S
+@@ -73,3 +73,53 @@ ENTRY(__smccc_workaround_1_smc_end)
+ ENTRY(__smccc_workaround_1_hvc_start)
+ 	smccc_workaround_1	hvc
+ ENTRY(__smccc_workaround_1_hvc_end)
++
++ENTRY(__smccc_workaround_3_smc_start)
++	sub     sp, sp, #(8 * 4)
++	stp     x2, x3, [sp, #(8 * 0)]
++	stp     x0, x1, [sp, #(8 * 2)]
++	mov     w0, #ARM_SMCCC_ARCH_WORKAROUND_3
++	smc     #0
++	ldp     x2, x3, [sp, #(8 * 0)]
++	ldp     x0, x1, [sp, #(8 * 2)]
++	add     sp, sp, #(8 * 4)
++ENTRY(__smccc_workaround_3_smc_end)
++
++ENTRY(__spectre_bhb_loop_k8_start)
++	sub     sp, sp, #(8 * 2)
++	stp     x0, x1, [sp, #(8 * 0)]
++	mov     x0, #8
++2:	b       . + 4
++	subs    x0, x0, #1
++	b.ne    2b
++	dsb     nsh
++	isb
++	ldp     x0, x1, [sp, #(8 * 0)]
++	add     sp, sp, #(8 * 2)
++ENTRY(__spectre_bhb_loop_k8_end)
++
++ENTRY(__spectre_bhb_loop_k24_start)
++	sub     sp, sp, #(8 * 2)
++	stp     x0, x1, [sp, #(8 * 0)]
++	mov     x0, #24
++2:	b       . + 4
++	subs    x0, x0, #1
++	b.ne    2b
++	dsb     nsh
++	isb
++	ldp     x0, x1, [sp, #(8 * 0)]
++	add     sp, sp, #(8 * 2)
++ENTRY(__spectre_bhb_loop_k24_end)
++
++ENTRY(__spectre_bhb_loop_k32_start)
++	sub     sp, sp, #(8 * 2)
++	stp     x0, x1, [sp, #(8 * 0)]
++	mov     x0, #32
++2:	b       . + 4
++	subs    x0, x0, #1
++	b.ne    2b
++	dsb     nsh
++	isb
++	ldp     x0, x1, [sp, #(8 * 0)]
++	add     sp, sp, #(8 * 2)
++ENTRY(__spectre_bhb_loop_k32_end)
 --- a/arch/arm64/kernel/cpu_errata.c
 +++ b/arch/arm64/kernel/cpu_errata.c
-@@ -512,36 +512,3 @@ const struct arm64_cpu_capabilities arm6
+@@ -74,6 +74,14 @@ extern char __smccc_workaround_1_smc_sta
+ extern char __smccc_workaround_1_smc_end[];
+ extern char __smccc_workaround_1_hvc_start[];
+ extern char __smccc_workaround_1_hvc_end[];
++extern char __smccc_workaround_3_smc_start[];
++extern char __smccc_workaround_3_smc_end[];
++extern char __spectre_bhb_loop_k8_start[];
++extern char __spectre_bhb_loop_k8_end[];
++extern char __spectre_bhb_loop_k24_start[];
++extern char __spectre_bhb_loop_k24_end[];
++extern char __spectre_bhb_loop_k32_start[];
++extern char __spectre_bhb_loop_k32_end[];
+ 
+ static void __copy_hyp_vect_bpi(int slot, const char *hyp_vecs_start,
+ 				const char *hyp_vecs_end)
+@@ -87,12 +95,14 @@ static void __copy_hyp_vect_bpi(int slot
+ 	flush_icache_range((uintptr_t)dst, (uintptr_t)dst + SZ_2K);
+ }
+ 
++static DEFINE_SPINLOCK(bp_lock);
++static int last_slot = -1;
++
+ static void __install_bp_hardening_cb(bp_hardening_cb_t fn,
+ 				      const char *hyp_vecs_start,
+ 				      const char *hyp_vecs_end)
+ {
+-	static int last_slot = -1;
+-	static DEFINE_SPINLOCK(bp_lock);
++
+ 	int cpu, slot = -1;
+ 
+ 	spin_lock(&bp_lock);
+@@ -113,6 +123,7 @@ static void __install_bp_hardening_cb(bp
+ 
+ 	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
+ 	__this_cpu_write(bp_hardening_data.fn, fn);
++	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
+ 	spin_unlock(&bp_lock);
+ }
+ #else
+@@ -544,3 +555,59 @@ const struct arm64_cpu_capabilities arm6
  	{
  	}
  };
--
--/*
-- * The CPU Errata work arounds are detected and applied at boot time
-- * and the related information is freed soon after. If the new CPU requires
-- * an errata not detected at boot, fail this CPU.
-- */
--void verify_local_cpu_errata_workarounds(void)
--{
--	const struct arm64_cpu_capabilities *caps = arm64_errata;
--
--	for (; caps->matches; caps++) {
--		if (cpus_have_cap(caps->capability)) {
--			if (caps->cpu_enable)
--				caps->cpu_enable(caps);
--		} else if (caps->matches(caps, SCOPE_LOCAL_CPU)) {
--			pr_crit("CPU%d: Requires work around for %s, not detected"
--					" at boot time\n",
--				smp_processor_id(),
--				caps->desc ? : "an erratum");
--			cpu_die_early();
--		}
--	}
--}
--
--void update_cpu_errata_workarounds(void)
--{
--	update_cpu_capabilities(arm64_errata, "enabling workaround for");
--}
--
--void __init enable_errata_workarounds(void)
--{
--	enable_cpu_capabilities(arm64_errata);
--}
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -439,6 +439,9 @@ static void __init init_cpu_ftr_reg(u32
- 	reg->strict_mask = strict_mask;
- }
- 
-+extern const struct arm64_cpu_capabilities arm64_errata[];
-+static void update_cpu_errata_workarounds(void);
 +
- void __init init_cpu_features(struct cpuinfo_arm64 *info)
- {
- 	/* Before we start using the tables, make sure it is sorted */
-@@ -1066,8 +1069,8 @@ static bool __this_cpu_has_cap(const str
- 	return false;
- }
- 
--void update_cpu_capabilities(const struct arm64_cpu_capabilities *caps,
--			    const char *info)
-+static void update_cpu_capabilities(const struct arm64_cpu_capabilities *caps,
-+				    const char *info)
- {
- 	for (; caps->matches; caps++) {
- 		if (!caps->matches(caps, caps->def_scope))
-@@ -1091,7 +1094,8 @@ static int __enable_cpu_capability(void
-  * Run through the enabled capabilities and enable() it on all active
-  * CPUs
-  */
--void __init enable_cpu_capabilities(const struct arm64_cpu_capabilities *caps)
-+static void __init
-+enable_cpu_capabilities(const struct arm64_cpu_capabilities *caps)
- {
- 	for (; caps->matches; caps++) {
- 		unsigned int num = caps->capability;
-@@ -1174,6 +1178,39 @@ verify_local_cpu_features(const struct a
- }
- 
- /*
-+ * The CPU Errata work arounds are detected and applied at boot time
-+ * and the related information is freed soon after. If the new CPU requires
-+ * an errata not detected at boot, fail this CPU.
-+ */
-+static void verify_local_cpu_errata_workarounds(void)
++#ifdef CONFIG_KVM
++static const char *kvm_bhb_get_vecs_end(const char *start)
 +{
-+	const struct arm64_cpu_capabilities *caps = arm64_errata;
++	if (start == __smccc_workaround_3_smc_start)
++		return __smccc_workaround_3_smc_end;
++	else if (start == __spectre_bhb_loop_k8_start)
++		return __spectre_bhb_loop_k8_end;
++	else if (start == __spectre_bhb_loop_k24_start)
++		return __spectre_bhb_loop_k24_end;
++	else if (start == __spectre_bhb_loop_k32_start)
++		return __spectre_bhb_loop_k32_end;
 +
-+	for (; caps->matches; caps++) {
-+		if (cpus_have_cap(caps->capability)) {
-+			if (caps->cpu_enable)
-+				caps->cpu_enable(caps);
-+		} else if (caps->matches(caps, SCOPE_LOCAL_CPU)) {
-+			pr_crit("CPU%d: Requires work around for %s, not detected"
-+					" at boot time\n",
-+				smp_processor_id(),
-+				caps->desc ? : "an erratum");
-+			cpu_die_early();
++	return NULL;
++}
++
++void kvm_setup_bhb_slot(const char *hyp_vecs_start)
++{
++	int cpu, slot = -1;
++	const char *hyp_vecs_end;
++
++	if (!IS_ENABLED(CONFIG_KVM) || !is_hyp_mode_available())
++		return;
++
++	hyp_vecs_end = kvm_bhb_get_vecs_end(hyp_vecs_start);
++	if (WARN_ON_ONCE(!hyp_vecs_start || !hyp_vecs_end))
++		return;
++
++	spin_lock(&bp_lock);
++	for_each_possible_cpu(cpu) {
++		if (per_cpu(bp_hardening_data.template_start, cpu) == hyp_vecs_start) {
++			slot = per_cpu(bp_hardening_data.hyp_vectors_slot, cpu);
++			break;
 +		}
 +	}
-+}
 +
-+static void update_cpu_errata_workarounds(void)
-+{
-+	update_cpu_capabilities(arm64_errata, "enabling workaround for");
-+}
++	if (slot == -1) {
++		last_slot++;
++		BUG_ON(((__bp_harden_hyp_vecs_end - __bp_harden_hyp_vecs_start)
++			/ SZ_2K) <= last_slot);
++		slot = last_slot;
++		__copy_hyp_vect_bpi(slot, hyp_vecs_start, hyp_vecs_end);
++	}
 +
-+static void __init enable_errata_workarounds(void)
-+{
-+	enable_cpu_capabilities(arm64_errata);
++	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
++	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
++	spin_unlock(&bp_lock);
 +}
++#else
++#define __smccc_workaround_3_smc_start NULL
++#define __spectre_bhb_loop_k8_start NULL
++#define __spectre_bhb_loop_k24_start NULL
++#define __spectre_bhb_loop_k32_start NULL
 +
-+/*
-  * Run through the enabled system capabilities and enable() it on this CPU.
-  * The capabilities were decided based on the available CPUs at the boot time.
-  * Any new CPU should match the system wide status of the capability. If the
++void kvm_setup_bhb_slot(const char *hyp_vecs_start) { };
++#endif
 
 
