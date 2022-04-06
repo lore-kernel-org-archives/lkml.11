@@ -2,79 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22844C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87582C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236406AbiDFPvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S236473AbiDFPv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236503AbiDFPvG (ORCPT
+        with ESMTP id S236488AbiDFPvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:51:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF1A4DFAB5;
-        Wed,  6 Apr 2022 06:10:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68F2CB8238E;
-        Wed,  6 Apr 2022 13:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 266F7C385B5;
-        Wed,  6 Apr 2022 13:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649250614;
-        bh=WOI/3Z/LteYjoTuPn50L6YBOOhoxI8VPYVqhUpjr6xI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SMv+u/J9Hy+HsR5lkTQDVZLXutCGi0qWdrRyoFQPT7wn+9SBUGDnHPUDwiOw1HWgq
-         SK2D6OSaTHFPnxAaoAakqMJNtQ82pY/fNdDRWqa1O7wSHIFX9dOKx4ES8/xAmGOjJe
-         aWbrYsZzf1DqGwGLRiv8ZTdABs0jSGgq6jO14qFaYV0/6Pe8eTyRXkirUif67qkhaf
-         l/IsN43YEYJfAzuYarXDZYO2laORmPy0x624ayIqAAP7a/fm9GfYVD9G9EhpcXsr37
-         J52GLK5nduYHU1F8llu64uSTf5n91u7Kci7rFnCFBnNAvtM8e0vbtBUnRIz96BWUXq
-         U/P3beDnVxl7w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13165E85BCB;
-        Wed,  6 Apr 2022 13:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 6 Apr 2022 11:51:39 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D3F1587A0;
+        Wed,  6 Apr 2022 06:11:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649250693; x=1680786693;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=dhKZFE7l+zk7iULmf3peuVOi1f+iSF+Jfyv10og7Xqg=;
+  b=K+B+TTuPShb+CIS2OhycOLA0rPPpcVS8C1jshFWIZBOJVeVTK8tvvV9v
+   RzKXDAziLWqC+QXEO6hbGsq7a7u4RimL4Y6+RZoF/1Czk+nKAc09DqNL7
+   0Oyevl9S3XamrbbYZJ41mThbu9FmUwJiN6FQ4sDIQyjVzp3hBpD3W0BwS
+   AWK3iTD9gV4qv10rLHU7zen0O0zBIsY0GO3DTQHg7CCKCcrMrrwrL0bLu
+   c2sB97wGzsLzjDGCTVb57gJuYjskHqRL7RIducPPqLiMnfEvqJeRu0SxZ
+   RF7Pskf6fqxVPGaZKct15pwk78xYsXSSEVPlD4tjhoWQpDd6Sq6YsHD1w
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="324208113"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="324208113"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:09:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="697364975"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 06 Apr 2022 06:09:54 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8585B405; Wed,  6 Apr 2022 16:05:55 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Michael Walle <michael@walle.cc>
+Subject: [PATCH v5 4/4] device property: Constify fwnode APIs that uses fwnode_get_next_parent()
+Date:   Wed,  6 Apr 2022 16:05:52 +0300
+Message-Id: <20220406130552.30930-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
+References: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3] net, uapi: remove inclusion of arpa/inet.h
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164925061407.5679.9432370761204809582.git-patchwork-notify@kernel.org>
-Date:   Wed, 06 Apr 2022 13:10:14 +0000
-References: <20220404175448.46200-1-ndesaulniers@google.com>
-In-Reply-To: <20220404175448.46200-1-ndesaulniers@google.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     kuba@kernel.org, jmaloy@redhat.com, ying.xue@windriver.com,
-        arnd@arndb.de, masahiroy@kernel.org, dhowells@redhat.com,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Due to fwnode_get_next_parent() used to be called against the parameters
+of some of fwnode APIs those parameters have no const qualifier. However,
+after switching to fwnode_for_each_parent_node() API now it's possible to
+constify the parameters. Do it for good.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+The affected functions are:
 
-On Mon,  4 Apr 2022 10:54:47 -0700 you wrote:
-> In include/uapi/linux/tipc_config.h, there's a comment that it includes
-> arpa/inet.h for ntohs; but ntohs is not defined in any UAPI header. For
-> now, reuse the definitions from include/linux/byteorder/generic.h, since
-> the various conversion functions do exist in UAPI headers:
-> include/uapi/linux/byteorder/big_endian.h
-> include/uapi/linux/byteorder/little_endian.h
-> 
-> [...]
+	fwnode_get_next_parent_dev()
+	fwnode_get_nth_parent()
+	fwnode_is_ancestor_of()
 
-Here is the summary with links:
-  - [net-next,v3] net, uapi: remove inclusion of arpa/inet.h
-    https://git.kernel.org/netdev/net-next/c/1ee375d77bb9
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v5: new patch
+ drivers/base/property.c  | 7 +++----
+ include/linux/property.h | 9 ++++-----
+ 2 files changed, 7 insertions(+), 9 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index 839ee7f3ee12..79e0adfa1e24 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -594,7 +594,7 @@ EXPORT_SYMBOL_GPL(fwnode_get_next_parent);
+  * The caller of this function is expected to call put_device() on the returned
+  * device when they are done.
+  */
+-struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode)
++struct device *fwnode_get_next_parent_dev(const struct fwnode_handle *fwnode)
+ {
+ 	struct fwnode_handle *parent;
+ 	struct device *dev;
+@@ -639,8 +639,7 @@ EXPORT_SYMBOL_GPL(fwnode_count_parents);
+  * The caller is responsible for calling fwnode_handle_put() for the returned
+  * node.
+  */
+-struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
+-					    unsigned int depth)
++struct fwnode_handle *fwnode_get_nth_parent(const struct fwnode_handle *fwnode, unsigned int depth)
+ {
+ 	struct fwnode_handle *parent;
+ 
+@@ -664,7 +663,7 @@ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
+  *
+  * Returns true if @ancestor is an ancestor of @child. Otherwise, returns false.
+  */
+-bool fwnode_is_ancestor_of(struct fwnode_handle *ancestor, struct fwnode_handle *child)
++bool fwnode_is_ancestor_of(const struct fwnode_handle *ancestor, const struct fwnode_handle *child)
+ {
+ 	struct fwnode_handle *parent;
+ 
+diff --git a/include/linux/property.h b/include/linux/property.h
+index fc24d45632eb..119bf7d6a02f 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -91,11 +91,10 @@ struct fwnode_handle *fwnode_get_next_parent(struct fwnode_handle *fwnode);
+ 	for (parent = fwnode_get_parent(fwnode); parent;	\
+ 	     parent = fwnode_get_next_parent(parent))
+ 
+-struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode);
+-unsigned int fwnode_count_parents(const struct fwnode_handle *fwn);
+-struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwn,
+-					    unsigned int depth);
+-bool fwnode_is_ancestor_of(struct fwnode_handle *ancestor, struct fwnode_handle *child);
++struct device *fwnode_get_next_parent_dev(const struct fwnode_handle *fwnode);
++unsigned int fwnode_count_parents(const struct fwnode_handle *fwnode);
++struct fwnode_handle *fwnode_get_nth_parent(const struct fwnode_handle *fwnode, unsigned int depth);
++bool fwnode_is_ancestor_of(const struct fwnode_handle *ancestor, const struct fwnode_handle *child);
+ struct fwnode_handle *fwnode_get_next_child_node(
+ 	const struct fwnode_handle *fwnode, struct fwnode_handle *child);
+ struct fwnode_handle *fwnode_get_next_available_child_node(
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.35.1
 
