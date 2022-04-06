@@ -2,90 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9318C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E72C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232566AbiDFTts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48604 "EHLO
+        id S232271AbiDFTuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232691AbiDFTtJ (ORCPT
+        with ESMTP id S232417AbiDFTtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:49:09 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A64210447
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:37:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649270261; x=1680806261;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=vwP7tqcATHHZbPTdGKag4qVPI+s/ZhYdH5Hhb5WB3pI=;
-  b=j+5OrFIiKUhF+fcNunzY4ArMaiuIa32lbz8thRQ4tT0YZr+q0bDWPagA
-   c0Q9CiX2YPZixw1k4X47Kg85Cw6SpWaXsSVR+F2w0m0jQ0fb1eeCpwZ+9
-   mgN4kX7Uj0RwcV3J+kqJ7Hwpgj7hgaVwckn5In/8Fb54eL0J2gFA2crAG
-   Qc3C7ZKPdgTj885dwfvdGnk0DVHUeLEa+ab3ePExxI34nnqyLMzzBvttu
-   4no6rlblGsv7DXZ2CFk/pWpAtdObIc3mRQZtaHVXFZ2uP3pZACjkdJwuf
-   MVxR4oC/+e8Oa+bI7jgQ+Vpp7Q225dwTkErrL0DRlzALRJ2EBQlX5TjsO
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="321822244"
-X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
-   d="scan'208";a="321822244"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 11:37:41 -0700
-X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
-   d="scan'208";a="588483890"
-Received: from djiang5-mobl1.amr.corp.intel.com (HELO [10.212.19.90]) ([10.212.19.90])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 11:37:40 -0700
-Message-ID: <b19466ad-afae-7c70-cd28-73e3959c48f4@intel.com>
-Date:   Wed, 6 Apr 2022 11:37:40 -0700
+        Wed, 6 Apr 2022 15:49:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B3D518BCFD;
+        Wed,  6 Apr 2022 11:27:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7D895CE24A6;
+        Wed,  6 Apr 2022 18:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A197C385A1;
+        Wed,  6 Apr 2022 18:27:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269643;
+        bh=Litla4dQ6FJ4XIrqe0GBrFnwKM6GLSoVgCqTTyuj7+g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=u4gTRVEmtREQeHX9NOyZ2RT/psDtnsZKTL/7LTxomCqWgMft/1x4jBB7eQjCPtIgD
+         rKGXcewE4Z71iK1Y7m3uF9rmYwqMUnMeRh9ziChagWJq6+KhqqE1FLP+jFUY3AROC0
+         Kc8uBue+hR0yBjzZ79jFnkibXxpQrKAgFSjC2ERE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 17/43] arm64: arch_timer: avoid unused function warning
+Date:   Wed,  6 Apr 2022 20:26:26 +0200
+Message-Id: <20220406182437.184811467@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/4] staging: r8188eu: correct misspelling in comment
- 'tppe' -> 'type'
-Content-Language: en-US
-To:     Rebecca Mckeever <remckee0@gmail.com>, outreachy@lists.linux.dev
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <cover.1649233201.git.remckee0@gmail.com>
- <edaab7d38893e4f1cbb3c281b617c74fa91f0fe7.1649233201.git.remckee0@gmail.com>
-From:   Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <edaab7d38893e4f1cbb3c281b617c74fa91f0fe7.1649233201.git.remckee0@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Arnd Bergmann <arnd@arndb.de>
 
-On 4/6/2022 1:30 AM, Rebecca Mckeever wrote:
-> Correct spelling typo.
->
-> Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> ---
->   drivers/staging/r8188eu/core/rtw_cmd.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-> index cd20811ae152..f4a277e6b654 100644
-> --- a/drivers/staging/r8188eu/core/rtw_cmd.c
-> +++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-> @@ -1162,7 +1162,7 @@ u8 p2p_protocol_wk_cmd(struct adapter *padapter, int intCmdType)
->   	}
->   
->   	pdrvextra_cmd_parm->ec_id = P2P_PROTO_WK_CID;
-> -	pdrvextra_cmd_parm->type_size = intCmdType;	/*	As the command tppe. */
-> +	pdrvextra_cmd_parm->type_size = intCmdType;	/*	As the command type. */
+commit 040f340134751d73bd03ee92fabb992946c55b3d upstream.
 
-Nothing to do with this patch. Just saw intCmdType. Suggest another 
-patch to fix this mixed case function parameter. Maybe cmd_type instead?
+arm64_1188873_read_cntvct_el0() is protected by the correct
+CONFIG_ARM64_ERRATUM_1188873 #ifdef, but the only reference to it is
+also inside of an CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND section,
+and causes a warning if that is disabled:
+
+drivers/clocksource/arm_arch_timer.c:323:20: error: 'arm64_1188873_read_cntvct_el0' defined but not used [-Werror=unused-function]
+
+Since the erratum requires that we always apply the workaround
+in the timer driver, select that symbol as we do for SoC
+specific errata.
+
+Fixes: 95b861a4a6d9 ("arm64: arch_timer: Add workaround for ARM erratum 1188873")
+Acked-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -444,6 +444,7 @@ config ARM64_ERRATUM_1024718
+ config ARM64_ERRATUM_1188873
+ 	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
+ 	default y
++	select ARM_ARCH_TIMER_OOL_WORKAROUND
+ 	help
+ 	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
+ 
 
 
->   	pdrvextra_cmd_parm->pbuf = NULL;		/*	Must be NULL here */
->   
->   	init_h2fwcmd_w_parm_no_rsp(ph2c, pdrvextra_cmd_parm, GEN_CMD_CODE(_Set_Drv_Extra));
