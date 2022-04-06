@@ -2,85 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 767FDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A6D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235685AbiDFPNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54016 "EHLO
+        id S235887AbiDFPNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235512AbiDFPMQ (ORCPT
+        with ESMTP id S235911AbiDFPMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:12:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023FB425E22;
-        Wed,  6 Apr 2022 05:12:40 -0700 (PDT)
+        Wed, 6 Apr 2022 11:12:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086B82B4B38;
+        Wed,  6 Apr 2022 05:13:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA2F8B822B4;
-        Wed,  6 Apr 2022 12:12:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE9DCC385A1;
-        Wed,  6 Apr 2022 12:12:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86F6061990;
+        Wed,  6 Apr 2022 12:13:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0951DC385A3;
+        Wed,  6 Apr 2022 12:13:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649247128;
-        bh=2LXuV2u6lOLRBe8QZ3x4ZpZ7WwX1scejq0bAc+nswto=;
+        s=k20201202; t=1649247197;
+        bh=C5yY4TzJsHO5v5SmsV4DdCVU8KzN24skgAd7g6PA70Q=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=qKEEJeyd4F53ztiMWPerjHQBobIXpFH3ochkjmigcZav3g1ySfLgELE1Zd/hU9kS/
-         NFYSm8OO1BFUkpHvcr9CmNoYx1U6ImxdSXJfD41jcICniGvLkBLIDPpJsf/Md5XDUR
-         kWhObUXMLVb0twnCx/SZEz6QkHEy6xfbeeNxfLNnM9lvZ0iqLUrWEgtS2Z9kEmCQPR
-         QWtdZ7SoYeA3lNZtKEvtoccwIeW2l3apHcgIddUu3rKEB+rLaPZATnwYVsscWwRII1
-         AHitI4XLeUXR98Qg2jZgsxO5dzY36TKUktmQ3FILdEx+udWc3EyZAPCsgAfjjm5nXx
-         u+4sdcoPHL7qQ==
+        b=f4Sn5I8ER6nvBYLy9ptHOBkC3EiOEEHM89nbOlt0vt6afUVcuXZpzNLUmvJxXittq
+         2+2BvXchKEHZ17hbu9h6oFMYTKe4sibMtmYZ0ULB0x5Rir+W4LHX3nxEhnvrD2ZcPc
+         V2ZVrLRXHbrHdfAETQm3D6VEyDnPkRxf6K+7YwuYKFh19yUd4/LUez7hHtUCMoR6xp
+         eQOtETFdi2XHuTb8SqCxnOVfHDKH30shvaFQEUEflXMrMLMY7MfDgy1wDpqH60I04F
+         VSqyl39xqtQNgG/SBKjnbKHX0Lb7E48vnRfpEpgtbz8D33oa00P7UZcH55auL2EdkE
+         qTyb8hP/rboZQ==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtlwifi: replace usage of found with dedicated list
- iterator
+Subject: Re: [PATCH V3] b43legacy: Fix assigning negative value to unsigned
  variable
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220324072124.62458-1-jakobkoschel@gmail.com>
-References: <20220324072124.62458-1-jakobkoschel@gmail.com>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <1648203433-8736-1-git-send-email-baihaowen@meizu.com>
+References: <1648203433-8736-1-git-send-email-baihaowen@meizu.com>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux-wireless@vger.kernel.org>, <b43-dev@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Haowen Bai <baihaowen@meizu.com>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164924712364.19026.13730544282775946007.kvalo@kernel.org>
-Date:   Wed,  6 Apr 2022 12:12:05 +0000 (UTC)
+Message-ID: <164924719317.19026.17281329284987126566.kvalo@kernel.org>
+Date:   Wed,  6 Apr 2022 12:13:14 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jakob Koschel <jakobkoschel@gmail.com> wrote:
+Haowen Bai <baihaowen@meizu.com> wrote:
 
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
+> fix warning reported by smatch:
+> drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
+> warn: assigning (-772) to unsigned variable 'fval'
 > 
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
-> 
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
-> 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 
 Patch applied to wireless-next.git, thanks.
 
-a0ff2a87194a rtlwifi: replace usage of found with dedicated list iterator variable
+3f6b867559b3 b43legacy: Fix assigning negative value to unsigned variable
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220324072124.62458-1-jakobkoschel@gmail.com/
+https://patchwork.kernel.org/project/linux-wireless/patch/1648203433-8736-1-git-send-email-baihaowen@meizu.com/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
