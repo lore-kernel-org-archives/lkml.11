@@ -2,229 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4867C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73299C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231504AbiDFMgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:36:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
+        id S231782AbiDFMgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233102AbiDFMbt (ORCPT
+        with ESMTP id S234017AbiDFMdr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:31:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075C7577B6A;
-        Wed,  6 Apr 2022 01:26:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 6 Apr 2022 08:33:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40A5FE543A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:36:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649234171;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Mo+37PUldM6ZumYASfl7EbwOu7jSED8t6QGqdYfIb4E=;
+        b=dJtJjtnec2Hl/uGPz5u0UqpnmFzyNPK55PcU0D0t2hL9f59YR548JDn2ZhLS40sdOJk3U0
+        9At/IywvPcpdhXV8AcjCKXoBUBJr9fC1oG8bRDhEdgstdm4qA0h1KMVE0E8xNa5oq2/j77
+        mGvG5Om0nRLesKByahUu+mU09iCLv6w=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-355--b2tvIduNiulsavj4ZShjQ-1; Wed, 06 Apr 2022 04:36:05 -0400
+X-MC-Unique: -b2tvIduNiulsavj4ZShjQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 836DAB82186;
-        Wed,  6 Apr 2022 08:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB7CC385A1;
-        Wed,  6 Apr 2022 08:26:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649233612;
-        bh=jRhpswGEZMMLoPMbto7cwMcackH47XHQEkjraLI8sdo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kMbnD+BaTqBtjWZYu4EYeqYMC9/LJvo1T0sQ6e2UNJx1043GxFfzR7FGW4p3x8OYd
-         F02uCGou7i3VV4KY/QK6ewH0rgtdzPqEvrNVIJcrvx7cxLUd9qS34wBveoQ1pkbcPv
-         GLN27pnDd1U78ayXS4C5hQDfHR9E+gLxTpkkyboGaTPpm8SN4BKc6qKQAQYA8GP7ee
-         IupN7g21lQBTu8Q5qNsRjdn9bbIJXQBhxD5dYPU4y4poglt9Q3FdnfXyFCO3ErRVXO
-         qvGbUgBnkhwSNC78wDdYOD+pC/+Rs6gwLekQuNUThMS6NF5GQ4VDLnqHTg1EdzzWfZ
-         dL4lHWpSXPCBA==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 14/17] net/mlx5: Move IPsec file to relevant directory
-Date:   Wed,  6 Apr 2022 11:25:49 +0300
-Message-Id: <a0ca88f4d9c602c574106c0de0511803e7dcbdff.1649232994.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
-References: <cover.1649232994.git.leonro@nvidia.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 73982800882;
+        Wed,  6 Apr 2022 08:36:05 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-12-58.pek2.redhat.com [10.72.12.58])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EF36E1121314;
+        Wed,  6 Apr 2022 08:35:51 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
+        peterz@infradead.org, sgarzare@redhat.com,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH V2 2/5] virtio: use virtio_reset_device() when possible
+Date:   Wed,  6 Apr 2022 16:35:35 +0800
+Message-Id: <20220406083538.16274-3-jasowang@redhat.com>
+In-Reply-To: <20220406083538.16274-1-jasowang@redhat.com>
+References: <20220406083538.16274-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+This allows us to do common extension without duplicating codes.
 
-IPsec is part of ethernet side of mlx5 driver and needs to be placed
-in en_accel folder.
-
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/Makefile                | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c             | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h        | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c     | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h     | 2 +-
- .../mellanox/mlx5/core/{accel => en_accel}/ipsec_offload.c      | 2 +-
- .../mellanox/mlx5/core/{accel => en_accel}/ipsec_offload.h      | 0
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c   | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_stats.c  | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c               | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c                 | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c                  | 2 +-
- 12 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/net/ethernet/mellanox/mlx5/core/{accel => en_accel}/ipsec_offload.c (99%)
- rename drivers/net/ethernet/mellanox/mlx5/core/{accel => en_accel}/ipsec_offload.h (100%)
+ drivers/virtio/virtio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 9e715a1056f8..f7aafbfcdb61 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -94,7 +94,7 @@ mlx5_core-$(CONFIG_MLX5_FPGA) += fpga/cmd.o fpga/core.o fpga/conn.o fpga/sdk.o
+diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+index 75c8d560bbd3..8dde44ea044a 100644
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -430,7 +430,7 @@ int register_virtio_device(struct virtio_device *dev)
  
- mlx5_core-$(CONFIG_MLX5_EN_IPSEC) += en_accel/ipsec.o en_accel/ipsec_rxtx.o \
- 				     en_accel/ipsec_stats.o en_accel/ipsec_fs.o \
--				     accel/ipsec_offload.o
-+				     en_accel/ipsec_offload.o
+ 	/* We always start by resetting the device, in case a previous
+ 	 * driver messed it up.  This also tests that code path a little. */
+-	dev->config->reset(dev);
++	virtio_reset_device(dev);
  
- mlx5_core-$(CONFIG_MLX5_EN_TLS) += en_accel/ktls_stats.o \
- 				   en_accel/fs_tcp.o en_accel/ktls.o en_accel/ktls_txrx.o \
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 9f4ae8bc09b9..1e8700957280 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -5,7 +5,7 @@
- #include "en/txrx.h"
- #include "en/port.h"
- #include "en_accel/en_accel.h"
--#include "accel/ipsec_offload.h"
-+#include "en_accel/ipsec_offload.h"
+ 	/* Acknowledge that we've seen the device. */
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+@@ -496,7 +496,7 @@ int virtio_device_restore(struct virtio_device *dev)
  
- static bool mlx5e_rx_is_xdp(struct mlx5e_params *params,
- 			    struct mlx5e_xsk_param *xsk)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index eccc13b1338f..a0e9dade09e9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -40,7 +40,7 @@
- #include <net/xfrm.h>
- #include <linux/idr.h>
+ 	/* We always start by resetting the device, in case a previous
+ 	 * driver messed it up. */
+-	dev->config->reset(dev);
++	virtio_reset_device(dev);
  
--#include "accel/ipsec_offload.h"
-+#include "ipsec_offload.h"
- 
- #define MLX5E_IPSEC_SADB_RX_BITS 10
- #define MLX5E_IPSEC_ESN_SCOPE_MID 0x80000000L
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-index 32093497292f..66b529e36ea1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-@@ -2,7 +2,7 @@
- /* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
- 
- #include <linux/netdevice.h>
--#include "accel/ipsec_offload.h"
-+#include "ipsec_offload.h"
- #include "ipsec_fs.h"
- #include "fs_core.h"
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
-index 3389b3bb3ef8..b3e23aa5beeb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
-@@ -6,7 +6,7 @@
- 
- #include "en.h"
- #include "ipsec.h"
--#include "accel/ipsec_offload.h"
-+#include "ipsec_offload.h"
- #include "en/fs.h"
- 
- #ifdef CONFIG_MLX5_EN_IPSEC
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-similarity index 99%
-rename from drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
-rename to drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index 9dbebef19ff0..7ae2d308139e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -2,7 +2,7 @@
- /* Copyright (c) 2017, Mellanox Technologies inc. All rights reserved. */
- 
- #include "mlx5_core.h"
--#include "accel/ipsec_offload.h"
-+#include "ipsec_offload.h"
- #include "lib/mlx5.h"
- #include "en_accel/ipsec_fs.h"
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.h
-similarity index 100%
-rename from drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h
-rename to drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.h
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-index 08a6dd4b7662..9b65c765cbd9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-@@ -34,7 +34,7 @@
- #include <crypto/aead.h>
- #include <net/xfrm.h>
- #include <net/esp.h>
--#include "accel/ipsec_offload.h"
-+#include "ipsec_offload.h"
- #include "en_accel/ipsec_rxtx.h"
- #include "en_accel/ipsec.h"
- #include "en.h"
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_stats.c
-index 87c42df3ee20..3aace1c2a763 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_stats.c
-@@ -35,7 +35,7 @@
- #include <net/sock.h>
- 
- #include "en.h"
--#include "accel/ipsec_offload.h"
-+#include "ipsec_offload.h"
- #include "fpga/sdk.h"
- #include "en_accel/ipsec.h"
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 6a3a08fd8910..12b72a0bcb1a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -48,7 +48,7 @@
- #include "en_accel/ipsec.h"
- #include "en_accel/en_accel.h"
- #include "en_accel/ktls.h"
--#include "accel/ipsec_offload.h"
-+#include "en_accel/ipsec_offload.h"
- #include "lib/vxlan.h"
- #include "lib/clock.h"
- #include "en/port.h"
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index f85eefaad6ab..a5f6fd16b665 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -48,7 +48,7 @@
- #include "en_rep.h"
- #include "en/rep/tc.h"
- #include "ipoib/ipoib.h"
--#include "accel/ipsec_offload.h"
-+#include "en_accel/ipsec_offload.h"
- #include "en_accel/ipsec_rxtx.h"
- #include "en_accel/ktls_txrx.h"
- #include "en/xdp.h"
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 8fcbb1032b07..032de078723c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -62,7 +62,7 @@
- #include "lib/mlx5.h"
- #include "lib/tout.h"
- #include "fpga/core.h"
--#include "accel/ipsec_offload.h"
-+#include "en_accel/ipsec_offload.h"
- #include "lib/clock.h"
- #include "lib/vxlan.h"
- #include "lib/geneve.h"
+ 	/* Acknowledge that we've seen the device. */
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
 -- 
-2.35.1
+2.25.1
 
