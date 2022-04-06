@@ -2,149 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B73CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5087FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235819AbiDFP0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
+        id S236058AbiDFP07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235989AbiDFP0a (ORCPT
+        with ESMTP id S236090AbiDFP0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:26:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DADA35FB0D2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:25:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649247900;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dicVFjsXOIL9hOndQjIV/DVmY/a3j1A4etYvxOxmSgQ=;
-        b=EHZpyBiT5wD+Ld+1o8JJzRi5eNFzJEFwcxqwMRQYtaSoJzd8uASFhtL/5CM2963QGPRMZV
-        yN2rIrJX6YiWZj89abcFC0feDNb9kV2Ef3oMV2Gdhy6MRlkvARZXbDTWGOxP3Qthgen7TA
-        uM3ydObB8/WQNw9yeNiOoSIXaC2HQIU=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-219-pYPjC8IkNmOoBi7ACrpfvg-1; Wed, 06 Apr 2022 07:59:38 -0400
-X-MC-Unique: pYPjC8IkNmOoBi7ACrpfvg-1
-Received: by mail-wm1-f69.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso608704wma.8
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 04:59:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dicVFjsXOIL9hOndQjIV/DVmY/a3j1A4etYvxOxmSgQ=;
-        b=l7ylINmXNCbnPmGVSg89ENAJdz44ltwxYwobnY9NiOYTNsekgYnUlXYBsKBWBhBRzy
-         TVt7lkxVRiGirBXnzKETZ2rqPax4CLhZTQQzGLi9X3+3N/J+M4piGAGhiOkzZ5TW4bhY
-         4e/aIzTf4COg4G3K5zjFVSxZ7DKII2z1Twz3D8nl5WRCkMsHco1pujKyqiIsa9Ueoh9v
-         /02Luspg/sSq7ftxUYE7/PjvSbipHmefvv/foFiK5UDytwfQsz2/DSk6NCcyTMk4k9NI
-         caVIihWcLq1PF/sOmD02SoIY0Cx/KjApRf7tZp2s6ddMoK5uqthyfMp3GBLuQk2mJS2i
-         e05w==
-X-Gm-Message-State: AOAM5329s8ylw73QJna6laF39Tgtp8d+hX2OBtZqjpHJ3fJq632YFadN
-        BEn8ugIJxNUxhI8yjcBd8YUMoBWN6BBXJiExEBb7a9zpwTh7OnJzxBLIl8hpuaJB3U4eSlXBcbz
-        AFGhz9pOT0uIOzY85U5ChyOhb
-X-Received: by 2002:adf:fc90:0:b0:206:e7b:cd63 with SMTP id g16-20020adffc90000000b002060e7bcd63mr6304657wrr.511.1649246377514;
-        Wed, 06 Apr 2022 04:59:37 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyXEb2qJOGVPTkba/SZuCnqqnQUU7IQyRanDtldo58dlWits4116YDR77kPcSHcn0/MUmK+Vg==
-X-Received: by 2002:adf:fc90:0:b0:206:e7b:cd63 with SMTP id g16-20020adffc90000000b002060e7bcd63mr6304642wrr.511.1649246377324;
-        Wed, 06 Apr 2022 04:59:37 -0700 (PDT)
-Received: from redhat.com ([2.55.179.195])
-        by smtp.gmail.com with ESMTPSA id u13-20020a05600c19cd00b0038cb84f4218sm5055607wmq.27.2022.04.06.04.59.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 04:59:36 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 07:59:32 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, sgarzare@redhat.com,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH V2 3/5] virtio: introduce config op to synchronize vring
- callbacks
-Message-ID: <20220406075405-mutt-send-email-mst@kernel.org>
-References: <20220406083538.16274-1-jasowang@redhat.com>
- <20220406083538.16274-4-jasowang@redhat.com>
+        Wed, 6 Apr 2022 11:26:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5775F90B1;
+        Wed,  6 Apr 2022 05:24:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 186BAB8232A;
+        Wed,  6 Apr 2022 12:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4107FC385A7;
+        Wed,  6 Apr 2022 12:24:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649247890;
+        bh=VXAqwleH/9FZW2pL8a52fjF/WAWTJuJF9KN83znJwp0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HxfZK3niCIpttqDTvrn+MhcnImqotYL7Z8+P8+ovfuMJxUiznMKGrln66zonahKVE
+         dXkrKrly7b3rYB8L7Skwd9NRQr9oB9V4mqugE466H0xmS4nkwNPVr8CDbmFRO8/Zpu
+         QQpru43kcyWvP97u/p0e1+sGS9ufH/5kMlt0HO1g=
+Date:   Wed, 6 Apr 2022 14:24:48 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.16 0000/1017] 5.16.19-rc1 review
+Message-ID: <Yk2GkNTTc3XYDU2X@kroah.com>
+References: <20220405070354.155796697@linuxfoundation.org>
+ <9882445d-ef29-689a-33de-ce66dfc79d31@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220406083538.16274-4-jasowang@redhat.com>
+In-Reply-To: <9882445d-ef29-689a-33de-ce66dfc79d31@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 04:35:36PM +0800, Jason Wang wrote:
-> This patch introduce
-
-introduces
-
-> a new
-
-new
-
-> virtio config ops to vring
-> callbacks. Transport specific method is required to call
-> synchornize_irq() on the IRQs. For the transport that doesn't provide
-> synchronize_vqs(), use synchornize_rcu() as a fallback.
+On Tue, Apr 05, 2022 at 05:03:24PM -0600, Shuah Khan wrote:
+> On 4/5/22 1:15 AM, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.16.19 release.
+> > There are 1017 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> > 
+> > Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> > Anything received after that time might be too late.
+> > 
+> > The whole patch series can be found in one patch at:
+> > 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.19-rc1.gz
+> > or in the git tree and branch at:
+> > 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> > and the diffstat can be found below.
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> > 
+> Build failed on my system. The following is the problem commit. There
+> are no changes to the config between 5.16.18 and this build.
 > 
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  include/linux/virtio_config.h | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-> index b341dd62aa4d..08b73d9bbff2 100644
-> --- a/include/linux/virtio_config.h
-> +++ b/include/linux/virtio_config.h
-> @@ -57,6 +57,8 @@ struct virtio_shm_region {
->   *		include a NULL entry for vqs unused by driver
->   *	Returns 0 on success or error status
->   * @del_vqs: free virtqueues found by find_vqs().
-> + * @synchronize_vqs: synchronize with the virtqueue callbacks.
-> + *	vdev: the virtio_device
+> Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+>     ASoC: SOF: Intel: hda: Remove link assignment limitation
 
-I think I prefer synchronize_callbacks
+Now dropped from 5.10, 5.15, and 5.16 queues, thanks!
 
->   * @get_features: get the array of feature bits for this device.
->   *	vdev: the virtio_device
->   *	Returns the first 64 feature bits (all we currently need).
-> @@ -89,6 +91,7 @@ struct virtio_config_ops {
->  			const char * const names[], const bool *ctx,
->  			struct irq_affinity *desc);
->  	void (*del_vqs)(struct virtio_device *);
-> +	void (*synchronize_vqs)(struct virtio_device *);
->  	u64 (*get_features)(struct virtio_device *vdev);
->  	int (*finalize_features)(struct virtio_device *vdev);
->  	const char *(*bus_name)(struct virtio_device *vdev);
-> @@ -217,6 +220,19 @@ int virtio_find_vqs_ctx(struct virtio_device *vdev, unsigned nvqs,
->  				      desc);
->  }
->  
-> +/**
-> + * virtio_synchronize_vqs - synchronize with virtqueue callbacks
-> + * @vdev: the device
-> + */
-> +static inline
-> +void virtio_synchronize_vqs(struct virtio_device *dev)
-> +{
-> +	if (dev->config->synchronize_vqs)
-> +		dev->config->synchronize_vqs(dev);
-> +	else
-> +		synchronize_rcu();
-
-I am not sure about this fallback and the latency impact.
-Maybe synchronize_rcu_expedited is better here.
-
-> +}
-> +
->  /**
->   * virtio_device_ready - enable vq use in probe function
->   * @vdev: the device
-> -- 
-> 2.25.1
-
+greg k-h
