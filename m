@@ -2,64 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F27AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2698C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232468AbiDFIj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 04:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36086 "EHLO
+        id S229624AbiDFIka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 04:40:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383748AbiDFIix (ORCPT
+        with ESMTP id S1355881AbiDFIiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:38:53 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1138148BEE7;
-        Tue,  5 Apr 2022 22:56:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3Ypxhbz/np55GXLZ63U30G4gE8wYAFughC237OInixw=; b=mOWvaWvntKJt7+qlKgTwd3MK3y
-        dBlugBGVzPi338E8zYhdSit/9i+H3F6jhVCmjyFXXp7z8hyqXASHvbBY0Ry1rCG6WP41UbuR0pRh/
-        XwllF61XNinwGoTS3UHVer3ZfS1vmY+k7G9yUkXnv9RdBijEvj/FIo3JBiVS7HfBguoXK0Gq9S2Ij
-        VlHVM9NF4yCfanuJ+93n+7BmuWmWzbHD60ROGy0eO8CvDlQ+p+QjfIYBAjDPmiWgV9etSPROhu4sk
-        dGeU7i1wN4zwMzNRysfX7DIQGc51MnVkEqoKPdszB0dOiEDpWu3c/m6A3s4489yRoyyamkWRWOFBn
-        FvMRKA8g==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbye6-003tMu-PC; Wed, 06 Apr 2022 05:55:58 +0000
-Date:   Tue, 5 Apr 2022 22:55:58 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     dsterba@suse.cz, Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: [GIT PULL] Folio fixes for 5.18
-Message-ID: <Yk0rbm6n6801cEq9@infradead.org>
-References: <YkdKgzil38iyc7rX@casper.infradead.org>
- <20220405120848.GV15609@twin.jikos.cz>
- <YkxQkZ24Zz9KCxK1@casper.infradead.org>
+        Wed, 6 Apr 2022 04:38:16 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B30DD39AA;
+        Tue,  5 Apr 2022 20:12:31 -0700 (PDT)
+Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 13A5E1C805DD;
+        Wed,  6 Apr 2022 11:12:31 +0800 (CST)
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS01.nuvoton.com
+ (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Wed, 6 Apr 2022
+ 11:12:30 +0800
+Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Wed, 6 Apr 2022 11:12:30 +0800
+Message-ID: <8ac80947-2f59-6eef-c6ac-2ad64628dfe6@nuvoton.com>
+Date:   Wed, 6 Apr 2022 11:12:30 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkxQkZ24Zz9KCxK1@casper.infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/3] dt-bindings: clock: Document MA35D1 clock controller
+ bindings
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
+        "soc@kernel.org" <soc@kernel.org>, MS10 CFLi0 <CFLi0@nuvoton.com>
+References: <20220331024256.14762-1-ychuang3@nuvoton.com>
+ <20220331024256.14762-3-ychuang3@nuvoton.com>
+ <6be6ffd1-a303-f3f2-0424-0ce622de197f@linaro.org>
+From:   Jacky Huang <ychuang3@nuvoton.com>
+In-Reply-To: <6be6ffd1-a303-f3f2-0424-0ce622de197f@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 03:22:09PM +0100, Matthew Wilcox wrote:
-> On Tue, Apr 05, 2022 at 02:08:48PM +0200, David Sterba wrote:
-> > Matthew, can you please always CC linux-btrfs@vger.kernel.org for any
-> > patches that touch code under fs/btrfs? I've only noticed your folio
-> > updates in this pull request. Some of the changes are plain API switch,
-> > that's fine but I want to know about that, some changes seem to slightly
-> > modify logic that I'd really like to review and there are several missed
-> > opportunities to fix coding style. Thanks.
-> 
-> I'm sorry, that's an unreasonable request.  There's ~50 filesystems
-> that use address_space_operations and cc'ing individual filesystems
-> on VFS-wide changes isn't feaasible.
 
-FYI, for these kinds of global API changes I tend to add all the
-mainling lists, but drop the multiple maintainers that would blow this
-up even futher.  But even that lead to occasional complaints.
+
+On 2022/3/31 下午 02:27, Krzysztof Kozlowski wrote:
+> On 31/03/2022 04:42, Jacky Huang wrote:
+>> Add documentation to describe Nuvoton MA35D1 clock driver bindings.
+>>
+>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>> ---
+>>   .../bindings/clock/nuvoton,ma35d1-clk.yaml    | 59 +++++++++++++++++++
+>>   1 file changed, 59 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+>> new file mode 100644
+>> index 000000000000..bf5474b10420
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+>> @@ -0,0 +1,59 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: https://apc01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fschemas%2Fclock%2Fnuvoton%2Cma35d1-clk.yaml%23&amp;data=04%7C01%7Cychuang3%40nuvoton.com%7C26d072d904854cb7c77308da12df8dd5%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637843048619482176%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=NgdR0%2F8%2BxsM4u%2BPuKtuniulNf%2BhMLJoYsjIPnR0iVec%3D&amp;reserved=0
+>> +$schema: https://apc01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fmeta-schemas%2Fcore.yaml%23&amp;data=04%7C01%7Cychuang3%40nuvoton.com%7C26d072d904854cb7c77308da12df8dd5%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637843048619482176%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=Km%2Fawm8lT0IYN39tkE3lSrho9uCOd2Fgs8qb82pI7ec%3D&amp;reserved=0
+>> +
+>> +title: Nuvoton MA35D1 Clock Control Module Binding
+>> +
+>> +maintainers:
+>> +  - Chi-Fang Li <cfli0@nuvoton.com>
+>> +  - Jacky Huang <ychuang3@nuvoton.com>
+>> +
+>> +description: |
+>> +  The MA35D1 clock controller generates clocks for the whole chip,
+>> +  including system clocks and all peripheral clocks.
+>> +
+>> +  See also:
+>> +    dt-bindings/clock/ma35d1-clk.h
+> Full path needed.
+
+I will fix it as include/dt-bindings/clock/ma35d1-clk.h
+>
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: nuvoton,ma35d1-clk
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  "#clock-cells":
+>> +    const: 1
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +
+>> +  assigned-clocks:
+>> +    maxItems: 4
+>> +
+>> +  assigned-clock-rates:
+>> +    maxItems: 4
+>> +
+>> +  clock-pll-mode:
+>> +    maxItems: 4
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - "#clock-cells"
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  # clock control module node:
+> Useless comment, remove it.
+
+OK, I will remove it.
+
+>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>
+> Best regards,
+> Krzysztof
+
+Thanks for your review.
+
+Sincerely,
+Jacky
+
