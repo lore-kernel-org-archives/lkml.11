@@ -2,139 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8665EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237533AbiDFQLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S237612AbiDFQM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237373AbiDFQLf (ORCPT
+        with ESMTP id S237538AbiDFQLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:11:35 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836154E0035
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:39:49 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a6so4454371ejk.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 06:39:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=iyJLK8l5hs8KCNBFxlx1llqa+FYfySe8JZbdJuv2BSY=;
-        b=AZPHzmAkPb4vBz8KQIFg70PyU76BInADKyX8st0Ig2+U518SEl0fYZpUw9xiNqn87K
-         aFxAL3Rzj+bm6m248CxtYI2apq5TfG0PFHHUmZ81yjVBfZyky+nQJ/y68jjzZEoz3IVP
-         2ZeHrhjWp7zRdPFnB94aJ4/AKOIGQDHMVIHBYN9336v/0QdlpMxxmRvr9byy1Bbv4vDL
-         t/8yFF66Fj9bRZzxcLG0bXKl15HjhRZclLJAUz756gQUgnTvBYY20cHN7doi1i5nWcX4
-         ErVcNb4eFZDmVj0lZzaKcxqtV9IkWmD3avg4JPdWRFGAV0+pyTjszJMDk1upXk7xhzUN
-         JwKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=iyJLK8l5hs8KCNBFxlx1llqa+FYfySe8JZbdJuv2BSY=;
-        b=U+DoP9+SCQIW9mWelHpeg3+c5hosev8xFySgzH8gaszeGvBL+JPRvPhNJlgCOMHDel
-         UGaxAfzi2uhCOE+vcn30D6CiHwO9R5MUMsiteMvyjz3HmkMra3+1eKxZs+XhguqEJl9N
-         zkEkbCcL/Om6RC6maIvfkJkiehx1cUxKFGXwK9VJKHQBckFqc/KnzmTKCcKfEtJ3ymbY
-         oewVhfiH+JhQVxURhRv3yjkZUbC64nRSC75Gz02HqjN46Ya0FH3uDvVOq3KczTtWQHpb
-         QwWev1K28vU2Uq+WI83GAiEsgF53H7ss0L17a+uSlnbHw0W00UpZQgPZ0XDXiUNXoUgG
-         pMtw==
-X-Gm-Message-State: AOAM533tQAu4yrhNVi+L2fks5uhcOghRzv0nF8p7oeK2FRX6H31w+dCo
-        NUU4xOoZPEH0POd5dUgWmW6mqUynXjARD8pdJjc=
-X-Google-Smtp-Source: ABdhPJxMIvTQA11CZ2AiXt7TtQTnJBNSoAaXV+VAZQ4YGkON/JIi45sEq/1i4BR871lm6N50qVjEtGN9q8EZB893/WU=
-X-Received: by 2002:a17:906:7947:b0:6da:892f:2503 with SMTP id
- l7-20020a170906794700b006da892f2503mr8161523ejo.710.1649252387873; Wed, 06
- Apr 2022 06:39:47 -0700 (PDT)
+        Wed, 6 Apr 2022 12:11:53 -0400
+Received: from out203-205-221-236.mail.qq.com (out203-205-221-236.mail.qq.com [203.205.221.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5170823AC83
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:47:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649216860;
+        bh=yj7NcvlYRMNO/RGY/g86/vf9wHVq0xTD1ZKTfb+GBg0=;
+        h=From:To:Cc:Subject:Date;
+        b=pnHlRDoqhKR7mdEscOLMNnNyoVTi2T6uaK2hhP6kNApYYPpLVwEup33gCQCqnTKS7
+         WrI2KP888qRvdqffpdMgUWxIQKzfwhmYsGphFnUkW8rZyKsUFTf3gVJCzucODAPl0m
+         KeDQvloChNUyP8ladIY7Aa8pKHk46PkzX1splruc=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
+        id BE4B001F; Wed, 06 Apr 2022 11:47:36 +0800
+X-QQ-mid: xmsmtpt1649216856to394z7sf
+Message-ID: <tencent_1D37399629C2C28395F0FE4940BA98DB7209@qq.com>
+X-QQ-XMAILINFO: OG3fjXpkFjhKdEI16ZoyY6ObZyAeXL6lYK8xtwi92ADw9HAkE5w2kNRxBWsU2z
+         idAgETmYMXqf98nbbuLGXUqrVP+f7jXh7eQg0o22D9TvAWYOc+Nc+GsB5QcY1KaW5DrlqOJSUw9/
+         KnX5buemHIrL1fkyGnTISzVi/+XBFjeupMUjMN+LB599uA7hlA7mcg5u9/5Gq4PMdpqf4xCiPmyJ
+         i6RghOyLaVgihmIC7hv/eMwxOW3NcSXKnaKU3yC2KNoa0yeKIxqNvnDziHJm5DorUq2g3iGLLezq
+         7ed2RfDVjKE4EtN4F33BTVNAZI1yv3SEwG7fCu4KMaaQe8L3TrJUP6uOTn2slCSph73BKGLwFZch
+         RGsCz6tGG2hYZNaRSd+hfqsffrMZJHRsFCkhXi9VZpuFufVNuZtAZuQwyIzlORK0qYRzTKtKu+/y
+         hVFDI/L8VXuHPpPFo2TnFwdfmasOPadApJNxqCh5EDAFEVbpR83Byj6vmJDPSlclQsitysJ0QJbn
+         wH6fABG2q9YSEV3d43D6VQt2mxNJOZbTqJabMAN5j/pPIHiKCRQs/racrsFVxGNhQ8X4WAvEPaot
+         IrZ1DwDusqcFS99sExQvqeCVXjEt7d73Dua/UTSROD9jNVjneEn6iH/C7ncl71vUyWMSsFLRELbO
+         CiwA27M1Omm3atch3EbzZfGJ1SJIwioqD1d5oa0Al+8F14yAB5IAXiCdDmN0s9wPU4nXIiMSeyte
+         x0KKx7h93FU89Gkwkv2WHmNEfkC2kPcWRbu86Ta9UXJUHBq+fqFiUSWdUjp0mF6/71Z3SEsyBLpB
+         HYi18FF/UW1KZS0yxLFji7L2lcoUcg9/ap28Ly2NswbHS6H1xHh6+cm6+8dy9xEWKEc4/ualMk8y
+         9ub+lO8kyWHWZNZw8c0VSv0tuJRrboM2qxSGrgyCV/Tqv6Rpcpo+PByoPJ9g4sB3NPykNLcy3M
+From:   xkernel.wang@foxmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH v4] staging: r8188eu: fix a potential memory leak in _rtw_init_cmd_priv()
+Date:   Wed,  6 Apr 2022 11:47:22 +0800
+X-OQ-MSGID: <20220406034722.12617-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-References: <20220405213800.90205-1-h0tc0d3@gmail.com> <CADnq5_PXDyOXX2p4FswWWyY6sw8nXmajhUzx-=ke+6jiZn3ZPA@mail.gmail.com>
-In-Reply-To: <CADnq5_PXDyOXX2p4FswWWyY6sw8nXmajhUzx-=ke+6jiZn3ZPA@mail.gmail.com>
-From:   =?UTF-8?B?0JPRgNC40LPQvtGA0LjQuQ==?= <h0tc0d3@gmail.com>
-Date:   Wed, 6 Apr 2022 16:39:46 +0300
-Message-ID: <CAD5ugGDAKGtKLavhqSDObbGRu1WSyE04eQRhUv4Dk7dC+PrK6w@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: Unnecessary code in gfx_v7_0.c
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Melissa Wen <mwen@igalia.com>,
-        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
-        Joseph Greathouse <Joseph.Greathouse@amd.com>,
-        Guchun Chen <guchun.chen@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        David Airlie <airlied@linux.ie>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alex Deucher, Thanks, that's what I thought too. But this code is
-uninformative, and without it is clear what this code is doing. If you
-need to provide additional information on how the code works, then for
-me it's better to leave a comment.
-This is actually more like a bug than an explanation of what the code is do=
-ing.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-=D1=81=D1=80, 6 =D0=B0=D0=BF=D1=80. 2022 =D0=B3. =D0=B2 16:20, Alex Deucher=
- <alexdeucher@gmail.com>:
->
-> On Wed, Apr 6, 2022 at 4:00 AM Grigory Vasilyev <h0tc0d3@gmail.com> wrote=
-:
-> >
-> > The code is useless and doesn't change the value.
-> >
-> > (0 << GB_ADDR_CONFIG__ROW_SIZE__SHIFT) =3D 0
-> > gb_addr_config | 0 =3D gb_addr_config
-> >
-> > Perhaps there could be 1 instead of 0, but this does not correspond wit=
-h
-> > the logic of the switch.
->
-> It doesn't do anything, but it helps the developer to understand how
-> the driver state maps to hardware state.
->
-> Alex
->
-> >
-> > Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
-> > ---
-> >  drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c | 6 ++----
-> >  1 file changed, 2 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c b/drivers/gpu/drm/am=
-d/amdgpu/gfx_v7_0.c
-> > index 1cb5db17d2b9..5ed84a6467ee 100644
-> > --- a/drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c
-> > +++ b/drivers/gpu/drm/amd/amdgpu/gfx_v7_0.c
-> > @@ -4409,16 +4409,14 @@ static void gfx_v7_0_gpu_early_init(struct amdg=
-pu_device *adev)
-> >         /* fix up row size */
-> >         gb_addr_config &=3D ~GB_ADDR_CONFIG__ROW_SIZE_MASK;
-> >         switch (adev->gfx.config.mem_row_size_in_kb) {
-> > -       case 1:
-> > -       default:
-> > -               gb_addr_config |=3D (0 << GB_ADDR_CONFIG__ROW_SIZE__SHI=
-FT);
-> > -               break;
-> >         case 2:
-> >                 gb_addr_config |=3D (1 << GB_ADDR_CONFIG__ROW_SIZE__SHI=
-FT);
-> >                 break;
-> >         case 4:
-> >                 gb_addr_config |=3D (2 << GB_ADDR_CONFIG__ROW_SIZE__SHI=
-FT);
-> >                 break;
-> > +       default:
-> > +               break;
-> >         }
-> >         adev->gfx.config.gb_addr_config =3D gb_addr_config;
-> >  }
-> > --
-> > 2.35.1
-> >
+In _rtw_init_cmd_priv(), if `pcmdpriv->rsp_allocated_buf` is allocated  
+in failure, then `pcmdpriv->cmd_allocated_buf` will not be properly 
+released. Besides, considering there are only two error paths and the 
+first one can directly return, we do not need to implicitly jump to the 
+`exit` tag to execute the error handling code.
+
+So this patch added `kfree(pcmdpriv->cmd_allocated_buf);` on the error 
+path to release the resource and simplified the return logic of 
+_rtw_init_cmd_priv().
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ChangeLog:
+v1->v2: simplify the function.
+v2->v3: rebase and recover some whitespace cleanups.
+v3->v4: update the description.
+ drivers/staging/r8188eu/core/rtw_cmd.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index 4eeb961..f6653d6 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -18,8 +18,6 @@ No irqsave is necessary.
+ 
+ static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+ {
+-	int res = _SUCCESS;
+-
+ 	init_completion(&pcmdpriv->enqueue_cmd);
+ 	/* sema_init(&(pcmdpriv->cmd_done_sema), 0); */
+ 	init_completion(&pcmdpriv->start_cmd_thread);
+@@ -34,27 +32,24 @@ static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+ 	pcmdpriv->cmd_allocated_buf = kzalloc(MAX_CMDSZ + CMDBUFF_ALIGN_SZ,
+ 					      GFP_KERNEL);
+ 
+-	if (!pcmdpriv->cmd_allocated_buf) {
+-		res = _FAIL;
+-		goto exit;
+-	}
++	if (!pcmdpriv->cmd_allocated_buf)
++		return _FAIL;
+ 
+ 	pcmdpriv->cmd_buf = pcmdpriv->cmd_allocated_buf  +  CMDBUFF_ALIGN_SZ - ((size_t)(pcmdpriv->cmd_allocated_buf) & (CMDBUFF_ALIGN_SZ - 1));
+ 
+ 	pcmdpriv->rsp_allocated_buf = kzalloc(MAX_RSPSZ + 4, GFP_KERNEL);
+ 
+ 	if (!pcmdpriv->rsp_allocated_buf) {
+-		res = _FAIL;
+-		goto exit;
++		kfree(pcmdpriv->cmd_allocated_buf);
++		return _FAIL;
+ 	}
+ 
+ 	pcmdpriv->rsp_buf = pcmdpriv->rsp_allocated_buf  +  4 - ((size_t)(pcmdpriv->rsp_allocated_buf) & 3);
+ 
+ 	pcmdpriv->cmd_done_cnt = 0;
+ 	pcmdpriv->rsp_cnt = 0;
+-exit:
+ 
+-	return res;
++	return _SUCCESS;
+ }
+ 
+ static void c2h_wk_callback(struct work_struct *work);
+-- 
