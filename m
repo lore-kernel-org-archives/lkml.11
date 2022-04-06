@@ -2,119 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC72C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233491AbiDFLie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39052 "EHLO
+        id S230141AbiDFLip (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231927AbiDFLge (ORCPT
+        with ESMTP id S231316AbiDFLhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:36:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1315B30F9EC;
-        Wed,  6 Apr 2022 01:26:25 -0700 (PDT)
+        Wed, 6 Apr 2022 07:37:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2042F26AE10;
+        Wed,  6 Apr 2022 01:26:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9539FB82176;
-        Wed,  6 Apr 2022 08:26:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD351C385A5;
-        Wed,  6 Apr 2022 08:26:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649233581;
-        bh=679M1iA6yBnnGFHzU0BmZQpya0Qyjygd487CEYEKU9o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yrLmGclX0eYKfbKaWuzkapCM16dPekIxEJ8ahchLPscDUoo+v79PjM0d3ySz/HtV/
-         JmltR01BsbGvzYKVFvv+N7778qv4xZa5V9raz49Of4pBr7oA7YpxlFvDmsQ/+NXp/N
-         Pk0Tfdb66yVFzIT+F14bD8IjyzrH2Az78qV2oQsc=
-Date:   Wed, 6 Apr 2022 10:26:15 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
-Message-ID: <Yk1Op5c0mbtR0VLw@kroah.com>
-References: <20220405070258.802373272@linuxfoundation.org>
- <20220406010749.GA1133386@roeck-us.net>
- <20220406023025.GA1926389@roeck-us.net>
- <20220405225212.061852f9@gandalf.local.home>
- <20220405230812.2feca4ed@gandalf.local.home>
- <20220405232413.6b38e966@gandalf.local.home>
- <Yk1LMYzEOv7vmEHR@kroah.com>
- <Yk1N5Vg+YrGxrfVo@kroah.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0883B8217D;
+        Wed,  6 Apr 2022 08:26:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A69BC385A5;
+        Wed,  6 Apr 2022 08:26:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649233593;
+        bh=2lsxnvVgrfilxs1Y136lilhCkFBbV9zKEaHZGUAmUPQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gAFLmM4LMBTrRM2PBLSqt25kx+KphA6+mlXDFf6lvQIa79XeF3oWTfNtRD++oGhfw
+         13vQqy1t8C6PtKrMkq+8ZNv8AUPFEH+QvhUibAp5EOKjvkiXzFXSoM+od8r8TvRKMU
+         15WuBbP6hv9htrFPbdQt2OYT+662oZX/UqXDvvwidYIbauf3gDXsx7fvMT6juVOC3d
+         z+7LSD45jIye+7uxRXtYv/Jr71mqqLtPPo50qqiGPtzL7tnWwL6sao81Z9yw4HhC3/
+         Fxq/620idpnOBEa5IZmiC51f5Fmx+wrDPkYPu9DYoi/uq6RGv9phKyYfpZN2+Ddcij
+         uLDiyw4dCHG3A==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Raed Salem <raeds@nvidia.com>
+Subject: [PATCH mlx5-next 10/17] net/mlx5: Remove useless IPsec device checks
+Date:   Wed,  6 Apr 2022 11:25:45 +0300
+Message-Id: <e45362abfcabe18e8af20ec8d1acdc99355978f3.1649232994.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
+References: <cover.1649232994.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yk1N5Vg+YrGxrfVo@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 10:23:01AM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Apr 06, 2022 at 10:11:29AM +0200, Greg Kroah-Hartman wrote:
-> > On Tue, Apr 05, 2022 at 11:24:13PM -0400, Steven Rostedt wrote:
-> > > On Tue, 5 Apr 2022 23:08:12 -0400
-> > > Steven Rostedt <rostedt@goodmis.org> wrote:
-> > > 
-> > > > Here's a thought, if you decide to backport a patch to stable, and you see
-> > > > that there's another commit with a "Fixes" tag to the automatically
-> > > > selected commit. DO NOT BACKPORT IF THE FIXES PATCH FAILS TO GO BACK TOO!
-> > > 
-> > > Seriously. This should be the case for *all* backported patches, not just
-> > > the AUTOSEL ones.
-> > > 
-> > > Otherwise you are backporting a commit to "stable" that is KNOWN TO BE
-> > > BROKEN!
-> > 
-> > My scripts usually do catch this, let me go see what went wrong...
-> 
-> Ok, my fault, my scripts _did_ catch this, but I ignored it as it was
-> filled with other noise.  I've now queued this commit up.
-> 
-> thanks for catching this and sorry for missing it the first time around.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Wait, no, I did catch this!  And I sent you a "FAILED" email about it, 4
-of them:
-	https://lore.kernel.org/r/164905985821176@kroah.com
-	https://lore.kernel.org/r/16490598521299@kroah.com
-	https://lore.kernel.org/r/1649059845215213@kroah.com
-	https://lore.kernel.org/r/16490598398133@kroah.com
-as the commit applied, but broke the build:
+The mlx5_is_ipsec_device() check was to distinguish ConnectX device
+related ops from FPGA, so post removing FPGA IPsec code this check
+can be removed as no other device implements it.
 
-kernel/trace/trace_events.c: In function ‘update_event_fields’:
-kernel/trace/trace_events.c:2459:40: error: ‘TRACE_EVENT_FL_DYNAMIC’ undeclared (first use in this function); did you mean ‘FTRACE_OPS_FL_DYNAMIC’?
- 2459 |         if (WARN_ON_ONCE(call->flags & TRACE_EVENT_FL_DYNAMIC))
-      |                                        ^~~~~~~~~~~~~~~~~~~~~~
-./include/asm-generic/bug.h:102:32: note: in definition of macro ‘WARN_ON_ONCE’
-  102 |         int __ret_warn_on = !!(condition);                      \
-      |                                ^~~~~~~~~
-kernel/trace/trace_events.c:2459:40: note: each undeclared identifier is reported only once for each function it appears in
- 2459 |         if (WARN_ON_ONCE(call->flags & TRACE_EVENT_FL_DYNAMIC))
-      |                                        ^~~~~~~~~~~~~~~~~~~~~~
-./include/asm-generic/bug.h:102:32: note: in definition of macro ‘WARN_ON_ONCE’
-  102 |         int __ret_warn_on = !!(condition);                      \
-      |                                ^~~~~~~~~
-kernel/trace/trace_events.c:2491:25: error: ‘struct trace_event_call’ has no member named ‘module’
- 2491 |                 if (call->module)
-      |                         ^~
-kernel/trace/trace_events.c:2492:47: error: ‘struct trace_event_call’ has no member named ‘module’
- 2492 |                         add_str_to_module(call->module, str);
-      |                                               ^~
+It is safe to do it as there is already embedded check of IPsec device
+in mlx5_accel_ipsec_device_caps().
 
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ .../mellanox/mlx5/core/en_accel/ipsec.c       | 10 +----
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c    |  3 --
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  | 42 +++++++++----------
+ 3 files changed, 20 insertions(+), 35 deletions(-)
 
-But I didn't drop the offending commit, I should have done that.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index f6e3b549424f..1391a0c84f16 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -286,9 +286,6 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
+ static int mlx5e_xfrm_fs_add_rule(struct mlx5e_priv *priv,
+ 				  struct mlx5e_ipsec_sa_entry *sa_entry)
+ {
+-	if (!mlx5_is_ipsec_device(priv->mdev))
+-		return 0;
+-
+ 	return mlx5e_accel_ipsec_fs_add_rule(priv, &sa_entry->xfrm->attrs,
+ 					     sa_entry->ipsec_obj_id,
+ 					     &sa_entry->ipsec_rule);
+@@ -297,9 +294,6 @@ static int mlx5e_xfrm_fs_add_rule(struct mlx5e_priv *priv,
+ static void mlx5e_xfrm_fs_del_rule(struct mlx5e_priv *priv,
+ 				   struct mlx5e_ipsec_sa_entry *sa_entry)
+ {
+-	if (!mlx5_is_ipsec_device(priv->mdev))
+-		return;
+-
+ 	mlx5e_accel_ipsec_fs_del_rule(priv, &sa_entry->xfrm->attrs,
+ 				      &sa_entry->ipsec_rule);
+ }
+@@ -550,9 +544,7 @@ void mlx5e_ipsec_build_netdev(struct mlx5e_priv *priv)
+ 		return;
+ 	}
+ 
+-	if (mlx5_is_ipsec_device(mdev))
+-		netdev->gso_partial_features |= NETIF_F_GSO_ESP;
+-
++	netdev->gso_partial_features |= NETIF_F_GSO_ESP;
+ 	mlx5_core_dbg(mdev, "mlx5e: ESP GSO capability turned on\n");
+ 	netdev->features |= NETIF_F_GSO_ESP;
+ 	netdev->hw_features |= NETIF_F_GSO_ESP;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+index 17da23dff0ed..32093497292f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+@@ -700,9 +700,6 @@ int mlx5e_accel_ipsec_fs_init(struct mlx5e_priv *priv)
+ {
+ 	int err;
+ 
+-	if (!mlx5_is_ipsec_device(priv->mdev) || !priv->ipsec)
+-		return -EOPNOTSUPP;
+-
+ 	err = fs_init_tx(priv);
+ 	if (err)
+ 		return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+index 8e0cf5e65100..08a6dd4b7662 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+@@ -202,16 +202,14 @@ static int mlx5e_ipsec_set_state(struct mlx5e_priv *priv,
+ 
+ 	ipsec_st->x = x;
+ 	ipsec_st->xo = xo;
+-	if (mlx5_is_ipsec_device(priv->mdev)) {
+-		aead = x->data;
+-		alen = crypto_aead_authsize(aead);
+-		blksize = ALIGN(crypto_aead_blocksize(aead), 4);
+-		clen = ALIGN(skb->len + 2, blksize);
+-		plen = max_t(u32, clen - skb->len, 4);
+-		tailen = plen + alen;
+-		ipsec_st->plen = plen;
+-		ipsec_st->tailen = tailen;
+-	}
++	aead = x->data;
++	alen = crypto_aead_authsize(aead);
++	blksize = ALIGN(crypto_aead_blocksize(aead), 4);
++	clen = ALIGN(skb->len + 2, blksize);
++	plen = max_t(u32, clen - skb->len, 4);
++	tailen = plen + alen;
++	ipsec_st->plen = plen;
++	ipsec_st->tailen = tailen;
+ 
+ 	return 0;
+ }
+@@ -244,19 +242,17 @@ void mlx5e_ipsec_tx_build_eseg(struct mlx5e_priv *priv, struct sk_buff *skb,
+ 		   ((struct iphdr *)skb_network_header(skb))->protocol :
+ 		   ((struct ipv6hdr *)skb_network_header(skb))->nexthdr;
+ 
+-	if (mlx5_is_ipsec_device(priv->mdev)) {
+-		eseg->flow_table_metadata |= cpu_to_be32(MLX5_ETH_WQE_FT_META_IPSEC);
+-		eseg->trailer |= cpu_to_be32(MLX5_ETH_WQE_INSERT_TRAILER);
+-		encap = x->encap;
+-		if (!encap) {
+-			eseg->trailer |= (l3_proto == IPPROTO_ESP) ?
+-				cpu_to_be32(MLX5_ETH_WQE_TRAILER_HDR_OUTER_IP_ASSOC) :
+-				cpu_to_be32(MLX5_ETH_WQE_TRAILER_HDR_OUTER_L4_ASSOC);
+-		} else if (encap->encap_type == UDP_ENCAP_ESPINUDP) {
+-			eseg->trailer |= (l3_proto == IPPROTO_ESP) ?
+-				cpu_to_be32(MLX5_ETH_WQE_TRAILER_HDR_INNER_IP_ASSOC) :
+-				cpu_to_be32(MLX5_ETH_WQE_TRAILER_HDR_INNER_L4_ASSOC);
+-		}
++	eseg->flow_table_metadata |= cpu_to_be32(MLX5_ETH_WQE_FT_META_IPSEC);
++	eseg->trailer |= cpu_to_be32(MLX5_ETH_WQE_INSERT_TRAILER);
++	encap = x->encap;
++	if (!encap) {
++		eseg->trailer |= (l3_proto == IPPROTO_ESP) ?
++			cpu_to_be32(MLX5_ETH_WQE_TRAILER_HDR_OUTER_IP_ASSOC) :
++			cpu_to_be32(MLX5_ETH_WQE_TRAILER_HDR_OUTER_L4_ASSOC);
++	} else if (encap->encap_type == UDP_ENCAP_ESPINUDP) {
++		eseg->trailer |= (l3_proto == IPPROTO_ESP) ?
++			cpu_to_be32(MLX5_ETH_WQE_TRAILER_HDR_INNER_IP_ASSOC) :
++			cpu_to_be32(MLX5_ETH_WQE_TRAILER_HDR_INNER_L4_ASSOC);
+ 	}
+ }
+ 
+-- 
+2.35.1
 
-I'll go and drop the offending commit here, if you could submit both of
-them as working backports to stable@vger if/when you want them queued up
-there, that would be great.
-
-thanks,
-
-greg k-h
