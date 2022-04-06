@@ -2,340 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3598FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 309B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233070AbiDFNTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
+        id S233115AbiDFNTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233375AbiDFNRy (ORCPT
+        with ESMTP id S233303AbiDFNRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:17:54 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D1B611C4F;
-        Wed,  6 Apr 2022 02:55:58 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2369Gkic013964;
-        Wed, 6 Apr 2022 11:55:25 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=jJktV2MZUbteZjvTj9QuYJux8SWlQyGFeaPGkgSU5wA=;
- b=rEC0UXEj7n8oVMGapxMjbT3QLAkbIDzO6VLKnh0FoXO8HzmjSUQiig7uW6dV8zkMc9jm
- Hi82nnJeHPeZ9p5lOA/4HSqqghn9FQlfohoLW5/0bPjxDjdav8LeWA5qWNpPPwl+xdj+
- 2m2DRk/vCbkmcZz6NGEHG+z03/sKdcsNvVufi8iBWPkP2aRI8TQFDNva2WKAOA2D4D2E
- cOr8qobTCfVDTcCS8KoYg0p9ye91YyvLreQljQEreNexd0VsFrgd/AsB7xZ+LTNyK4CU
- MG6TdkrYEMqDZZPEQNQXG+7BZ8VHVuQtS7+nWwAdpH61Rzyas7myqrCxKXasaYo+F9oe CQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6du0vqt7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 11:55:25 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C7131100038;
-        Wed,  6 Apr 2022 11:55:24 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id BE6E420F2A4;
-        Wed,  6 Apr 2022 11:55:24 +0200 (CEST)
-Received: from localhost (10.75.127.47) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 6 Apr 2022 11:55:24
- +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Stefano Stabellini <stefanos@xilinx.com>,
-        Bruce Ashfield <bruce.ashfield@xilinx.com>,
-        <arnaud.pouliquen@foss.st.com>
-Subject: [RFC PATCH v5 1/4] remoteproc: core: Introduce virtio device add/remove functions
-Date:   Wed, 6 Apr 2022 11:54:43 +0200
-Message-ID: <20220406095446.1187968-2-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
-References: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
+        Wed, 6 Apr 2022 09:17:39 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DFE611C65
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:56:00 -0700 (PDT)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4AB5C3F867
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:55:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1649238948;
+        bh=Cr0zob3O2czZYqaT1XEpHfoL1utbHJLFt3/CqeQ40lk=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=nme510sxHwdZSezl8onrgK9B/7LNYNoGv/cl889f2lRRqrTPwMRlWpxkqtgnNK/Nc
+         W16tXGJlG9B7mqhQABwICMq5Pfz9NfZ4D48365/bmaGBd/SVWCu0wEkFFwgS3wcoTm
+         OsRByCeYmQdzgYnde/xh1Y4UuQRsakODyPU9T+3ugfkoMy6hKolzxo9QnD9g5G7GiM
+         lZ0Lhm7c043jBi/Z2q3ctio3ReAfEXcIh6FmpXJ/rZcttLx95ZvkLXzRHiDmdK0RXD
+         WxysJwhyHjjlwD61J9D1D3lMM9b8AxtYnS6CIJmhwAaIylz5a7mCe24AsfjPTpQJro
+         4UtAVP7+o6YsQ==
+Received: by mail-ej1-f69.google.com with SMTP id x2-20020a1709065ac200b006d9b316257fso922659ejs.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 02:55:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Cr0zob3O2czZYqaT1XEpHfoL1utbHJLFt3/CqeQ40lk=;
+        b=YO+GXMJr2ORf8l3XX7VDKW1TmoO0YcJ3nlApIwryAAewa3MKAhQl5L9XEz/grp56io
+         u0l5TiWheBskU3g+p+OxcxuqthVh8h1l5t2sjVCOwhQkNhDAUty9N2zMe6flLhCeSdCE
+         4aMFZZZKGhx77WzPFm49h4uFZ9qzzXIMsHvf1tah+XmyT5DDpRtsjR93swUn7MKV7Pm2
+         s5KC6GWjss1dzyiX/zyUC7NZUuxw4BCfhPu+plEIf2rpwMqtcN4XLgxb3SYeDe6fVu6O
+         2C/ty/97clMGxxDS1JcBiFxqPnByPxRgpK4YWLLwco5sEicLOPZUHfMJY7H8Ep9zZgjJ
+         TAxQ==
+X-Gm-Message-State: AOAM530MkgTz744pWsl1rxkPAMc15VJQbfHihc/+FRf08vEVDVh/Cucl
+        qzPL7RczBMGFpTkUtYJIf0KcZa6BChHyVmCZNdeZkhNA3/nLU1mf5cBkmzJW7UTyKiPXO7FMMIj
+        MzKNUKkT+1JTk6emIiQ5KhtW+G4WSQcaVT4AnAkQ8Gg==
+X-Received: by 2002:a17:907:7e96:b0:6da:f7ee:4a25 with SMTP id qb22-20020a1709077e9600b006daf7ee4a25mr7322194ejc.436.1649238945562;
+        Wed, 06 Apr 2022 02:55:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxp7atgtib6PHMj3QV9Py+Ljc5dGjtqXV9y+Mr0o7vdm5hiR1gMwYh9YCrNenxw7wazsURVVw==
+X-Received: by 2002:a17:907:7e96:b0:6da:f7ee:4a25 with SMTP id qb22-20020a1709077e9600b006daf7ee4a25mr7322169ejc.436.1649238945248;
+        Wed, 06 Apr 2022 02:55:45 -0700 (PDT)
+Received: from [192.168.123.67] (ip-088-152-144-107.um26.pools.vodafone-ip.de. [88.152.144.107])
+        by smtp.gmail.com with ESMTPSA id sa26-20020a1709076d1a00b006e6b23c8dafsm4774120ejc.164.2022.04.06.02.55.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 02:55:44 -0700 (PDT)
+Message-ID: <cd8d6641-4a29-7deb-49ae-a80baab0344f@canonical.com>
+Date:   Wed, 6 Apr 2022 11:55:43 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] RISC-V: Increase range and default value of NR_CPUS
+Content-Language: en-US
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Arnd Bergmann <arnd@arndb.de>, atishp@atishpatra.org,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        anup@brainfault.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, apatel@ventanamicro.com
+References: <mhng-9cbb2a46-8bcb-4bfe-b927-0ed469dbd3a6@palmer-mbp2014>
+From:   Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+In-Reply-To: <mhng-9cbb2a46-8bcb-4bfe-b927-0ed469dbd3a6@palmer-mbp2014>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_03,2022-04-05_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation of the migration of the management of rvdev in
-remoteproc_virtio.c, this patch spins off new functions to manage the
-remoteproc virtio device.
- - rproc_rvdev_add_device
- - rproc_rvdev_remove_device
+On 3/31/22 21:42, Palmer Dabbelt wrote:
+> On Sat, 19 Mar 2022 05:12:06 PDT (-0700), apatel@ventanamicro.com wrote:
+>> Currently, the range and default value of NR_CPUS is too restrictive
+>> for high-end RISC-V systems with large number of HARTs. The latest
+>> QEMU virt machine supports upto 512 CPUs so the current NR_CPUS is
+>> restrictive for QEMU as well. Other major architectures (such as
+>> ARM64, x86_64, MIPS, etc) have a much higher range and default
+>> value of NR_CPUS.
+>>
+>> This patch increases NR_CPUS range to 2-512 and default value to
+>> XLEN (i.e. 32 for RV32 and 64 for RV64).
+>>
+>> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+>> ---
+>> Changes since v1:
+>>  - Updated NR_CPUS range to 2-512 which reflects maximum number of
+>>    CPUs supported by QEMU virt machine.
+>> ---
+>>  arch/riscv/Kconfig | 7 ++++---
+>>  1 file changed, 4 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+>> index 5adcbd9b5e88..423ac17f598c 100644
+>> --- a/arch/riscv/Kconfig
+>> +++ b/arch/riscv/Kconfig
+>> @@ -274,10 +274,11 @@ config SMP
+>>        If you don't know what to do here, say N.
+>>
+>>  config NR_CPUS
+>> -    int "Maximum number of CPUs (2-32)"
+>> -    range 2 32
+>> +    int "Maximum number of CPUs (2-512)"
+>> +    range 2 512
 
-The rproc_rvdev_add_device and rproc_rvdev_remove_device will be
-moved to remoteproc_virtio.c.
+For SBI_V01=y there seems to be a hard constraint to XLEN bits.
+See __sbi_v01_cpumask_to_hartmask() in rch/riscv/kernel/sbi.c.
 
-The rproc_vdev_data structure is introduced to provide information for
-the rvdev creation. This structure allows to manage the rvdev and vrings
-allocation in the rproc_rvdev_add_device function.
+So shouldn't this be something like:
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
----
- drivers/remoteproc/remoteproc_core.c     | 157 +++++++++++++----------
- drivers/remoteproc/remoteproc_internal.h |  15 +++
- 2 files changed, 106 insertions(+), 66 deletions(-)
+range 2 512 !SBI_V01
+range 2 32 SBI_V01 && 32BIT
+range 2 64 SBI_V01 && 64BIT
 
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index c510125769b9..3a469220ac73 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -484,74 +484,23 @@ static int copy_dma_range_map(struct device *to, struct device *from)
- 	return 0;
- }
- 
--/**
-- * rproc_handle_vdev() - handle a vdev fw resource
-- * @rproc: the remote processor
-- * @ptr: the vring resource descriptor
-- * @offset: offset of the resource entry
-- * @avail: size of available data (for sanity checking the image)
-- *
-- * This resource entry requests the host to statically register a virtio
-- * device (vdev), and setup everything needed to support it. It contains
-- * everything needed to make it possible: the virtio device id, virtio
-- * device features, vrings information, virtio config space, etc...
-- *
-- * Before registering the vdev, the vrings are allocated from non-cacheable
-- * physically contiguous memory. Currently we only support two vrings per
-- * remote processor (temporary limitation). We might also want to consider
-- * doing the vring allocation only later when ->find_vqs() is invoked, and
-- * then release them upon ->del_vqs().
-- *
-- * Note: @da is currently not really handled correctly: we dynamically
-- * allocate it using the DMA API, ignoring requested hard coded addresses,
-- * and we don't take care of any required IOMMU programming. This is all
-- * going to be taken care of when the generic iommu-based DMA API will be
-- * merged. Meanwhile, statically-addressed iommu-based firmware images should
-- * use RSC_DEVMEM resource entries to map their required @da to the physical
-- * address of their base CMA region (ouch, hacky!).
-- *
-- * Return: 0 on success, or an appropriate error code otherwise
-- */
--static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
--			     int offset, int avail)
-+static struct rproc_vdev *
-+rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
- {
--	struct fw_rsc_vdev *rsc = ptr;
--	struct device *dev = &rproc->dev;
- 	struct rproc_vdev *rvdev;
--	int i, ret;
-+	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
- 	char name[16];
--
--	/* make sure resource isn't truncated */
--	if (struct_size(rsc, vring, rsc->num_of_vrings) + rsc->config_len >
--			avail) {
--		dev_err(dev, "vdev rsc is truncated\n");
--		return -EINVAL;
--	}
--
--	/* make sure reserved bytes are zeroes */
--	if (rsc->reserved[0] || rsc->reserved[1]) {
--		dev_err(dev, "vdev rsc has non zero reserved bytes\n");
--		return -EINVAL;
--	}
--
--	dev_dbg(dev, "vdev rsc: id %d, dfeatures 0x%x, cfg len %d, %d vrings\n",
--		rsc->id, rsc->dfeatures, rsc->config_len, rsc->num_of_vrings);
--
--	/* we currently support only two vrings per rvdev */
--	if (rsc->num_of_vrings > ARRAY_SIZE(rvdev->vring)) {
--		dev_err(dev, "too many vrings: %d\n", rsc->num_of_vrings);
--		return -EINVAL;
--	}
-+	int i, ret;
- 
- 	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
- 	if (!rvdev)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	kref_init(&rvdev->refcount);
- 
--	rvdev->id = rsc->id;
-+	rvdev->id = rvdev_data->id;
- 	rvdev->rproc = rproc;
--	rvdev->index = rproc->nb_vdev++;
-+	rvdev->index = rvdev_data->index;
- 
- 	/* Initialise vdev subdevice */
- 	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
-@@ -563,7 +512,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
- 	ret = device_register(&rvdev->dev);
- 	if (ret) {
- 		put_device(&rvdev->dev);
--		return ret;
-+		return ERR_PTR(ret);
- 	}
- 
- 	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
-@@ -576,7 +525,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
- 	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
- 					   dma_get_mask(rproc->dev.parent));
- 	if (ret) {
--		dev_warn(dev,
-+		dev_warn(&rvdev->dev,
- 			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
- 			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
- 	}
-@@ -589,7 +538,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
- 	}
- 
- 	/* remember the resource offset*/
--	rvdev->rsc_offset = offset;
-+	rvdev->rsc_offset = rvdev_data->rsc_offset;
- 
- 	/* allocate the vring resources */
- 	for (i = 0; i < rsc->num_of_vrings; i++) {
-@@ -605,21 +554,20 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
- 
- 	rproc_add_subdev(rproc, &rvdev->subdev);
- 
--	return 0;
-+	return rvdev;
- 
- unwind_vring_allocations:
- 	for (i--; i >= 0; i--)
- 		rproc_free_vring(&rvdev->vring[i]);
- free_rvdev:
- 	device_unregister(&rvdev->dev);
--	return ret;
-+	return ERR_PTR(ret);
- }
- 
--void rproc_vdev_release(struct kref *ref)
-+static void rproc_rvdev_remove_device(struct rproc_vdev *rvdev)
- {
--	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
--	struct rproc_vring *rvring;
- 	struct rproc *rproc = rvdev->rproc;
-+	struct rproc_vring *rvring;
- 	int id;
- 
- 	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
-@@ -632,6 +580,83 @@ void rproc_vdev_release(struct kref *ref)
- 	device_unregister(&rvdev->dev);
- }
- 
-+/**
-+ * rproc_handle_vdev() - handle a vdev fw resource
-+ * @rproc: the remote processor
-+ * @ptr: the vring resource descriptor
-+ * @offset: offset of the resource entry
-+ * @avail: size of available data (for sanity checking the image)
-+ *
-+ * This resource entry requests the host to statically register a virtio
-+ * device (vdev), and setup everything needed to support it. It contains
-+ * everything needed to make it possible: the virtio device id, virtio
-+ * device features, vrings information, virtio config space, etc...
-+ *
-+ * Before registering the vdev, the vrings are allocated from non-cacheable
-+ * physically contiguous memory. Currently we only support two vrings per
-+ * remote processor (temporary limitation). We might also want to consider
-+ * doing the vring allocation only later when ->find_vqs() is invoked, and
-+ * then release them upon ->del_vqs().
-+ *
-+ * Note: @da is currently not really handled correctly: we dynamically
-+ * allocate it using the DMA API, ignoring requested hard coded addresses,
-+ * and we don't take care of any required IOMMU programming. This is all
-+ * going to be taken care of when the generic iommu-based DMA API will be
-+ * merged. Meanwhile, statically-addressed iommu-based firmware images should
-+ * use RSC_DEVMEM resource entries to map their required @da to the physical
-+ * address of their base CMA region (ouch, hacky!).
-+ *
-+ * Return: 0 on success, or an appropriate error code otherwise
-+ */
-+static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
-+			     int offset, int avail)
-+{
-+	struct fw_rsc_vdev *rsc = ptr;
-+	struct device *dev = &rproc->dev;
-+	struct rproc_vdev *rvdev;
-+	struct rproc_vdev_data rvdev_data;
-+
-+	/* make sure resource isn't truncated */
-+	if (struct_size(rsc, vring, rsc->num_of_vrings) + rsc->config_len >
-+			avail) {
-+		dev_err(dev, "vdev rsc is truncated\n");
-+		return -EINVAL;
-+	}
-+
-+	/* make sure reserved bytes are zeroes */
-+	if (rsc->reserved[0] || rsc->reserved[1]) {
-+		dev_err(dev, "vdev rsc has non zero reserved bytes\n");
-+		return -EINVAL;
-+	}
-+
-+	dev_dbg(dev, "vdev rsc: id %d, dfeatures 0x%x, cfg len %d, %d vrings\n",
-+		rsc->id, rsc->dfeatures, rsc->config_len, rsc->num_of_vrings);
-+
-+	/* we currently support only two vrings per rvdev */
-+	if (rsc->num_of_vrings > ARRAY_SIZE(rvdev->vring)) {
-+		dev_err(dev, "too many vrings: %d\n", rsc->num_of_vrings);
-+		return -EINVAL;
-+	}
-+
-+	rvdev_data.id = rsc->id;
-+	rvdev_data.index = rproc->nb_vdev++;
-+	rvdev_data.rsc_offset = offset;
-+	rvdev_data.rsc = rsc;
-+
-+	rvdev = rproc_rvdev_add_device(rproc, &rvdev_data);
-+	if (IS_ERR(rvdev))
-+		return PTR_ERR(rvdev);
-+
-+	return 0;
-+}
-+
-+void rproc_vdev_release(struct kref *ref)
-+{
-+	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
-+
-+	rproc_rvdev_remove_device(rvdev);
-+}
-+
- /**
-  * rproc_handle_trace() - handle a shared trace buffer resource
-  * @rproc: the remote processor
-diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
-index 72d4d3d7d94d..99f2ff88079f 100644
---- a/drivers/remoteproc/remoteproc_internal.h
-+++ b/drivers/remoteproc/remoteproc_internal.h
-@@ -24,6 +24,21 @@ struct rproc_debug_trace {
- 	struct rproc_mem_entry trace_mem;
- };
- 
-+/**
-+ * struct rproc_vdev_data - remoteproc virtio device data
-+ * @rsc_offset: offset of the vdev's resource entry
-+ * @id: virtio device id (as in virtio_ids.h)
-+ * @index: vdev position versus other vdev declared in resource table
-+ * @rsc: pointer to the vdev resource entry. Valid onlyduring vdev init as the resource can
-+ *       be cached by rproc.
-+ */
-+struct rproc_vdev_data {
-+	u32 rsc_offset;
-+	unsigned int id;
-+	unsigned int index;
-+	struct fw_rsc_vdev *rsc;
-+};
-+
- /* from remoteproc_core.c */
- void rproc_release(struct kref *kref);
- irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
--- 
-2.25.1
+>>      depends on SMP
+>> -    default "8"
+>> +    default "32" if 32BIT
+>> +    default "64" if 64BIT
+>>
+>>  config HOTPLUG_CPU
+>>      bool "Support for hot-pluggable CPUs"
+> 
+> I'm getting all sorts of boot issues with more than 32 CPUs, even on the 
+> latest QEMU master.  I'm not opposed to increasing the CPU count in 
+> theory, but if we're going to have a setting that goes up to a huge 
+> number it needs to at least boot.  I've got 64 host threads, so it 
+> shouldn't just be a scheduling thing.
+
+Currently high performing hardware for RISC-V is missing. So it makes 
+sense to build software via QEMU on x86_64 or arm64 with as many 
+hardware threads as available (128 is not uncommon).
+
+OpenSBI currently is limited to 128 threads:
+include/sbi/sbi_hartmask.h:22:
+#define SBI_HARTMASK_MAX_BITS 128
+This is just an arbitrary value we can be modified.
+
+U-Boot v2022.04 qemu-riscv64_smode_defconfig has a value of 
+CONFIG_SYS_MALLOC_F_LEN that is to low. This leads to a boot failure for 
+more than 16 harts. A patch to correct this is pending:
+[PATCH v2 1/1] riscv: alloc space exhausted
+https://lore.kernel.org/u-boot/CAN5B=eKt=tFLZ2z3aNHJqsnJzpdA0oikcrC2i1_=ZDD=f+M0jA@mail.gmail.com/T/#t
+
+With QEMU 7.0 and the U-Boot fix booting into a 5.17 defconfig kernel 
+with 64 virtual cores worked fine for me.
+
+Best regards
+
+Heinrich
+
+> 
+> If there was some hardware that actually boots on these I'd be happy to 
+> take it, but given that it's just QEMU I'd prefer to sort out the bugs 
+> first.  It's probably just latent bugs somewhere, but allowing users to 
+> turn on configs we know don't work just seems like the wrong way to go.
+> 
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> 
 
