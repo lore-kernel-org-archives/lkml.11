@@ -2,204 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40ADCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237929AbiDFQdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
+        id S237659AbiDFQdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238336AbiDFQc5 (ORCPT
+        with ESMTP id S238367AbiDFQc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:32:57 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D73A1C1E7F;
-        Wed,  6 Apr 2022 06:52:35 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 236DqQmJ073045;
-        Wed, 6 Apr 2022 08:52:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649253146;
-        bh=ZlZPerePjjnbj3qgnIGG7yS3FTWwbY7C2WJBkoXBy6M=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=La0pqumwT0j2FA5QBZGRs5ikic5wng09DaA3KWGUc0N5GzCiB7nm59TYt8JSTZkGO
-         trzjCNPx2KX3SmRUuqW2e+5VG5F+nqjYMf7B1ac3IRS0B4KkKlrNk0zIXov0nzBffq
-         VGijLZApk9wZTM3CfOtZg8wzDeTdmLSwZ9Hh8j8o=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 236DqQdo089793
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 08:52:26 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 08:52:26 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 08:52:26 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 236DqFso079424;
-        Wed, 6 Apr 2022 08:52:23 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 1/2] dt-bindings: usb: Add documentation for AM62 USB Wrapper module
-Date:   Wed, 6 Apr 2022 19:22:10 +0530
-Message-ID: <20220406135214.6989-2-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406135214.6989-1-a-govindraju@ti.com>
-References: <20220406135214.6989-1-a-govindraju@ti.com>
+        Wed, 6 Apr 2022 12:32:59 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C201FAA29
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:22:59 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id l4-20020a17090a49c400b001c6840df4a3so1273685pjm.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 18:22:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GpAHmbeaClOABfDOq4xnFecCsaGHIekoRhkFacwUlXs=;
+        b=DTGX679OZ1qKODLoERzJPs9u5x0CQ7BYYUpa2ouElTHNgAKbPpKoCPRTExB81qQ2US
+         94dbMKZq/YmOeyWFp2JbpnvKA0jH4iSww8lz1A4p4C92e1wGL/hPVnaXi1g1ADkUAp6P
+         RNhUno+35Z8wecDtsPPgH+m4yLNmQXPQLqx3+K7wiP9W7njPgLJqsTd3C7bY0GOn3iL4
+         DU1KcaQsM6ar/F3C6nMFoc7ou3I3CvJEUZey03r8p0CmPUzHrg/bmaACtqdejQJ4iant
+         V/TCZoYpa1rMEzqemePJkaBICzpAtqcCLdOPBkkwkXyPjciIJJUh7pdnmRJymCr3P0SZ
+         hABQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GpAHmbeaClOABfDOq4xnFecCsaGHIekoRhkFacwUlXs=;
+        b=o/4AdjyKWi3YKrLDoHtZqOOMp0Zaikz1Mr5aimkeD+wRhL/MXrZMT4U5zyOSHBxXRB
+         bp3hMyozrW2hB8l+rDX1Tj5aiYg59j+0KblTubzdh3Q4SLWSE9kIrArVR4i+75uNtgsz
+         3e68SMGC+0q+KV45zatGDo3FOEyg8rUhsffTxQZ+NWBb3fSog5Z7rGV6gttctBx4fuqf
+         mN2T9v5N5kFr9MG+iDSE++WosAypbzuyIW/xuVvUwMXsrf6Wq7QKgmIeWKr0SxJyBvJy
+         QErD8grE2t4L2WPyxNtQcfHJx/mDDNIct4EExz0m99pKb/o5hB9ejdt4N/YcgpKr2Dj8
+         3YsA==
+X-Gm-Message-State: AOAM531FrfTiBN9b1WrvMZS5LQQO3j+0yYt2B+LRAITL1tZ1SXdWRMP2
+        g6Bsnp5MOzTlXit5urW8VUSUCeL1N2Y884W3Wvo2H6aIvfU=
+X-Google-Smtp-Source: ABdhPJy2l3ev5j2Q7pkZUUiX17H1f2uX0JiaFPO6bc09C7QOxwwhFdxA05PXl7UqsyY9sLkpv+RVessbAtwzpZwLwNA=
+X-Received: by 2002:a17:902:d512:b0:156:b23f:ed62 with SMTP id
+ b18-20020a170902d51200b00156b23fed62mr6252643plg.147.1649208179456; Tue, 05
+ Apr 2022 18:22:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220227120747.711169-1-ruansy.fnst@fujitsu.com>
+ <20220227120747.711169-2-ruansy.fnst@fujitsu.com> <CAPcyv4jAqV7dZdmGcKrG=f8sYmUXaL7YCQtME6GANywncwd+zg@mail.gmail.com>
+ <4fd95f0b-106f-6933-7bc6-9f0890012b53@fujitsu.com> <YkPtptNljNcJc1g/@infradead.org>
+ <15a635d6-2069-2af5-15f8-1c0513487a2f@fujitsu.com> <YkQtOO/Z3SZ2Pksg@infradead.org>
+ <4ed8baf7-7eb9-71e5-58ea-7c73b7e5bb73@fujitsu.com> <YkR8CUdkScEjMte2@infradead.org>
+ <20220330161812.GA27649@magnolia> <fd37cde6-318a-9faf-9bff-70bb8e5d3241@oracle.com>
+In-Reply-To: <fd37cde6-318a-9faf-9bff-70bb8e5d3241@oracle.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 5 Apr 2022 18:22:48 -0700
+Message-ID: <CAPcyv4gqBmGCQM_u40cR6GVror6NjhxV5Xd7pdHedE2kHwueoQ@mail.gmail.com>
+Subject: Re: [PATCH v11 1/8] dax: Introduce holder for dax_device
+To:     Jane Chu <jane.chu@oracle.com>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        david <david@fromorbit.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD
-controller.
+On Tue, Apr 5, 2022 at 5:55 PM Jane Chu <jane.chu@oracle.com> wrote:
+>
+> On 3/30/2022 9:18 AM, Darrick J. Wong wrote:
+> > On Wed, Mar 30, 2022 at 08:49:29AM -0700, Christoph Hellwig wrote:
+> >> On Wed, Mar 30, 2022 at 06:58:21PM +0800, Shiyang Ruan wrote:
+> >>> As the code I pasted before, pmem driver will subtract its ->data_offset,
+> >>> which is byte-based. And the filesystem who implements ->notify_failure()
+> >>> will calculate the offset in unit of byte again.
+> >>>
+> >>> So, leave its function signature byte-based, to avoid repeated conversions.
+> >>
+> >> I'm actually fine either way, so I'll wait for Dan to comment.
+> >
+> > FWIW I'd convinced myself that the reason for using byte units is to
+> > make it possible to reduce the pmem failure blast radius to subpage
+> > units... but then I've also been distracted for months. :/
+> >
+>
+> Yes, thanks Darrick!  I recall that.
+> Maybe just add a comment about why byte unit is used?
 
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
----
-
-changes since v2:
-- Removed the implementation of detecting the role from the wrapper
-  driver and moved the implementation to using linux,extcon-usb-gpio
-  driver for role detection.
-- Updated the binding documentation and example to reflect the same.
-
- .../devicetree/bindings/usb/ti,am62-usb.yaml  | 115 ++++++++++++++++++
- 1 file changed, 115 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
-
-diff --git a/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
-new file mode 100644
-index 000000000000..59b5ccea5671
---- /dev/null
-+++ b/Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
-@@ -0,0 +1,115 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/usb/ti,am62-usb.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TI's AM62 wrapper module for the Synopsys USBSS-DRD controller
-+
-+maintainers:
-+  - Aswath Govindraju <a-govindraju@ti.com>
-+
-+properties:
-+  compatible:
-+    const: ti,am62-usb
-+
-+  reg:
-+    maxItems: 1
-+
-+  ranges: true
-+
-+  power-domains:
-+    description:
-+      PM domain provider node and an args specifier containing
-+      the USB ISO device id value. See,
-+      Documentation/devicetree/bindings/soc/ti/sci-pm-domain.yaml
-+    maxItems: 1
-+
-+  clocks:
-+    description: Clock phandle to usb2_refclk
-+    maxItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: ref
-+
-+  interrupts:
-+    description:
-+      interrupt line to be used for detecting changes in VBUS
-+    maxItems: 1
-+
-+  ti,vbus-divider:
-+    description:
-+      Should be present if USB VBUS line is connected to the
-+      VBUS pin of the SoC via a 1/3 voltage divider.
-+    type: boolean
-+
-+  ti,syscon-phy-pll-refclk:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      - items:
-+          - description: Phandle to the SYSCON entry
-+          - description: USB phy control register offset within SYSCON
-+    description:
-+      Specifier for conveying frequency of ref clock input, for the
-+      operation of USB2PHY.
-+
-+  '#address-cells':
-+    const: 2
-+
-+  '#size-cells':
-+    const: 2
-+
-+patternProperties:
-+  "^usb@[0-9a-f]+$":
-+    $ref: snps,dwc3.yaml#
-+    description: Required child node
-+
-+required:
-+  - compatible
-+  - reg
-+  - power-domains
-+  - clocks
-+  - clock-names
-+  - interrupts
-+  - ti,syscon-phy-pll-refclk
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/soc/ti,sci_pm_domain.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    extcon_usb1: extcon-usb1 {
-+      id-gpios = <&main_gpio1 51 GPIO_ACTIVE_HIGH>;
-+    };
-+
-+    bus {
-+      #address-cells = <2>;
-+      #size-cells = <2>;
-+
-+      usbss1: usb@f910000 {
-+        compatible = "ti,am62-usb";
-+        reg = <0x00 0x0f910000 0x00 0x800>;
-+        interrupts = <GIC_SPI 234 IRQ_TYPE_LEVEL_HIGH>; /* MISC IRQ */
-+        clocks = <&k3_clks 162 3>;
-+        clock-names = "ref";
-+        ti,syscon-phy-pll-refclk = <&wkup_conf 0x4018>;
-+        power-domains = <&k3_pds 179 TI_SCI_PD_EXCLUSIVE>;
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        usb@31100000 {
-+          compatible = "snps,dwc3";
-+          reg =<0x00 0x31100000 0x00 0x50000>;
-+          interrupts = <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>, /* irq.0 */
-+                       <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>; /* irq.0 */
-+          interrupt-names = "host", "peripheral";
-+          maximum-speed = "high-speed";
-+          extcon = <&extcon_usb1>;
-+          dr_mode = "otg";
-+        };
-+      };
-+    };
--- 
-2.17.1
-
+I think we start with page failure notification and then figure out
+how to get finer grained through the dax interface in follow-on
+changes. Otherwise, for finer grained error handling support,
+memory_failure() would also need to be converted to stop upcasting
+cache-line granularity to page granularity failures. The native MCE
+notification communicates a 'struct mce' that can be in terms of
+sub-page bytes, but the memory management implications are all page
+based. I assume the FS implications are all FS-block-size based?
