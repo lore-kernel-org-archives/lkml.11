@@ -2,150 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE642C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED97C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245459AbiDFI0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 04:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
+        id S241608AbiDFI0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 04:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359202AbiDFIY0 (ORCPT
+        with ESMTP id S1381632AbiDFIZD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:24:26 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56EA21FAA2D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:23:00 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id w21so887001pgm.7
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 18:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=het7xQEY6AiunexNVt3R9JrRc+WqABKqnLlFmve94Cc=;
-        b=itRW2E0kExcc0Xbaqr5Rh6BbC+cbZkZDFpK9xbhZMF0juee9my0sm58u9xyFrLsprz
-         ot2kFFHJ1bTgUg/fkR0IR5ACSG3O2kY3wbGZKsfnHPRgqglv6F20nLcOqRJYT6abN+b/
-         XUJnGOA9Pkr8343tkubrNfuBP3p0OT+EyRVXTb43d3x+xb9/TdGS7afMW/Ax8Qo/pUJj
-         /CkF2+7+R+QXIikz7cnO0nvZHX2zpv6hjyWAHgQSjiCrAqBOMM1nv1aRMn4TW+KAl1cm
-         H1HVHdBs+dCQa9JdCslDgZkoOj6P5HsLWe+AkWTDb0ClwzJ5EsIyIwJvQzH8Gy+hoUBN
-         956Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=het7xQEY6AiunexNVt3R9JrRc+WqABKqnLlFmve94Cc=;
-        b=43IMJqRNGyLGvyWgkMQ+Y1a9YGg+JbhfQv4cp+UnPKRBHC1B2Q39V9LCIuUvZxxnHg
-         O1hVnC0BFC4p5NaQOMv30gNWzHrsM4RveU7d7yRgoHIhuAfxIQ7RKRB1+l5yZCRXW5Uc
-         jtdFzgoDEjOY0QxKoyFJ/UMYZzVZEolDgO1apDIrABbd5Zn2ftizO/HsDEntGx4YdlX4
-         7Fs9NMBgW4LMLpFMhP2NBVkInWgPRaRfrbe9JEJ8MCYmfQbSin11pC847j7HJdMbguVw
-         113Cj3w6+EH7WKeccKrNSc/8gGlkG2zjJDurY/YNsknwXcc42K9puXkn/9ZbZNgBoS4u
-         IblA==
-X-Gm-Message-State: AOAM5324QDFS07EkpUBX/hTqcWh0Bh5XT90jP0LC+tUOpLCB3cOSo4UD
-        Z4J7GWfg3Two8WwSRefuotq+CQ==
-X-Google-Smtp-Source: ABdhPJzL8bboghyNu1DtoVv4HWrIhBJdeVZOAv1DNCUs8URWTJG38gLEY45sMuuz7zbtkBkVvRIltg==
-X-Received: by 2002:a05:6a02:28a:b0:385:f767:34f4 with SMTP id bk10-20020a056a02028a00b00385f76734f4mr5163616pgb.299.1649208179490;
-        Tue, 05 Apr 2022 18:22:59 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id m21-20020a17090a7f9500b001c97c6bcaf4sm3663556pjl.39.2022.04.05.18.22.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 18:22:58 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 01:22:55 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vasant Karasulli <vkarasulli@suse.de>
-Cc:     linux-kernel@vger.kernel.org, jroedel@suse.de, kvm@vger.kernel.org,
-        bp@alien8.de, x86@kernel.org, thomas.lendacky@amd.com,
-        varad.gautam@suse.com
-Subject: Re: [PATCH v6 2/4] x86/tests: Add tests for AMD SEV-ES #VC handling
- Add KUnit based tests to validate Linux's VC handling for instructions cpuid
- and wbinvd. These tests: 1. install a kretprobe on the #VC handler
- (sev_es_ghcb_hv_call, to access GHCB before/after the resulting VMGEXIT). 2.
- trigger an NAE by executing either cpuid or wbinvd. 3. check that the
- kretprobe was hit with the right exit_code available in GHCB.
-Message-ID: <Ykzrb1uyPZ2AKWos@google.com>
-References: <20220318094532.7023-1-vkarasulli@suse.de>
- <20220318094532.7023-3-vkarasulli@suse.de>
+        Wed, 6 Apr 2022 04:25:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D4110FC6
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:37:44 -0700 (PDT)
+Received: from kwepemi100010.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KY6Xs3t3QzgYP3;
+        Wed,  6 Apr 2022 09:35:57 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi100010.china.huawei.com (7.221.188.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 09:37:41 +0800
+Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
+ (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 6 Apr
+ 2022 09:37:41 +0800
+Subject: Re: [PATCH v3 1/2] drivers/perf: hisi: Associate PMUs in SICL with
+ CPUs online
+To:     John Garry <john.garry@huawei.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+CC:     Zhangshaokun <zhangshaokun@hisilicon.com>,
+        Linuxarm <linuxarm@huawei.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220321070124.41338-1-liuqi115@huawei.com>
+ <20220321070124.41338-2-liuqi115@huawei.com>
+ <ba5aa606-54bf-e19f-39ba-a21998781a6c@huawei.com>
+From:   "liuqi (BA)" <liuqi115@huawei.com>
+Message-ID: <3243b077-1cca-9986-f587-362a46589aba@huawei.com>
+Date:   Wed, 6 Apr 2022 09:37:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220318094532.7023-3-vkarasulli@suse.de>
+In-Reply-To: <ba5aa606-54bf-e19f-39ba-a21998781a6c@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.101.67]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The shortlog and changelog are all messed up.  Ditto for the other patches in this
-series.
+Hi John,
 
-On Fri, Mar 18, 2022, Vasant Karasulli wrote:
-> Signed-off-by: Vasant Karasulli <vkarasulli@suse.de>
-> ---
->  arch/x86/tests/Makefile      |   2 +
->  arch/x86/tests/sev-test-vc.c | 114 +++++++++++++++++++++++++++++++++++
->  2 files changed, 116 insertions(+)
->  create mode 100644 arch/x86/tests/sev-test-vc.c
+Thanks for the comments. some replies inline.
 
-...
+On 2022/4/5 16:18, John Garry wrote:
+> On 21/03/2022 07:01, Qi Liu wrote:
+>> If a PMU is in SICL, we associate it with all CPUs online, rather
+> 
+> /s/in SICL/in a SICL/ [and all other places, including the code change], 
+> or maybe it is better mention "IO super cluster" as well for people who 
+> would not know or remember.
+> 
+got it, will change these description, thanks.
 
-> +int sev_es_test_vc_init(struct kunit *test)
-> +{
-> +	int ret;
-> +
-> +	if (!cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT)) {
-> +		kunit_info(test, "Not a SEV-ES guest. Skipping.");
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	memset(&hv_call_krp, 0, sizeof(hv_call_krp));
-> +	hv_call_krp.entry_handler = hv_call_krp_entry;
-> +	hv_call_krp.handler = hv_call_krp_ret;
-> +	hv_call_krp.maxactive = 100;
-> +	hv_call_krp.data_size = sizeof(unsigned long);
-> +	hv_call_krp.kp.symbol_name = "sev_es_ghcb_hv_call";
-> +	hv_call_krp.kp.addr = 0;
-> +
-> +	ret = register_kretprobe(&hv_call_krp);
-> +	if (ret) {
-> +		kunit_info(test, "Could not register kretprobe. Skipping.");
-> +		goto out;
-> +	}
-> +
-> +	test->priv = kunit_kzalloc(test, sizeof(u64), GFP_KERNEL);
+>> than CPUs in the nearest SCCL.
+> 
+> You are not really saying why. I would mention that we do it as it is 
+> not appropiate to associate with a CPU die, and you can also mention 
+> problems that associating with a SICL creates.
+> 
+> Please also mention how changing FW definition is ok at this stage.
 
-Allocating 8 bytes and storing the pointer an 8-byte field is rather pointless :-)
+ok, I'll metion this next time.
+> 
+>>
+>> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+>> ---
+>>   drivers/perf/hisilicon/hisi_uncore_pa_pmu.c | 18 +++++++-----------
+>>   drivers/perf/hisilicon/hisi_uncore_pmu.c    |  4 ++++
+>>   drivers/perf/hisilicon/hisi_uncore_pmu.h    |  1 +
+>>   3 files changed, 12 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c 
+>> b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+>> index bad99d149172..54c604c0d404 100644
+>> --- a/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+>> +++ b/drivers/perf/hisilicon/hisi_uncore_pa_pmu.c
+>> @@ -258,13 +258,12 @@ static int hisi_pa_pmu_init_data(struct 
+>> platform_device *pdev,
+>>                      struct hisi_pmu *pa_pmu)
+>>   {
+>>       /*
+>> -     * Use the SCCL_ID and the index ID to identify the PA PMU,
+>> -     * while SCCL_ID is the nearst SCCL_ID from this SICL and
+>> -     * CPU core is chosen from this SCCL to manage this PMU.
+>> +     * As PA PMU is in SICL, use the SICL_ID and the index ID
+> 
+> "a SICL"
 
-> +	if (!test->priv) {
-> +		ret = -ENOMEM;
-> +		kunit_info(test, "Could not allocate. Skipping.");
-> +		goto out;
-> +	}
-> +
-> +out:
-> +	return ret;
-> +}
-> +
-> +void sev_es_test_vc_exit(struct kunit *test)
-> +{
-> +	if (test->priv)
-> +		kunit_kfree(test, test->priv);
-> +
-> +	if (hv_call_krp.kp.addr)
-> +		unregister_kretprobe(&hv_call_krp);
-> +}
-> +
-> +#define check_op(kt, ec, op)			\
-> +do {						\
-> +	struct kunit *t = (struct kunit *) kt;	\
-> +	op;					\
-> +	KUNIT_EXPECT_EQ(t, (typeof(ec)) ec,	\
-> +		*((typeof(ec) *)(t->priv)));		\
-> +} while (0)
-> +
-> +static void sev_es_nae_cpuid(struct kunit *test)
-> +{
-> +	unsigned int cpuid_fn = 0x8000001f;
-> +
-> +	check_op(test, SVM_EXIT_CPUID, native_cpuid_eax(cpuid_fn));
+got it.
+> 
+>> +     * to identify the PA PMU.
+>>        */
+>>       if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
+>> -                     &pa_pmu->sccl_id)) {
+>> -        dev_err(&pdev->dev, "Cannot read sccl-id!\n");
+>> +                     &pa_pmu->sicl_id)) {
+>> +        dev_err(&pdev->dev, "Cannot read sicl-id!\n");
+>>           return -EINVAL;
+>>       }
+>> @@ -275,6 +274,7 @@ static int hisi_pa_pmu_init_data(struct 
+>> platform_device *pdev,
+>>       }
+>>       pa_pmu->ccl_id = -1;
+>> +    pa_pmu->sccl_id = -1;
+>>       pa_pmu->base = devm_platform_ioremap_resource(pdev, 0);
+>>       if (IS_ERR(pa_pmu->base)) {
+>> @@ -399,13 +399,9 @@ static int hisi_pa_pmu_probe(struct 
+>> platform_device *pdev)
+>>       ret = hisi_pa_pmu_dev_probe(pdev, pa_pmu);
+>>       if (ret)
+>>           return ret;
+>> -    /*
+>> -     * PA is attached in SICL and the CPU core is chosen to manage this
+>> -     * PMU which is the nearest SCCL, while its SCCL_ID is greater than
+>> -     * one with the SICL_ID.
+>> -     */
+>> +
+>>       name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sicl%u_pa%u",
+>> -                  pa_pmu->sccl_id - 1, pa_pmu->index_id);
+>> +                  pa_pmu->sicl_id, pa_pmu->index_id);
+>>       if (!name)
+>>           return -ENOMEM;
+>> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c 
+>> b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+>> index a738aeab5c04..31930166c34b 100644
+>> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
+>> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+>> @@ -458,6 +458,10 @@ static bool hisi_pmu_cpu_is_associated_pmu(struct 
+>> hisi_pmu *hisi_pmu)
+>>   {
+>>       int sccl_id, ccl_id;
+>> +    /* If SCCL_ID is -1, the PMU is in SICL and can be associated 
+>> this PMU with any CPU */
+> 
+> too long, just have "The PMU is in a SICL and has no CPU affinity"
 
-Are there plans to go beyond basic checks?  Neat idea, but it seems like it will
-be prone to bitrot since it requires a somewhat esoteric setup and an opt-in config.
-And odds are very good that if the kernel can make it this far as an SEV-ES guest,
-it's gotten the basics right.
+ok, will fix this.
+
+Thanks,
+Qi
+> 
+>> +    if (hisi_pmu->sccl_id == -1)
+>> +        return true;
+>> +
+>>       if (hisi_pmu->ccl_id == -1) {
+>>           /* If CCL_ID is -1, the PMU only shares the same SCCL */
+>>           hisi_read_sccl_and_ccl_id(&sccl_id, NULL);
+>> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.h 
+>> b/drivers/perf/hisilicon/hisi_uncore_pmu.h
+>> index 7f5841d6f592..96eeddad55ff 100644
+>> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.h
+>> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.h
+>> @@ -81,6 +81,7 @@ struct hisi_pmu {
+>>       struct device *dev;
+>>       struct hlist_node node;
+>>       int sccl_id;
+>> +    int sicl_id;
+>>       int ccl_id;
+>>       void __iomem *base;
+>>       /* the ID of the PMU modules */
+> 
+> .
