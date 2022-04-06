@@ -2,78 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B04C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08516C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233277AbiDFTzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
+        id S229871AbiDFT5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:57:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235656AbiDFTxd (ORCPT
+        with ESMTP id S233168AbiDFT4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:53:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A61C19750B;
-        Wed,  6 Apr 2022 10:50:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E204961B49;
-        Wed,  6 Apr 2022 17:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A8BFC385A5;
-        Wed,  6 Apr 2022 17:50:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649267435;
-        bh=OTuMiMOd4RDZWmBCix2nDQHdZzlveUQCTb8m/MUvcHs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F1leZkzPgXlatMaUhsoBgDwylCeXv8KqD+lqete/fGVQQU3KR/dNbmrIxo67ZhwLE
-         jvVjERepmp4YMV8+fFsVLYyNW93Nd1aE8MM8VtQiTXnB4VmwbglGCGatacxwJDc0ix
-         TFyMwvAZkQMPqfLX1lQAo148d4NVVqu9qgjY58vknrKArJw0sZ0mtiKnwcXpitgJ3w
-         VR1C/vPtTx5Ce7kUJ0V+2233IwQgS+DCTC81dVbK7qfgxdzzdyDzRnaQg3POei0+u1
-         vxy5AwxIK/LrbI7qZg4mClRiXHj6fe0THdiI91e+A71FlGlJntV07UmsJLbjTVeJ6M
-         h1ngfOgyBvbXw==
-Date:   Wed, 6 Apr 2022 10:50:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     christopher.lee@cspi.com, davem@davemloft.net, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] myri10ge: fix an incorrect free for skb in
- myri10ge_sw_tso
-Message-ID: <20220406105033.6e0f1978@kernel.org>
-In-Reply-To: <20220406035556.730-1-xiam0nd.tong@gmail.com>
-References: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+        Wed, 6 Apr 2022 15:56:55 -0400
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7253120;
+        Wed,  6 Apr 2022 11:04:15 -0700 (PDT)
+Received: by mail-ot1-f54.google.com with SMTP id b17-20020a0568301df100b005ce0456a9efso2235185otj.9;
+        Wed, 06 Apr 2022 11:04:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tFqNaCkKApeiYksTrleFPMTtEkbWW1D2qkuPxZr5fUU=;
+        b=p6Kep7PdDJIXqjRSdgPPiAf6oylXPI8nJidFvIvDqmuGsJ+Ezy7i/VMCwyzUitV4zU
+         WFBegedwpLH2Scye4SDLQsqcU6VAcwID/8Zssl9Ojp2nmaFkSAg1w5rMfmLF/w5hUOl0
+         BFsXg5TK8IFQMA93vECO7hVHDWHTUX+iyFuJc1pZ1YkAY05l1IB2bxX7AQ5fnHtWfAtF
+         y5lgkwYTkEnF4DW/legt1/uIvmwUWwE5wxxXL1NaBWelySJUayQHK1D79WxEpb8D3Tzw
+         Ww+QW1ViDtA+tOJMK+hDLayQtdL0mz1mk1Id2RglJhbxg8PfUzlmXA9rxkr3S6czdZPb
+         oJuA==
+X-Gm-Message-State: AOAM533nsWyMHhCPiqVb/b7+/iB8AiOvh6haQmBW8WcmnK5nDHB6oYi9
+        xc9r0Dp7OKm0jy+SU1mUUg==
+X-Google-Smtp-Source: ABdhPJxJrK5rkRuJA8giQLl7I8TM/bAyKlXb/0qJLn0Q5cg/Dw6LDk4xNjJcq5oJVm/nbTKPAJWRrA==
+X-Received: by 2002:a9d:65d4:0:b0:5b2:67f2:244 with SMTP id z20-20020a9d65d4000000b005b267f20244mr3404940oth.307.1649268255051;
+        Wed, 06 Apr 2022 11:04:15 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j145-20020acaeb97000000b002d9f37166c1sm6631489oih.17.2022.04.06.11.04.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 11:04:14 -0700 (PDT)
+Received: (nullmailer pid 2508522 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:04:13 -0000
+Date:   Wed, 6 Apr 2022 13:04:13 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Abel Vesa <abel.vesa@nxp.com>
+Cc:     Dong Aisheng <aisheng.dong@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v5 8/8] dt-bindings: net: dwmac-imx: Document clk_csr
+ property
+Message-ID: <Yk3WHSr+OGRxYCg0@robh.at.kernel.org>
+References: <20220404134609.2676793-1-abel.vesa@nxp.com>
+ <20220404134609.2676793-9-abel.vesa@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404134609.2676793-9-abel.vesa@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  6 Apr 2022 11:55:56 +0800 Xiaomeng Tong wrote:
-> All remaining skbs should be released when myri10ge_xmit fails to
-> transmit a packet. Fix it within another skb_list_walk_safe.
+On Mon, Apr 04, 2022 at 04:46:09PM +0300, Abel Vesa wrote:
+> The clk_csr property is used for CSR clock range selection.
 
-I think it was also a UAF.
+Why?
 
-> diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> index 50ac3ee2577a..21d2645885ce 100644
-> --- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> +++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-> @@ -2903,11 +2903,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
->  		status = myri10ge_xmit(curr, dev);
->  		if (status != 0) {
->  			dev_kfree_skb_any(curr);
-> -			if (segs != NULL) {
-> -				curr = segs;
-> -				segs = next;
-> +			skb_list_walk_safe(next, curr, next) {
->  				curr->next = NULL;
-> -				dev_kfree_skb_any(segs);
-> +				dev_kfree_skb_any(curr);
->  			}
->  			goto drop;
->  		}
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> ---
+>  Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml b/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
+> index 011363166789..1556d95943f6 100644
+> --- a/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
+> +++ b/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
+> @@ -32,6 +32,10 @@ properties:
+>                - nxp,imx8dxl-dwmac-eqos
+>            - const: snps,dwmac-5.10a
+>  
+> +  clk_csr:
 
-Much better, thanks. 
+s/_/-/
 
-kfree_skb_list() exists but the patch was already applied, so whatever.
+vendor prefix needed. 
+
+And a type is needed.
+
+> +    description: |
+> +      Fixed CSR Clock Range selection
+
+What? Explain all this to someone that doesn't know your h/w.
+
+> +
+>    clocks:
+>      minItems: 3
+>      items:
+> -- 
+> 2.34.1
+> 
+> 
