@@ -2,86 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 725E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C31C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbiDFIMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 04:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
+        id S232621AbiDFINY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 04:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347385AbiDFII1 (ORCPT
+        with ESMTP id S1445649AbiDFILu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:08:27 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CBB3ED26;
-        Tue,  5 Apr 2022 22:50:33 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KYDBb4LKqz4xNp;
-        Wed,  6 Apr 2022 15:50:31 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649224231;
-        bh=7PZ3FsoJ+2ptme2gu7mqW7PuHp/a2hhqRzA7YZz7414=;
-        h=Date:From:To:Cc:Subject:From;
-        b=oz6dV031CxuborbAjuX5RgW5wpiMVyWp13vQU28ZuylsCpGvHzkq/K22YfGYFAWlX
-         vgMtTkI+kKY+Dv3+ceQ9G+t9IZladrQB5DVsw1futYdvDwJnhJuCa3DdcgefQfIZI6
-         JGH4QjbAdqKQiAWeEH+RrhP/irBjNgKyAXdoVVO6bQ6rMDU5zv6MoPZ6QIiLWGDGWP
-         uJTamH7gjribW1S6IHa1Enr+t/P7JeAgCBUrxPMKWBvLKLulnZ45aQL1KFD8S+/r5D
-         PgqPh3OGbgZpoV0GUGEFN7Ii8Qdy9UzjmLKLG/TIMwvk7qhX35hUEfbh09dRh4MAAV
-         kzhzX7+3Y2X7A==
-Date:   Wed, 6 Apr 2022 15:50:30 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>
-Cc:     Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the drm-misc tree
-Message-ID: <20220406155030.0dacf051@canb.auug.org.au>
+        Wed, 6 Apr 2022 04:11:50 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41192BD7ED
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:02:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649210567; x=1680746567;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=q9HJ/wMoqCq/bvozt3SgFYGtUgCsUPN2Y8mufFhHYxg=;
+  b=fS/37ow91/wRlVvtYeosAM+jHpFDMittLfAqCcsAwAPNlYyvjZfyl5SR
+   AkmyzL2jCU6wHrx8Ud0K8FwRs683nMZHxbZzFF2tOdgzUYyEU2fvG8+AN
+   0vv+pleFZdHnG5cMWsu5UNZO8FZ732z+9ygce5OLygpDpro0rXnCkxAEe
+   qU9aky5mYfhx44t/mffsk2gxXpOQw98eZG005oO09BEpAIJsEcZ+UyXFK
+   ol5gGzPRyNBbKSXb1G1MZRxSH9PAvun3tiDhaDN4qAMY3P/ySGnCsur1r
+   v68rR5G9oDIS+8Mac976qye8SukWAssHGtrkP/PXNz7372a0J07pvHQtK
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260918486"
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="260918486"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 19:02:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="608701778"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 05 Apr 2022 19:02:45 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbv0O-0003yv-GN;
+        Wed, 06 Apr 2022 02:02:44 +0000
+Date:   Wed, 6 Apr 2022 10:01:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:robh/linux/dt/pop-pci-nodes 2/2]
+ drivers/pci/of.c:29:6: warning: no previous prototype for function
+ 'add_bus_props'
+Message-ID: <202204060919.ixlG0hLi-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/rUlpEF7g.GhbEZ/hrKpYp5t";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/rUlpEF7g.GhbEZ/hrKpYp5t
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+tree:   https://github.com/ammarfaizi2/linux-block robh/linux/dt/pop-pci-nodes
+head:   b9198a9525a97d05b0bb2a7282fede92d7d2d93d
+commit: b9198a9525a97d05b0bb2a7282fede92d7d2d93d [2/2] PCI: Create DT nodes if they don't exist
+config: mips-buildonly-randconfig-r002-20220405 (https://download.01.org/0day-ci/archive/20220406/202204060919.ixlG0hLi-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/b9198a9525a97d05b0bb2a7282fede92d7d2d93d
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block robh/linux/dt/pop-pci-nodes
+        git checkout b9198a9525a97d05b0bb2a7282fede92d7d2d93d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/pci/
 
-Hi all,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-After merging the drm-misc tree, today's linux-next build (htmldocs)
-produced this warning:
+All warnings (new ones prefixed by >>):
 
-include/drm/ttm/ttm_resource.h:226: warning: Function parameter or member '=
-pos' not described in 'ttm_lru_bulk_move'
+   drivers/pci/of.c:18:21: warning: no previous prototype for function 'make_node' [-Wmissing-prototypes]
+   struct device_node *make_node(void)
+                       ^
+   drivers/pci/of.c:18:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   struct device_node *make_node(void)
+   ^
+   static 
+>> drivers/pci/of.c:29:6: warning: no previous prototype for function 'add_bus_props' [-Wmissing-prototypes]
+   void add_bus_props(struct device_node *node)
+        ^
+   drivers/pci/of.c:29:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void add_bus_props(struct device_node *node)
+   ^
+   static 
+   drivers/pci/of.c:60:6: warning: no previous prototype for function 'make_dev_node' [-Wmissing-prototypes]
+   void make_dev_node(struct pci_dev *dev)
+        ^
+   drivers/pci/of.c:60:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void make_dev_node(struct pci_dev *dev)
+   ^
+   static 
+   drivers/pci/of.c:88:21: warning: no previous prototype for function 'make_bus_node' [-Wmissing-prototypes]
+   struct device_node *make_bus_node(struct pci_bus *bus)
+                       ^
+   drivers/pci/of.c:88:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   struct device_node *make_bus_node(struct pci_bus *bus)
+   ^
+   static 
+   4 warnings generated.
 
-Introduced by commit
 
-  b0e2c9ea5afc ("drm/ttm: allow bulk moves for all domains")
+vim +/add_bus_props +29 drivers/pci/of.c
 
---=20
-Cheers,
-Stephen Rothwell
+    28	
+  > 29	void add_bus_props(struct device_node *node)
+    30	{
+    31		struct property *prop;
+    32		__be32 *val;
+    33	
+    34		prop = kzalloc(sizeof(*prop), GFP_KERNEL);
+    35		prop->name = "ranges";
+    36		prop->value = prop + 1;
+    37		prop->next = node->properties;
+    38		node->properties = prop;
+    39	
+    40		prop = kzalloc(sizeof(*prop) + sizeof(__be32), GFP_KERNEL);
+    41		prop->name = "#address-cells";
+    42		prop->value = prop + 1;
+    43		prop->length = sizeof(__be32);
+    44		val = prop->value;
+    45		val[0] = __cpu_to_be32(3);
+    46		prop->next = node->properties;
+    47		node->properties = prop;
+    48	
+    49		prop = kzalloc(sizeof(*prop) + sizeof(__be32), GFP_KERNEL);
+    50		prop->name = "#size-cells";
+    51		prop->value = prop + 1;
+    52		prop->length = sizeof(__be32);
+    53		val = prop->value;
+    54		val[0] = __cpu_to_be32(2);
+    55		prop->next = node->properties;
+    56		node->properties = prop;
+    57	
 
---Sig_/rUlpEF7g.GhbEZ/hrKpYp5t
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJNKiYACgkQAVBC80lX
-0GxvGgf/e0A2pF/iLTLUGePDXq6bOz3pHSt0OiJIXgF9wfnHIG1H+eCufkblYrxn
-jYDshdWhGpzf3QJtp8MxzgqbH6j019ekBzvp4DL+1tY5KXs39c5oAXXuEyG1UMYU
-bUT8HvCnvapzCKCcloVYNRR4nqaXvHGJe3LbUUR1nRLJ6xleQO8KdbbaGTCaTV/M
-VBSKJ/0tkw3W1oW7yW5/qcQuzuMDJPWXUIK9RB/1omEGDJ4tlvLB2AIh3Oaeb45B
-zaDYZIOvMhYME5exTu3oyetIAvslyTHYTZXLCV3lO6ZOIvl35IhWlqO+2M+GrI3n
-pC9r7owGL6YmQIq0DfUwJ7lQ+KJJsw==
-=Kh+P
------END PGP SIGNATURE-----
-
---Sig_/rUlpEF7g.GhbEZ/hrKpYp5t--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
