@@ -2,172 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37703C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237149AbiDFL1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51256 "EHLO
+        id S242163AbiDFL1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241115AbiDFL0f (ORCPT
+        with ESMTP id S241900AbiDFL1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:26:35 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D309355CFE8;
-        Wed,  6 Apr 2022 01:13:15 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 4DED31F38A;
-        Wed,  6 Apr 2022 08:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649232794; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/rBcyoDoTq/ouUuDrmZ5BU4RlZeCyQlpcb/fLfqi5+g=;
-        b=dJ+xoXpY08wKZSxp4z1Y5Osm1Twl7YrbmzMZrDi+X2woMiKeABbNRwulYBc2qOF6dH3brs
-        MNTVdkTWKIpEhYzVo45ZPk4swaf0E52Z+v/2uKVyVQI5xbozxEx46EpwHv1IkCHg1/P9MJ
-        oeOBCZNuC7mWz+jnAtWnLkdd6TkHf0M=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649232794;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/rBcyoDoTq/ouUuDrmZ5BU4RlZeCyQlpcb/fLfqi5+g=;
-        b=+cHhjmj0LF7iVvf9KUfF3wuUVkHwKWOHOJ0OtTa9gm6FBswBsRelBd0noj2RXLYYVFYpeZ
-        Z7ZFBZ+7OjnqgnCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1266A13A8E;
-        Wed,  6 Apr 2022 08:13:14 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Ik0hA5pLTWJeYAAAMHmgww
-        (envelope-from <ddiss@suse.de>); Wed, 06 Apr 2022 08:13:14 +0000
-Date:   Wed, 6 Apr 2022 10:13:11 +0200
-From:   David Disseldorp <ddiss@suse.de>
-To:     "NeilBrown" <neilb@suse.de>
-Cc:     "Al Viro" <viro@zeniv.linux.org.uk>, linux-nfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org,
-        "LKML" <linux-kernel@vger.kernel.org>,
-        "Jeff Layton" <jlayton@kernel.org>
-Subject: Re: [PATCH v4] VFS: filename_create(): fix incorrect intent.
-Message-ID: <20220406101311.502aa172@suse.de>
-In-Reply-To: <164878611050.25542.6758961460499392000@noble.neil.brown.name>
-References: <164877264126.25542.1271530843099472952@noble.neil.brown.name>
-        <164878611050.25542.6758961460499392000@noble.neil.brown.name>
+        Wed, 6 Apr 2022 07:27:01 -0400
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA6B55F353;
+        Wed,  6 Apr 2022 01:13:39 -0700 (PDT)
+Received: by mail-ej1-f47.google.com with SMTP id ot30so2552004ejb.12;
+        Wed, 06 Apr 2022 01:13:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nbgR+IckzJRUGptIoNowdGGPeNkA0puvrWRLQTOMQtg=;
+        b=b9ZCrlDB+GTB2tVlJ/03f4DiB6XAjJLJKb4ju2RtXtfz2tJbZYXFz71/nhsJDZOsLo
+         L6raeh7/AIHcw83pF3yrDE4JGlD2ik+B4sCAwit8Ppm3GKgHrlmhhHSm4mGY32xNPa8H
+         Ua9b8nJOpDTu9x+Jrpcpogv4mtiSYHw/ub8rC97JIaByLspqNSI7NAGdAhGjr5E4f8tU
+         82bTW/HjL+6XlA2c0VQQBYENjhWK9k1Mta4sJE6n1Vi/tF2V1ZWrSqNHJdkU2hJGeQ5h
+         n1+3vlgoZYK9Q7a7mkXf7XNgagipkFHKtDsrI0xhYIGyjBDKZcKHe6PeyV57qPlMb0Zq
+         W8LA==
+X-Gm-Message-State: AOAM531adGUewbHwKMnLe3tMcNrg+us/HWT5o3H5UmsvZixEJqcQ0pyz
+        Y5PGfAvOpy4Of374/Vld9Y8=
+X-Google-Smtp-Source: ABdhPJxi7OtObunO4HoGzaVX4GKdsXdaUsE1FqYamU4yS4gwOCjIaGhCC1e2eJVmIPDZ2UdFExQpcQ==
+X-Received: by 2002:a17:907:3f9c:b0:6d8:116d:476b with SMTP id hr28-20020a1709073f9c00b006d8116d476bmr7036757ejc.432.1649232818074;
+        Wed, 06 Apr 2022 01:13:38 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id c14-20020a170906340e00b006ce98f2581asm6270629ejb.205.2022.04.06.01.13.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 01:13:37 -0700 (PDT)
+Message-ID: <7cb1cc42-ef98-cbbe-1779-107602747d07@kernel.org>
+Date:   Wed, 6 Apr 2022 10:13:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] tty: Add lookahead param to receive_buf
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
+ <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 01 Apr 2022 15:08:30 +1100, NeilBrown wrote:
+On 05. 04. 22, 12:24, Ilpo Järvinen wrote:
+> After lookahead for XON/XOFF characters is added by the next
+> patch, the receive side needs to ensure the flow-control
+> actions are not retaken later on when those same characters
+> get read by TTY.
+> 
+> Thus, pass lookahead count to receive_buf and skip
+> flow-control character actions if already taken for the
+> character in question. Lookahead count will become live after
+> the next patch.
+...
+> --- a/include/linux/tty_ldisc.h
+> +++ b/include/linux/tty_ldisc.h
+> @@ -224,11 +224,11 @@ struct tty_ldisc_ops {
+>   	 * The following routines are called from below.
+>   	 */
+>   	void	(*receive_buf)(struct tty_struct *tty, const unsigned char *cp,
+> -			       const char *fp, int count);
+> +			       const char *fp, int count, int lookahead_count);
+>   	void	(*write_wakeup)(struct tty_struct *tty);
+>   	void	(*dcd_change)(struct tty_struct *tty, unsigned int status);
+>   	int	(*receive_buf2)(struct tty_struct *tty, const unsigned char *cp,
+> -				const char *fp, int count);
+> +				const char *fp, int count, int lookahead_count);
 
-> When asked to create a path ending '/', but which is not to be a
-> directory (LOOKUP_DIRECTORY not set), filename_create() will never try
-> to create the file.  If it doesn't exist, -ENOENT is reported.
-> 
-> However, it still passes LOOKUP_CREATE|LOOKUP_EXCL to the filesystems
-> ->lookup() function, even though there is no intent to create.  This is  
-> misleading and can cause incorrect behaviour.
-> 
-> If you try
->    ln -s foo /path/dir/
+Please always use unsigned if you don't expect negative numbers. count 
+should be changed to unsigned in long term too.
 
-It'd be helpful if we could run these sorts of tests from the xfstests
-suite. I wonder whether some sort of other-client ssh backchannel would
-be useful (for cifs.ko and cephfs too).
+> diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+> index 58e9619116b7..1871a6a9cb00 100644
+> --- a/include/linux/tty_port.h
+> +++ b/include/linux/tty_port.h
+> @@ -39,7 +39,7 @@ struct tty_port_operations {
+>   };
+>   
+>   struct tty_port_client_operations {
+> -	int (*receive_buf)(struct tty_port *port, const unsigned char *, const unsigned char *, size_t);
+> +	int (*receive_buf)(struct tty_port *port, const unsigned char *, const unsigned char *, size_t, size_t);
 
-> where 'dir' is a directory on an NFS filesystem which is not currently
-> known in the dcache, this will fail with ENOENT.
-> As the name is not in the dcache, nfs_lookup gets called with
-> LOOKUP_CREATE|LOOKUP_EXCL and so it returns NULL without performing any
-> lookup, with the expectation that a subsequent call to create the
-> target will be made, and the lookup can be combined with the creation.
-> In the case with a trailing '/' and no LOOKUP_DIRECTORY, that call is never
-> made.  Instead filename_create() sees that the dentry is not (yet)
-> positive and returns -ENOENT - even though the directory actually
-> exists.
-> 
-> So only set LOOKUP_CREATE|LOOKUP_EXCL if there really is an intent
-> to create, and use the absence of these flags to decide if -ENOENT
-> should be returned.
-> 
-> Note that filename_parentat() is only interested in LOOKUP_REVAL, so we
-> split that out and store it in 'reval_flag'.
-> __looku_hash() then gets reval_flag combined with whatever create flags
-> were determined to be needed.
+Good, here it is unsigned and even of size_t size (I don't immediately 
+see why, but OK).
 
-nit: __lookup_hash()
-
-> 
-> Signed-off-by: NeilBrown <neilb@suse.de>
-> ---
->  fs/namei.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
-> 
-> ARG - v3 had a missing semi-colon.  Sorry.
-> 
-> diff --git a/fs/namei.c b/fs/namei.c
-> index 3f1829b3ab5b..509657fdf4f5 100644
-> --- a/fs/namei.c
-> +++ b/fs/namei.c
-> @@ -3673,18 +3673,14 @@ static struct dentry *filename_create(int dfd, struct filename *name,
->  {
->  	struct dentry *dentry = ERR_PTR(-EEXIST);
->  	struct qstr last;
-> +	bool want_dir = lookup_flags & LOOKUP_DIRECTORY;
-> +	unsigned int reval_flag = lookup_flags & LOOKUP_REVAL;
-> +	unsigned int create_flags = LOOKUP_CREATE | LOOKUP_EXCL;
->  	int type;
->  	int err2;
->  	int error;
-> -	bool is_dir = (lookup_flags & LOOKUP_DIRECTORY);
->  
-> -	/*
-> -	 * Note that only LOOKUP_REVAL and LOOKUP_DIRECTORY matter here. Any
-> -	 * other flags passed in are ignored!
-> -	 */
-> -	lookup_flags &= LOOKUP_REVAL;
-> -
-> -	error = filename_parentat(dfd, name, lookup_flags, path, &last, &type);
-> +	error = filename_parentat(dfd, name, reval_flag, path, &last, &type);
->  	if (error)
->  		return ERR_PTR(error);
->  
-> @@ -3698,11 +3694,13 @@ static struct dentry *filename_create(int dfd, struct filename *name,
->  	/* don't fail immediately if it's r/o, at least try to report other errors */
->  	err2 = mnt_want_write(path->mnt);
->  	/*
-> -	 * Do the final lookup.
-> +	 * Do the final lookup.  Suppress 'create' if there is a trailing
-> +	 * '/', and a directory wasn't requested.
->  	 */
-> -	lookup_flags |= LOOKUP_CREATE | LOOKUP_EXCL;
-> +	if (last.name[last.len] && !want_dir)
-> +		create_flags = 0;
->  	inode_lock_nested(path->dentry->d_inode, I_MUTEX_PARENT);
-> -	dentry = __lookup_hash(&last, path->dentry, lookup_flags);
-> +	dentry = __lookup_hash(&last, path->dentry, reval_flag | create_flags);
->  	if (IS_ERR(dentry))
->  		goto unlock;
->  
-> @@ -3716,7 +3714,7 @@ static struct dentry *filename_create(int dfd, struct filename *name,
->  	 * all is fine. Let's be bastards - you had / on the end, you've
->  	 * been asking for (non-existent) directory. -ENOENT for you.
->  	 */
-> -	if (unlikely(!is_dir && last.name[last.len])) {
-> +	if (unlikely(!create_flags)) {
->  		error = -ENOENT;
->  		goto fail;
->  	}
-
-Looks good and works for me.
-Reviewed-by: David Disseldorp <ddiss@suse.de>
+thanks,
+-- 
+js
+suse labs
