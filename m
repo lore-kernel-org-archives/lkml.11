@@ -2,152 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE19C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F71C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231215AbiDFTgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54340 "EHLO
+        id S232058AbiDFTim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231795AbiDFTfx (ORCPT
+        with ESMTP id S232549AbiDFThj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:35:53 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E166BD6D;
-        Wed,  6 Apr 2022 10:19:28 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id k2so3435841edj.9;
-        Wed, 06 Apr 2022 10:19:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=vdE7ENdk50E008niFssMoI/ouBHi+zXp0XKAL9+sLMU=;
-        b=MLX8eLxI0+AXuN+l8u9PcFmRJgkQ8kt9A0wrp+VwWRqy23mMFhLT8whzsf7t000Ncc
-         97Xt8KXreXtmlAyc/43AWxy5o4JoMImIo7MTazY8o9DuT3xSLfJ81UArwUm9a7pT4ZwC
-         CEwip7418fGB8AT2ch6oEoiUwjOOD+dbHRDMFCqll0ZnjyqmH6rfwMFwR0th5ZtEW9/s
-         g2zt/ziGlxVPZz9XFEu89z4Buc5QwGtHq046NsieugzH5lE37pIxdWY+Vjt6VDsOBSUV
-         JlMRIarD6IZoAweQZVuW9y8wLuvDffwIMwVKCUg6g7iOa/ikjZfQHe9BQ8Kra7HRsLVd
-         7nhg==
+        Wed, 6 Apr 2022 15:37:39 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7638DEF793;
+        Wed,  6 Apr 2022 11:18:02 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id e189so3243939oia.8;
+        Wed, 06 Apr 2022 11:18:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=vdE7ENdk50E008niFssMoI/ouBHi+zXp0XKAL9+sLMU=;
-        b=TUeKNzDFKbXSm6MgsCNTmHCarWovjj6Vo8xSkbmkMcjfktQc6tLsIIA4pQq3dtqWzG
-         rjCZC/+AoACeU0RLyj/hjm+M+LTwq/wR5BVZyXVdQlWR3K98RYZ8gLl8H7GEjNWMTafi
-         ayPn8Cj9wksEpmfFHFwB9pUn1QSfa9dVpwRrw/gB3jeb2jf3OY+FP4ZcovMi5R8FVuuZ
-         OudkdTi721FuJkNPlekmxTRpbxEsYbIhG1lw1MNuX+qNXqy274Mpvs1ORrzTc4CPd38V
-         rw5hkYss7VctLPmmEGff/+HlOynhNGS+Dnfghw0KTLrd43r0o7PzPMh70+/DpwOEkZhF
-         RBQg==
-X-Gm-Message-State: AOAM530Q0xc+9LELaep1aHg2n+af4CiCNTWjKgkvj7bjL2kzaDvSGpbq
-        5vllsV5uOJTRqqanhvPm5Kk=
-X-Google-Smtp-Source: ABdhPJwP6YnvLsavwQYRZtElYmnNa4TOvdQSidjbmDbmGHxOqnd2mnzm7WQStOVEdLTqWKYyw+6tLA==
-X-Received: by 2002:aa7:d718:0:b0:41c:d766:7e74 with SMTP id t24-20020aa7d718000000b0041cd7667e74mr9982157edq.38.1649265566939;
-        Wed, 06 Apr 2022 10:19:26 -0700 (PDT)
-Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
-        by smtp.googlemail.com with ESMTPSA id sb15-20020a1709076d8f00b006dfe4cda58fsm6749791ejc.95.2022.04.06.10.19.25
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2yVQ2J4c2VWHwJ0B/X8jXLgF6GbJE3tf471KObA5vHk=;
+        b=NzvOZtbR4boKOvMVeF3JPwcJHPU+XnXVU5sB3kfU2Si7BTFWwd6UngeYHxtd/jAhl6
+         Xt++q75rJJEJdlIWCRp2iwZmXoX0Tkx47e+yhW0JOco0e6nDFo4zz4skQxaH9VZwZnKx
+         ifvuMq+KSNivwqHAqUv1FG4VN8FSZ4yt/LDcgwba1jvx2we5wKqROWhtxYYFZJJcUyQD
+         PfpI3EtwC13Ukb5B7885GxjhbHRB9MN0Rkf8mKdmbIxe69I8nupb+ITOPXOD4YUximiX
+         xb8YocVNeaH/2tz9cnWzBqDMdDc3QQeHegdnBd5d0Ir5XyeZ8yZDNYLJbaSv/ggcg0Kv
+         heQA==
+X-Gm-Message-State: AOAM530oanjGdL7sqDEKSRRpDmlFNybb//8wdHqrrX2C2eq05Cyi2vSo
+        URE5yENM+T8obP8bmPyFiw==
+X-Google-Smtp-Source: ABdhPJyCcrX550X5kHn4yyhHay12s23rJTOjmXniu90yHWq2OuGi3MAmBp+k3YVN0ThvPyumKI1Tvg==
+X-Received: by 2002:a05:6808:2008:b0:2da:5b12:83ff with SMTP id q8-20020a056808200800b002da5b1283ffmr4036695oiw.216.1649269081713;
+        Wed, 06 Apr 2022 11:18:01 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t3-20020a05680800c300b002f935a7daa9sm6676425oic.19.2022.04.06.11.18.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:19:26 -0700 (PDT)
-Message-ID: <c18a2b359046a14250cafa5a619dbe53f2872b5a.camel@gmail.com>
-Subject: Re: [PATCH  v2 0/4] rpmb subsystem, uapi and virtio-rpmb driver
-From:   Bean Huo <huobean@gmail.com>
-To:     Alex =?ISO-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, maxim.uvarov@linaro.org,
-        joakim.bech@linaro.org, ulf.hansson@linaro.org,
-        ilias.apalodimas@linaro.org, arnd@linaro.org,
-        ruchika.gupta@linaro.org, tomas.winkler@intel.com,
-        yang.huang@intel.com, bing.zhu@intel.com,
-        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
-        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        bvanassche@acm.org
-Date:   Wed, 06 Apr 2022 19:19:24 +0200
-In-Reply-To: <87ee2ajuky.fsf@linaro.org>
-References: <20220405093759.1126835-1-alex.bennee@linaro.org>
-         <8b3ce88f65fd11523a4d2daab3c617f7089eb1ce.camel@gmail.com>
-         <87r16bk013.fsf@linaro.org>
-         <aeb64d1c4bbddfd8463c07a40ab1fc78be0d158d.camel@gmail.com>
-         <87ee2ajuky.fsf@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0-1 
+        Wed, 06 Apr 2022 11:18:01 -0700 (PDT)
+Received: (nullmailer pid 2529145 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:18:00 -0000
+Date:   Wed, 6 Apr 2022 13:18:00 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH] dt-bindings: reset: uniphier-glue: Clean up clocks,
+ resets, and their names using compatible string
+Message-ID: <Yk3ZWK3kazy2MD1E@robh.at.kernel.org>
+References: <1649145378-30358-1-git-send-email-hayashi.kunihiko@socionext.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649145378-30358-1-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-06 at 12:22 +0100, Alex Benn=C3=A9e wrote:
->=20
-> Bean Huo <huobean@gmail.com> writes:
->=20
-> > On Tue, 2022-04-05 at 16:43 +0100, Alex Benn=C3=A9e wrote:
-> > >=20
-> > > Bean Huo <huobean@gmail.com> writes:
-> > >=20
-> > > > Hi Alex,
-> > > >=20
-> > > > Thanks for this unified RPMB interface, I wanted to verify this
-> > > > on
-> > > > our
-> > > > UFS, it seems you didn't add the UFS access interface in this
-> > > > version=20
-> > > > from your userspace tools, right?
-> > >=20
-> > > No I didn't but it should be easy enough to add some function
-> > > pointer
-> > > redirection everywhere one of the op_* functions calls a vrpmb_*
-> > > function. Do you already have a UFS RPMB device driver?
-> > >=20
-> >=20
-> > Hi Alex,
-> > Thanks for your feedback.
-> >=20
-> > We now access UFS RPMB through the RPMB LUN BSG device, RPMB is a
-> > well-
-> > known LU and we have a userspace tool to access it.
-> >=20
-> > I see that if we're going to use your interface, "static struct
-> > rpmb_ops" should be registered from a lower-level driver, for
-> > example
-> > in a UFS driver, yes there should be no problem with this
-> > registration,
-> > but I don't know with the current way Compared, what are the
-> > advantages
-> > to add a driver. maybe the main advantage is that we will have an
-> > unified user space tool for RPMB. right?
->=20
-> Pretty much. The main issue for virtio-rpmb is it doesn't really fit
-> neatly into the block stack because all it does is the RPMB part so a
-> non-block orientate API makes sense.
->=20
-> Can you point be to where the UFS driver does it's current RPMB
-> stuff?
->=20
+On Tue, 05 Apr 2022 16:56:18 +0900, Kunihiko Hayashi wrote:
+> Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
+> resets, and their names that can be taken by the compatible string.
+> 
+> The order of clock-names and reset-names doesn't change here.
+> 
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> ---
+>  .../reset/socionext,uniphier-glue-reset.yaml  | 52 ++++++++++++++-----
+>  1 file changed, 38 insertions(+), 14 deletions(-)
+> 
 
-It's the SCSI BSG driver, in fact, we don't have a dedicated UFS RPMB
-driver in the kernel. RPMB is a well known LU, we are using userspace
-tools to issue SCSI commands directly to the UFS RPMB LU via ioctl()
-from the BSG device node in the /dev/sg/ folder.
-
-Here is the BSG part of the code in the userspace tools:
-
-        io_hdr_v4.guard =3D 'Q';                                       =20
-        io_hdr_v4.protocol =3D BSG_PROTOCOL_SCSI;                      =20
-        io_hdr_v4.subprotocol =3D BSG_SUB_PROTOCOL_SCSI_CMD;           =20
-        io_hdr_v4.response =3D (__u64)sense_buffer;                    =20
-        io_hdr_v4.max_response_len =3D SENSE_BUFF_LEN;                 =20
-        io_hdr_v4.request_len =3D cmd_len;                             =20
-        io_hdr_v4.request =3D (__u64)cdb;                              =20
-                                                                           =
-                                              =20
-                                                                           =
-     =20
-        ioctl(fd, SG_IO, &io_hdr_v4))
-...
-
-
-> >=20
-> > Kind regards,
-> > Bean
->=20
->=20
-
+Reviewed-by: Rob Herring <robh@kernel.org>
