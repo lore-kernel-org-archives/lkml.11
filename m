@@ -2,98 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA23C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D5EC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231683AbiDFTbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
+        id S231431AbiDFTc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:32:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbiDFTam (ORCPT
+        with ESMTP id S231626AbiDFTcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:30:42 -0400
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EFE68989;
-        Wed,  6 Apr 2022 11:23:29 -0700 (PDT)
-Received: by mail-ot1-f52.google.com with SMTP id w17-20020a056830111100b005b22c584b93so2264228otq.11;
-        Wed, 06 Apr 2022 11:23:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tWsk24R9WrkUYNjf3D7RLbL4lCjrTiP3ymYMdxnXVDQ=;
-        b=UK2XZPVbo7Kw2UqKzoFKYFqgoAvKT3c9ihl+5zavwwL0X1rCS/3mtWVRlgQ3h36o1W
-         A/CzgxzDvQBG/7BtnoiGN2DKGx1RWe1L7wUadwqPu2SL1X+/ZV5lYUxStZfR8l0j+9LW
-         YBavZKNmQIwF8+32lRzFju+Cbz/vcROunKNnk3z2oQHxdI+6rSAD+pILe6wjsI802ETj
-         z0/P92ODQl8OqrMYXiW7hNQJckT8eLsZ4wtSSixxXEZ36N2WrbBQ0J0DABLgwB9uM8lV
-         OaN0Ycz1DNe0tMXBCRLkJS4Rymkx7Cz1vUVE7KpsQl4ftxvCqDXj1UBacsGYtIGRbiW3
-         B09A==
-X-Gm-Message-State: AOAM531pm2Nz7MxCv5E5SLyCG8rPzmfegaW60snAk1ojqiMoDDbFSBjA
-        W1z4Fh5jp+BrUA7pPWQpJua5RMna3w==
-X-Google-Smtp-Source: ABdhPJy9M1zOkqd3RzsV06ddwdvy4gKJmDyI2VGRvx/GwLNK9Cu4loHT5QwLjSZWYqqHEny4n1Ob6g==
-X-Received: by 2002:a9d:12c1:0:b0:5b2:6181:a20f with SMTP id g59-20020a9d12c1000000b005b26181a20fmr3663470otg.242.1649269408891;
-        Wed, 06 Apr 2022 11:23:28 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id e12-20020a4aa60c000000b00324bb45d7ecsm6196484oom.48.2022.04.06.11.23.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:23:28 -0700 (PDT)
-Received: (nullmailer pid 2536610 invoked by uid 1000);
-        Wed, 06 Apr 2022 18:23:27 -0000
-Date:   Wed, 6 Apr 2022 13:23:27 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-Cc:     Mark Brown <broonie@kernel.org>, Pratyush Yadav <p.yadav@ti.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-spi@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>,
-        git@xilinx.com, saikrishna12468@gmail.com, sgoud@xilinx.com
-Subject: Re: [PATCH 1/2] dt-bindings: spi: cadence-quadspi: Add reset-gpios
- for Xilinx Versal OSPI
-Message-ID: <Yk3an4F0s2p0vxKi@robh.at.kernel.org>
-References: <1649156437-15609-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
- <1649156437-15609-2-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+        Wed, 6 Apr 2022 15:32:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 007D81B9FC5;
+        Wed,  6 Apr 2022 11:27:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FEBAB8253C;
+        Wed,  6 Apr 2022 18:27:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E94D2C385A3;
+        Wed,  6 Apr 2022 18:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269640;
+        bh=q+CDZVRrCXAK8ZiYWzkHLt6sYUFD4HaQ4RysPdfvcjk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SpHwCgj0X32OP6ZcTcw/pcdSG8xHLNyH962EaF2iug6j6Tpp3c7vhlPsspaZk/aUe
+         pQlPUkltjKJiOEMUc1V2gTRwBrVzAdgRNyPpz7+idu9P1g95BY2nwcq0LwG1iTcCsV
+         nQ2QC1g/8D7CcNgLok4maWVj3rKx5x6DHQHzHVuk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 16/43] arm64: arch_timer: Add workaround for ARM erratum 1188873
+Date:   Wed,  6 Apr 2022 20:26:25 +0200
+Message-Id: <20220406182437.155996244@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649156437-15609-2-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 04:30:36PM +0530, Sai Krishna Potthuri wrote:
-> Add reset-gpios property to the properties list and marked as required
-> for Xilinx Versal OSPI compatible. This is used to perform the HW reset
-> for OSPI flash device.
-> 
-> Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-> ---
->  Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-> index 0a537fa3a641..56001eaf6365 100644
-> --- a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-> +++ b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-> @@ -19,6 +19,7 @@ allOf:
->      then:
->        required:
->          - power-domains
-> +        - reset-gpios
->  
->  properties:
->    compatible:
-> @@ -78,6 +79,12 @@ properties:
->    power-domains:
->      maxItems: 1
->  
-> +  reset-gpios:
-> +    description:
-> +      Contains a phandle and GPIO specifier for reset with the default active
-> +      state.
+From: Marc Zyngier <marc.zyngier@arm.com>
 
-Other than 'for reset' that's every GPIO property. Just drop unless you 
-have something specific to cdns,qspi-nor to say.
+commit 95b861a4a6d94f64d5242605569218160ebacdbe upstream.
 
-However, a reset for the flash device belongs in the flash device node, 
-not the controller node.
+When running on Cortex-A76, a timer access from an AArch32 EL0
+task may end up with a corrupted value or register. The workaround for
+this is to trap these accesses at EL1/EL2 and execute them there.
 
-Rob
+This only affects versions r0p0, r1p0 and r2p0 of the CPU.
+
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/Kconfig                   |   12 ++++++++++++
+ arch/arm64/include/asm/cpucaps.h     |    3 ++-
+ arch/arm64/include/asm/cputype.h     |    2 ++
+ arch/arm64/kernel/cpu_errata.c       |    8 ++++++++
+ drivers/clocksource/arm_arch_timer.c |   15 +++++++++++++++
+ 5 files changed, 39 insertions(+), 1 deletion(-)
+
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -441,6 +441,18 @@ config ARM64_ERRATUM_1024718
+ 
+ 	  If unsure, say Y.
+ 
++config ARM64_ERRATUM_1188873
++	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
++	default y
++	help
++	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
++
++	  Affected Cortex-A76 cores (r0p0, r1p0, r2p0) could cause
++	  register corruption when accessing the timer registers from
++	  AArch32 userspace.
++
++	  If unsure, say Y.
++
+ config CAVIUM_ERRATUM_22375
+ 	bool "Cavium erratum 22375, 24313"
+ 	default y
+--- a/arch/arm64/include/asm/cpucaps.h
++++ b/arch/arm64/include/asm/cpucaps.h
+@@ -38,7 +38,8 @@
+ #define ARM64_HARDEN_BRANCH_PREDICTOR		17
+ #define ARM64_SSBD				18
+ #define ARM64_MISMATCHED_CACHE_TYPE		19
++#define ARM64_WORKAROUND_1188873		20
+ 
+-#define ARM64_NCAPS				20
++#define ARM64_NCAPS				21
+ 
+ #endif /* __ASM_CPUCAPS_H */
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -85,6 +85,7 @@
+ #define ARM_CPU_PART_CORTEX_A75		0xD0A
+ #define ARM_CPU_PART_CORTEX_A35		0xD04
+ #define ARM_CPU_PART_CORTEX_A55		0xD05
++#define ARM_CPU_PART_CORTEX_A76		0xD0B
+ 
+ #define APM_CPU_PART_POTENZA		0x000
+ 
+@@ -102,6 +103,7 @@
+ #define MIDR_CORTEX_A75 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A75)
+ #define MIDR_CORTEX_A35 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35)
+ #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
++#define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_CAVIUM_THUNDERX2 MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX2)
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -533,6 +533,14 @@ const struct arm64_cpu_capabilities arm6
+ 		.matches = has_ssbd_mitigation,
+ 	},
+ #endif
++#ifdef CONFIG_ARM64_ERRATUM_1188873
++	{
++		/* Cortex-A76 r0p0 to r2p0 */
++		.desc = "ARM erratum 1188873",
++		.capability = ARM64_WORKAROUND_1188873,
++		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 2, 0),
++	},
++#endif
+ 	{
+ 	}
+ };
+--- a/drivers/clocksource/arm_arch_timer.c
++++ b/drivers/clocksource/arm_arch_timer.c
+@@ -130,6 +130,13 @@ static u64 notrace fsl_a008585_read_cntv
+ }
+ #endif
+ 
++#ifdef CONFIG_ARM64_ERRATUM_1188873
++static u64 notrace arm64_1188873_read_cntvct_el0(void)
++{
++	return read_sysreg(cntvct_el0);
++}
++#endif
++
+ #ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
+ const struct arch_timer_erratum_workaround *timer_unstable_counter_workaround = NULL;
+ EXPORT_SYMBOL_GPL(timer_unstable_counter_workaround);
+@@ -148,6 +155,14 @@ static const struct arch_timer_erratum_w
+ 		.read_cntvct_el0 = fsl_a008585_read_cntvct_el0,
+ 	},
+ #endif
++#ifdef CONFIG_ARM64_ERRATUM_1188873
++	{
++		.match_type = ate_match_local_cap_id,
++		.id = (void *)ARM64_WORKAROUND_1188873,
++		.desc = "ARM erratum 1188873",
++		.read_cntvct_el0 = arm64_1188873_read_cntvct_el0,
++	},
++#endif
+ };
+ 
+ typedef bool (*ate_match_fn_t)(const struct arch_timer_erratum_workaround *,
+
+
