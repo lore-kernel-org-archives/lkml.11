@@ -2,122 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0308C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACD2C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378099AbiDFFwJ (ORCPT
+        id S1380535AbiDFFwm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48588 "EHLO
+        Wed, 6 Apr 2022 01:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2360982AbiDFDoG (ORCPT
+        with ESMTP id S2361378AbiDFE3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 23:44:06 -0400
-Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D12296D2F
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:12:14 -0700 (PDT)
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 1616156A6
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:12:14 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id btHRnRHiaXvvJbtHSnS7gB; Tue, 05 Apr 2022 19:12:14 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=V34eNda++WlmGe+ZWCeqNhmRnpIlO8Tl6u7MFmXbztQ=; b=EbiyndnK4uoLFl5VhRQPS09z1S
-        /yRo1ynqYNlThAxczGu1FqKJTEXcc6AlPe6vEEB8L3UVFwZAS9dtqH7Jnyvy/mwSfokN2SkZGR/WH
-        A9JnbadYt3+rk4viOgIydnS0VTdSrBCt1CQFKo+FlZTvhcxjmneFzuATMeBe2BP4IpqDXacIFqK3W
-        lzKjDTRgLJaD+jht1thLujSL4f3L5cH29a1ZqfO6TsXeNhqkAMo1tfbdhxVkjzJ5Bs4XamjDKoC4G
-        QJzf5JMTZ9GE9dR2FWF4iun9VTKFbPPCAGFbHWTKAHHkNrt0BqRy2St1XGwRQlzmHx6Xr01d9Jpev
-        Ot3jyP4A==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54732)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nbtHR-000mos-4N; Wed, 06 Apr 2022 00:12:13 +0000
-Message-ID: <53e24114-fe48-91aa-1b76-78b12dfcdf4e@roeck-us.net>
-Date:   Tue, 5 Apr 2022 17:12:10 -0700
+        Wed, 6 Apr 2022 00:29:47 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3E626AEC
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:35:39 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id b188so821082oia.13
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 17:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxtx.org; s=google;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mWFuKJuXH3JpCWyGBa6xx2LmvwEnKcbXduTsw7Z7YIU=;
+        b=MoK0YPGtjdXPrEZkSIakvUvOkhjS8gFgVHjaXfyedLGWqCMMWcU91qZsRHV/h9d791
+         sx/VPcDjdNXlb6E2kw+w0SchCneFkGqcrRzFje8O3lmg5zK/Du2gF4ky2iPmmUSThLAL
+         lM4rEnMOotds5JL+QC1zcz5Y0IOYwjHBDMN1U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=mWFuKJuXH3JpCWyGBa6xx2LmvwEnKcbXduTsw7Z7YIU=;
+        b=Wcs7uxG9Qef67bfc4IqT8lbW+FJTIHJs5k7Waml5XUVqS3ZaH5rEC3Yf5B6HlsTxom
+         oBFVYEKIUvWazmFcn3GXe95X6CbUQGTD7Vt9HleMUCfqHMszuHw5Hl1GROUsJ3x6DhRu
+         ZcnPbu6/TaCOl4mkoN875MET3zEiTCpZ7HqfjPFzz9Lc09mWW70XphmFWbxUeuph+uuv
+         PP/Ip400zrORP9kOQahsLdounFki62UQDzOPhRUS8Sok5sloHR7X9tPdR6YxWlGnorad
+         jkqqwTPDnGlpoZthUdBCjmj7uEn8b1j4Jtn1wIXq/8ZoJBG5rZebyx72WFoNhBq6Mq8z
+         4NOQ==
+X-Gm-Message-State: AOAM532anWS4lQor6oKfhNKdD65F9bWKqddgKJT2RTIhcIQ8fe7dpbqh
+        uc9ny+acZoVSe33HXx5sCT9gxw==
+X-Google-Smtp-Source: ABdhPJwliHIC9NE7w1F7CKSJlSP+1lFiaaLewtPfqwixit7GxL6/WB3UnFvvPC9MtZEUbujO4o8ANQ==
+X-Received: by 2002:aca:61c1:0:b0:2ec:d091:ff53 with SMTP id v184-20020aca61c1000000b002ecd091ff53mr2617124oib.235.1649205339029;
+        Tue, 05 Apr 2022 17:35:39 -0700 (PDT)
+Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
+        by smtp.gmail.com with ESMTPSA id r19-20020a056830121300b005cdb11a7b85sm6385572otp.29.2022.04.05.17.35.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 17:35:38 -0700 (PDT)
+Sender: Justin Forbes <jmforbes@linuxtx.org>
+Date:   Tue, 5 Apr 2022 19:35:36 -0500
+From:   Justin Forbes <jforbes@fedoraproject.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
+Message-ID: <YkzgWEyDZXFrCbju@fedora64.linuxtx.org>
+References: <20220405070407.513532867@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "moderated list:H8/300 ARCHITECTURE" 
-        <uclinux-h8-devel@lists.sourceforge.jp>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, Max Filippov <jcmvbkbc@gmail.com>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-References: <Yib9F5SqKda/nH9c@infradead.org>
- <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
- <YkmWh2tss8nXKqc5@infradead.org>
- <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
- <20220405212653.GA2482665@roeck-us.net>
- <CAK8P3a396EkfQtmkwo80eB9i7F37S=mvrHtCLXhGDhHBczYK3g@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [RFC PULL] remove arch/h8300
-In-Reply-To: <CAK8P3a396EkfQtmkwo80eB9i7F37S=mvrHtCLXhGDhHBczYK3g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nbtHR-000mos-4N
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54732
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 10
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 15:01, Arnd Bergmann wrote:
-> On Tue, Apr 5, 2022 at 11:26 PM Guenter Roeck <linux@roeck-us.net> wrote:
->> On Mon, Apr 04, 2022 at 03:07:06PM +0200, Arnd Bergmann wrote:
->>>
->>> Should we garbage-collect some of the other nommu platforms where
->>> we're here? Some of them are just as stale:
->>>
->>> 1. xtensa nommu has does not compile in mainline and as far as I can
->>> tell never did
->>>     (there was https://github.com/jcmvbkbc/linux-xtensa/tree/xtensa-5.6-esp32,
->>> which
->>>     worked at some point, but I don't think there was enough interest
->>> to get in merged)
->>
->> Hmm, I build and test nommu_kc705_defconfig in my test system.
+On Tue, Apr 05, 2022 at 09:12:27AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.2 release.
+> There are 1126 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> What toolchain do you use for this? Max already pointed out my mistake
-> regarding xtensa, which I thought does not build at all, but just needs
-> a toolchain specific to the cpu.
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
 > 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.2-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Home-built using buildroot. I have three different xtensa toolchains
-(de212, dc232b, and dc233c). The toolchain for kc705_nommu needs the
-de212 overlay; I think Max pointed to to the information needed
-to build the compiler. Buildroot has the "XTENSA_OVERLAY_FILE"
-option to specify the compiler overlay file for the target.
+This fails to build on x86_64, but builds on all other architectures for
+Fedora using the fedora configs. Specifically 
+[PATCH 5.17 0943/1126] ASoC: Intel: sof_es8336: use NHLT information to set dmic and SSP
+is missing a dependent patch, upstream commit 679aa83a0fb70dcbf9e97cbdfd573e6fc8bf9b1a
+ASoC: soc-acpi: add information on I2S/TDM link mask.  Applying this
+patch makes x86_64 build again.
 
-Guenter
+Justin
+
