@@ -2,403 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4119C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC16C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbiDFUur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49204 "EHLO
+        id S232870AbiDFUvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232608AbiDFUtv (ORCPT
+        with ESMTP id S232071AbiDFUvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:49:51 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB623C15BA
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:05:18 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id p15so6218072ejc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:05:18 -0700 (PDT)
+        Wed, 6 Apr 2022 16:51:00 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8869396AFF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:06:31 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 32so861775pgl.4
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:06:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linbit-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qfxFWJFZ6uw2agXHgOvG4u2eDOtbo0NRWmwVpn4uFPA=;
-        b=Fx6Uzt6LOot/haJHKSHSwXct2yt9GFO4Y+pzzAVJq+RpsGqBTpxSYkyR9QFt7Y0cLD
-         kQxZ1vVDQ7f3QAoHSIG9u5Q3r6tBdOc3EbnYSkMLTr4QM1jbq3UZDKVGAiMfH7bG5YXE
-         jJYEf4EuB+iDCS6kGeOsokexim4cusMplStRE1+lq5+0ObBGJhyqoNcoGBjcfYPwJV42
-         RK6bnZFLhHVqtvgSyb88PiE6n42DbDIAVYOUqhZ3ULxnGeH6EWbxxq6LQF+saZUMu4XA
-         FQKPMrrX9xfisuqVFIcAoplgPEjFtJln0yzkQ6jyBu4WMniucMTHvmEKbFkesaCYihMy
-         p3kQ==
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xEHjPFbG2l95vT/9TUf5xFEmrU+wbLDsR7mssjGd3t0=;
+        b=0eKouJ7hzOepoVSRqRsRB5ISeXx5Nnlsh14Z1+53rddDy3I8jc5eKeLb6eDXtzkKGc
+         L525OQvHPL8S530OfqYvY+irHpGV2xABBSf+IDUZy2TIx9o0HOVcskxU+vys6yD+o+Uk
+         Lney/6JQGjjx8pDVxo6Qj7fyU0sRt2PlviBAiMEBMttx/TSlRs4qvlYSqS2wx7NT5UNX
+         6cmLXSroLEDYa5BKLtbFZugvXcSdfLritrR1NnsKzh2QJzb4zlZHUAOjbdDGEm9522jw
+         5U7yEwauEC4gC1bJpv/7tuwrw/e/YsognCW0wblaH9nEZnSZUbabNx9XD62+MGGfEK65
+         IZCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qfxFWJFZ6uw2agXHgOvG4u2eDOtbo0NRWmwVpn4uFPA=;
-        b=MvInvxjynzPZq9GqgFAtVlwGy/wz36tZsqgmH1jXGLeReS7/cnhHhBXSkmWkMP6pnS
-         S3eBWWEMNVmuRIwsUofMn4uDMZ3D0tKBRC+99TXWEopJvRSMdb2Dshjt4uSi3WK1r58p
-         UjwpiPjaWgi5bk75dEpjkn137VKuNtBKRH+q1KE2n0EpVJs403bXod0ocXs7s8ATIjOe
-         hgxLvprVwbMGYDGNFZqfUXonZeT58GSptQysyVy/s+Z+in6g6iaya04NxzQfzCwcpNjy
-         UHS/fsJLt8cVym+Hdgg0AsT1vfHPLVp6feEkri3ExjiYGSlNPbgQZUL/atqJ9+MXm3a9
-         PXSg==
-X-Gm-Message-State: AOAM533C3IoAhhEF3K8qC3iJSr8ckAsiKwQbzAwn20nRjAkI83H7ObBw
-        U3Dh74RemDIy9q8cwB1LsFdjCA==
-X-Google-Smtp-Source: ABdhPJzNa8Nk7IZLK4W0O/SXUB4IqOz2lnsHa91HVJ6qB8thGBlO43hlkjSUFd9q3q4sAFC1DvyuoA==
-X-Received: by 2002:a17:906:6841:b0:6cf:9c02:8965 with SMTP id a1-20020a170906684100b006cf9c028965mr9570039ejs.440.1649271916774;
-        Wed, 06 Apr 2022 12:05:16 -0700 (PDT)
-Received: from localhost (85-127-190-169.dsl.dynamic.surfer.at. [85.127.190.169])
-        by smtp.gmail.com with ESMTPSA id hq39-20020a1709073f2700b006dfc58efab9sm6897892ejc.73.2022.04.06.12.05.16
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=xEHjPFbG2l95vT/9TUf5xFEmrU+wbLDsR7mssjGd3t0=;
+        b=B66s2CKyINm2l0IoFgr7U5YP8WvaRnLGDtnhvytRd9y2mjjgqOlQlZfYREK8Zxd0kM
+         fqAQQjLMEvbwQQMTlKO2wrGNR112crV8dE8qYcl/Fy9NzqEwqlOpmqp6dkUh7PxCNN31
+         +eR8TkcP+oPwIDj3ZKoP50JEL7YwU+9WSe+mc7R+FGpI6IrHMHHYLUrqFGqicr4ZZoEC
+         r1sh/vx5SAaAQ3msni2kGE3ES91xGpeJWjNEStmmeQgR5DsfVQ9iFGPe4m1Z5R8WW016
+         VPXNfdPDyKMszwaGHBExmX9/2LiZZ8/kFLbga1dxfl7x+In5MKed0U5yn3btB04lZQf8
+         B4OA==
+X-Gm-Message-State: AOAM531lEVKICNA4XtaeHPrZyFiQFYuMRhWSp48vKMkCggCJYdZbaNzj
+        HiSrb4wdUXBQeeSol6g66X43MQ==
+X-Google-Smtp-Source: ABdhPJzzIPquNU49pHdFoqAJuy/FaFv3mvXL+ipftmawmoH39R144bhpC5RIr4bImN+8/rAtsHhEjA==
+X-Received: by 2002:a05:6a00:190a:b0:4fa:e4e9:7126 with SMTP id y10-20020a056a00190a00b004fae4e97126mr10336457pfi.65.1649271991420;
+        Wed, 06 Apr 2022 12:06:31 -0700 (PDT)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id z16-20020aa78890000000b004fad8469f88sm20788500pfe.38.2022.04.06.12.06.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 12:05:16 -0700 (PDT)
-From:   =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     drbd-dev@lists.linbit.com, linux-kernel@vger.kernel.org,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        linux-block@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>
-Subject: [PATCH 1/3] drbd: Fix five use after free bugs in get_initial_state
-Date:   Wed,  6 Apr 2022 21:04:43 +0200
-Message-Id: <20220406190445.1937206-2-christoph.boehmwalder@linbit.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406190445.1937206-1-christoph.boehmwalder@linbit.com>
-References: <20220406190445.1937206-1-christoph.boehmwalder@linbit.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Wed, 06 Apr 2022 12:06:31 -0700 (PDT)
+Date:   Wed, 06 Apr 2022 12:06:31 -0700 (PDT)
+X-Google-Original-Date: Wed, 06 Apr 2022 12:06:29 PDT (-0700)
+Subject:     Re: [PATCH V3] riscv: patch_text: Fixup last cpu should be master
+In-Reply-To: <Yk3YUFfvEszb+cXT@kroah.com>
+CC:     guoren@kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, guoren@linux.alibaba.com,
+        mhiramat@kernel.org, stable@vger.kernel.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Message-ID: <mhng-492e449b-ad90-4725-86a0-d5d84e4c35be@palmer-mbp2014>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+On Wed, 06 Apr 2022 11:13:36 PDT (-0700), Greg KH wrote:
+> On Wed, Apr 06, 2022 at 10:16:49PM +0800, guoren@kernel.org wrote:
+>> From: Guo Ren <guoren@linux.alibaba.com>
+>>
+>> These patch_text implementations are using stop_machine_cpuslocked
+>> infrastructure with atomic cpu_count. The original idea: When the
+>> master CPU patch_text, the others should wait for it. But current
+>> implementation is using the first CPU as master, which couldn't
+>> guarantee the remaining CPUs are waiting. This patch changes the
+>> last CPU as the master to solve the potential risk.
+>>
+>> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+>> Signed-off-by: Guo Ren <guoren@kernel.org>
+>> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+>> Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+>> Cc: <stable@vger.kernel.org>
+>> ---
+>>  arch/riscv/kernel/patch.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> What commit id does this change fix?
 
-In get_initial_state, it calls notify_initial_state_done(skb,..) if
-cb->args[5]==1. If genlmsg_put() failed in notify_initial_state_done(),
-the skb will be freed by nlmsg_free(skb).
-Then get_initial_state will goto out and the freed skb will be used by
-return value skb->len, which is a uaf bug.
+I think it's been there since the beginning of our text patching, so
 
-What's worse, the same problem goes even further: skb can also be
-freed in the notify_*_state_change -> notify_*_state calls below.
-Thus 4 additional uaf bugs happened.
+Fixes: 043cb41a85de ("riscv: introduce interfaces to patch kernel code")
 
-My patch lets the problem callee functions: notify_initial_state_done
-and notify_*_state_change return an error code if errors happen.
-So that the error codes could be propagated and the uaf bugs can be avoid.
+seems like the best bet, but I'll go take another look before merging 
+it.  That's confusing here, as I acked it, but that was for an earlier 
+version that touched more than one arch so it was more ambiguous as to 
+which tree it was going through (IIRC I said one of those "LMK if you 
+want it through my tree, but here's an Ack in case someone else wants to 
+take it" sort of things, as I usually do when it's ambiguous).
 
-v2 reports a compilation warning. This v3 fixed this warning and built
-successfully in my local environment with no additional warnings.
-v2: https://lore.kernel.org/patchwork/patch/1435218/
-
-Fixes: a29728463b254 ("drbd: Backport the "events2" command")
-Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
----
- drivers/block/drbd/drbd_int.h          |  8 ++---
- drivers/block/drbd/drbd_nl.c           | 41 ++++++++++++++++----------
- drivers/block/drbd/drbd_state.c        | 18 +++++------
- drivers/block/drbd/drbd_state_change.h |  8 ++---
- 4 files changed, 42 insertions(+), 33 deletions(-)
-
-diff --git a/drivers/block/drbd/drbd_int.h b/drivers/block/drbd/drbd_int.h
-index 4b55e864a0a3..4d3efaa20b7b 100644
---- a/drivers/block/drbd/drbd_int.h
-+++ b/drivers/block/drbd/drbd_int.h
-@@ -1638,22 +1638,22 @@ struct sib_info {
- };
- void drbd_bcast_event(struct drbd_device *device, const struct sib_info *sib);
- 
--extern void notify_resource_state(struct sk_buff *,
-+extern int notify_resource_state(struct sk_buff *,
- 				  unsigned int,
- 				  struct drbd_resource *,
- 				  struct resource_info *,
- 				  enum drbd_notification_type);
--extern void notify_device_state(struct sk_buff *,
-+extern int notify_device_state(struct sk_buff *,
- 				unsigned int,
- 				struct drbd_device *,
- 				struct device_info *,
- 				enum drbd_notification_type);
--extern void notify_connection_state(struct sk_buff *,
-+extern int notify_connection_state(struct sk_buff *,
- 				    unsigned int,
- 				    struct drbd_connection *,
- 				    struct connection_info *,
- 				    enum drbd_notification_type);
--extern void notify_peer_device_state(struct sk_buff *,
-+extern int notify_peer_device_state(struct sk_buff *,
- 				     unsigned int,
- 				     struct drbd_peer_device *,
- 				     struct peer_device_info *,
-diff --git a/drivers/block/drbd/drbd_nl.c b/drivers/block/drbd/drbd_nl.c
-index 02030c9c4d3b..b7216c186ba4 100644
---- a/drivers/block/drbd/drbd_nl.c
-+++ b/drivers/block/drbd/drbd_nl.c
-@@ -4549,7 +4549,7 @@ static int nla_put_notification_header(struct sk_buff *msg,
- 	return drbd_notification_header_to_skb(msg, &nh, true);
- }
- 
--void notify_resource_state(struct sk_buff *skb,
-+int notify_resource_state(struct sk_buff *skb,
- 			   unsigned int seq,
- 			   struct drbd_resource *resource,
- 			   struct resource_info *resource_info,
-@@ -4591,16 +4591,17 @@ void notify_resource_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(resource, "Error %d while broadcasting event. Event seq:%u\n",
- 			err, seq);
-+	return err;
- }
- 
--void notify_device_state(struct sk_buff *skb,
-+int notify_device_state(struct sk_buff *skb,
- 			 unsigned int seq,
- 			 struct drbd_device *device,
- 			 struct device_info *device_info,
-@@ -4640,16 +4641,17 @@ void notify_device_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(device, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
--void notify_connection_state(struct sk_buff *skb,
-+int notify_connection_state(struct sk_buff *skb,
- 			     unsigned int seq,
- 			     struct drbd_connection *connection,
- 			     struct connection_info *connection_info,
-@@ -4689,16 +4691,17 @@ void notify_connection_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(connection, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
--void notify_peer_device_state(struct sk_buff *skb,
-+int notify_peer_device_state(struct sk_buff *skb,
- 			      unsigned int seq,
- 			      struct drbd_peer_device *peer_device,
- 			      struct peer_device_info *peer_device_info,
-@@ -4739,13 +4742,14 @@ void notify_peer_device_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(peer_device, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
- void notify_helper(enum drbd_notification_type type,
-@@ -4796,7 +4800,7 @@ void notify_helper(enum drbd_notification_type type,
- 		 err, seq);
- }
- 
--static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
-+static int notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
- {
- 	struct drbd_genlmsghdr *dh;
- 	int err;
-@@ -4810,11 +4814,12 @@ static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
- 	if (nla_put_notification_header(skb, NOTIFY_EXISTS))
- 		goto nla_put_failure;
- 	genlmsg_end(skb, dh);
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- 	pr_err("Error %d sending event. Event seq:%u\n", err, seq);
-+	return err;
- }
- 
- static void free_state_changes(struct list_head *list)
-@@ -4841,6 +4846,7 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 	unsigned int seq = cb->args[2];
- 	unsigned int n;
- 	enum drbd_notification_type flags = 0;
-+	int err = 0;
- 
- 	/* There is no need for taking notification_mutex here: it doesn't
- 	   matter if the initial state events mix with later state chage
-@@ -4849,32 +4855,32 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 
- 	cb->args[5]--;
- 	if (cb->args[5] == 1) {
--		notify_initial_state_done(skb, seq);
-+		err = notify_initial_state_done(skb, seq);
- 		goto out;
- 	}
- 	n = cb->args[4]++;
- 	if (cb->args[4] < cb->args[3])
- 		flags |= NOTIFY_CONTINUES;
- 	if (n < 1) {
--		notify_resource_state_change(skb, seq, state_change->resource,
-+		err = notify_resource_state_change(skb, seq, state_change->resource,
- 					     NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n--;
- 	if (n < state_change->n_connections) {
--		notify_connection_state_change(skb, seq, &state_change->connections[n],
-+		err = notify_connection_state_change(skb, seq, &state_change->connections[n],
- 					       NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n -= state_change->n_connections;
- 	if (n < state_change->n_devices) {
--		notify_device_state_change(skb, seq, &state_change->devices[n],
-+		err = notify_device_state_change(skb, seq, &state_change->devices[n],
- 					   NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n -= state_change->n_devices;
- 	if (n < state_change->n_devices * state_change->n_connections) {
--		notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
-+		err = notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
- 						NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
-@@ -4889,7 +4895,10 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 		cb->args[4] = 0;
- 	}
- out:
--	return skb->len;
-+	if (err)
-+		return err;
-+	else
-+		return skb->len;
- }
- 
- int drbd_adm_get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
-diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
-index b8a27818ab3f..4ee11aef6672 100644
---- a/drivers/block/drbd/drbd_state.c
-+++ b/drivers/block/drbd/drbd_state.c
-@@ -1537,7 +1537,7 @@ int drbd_bitmap_io_from_worker(struct drbd_device *device,
- 	return rv;
- }
- 
--void notify_resource_state_change(struct sk_buff *skb,
-+int notify_resource_state_change(struct sk_buff *skb,
- 				  unsigned int seq,
- 				  struct drbd_resource_state_change *resource_state_change,
- 				  enum drbd_notification_type type)
-@@ -1550,10 +1550,10 @@ void notify_resource_state_change(struct sk_buff *skb,
- 		.res_susp_fen = resource_state_change->susp_fen[NEW],
- 	};
- 
--	notify_resource_state(skb, seq, resource, &resource_info, type);
-+	return notify_resource_state(skb, seq, resource, &resource_info, type);
- }
- 
--void notify_connection_state_change(struct sk_buff *skb,
-+int notify_connection_state_change(struct sk_buff *skb,
- 				    unsigned int seq,
- 				    struct drbd_connection_state_change *connection_state_change,
- 				    enum drbd_notification_type type)
-@@ -1564,10 +1564,10 @@ void notify_connection_state_change(struct sk_buff *skb,
- 		.conn_role = connection_state_change->peer_role[NEW],
- 	};
- 
--	notify_connection_state(skb, seq, connection, &connection_info, type);
-+	return notify_connection_state(skb, seq, connection, &connection_info, type);
- }
- 
--void notify_device_state_change(struct sk_buff *skb,
-+int notify_device_state_change(struct sk_buff *skb,
- 				unsigned int seq,
- 				struct drbd_device_state_change *device_state_change,
- 				enum drbd_notification_type type)
-@@ -1577,10 +1577,10 @@ void notify_device_state_change(struct sk_buff *skb,
- 		.dev_disk_state = device_state_change->disk_state[NEW],
- 	};
- 
--	notify_device_state(skb, seq, device, &device_info, type);
-+	return notify_device_state(skb, seq, device, &device_info, type);
- }
- 
--void notify_peer_device_state_change(struct sk_buff *skb,
-+int notify_peer_device_state_change(struct sk_buff *skb,
- 				     unsigned int seq,
- 				     struct drbd_peer_device_state_change *p,
- 				     enum drbd_notification_type type)
-@@ -1594,7 +1594,7 @@ void notify_peer_device_state_change(struct sk_buff *skb,
- 		.peer_resync_susp_dependency = p->resync_susp_dependency[NEW],
- 	};
- 
--	notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
-+	return notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
- }
- 
- static void broadcast_state_change(struct drbd_state_change *state_change)
-@@ -1602,7 +1602,7 @@ static void broadcast_state_change(struct drbd_state_change *state_change)
- 	struct drbd_resource_state_change *resource_state_change = &state_change->resource[0];
- 	bool resource_state_has_changed;
- 	unsigned int n_device, n_connection, n_peer_device, n_peer_devices;
--	void (*last_func)(struct sk_buff *, unsigned int, void *,
-+	int (*last_func)(struct sk_buff *, unsigned int, void *,
- 			  enum drbd_notification_type) = NULL;
- 	void *last_arg = NULL;
- 
-diff --git a/drivers/block/drbd/drbd_state_change.h b/drivers/block/drbd/drbd_state_change.h
-index ba80f612d6ab..d5b0479bc9a6 100644
---- a/drivers/block/drbd/drbd_state_change.h
-+++ b/drivers/block/drbd/drbd_state_change.h
-@@ -44,19 +44,19 @@ extern struct drbd_state_change *remember_old_state(struct drbd_resource *, gfp_
- extern void copy_old_to_new_state_change(struct drbd_state_change *);
- extern void forget_state_change(struct drbd_state_change *);
- 
--extern void notify_resource_state_change(struct sk_buff *,
-+extern int notify_resource_state_change(struct sk_buff *,
- 					 unsigned int,
- 					 struct drbd_resource_state_change *,
- 					 enum drbd_notification_type type);
--extern void notify_connection_state_change(struct sk_buff *,
-+extern int notify_connection_state_change(struct sk_buff *,
- 					   unsigned int,
- 					   struct drbd_connection_state_change *,
- 					   enum drbd_notification_type type);
--extern void notify_device_state_change(struct sk_buff *,
-+extern int notify_device_state_change(struct sk_buff *,
- 				       unsigned int,
- 				       struct drbd_device_state_change *,
- 				       enum drbd_notification_type type);
--extern void notify_peer_device_state_change(struct sk_buff *,
-+extern int notify_peer_device_state_change(struct sk_buff *,
- 					    unsigned int,
- 					    struct drbd_peer_device_state_change *,
- 					    enum drbd_notification_type type);
--- 
-2.35.1
-
+Without a changelog, cover letter, or the other patches in the set it's 
+kind of hard to tell, though ;)
