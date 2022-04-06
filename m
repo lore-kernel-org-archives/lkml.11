@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F536C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234133AbiDFOGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40946 "EHLO
+        id S234183AbiDFOGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234173AbiDFOGQ (ORCPT
+        with ESMTP id S234206AbiDFOGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 10:06:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81C0475846;
-        Wed,  6 Apr 2022 02:41:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEDC15CB63;
+        Wed,  6 Apr 2022 02:41:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83F1161629;
-        Wed,  6 Apr 2022 09:40:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 718B7C385A8;
-        Wed,  6 Apr 2022 09:40:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9EE6B82153;
+        Wed,  6 Apr 2022 09:41:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 286F3C385A8;
+        Wed,  6 Apr 2022 09:41:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649238049;
-        bh=x+m2MWCq6qFwh90X4cyqG6Rzi2rBlGxar0o6fHyYx9k=;
+        s=k20201202; t=1649238082;
+        bh=n3Wkk5bm16a05lN7V/okcIiS7mgAL2qB7YWgC48E5A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNSeNrDj23At6EHMPg1C8m5Oz1arUCkHbccAcgjer2F7/6FHRapW4xfDAHAZYW/Df
-         aEIh8Te2D4fRXNsmMgLuApoKtzl/pfOI7BW13H47pqcJxPPjpLAfU1bnnQGDTYXHjU
-         EurkrPKnep+qF8WfOUjA9EzY0zUPoaUJBts96en6WJFhJqR5RllepO8IBL0CWkAfPl
-         Az3BR9ktB5iE2RjlEx9TGXNpb0CvZc6YWHN/Y0TEpdNbj+Y32U0SGv5gc4Wlxncuc+
-         dO0kpvU5ngEHubgD0vmY56ClCoR4EjF1rfHHEvBIVpROYwMo5BTGntacPbwgMtmCT2
-         6BgIxgM1ukXRA==
+        b=nscBFOvEavmhMd+lAs4kpGbt/Ve0styAwRkfWwbsoysfwHrOV0lslc8yJHJ5i/L2w
+         6FbCcdFnepqBNCNL0pq0QytwTw87vVe3SxMtj3otqBYFjaaWkNxMp2OEYqgjWqcDla
+         Px62Za3fIQzInt4IAVn6mV7jTWk6ZKyhaFpdc5pdoa3a07XShBLGfTSpDBJmPBSrZb
+         FYe9/PLDaUG530a7R+l3QGhp6vsCO3I8RAjW2ud9Ruc07WBmScAnSFjwd9xEj8rMrv
+         MuYnMdhDzP1LN5zP5pA0rxEDEFtuehoQ8WPyBejVpiyRGQLTjsJ5jwlfxWwPfDG5Q0
+         qCf5XMRbm4MCQ==
 From:   Vinod Koul <vkoul@kernel.org>
 To:     Rob Clark <robdclark@gmail.com>
 Cc:     linux-arm-msm@vger.kernel.org,
@@ -43,9 +43,9 @@ Cc:     linux-arm-msm@vger.kernel.org,
         Abhinav Kumar <quic_abhinavk@quicinc.com>,
         linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         freedreno@lists.freedesktop.org
-Subject: [PATCH v7 02/14] drm/msm/dsi: Pass DSC params to drm_panel
-Date:   Wed,  6 Apr 2022 15:10:19 +0530
-Message-Id: <20220406094031.1027376-3-vkoul@kernel.org>
+Subject: [PATCH v7 10/14] drm/msm/disp/dpu1: Add support for DSC in topology
+Date:   Wed,  6 Apr 2022 15:10:27 +0530
+Message-Id: <20220406094031.1027376-11-vkoul@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220406094031.1027376-1-vkoul@kernel.org>
 References: <20220406094031.1027376-1-vkoul@kernel.org>
@@ -55,167 +55,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When DSC is enabled, we need to get the DSC parameters from the panel
-driver, so add a dsc parameter in panel to fetch and pass DSC
-configuration for DSI panels to DPU encoder, which will enable and
-then configure DSC hardware blocks accordingly.
+For DSC to work we typically need a 2,2,1 configuration. This should
+suffice for resolutions up to 4k. For more resolutions like 8k this won't
+work.
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Also, it is better to use 2 LMs and DSC instances as half width results
+in lesser power consumption as compared to single LM, DSC at full width.
+
+The panel has been tested only with 2,2,1 configuration, so for
+now we blindly create 2,2,1 topology when DSC is enabled
+
+Co-developed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |  2 ++
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c     |  2 ++
- drivers/gpu/drm/msm/dsi/dsi.c               |  5 +++++
- drivers/gpu/drm/msm/dsi/dsi.h               |  1 +
- drivers/gpu/drm/msm/dsi/dsi_host.c          | 22 +++++++++++++++++++++
- drivers/gpu/drm/msm/msm_drv.h               |  6 ++++++
- include/drm/drm_panel.h                     |  7 +++++++
- 7 files changed, 45 insertions(+)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 13 +++++++++++++
+ drivers/gpu/drm/msm/msm_drv.h               |  2 ++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-index 42db6ce12caf..ef873e5285a0 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
-@@ -27,6 +27,7 @@
-  *                      based on num_of_h_tiles
-  * @is_te_using_watchdog_timer:  Boolean to indicate watchdog TE is
-  *				 used instead of panel TE in cmd mode panels
-+ * @dsc:		DSC configuration data for DSC-enabled displays
-  */
- struct msm_display_info {
- 	int intf_type;
-@@ -34,6 +35,7 @@ struct msm_display_info {
- 	uint32_t num_of_h_tiles;
- 	uint32_t h_tile_instance[MAX_H_TILES_PER_DISPLAY];
- 	bool is_te_using_watchdog_timer;
-+	struct msm_display_dsc_config *dsc;
- };
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 95d1588f3bb6..51f24ba68375 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -567,8 +567,21 @@ static struct msm_display_topology dpu_encoder_get_topology(
+ 	topology.num_enc = 0;
+ 	topology.num_intf = intf_count;
  
- /**
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index e29796c4f27b..e64154407425 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -582,6 +582,8 @@ static int _dpu_kms_initialize_dsi(struct drm_device *dev,
- 			MSM_DISPLAY_CAP_CMD_MODE :
- 			MSM_DISPLAY_CAP_VID_MODE;
- 
-+		info.dsc = msm_dsi_get_dsc_config(priv->dsi[i]);
-+
- 		if (msm_dsi_is_bonded_dsi(priv->dsi[i]) && priv->dsi[other]) {
- 			rc = msm_dsi_modeset_init(priv->dsi[other], dev, encoder);
- 			if (rc) {
-diff --git a/drivers/gpu/drm/msm/dsi/dsi.c b/drivers/gpu/drm/msm/dsi/dsi.c
-index c12e66aa42a3..06a76834be52 100644
---- a/drivers/gpu/drm/msm/dsi/dsi.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi.c
-@@ -21,6 +21,11 @@ bool msm_dsi_is_cmd_mode(struct msm_dsi *msm_dsi)
- 	return !(host_flags & MIPI_DSI_MODE_VIDEO);
- }
- 
-+struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi)
-+{
-+	return msm_dsi_host_get_dsc_config(msm_dsi->host);
-+}
-+
- static int dsi_get_phy(struct msm_dsi *msm_dsi)
- {
- 	struct platform_device *pdev = msm_dsi->pdev;
-diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
-index c8dedc95428c..16cd9b2fce86 100644
---- a/drivers/gpu/drm/msm/dsi/dsi.h
-+++ b/drivers/gpu/drm/msm/dsi/dsi.h
-@@ -152,6 +152,7 @@ int dsi_calc_clk_rate_v2(struct msm_dsi_host *msm_host, bool is_bonded_dsi);
- int dsi_calc_clk_rate_6g(struct msm_dsi_host *msm_host, bool is_bonded_dsi);
- void msm_dsi_host_snapshot(struct msm_disp_state *disp_state, struct mipi_dsi_host *host);
- void msm_dsi_host_test_pattern_en(struct mipi_dsi_host *host);
-+struct msm_display_dsc_config *msm_dsi_host_get_dsc_config(struct mipi_dsi_host *host);
- 
- /* dsi phy */
- struct msm_dsi_phy;
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index 4a8a9b31ce1d..cb2e179127ea 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -2061,9 +2061,24 @@ int msm_dsi_host_modeset_init(struct mipi_dsi_host *host,
- {
- 	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
- 	const struct msm_dsi_cfg_handler *cfg_hnd = msm_host->cfg_hnd;
-+	struct drm_panel *panel;
- 	int ret;
- 
- 	msm_host->dev = dev;
-+	panel = msm_dsi_host_get_panel(&msm_host->base);
-+
-+	if (panel && panel->dsc) {
-+		struct msm_display_dsc_config *dsc = msm_host->dsc;
-+
-+		if (!dsc) {
-+			dsc = devm_kzalloc(&msm_host->pdev->dev, sizeof(*dsc), GFP_KERNEL);
-+			if (!dsc)
-+				return -ENOMEM;
-+			dsc->drm = panel->dsc;
-+			msm_host->dsc = dsc;
-+		}
++	if (dpu_enc->dsc) {
++		/* In case of Display Stream Compression (DSC), we would use
++		 * 2 encoders, 2 layer mixers and 1 interface
++		 * this is power optimal and can drive up to (including) 4k
++		 * screens
++		 */
++		topology.num_enc = 2;
++		topology.num_dsc = 2;
++		topology.num_intf = 1;
++		topology.num_lm = 2;
 +	}
 +
- 	ret = cfg_hnd->ops->tx_buf_alloc(msm_host, SZ_4K);
- 	if (ret) {
- 		pr_err("%s: alloc tx gem obj failed, %d\n", __func__, ret);
-@@ -2628,3 +2643,10 @@ void msm_dsi_host_test_pattern_en(struct mipi_dsi_host *host)
- 		dsi_write(msm_host, REG_DSI_TEST_PATTERN_GEN_CMD_STREAM0_TRIGGER,
- 				DSI_TEST_PATTERN_GEN_CMD_STREAM0_TRIGGER_SW_TRIGGER);
+ 	return topology;
  }
 +
-+struct msm_display_dsc_config *msm_dsi_host_get_dsc_config(struct mipi_dsi_host *host)
-+{
-+	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
-+
-+	return msm_host->dsc;
-+}
+ static int dpu_encoder_virt_atomic_check(
+ 		struct drm_encoder *drm_enc,
+ 		struct drm_crtc_state *crtc_state,
 diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-index 57aee75f5022..2a3280df7b12 100644
+index bf2ccff97562..0ace9b0549a4 100644
 --- a/drivers/gpu/drm/msm/msm_drv.h
 +++ b/drivers/gpu/drm/msm/msm_drv.h
-@@ -336,6 +336,7 @@ void msm_dsi_snapshot(struct msm_disp_state *disp_state, struct msm_dsi *msm_dsi
- bool msm_dsi_is_cmd_mode(struct msm_dsi *msm_dsi);
- bool msm_dsi_is_bonded_dsi(struct msm_dsi *msm_dsi);
- bool msm_dsi_is_master_dsi(struct msm_dsi *msm_dsi);
-+struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi);
- #else
- static inline void __init msm_dsi_register(void)
- {
-@@ -364,6 +365,11 @@ static inline bool msm_dsi_is_master_dsi(struct msm_dsi *msm_dsi)
- {
- 	return false;
- }
-+
-+static inline struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi)
-+{
-+	return NULL;
-+}
- #endif
- 
- #ifdef CONFIG_DRM_MSM_DP
-diff --git a/include/drm/drm_panel.h b/include/drm/drm_panel.h
-index 4602f833eb51..eb8ae9bf32ed 100644
---- a/include/drm/drm_panel.h
-+++ b/include/drm/drm_panel.h
-@@ -171,6 +171,13 @@ struct drm_panel {
- 	 * Panel entry in registry.
- 	 */
- 	struct list_head list;
-+
-+	/**
-+	 * @dsc:
-+	 *
-+	 * Panel DSC pps payload to be sent
-+	 */
-+	struct drm_dsc_config *dsc;
+@@ -103,12 +103,14 @@ enum msm_event_wait {
+  * @num_enc:      number of compression encoder blocks used
+  * @num_intf:     number of interfaces the panel is mounted on
+  * @num_dspp:     number of dspp blocks used
++ * @num_dsc:      number of Display Stream Compression (DSC) blocks used
+  */
+ struct msm_display_topology {
+ 	u32 num_lm;
+ 	u32 num_enc;
+ 	u32 num_intf;
+ 	u32 num_dspp;
++	u32 num_dsc;
  };
  
- void drm_panel_init(struct drm_panel *panel, struct device *dev,
+ /* Commit/Event thread specific structure */
 -- 
 2.34.1
 
