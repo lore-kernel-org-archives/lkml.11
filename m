@@ -2,106 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F07C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73AF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234787AbiDFOVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47548 "EHLO
+        id S234640AbiDFOXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234614AbiDFOVJ (ORCPT
+        with ESMTP id S234556AbiDFOWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:21:09 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6493479AB;
-        Wed,  6 Apr 2022 03:27:06 -0700 (PDT)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KYKvz0p6rz686vL;
-        Wed,  6 Apr 2022 18:08:15 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 12:11:12 +0200
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 11:11:11 +0100
-Date:   Wed, 6 Apr 2022 11:11:10 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Ira Weiny <ira.weiny@intel.com>
-CC:     Lukas Wunner <lukas@wunner.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Dan Williams" <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH V7 03/10] PCI: Create PCI library functions in support
- of DOE mailboxes.
-Message-ID: <20220406111110.00000e72@Huawei.com>
-In-Reply-To: <YkzPIzIhfzQKIMe0@iweiny-desk3>
-References: <20220330235920.2800929-1-ira.weiny@intel.com>
-        <20220330235920.2800929-4-ira.weiny@intel.com>
-        <YkVBJ+nRA2g/WDxa@infradead.org>
-        <YkXGnKsTEUAe29io@iweiny-desk3>
-        <20220402144845.GA7822@wunner.de>
-        <YkzPIzIhfzQKIMe0@iweiny-desk3>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Wed, 6 Apr 2022 10:22:24 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F9C3919C2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:27:55 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id j12so2512927wrb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 03:27:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=BwJ8SAExrW9RROE3H/KoFKcCEjo9fX//swBP0z59ayk=;
+        b=DJsXVuR9LnT4MsrQXyeJ1YXGm1NrYFUF/KXlDFJg0R5rzk9CzQZcmR3jlrF8manMtp
+         ASXneeEVMU4q6+Jap7hwKjd4Be+CLYwPoowyh44dFBJkGy8S4RY19sE1wUe9r62ycByT
+         HOYz/2vRmbkG1CR3+hZqB0h4vUVzlT+OUXPMLAfbeK8tMrsozQf93/f8Xnd16/eMX8BO
+         YHOGa//5Dl8yEeXXBuZTnzd5FH35Qcy0XRDxYTtyvrKUJ2GQNOlSLgAdOJSTyVqCgeQb
+         qDTlMkoSMtO0BwzvIICzlSHb7wRbClWSNEOn12+h1VwnTWM7bReTHIV53mTDlmUbJuMU
+         fMqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=BwJ8SAExrW9RROE3H/KoFKcCEjo9fX//swBP0z59ayk=;
+        b=uzYlbCl0gUFo3Z0EwfIKOHLPr9NCM+DFNuSWI7friJlDh6jUsTs2QnGYz6xB7ARIp1
+         cwwzI2Ed70kuD5vGGRpDCWlmWfRlMjNV12KAS/x7MZ2P7uoReOrfKjKjjCvOpGu7n5so
+         dDmZ+QJSxFTftHElhtK4Ak6She6GeEynxq/RwciXPze/oSRBhPC6zVIIvGxq9D3r64fG
+         Hvfef/tvRkihzeAmOechtYJlU/nuiFwDoq3uad+zBym+TwmpqGOiiawC7jurEhQusGYq
+         USPubZOZSDgkcE7wAXQiqkPTReo5Tb65iW2F7lNmhvfLrdVME6WgWezcxHH7iCFLLN4l
+         EHBw==
+X-Gm-Message-State: AOAM532rpd4ieYZlJqQedzRRBPYq0BLoN/ojDO7Ys5OKQfOn0NALOfXo
+        TaHuM978dq3YuD8m/jy8JSWPVw==
+X-Google-Smtp-Source: ABdhPJxjZWm6A/FkxhLV3pL1XPdURvb/xkERbt+nv44rDcPej9lBzoqljxAT2Qz0N+zvvuec3B4ykA==
+X-Received: by 2002:a5d:6dad:0:b0:204:182a:e601 with SMTP id u13-20020a5d6dad000000b00204182ae601mr6018322wrs.262.1649240874318;
+        Wed, 06 Apr 2022 03:27:54 -0700 (PDT)
+Received: from ?IPV6:2a01:e34:ed2f:f020:261f:c14c:d23b:d177? ([2a01:e34:ed2f:f020:261f:c14c:d23b:d177])
+        by smtp.googlemail.com with ESMTPSA id bg20-20020a05600c3c9400b0037fa5c422c8sm5011797wmb.48.2022.04.06.03.27.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 03:27:52 -0700 (PDT)
+Message-ID: <768c4fe5-fd36-8e4a-a9c2-1c799af3ed44@linaro.org>
+Date:   Wed, 6 Apr 2022 12:27:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v15 4/5] clocksource/drivers: Add a goldfish-timer
+ clocksource
+Content-Language: en-US
+To:     Laurent Vivier <laurent@vivier.eu>
+Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-rtc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-m68k@lists.linux-m68k.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-kernel@vger.kernel.org
+References: <20220310090048.1933020-1-laurent@vivier.eu>
+ <20220310090048.1933020-5-laurent@vivier.eu>
+ <f87deb83-7f1f-5acf-b6c6-040fcd02c0be@vivier.eu>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <f87deb83-7f1f-5acf-b6c6-040fcd02c0be@vivier.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 16:22:11 -0700
-Ira Weiny <ira.weiny@intel.com> wrote:
 
-> On Sat, Apr 02, 2022 at 04:48:45PM +0200, Lukas Wunner wrote:
-> > On Thu, Mar 31, 2022 at 08:19:56AM -0700, Ira Weiny wrote:  
-> > > On Wed, Mar 30, 2022 at 10:50:31PM -0700, Christoph Hellwig wrote:  
-> > > > On Wed, Mar 30, 2022 at 04:59:13PM -0700, ira.weiny@intel.com wrote:  
-> > > > > Introduced in a PCI v6.0[1], DOE provides a config space based mailbox
-> > > > > with standard protocol discovery.  Each mailbox is accessed through a
-> > > > > DOE Extended Capability.  
-> > > > 
-> > > > I really don't think this should be built unconditionally and bloat
-> > > > every single kernel built with PCI support.  
-> > > 
-> > > I can add a Kconfig.  
-> > 
-> > Ideally, that config option should live in the pcie/ subdirectory,
-> > i.e. in drivers/pci/pcie/Kconfig, alongside drivers/pci/pcie/doe.c,
-> > as we try to consolidate PCIe-specific features there and reserve
-> > core code in drivers/pci/*.c for functionality that also applies
-> > to Conventional PCI.  
+Hi Laurent,
+
+
+On 01/04/2022 12:20, Laurent Vivier wrote:
 > 
-> Thanks for letting me know about this direction.  I was unaware of this.
-
-We had this in the pcie directory, but Bjorn asked us to move it to the pci
-directory as there isn't anything specific to PCIe about DOE. You could
-implement it on pci-x (maybe 2.0?) I think even though it's in the PCIe specification.
-
-https://lore.kernel.org/linux-pci/20210413194927.GA2241331@bjorn-Precision-5520/
-
-Thanks,
-
-Jonathan
-
-
+> Daniel ?
 > 
-> I'll move the file no problem, thanks,
-> Ira
+> Thanks,
+> Laurent
 > 
-> > 
-> > Thanks,
-> > 
-> > Lukas  
+> Le 10/03/2022 à 10:00, Laurent Vivier a écrit :
+>> Add a clocksource based on the goldfish-rtc device.
+>>
+>> Move the timer register definition to <clocksource/timer-goldfish.h>
+>>
+>> This kernel implementation is based on the QEMU upstream implementation:
+>>
+>>     https://git.qemu.org/?p=qemu.git;a=blob_plain;f=hw/rtc/goldfish_rtc.c
+>>
+>> goldfish-timer is a high-precision signed 64-bit nanosecond timer.
+>> It is part of the 'goldfish' virtual hardware platform used to run
+>> some emulated Android systems under QEMU.
+>> This timer only supports oneshot event.
+>>
+>> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+>> ---
+>>   drivers/clocksource/Kconfig          |   7 ++
+>>   drivers/clocksource/Makefile         |   1 +
+>>   drivers/clocksource/timer-goldfish.c | 153 +++++++++++++++++++++++++++
+>>   drivers/rtc/rtc-goldfish.c           |  13 +--
+>>   include/clocksource/timer-goldfish.h |  31 ++++++
+>>   5 files changed, 193 insertions(+), 12 deletions(-)
+>>   create mode 100644 drivers/clocksource/timer-goldfish.c
+>>   create mode 100644 include/clocksource/timer-goldfish.h
+>>
+>> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+>> index cfb8ea0df3b1..94f00374cebb 100644
+>> --- a/drivers/clocksource/Kconfig
+>> +++ b/drivers/clocksource/Kconfig
+>> @@ -721,4 +721,11 @@ config MICROCHIP_PIT64B
+>>         modes and high resolution. It is used as a clocksource
+>>         and a clockevent.
+>> +config GOLDFISH_TIMER
+>> +    bool "Clocksource using goldfish-rtc"
+>> +    depends on M68K || COMPILE_TEST
+>> +    depends on RTC_DRV_GOLDFISH
+>> +    help
+>> +      Support for the timer/counter of goldfish-rtc
+>> +
+>>   endmenu
+>> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+>> index fa5f624eadb6..12f5d7e8cc2d 100644
+>> --- a/drivers/clocksource/Makefile
+>> +++ b/drivers/clocksource/Makefile
+>> @@ -89,3 +89,4 @@ obj-$(CONFIG_GX6605S_TIMER)        += timer-gx6605s.o
+>>   obj-$(CONFIG_HYPERV_TIMER)        += hyperv_timer.o
+>>   obj-$(CONFIG_MICROCHIP_PIT64B)        += timer-microchip-pit64b.o
+>>   obj-$(CONFIG_MSC313E_TIMER)        += timer-msc313e.o
+>> +obj-$(CONFIG_GOLDFISH_TIMER)        += timer-goldfish.o
+>> diff --git a/drivers/clocksource/timer-goldfish.c 
+>> b/drivers/clocksource/timer-goldfish.c
+>> new file mode 100644
+>> index 000000000000..0512d5eabc82
+>> --- /dev/null
+>> +++ b/drivers/clocksource/timer-goldfish.c
+>> @@ -0,0 +1,153 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +
+>> +#include <linux/interrupt.h>
+>> +#include <linux/ioport.h>
+>> +#include <linux/clocksource.h>
+>> +#include <linux/clockchips.h>
+>> +#include <linux/module.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/goldfish.h>
 
+Not related to this patch: would it make sense to move it to linux/soc/... ?
+
+
+>> +#include <clocksource/timer-goldfish.h>
+>> +
+>> +struct goldfish_timer {
+>> +    struct clocksource cs;
+>> +    struct clock_event_device ced;
+>> +    struct resource res;
+>> +    void __iomem *base;
+>> +};
+>> +
+>> +static struct goldfish_timer *ced_to_gf(struct clock_event_device *ced)
+>> +{
+>> +    return container_of(ced, struct goldfish_timer, ced);
+>> +}
+>> +
+>> +static struct goldfish_timer *cs_to_gf(struct clocksource *cs)
+>> +{
+>> +    return container_of(cs, struct goldfish_timer, cs);
+>> +}
+>> +
+>> +static u64 goldfish_timer_read(struct clocksource *cs)
+>> +{
+>> +    struct goldfish_timer *timerdrv = cs_to_gf(cs);
+>> +    void __iomem *base = timerdrv->base;
+>> +    u32 time_low, time_high;
+>> +    u64 ticks;
+>> +
+>> +    /*
+>> +     * time_low: get low bits of current time and update time_high
+>> +     * time_high: get high bits of time at last time_low read
+>> +     */
+>> +    time_low = gf_ioread32(base + TIMER_TIME_LOW);
+>> +    time_high = gf_ioread32(base + TIMER_TIME_HIGH);
+
+There is a risk here to have the counter rolling over between low and 
+high reading, no ?
+
+If it is the case, you may consider using 32bits instead of 64bits, 
+otherwise handle the counter wrapping around.
+
+>> +    ticks = ((u64)time_high << 32) | time_low;
+>> +
+>> +    return ticks;
+>> +}
+>> +
+
+[ ... ]
+
+>> +/*
+>> + * TIMER_TIME_LOW     get low bits of current time and update 
+>> TIMER_TIME_HIGH
+>> + * TIMER_TIME_HIGH     get high bits of time at last TIMER_TIME_LOW read
+>> + * TIMER_ALARM_LOW     set low bits of alarm and activate it
+>> + * TIMER_ALARM_HIGH     set high bits of next alarm
+>> + * TIMER_IRQ_ENABLED     enable alarm interrupt
+>> + * TIMER_CLEAR_ALARM     disarm an existin alarm
+
+typo: s/existin/existing/
+
+>> + * TIMER_ALARM_STATUS     alarm status (running or not)
+>> + * TIMER_CLEAR_INTERRUPT clear interrupt
+>> + */
+>> +#define TIMER_TIME_LOW        0x00
+>> +#define TIMER_TIME_HIGH        0x04
+>> +#define TIMER_ALARM_LOW        0x08
+>> +#define TIMER_ALARM_HIGH    0x0c
+>> +#define TIMER_IRQ_ENABLED    0x10
+>> +#define TIMER_CLEAR_ALARM    0x14
+>> +#define TIMER_ALARM_STATUS    0x18
+>> +#define TIMER_CLEAR_INTERRUPT    0x1c
+>> +
+>> +extern int goldfish_timer_init(int irq, void __iomem *base);
+>> +
+>> +#endif /* _CLOCKSOURCE_TIMER_GOLDFISH_H */
+
+
+
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
