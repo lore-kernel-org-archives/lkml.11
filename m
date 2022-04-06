@@ -2,106 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 911BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10757C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240470AbiDFSUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
+        id S240586AbiDFSUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241494AbiDFSTT (ORCPT
+        with ESMTP id S240802AbiDFSRt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:19:19 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB9810781D;
-        Wed,  6 Apr 2022 10:01:50 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id bx5so3117507pjb.3;
-        Wed, 06 Apr 2022 10:01:50 -0700 (PDT)
+        Wed, 6 Apr 2022 14:17:49 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47059DB2EA
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:55:30 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id w4so4102479wrg.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:55:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tji3uryA80ryL0v5i/4cJLB5FmNIif56xmTcuZ+KJ1E=;
-        b=VKGbuIMCQkgcPN2TDBgIhQ0kOQ5fkECxM375spzc9MjKK3AH4Ss+8I8/w0TwxzGZbr
-         yjEIW1kMpL5UwR1ByOoQuTEmwmZ5ihewS3bXAPBrTmZkNtFo/Exj6Z4QOoPDVpOXqEa+
-         X6FPILUSP6D3YB7DWDU7Jdw37z5u1JX1ojLmwZ30eY/6ono4+TJeSEqks+f77pJx0VNb
-         P38COxMVPO4tGwAxAg43DcCXd9MVWqpad9quPgVZEwgn1qtOLFcsnQjMln6foAhj/yzm
-         uiJHXRrTqlM5gty/vGc5IrBp7CctkWXdH8jJIGMgwp35/mg7Zn/xYnraYhXVa0RUc0rg
-         fV0g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fLTxnGR7/KTIrTDEayIFV/BI/DbPoVL88+VO1j10fPI=;
+        b=Z7MBoyVQaoQbXieqx9qBI5GYO+2AdCuq0p9KpnbZlQWWbCS3qGiJEeFFp6bn3jER+O
+         YTJeKhwvNRVcLyLmeZMe9urVW7uBNJOsZFDJfCGFgVxT9Z9Ost0Y5KjMQQNrZhXhnfGd
+         oRjc8lGI+owp5FFB94h1Xk7sU1irJSkS8H5ALS+OTZQHkukOyrDfFfqYuHu/cweS74N2
+         K428wdkELHXOqp9RXLZfqkgTG9WCFHyX56vWH8/H1DzcQgsfRWyvcs4HsoCliB+i/csb
+         w1W3uApqQie6RrwI9JmzF1xjBETby2HrhbzroNgT0D0mliRVu38z5WQQamuCweMOTGEF
+         Vgog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tji3uryA80ryL0v5i/4cJLB5FmNIif56xmTcuZ+KJ1E=;
-        b=VR42+s8nWqdxOLTmFXzomEQuyirTtRfFL132GEXsRNHflgozZkblSlNRlZH+7Ggvg+
-         0/KfFem5XGSzX+4qA3y9FGo9zHpKzAeiZDWc3n/W7DXyCakHpPmedrOkej07m0QzQpDR
-         RIgviZjdva5CGrum1DVYVJaWdNNLBCaFPo7EiEjaiNnw5PQvfNDOkKVm3IVrF4oCV8jd
-         kJ+r/GVNoBpet6sTVgtrmQu/k+hGfIu/udDWRAnmQLaZQRSWjBaK3NMHkfyP5v23YDLD
-         BDKUJtD1zfi+vq67GHDsCslmMU61kk+hEuOSoImhubDkvPzYo7T9BCaqT94TSvFS04H0
-         bslg==
-X-Gm-Message-State: AOAM533c/jtMy6uoLjK8TiGdGDFgoI4RxW4ysIjt6IiBXx3ul67Y7OUq
-        5Es7JOwP2EZZw3SaPxPHzdAQVFrhw+UUJvT5e1mngQul
-X-Google-Smtp-Source: ABdhPJwnrYWN+wCHETrUl7CszfjDyZfqz3h5NA96wUGgNIvVDzoB+9XhRVEIkQ3LYGAY8vAr6aG3dWoV31bu/qaLbk0=
-X-Received: by 2002:a17:903:32c5:b0:156:b466:c8ed with SMTP id
- i5-20020a17090332c500b00156b466c8edmr9561560plr.34.1649264510205; Wed, 06 Apr
- 2022 10:01:50 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fLTxnGR7/KTIrTDEayIFV/BI/DbPoVL88+VO1j10fPI=;
+        b=oeSuYUw+s8kxqKCySXL0SEAdedzt/Yo27p6e6T4yQSXIY737bzR60gfXNlmcTs/nxt
+         kC0gy9W+ara6v4o5x+X6ZznjgbaJvyoHpwLznAUdYj6gY3AnuWj7oWPpLi5v7vrDxPcT
+         hu5GizY2aj3+yAUFtb8Yqfz5Eqj5XQbSoa8twkhwAuWml+S2gcMM3fM5kOh7looxxrU/
+         pYeeGkVvncPPGJv4wzE9Kghi1gqEcvaSm9oBfUvYeKHJUy/PSiUlWlt9VN5901ky5yqh
+         WXpCaAXxfqnnRncE1VedI5lDiJ6Hx4OxNd2/RRRZ1EFIZiuRsOu2Qo5Uvqp0xKNrnYWi
+         nCRQ==
+X-Gm-Message-State: AOAM533d0WNjKpEdTUAZiZ0hmveVaP0jp6nO+u59U76JzUw+0DWy+2rE
+        MVHZWJeRGlmOokJwUp8rjF6ugweZA8u+bg==
+X-Google-Smtp-Source: ABdhPJwkIAuexl3wfrlFeKQ3C80Sb6JkJaovTFTC+6nDT5lFOmwSus6YA2zf1UDBLUBgluO0yExeDA==
+X-Received: by 2002:adf:e5c2:0:b0:206:116a:432a with SMTP id a2-20020adfe5c2000000b00206116a432amr7358435wrn.223.1649264128743;
+        Wed, 06 Apr 2022 09:55:28 -0700 (PDT)
+Received: from localhost.localdomain ([217.113.241.148])
+        by smtp.gmail.com with ESMTPSA id j16-20020a05600c191000b0038c9249ffdesm5694484wmq.9.2022.04.06.09.55.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 09:55:28 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     emma@anholt.net
+Cc:     mripard@kernel.org, laurent.pinchart@ideasonboard.com,
+        airlied@linux.ie, daniel@ffwll.ch, p.zabel@pengutronix.de,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH 0/1] drm/vc4: hdmi: Replace drm_detect_hdmi_monitor() with drm_display_info.is_hdmi
+Date:   Wed,  6 Apr 2022 18:55:13 +0200
+Message-Id: <20220406165514.6106-1-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220405075531.GB30877@worktop.programming.kicks-ass.net>
- <CAADnVQJ1_9sBqRngG_J+84whx9j7d7qOSzMaJvhc0evDBQfE3w@mail.gmail.com> <20220406104643.GB2731@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220406104643.GB2731@worktop.programming.kicks-ass.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 6 Apr 2022 10:01:39 -0700
-Message-ID: <CAADnVQLnHYQDM650v7JBw4TkmWOR5FMyEbTw31ySEyccM8QDCg@mail.gmail.com>
-Subject: Re: [PATCH] x86,bpf: Avoid IBT objtool warning
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     bpf <bpf@vger.kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, X86 ML <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 3:46 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Tue, Apr 05, 2022 at 09:58:28AM -0700, Alexei Starovoitov wrote:
-> > On Tue, Apr 5, 2022 at 12:55 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> > >
-> > >
-> > > Clang can inline emit_indirect_jump() and then folds constants, which
-> > > results in:
-> > >
-> > >   | vmlinux.o: warning: objtool: emit_bpf_dispatcher()+0x6a4: relocation to !ENDBR: .text.__x86.indirect_thunk+0x40
-> > >   | vmlinux.o: warning: objtool: emit_bpf_dispatcher()+0x67d: relocation to !ENDBR: .text.__x86.indirect_thunk+0x40
-> > >   | vmlinux.o: warning: objtool: emit_bpf_tail_call_indirect()+0x386: relocation to !ENDBR: .text.__x86.indirect_thunk+0x20
-> > >   | vmlinux.o: warning: objtool: emit_bpf_tail_call_indirect()+0x35d: relocation to !ENDBR: .text.__x86.indirect_thunk+0x20
-> > >
-> > > Suppress the optimization such that it must emit a code reference to
-> > > the __x86_indirect_thunk_array[] base.
-> > >
-> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > > ---
-> > >  arch/x86/net/bpf_jit_comp.c |    1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > --- a/arch/x86/net/bpf_jit_comp.c
-> > > +++ b/arch/x86/net/bpf_jit_comp.c
-> > > @@ -412,6 +412,7 @@ static void emit_indirect_jump(u8 **ppro
-> > >                 EMIT_LFENCE();
-> > >                 EMIT2(0xFF, 0xE0 + reg);
-> > >         } else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
-> > > +               OPTIMIZER_HIDE_VAR(reg);
-> > >                 emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
-> > >         } else
-> > >  #endif
-> >
-> > Looks good. Please cc bpf@vger and all bpf maintainers in the future.
->
-> Oh right, I'll go add an alias for that.
->
-> > We can take it through the bpf tree if you prefer.
->
-> I'll take it through the x86/urgent tree if you don't mind.
+Hello everyone,
 
-Sure. Then pls add:
-Acked-by: Alexei Starovoitov <ast@kernel.org>
+This patch replaces the calls to drm_detect_hdmi_monitor() with the more
+efficient drm_display_info.is_hdmi in the VC4 driver.
+
+After applying it, vc4_encoder->hdmi_monitor could be removed in a
+follow up patch. However, since it is used by some code not present in
+the mainline kernel but present in the Raspberry Pi tree [1] I decided
+to send only this first patch and see if the maintainers also want to
+remove vc4_encoder->hdmi_monitor.
+
+Best wishes,
+José Expósito
+
+[1] https://github.com/raspberrypi/linux/blob/rpi-5.15.y/drivers/gpu/drm/vc4/vc4_firmware_kms.c#L1410
+
+José Expósito (1):
+  drm/vc4: hdmi: Replace drm_detect_hdmi_monitor() with is_hdmi
+
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
+
