@@ -2,331 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1752EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA090C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238837AbiDFJlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
+        id S241646AbiDFJlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 05:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584362AbiDFJfq (ORCPT
+        with ESMTP id S1585823AbiDFJgr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:35:46 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867F328AC74
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1649209651; x=1680745651;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=y4QNGhCVjyn8LK6USs8COB4Sf+wqXGaxVxcHDk7fwkI=;
-  b=QuQ8Lsd+ZRwySoloi3nj6M5/pJuTq65QcTmixC8S1yfCU7vGAC2LE1l+
-   MoF2uhvfEHGtW+GKax4MI8r/oRrWGsed376LdpaUCpNmK6sPMCU2ge+v3
-   2FrG1icregQQJnugwzTpCpWhGVAAJZDbzWGEUz7u5MCNbimnVM9IODSX1
-   PvnTuxOWcoUZdkZvw0B4N0Mzz1DaGnhN+kSnXKJktwW0scorCRVq8Jjwc
-   mkmkJf5ciepyoG5M1RYRsuH/gThZzYtcyYyUDWbmk4sDbq2AOKPR7snbF
-   6n4KpimSlTfyI6VYtjBeqsBW6Ci3BLbOALSc/SSP8EmEwMw8KXI1yPURs
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,238,1643644800"; 
-   d="scan'208";a="202037172"
-Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 06 Apr 2022 09:47:30 +0800
-IronPort-SDR: oqwoWS6Aa3yKn9FWdqfzW+BQFITi9fatvRfx2w6kwVtUxAUAIqpadYN//mglpE+z1wAk7REJ59
- HO5WAHhmX2ZEXTA1v/99luheoiMDtS/B0TEMuH6i76BQH8hYLOi/LCa1Z2YzNzkEdm8J9Bkag7
- /kyly5Effzdkkv3aIx+XoE97xlAeqhT7gHJdD0t0c2EnfE/szek2vXdh2jXlGy2t2/wATy45WT
- O2NChwqnWOV3gaLjOr2uNxFfNi0pIMPsx2KRxud74SnSIabrhBw3FUoA9lNEZ9PiaXIOM8iYe/
- mTs8J3tYc7cgoKVYlykN71Z/
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Apr 2022 18:18:13 -0700
-IronPort-SDR: TnNJ+eOBcZlzyTghWp58f1M5Pc5BQAW4Z80aPlU0NiLWimWTB4seDdmy8fAys42LOLi39rK9N3
- C7N8PW1Gos1Roxy0BZS9qSo0rXaMcOIVW9z03hl2dU+Uyy9EAcbKqjxlByTJbaZ/MwNsDjtlhx
- kRlIx/VgVKGTOLME+6wbfEfmZO1PQvFFVR/ZsKoMoqWGJRNQ0btDAYcEEPuz81z8CVLStdeNP1
- VYa2S4NXWGBv3kIV83yi1N13UkwrLxs+tlsY2RNHn4snpLVf9Rvk42J6dq/B0siHSE72rw3lH0
- PlM=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Apr 2022 18:47:31 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KY6pB2qrCz1SHwl
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:47:30 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1649209649; x=1651801650; bh=y4QNGhCVjyn8LK6USs8COB4Sf+wqXGaxVxc
-        HDk7fwkI=; b=Why92KATSaTWDTRdXay89bhrCfE+1JZ8pl0W5gEX0tMou80PTaH
-        +cKUGzGsZCK6oc3VuDa8Xhh/tvyH6TebYFLsblvcOBGCaf+ggmkdIMaN7BNdjVj5
-        i5cWlDtI0X190r1EGVdNK39W/3Lo11pBsdSrHaZB8CWuwtnZ0KEJylov7/z02FCL
-        ErgJX4RoTpQPSzWVVjQEtHuTaS3tEPVrQdVxTOm9/eJtkgQlZoewFbAPFVqIfhRH
-        2A04PTkig8CZ55is1S++NeHTWd9A74rs6gSyNyel9IdCFHA6DRSNt8Tn/aE5Ux4l
-        h1lX45PHMXe4PMN7ZcKqV4fdn93iv2GXc1g==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id ODEZjpbsY1xd for <linux-kernel@vger.kernel.org>;
-        Tue,  5 Apr 2022 18:47:29 -0700 (PDT)
-Received: from [10.149.53.254] (washi.fujisawa.hgst.com [10.149.53.254])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KY6p83wbmz1Rvlx;
-        Tue,  5 Apr 2022 18:47:28 -0700 (PDT)
-Message-ID: <06820834-409e-5a53-b7b2-e3787a16d329@opensource.wdc.com>
-Date:   Wed, 6 Apr 2022 10:47:27 +0900
+        Wed, 6 Apr 2022 05:36:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8674A19D61B;
+        Tue,  5 Apr 2022 19:31:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20AEB616B8;
+        Wed,  6 Apr 2022 02:31:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 321F8C385A0;
+        Wed,  6 Apr 2022 02:31:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649212284;
+        bh=aw2bq5SC6SuV7FHJKRzv7VxT/0OLDHfP3nbZybj0tO4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KhCwMTsQmGqmfrifRKhNYRshX9Xl9dg1YeS5en9OMMAb2Jvrns3OwcFsiRAk0ZCnd
+         rI2Bg8FjLLLuBPzw9N72CUjdrH6EoTPNI7QW/FhqY4RF5e3FxcgaZT/2eRAK5pSjx4
+         Pp2l2FRn8bATi7BHqSjPCDXWCyIx+PdUDux/4dqcB1QnWlndoTVHb9WvwsRg57d/di
+         JczJt0ogZ3iw3ZsLJYKLx3zH6dMSoFp4ggG2cg67QshCe4NQcbEYnQfvWENpLYOWSR
+         dWsfEf5l6TJqokFrQ/yspb+QoqXysk+1geOPyW/O+erY/UXNXD3p89nq5iPqcObaZL
+         yOfmu+Sc25IHA==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Subject: [PATCH v8 3/4] bootconfig: Support embedding a bootconfig file in kernel
+Date:   Wed,  6 Apr 2022 11:31:19 +0900
+Message-Id: <164921227943.1090670.14035119557571329218.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <164921224829.1090670.9700650651725930602.stgit@devnote2>
+References: <164921224829.1090670.9700650651725930602.stgit@devnote2>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] libata: Inline ata_qc_new_init() in
- ata_scsi_qc_new()
-Content-Language: en-US
-To:     John Garry <john.garry@huawei.com>, hch@lst.de
-Cc:     linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-scsi@vger.kernel.org
-References: <1649083990-207133-1-git-send-email-john.garry@huawei.com>
- <1649083990-207133-3-git-send-email-john.garry@huawei.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <1649083990-207133-3-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 23:53, John Garry wrote:
-> From: Christoph Hellwig <hch@lst.de>
-> 
-> It is a bit pointless to have ata_qc_new_init() in libata-core.c since it
-> pokes scsi internals, so inline it in ata_scsi_qc_new() (in libata-scsi.c).
-> 
-> <Christoph, please provide signed-off-by>
-> [jpg, Take Christoph's change from list and form into a patch]
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
->   Documentation/driver-api/libata.rst | 11 -------
->   drivers/ata/libata-core.c           | 44 +---------------------------
->   drivers/ata/libata-sata.c           |  8 -----
->   drivers/ata/libata-scsi.c           | 45 ++++++++++++++++++++++-------
->   drivers/ata/libata.h                | 12 --------
->   5 files changed, 35 insertions(+), 85 deletions(-)
-> 
-> diff --git a/Documentation/driver-api/libata.rst b/Documentation/driver-api/libata.rst
-> index d477e296bda5..311af516a3fd 100644
-> --- a/Documentation/driver-api/libata.rst
-> +++ b/Documentation/driver-api/libata.rst
-> @@ -424,12 +424,6 @@ How commands are issued
->   -----------------------
->   
->   Internal commands
-> -    First, qc is allocated and initialized using :c:func:`ata_qc_new_init`.
-> -    Although :c:func:`ata_qc_new_init` doesn't implement any wait or retry
-> -    mechanism when qc is not available, internal commands are currently
-> -    issued only during initialization and error recovery, so no other
-> -    command is active and allocation is guaranteed to succeed.
-> -
->       Once allocated qc's taskfile is initialized for the command to be
->       executed. qc currently has two mechanisms to notify completion. One
->       is via ``qc->complete_fn()`` callback and the other is completion
-> @@ -447,11 +441,6 @@ SCSI commands
->       translated. No qc is involved in processing a simulated scmd. The
->       result is computed right away and the scmd is completed.
->   
-> -    For a translated scmd, :c:func:`ata_qc_new_init` is invoked to allocate a
-> -    qc and the scmd is translated into the qc. SCSI midlayer's
-> -    completion notification function pointer is stored into
-> -    ``qc->scsidone``.
-> -
->       ``qc->complete_fn()`` callback is used for completion notification. ATA
->       commands use :c:func:`ata_scsi_qc_complete` while ATAPI commands use
->       :c:func:`atapi_qc_complete`. Both functions end up calling ``qc->scsidone``
-> diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-> index 1067b2e2be28..5e7d6ccad5da 100644
-> --- a/drivers/ata/libata-core.c
-> +++ b/drivers/ata/libata-core.c
-> @@ -4563,43 +4563,6 @@ void swap_buf_le16(u16 *buf, unsigned int buf_words)
->   #endif /* __BIG_ENDIAN */
->   }
->   
-> -/**
-> - *	ata_qc_new_init - Request an available ATA command, and initialize it
-> - *	@dev: Device from whom we request an available command structure
-> - *	@scmd: scmd for which to get qc
-> - *
-> - *	LOCKING:
-> - *	None.
-> - */
-> -
-> -struct ata_queued_cmd *ata_qc_new_init(struct ata_device *dev, struct scsi_cmnd *scmd)
-> -{
-> -	int tag = scsi_cmd_to_rq(scmd)->tag;
-> -	struct ata_port *ap = dev->link->ap;
-> -	struct ata_queued_cmd *qc;
-> -
-> -	/* no command while frozen */
-> -	if (unlikely(ap->pflags & ATA_PFLAG_FROZEN))
-> -		return NULL;
-> -
-> -	/* libsas case */
-> -	if (ap->flags & ATA_FLAG_SAS_HOST) {
-> -		tag = ata_sas_get_tag(scmd);
-> -		if (tag < 0)
-> -			return NULL;
-> -	}
-> -
-> -	qc = __ata_qc_from_tag(ap, tag);
-> -	qc->tag = qc->hw_tag = tag;
-> -	qc->scsicmd = NULL;
-> -	qc->ap = ap;
-> -	qc->dev = dev;
-> -
-> -	ata_qc_reinit(qc);
-> -
-> -	return qc;
-> -}
-> -
->   /**
->    *	ata_qc_free - free unused ata_queued_cmd
->    *	@qc: Command to complete
-> @@ -4612,13 +4575,8 @@ struct ata_queued_cmd *ata_qc_new_init(struct ata_device *dev, struct scsi_cmnd
->    */
->   void ata_qc_free(struct ata_queued_cmd *qc)
->   {
-> -	unsigned int tag;
-> -
-> -	WARN_ON_ONCE(qc == NULL); /* ata_qc_from_tag _might_ return NULL */
-> -
->   	qc->flags = 0;
-> -	tag = qc->tag;
-> -	if (ata_tag_valid(tag))
-> +	if (ata_tag_valid(qc->tag))
->   		qc->tag = ATA_TAG_POISON;
->   }
->   
-> diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
-> index c3e9fd7d920c..7a5fe41aa5ae 100644
-> --- a/drivers/ata/libata-sata.c
-> +++ b/drivers/ata/libata-sata.c
-> @@ -1268,14 +1268,6 @@ int ata_sas_queuecmd(struct scsi_cmnd *cmd, struct ata_port *ap)
->   }
->   EXPORT_SYMBOL_GPL(ata_sas_queuecmd);
->   
-> -int ata_sas_get_tag(struct scsi_cmnd *scmd)
-> -{
-> -	if (WARN_ON_ONCE(scmd->budget_token >= ATA_MAX_QUEUE))
-> -		return -1;
-> -
-> -	return scmd->budget_token;
-> -}
-> -
->   /**
->    *	sata_async_notification - SATA async notification handler
->    *	@ap: ATA port where async notification is received
-> diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-> index 61dd7f7c7743..50ef132ec48c 100644
-> --- a/drivers/ata/libata-scsi.c
-> +++ b/drivers/ata/libata-scsi.c
-> @@ -638,24 +638,47 @@ EXPORT_SYMBOL_GPL(ata_scsi_ioctl);
->   static struct ata_queued_cmd *ata_scsi_qc_new(struct ata_device *dev,
->   					      struct scsi_cmnd *cmd)
->   {
-> +	struct ata_port *ap = dev->link->ap;
->   	struct ata_queued_cmd *qc;
-> +	int tag;
->   
-> -	qc = ata_qc_new_init(dev, cmd);
-> -	if (qc) {
-> -		qc->scsicmd = cmd;
-> -		qc->scsidone = scsi_done;
-> -
-> -		qc->sg = scsi_sglist(cmd);
-> -		qc->n_elem = scsi_sg_count(cmd);
-> +	if (unlikely(ap->pflags & ATA_PFLAG_FROZEN))
-> +		goto fail;
->   
-> -		if (scsi_cmd_to_rq(cmd)->rq_flags & RQF_QUIET)
-> -			qc->flags |= ATA_QCFLAG_QUIET;
-> +	if (ap->flags & ATA_FLAG_SAS_HOST) {
-> +		/*
-> +		 * SAS hosts may queue > ATA_MAX_QUEUE commands so use
-> +		 * unique per-device budget token as a tag.
-> +		 */
-> +		if (WARN_ON_ONCE(cmd->budget_token >= ATA_MAX_QUEUE))
-> +			goto fail;
-> +		tag = cmd->budget_token;
->   	} else {
-> -		cmd->result = (DID_OK << 16) | SAM_STAT_TASK_SET_FULL;
-> -		scsi_done(cmd);
-> +		tag = scsi_cmd_to_rq(cmd)->tag;
->   	}
->   
-> +	qc = __ata_qc_from_tag(ap, tag);
-> +	qc->tag = qc->hw_tag = tag;
-> +	qc->scsicmd = NULL;
-> +	qc->ap = ap;
-> +	qc->dev = dev;
-> +
-> +	ata_qc_reinit(qc);
-> +
-> +	qc->scsicmd = cmd;
-> +	qc->scsidone = scsi_done;
-> +
-> +	qc->sg = scsi_sglist(cmd);
-> +	qc->n_elem = scsi_sg_count(cmd);
-> +
-> +	if (scsi_cmd_to_rq(cmd)->rq_flags & RQF_QUIET)
-> +		qc->flags |= ATA_QCFLAG_QUIET;
+This allows kernel developer to embed a default bootconfig file in
+the kernel instead of embedding it in the initrd. This will be good
+for who are using the kernel without initrd, or who needs a default
+bootconfigs.
+This needs to set two kconfigs: CONFIG_BOOT_CONFIG_EMBED=y and set
+the file path to CONFIG_BOOT_CONFIG_EMBED_FILE.
 
-Please add a blank line here.
-I like to have return statements stand out :)
+Note that you still need 'bootconfig' command line option to load the
+embedded bootconfig. Also if you boot using an initrd with a different
+bootconfig, the kernel will use the bootconfig in the initrd, instead
+of the default bootconfig.
 
->   	return qc;
-> +
-> +fail:
-> +	cmd->result = (DID_OK << 16) | SAM_STAT_TASK_SET_FULL;
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+---
+ Changes in v8:
+  - Fix a build error in CONFIG_BLK_DEV_INITRD=n case.
+ Changes in v7:
+  - Change kconfig option name to share the common prefix so that
+    we can search it easier.
+  - Make embedded_bootconfig_data readonly.
+  - Select CONFIG_BLK_DEV_INITRD only if CONFIG_BOOT_CONFIG_EMBED=n
+  - Remove redundant default settings for new Kconfig options.
+ Changes in v6:
+  - Split out the .incbin asm part as bootconfig-data.S according to
+    Masahiro's comment.
+ Changes in v5:
+  - Fix .gitignore to be sorted alphabetically.
+  - Make default.bconf is cleaned up correctly.
+  - Allow user to specify relative path to CONFIG_EMBED_BOOT_CONFIG_FILE.
+    (Thanks Masahiro!)
+ Changes in v4:
+  - Avoid updating the default.bconf if the file is not changed.
+---
+ MAINTAINERS                |    1 +
+ include/linux/bootconfig.h |   10 ++++++++++
+ init/Kconfig               |   21 ++++++++++++++++++++-
+ init/main.c                |   22 ++++++++++++----------
+ lib/.gitignore             |    1 +
+ lib/Makefile               |    8 ++++++++
+ lib/bootconfig-data.S      |   10 ++++++++++
+ lib/bootconfig.c           |   13 +++++++++++++
+ 8 files changed, 75 insertions(+), 11 deletions(-)
+ create mode 100644 lib/bootconfig-data.S
 
-While at it, it may be better to use:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c10fbd13080a..88c9d62acd90 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7318,6 +7318,7 @@ S:	Maintained
+ F:	Documentation/admin-guide/bootconfig.rst
+ F:	fs/proc/bootconfig.c
+ F:	include/linux/bootconfig.h
++F:	lib/bootconfig-data.S
+ F:	lib/bootconfig.c
+ F:	tools/bootconfig/*
+ F:	tools/bootconfig/scripts/*
+diff --git a/include/linux/bootconfig.h b/include/linux/bootconfig.h
+index a4665c7ab07c..1611f9db878e 100644
+--- a/include/linux/bootconfig.h
++++ b/include/linux/bootconfig.h
+@@ -289,4 +289,14 @@ int __init xbc_get_info(int *node_size, size_t *data_size);
+ /* XBC cleanup data structures */
+ void __init xbc_exit(void);
+ 
++/* XBC embedded bootconfig data in kernel */
++#ifdef CONFIG_BOOT_CONFIG_EMBED
++const char * __init xbc_get_embedded_bootconfig(size_t *size);
++#else
++static inline const char *xbc_get_embedded_bootconfig(size_t *size)
++{
++	return NULL;
++}
++#endif
++
+ #endif
+diff --git a/init/Kconfig b/init/Kconfig
+index beb5b866c318..e7c75fb7d244 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1347,7 +1347,7 @@ endif
+ 
+ config BOOT_CONFIG
+ 	bool "Boot config support"
+-	select BLK_DEV_INITRD
++	select BLK_DEV_INITRD if !BOOT_CONFIG_EMBED
+ 	help
+ 	  Extra boot config allows system admin to pass a config file as
+ 	  complemental extension of kernel cmdline when booting.
+@@ -1357,6 +1357,25 @@ config BOOT_CONFIG
+ 
+ 	  If unsure, say Y.
+ 
++config BOOT_CONFIG_EMBED
++	bool "Embed bootconfig file in the kernel"
++	depends on BOOT_CONFIG
++	help
++	  Embed a bootconfig file given by BOOT_CONFIG_EMBED_FILE in the
++	  kernel. Usually, the bootconfig file is loaded with the initrd
++	  image. But if the system doesn't support initrd, this option will
++	  help you by embedding a bootconfig file while building the kernel.
++
++	  If unsure, say N.
++
++config BOOT_CONFIG_EMBED_FILE
++	string "Embedded bootconfig file path"
++	depends on BOOT_CONFIG_EMBED
++	help
++	  Specify a bootconfig file which will be embedded to the kernel.
++	  This bootconfig will be used if there is no initrd or no other
++	  bootconfig in the initrd.
++
+ choice
+ 	prompt "Compiler optimization level"
+ 	default CC_OPTIMIZE_FOR_PERFORMANCE
+diff --git a/init/main.c b/init/main.c
+index 4f3ba3b84e34..d00c6f77d0e0 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -265,7 +265,7 @@ static int __init loglevel(char *str)
+ early_param("loglevel", loglevel);
+ 
+ #ifdef CONFIG_BLK_DEV_INITRD
+-static void * __init get_boot_config_from_initrd(u32 *_size)
++static void * __init get_boot_config_from_initrd(size_t *_size)
+ {
+ 	u32 size, csum;
+ 	char *data;
+@@ -312,7 +312,7 @@ static void * __init get_boot_config_from_initrd(u32 *_size)
+ 	return data;
+ }
+ #else
+-static void * __init get_boot_config_from_initrd(u32 *_size)
++static void * __init get_boot_config_from_initrd(size_t *_size)
+ {
+ 	return NULL;
+ }
+@@ -409,14 +409,16 @@ static int __init warn_bootconfig(char *str)
+ static void __init setup_boot_config(void)
+ {
+ 	static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
+-	const char *msg;
+-	int pos;
+-	u32 size;
+-	char *data, *err;
+-	int ret;
++	const char *msg, *data;
++	int pos, ret;
++	size_t size;
++	char *err;
+ 
+ 	/* Cut out the bootconfig data even if we have no bootconfig option */
+ 	data = get_boot_config_from_initrd(&size);
++	/* If there is no bootconfig in initrd, try embedded one. */
++	if (!data)
++		data = xbc_get_embedded_bootconfig(&size);
+ 
+ 	strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
+ 	err = parse_args("bootconfig", tmp_cmdline, NULL, 0, 0, 0, NULL,
+@@ -435,8 +437,8 @@ static void __init setup_boot_config(void)
+ 	}
+ 
+ 	if (size >= XBC_DATA_MAX) {
+-		pr_err("bootconfig size %d greater than max size %d\n",
+-			size, XBC_DATA_MAX);
++		pr_err("bootconfig size %ld greater than max size %d\n",
++			(long)size, XBC_DATA_MAX);
+ 		return;
+ 	}
+ 
+@@ -449,7 +451,7 @@ static void __init setup_boot_config(void)
+ 				msg, pos);
+ 	} else {
+ 		xbc_get_info(&ret, NULL);
+-		pr_info("Load bootconfig: %d bytes %d nodes\n", size, ret);
++		pr_info("Load bootconfig: %ld bytes %d nodes\n", (long)size, ret);
+ 		/* keys starting with "kernel." are passed via cmdline */
+ 		extra_command_line = xbc_make_cmdline("kernel");
+ 		/* Also, "init." keys are init arguments */
+diff --git a/lib/.gitignore b/lib/.gitignore
+index e5e217b8307b..54596b634ecb 100644
+--- a/lib/.gitignore
++++ b/lib/.gitignore
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ /crc32table.h
+ /crc64table.h
++/default.bconf
+ /gen_crc32table
+ /gen_crc64table
+ /oid_registry_data.c
+diff --git a/lib/Makefile b/lib/Makefile
+index 4fc48543dc8f..62a103aaabd4 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -277,6 +277,14 @@ $(foreach file, $(libfdt_files), \
+ lib-$(CONFIG_LIBFDT) += $(libfdt_files)
+ 
+ obj-$(CONFIG_BOOT_CONFIG) += bootconfig.o
++obj-$(CONFIG_BOOT_CONFIG_EMBED) += bootconfig-data.o
++
++$(obj)/bootconfig-data.o: $(obj)/default.bconf
++
++targets += default.bconf
++filechk_defbconf = cat $(or $(real-prereqs), /dev/null)
++$(obj)/default.bconf: $(CONFIG_BOOT_CONFIG_EMBED_FILE) FORCE
++	$(call filechk,defbconf)
+ 
+ obj-$(CONFIG_RBTREE_TEST) += rbtree_test.o
+ obj-$(CONFIG_INTERVAL_TREE_TEST) += interval_tree_test.o
+diff --git a/lib/bootconfig-data.S b/lib/bootconfig-data.S
+new file mode 100644
+index 000000000000..ef85ba1a82f4
+--- /dev/null
++++ b/lib/bootconfig-data.S
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Embed default bootconfig in the kernel.
++ */
++	.section .init.rodata, "aw"
++	.global embedded_bootconfig_data
++embedded_bootconfig_data:
++	.incbin "lib/default.bconf"
++	.global embedded_bootconfig_data_end
++embedded_bootconfig_data_end:
+diff --git a/lib/bootconfig.c b/lib/bootconfig.c
+index 74f3201ab8e5..c59d26068a64 100644
+--- a/lib/bootconfig.c
++++ b/lib/bootconfig.c
+@@ -12,6 +12,19 @@
+ #include <linux/kernel.h>
+ #include <linux/memblock.h>
+ #include <linux/string.h>
++
++#ifdef CONFIG_BOOT_CONFIG_EMBED
++/* embedded_bootconfig_data is defined in bootconfig-data.S */
++extern __visible const char embedded_bootconfig_data[];
++extern __visible const char embedded_bootconfig_data_end[];
++
++const char * __init xbc_get_embedded_bootconfig(size_t *size)
++{
++	*size = embedded_bootconfig_data_end - embedded_bootconfig_data;
++	return (*size) ? embedded_bootconfig_data : NULL;
++}
++#endif
++
+ #else /* !__KERNEL__ */
+ /*
+  * NOTE: This is only for tools/bootconfig, because tools/bootconfig will
 
-	set_host_byte(cmd, DID_OK);
-	set_status_byte(cmd, SAM_STAT_TASK_SET_FULL);
-
-> +	scsi_done(cmd);
-> +	return NULL;
->   }
->   
->   static void ata_qc_set_pc_nbytes(struct ata_queued_cmd *qc)
-> diff --git a/drivers/ata/libata.h b/drivers/ata/libata.h
-> index 92e52090165b..926a7f41303d 100644
-> --- a/drivers/ata/libata.h
-> +++ b/drivers/ata/libata.h
-> @@ -44,7 +44,6 @@ static inline void ata_force_cbl(struct ata_port *ap) { }
->   #endif
->   extern u64 ata_tf_to_lba(const struct ata_taskfile *tf);
->   extern u64 ata_tf_to_lba48(const struct ata_taskfile *tf);
-> -extern struct ata_queued_cmd *ata_qc_new_init(struct ata_device *dev, struct scsi_cmnd *scmd);
->   extern int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
->   			   u64 block, u32 n_block, unsigned int tf_flags,
->   			   unsigned int tag, int class);
-> @@ -91,17 +90,6 @@ extern unsigned int ata_read_log_page(struct ata_device *dev, u8 log,
->   
->   #define to_ata_port(d) container_of(d, struct ata_port, tdev)
->   
-> -/* libata-sata.c */
-> -#ifdef CONFIG_SATA_HOST
-> -int ata_sas_get_tag(struct scsi_cmnd *scmd);
-> -#else
-> -static inline int ata_sas_get_tag(struct scsi_cmnd *scmd)
-> -{
-> -	return -EOPNOTSUPP;
-> -}
-> -static inline void ata_sas_free_tag(unsigned int tag, struct ata_port *ap) { }
-> -#endif
-> -
->   /* libata-acpi.c */
->   #ifdef CONFIG_ATA_ACPI
->   extern unsigned int ata_acpi_gtf_filter;
-
-
--- 
-Damien Le Moal
-Western Digital Research
