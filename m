@@ -2,105 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5882C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 741A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbiDFMMD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
+        id S231251AbiDFMMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231562AbiDFMLt (ORCPT
+        with ESMTP id S230015AbiDFMLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:11:49 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F53940FFA9
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:55:59 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id g20so1610394edw.6
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=7r2ffZ+ymB7DSx9Uk93kfN7lmzvxR8eXYAcNA9ceeys=;
-        b=zxFruS8gRL4tPtU8Ut5n9NTDlAjFzRntseZuBWseA3iiTjEkVVbIBatFpgMTJbydoN
-         RM+y5vY/M6WExNM9DIWWTxua06tXakZqJk0uvOu9DkFPsijYYv+NI6C/50DIFmKVa2W6
-         Nf9YbvhOHYPxyhPSknarhpoLXa6M7mz3hZA79uJUnMcMuYbC/Y7mgMyRzUERjwppCZv7
-         A+7eWm6Ovx4+l44bjrukgViG+oGEua7/hVvndipD5EflBZxz28tGMFpSUeKVCkdXnIA7
-         2Du3YqWSjeqyoUVc3a9bykwvyf95KU2gzkx6Qq/2L/aTChNA1iGqtSXSXQ10CrSTscr2
-         xR+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=7r2ffZ+ymB7DSx9Uk93kfN7lmzvxR8eXYAcNA9ceeys=;
-        b=v1K930u2Ulvp+ZQTm0yD6IwYr2hHz1v3qJ2v+izbscTnJAluDXtG9JQa0rtkCypBwu
-         3SvUd2sBCSNU98rAa0cyLDwWtaNTwM6as/cjfPuFpRd6Ozedu638J4LNNCiJPHA5w+Mf
-         QnuT30JbfL630keHS/vr46F9f1BQHcDakHhUSOAEog70p5PwuqHKddMVsmIGiNiXq1uW
-         hS8Zo7JiUoJXyCG1kc/Hz28uaEC93t5rtIkN4wxmzHAVAZeuOXZuH7OklYJHjrc3uHgZ
-         ZhW/5gYnHrXzfKqzIZ2shjKpuuavwt4xAFRrM0M3tfzgKrpPZabBfkSwijaP8mkgXljU
-         D47w==
-X-Gm-Message-State: AOAM533chz3dp9AE59ayui687CcMrMlyzgI63NYpkK0boM0jsWtDIFH/
-        C7AbmevurcxUCfO0GJkJrodUkA==
-X-Google-Smtp-Source: ABdhPJzz9acBp2KtEvdtZLSTA2T1pnx8GCYRU6b4yCNpabNmCToBUtduaSjaDpyT7qBPsD4vc0i8nQ==
-X-Received: by 2002:a50:9d47:0:b0:40f:9d3d:97b6 with SMTP id j7-20020a509d47000000b0040f9d3d97b6mr7487089edk.392.1649231758115;
-        Wed, 06 Apr 2022 00:55:58 -0700 (PDT)
-Received: from [192.168.0.182] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id qq21-20020a17090720d500b006e7eec5c96csm3485199ejb.0.2022.04.06.00.55.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 00:55:57 -0700 (PDT)
-Message-ID: <ecc21772-54ca-23d5-aed5-f87dc7abed32@linaro.org>
-Date:   Wed, 6 Apr 2022 09:55:56 +0200
+        Wed, 6 Apr 2022 08:11:52 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED063425E30;
+        Wed,  6 Apr 2022 00:56:38 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R591e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9Ko7Vp_1649231793;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9Ko7Vp_1649231793)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 06 Apr 2022 15:56:34 +0800
+From:   Jeffle Xu <jefflexu@linux.alibaba.com>
+To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org
+Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com
+Subject: [PATCH v8 13/20] erofs: add erofs_fscache_read_folios() helper
+Date:   Wed,  6 Apr 2022 15:56:05 +0800
+Message-Id: <20220406075612.60298-14-jefflexu@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
+References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] i2c: add binding to prevent device detection
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     "wsa@kernel.org" <wsa@kernel.org>, kernel <kernel@axis.com>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
- <20220405121627.1560949-2-vincent.whitchurch@axis.com>
- <e3247f0f-5d3d-d981-699e-7dcedb30f881@linaro.org>
- <20220405141255.GD28574@axis.com>
- <315c957b-8d22-dcef-a5b8-36e92f0897be@linaro.org>
-In-Reply-To: <315c957b-8d22-dcef-a5b8-36e92f0897be@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/2022 09:26, Krzysztof Kozlowski wrote:
->>
->> I'm having a hard time drawing the line between hardware and the
->> "system" here.  The bus being completely described in devicetree doesn't
->> sound like a hardware property to me, but, yes, I can change the
->> description to say that.
-> 
-> Then you need to come up with better description. :) By system I
-> understood here Operating System, therefore a Software piece or pieces.
-> Bindings should not rather focus on hardware instead of referencing
-> software.
+Add erofs_fscache_read_folios() helper reading from fscache. It supports
+on-demand read semantics. That is, it will make the backend prepare for
+the data when cache miss. Once data ready, it will reinitiate a read
+from the cache.
 
-Ah... I meant:
-Bindings should rather focus on hardware instead of referencing software.
+This helper can then be used to implement .readpage()/.readahead() of
+on-demand read semantics.
 
-> Software actually not matter for the bindings... There is
-> quite clear distinction between hardware and operating system...
-> 
-> Can you explain why do you think "bus being completely described" is not
-> a hardware description? Bindings and DTS describe hardware, so one of
-> parts of such description is whether nodes and other properties are
-> present. If all child nodes are present in DT - no-detect - and this is
-> a purely hardware point of view. No software here.
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+---
+ fs/erofs/fscache.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index 1c88614203d2..d38a6efc8e50 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -5,6 +5,35 @@
+ #include <linux/fscache.h>
+ #include "internal.h"
+ 
++/*
++ * Read data from fscache and fill the read data into page cache described by
++ * @start/len, which shall be both aligned with PAGE_SIZE. @pstart describes
++ * the start physical address in the cache file.
++ */
++static int erofs_fscache_read_folios(struct fscache_cookie *cookie,
++				     struct address_space *mapping,
++				     loff_t start, size_t len,
++				     loff_t pstart)
++{
++	struct netfs_cache_resources cres;
++	struct iov_iter iter;
++	int ret;
++
++	memset(&cres, 0, sizeof(cres));
++
++	ret = fscache_begin_read_operation(&cres, cookie);
++	if (ret)
++		return ret;
++
++	iov_iter_xarray(&iter, READ, &mapping->i_pages, start, len);
++
++	ret = fscache_read(&cres, pstart, &iter,
++			   NETFS_READ_HOLE_ONDEMAND, NULL, NULL);
++
++	fscache_end_operation(&cres);
++	return ret;
++}
++
+ static const struct address_space_operations erofs_fscache_meta_aops = {
+ };
+ 
+-- 
+2.27.0
 
-
-Best regards,
-Krzysztof
