@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29147C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE66FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240162AbiDFSI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54732 "EHLO
+        id S240174AbiDFSJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240404AbiDFSHw (ORCPT
+        with ESMTP id S240410AbiDFSHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 14:07:52 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 889A816F6CE;
-        Wed,  6 Apr 2022 09:46:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44947188579;
+        Wed,  6 Apr 2022 09:46:13 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6626D23A;
-        Wed,  6 Apr 2022 09:46:11 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 29DE723A;
+        Wed,  6 Apr 2022 09:46:13 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B89003F73B;
-        Wed,  6 Apr 2022 09:46:10 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7CC413F73B;
+        Wed,  6 Apr 2022 09:46:12 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     James Morse <james.morse@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>
-Subject: [stable:PATCH v4.9.309 10/43] arm64: Add helpers for checking CPU MIDR against a range
-Date:   Wed,  6 Apr 2022 17:45:13 +0100
-Message-Id: <20220406164546.1888528-10-james.morse@arm.com>
+Subject: [stable:PATCH v4.9.309 12/43] clocksource/drivers/arm_arch_timer: Remove fsl-a008585 parameter
+Date:   Wed,  6 Apr 2022 17:45:15 +0100
+Message-Id: <20220406164546.1888528-12-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220406164546.1888528-1-james.morse@arm.com>
 References: <0220406164217.1888053-1-james.morse@arm.com>
@@ -38,127 +38,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
+From: Ding Tianhong <dingtianhong@huawei.com>
 
-[ Upstream commit 1df310505d6d544802016f6bae49aab836ae8510 ]
+commit 5444ea6a7f46276876e94ecf8d44615af1ef22f7 upstream.
 
-Add helpers for checking if the given CPU midr falls in a range
-of variants/revisions for a given model.
+Having a command line option to flip the errata handling for a
+particular erratum is a little bit unusual, and it's vastly superior to
+pass this in the DT. By common consensus, it's best to kill off the
+command line parameter.
 
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Reviewed-by: Dave Martin <dave.martin@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ding Tianhong <dingtianhong@huawei.com>
+[Mark: split patch, reword commit message]
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm64/include/asm/cpufeature.h |  4 ++--
- arch/arm64/include/asm/cputype.h    | 30 +++++++++++++++++++++++++++++
- arch/arm64/kernel/cpu_errata.c      | 14 +++++---------
- 3 files changed, 37 insertions(+), 11 deletions(-)
+ Documentation/kernel-parameters.txt  |  9 ---------
+ drivers/clocksource/arm_arch_timer.c | 14 --------------
+ 2 files changed, 23 deletions(-)
 
-diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-index 542a082dfdfc..f8646d7fae49 100644
---- a/arch/arm64/include/asm/cpufeature.h
-+++ b/arch/arm64/include/asm/cpufeature.h
-@@ -10,6 +10,7 @@
- #define __ASM_CPUFEATURE_H
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index 6c0957c67d20..f2b10986ab88 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -751,15 +751,6 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			loops can be debugged more effectively on production
+ 			systems.
  
- #include <asm/cpucaps.h>
-+#include <asm/cputype.h>
- #include <asm/hwcap.h>
- #include <asm/sysreg.h>
+-	clocksource.arm_arch_timer.fsl-a008585=
+-			[ARM64]
+-			Format: <bool>
+-			Enable/disable the workaround of Freescale/NXP
+-			erratum A-008585.  This can be useful for KVM
+-			guests, if the guest device tree doesn't show the
+-			erratum.  If unspecified, the workaround is
+-			enabled based on the device tree.
+-
+ 	clearcpuid=BITNUM [X86]
+ 			Disable CPUID feature X for the kernel. See
+ 			arch/x86/include/asm/cpufeatures.h for the valid bit
+diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
+index 5d7f83d27093..c2a5e8252cd7 100644
+--- a/drivers/clocksource/arm_arch_timer.c
++++ b/drivers/clocksource/arm_arch_timer.c
+@@ -101,20 +101,6 @@ EXPORT_SYMBOL_GPL(arch_timer_read_ool_enabled);
  
-@@ -229,8 +230,7 @@ struct arm64_cpu_capabilities {
- 	void (*cpu_enable)(const struct arm64_cpu_capabilities *cap);
- 	union {
- 		struct {	/* To be used for erratum handling only */
--			u32 midr_model;
--			u32 midr_range_min, midr_range_max;
-+			struct midr_range midr_range;
- 		};
+ static int fsl_a008585_enable = -1;
  
- 		struct {	/* Feature register checking */
-diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
-index 2270a5f31271..e76245ea6b60 100644
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -113,6 +113,36 @@
- 
- #define read_cpuid(reg)			read_sysreg_s(SYS_ ## reg)
- 
-+/*
-+ * Represent a range of MIDR values for a given CPU model and a
-+ * range of variant/revision values.
-+ *
-+ * @model	- CPU model as defined by MIDR_CPU_MODEL
-+ * @rv_min	- Minimum value for the revision/variant as defined by
-+ *		  MIDR_CPU_VAR_REV
-+ * @rv_max	- Maximum value for the variant/revision for the range.
-+ */
-+struct midr_range {
-+	u32 model;
-+	u32 rv_min;
-+	u32 rv_max;
-+};
-+
-+#define MIDR_RANGE(m, v_min, r_min, v_max, r_max)		\
-+	{							\
-+		.model = m,					\
-+		.rv_min = MIDR_CPU_VAR_REV(v_min, r_min),	\
-+		.rv_max = MIDR_CPU_VAR_REV(v_max, r_max),	\
-+	}
-+
-+#define MIDR_ALL_VERSIONS(m) MIDR_RANGE(m, 0, 0, 0xf, 0xf)
-+
-+static inline bool is_midr_in_range(u32 midr, struct midr_range const *range)
-+{
-+	return MIDR_IS_CPU_MODEL_RANGE(midr, range->model,
-+				 range->rv_min, range->rv_max);
-+}
-+
- /*
-  * The CPU ID never changes at run time, so we might as well tell the
-  * compiler that it's constant.  Use this function to read the CPU ID
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 858a4954907d..e2630e88e8ad 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -27,10 +27,10 @@
- static bool __maybe_unused
- is_affected_midr_range(const struct arm64_cpu_capabilities *entry, int scope)
+-static int __init early_fsl_a008585_cfg(char *buf)
+-{
+-	int ret;
+-	bool val;
+-
+-	ret = strtobool(buf, &val);
+-	if (ret)
+-		return ret;
+-
+-	fsl_a008585_enable = val;
+-	return 0;
+-}
+-early_param("clocksource.arm_arch_timer.fsl-a008585", early_fsl_a008585_cfg);
+-
+ u32 __fsl_a008585_read_cntp_tval_el0(void)
  {
-+	u32 midr = read_cpuid_id();
-+
- 	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
--	return MIDR_IS_CPU_MODEL_RANGE(read_cpuid_id(), entry->midr_model,
--				       entry->midr_range_min,
--				       entry->midr_range_max);
-+	return is_midr_in_range(midr, &entry->midr_range);
- }
- 
- static bool
-@@ -370,15 +370,11 @@ static bool has_ssbd_mitigation(const struct arm64_cpu_capabilities *entry,
- 
- #define CAP_MIDR_RANGE(model, v_min, r_min, v_max, r_max)	\
- 	.matches = is_affected_midr_range,			\
--	.midr_model = model,					\
--	.midr_range_min = MIDR_CPU_VAR_REV(v_min, r_min),	\
--	.midr_range_max = MIDR_CPU_VAR_REV(v_max, r_max)
-+	.midr_range = MIDR_RANGE(model, v_min, r_min, v_max, r_max)
- 
- #define CAP_MIDR_ALL_VERSIONS(model)					\
- 	.matches = is_affected_midr_range,				\
--	.midr_model = model,						\
--	.midr_range_min = MIDR_CPU_VAR_REV(0, 0),			\
--	.midr_range_max = (MIDR_VARIANT_MASK | MIDR_REVISION_MASK)
-+	.midr_range = MIDR_ALL_VERSIONS(model)
- 
- #define MIDR_FIXED(rev, revidr_mask) \
- 	.fixed_revs = (struct arm64_midr_revidr[]){{ (rev), (revidr_mask) }, {}}
+ 	return __fsl_a008585_read_reg(cntp_tval_el0);
 -- 
 2.30.2
 
