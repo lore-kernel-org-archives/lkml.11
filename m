@@ -2,109 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CF6C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E5AC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343663AbiDFHLQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56322 "EHLO
+        id S245594AbiDFHLH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 03:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577694AbiDFGqd (ORCPT
+        with ESMTP id S1574068AbiDFGpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:46:33 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C656F33DC95
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:04:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649221491; x=1680757491;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=OczbPPxYW0BCxFajxdauSyALL2YSGe5d39xyMD6vbAA=;
-  b=ZKHKgtbAqvMt5sHspQxJQ3Jr1mQUoY2z9sJvoHMrGjt1cv01TCw1yLan
-   xRd3OQHLimiKR8i0z0Tyon2IVxLocD0Cy63Ip5+AL4G+FjR0NSHCHEh8W
-   cTLhGkxz3W6GGJJUaJAwrzKm6p3JkQ8tda7C5iAAEYBD/c0+EsndqOu2P
-   d/MP+1Xdg9EG7oYE877Divdijdxi3wqxFAct9DJYtz3Ins03rjZpdlLR2
-   ufbrasK54ThmZ4XPa4hw9240xxkI1EfdFH2iGyrAOsLR0b83KgyHwQUIF
-   JLWRSuMO5blc9NcF8P32I/jLY5KDqLEA8hCYA4+AifjtJ2BchXWCPm4tr
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="347394219"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="347394219"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 22:04:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="658363665"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2022 22:04:48 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbxqa-00044n-4v;
-        Wed, 06 Apr 2022 05:04:48 +0000
-Date:   Wed, 6 Apr 2022 13:04:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     James Schulman <james.schulman@cirrus.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [broonie-ci:20220318_rf_asoc_add_a_driver_for_the_cirrus_logic_cs35l45_smart_amplifier
- 29/29] sound/soc/codecs/cs35l45-spi.c:66:27: error: initialization of 'void
- (*)(struct spi_device *)' from incompatible pointer type 'int (*)(struct
- spi_device *)'
-Message-ID: <202204061233.zD5PMrQA-lkp@intel.com>
+        Wed, 6 Apr 2022 02:45:51 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B158B465FAD;
+        Tue,  5 Apr 2022 21:56:04 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id k14so1286572pga.0;
+        Tue, 05 Apr 2022 21:56:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XBTdao9jI2D9lmUstuUU/m3zazcNfOzNZk+VV+cPROc=;
+        b=o2agCgrxWu1S/e5lz0xVtEak+ZjQkhVy9NqMyYFzMyY9ik/F5+gNKctB0njKq7ces1
+         aI/9JWwLMVlb+SvDL4nLGYceD8GUnBuB/ONF0LmL/uiVr3LrEJ/UZM7qBmuRV19R/Lqq
+         eEg/JAcATqtsVoCvUWoIIqBN/6e5wq5qRQfvABEdDppWnVMgzARscEEzZjgQeVUdVG5M
+         fxerWuCIAL3EyhOtgbvIVu58ec4jw1A/ts/oS3qgv6TNXThW00V0lAflUITHPoQp0bs6
+         yWv0l3EIHNotko3JivWOqOdwgXH7rq89XnKq9MNou+P2mCs5gQDzXfocQIhR/IjQ0aaJ
+         m8dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XBTdao9jI2D9lmUstuUU/m3zazcNfOzNZk+VV+cPROc=;
+        b=RaG2oI9zchAbQ8StOKgKJM4m8kFwVLmYaiWfH8BhPRFLnV4daiDR1WjVBIo5pCTq5G
+         E9pNV4D7NXGvyzrJ4avTzpfKz7MUuvP0T6WbBDjXZ2Ur8Ct9scOessk0vAek7HL671Pc
+         7ERFGhKVUbRSdBSpWFWHXLP5mUZ1hfsK3Jg6fkOpOGZmTgGoCMS/554lMk8NKjM9+sAF
+         Ph6cq5L9eRzTj4CVwPj6acyKfUyaBCvmPEU4QF9sup+T2kaDK5PsVTVDAMx4OsPDMQnV
+         e2y8HVguIXPJ6PbId8fbGawR91876ACW+DpeU6RAZspRARfVUQYs/OUSLlaMd5DPv+aB
+         rpGw==
+X-Gm-Message-State: AOAM531Xe8/J+CrCycYZXi6Ig1Wo7F4XT+tsPUkIB0WotegtkQcI2jCf
+        q3tO6kQDP0EPhkZWtghf90U=
+X-Google-Smtp-Source: ABdhPJytkJ6f/uulz3QgK3M86/NPKKlfRJs2XNZcJl7LiOP0j6bY87u1/erao2AY0FPEkWDZU/f7xw==
+X-Received: by 2002:a63:cf12:0:b0:399:38a7:5063 with SMTP id j18-20020a63cf12000000b0039938a75063mr5592832pgg.311.1649220964192;
+        Tue, 05 Apr 2022 21:56:04 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-9.three.co.id. [180.214.233.9])
+        by smtp.gmail.com with ESMTPSA id s24-20020a17090a441800b001ca9b5724a6sm3858330pjg.36.2022.04.05.21.55.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 21:56:03 -0700 (PDT)
+Message-ID: <bc258b22-71b9-c8af-4045-21d424d978b8@gmail.com>
+Date:   Wed, 6 Apr 2022 11:55:56 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] Documentation: arch_pgtable_helpers: demote pgtable list
+ headings
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220326131313.691027-1-bagasdotme@gmail.com>
+ <87k0c3ecc1.fsf@meer.lwn.net>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <87k0c3ecc1.fsf@meer.lwn.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git 20220318_rf_asoc_add_a_driver_for_the_cirrus_logic_cs35l45_smart_amplifier
-head:   22d0ed9e232c66cf1d388c39fafac77c0872ae79
-commit: 22d0ed9e232c66cf1d388c39fafac77c0872ae79 [29/29] ASoC: cs35l45: Add driver for Cirrus Logic CS35L45 Smart Amp
-config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220406/202204061233.zD5PMrQA-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git/commit/?id=22d0ed9e232c66cf1d388c39fafac77c0872ae79
-        git remote add broonie-ci https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git
-        git fetch --no-tags broonie-ci 20220318_rf_asoc_add_a_driver_for_the_cirrus_logic_cs35l45_smart_amplifier
-        git checkout 22d0ed9e232c66cf1d388c39fafac77c0872ae79
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash sound/soc/
+On 05/04/22 23.15, Jonathan Corbet wrote:
+> Bagas Sanjaya <bagasdotme@gmail.com> writes:
+> 
+>> Demote pgtable list headings from title heading to chapter heading.
+> 
+> This is a classic example of the sort of changelog that says *what* the
+> patch does (which we can also see from the patch itself) but not *why*.
+> Why do these headings need to be changed?
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+In this case, before this patch, generated table of contents for
+vm/ contains:
 
-All errors (new ones prefixed by >>):
+- Active MM
+- Architecture Page Table Helpers
+- PTE Page Table Helpers
+- PMD Page Table Helpers
+- PUD Page Table Helpers
+- HugeTLB Page Table Helpers
+- SWAP Page Table Helpers
+- Memory Balancing
+...
 
->> sound/soc/codecs/cs35l45-spi.c:66:27: error: initialization of 'void (*)(struct spi_device *)' from incompatible pointer type 'int (*)(struct spi_device *)' [-Werror=incompatible-pointer-types]
-      66 |         .remove         = cs35l45_spi_remove,
-         |                           ^~~~~~~~~~~~~~~~~~
-   sound/soc/codecs/cs35l45-spi.c:66:27: note: (near initialization for 'cs35l45_spi_driver.remove')
-   cc1: some warnings being treated as errors
-
-
-vim +66 sound/soc/codecs/cs35l45-spi.c
-
-    57	
-    58	static struct spi_driver cs35l45_spi_driver = {
-    59		.driver = {
-    60			.name		= "cs35l45",
-    61			.of_match_table = cs35l45_of_match,
-    62			.pm		= &cs35l45_pm_ops,
-    63		},
-    64		.id_table	= cs35l45_id_spi,
-    65		.probe		= cs35l45_spi_probe,
-  > 66		.remove		= cs35l45_spi_remove,
-    67	};
-    68	module_spi_driver(cs35l45_spi_driver);
-    69	
+The headings for PTE, PMD, PUD, HugeTLB, and SWAP Page Table Helpers
+should be subheading of Architecture Page Table Helpers, but these
+were marked up with page title heading instead of chapter heading.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+An old man doll... just what I always wanted! - Clara
