@@ -2,89 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5419FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B26AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238606AbiDFRMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50530 "EHLO
+        id S238387AbiDFRQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238264AbiDFRMK (ORCPT
+        with ESMTP id S238718AbiDFRPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:12:10 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C154E6EC8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:39:01 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id r13so4730184ejd.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:39:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=bNgbs4OFoMS67Fuie7ANLOacB2yAm3W1OqcmJK7OTVs=;
-        b=T3DXX5LG80TAa5jhmJ+hte2Ix47PFwLQvw5UwWPX9g32qhjfIyHWJebu9Nt9r7Mj9W
-         dv1snFPDRtjBXz71iZfGVNqClfUe8yw0Cy8+myiPXcuvLDpTjv9tl+RaU020Mga7LMnQ
-         0gW3uYenqx5E5WEfzZgXNUj/9z8V5Z8VJWwRh4YKmgbnuJSOF/zmUN2ZocyY6I/bWiC4
-         eKPVA41/UCls5yuYaOhsLtRkwN64bbkClmst3p4PyR8tRUacjcYx+wslxpczeBaZK26/
-         WfMHCqCkHbd4zLB/bo7OuoES4GmOkoRY5SJA7IUQD+HHumC7Jph3jZJm9OJAmdJBgzfo
-         i9tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bNgbs4OFoMS67Fuie7ANLOacB2yAm3W1OqcmJK7OTVs=;
-        b=G/pJJNKGQbJicJ1cvp6Ss5/Gn8n7naXrNs4ljJ0JpucgN9KscsOUC7vQcLu9hd59gT
-         yd5P+Y5AVeU26f3UlGxnbvgCTcoXfwDLgL06w4vLgiWE4wChOrhzj3a5r5ay0y4k83cY
-         yEtNB4yEAuUpA80+i3CUjNP5zp65dvu0486EeG/ZqSZ9bRzbVPmO06HAjeo9gU3O2ayI
-         e9V+3Z9ASFAxvhsvPgzMtxBvvCRQW1IQr2kq2ZRReVGGmT+qmsWsLdTRye6pMjlSKkPO
-         k+HYlG8fOlGDYY0gxcKp2unrJOmV3xB8HSRXYjhEkCM6awy6EFjAraSU0jhIIp17p2aT
-         9Faw==
-X-Gm-Message-State: AOAM533aLCM+8oUO1F6nzxCPe3Zy4N/SivAA3clwoQJGpsSkfyntq98W
-        afTc6lpBGJA3a9joyQO0K6PijZafD+bEgjfp
-X-Google-Smtp-Source: ABdhPJzFAvgJatJMKx+tNpSSM2jv7GTFRgW2LwYez4TX7bmlyDUdenfPvyu611vrk4BD9KB6g4C0Fw==
-X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id nc6-20020a1709071c0600b006dfb257cbb3mr8547652ejc.631.1649255939485;
-        Wed, 06 Apr 2022 07:38:59 -0700 (PDT)
-Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id y8-20020a50d8c8000000b0041c80bb88c7sm7528932edj.8.2022.04.06.07.38.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 07:38:59 -0700 (PDT)
-Message-ID: <9326aee4-744e-9eeb-a5dd-b86e43b6c4c0@linaro.org>
-Date:   Wed, 6 Apr 2022 16:38:58 +0200
+        Wed, 6 Apr 2022 13:15:51 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692EA3C59A1;
+        Wed,  6 Apr 2022 07:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649255796; x=1680791796;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pYFWpetVoxCbWFjEA4TJFxgbar+HNO3sGIldRIqiTWs=;
+  b=Rrj/pu76TaEmk4ccio+kleoPqFn61G3GuhKxbXpoHT1cl+f8L4dcbBE2
+   IeHEr4lE1ltBuMJmKEu3kmRE1O2VHRZMXFV50gMjnWfmbkzKzw+RXJH+p
+   cdswXJGSaVg2VTnZrWI42Ndmf6ukFUOKYtLdF+j8NDYAaTZJG/XQVHQk0
+   HOL6X+sGACvx5pRDRx2CNDKuvwS7JrQGp3aSRpCIo4P0nVrnOTm4T3Yqg
+   QWBvDpMiuYm9xeRguqqF6UuMSiQOg9/RGqQ0p4DVmsg1QjkWby8j0cpeJ
+   vk7z7u6H0ay3AoOKJHF5Owdx3w6k+7lwJikwPfMCTSwak1vRbeIHRfLXU
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="321759721"
+X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
+   d="scan'208";a="321759721"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 07:29:00 -0700
+X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
+   d="scan'208";a="505758016"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 07:29:00 -0700
+Message-ID: <5380fef6d45f2f7a0b8a5f681934f02943d5e138.camel@linux.intel.com>
+Subject: Re: [PATCH v2 0/4] tools/thermal: thermal library and tools
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Date:   Wed, 06 Apr 2022 07:28:59 -0700
+In-Reply-To: <f526d227-ffbb-4ac0-ceb6-c793ab912559@linaro.org>
+References: <20220330100444.3846661-1-daniel.lezcano@linaro.org>
+         <f526d227-ffbb-4ac0-ceb6-c793ab912559@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] arm64: dts: qcom: Add sc7180-gelarshie
-Content-Language: en-US
-To:     Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
-        agross@kernel.org
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220406094156.3191-1-chenxiangrui@huaqin.corp-partner.google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220406094156.3191-1-chenxiangrui@huaqin.corp-partner.google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/2022 11:41, Mars Chen wrote:
-> Add device tree for Gelarshie, a trogdor variant
+Hi Daniel,
+
+On Wed, 2022-04-06 at 10:00 +0200, Daniel Lezcano wrote:
 > 
-> Signed-off-by: Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>
+> Hi,
+> 
+> if there is no comment for the series, shall I pick it so we can go 
+> forward ?
+Didn't get time to check yet. It will still be for the next merge
+window, correct?
 
-Hi,
+Thanks,
+Srinivas
 
-I think I saw this some days ago... Isn't this a v2? If yes, please mark
-it in subject and add a changelog describing what you did. See also:
-https://elixir.bootlin.com/linux/v5.13/source/Documentation/process/submitting-patches.rst
+> 
+> 
+> 
+> On 30/03/2022 12:04, Daniel Lezcano wrote:
+> > These changes are providing the following tools and library:
+> > 
+> >   - A thermal library doing the netlink abstraction from the kernel
+> > in
+> >     order to make the userspace thermal implementation easier.
+> > Having
+> >     the library integrated with the kernel tree is also a guarantee
+> > to
+> >     keep the message format and their encoding/decoding aligned
+> >                                                                    
+> >                                                                    
+> >                                                                    
+> >                                                                    
+> >    
+> >   - A thermal tools library providing a set of functions to deal
+> > with
+> >     usual features like the log, the mainloop and the time. This
+> >     library is used by the provided tools below
+> > 
+> >   - An data acquisition program to capture the temperature of the
+> >     different thermal zone during an amount of time or during the
+> >     execution of an application. The output is formated to be
+> > easily
+> >     parsed by gnuplot, a spreadsheet program or a statistical
+> > command
+> >     line utility. The timestamp is based on the system uptime, thus
+> >     giving an indication of when a thermal event happened, that can
+> >     help to spot or reproduce thermal issue in the long run
+> > 
+> >   - A thermal monitoring program based on the thermal library. It
+> > gives
+> >     a skeleton to build any logic on top of it and shows how to use
+> > the
+> >     thermal library. It does nothing except discovering the thermal
+> >     zones, their trip points and listening for events like cooling
+> >     devices state changes or trip point crossed
+> > 
+> >   Changelog:
+> > 
+> >   v1: Initial post after a RFC
+> > 
+> >   v2:
+> > 
+> >    - Fixed all trailing whitespaces and some other checkpatch
+> >      warnings. Some warnings remain but they can be considered as
+> > false
+> >      positive
+> > 
+> >    - Added in the thermometer tool:
+> >      - Usage/help option as well as a man page
+> >      - The ability to execute a program
+> >      - The capture duration
+> >      - Create the output directory if it does not exist
+> > 
+> >    - Add in the thermal-engine tool:
+> >      - A usage/help option
+> >      - A message telling the userspace it is waiting for events
+> >      - A daemonize option
+> > 
+> >    - Minor bug fixes here and there, as well as typos
+> > 
+> > Daniel Lezcano (4):
+> >    tools/lib/thermal: Add a thermal library
+> >    tools/thermal: Add util library
+> >    tools/thermal: A temperature capture tool
+> >    tools/thermal: Add thermal daemon skeleton
+> > 
+> >   MAINTAINERS                                   |   1 +
+> >   tools/Makefile                                |  36 +-
+> >   tools/lib/thermal/.gitignore                  |   2 +
+> >   tools/lib/thermal/Build                       |   5 +
+> >   tools/lib/thermal/Makefile                    | 165 ++++++
+> >   tools/lib/thermal/commands.c                  | 349 +++++++++++
+> >   tools/lib/thermal/events.c                    | 164 +++++
+> >   tools/lib/thermal/include/thermal.h           | 142 +++++
+> >   tools/lib/thermal/libthermal.map              |  25 +
+> >   tools/lib/thermal/libthermal.pc.template      |  12 +
+> >   tools/lib/thermal/sampling.c                  |  75 +++
+> >   tools/lib/thermal/thermal.c                   | 126 ++++
+> >   tools/lib/thermal/thermal_nl.c                | 215 +++++++
+> >   tools/lib/thermal/thermal_nl.h                |  46 ++
+> >   tools/thermal/lib/Build                       |   3 +
+> >   tools/thermal/lib/Makefile                    | 158 +++++
+> >   .../thermal/lib/libthermal_tools.pc.template  |  12 +
+> >   tools/thermal/lib/log.c                       |  77 +++
+> >   tools/thermal/lib/log.h                       |  31 +
+> >   tools/thermal/lib/mainloop.c                  | 120 ++++
+> >   tools/thermal/lib/mainloop.h                  |  15 +
+> >   tools/thermal/lib/thermal-tools.h             |  10 +
+> >   tools/thermal/lib/uptimeofday.c               |  40 ++
+> >   tools/thermal/lib/uptimeofday.h               |  12 +
+> >   tools/thermal/thermal-engine/Build            |   2 +
+> >   tools/thermal/thermal-engine/Makefile         |  28 +
+> >   tools/thermal/thermal-engine/thermal-engine.c | 326 ++++++++++
+> >   tools/thermal/thermometer/Build               |   2 +
+> >   tools/thermal/thermometer/Makefile            |  26 +
+> >   tools/thermal/thermometer/thermometer.8       |  93 +++
+> >   tools/thermal/thermometer/thermometer.c       | 558
+> > ++++++++++++++++++
+> >   tools/thermal/thermometer/thermometer.conf    |   5 +
+> >   32 files changed, 2878 insertions(+), 3 deletions(-)
+> >   create mode 100644 tools/lib/thermal/.gitignore
+> >   create mode 100644 tools/lib/thermal/Build
+> >   create mode 100644 tools/lib/thermal/Makefile
+> >   create mode 100644 tools/lib/thermal/commands.c
+> >   create mode 100644 tools/lib/thermal/events.c
+> >   create mode 100644 tools/lib/thermal/include/thermal.h
+> >   create mode 100644 tools/lib/thermal/libthermal.map
+> >   create mode 100644 tools/lib/thermal/libthermal.pc.template
+> >   create mode 100644 tools/lib/thermal/sampling.c
+> >   create mode 100644 tools/lib/thermal/thermal.c
+> >   create mode 100644 tools/lib/thermal/thermal_nl.c
+> >   create mode 100644 tools/lib/thermal/thermal_nl.h
+> >   create mode 100644 tools/thermal/lib/Build
+> >   create mode 100644 tools/thermal/lib/Makefile
+> >   create mode 100644 tools/thermal/lib/libthermal_tools.pc.template
+> >   create mode 100644 tools/thermal/lib/log.c
+> >   create mode 100644 tools/thermal/lib/log.h
+> >   create mode 100644 tools/thermal/lib/mainloop.c
+> >   create mode 100644 tools/thermal/lib/mainloop.h
+> >   create mode 100644 tools/thermal/lib/thermal-tools.h
+> >   create mode 100644 tools/thermal/lib/uptimeofday.c
+> >   create mode 100644 tools/thermal/lib/uptimeofday.h
+> >   create mode 100644 tools/thermal/thermal-engine/Build
+> >   create mode 100644 tools/thermal/thermal-engine/Makefile
+> >   create mode 100644 tools/thermal/thermal-engine/thermal-engine.c
+> >   create mode 100644 tools/thermal/thermometer/Build
+> >   create mode 100644 tools/thermal/thermometer/Makefile
+> >   create mode 100644 tools/thermal/thermometer/thermometer.8
+> >   create mode 100644 tools/thermal/thermometer/thermometer.c
+> >   create mode 100644 tools/thermal/thermometer/thermometer.conf
+> > 
+> 
+> 
 
-Did you address all the comments you received before? At mine looks not
-addressed... :(
 
-Best regards,
-Krzysztof
