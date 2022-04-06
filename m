@@ -2,112 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18752C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3595C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231857AbiDFNKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        id S232298AbiDFNK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232464AbiDFNKF (ORCPT
+        with ESMTP id S232515AbiDFNKF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 09:10:05 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8E523009C;
-        Tue,  5 Apr 2022 19:28:41 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KY7cr2lkyzBrX0;
-        Wed,  6 Apr 2022 10:24:28 +0800 (CST)
-Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 10:28:37 +0800
-From:   Liao Chang <liaochang1@huawei.com>
-To:     <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
-        <liaochang1@huawei.com>, <tglx@linutronix.de>, <nitesh@redhat.com>,
-        <edumazet@google.com>, <clg@kaod.org>, <tannerlove@google.com>,
-        <peterz@infradead.org>, <joshdon@google.com>,
-        <masahiroy@kernel.org>, <nathan@kernel.org>, <vbabka@suse.cz>,
-        <akpm@linux-foundation.org>, <gustavoars@kernel.org>,
-        <arnd@arndb.de>, <chris@chrisdown.name>,
-        <dmitry.torokhov@gmail.com>, <linux@rasmusvillemoes.dk>,
-        <daniel@iogearbox.net>, <john.ogness@linutronix.de>,
-        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <heying24@huawei.com>, <guohanjun@huawei.com>,
-        <weiyongjun1@huawei.com>
-Subject: [RFC 0/3] softirq: Introduce softirq throttling
-Date:   Wed, 6 Apr 2022 10:27:46 +0800
-Message-ID: <20220406022749.184807-1-liaochang1@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.53]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1442300A8;
+        Tue,  5 Apr 2022 19:31:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6799DB80EEB;
+        Wed,  6 Apr 2022 02:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92DAAC385A4;
+        Wed,  6 Apr 2022 02:31:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649212300;
+        bh=f5hf7D5TOW99iCnwO8kt6lFjR6zeUwXI7tLm2to12Qo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=A+0wVCvFuyDGt9jDtBmmeUHHtOs4eMMxrROWP8voKqq9/5n9bVhy1nR5JnT0Tu9ue
+         NihknhiDf8bs9x8ouLFYDNZM0ki3+RoegUSj1Y1hNom9q5DgolipUBaA7Nz59JswNK
+         m4UXP6gyZOrjoAcA22v8+obrSs93/5IBvSuqi3y15QeBjlnXcZ0HYAVhy0jiBEUBeb
+         RJ7snLY3RS3JFoEpkQXgVVMVJgDFwqCi+j9oC206Ql/4/rgzt/rsq6iXYxepex3YbA
+         HT8PsRsvbxlKai2UHs5BYItHx8JyytVt6S7BdVHbUKmcYpBG5Gp9i+Yruu5UjksmrL
+         M0JJBIZ3WzGrg==
+Date:   Wed, 6 Apr 2022 11:31:35 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Subject: Re: [PATCH v7 3/4] bootconfig: Support embedding a bootconfig file
+ in kernel
+Message-Id: <20220406113135.ce40e165654dbafcb78f980f@kernel.org>
+In-Reply-To: <20220405110243.21cdee07@gandalf.local.home>
+References: <164871505771.178991.7870442736805590948.stgit@devnote2>
+        <164871509158.178991.12705786877340857725.stgit@devnote2>
+        <20220405235548.38344aba5a7fcb059924c367@kernel.org>
+        <20220405110243.21cdee07@gandalf.local.home>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel check for pending softirqs periodically, they are performed in a
-few points of kernel code, such as irq_exit() and __local_bh_enable_ip(),
-softirqs that have been activated by a given CPU must be executed on the
-same CPU, this characteristic of softirq is always a potentially
-"dangerous" operation, because one CPU might be end up very busy while
-the other are most idle.
+On Tue, 5 Apr 2022 11:02:43 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-Above concern is proven in a networking user case: recenlty, we
-engineer find out the time used for connection re-establishment on
-kernel v5.10 is 300 times larger than v4.19, meanwhile, softirq
-monopolize almost 99% of CPU. This problem stem from that the connection
-between Sender and Receiver node get lost, the NIC driver on Sender node
-will keep raising NET_TX softirq before connection recovery. The system
-log show that most of softirq is performed from __local_bh_enable_ip(),
-since __local_bh_enable_ip is used widley in kernel code, it is very
-easy to run out most of CPU, and the user-mode application can't obtain
-enough CPU cycles to establish connection as soon as possible.
+> On Tue, 5 Apr 2022 23:55:48 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> 
+> > Have you already picked this series?
+> 
+> No I haven't. I do not add any patches until after the merge window, which
+> just ended Sunday.
+> 
+> > 
+> > Actually, kernel test robot reported an issue in this patch today.
+> > Here is the patch. Should I send v8 including this?
+> 
+> Yes, please send a v8.
 
-Although kernel limit the running time of __do_softirq(), it does not
-control the running time of entire softirqs on given CPU, so this
-patchset introduce a safeguard mechanism that allows the system
-administrator to allocate bandwidth for used by softirqs, this safeguard
-mechanism is known as Sofitrq Throttling and is controlled by two
-parameters in the /proc file system:
+OK, thanks for the confirmation!
+Let me send v8.
 
-/proc/sys/kernel/sofitrq_period_ms
-  Defines the period in ms(millisecond) to be considered as 100% of CPU
-  bandwidth, the default value is 1,000 ms(1second). Changes to the
-  value of the period must be very well thought out, as too long or too
-  short are beyond one's expectation.
+Thanks!
 
-/proc/sys/kernel/softirq_runtime_ms
-  Define the bandwidth available to softirqs on each CPU, the default
-  values is 950 ms(0.95 second) or, in other words, 95% of the CPU
-  bandwidth. Setting negative integer to this value means that softirqs
-  my use up to 100% CPU times.
+> 
+> Thanks!
+> 
+> -- Steve
 
-The default values for softirq throttling mechanism define that 95% of
-the CPU time can be used by softirqs. The remaing 5% will be devoted to
-other kinds of tasks, such as syscall, interrupt, exception, real-time
-processes and normal processes when the softirqs workload in system are
-very heavy. System administrator can tune above two parameters to
-satifies the need of system performance and stability.
-
-Liao Chang (3):
-  softirq: Add two parameters to control CPU bandwidth for use by
-    softirq
-  softirq: Do throttling when softirqs use up its bandwidth
-  softirq: Introduce statistics about softirq throttling
-
- fs/proc/softirqs.c          |  18 +++++
- include/linux/interrupt.h   |   7 ++
- include/linux/kernel_stat.h |  27 +++++++
- init/Kconfig                |  10 +++
- kernel/softirq.c            | 155 ++++++++++++++++++++++++++++++++++++
- kernel/sysctl.c             |  16 ++++
- 6 files changed, 233 insertions(+)
 
 -- 
-2.17.1
-
+Masami Hiramatsu <mhiramat@kernel.org>
