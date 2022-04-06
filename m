@@ -2,220 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4ADC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237291AbiDFQJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
+        id S236990AbiDFQJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237307AbiDFQHb (ORCPT
+        with ESMTP id S237348AbiDFQHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:07:31 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1215810CF36;
-        Tue,  5 Apr 2022 21:41:57 -0700 (PDT)
+        Wed, 6 Apr 2022 12:07:33 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD03354285
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:38:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649220117; x=1680756117;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=u09UX1cpftFlDy+04/8/MBoFJokE196Rc05lVOYWpk8=;
-  b=L+XUUApL9XUrHol0gK5rHzMCgyF+QF6TPQ80nJOra4pp8XaqPsrqyQVy
-   x8ZtJT6uYTzi9wAk2z+ykb5bINH+8yasBJVwRxWJELyDtKyO2THLnIwm+
-   ORxUIBiieNiuDrMTVeH1P/VFKfAUeGJ9/xYaSH+kezboJa5Njm5I5roFJ
-   ktNyxui44yJ2Isxz97BYAHYRYHRTmmqxavbGIOT+D/E0M4Uy7ebLXQB87
-   m7HJ7CReIen0prXE5OJFElV4x2TU9/VtQsX0vZFvPnfX7kocY3DK5K4ed
-   OwFxQ9JGMn5KGZaUWnwvmadLF4hXcxYhtXL6DSu0+lhv3/8TcHJ22rp66
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="324119942"
+  t=1649252287; x=1680788287;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UeFC7fpDZnXplz+DIDUQq9eJtolg3YQ0MG069H0UONk=;
+  b=QdHpBTtsnqiquRY7dsJ91JY5CrISk8D2RMbyKodEBvEb2J+D58SxEb/C
+   zAm1OqUjR0qY8cJZQvWXsK4HkBefggg5tOsiaT75LLwULr4OclSGviQq4
+   ZEMcOy+X2d72nOdkZqiE2uyQfNAX9A0ivc0qpX27ZkLWyqnyDYmlxls7J
+   RXKUdK6uv5AwmrJFW8Y8yanlCxy/K5JfdeIFTJjXzON+H5AErnDLjekCO
+   JhJWQo7LDvm8AwUFA5aO3PonWEVjEiSSJZNbbR6bb7i2k59/fPgKyJnOT
+   lwHqOTRWC1uXw3kKBNwnKwkYlhBpkeXBrjWESpzcJaeRxoSLp2/fxELTQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="248567249"
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="324119942"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:41:56 -0700
+   d="scan'208";a="248567249"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:38:06 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="697221694"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by fmsmga001.fm.intel.com with ESMTP; 05 Apr 2022 21:41:55 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 5 Apr 2022 21:41:55 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 5 Apr 2022 21:41:55 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 5 Apr 2022 21:41:55 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 5 Apr 2022 21:41:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lCVhFPpNjrcZ0A6WK7Fakd4A3LZbDiASBID01190mxFfZLUVbCzl4FoesfaF23Bwed4L5BR3rFq4AVz5jwYa+9GairWLHOgI+ZF72bY7OoHR+lv3quutMOUAvBVleDQg/x6HnqOz4Mnq//S2BDgDVHvwxWnNu6c6B6qf5CTQZ7Y2UAVoZzFghcR0rKTr4DUMGtB+GftG7OC9B/SUiMeeclAR8Fm+xObzn4xvLztcL6llBuvpgky4dJssIm/9Gv/bSIowc26FCVwOOp9NxDHhCehi8X/h90zZyX0QFMGndjfAgqdhPPhv3PAOEvXGEEWppcXQt7pd8PpG9y+bH9svZg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GQYr+FCBhBQAdzZj79Sc2QCE7ib6vwE1DNrYMPZwJ/g=;
- b=TL/f3LYJn2Vr0OhrmDEzw241tXcfnn6ErZ0/Fcaei2t6IDeOE3vvgWUwXwiE+QTxflCboClu6GFbBB8IYTb5Nza1BKSapG+XGY/xPsJIGe9aISndxXGBo92NMGWyIqO2COhTO9EGYyCx7JkX4wmqw0ziO6YYtwDsiuOdQbzll5CYqny6Os/DhKExikfngD50ZscMGnP3bMI43uAIp+3sjsk78QxFwq196VL3bhOyCWFwksUkEj/g7OfHAfTQkYd0pOxZZ/oPgc/3+g0UMmvUEqOdMP3/KCaD2XcvhwIEOyeuWfOj/rZ1OL2vFbmG6CEdd1EQeBcuHQDzfkHP4nOc4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB5880.namprd11.prod.outlook.com (2603:10b6:510:143::14)
- by DM5PR11MB1657.namprd11.prod.outlook.com (2603:10b6:4:c::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5123.31; Wed, 6 Apr 2022 04:41:46 +0000
-Received: from PH0PR11MB5880.namprd11.prod.outlook.com
- ([fe80::6439:b0f1:f43f:54d3]) by PH0PR11MB5880.namprd11.prod.outlook.com
- ([fe80::6439:b0f1:f43f:54d3%7]) with mapi id 15.20.5123.031; Wed, 6 Apr 2022
- 04:41:46 +0000
-From:   "Zhang, Qiang1" <qiang1.zhang@intel.com>
-To:     "paulmck@kernel.org" <paulmck@kernel.org>
-CC:     "frederic@kernel.org" <frederic@kernel.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] rcu: Use IRQ_WORK_INIT_HARD() to initialize defer_qs_iw
- on PREEMPT_RT kernel
-Thread-Topic: [PATCH] rcu: Use IRQ_WORK_INIT_HARD() to initialize defer_qs_iw
- on PREEMPT_RT kernel
-Thread-Index: AQHYRyIUb1aC3TohkEGqUigSyiIkjazeVbAAgAP8uAA=
-Date:   Wed, 6 Apr 2022 04:41:46 +0000
-Message-ID: <PH0PR11MB58802019D7B5F23CEACE2D69DAE79@PH0PR11MB5880.namprd11.prod.outlook.com>
-References: <20220403061440.2762522-1-qiang1.zhang@intel.com>
- <20220403154626.GO4285@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220403154626.GO4285@paulmck-ThinkPad-P17-Gen-1>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.6.401.20
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e5a7724f-dfe0-4ee2-6bec-08da1787c201
-x-ms-traffictypediagnostic: DM5PR11MB1657:EE_
-x-microsoft-antispam-prvs: <DM5PR11MB165788B1BDC7AAC871DE3564DAE79@DM5PR11MB1657.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: BxFx8nSt1vF+e6IZ+8QzjSnwI4jHtHLqNux6+eGRjU5aFB1OooWsLyRBS9CRq0d0wV1dwaCNUywsOdHGB8hROJvJPGmknrzUCEUNPNqleGD6yzfPcYSzQ3hsy7N6vRJbwVST3Ou08k4fU1EhEzkxGviMmFZXuq8VclI9UWH+tA0oEFfER8iuciiPx5FGBYPBvST7XYwvy2P5d93rSFY1V6yS1ckc7E/q7BbO/I4s7fXKaUUlKO1QAO9sZmE+a1cICBavJTcS0WeQZ/HfMsxv2phs6XvwfnM/UCxg3ohdrFu/3giiS4fIDd0KU+EmUlT0hPWDOc2V/hQBqdtE+iWNvyORHcD72y8ETIEIDHQDeaovIvYZLMMGqhT6b2x9823o93WsoYZPobD85efAZv0VAXu3uDdw2OVwTe3Dho22nWoRuy2m4EaQATxM+V49hkTejLa3SafpaNoQ8NbPtFYNLVsDfZT30BnrCi0QLbNNUP3NR4s8DxOlwK4gFyLcy1b03Oi96iMHQbOood8iDbfq4nwny5Z9xTsBttx1kwP6jZ8cPwIkC3DtENwaNUPiu7xopy1BT7+A7be8gHqeLfvV4eI9lI6v6M5xrGWiAG8vlNrxt3MlIAipKXwJBuRGzqrY2x4pyNB/RbMAwK8fYqXnPoH1CiEcclSIoaarwEiW8gQo3K5/G4LdTnK7lHGfncXT+mIxP7j/Y5Oevy0PGPSqKQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5880.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66574015)(6506007)(52536014)(26005)(186003)(508600001)(33656002)(86362001)(2906002)(7696005)(66946007)(5660300002)(4326008)(66556008)(66446008)(66476007)(83380400001)(64756008)(76116006)(316002)(122000001)(82960400001)(38100700002)(71200400001)(9686003)(55016003)(54906003)(8936002)(38070700005)(6916009)(8676002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?NhEIP9IgXGQwEmHJWFVaN2idkNkJzgmwa3O15zvLOT16P40hYkr1ncPGWFIM?=
- =?us-ascii?Q?bfhVPlpXdkuPTqhFGti0i7xIFYmPNtyIiWQOj5F1Y4hXxCr0ibT6yuCKLxA4?=
- =?us-ascii?Q?gJUMsSExPKtwMMgvdKzq7GynZ8K4NeSvWrGvlALFo5rxyTlO1ADPjx4fvgeW?=
- =?us-ascii?Q?553+WHzlGlXK+P4P0fN+34C13Kje6i/cdUAJwEVrA36yRmSJ9OxQnRXLrxhL?=
- =?us-ascii?Q?dLdipOhg/1fh1XwIwuBky9DoLUKjhEvZInXAGUDPb2A0dfJbQVCmvIPuFZ0i?=
- =?us-ascii?Q?FZVQXbwQy8ARNGAModoOreMbBLm+gPKRMvIJ4gaYseCrUOD7W+tkbFky5rch?=
- =?us-ascii?Q?PGgiquhl3iZ2ip0b2zdniP8QdgKTdeqNhxZ3tvRIfZ9mMnTV5yDCBUt8dgoL?=
- =?us-ascii?Q?FbQapXH31G9Xka87yauFxVS1NHxfM2ms6liRM1ArdPp/zEbvfKfZgWxFy0XW?=
- =?us-ascii?Q?WlY0JeiXgo4M3NDin7zghrYQ9ZXgjKXNoTUJBdmUT5M7/x1EOt/gOMTY40rf?=
- =?us-ascii?Q?06iBrbeUqJRaV6V1bgp+LOZIvXs1xhEcuAYMZmrd75G3zmhzPUZewvLz4+mM?=
- =?us-ascii?Q?IVSEYVspAdZ8ePBwf+21t03saVUrIjjzGuHXvynccom0KGLpyKWVdhMsf84v?=
- =?us-ascii?Q?6NYLbeQRy3oDKtp3q+28kHEVp8sqwmrxXTxbYMHjA4bqThQwPQhC+Wr1rS9B?=
- =?us-ascii?Q?Wwx5PqH/2q94X7NgJZh9nZEqiP/NRR7ZAMZ95y2pcq737poU3a7qZR47ZDgR?=
- =?us-ascii?Q?fTRflvl2YQ3VWvYdfWuk5+kufA2Qc9kuwJoQ6sObLLLyIC8LklYnKUXqtIK3?=
- =?us-ascii?Q?HSXzWZwYc13Y6dhs1AC78u31o104u3uiVr0tajm0uWlqi/7W0XCwt6NQXXtA?=
- =?us-ascii?Q?R18kuFVgm0cqHMj4MM4mcFi8nmYFWbZFy4s5RiVqBia1cP5CVN8mXUvyuy04?=
- =?us-ascii?Q?/QX0ivkrX5+QI1mxHqi49oZNfig+Dnc6S55itV1vGPNnU3oG8feHK2vB5Hmj?=
- =?us-ascii?Q?F7pP/m1WrmZyg1w7udNa+nN9bw70tHHzFGyzMGpiflx81jcpbHVgckHixMLg?=
- =?us-ascii?Q?QN1gf9dEcFf5B+8Q2oKnDRIsZy70FGLsTFdgRcwDrUfs2lLBmYJVrBQw14i2?=
- =?us-ascii?Q?ubnYRxJ78sm0RRrLPnBH/OReTHxtsi+Hn45Kt5WWEmXng5I4I+iFe8kE9v+n?=
- =?us-ascii?Q?N28Ktx55J7wZY3Ay651zO1n/YsgRaF6yjQmM+j5uFEnKwDkZ51p0d9yWzXKe?=
- =?us-ascii?Q?S22gFcGrQnhe6YLIALWjNn76II/R5tl09nn5gGbvA8ybqEOXTtjSpagrYyOJ?=
- =?us-ascii?Q?gjzaq2gbWeQxuC7Le4Ye30c8n4//MXVjDKdKlgtSVSI/EbmfGma/x0SLrJN4?=
- =?us-ascii?Q?1NVWfNp7cX0yK1Cyc2jHIFT2KIj2ocgCifon+CJvuootjojdgmul4rHfG8Kq?=
- =?us-ascii?Q?y4GUZPSpGCClqXnSA8S/e+YzYuSlAT8a5FRawRn2jFgdKOy3ldX1XkYbp57c?=
- =?us-ascii?Q?weCJ2zSocVSvMROiU3ey1XDXvboLAh594ursAzsRIXmGHxfWY+GHZcmZtQ4s?=
- =?us-ascii?Q?6ivrA6Qj1wMyP2GHtXGXKaBeAACH/N71rH8Gyipc/gSfJtVIXsS1kObku7BW?=
- =?us-ascii?Q?1giDJ/z3tKCFEWLfJiEfmeTGd3+8/3taCwVqsxzfnlm3/emhplGjIUmRjE/i?=
- =?us-ascii?Q?BuMu+G2Ta1HrUfbi/QIlu8wiawTYKQiuShCX98U8EQsWYoX+ptbvignDLV05?=
- =?us-ascii?Q?h3nhh1dD+w=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="588372196"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 06 Apr 2022 06:38:03 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nc5rG-0004RV-EO;
+        Wed, 06 Apr 2022 13:38:02 +0000
+Date:   Wed, 6 Apr 2022 21:37:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Xu <peterx@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Cc:     kbuild-all@lists.01.org, Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Alistair Popple <apopple@nvidia.com>, peterx@redhat.com
+Subject: Re: [PATCH v8 15/23] mm/hugetlb: Handle pte markers in page faults
+Message-ID: <202204062154.2txNJyaf-lkp@intel.com>
+References: <20220405014909.14761-1-peterx@redhat.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5880.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5a7724f-dfe0-4ee2-6bec-08da1787c201
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2022 04:41:46.8149
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: P9FsRgOPh0npzjCVfEbq3FwPqAt0rd6DvFgJVvGpgvRr01Hty8vXFJGtG6Ce80lCQeDjZ2I1eoGleqDfKl4UgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1657
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405014909.14761-1-peterx@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Peter,
 
-On Sun, Apr 03, 2022 at 02:14:40PM +0800, Zqiang wrote:
-> On non-PREEMPT_RT kernel, the init_irq_work() make the defer_qs_iw=20
-> irq-work execute in interrupt context. however, on PREEMPT_RT kernel,=20
-> the
-> init_irq_work() make defer_qs_iq irq-work execute in rt-fifo irq_work=20
-> kthreads. when system booting, and the CONFIG_RCU_STRICT_GRACE_PERIOD=20
-> is enabled, there are a lot of defer_qs_iw irq-work to be processed in=20
-> rt-fifo irq_work kthreads, it occupies boot CPU for long time and=20
-> cause other kthread cannot get the boot CPU, the boot process occurs=20
-> hang. use IRQ_WORK_INIT_HARD() to initialize defer_qs_iw irq-work, can=20
-> ensure the defer_qs_iw irq-work always execute in interrupt context,=20
-> whether PREEMPT_RT or non PREEMPT_RT kernel.
+Thank you for the patch! Yet something to improve:
 
-This is a much better justification of the need for a change, thank you!
+[auto build test ERROR on hnaz-mm/master]
+[cannot apply to arnd-asm-generic/master linus/master linux/master v5.18-rc1 next-20220406]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
->But it looks like I need to clarify a sentence in my previous email.
->
->Please note that you were using the debugging RCU_STRICT_GRACE_PERIOD Kcon=
-fig option, so this is a potential problem as opposed to an immediate bug. =
- Yes, we must fix bugs, but it is also very important to avoid harming othe=
-r workloads, which are after all the vast majority of the uses of the Linux=
- kernel.
->
->And a major purpose of things like RCU_STRICT_GRACE_PERIOD is to give us a=
-dvanced warning of bugs so that we can fix them properly, without hurting o=
-ther workloads.
->
->So, does this patch guarantee exactly the same performance and scalability=
- as before for !PREEMPT_RT systems?  If so, please add an explanation to th=
-e commit log.
->
->Otherwise, please adjust the code to provide this guarantee.
+url:    https://github.com/intel-lab-lkp/linux/commits/Peter-Xu/userfaultfd-wp-Support-shmem-and-hugetlbfs/20220405-100136
+base:   https://github.com/hnaz/linux-mm master
+config: s390-randconfig-r044-20220406 (https://download.01.org/0day-ci/archive/20220406/202204062154.2txNJyaf-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e7e7aaec811e2817cd169f0cc1d8f81bdf1f05c3
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Peter-Xu/userfaultfd-wp-Support-shmem-and-hugetlbfs/20220405-100136
+        git checkout e7e7aaec811e2817cd169f0cc1d8f81bdf1f05c3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
 
-Thanks, I have been adjusted code and resend v2.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks
-Zqiang
+All errors (new ones prefixed by >>):
 
->
->							Thanx, Paul
+   mm/hugetlb.c: In function 'hugetlb_fault':
+>> mm/hugetlb.c:5678:13: error: implicit declaration of function 'huge_pte_none_mostly'; did you mean 'pte_none_mostly'? [-Werror=implicit-function-declaration]
+    5678 |         if (huge_pte_none_mostly(entry)) {
+         |             ^~~~~~~~~~~~~~~~~~~~
+         |             pte_none_mostly
+   cc1: some warnings being treated as errors
 
-> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> ---
->  kernel/rcu/tree_plugin.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h index=20
-> 3037c2536e1f..cf7bd28af8ef 100644
-> --- a/kernel/rcu/tree_plugin.h
-> +++ b/kernel/rcu/tree_plugin.h
-> @@ -661,7 +661,7 @@ static void rcu_read_unlock_special(struct task_struc=
-t *t)
->  			    expboost && !rdp->defer_qs_iw_pending && cpu_online(rdp->cpu)) {
->  				// Get scheduler to re-evaluate and call hooks.
->  				// If !IRQ_WORK, FQS scan will eventually IPI.
-> -				init_irq_work(&rdp->defer_qs_iw, rcu_preempt_deferred_qs_handler);
-> +				rdp->defer_qs_iw =3D=20
-> +IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
->  				rdp->defer_qs_iw_pending =3D true;
->  				irq_work_queue_on(&rdp->defer_qs_iw, rdp->cpu);
->  			}
-> --
-> 2.25.1
->=20
+
+vim +5678 mm/hugetlb.c
+
+  5616	
+  5617	vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+  5618				unsigned long address, unsigned int flags)
+  5619	{
+  5620		pte_t *ptep, entry;
+  5621		spinlock_t *ptl;
+  5622		vm_fault_t ret;
+  5623		u32 hash;
+  5624		pgoff_t idx;
+  5625		struct page *page = NULL;
+  5626		struct page *pagecache_page = NULL;
+  5627		struct hstate *h = hstate_vma(vma);
+  5628		struct address_space *mapping;
+  5629		int need_wait_lock = 0;
+  5630		unsigned long haddr = address & huge_page_mask(h);
+  5631	
+  5632		ptep = huge_pte_offset(mm, haddr, huge_page_size(h));
+  5633		if (ptep) {
+  5634			/*
+  5635			 * Since we hold no locks, ptep could be stale.  That is
+  5636			 * OK as we are only making decisions based on content and
+  5637			 * not actually modifying content here.
+  5638			 */
+  5639			entry = huge_ptep_get(ptep);
+  5640			if (unlikely(is_hugetlb_entry_migration(entry))) {
+  5641				migration_entry_wait_huge(vma, mm, ptep);
+  5642				return 0;
+  5643			} else if (unlikely(is_hugetlb_entry_hwpoisoned(entry)))
+  5644				return VM_FAULT_HWPOISON_LARGE |
+  5645					VM_FAULT_SET_HINDEX(hstate_index(h));
+  5646		}
+  5647	
+  5648		/*
+  5649		 * Acquire i_mmap_rwsem before calling huge_pte_alloc and hold
+  5650		 * until finished with ptep.  This serves two purposes:
+  5651		 * 1) It prevents huge_pmd_unshare from being called elsewhere
+  5652		 *    and making the ptep no longer valid.
+  5653		 * 2) It synchronizes us with i_size modifications during truncation.
+  5654		 *
+  5655		 * ptep could have already be assigned via huge_pte_offset.  That
+  5656		 * is OK, as huge_pte_alloc will return the same value unless
+  5657		 * something has changed.
+  5658		 */
+  5659		mapping = vma->vm_file->f_mapping;
+  5660		i_mmap_lock_read(mapping);
+  5661		ptep = huge_pte_alloc(mm, vma, haddr, huge_page_size(h));
+  5662		if (!ptep) {
+  5663			i_mmap_unlock_read(mapping);
+  5664			return VM_FAULT_OOM;
+  5665		}
+  5666	
+  5667		/*
+  5668		 * Serialize hugepage allocation and instantiation, so that we don't
+  5669		 * get spurious allocation failures if two CPUs race to instantiate
+  5670		 * the same page in the page cache.
+  5671		 */
+  5672		idx = vma_hugecache_offset(h, vma, haddr);
+  5673		hash = hugetlb_fault_mutex_hash(mapping, idx);
+  5674		mutex_lock(&hugetlb_fault_mutex_table[hash]);
+  5675	
+  5676		entry = huge_ptep_get(ptep);
+  5677		/* PTE markers should be handled the same way as none pte */
+> 5678		if (huge_pte_none_mostly(entry)) {
+  5679			ret = hugetlb_no_page(mm, vma, mapping, idx, address, ptep,
+  5680					      entry, flags);
+  5681			goto out_mutex;
+  5682		}
+  5683	
+  5684		ret = 0;
+  5685	
+  5686		/*
+  5687		 * entry could be a migration/hwpoison entry at this point, so this
+  5688		 * check prevents the kernel from going below assuming that we have
+  5689		 * an active hugepage in pagecache. This goto expects the 2nd page
+  5690		 * fault, and is_hugetlb_entry_(migration|hwpoisoned) check will
+  5691		 * properly handle it.
+  5692		 */
+  5693		if (!pte_present(entry))
+  5694			goto out_mutex;
+  5695	
+  5696		/*
+  5697		 * If we are going to COW/unshare the mapping later, we examine the
+  5698		 * pending reservations for this page now. This will ensure that any
+  5699		 * allocations necessary to record that reservation occur outside the
+  5700		 * spinlock. For private mappings, we also lookup the pagecache
+  5701		 * page now as it is used to determine if a reservation has been
+  5702		 * consumed.
+  5703		 */
+  5704		if ((flags & (FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE)) &&
+  5705		    !huge_pte_write(entry)) {
+  5706			if (vma_needs_reservation(h, vma, haddr) < 0) {
+  5707				ret = VM_FAULT_OOM;
+  5708				goto out_mutex;
+  5709			}
+  5710			/* Just decrements count, does not deallocate */
+  5711			vma_end_reservation(h, vma, haddr);
+  5712	
+  5713			if (!(vma->vm_flags & VM_MAYSHARE))
+  5714				pagecache_page = hugetlbfs_pagecache_page(h,
+  5715									vma, haddr);
+  5716		}
+  5717	
+  5718		ptl = huge_pte_lock(h, mm, ptep);
+  5719	
+  5720		/* Check for a racing update before calling hugetlb_wp() */
+  5721		if (unlikely(!pte_same(entry, huge_ptep_get(ptep))))
+  5722			goto out_ptl;
+  5723	
+  5724		/* Handle userfault-wp first, before trying to lock more pages */
+  5725		if (userfaultfd_wp(vma) && huge_pte_uffd_wp(huge_ptep_get(ptep)) &&
+  5726		    (flags & FAULT_FLAG_WRITE) && !huge_pte_write(entry)) {
+  5727			struct vm_fault vmf = {
+  5728				.vma = vma,
+  5729				.address = haddr,
+  5730				.real_address = address,
+  5731				.flags = flags,
+  5732			};
+  5733	
+  5734			spin_unlock(ptl);
+  5735			if (pagecache_page) {
+  5736				unlock_page(pagecache_page);
+  5737				put_page(pagecache_page);
+  5738			}
+  5739			mutex_unlock(&hugetlb_fault_mutex_table[hash]);
+  5740			i_mmap_unlock_read(mapping);
+  5741			return handle_userfault(&vmf, VM_UFFD_WP);
+  5742		}
+  5743	
+  5744		/*
+  5745		 * hugetlb_wp() requires page locks of pte_page(entry) and
+  5746		 * pagecache_page, so here we need take the former one
+  5747		 * when page != pagecache_page or !pagecache_page.
+  5748		 */
+  5749		page = pte_page(entry);
+  5750		if (page != pagecache_page)
+  5751			if (!trylock_page(page)) {
+  5752				need_wait_lock = 1;
+  5753				goto out_ptl;
+  5754			}
+  5755	
+  5756		get_page(page);
+  5757	
+  5758		if (flags & (FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE)) {
+  5759			if (!huge_pte_write(entry)) {
+  5760				ret = hugetlb_wp(mm, vma, address, ptep, flags,
+  5761						 pagecache_page, ptl);
+  5762				goto out_put_page;
+  5763			} else if (likely(flags & FAULT_FLAG_WRITE)) {
+  5764				entry = huge_pte_mkdirty(entry);
+  5765			}
+  5766		}
+  5767		entry = pte_mkyoung(entry);
+  5768		if (huge_ptep_set_access_flags(vma, haddr, ptep, entry,
+  5769							flags & FAULT_FLAG_WRITE))
+  5770			update_mmu_cache(vma, haddr, ptep);
+  5771	out_put_page:
+  5772		if (page != pagecache_page)
+  5773			unlock_page(page);
+  5774		put_page(page);
+  5775	out_ptl:
+  5776		spin_unlock(ptl);
+  5777	
+  5778		if (pagecache_page) {
+  5779			unlock_page(pagecache_page);
+  5780			put_page(pagecache_page);
+  5781		}
+  5782	out_mutex:
+  5783		mutex_unlock(&hugetlb_fault_mutex_table[hash]);
+  5784		i_mmap_unlock_read(mapping);
+  5785		/*
+  5786		 * Generally it's safe to hold refcount during waiting page lock. But
+  5787		 * here we just wait to defer the next page fault to avoid busy loop and
+  5788		 * the page is not used after unlocked before returning from the current
+  5789		 * page fault. So we are safe from accessing freed page, even if we wait
+  5790		 * here without taking refcount.
+  5791		 */
+  5792		if (need_wait_lock)
+  5793			wait_on_page_locked(page);
+  5794		return ret;
+  5795	}
+  5796	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
