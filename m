@@ -2,154 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE72C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 886E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235958AbiDFP2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
+        id S236029AbiDFP2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236691AbiDFP2I (ORCPT
+        with ESMTP id S236094AbiDFP1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:28:08 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA3855B5E4
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:27:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649248070; x=1680784070;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=mhFf4MzmEvEBuBGPHkwVC+jjG9nj2neUKRDHonPyJwc=;
-  b=jnNpAtdv0vkU9bcXGHD5O/puHak6+NB6IAgbYZSow40ddNnrLFTiz6Jg
-   GyVHiUAYWliLXtPwwNcrkxXioxxtp/U9FWh2fMStpiBiB83A5x4akhAdf
-   2Ouce+gTLjfXWw3BtK8/t8NYm468l5fH9/HfI0iOq+VpqYkhvLvIH1POv
-   OVJPzq1HEDfmMEDZP4RAfvnzxKPutClZo5MBW3s+EVYRXWyzMJiln8dDn
-   BGy8jgJUu3lFcGY6jLvvx1ARVpjmHeRHT16wN6fX6we+qSNYvNI/abi4g
-   wmifHM3xlvv4ufqexp9rXVyU80lU5DhJybqGGohFPcsgqluvEpwlALRq8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260730212"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="260730212"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 05:27:35 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="570491704"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.249.173.64]) ([10.249.173.64])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 05:27:33 -0700
-Subject: Re: [kbuild-all] Re: drivers/cpuidle/cpuidle-riscv-sbi.c:79:16:
- error: variable has incomplete type 'struct sbiret'
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Anup Patel <anup.patel@wdc.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
-References: <202204051441.dQ4w35Ga-lkp@intel.com>
- <019baa48-a594-ba00-67a9-b0eb62b32ac0@infradead.org>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <fbd31f81-9c83-0e0b-38ba-a42ed1e49ec4@intel.com>
-Date:   Wed, 6 Apr 2022 20:27:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Wed, 6 Apr 2022 11:27:09 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19039407E27;
+        Wed,  6 Apr 2022 05:25:44 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id i10-20020a17090a2aca00b001ca56c9ab16so3921970pjg.1;
+        Wed, 06 Apr 2022 05:25:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=u4lQcQZ+imfh4MOd3QbHlEhGcU+MXHsvZG3cns0j61I=;
+        b=akzK0B7lVqP4dRsVOS9uOB3iL0Vmy9LqMijzk47ODkF1PEUAI/jNHSGorvJnzT0Oy9
+         AIKplwtBFlQhfUVC59dPSkfG08+pw8aAneA7b6IIHzS+lkjwZWlM0BSyhNtv3nra3nLl
+         48SaenkFEFzBzVqMt/KKVRAm0GliPl3bZD3Udlu3zyd+2BTVXz5WPq0eJrWK/V7Ln1BB
+         uk/wM07K5Cbl42WIsgszpAi6CjTHaA9rcdrXuiLuGYu1NwsHPTZ5zB9wsUsrq6zNw8hN
+         d7mCD6Tfc2UdvWlDKJD2fsaQoeb3spbvsQL/5f6kWgBS/JOE6Cs83OTDhIx7irtIhvkC
+         jaxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=u4lQcQZ+imfh4MOd3QbHlEhGcU+MXHsvZG3cns0j61I=;
+        b=FxwSPzdp5uoRRxLqmNjnrOa2DadynnPoalW3/uK4TtOJ5sOdIpQ4/CqS1MBQOPhCv+
+         Lu6rfIKhQwIvhKOOZJUie4GXRSPMxJ9ifbITkNWUVVlMEv3aOF9oacWBt+yOVjeW0xUn
+         ThkjAeuogUq60HKLkLvAmBBxw++w7zVP9x5s0fcRPLVmFCU7SJ/a6yOmOxzM5lkvKjcq
+         5FnSle+iN50SIj3yUIrd+x0rpJ1uoQ3hYrRi0hLNkzenL6ikPIHHVdyliW5N+rNTJeCB
+         buUHVcOG81OUMozJZo2nVLkT8VFyquladcOhhDjE2iylLS1o60uEsm3t1ylacZn2p7As
+         BzsQ==
+X-Gm-Message-State: AOAM533NMJ9bvk83Cb9tkP8IMaNrBWtdjJ7D9drK106vB21AD+fxXLVT
+        9JxNUXrbXQSul3F/auhEVZM=
+X-Google-Smtp-Source: ABdhPJyL+30565wftFyUsYo6o4/MHY5OjykGUh2b38JVSNhDM20ubMcobFCgyq3dmbuYezTCOZEmDA==
+X-Received: by 2002:a17:90b:4d10:b0:1ca:5925:442 with SMTP id mw16-20020a17090b4d1000b001ca59250442mr9797382pjb.135.1649247943673;
+        Wed, 06 Apr 2022 05:25:43 -0700 (PDT)
+Received: from [192.168.43.80] (subs28-116-206-12-45.three.co.id. [116.206.12.45])
+        by smtp.gmail.com with ESMTPSA id d5-20020a17090acd0500b001b9c05b075dsm5628543pju.44.2022.04.06.05.25.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 05:25:43 -0700 (PDT)
+Message-ID: <1ea212ba-250a-66e9-37a5-f0022107b053@gmail.com>
+Date:   Wed, 6 Apr 2022 19:25:38 +0700
 MIME-Version: 1.0
-In-Reply-To: <019baa48-a594-ba00-67a9-b0eb62b32ac0@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
 Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220405070258.802373272@linuxfoundation.org>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 05/04/22 14.24, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.110 release.
+> There are 599 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
 
+Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
+powerpc (ps3_defconfig, gcc 11.2.0).
 
-On 4/6/2022 2:26 AM, Randy Dunlap wrote:
-> Hi,
-> 
-> On 4/4/22 23:11, kernel test robot wrote:
->> Hi Anup,
->>
->> First bad commit (maybe != root cause):
->>
->> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->> head:   3123109284176b1532874591f7c81f3837bbdc17
->> commit: c5179ef1ca0c39dab6955be6b0e3c034cc4164c8 RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
->> date:   4 weeks ago
->> config: riscv-randconfig-r022-20220405 (https://download.01.org/0day-ci/archive/20220405/202204051441.dQ4w35Ga-lkp@intel.com/config)
->> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c4a1b07d0979e7ff20d7d541af666d822d66b566)
->> reproduce (this is a W=1 build):
->>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>          chmod +x ~/bin/make.cross
->>          # install riscv cross compiling tool for clang build
->>          # apt-get install binutils-riscv64-linux-gnu
->>          # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c5179ef1ca0c39dab6955be6b0e3c034cc4164c8
->>          git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>          git fetch --no-tags linus master
->>          git checkout c5179ef1ca0c39dab6955be6b0e3c034cc4164c8
->>          # save the config file to linux build tree
->>          mkdir build_dir
->>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/
->>
->> If you fix the issue, kindly add following tag as appropriate
->> Reported-by: kernel test robot <lkp@intel.com>
->>
->> All errors (new ones prefixed by >>):
->>
-> 
-> [delete many build warnings and errors]
-> 
->>     3 warnings and 17 errors generated.
->>
->> Kconfig warnings: (for reference only)
->>     WARNING: unmet direct dependencies detected for RISCV_SBI_CPUIDLE
->>     Depends on CPU_IDLE && RISCV && RISCV_SBI
->>     Selected by
->>     - SOC_VIRT && CPU_IDLE
-> 
-> This Kconfig warning is the root of the problem. All of the build errors
-> and warnings can be fixed by something like so. Is it OK?
-> 
-> ---
->   arch/riscv/Kconfig.socs |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> --- linux-next-20220404.orig/arch/riscv/Kconfig.socs
-> +++ linux-next-20220404/arch/riscv/Kconfig.socs
-> @@ -38,7 +38,7 @@ config SOC_VIRT
->   	select SIFIVE_PLIC
->   	select PM_GENERIC_DOMAINS if PM
->   	select PM_GENERIC_DOMAINS_OF if PM && OF
-> -	select RISCV_SBI_CPUIDLE if CPU_IDLE
-> +	select RISCV_SBI_CPUIDLE if CPU_IDLE && RISCV_SBI
->   	help
->   	  This enables support for QEMU Virt Machine.
->   
-> [snip]
-> 
-> Also, to the @bot:
-> 
-> Why does the reported Kconfig warning look like it was generated
-> by some older kconfig software?  Current Kconfig reports more info:
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-Hi Randy,
-
-The contents were from a special method, not from the output directly,
-I will take a look to keep the same with below results.
-
-Best Regards,
-Rong Chen
-
-> 
-> WARNING: unmet direct dependencies detected for RISCV_SBI_CPUIDLE
->    Depends on [n]: CPU_IDLE [=y] && RISCV [=y] && RISCV_SBI [=n]
->    Selected by [y]:
->    - SOC_VIRT [=y] && CPU_IDLE [=y]
-> 
-> Thanks.
->>
->> :::::: The code at line 79 was first introduced by commit
->> :::::: 6abf32f1d9c5009dcccded2c1e7ca899a4ab587b cpuidle: Add RISC-V SBI CPU idle driver
->>
->> :::::: TO: Anup Patel <anup.patel@wdc.com>
->> :::::: CC: Palmer Dabbelt <palmer@rivosinc.com>
->>
-> 
+-- 
+An old man doll... just what I always wanted! - Clara
