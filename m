@@ -2,111 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:00:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239961AbiDFJBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        id S245527AbiDFJCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 05:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450849AbiDFI6D (ORCPT
+        with ESMTP id S1444625AbiDFIz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:58:03 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61318329253;
-        Tue,  5 Apr 2022 19:53:36 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KY8Fr2Fk9z1HBRp;
-        Wed,  6 Apr 2022 10:53:04 +0800 (CST)
-Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 10:53:29 +0800
-From:   Liao Chang <liaochang1@huawei.com>
-To:     <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
-        <liaochang1@huawei.com>, <tglx@linutronix.de>, <clg@kaod.org>,
-        <nitesh@redhat.com>, <edumazet@google.com>, <peterz@infradead.org>,
-        <joshdon@google.com>, <masahiroy@kernel.org>, <nathan@kernel.org>,
-        <akpm@linux-foundation.org>, <vbabka@suse.cz>,
-        <gustavoars@kernel.org>, <arnd@arndb.de>, <chris@chrisdown.name>,
-        <dmitry.torokhov@gmail.com>, <linux@rasmusvillemoes.dk>,
-        <daniel@iogearbox.net>, <john.ogness@linutronix.de>,
-        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <heying24@huawei.com>, <guohanjun@huawei.com>,
-        <weiyongjun1@huawei.com>
-Subject: [RFC 0/3] softirq: Introduce softirq throttling
-Date:   Wed, 6 Apr 2022 10:52:38 +0800
-Message-ID: <20220406025241.191300-1-liaochang1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 6 Apr 2022 04:55:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C71AFE41E;
+        Tue,  5 Apr 2022 18:20:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B684D619C0;
+        Wed,  6 Apr 2022 01:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1A1CBC385A1;
+        Wed,  6 Apr 2022 01:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649208012;
+        bh=z5ikIrvAWbdvVSUz6n5Lk27siJp+TxbgZHkbrdoS3fM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tUegwQeMRwlnbqI2AbE2yLSNxRObKDNMvKQJWUqvVtGOCZ2oclfWJkAa07LbpYgUs
+         kAHHhbbRqvGIsu3Wl3QohNc7qwSFALBXdDhkAXaTWLfILmshtgbNqwuHE2HmYzNyyx
+         NA3n1vUzUpE8gQi9HeB9CYmrMhuipVQowyWlYhz+hdgbazbKsowloY1SjXNYsFdZra
+         STzXynB07/yEYg77eLtT0RGcy9Ikh/P5ne/rI+NDhqvlxeOghvp++Tty+8/lc6lBsZ
+         5xrq3xqBDFsCVTvbRI5+WOWwbVqAyhTyvCBwiABD+SJ4uhEC4mzE6iC3ySSer3IG+6
+         6rNJiETOLuMrg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F342CE85D53;
+        Wed,  6 Apr 2022 01:20:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.53]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: openvswitch: don't send internal clone attribute to
+ the userspace.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164920801199.3942.3063131772130924818.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Apr 2022 01:20:11 +0000
+References: <20220404104150.2865736-1-i.maximets@ovn.org>
+In-Reply-To: <20220404104150.2865736-1-i.maximets@ovn.org>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org,
+        pabeni@redhat.com, pshelar@ovn.org, azhou@ovn.org,
+        pkusunyifeng@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel check for pending softirqs periodically, they are performed in a
-few points of kernel code, such as irq_exit() and __local_bh_enable_ip(),
-softirqs that have been activated by a given CPU must be executed on the
-same CPU, this characteristic of softirq is always a potentially
-"dangerous" operation, because one CPU might be end up very busy while
-the other are most idle.
+Hello:
 
-Above concern is proven in a networking user case: recenlty, we
-engineer find out the time used for connection re-establishment on
-kernel v5.10 is 300 times larger than v4.19, meanwhile, softirq
-monopolize almost 99% of CPU. This problem stem from that the connection
-between Sender and Receiver node get lost, the NIC driver on Sender node
-will keep raising NET_TX softirq before connection recovery. The system
-log show that most of softirq is performed from __local_bh_enable_ip(),
-since __local_bh_enable_ip is used widley in kernel code, it is very
-easy to run out most of CPU, and the user-mode application can't obtain
-enough CPU cycles to establish connection as soon as possible.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Although kernel limit the running time of __do_softirq(), it does not
-control the running time of entire softirqs on given CPU, so this
-patchset introduce a safeguard mechanism that allows the system
-administrator to allocate bandwidth for used by softirqs, this safeguard
-mechanism is known as Sofitrq Throttling and is controlled by two
-parameters in the /proc file system:
+On Mon,  4 Apr 2022 12:41:50 +0200 you wrote:
+> 'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
+> performance optimization inside the kernel.  It's added by the kernel
+> while parsing user-provided actions and should not be sent during the
+> flow dump as it's not part of the uAPI.
+> 
+> The issue doesn't cause any significant problems to the ovs-vswitchd
+> process, because reported actions are not really used in the
+> application lifecycle and only supposed to be shown to a human via
+> ovs-dpctl flow dump.  However, the action list is still incorrect
+> and causes the following error if the user wants to look at the
+> datapath flows:
+> 
+> [...]
 
-/proc/sys/kernel/sofitrq_period_ms
-  Defines the period in ms(millisecond) to be considered as 100% of CPU
-  bandwidth, the default value is 1,000 ms(1second). Changes to the
-  value of the period must be very well thought out, as too long or too
-  short are beyond one's expectation.
+Here is the summary with links:
+  - [net] net: openvswitch: don't send internal clone attribute to the userspace.
+    https://git.kernel.org/netdev/net/c/3f2a3050b4a3
 
-/proc/sys/kernel/softirq_runtime_ms
-  Define the bandwidth available to softirqs on each CPU, the default
-  values is 950 ms(0.95 second) or, in other words, 95% of the CPU
-  bandwidth. Setting negative integer to this value means that softirqs
-  my use up to 100% CPU times.
-
-The default values for softirq throttling mechanism define that 95% of
-the CPU time can be used by softirqs. The remaing 5% will be devoted to
-other kinds of tasks, such as syscall, interrupt, exception, real-time
-processes and normal processes when the softirqs workload in system are
-very heavy. System administrator can tune above two parameters to
-satifies the need of system performance and stability.
-
-Liao Chang (3):
-  softirq: Add two parameters to control CPU bandwidth for use by
-    softirq
-  softirq: Do throttling when softirqs use up its bandwidth
-  softirq: Introduce statistics about softirq throttling
-
- fs/proc/softirqs.c          |  18 +++++
- include/linux/interrupt.h   |   7 ++
- include/linux/kernel_stat.h |  27 +++++++
- init/Kconfig                |  10 +++
- kernel/softirq.c            | 155 ++++++++++++++++++++++++++++++++++++
- kernel/sysctl.c             |  16 ++++
- 6 files changed, 233 insertions(+)
-
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
