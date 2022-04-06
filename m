@@ -2,89 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB289C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32701C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238448AbiDFRGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
+        id S238340AbiDFRHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238316AbiDFRGm (ORCPT
+        with ESMTP id S238506AbiDFRGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:06:42 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BFE37DEA2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:46:07 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id a6so4875998ejk.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:46:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xDSVxXfePuzg5H9akSGpqrt3EQAyFHRkATzzbCmNu4Q=;
-        b=oc7fYa5LKG8ufWeEnZcEwfzJ5lpIHj9hFl2tWq7M6SBzlHKjff+4zqdYGau4afQ26F
-         VJFIPUlzbtvqtStHIl7vAupTJduZuMrIsJj5WFVX4t80pT+CgEQTb4aFQB4K0LZQK+oT
-         AQ4TlPPJLxK6pu+alTOr5MjlbijZ3I9iNnIEibjRn8AF9McXK56gvy6w4igQZbA7SlKN
-         WQGYLfPg2A9mHkoqM/+Mg770Lid0eOx9+FqqS2uTdj1D1np0eBXZ4RZnxHuQMLlBt+v+
-         Zp2doRxa3UpevU/5tcKXAvy0PamPFu6QEyUhrfRlC5l4/RwCKGfFiHr/9/pIs9/+WxTD
-         9QAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xDSVxXfePuzg5H9akSGpqrt3EQAyFHRkATzzbCmNu4Q=;
-        b=rS2WWgBevcxycdZbbGPx6vEdsYFBQ/cvG2NJi2lrHsvDTRiyHPSngdXmIOVDN4fUVx
-         CB8dv764wh+PDGJpVv8fDP6Lnlen0fx0HlZu2WKHYWCfM8Q0Iuqisl2coU5b/I/WQb15
-         H+jlb9GjtQS1a/tnC2G/ngWD+Yt89QG3HOV6LP8cPUCFC5y2eTxHuCRKfPepedGB80tr
-         8QltzsGa9vG9/nPoR5r0GuRf2aZ6WpC9sqZrwL2RbNvVjaz3xl6tfgfKVEmI4H/dpekh
-         Zkxi1iB+Gtpn08QZlxEoDIw+EKvEvj3tOKixR0x77rO+UYuaZa6VFw7KlbD7rC/puVCu
-         fGKg==
-X-Gm-Message-State: AOAM532VKhShz1dN3zgqImHH0Ahsoa8ZxIsviPBmOF3d9Tbz004EuJAR
-        hrtJttISlON6jWzeGRa+P5RbHA==
-X-Google-Smtp-Source: ABdhPJw4gXYqy583VI6CGvVJfLyOfsByKyXlBbza+dyYyC5ApRWjpBZCtEODLtt59+/ES2G6ddhfaQ==
-X-Received: by 2002:a17:906:7945:b0:6e0:19:5f7c with SMTP id l5-20020a170906794500b006e000195f7cmr8956964ejo.458.1649256366005;
-        Wed, 06 Apr 2022 07:46:06 -0700 (PDT)
-Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id lb4-20020a170907784400b006e0d13f65e5sm6606684ejc.167.2022.04.06.07.46.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 07:46:05 -0700 (PDT)
-Message-ID: <e7face88-5069-c560-ad2b-a0a658fb8cef@linaro.org>
-Date:   Wed, 6 Apr 2022 16:46:04 +0200
+        Wed, 6 Apr 2022 13:06:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B308B2493FE;
+        Wed,  6 Apr 2022 07:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ABF6619C2;
+        Wed,  6 Apr 2022 14:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 91871C385A9;
+        Wed,  6 Apr 2022 14:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649255412;
+        bh=jzQGgDHxcsZyxDhbb/BjvyBbxR3qUFsjUhdFsWW7KSI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RF94RMtDsUFAmpuEN92cGKf51LtRXf6gwz+/FHEBnzgr8qOuAX/RfhcHxpuTogfF7
+         OLb/tebhFjl0TuQ9F2x6v2UqjTybmGSu2+DTuN3w9JAgOtrHC1Zc/sdtVhOBQDYgBK
+         nCkoxzpacus07BKGjBNr2w9LJwU/eFC66T/o9GEjjNcBsW2XU6SkXnfqgu5j5qmi0/
+         4pzT5fmtajQjkbMUtB/nkNVi6kCpKxM6CxklmVI8m09H9R/mp5sLTa79YJASpzZgDq
+         C4RGs2/jLioOyD86K7liRu3OqIIIRdSofjwaWEjvxorhCyx033hLCH4Szk/IEUGknw
+         9Jhklnlr7FLug==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6A3FEE8DBDD;
+        Wed,  6 Apr 2022 14:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/3] dt-bindings: display: mediatek: Correct disp_aal
- binding for MT8192
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de, airlied@linux.ie,
-        yongqiang.niu@mediatek.com, jason-jh.lin@mediatek.com,
-        nancy.lin@mediatek.com, allen-kh.cheng@mediatek.com,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
- <20220406094654.29722-4-rex-bc.chen@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220406094654.29722-4-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164925541243.21938.8143288324519460216.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Apr 2022 14:30:12 +0000
+References: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+In-Reply-To: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/2022 11:46, Rex-BC Chen wrote:
-> The driver data for MT8192 is the same with MT8183. Therefore, we
-> correct it.
+Hello:
 
-Driver data is Linux implementation specific so does not really matter
-for bindings. Probably you want to say here that devices are fully
-compatible? If so, please rephrase it. Also remove the wording "correct
-it" in subject and here because there is no mistake here (at least you
-did not describe it) and otherwise AUTOSEL might pick it up...
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Best regards,
-Krzysztof
+On Wed,  6 Apr 2022 11:55:56 +0800 you wrote:
+> All remaining skbs should be released when myri10ge_xmit fails to
+> transmit a packet. Fix it within another skb_list_walk_safe.
+> 
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
+> 
+> changes since v2:
+>  - free all remaining skbs. (Xiaomeng Tong)
+> 
+> [...]
+
+Here is the summary with links:
+  - [v3] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
+    https://git.kernel.org/netdev/net/c/b423e54ba965
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
