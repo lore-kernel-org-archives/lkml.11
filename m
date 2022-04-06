@@ -2,178 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231676AbiDFMAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56832 "EHLO
+        id S231956AbiDFMAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232929AbiDFL6W (ORCPT
+        with ESMTP id S232944AbiDFL6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 07:58:22 -0400
-Received: from euporie.uberspace.de (euporie.uberspace.de [185.26.156.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F404C5282ED
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:29:22 -0700 (PDT)
-Received: (qmail 8394 invoked by uid 989); 6 Apr 2022 07:29:21 -0000
-Authentication-Results: euporie.uberspace.de;
-        auth=pass (plain)
-From:   Florian Fischer <florian.fischer@muhq.space>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Florian Schmaus <flow@cs.fau.de>,
-        Florian Fischer <florian.fischer@muhq.space>
-Subject: [PATCH v2 3/4] perf list: print all available tool events
-Date:   Wed,  6 Apr 2022 09:28:38 +0200
-Message-Id: <20220406072839.107519-4-florian.fischer@muhq.space>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406072839.107519-1-florian.fischer@muhq.space>
-References: <YkybjsCKyWkDZGX+@kernel.org>
- <20220406072839.107519-1-florian.fischer@muhq.space>
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5662F5282C3;
+        Wed,  6 Apr 2022 00:29:14 -0700 (PDT)
+Received: by mail-ed1-f50.google.com with SMTP id c42so1549052edf.3;
+        Wed, 06 Apr 2022 00:29:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=z2ezFCGSgEKTPnQs0DP8kH2hHy8925AWGsEZVjbFb28=;
+        b=QmN9XOVXxNyOG2DMKazonMak7I6SnD2Zf73bGetw0HJ4yxHcETL6R/6nGH9SxC7a/5
+         l1BzXOYhI4TzHpsrit+gN2WPO+Vo+INTt+ZdtGnUhHsdXIwzfuPtbbrzk8Rp4OYxrHhg
+         D+P1MKfzQlcMjisOU4i1+Irxfe0ELQuZ50L/6YaC+PrlPvzjBx9JSbixbcMVDPVsxgcX
+         xZRJ/Bj03l74Wdvfn0VrXmHcFPdfv96U97Rh2Q78MAW+FdHWbYIy7pfxx5Lnu20viUJh
+         ywMhtIKklqxt9F9SNN/VNobcsKvguVTEoBWhoypHpI29Kis65HKWROocCZYURXkb9nzF
+         qdPQ==
+X-Gm-Message-State: AOAM531gNvqxX8pboHGhp40b4MSDnNPpZuVETviWASnT/XSO1SnKj9N0
+        TzcMOexoEML/x+4+tr+IDtU=
+X-Google-Smtp-Source: ABdhPJxJShJKSQPDE3igoNzaaijVwWVNhBe249ZbL2htOyfxK8Nzl3j2yHZRzom190k1LuYuNsRkNw==
+X-Received: by 2002:aa7:de93:0:b0:418:d700:662a with SMTP id j19-20020aa7de93000000b00418d700662amr7335334edv.107.1649230152714;
+        Wed, 06 Apr 2022 00:29:12 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id w22-20020a056402269600b004194f4eb3e7sm7815060edd.19.2022.04.06.00.29.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 00:29:11 -0700 (PDT)
+Message-ID: <8ea245ed-eac9-1cd5-31bd-150a06378872@kernel.org>
+Date:   Wed, 6 Apr 2022 09:29:10 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220405070407.513532867@linuxfoundation.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: -----
-X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) REPLY(-4) MID_CONTAINS_FROM(1) BAYES_HAM(-2.912096)
-X-Rspamd-Score: -5.512096
-Received: from unknown (HELO unkown) (::1)
-        by euporie.uberspace.de (Haraka/2.8.28) with ESMTPSA; Wed, 06 Apr 2022 09:29:21 +0200
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce names and aliases for the new tool events 'rusage_user_time'
-and 'rusage_system_time'.
----
- tools/perf/util/evsel.c        | 19 ++++++++++------
- tools/perf/util/evsel.h        |  1 +
- tools/perf/util/parse-events.c | 40 +++++++++++++++++++++++++++++-----
- 3 files changed, 47 insertions(+), 13 deletions(-)
+On 05. 04. 22, 9:12, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.2 release.
+> There are 1126 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+...
+> Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+>      ASoC: Intel: sof_es8336: use NHLT information to set dmic and SSP
 
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index 2a1729e7aee4..26cf7e76698b 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -597,6 +597,17 @@ static int evsel__sw_name(struct evsel *evsel, char *bf, size_t size)
- 	return r + evsel__add_modifiers(evsel, bf + r, size - r);
- }
- 
-+const char *evsel__tool_names[PERF_TOOL_LAST] = {
-+	"duration_time",
-+	"rusage_user_time",
-+	"rusage_system_time",
-+};
-+
-+static int evsel__tool_name(enum perf_tool_event ev, char *bf, size_t size)
-+{
-+	return scnprintf(bf, size, "%s", evsel__tool_names[ev]);
-+}
-+
- static int __evsel__bp_name(char *bf, size_t size, u64 addr, u64 type)
- {
- 	int r;
-@@ -723,12 +734,6 @@ static int evsel__raw_name(struct evsel *evsel, char *bf, size_t size)
- 	return ret + evsel__add_modifiers(evsel, bf + ret, size - ret);
- }
- 
--static int evsel__tool_name(char *bf, size_t size)
--{
--	int ret = scnprintf(bf, size, "duration_time");
--	return ret;
--}
--
- const char *evsel__name(struct evsel *evsel)
- {
- 	char bf[128];
-@@ -754,7 +759,7 @@ const char *evsel__name(struct evsel *evsel)
- 
- 	case PERF_TYPE_SOFTWARE:
- 		if (evsel->tool_event)
--			evsel__tool_name(bf, sizeof(bf));
-+			evsel__tool_name(evsel->tool_event, bf, sizeof(bf));
- 		else
- 			evsel__sw_name(evsel, bf, sizeof(bf));
- 		break;
-diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
-index e89b1224ae61..2adb97383952 100644
---- a/tools/perf/util/evsel.h
-+++ b/tools/perf/util/evsel.h
-@@ -261,6 +261,7 @@ extern const char *evsel__hw_cache_op[PERF_COUNT_HW_CACHE_OP_MAX][EVSEL__MAX_ALI
- extern const char *evsel__hw_cache_result[PERF_COUNT_HW_CACHE_RESULT_MAX][EVSEL__MAX_ALIASES];
- extern const char *evsel__hw_names[PERF_COUNT_HW_MAX];
- extern const char *evsel__sw_names[PERF_COUNT_SW_MAX];
-+extern const char *evsel__tool_names[PERF_TOOL_LAST];
- extern char *evsel__bpf_counter_events;
- bool evsel__match_bpf_counter_events(const char *name);
- 
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 24997925ae00..5c84d5d43bff 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -154,6 +154,21 @@ struct event_symbol event_symbols_sw[PERF_COUNT_SW_MAX] = {
- 	},
- };
- 
-+struct event_symbol event_symbols_tool[PERF_TOOL_LAST] = {
-+	[PERF_TOOL_DURATION_TIME] = {
-+		.symbol = "duration_time",
-+		.alias  = "",
-+	},
-+	[PERF_TOOL_RU_UTIME] = {
-+		.symbol = "rusage_user_time",
-+		.alias  = "ru_utime",
-+	},
-+	[PERF_TOOL_RU_STIME] = {
-+		.symbol = "rusage_system_time",
-+		.alias  = "ru_stime",
-+	},
-+};
-+
- #define __PERF_EVENT_FIELD(config, name) \
- 	((config & PERF_EVENT_##name##_MASK) >> PERF_EVENT_##name##_SHIFT)
- 
-@@ -3055,21 +3070,34 @@ int print_hwcache_events(const char *event_glob, bool name_only)
- 	return evt_num;
- }
- 
--static void print_tool_event(const char *name, const char *event_glob,
-+static void print_tool_event(const struct event_symbol *syms, const char *event_glob,
- 			     bool name_only)
- {
--	if (event_glob && !strglobmatch(name, event_glob))
-+	if (syms->symbol == NULL)
-+		return;
-+
-+	if (event_glob && !(strglobmatch(syms->symbol, event_glob) ||
-+	      (syms->alias && strglobmatch(syms->alias, event_glob))))
- 		return;
-+
- 	if (name_only)
--		printf("%s ", name);
--	else
-+		printf("%s ", syms->symbol);
-+	else {
-+		char name[MAX_NAME_LEN];
-+		if (syms->alias)
-+			snprintf(name, MAX_NAME_LEN, "%s OR %s", syms->symbol, syms->alias);
-+		else
-+			strlcpy(name, syms->symbol, MAX_NAME_LEN);
- 		printf("  %-50s [%s]\n", name, "Tool event");
--
-+	}
- }
- 
- void print_tool_events(const char *event_glob, bool name_only)
- {
--	print_tool_event("duration_time", event_glob, name_only);
-+	// Start at 1 because the first enum entry symbols no tool event
-+	for (int i = 0; i < PERF_TOOL_LAST; ++i) {
-+		print_tool_event(event_symbols_tool + i, event_glob, name_only);
-+	}
- 	if (pager_in_use())
- 		printf("\n");
- }
+Fails to build w/ suse x86_64 default config [1] (and x86_32 too):
+ > sound/soc/intel/boards/sof_es8336.c: In function ‘sof_es8336_probe’:
+ > sound/soc/intel/boards/sof_es8336.c:482:32: error: ‘struct 
+snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you 
+mean ‘link_mask’?
+ >   482 |         if (!mach->mach_params.i2s_link_mask) {
+ >       |                                ^~~~~~~~~~~~~
+ >       |                                link_mask
+ > sound/soc/intel/boards/sof_es8336.c:494:39: error: ‘struct 
+snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you 
+mean ‘link_mask’?
+ >   494 |                 if (mach->mach_params.i2s_link_mask & BIT(2))
+ >       |                                       ^~~~~~~~~~~~~
+ >       |                                       link_mask
+ > sound/soc/intel/boards/sof_es8336.c:496:44: error: ‘struct 
+snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you 
+mean ‘link_mask’?
+ >   496 |                 else if (mach->mach_params.i2s_link_mask & 
+BIT(1))
+ >       |                                            ^~~~~~~~~~~~~
+ >       |                                            link_mask
+ > sound/soc/intel/boards/sof_es8336.c:498:45: error: ‘struct 
+snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you 
+mean ‘link_mask’?
+ >   498 |                 else  if (mach->mach_params.i2s_link_mask & 
+BIT(0))
+ >       |                                             ^~~~~~~~~~~~~
+ >       |                                             link_mask
+
+So 679aa83a0fb70dcbf9e97c is missing -- but likely more is needed.
+
+[1] 
+https://raw.githubusercontent.com/SUSE/kernel-source/stable/config/x86_64/default
+
+regards,
 -- 
-2.35.1
-
+js
+suse labs
