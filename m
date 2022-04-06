@@ -2,97 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 995F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 23:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95783C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 23:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238087AbiDFXkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 19:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
+        id S238084AbiDFXlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 19:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237885AbiDFXjT (ORCPT
+        with ESMTP id S238212AbiDFXkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 19:39:19 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D303B1FF232
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 16:37:15 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id j17so2438660pfi.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 16:37:15 -0700 (PDT)
+        Wed, 6 Apr 2022 19:40:43 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCAB208300;
+        Wed,  6 Apr 2022 16:38:08 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id k14so3538008pga.0;
+        Wed, 06 Apr 2022 16:38:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vwEJdK6mP4HLwzlF0NPpDB80vAiIJPOce5ra0JhLa38=;
-        b=GlwNdB8zBVCXaFx26HpKx7WELFJMmt4kNuhMN8vvHeN5vX0zCQdLS3NJDz8Fn5CnHW
-         3xeqY1ZBMDisFyF4etaO1RPGXFVSlD8jEj2q1YJ3qTyZ1S2gizpIv5zBXI+afVoYmVUP
-         Ko4jbM0TFMXDMw8zydt1oduC4mvUu9q7FExp1ZVzvm4wdcFWJJ0LV46x0JzoFEJ1zcgW
-         MV8/FqqM20hcX0EwicLISB+WCDT8k4wl6u8qEPs+7VZEAhCyVqBEy58v2s+igTNztzXd
-         z7Da+eVH7UfNXRSFD574IS0YzwbxtFXX3YBUIDv/vN5fRZSmMxrvWla9q2U5jvwa90yi
-         RyCA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rhS7OTxGR6L+t64q04L0IHm02DXhCb8gCMHEf6NnkpI=;
+        b=X70yDAE5D4pJzAsx6N9bvcw8fc5FAxSbzKdC+8JZug5OVVhB38wxgmBHOc9aq77Ofa
+         2qcpDVXmCD4xXBR3UrGQFLsjgEI5DjupVh4vg/MTNJ4/avk+6+eTluRyiT8NxTfPSSUG
+         e7/SukrLtwAVsIwouAm8IoyJz3azcrW0dJF6VbOTWqdLPGbb02Pd2P/Z3egWI4i0nXnx
+         UMw4Rg5SvoYnZ5NXKOXWVv3zh67omcj3dwwRwVMI4RuAtI72PyPaq8Sg3pzLDgDNlgbn
+         DfdNWhRoDjGI0AL3NxscGwQqvAFeAkJS2v5gCdqyxMnBT7XxRBrYYecko0EBHsRxRRgI
+         K5Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=vwEJdK6mP4HLwzlF0NPpDB80vAiIJPOce5ra0JhLa38=;
-        b=ddKTqp7CMkL+0nGOzPJV9QfWu8eHhYFg1Z3G491xhaLZh1yn37cpwwrQ+/WcbONLLu
-         rj8Txx3yjjUE0i+W02ZUZP2BcUErFc2HXW+x+0ATuLWjUshQrviAWeVvvhisRcutSl4N
-         G/7lWLmg7sswv2Faq8OlRMsw3T7AiHD+VtD5QsKhscETG0Dfs79qYGhVaxKVzgFQgWCR
-         yDhzVXPxt9b5OoBYt/IYzp37kuzlvRv2JiUYCqiG7KMhCZkOEVVLBn2YIIuWjTPuIiTn
-         WK7Q1uft0WU6s8Ri5aoQkVFotxZ9fCiBDElUJPErK2j/pO2s9K/pTONAGK1XKaEVZgJA
-         MCDw==
-X-Gm-Message-State: AOAM533HasXsmW9HLIMmaZf8g6Jg2CKdSz8fn6gCWy+WL0qz1S5Lunk2
-        0SQxlYtDT2K3M4tWnKtoKCNCdQXQm9HIpA==
-X-Google-Smtp-Source: ABdhPJyxcbTU9ZBcO9y89jqsqr4/jfNurjGIi6t4DNl6SvL7WcLDdfJNS9GAdP8Mq6nLARE8qXq19A==
-X-Received: by 2002:a65:57cc:0:b0:384:3370:e161 with SMTP id q12-20020a6557cc000000b003843370e161mr8998868pgr.364.1649288235387;
-        Wed, 06 Apr 2022 16:37:15 -0700 (PDT)
-Received: from platform-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id m21-20020a17090a7f9500b001c97c6bcaf4sm6903667pjl.39.2022.04.06.16.37.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 16:37:14 -0700 (PDT)
-From:   Brad Larson <brad@pensando.io>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     arnd@arndb.de, linus.walleij@linaro.org, bgolaszewski@baylibre.com,
-        broonie@kernel.org, fancer.lancer@gmail.com,
-        adrian.hunter@intel.com, ulf.hansson@linaro.org, olof@lixom.net,
-        brad@pensando.io, dac2@pensando.io, linux-gpio@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 06/11] MAINTAINERS: Add entry for PENSANDO
-Date:   Wed,  6 Apr 2022 16:36:43 -0700
-Message-Id: <20220406233648.21644-7-brad@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406233648.21644-1-brad@pensando.io>
-References: <20220406233648.21644-1-brad@pensando.io>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rhS7OTxGR6L+t64q04L0IHm02DXhCb8gCMHEf6NnkpI=;
+        b=UXwsCj4oWlJ3nsYCAnv32rPtu5AjIpAtkzEwS+5O8MqeMzYSDU2QiS2rG96pmUQdF/
+         cUtYzNkrTYeS5r14WEjzk9XzflqN3cp57Z3tbtUVR6aP3qv+pCmZDXZWM7auttSKfWHW
+         dInZ7fu5kxe0gyi2BWz/fFaHrD2EAaSYoddiXCkmASezuM7b05sdDWgkopJPlqiiKbcG
+         NGYV9f3WYbv6W6VCCMDmKVw/x6LcRciSZktWsfUSgBTlvdDOw7gsssiQV90e8WT9hU3k
+         lt8EtM7y9V3j0Xe9N2eTlEyInMEsaQMgD5cxsRQsHrJhsGkQrIwLfD3APv4kRvMYwL1A
+         wWqQ==
+X-Gm-Message-State: AOAM531rW9mVUSbajFJjHlNrPGE95Zc9AjVKhnLacdOglBmfa9yePSqZ
+        EBBHIw91P0TxRR7jpBdKqgk=
+X-Google-Smtp-Source: ABdhPJyBBC+LDZ0ftU/2Gv9xlfVyDt3T+i5Nlh0ZBYVNAEic1LjKx5i7fmHZQOAGzN21xpSbb28bIQ==
+X-Received: by 2002:a65:5083:0:b0:382:3b02:9799 with SMTP id r3-20020a655083000000b003823b029799mr9295626pgp.302.1649288288270;
+        Wed, 06 Apr 2022 16:38:08 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id om16-20020a17090b3a9000b001c7bc91a89bsm6904938pjb.52.2022.04.06.16.38.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 16:38:07 -0700 (PDT)
+Message-ID: <bdc2073a-9adf-db20-bed0-54e88d9beb81@gmail.com>
+Date:   Wed, 6 Apr 2022 16:38:04 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.16 0000/1014] 5.16.19-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220406133109.570377390@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220406133109.570377390@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add entry for PENSANDO maintainer and files
+On 4/6/22 06:44, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.19 release.
+> There are 1014 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 08 Apr 2022 13:27:53 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.19-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Signed-off-by: Brad Larson <brad@pensando.io>
----
-Change from V3:
-- Change Maintained to Supported
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 4cb7fd127e68..456d50921b3a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2509,6 +2509,13 @@ S:	Maintained
- W:	http://hackndev.com
- F:	arch/arm/mach-pxa/palmz72.*
- 
-+ARM/PENSANDO ARM64 ARCHITECTURE
-+M:	Brad Larson <brad@pensando.io>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+S:	Supported
-+F:	Documentation/devicetree/bindings/*/pensando*
-+F:	arch/arm64/boot/dts/pensando/
-+
- ARM/PLEB SUPPORT
- M:	Peter Chubb <pleb@gelato.unsw.edu.au>
- S:	Maintained
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.17.1
-
+Florian
