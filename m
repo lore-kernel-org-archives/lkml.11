@@ -2,91 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3304C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243618AbiDFKGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35806 "EHLO
+        id S232310AbiDFKGN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244241AbiDFKE4 (ORCPT
+        with ESMTP id S1347888AbiDFKEv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:04:56 -0400
-Received: from mg.richtek.com (mg.richtek.com [220.130.44.152])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93CD3158DB1
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:47:28 -0700 (PDT)
-X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
-        LIVER,40,3)
-Received: from 192.168.10.47
-        by mg.richtek.com with MailGates ESMTP Server V5.0(7803:0:AUTH_RELAY)
-        (envelope-from <cy_huang@richtek.com>); Wed, 06 Apr 2022 09:47:11 +0800 (CST)
-Received: from ex3.rt.l (192.168.10.46) by ex4.rt.l (192.168.10.47) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Apr 2022
- 09:47:10 +0800
-Received: from ex3.rt.l ([fe80::ede0:40a5:8f78:963e]) by ex3.rt.l
- ([fe80::ede0:40a5:8f78:963e%2]) with mapi id 15.02.0986.022; Wed, 6 Apr 2022
- 09:47:10 +0800
-From:   =?utf-8?B?Y3lfaHVhbmco6buD5ZWf5Y6fKQ==?= <cy_huang@richtek.com>
-To:     "axel.lin@ingics.com" <axel.lin@ingics.com>,
-        "broonie@kernel.org" <broonie@kernel.org>
-CC:     "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] regulator: rtq2134: Fix missing active_discharge_on
- setting
-Thread-Topic: [PATCH] regulator: rtq2134: Fix missing active_discharge_on
- setting
-Thread-Index: AQHYR8tQ9pi7OoOc3kOG+WPCRwxXEKzhmsIA
-Date:   Wed, 6 Apr 2022 01:47:10 +0000
-Message-ID: <1649209630.3282.2.camel@richtek.com>
-References: <20220404022514.449231-1-axel.lin@ingics.com>
-In-Reply-To: <20220404022514.449231-1-axel.lin@ingics.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.18.5.2-0ubuntu3.2 
-x-originating-ip: [192.168.18.182]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C344EE769DF4FA408122293B755DD08A@rt.l>
-Content-Transfer-Encoding: base64
+        Wed, 6 Apr 2022 06:04:51 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F0C8148E;
+        Tue,  5 Apr 2022 23:32:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649226751; x=1680762751;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=DRhUZhi+ke2tCAFDOkKtZrnyyEngvYwmfRdoy6Io8Ts=;
+  b=GyrRfB3FqCkLokIVTf4cQ5+oUUTL1jAX1I1bzJkd/ZZYs6v5M4eyFFFC
+   ak2yTR9dCCmHsn42LosqbTF6ZDX33atsxZ0bppvu714oMHuTlNQD8KVwk
+   mGEB0u3UWSkn6Z+bgOleoB/vgOtIPUH6JQffPQIIJJUYUKcpz9Bp5gIcl
+   r5fsuyJG2ZIzMgZEE1XTCTFWEMDkrHNNvhgFUQ63vFU/v6wBlGWtyPtB5
+   pw0n80F3LvdPfJ3cCutqfVCsLvulbEiH+wH0U2NUr2UmsyXS+yqWkobJ/
+   p8r8Zs8TOy7OfxtwmX4xK02zxWWWD5AtkQQ9i6X4BehgwJiIkZaNdl2tR
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="324134252"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="324134252"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 23:32:30 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="549408024"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 23:32:26 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Wei Xu <weixugc@google.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Cgroups <cgroups@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Thelen <gthelen@google.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>
+Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
+References: <20220331084151.2600229-1-yosryahmed@google.com>
+        <YkcEMdsi9G5y8mX4@dhcp22.suse.cz>
+        <CAAPL-u_i-Mp-Bo7LtP_4aJscY=1JHG_y1H_-A7N_HRAgtz+arg@mail.gmail.com>
+        <87y20nzyw4.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u8wjtBRE7KZyZjoQ0eTJecnW35uEXAE3KU0M+AvL=5-ug@mail.gmail.com>
+        <87o81fujdc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u_6XqQYtLAMNFvEo+0XU2VR=XYm0T9btL=g6rVVW2h93w@mail.gmail.com>
+        <87bkxfudrk.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAAPL-u_FVEVE+wTBNYfDibLVKsRuOwEnpigYYRiZ2MbeUs1u8w@mail.gmail.com>
+Date:   Wed, 06 Apr 2022 14:32:24 +0800
+In-Reply-To: <CAAPL-u_FVEVE+wTBNYfDibLVKsRuOwEnpigYYRiZ2MbeUs1u8w@mail.gmail.com>
+        (Wei Xu's message of "Tue, 5 Apr 2022 22:02:03 -0700")
+Message-ID: <877d82vi13.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-5pa8IOS4gO+8jDIwMjItMDQtMDQg5pa8IDEwOjI1ICswODAw77yMQXhlbCBMaW4g5o+Q5Yiw77ya
-DQo+IFRoZSBhY3RpdmVfZGlzY2hhcmdlX29uIHNldHRpbmcgd2FzIG1pc3NlZCwgc28gb3V0cHV0
-IGRpc2NoYXJnZSByZXNpc3Rvcg0KPiBpcyBhbHdheXMgZGlzYWJsZWQuIEZpeCBpdC4NCj4NCj4g
-Rml4ZXM6IDA1NTVkNDE0OTdkZSAoInJlZ3VsYXRvcjogcnRxMjEzNDogQWRkIHN1cHBvcnQgZm9y
-IFJpY2h0ZWsgUlRRMjEzNA0KPiBTdWJQTUlDIikNCj4gU2lnbmVkLW9mZi1ieTogQXhlbCBMaW4g
-PGF4ZWwubGluQGluZ2ljcy5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9yZWd1bGF0b3IvcnRxMjEz
-NC1yZWd1bGF0b3IuYyB8IDEgKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+
-DQpIaSwgQXhlbDoNClRoYW5rcyBmb3IgdGhlIGZpeC4NCg0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9yZWd1bGF0b3IvcnRxMjEzNC1yZWd1bGF0b3IuYw0KPiBiL2RyaXZlcnMvcmVndWxhdG9yL3J0
-cTIxMzQtcmVndWxhdG9yLmMNCj4gaW5kZXggZjIxZTNmOGIyMWYyLi44ZTEzZGVhMzU0YTIgMTAw
-NjQ0DQo+IC0tLSBhL2RyaXZlcnMvcmVndWxhdG9yL3J0cTIxMzQtcmVndWxhdG9yLmMNCj4gKysr
-IGIvZHJpdmVycy9yZWd1bGF0b3IvcnRxMjEzNC1yZWd1bGF0b3IuYw0KPiBAQCAtMjg1LDYgKzI4
-NSw3IEBAIHN0YXRpYyBjb25zdCB1bnNpZ25lZCBpbnQgcnRxMjEzNF9idWNrX3JhbXBfZGVsYXlf
-dGFibGVbXQ0KPiA9IHsNCj4gIC5lbmFibGVfbWFzayA9IFJUUTIxMzRfVk9VVEVOX01BU0ssIFwN
-Cj4gIC5hY3RpdmVfZGlzY2hhcmdlX3JlZyA9IFJUUTIxMzRfUkVHX0JVQ0sjI19pZCMjX0NGRzAs
-IFwNCj4gIC5hY3RpdmVfZGlzY2hhcmdlX21hc2sgPSBSVFEyMTM0X0FDVERJU0NIR19NQVNLLCBc
-DQo+ICsuYWN0aXZlX2Rpc2NoYXJnZV9vbiA9IFJUUTIxMzRfQUNURElTQ0hHX01BU0ssIFwNCj4g
-IC5yYW1wX3JlZyA9IFJUUTIxMzRfUkVHX0JVQ0sjI19pZCMjX1JTUENGRywgXA0KPiAgLnJhbXBf
-bWFzayA9IFJUUTIxMzRfUlNQVVBfTUFTSywgXA0KPiAgLnJhbXBfZGVsYXlfdGFibGUgPSBydHEy
-MTM0X2J1Y2tfcmFtcF9kZWxheV90YWJsZSwgXA0KKioqKioqKioqKioqKiBFbWFpbCBDb25maWRl
-bnRpYWxpdHkgTm90aWNlICoqKioqKioqKioqKioqKioqKioqDQoNClRoZSBpbmZvcm1hdGlvbiBj
-b250YWluZWQgaW4gdGhpcyBlLW1haWwgbWVzc2FnZSAoaW5jbHVkaW5nIGFueSBhdHRhY2htZW50
-cykgbWF5IGJlIGNvbmZpZGVudGlhbCwgcHJvcHJpZXRhcnksIHByaXZpbGVnZWQsIG9yIG90aGVy
-d2lzZSBleGVtcHQgZnJvbSBkaXNjbG9zdXJlIHVuZGVyIGFwcGxpY2FibGUgbGF3cy4gSXQgaXMg
-aW50ZW5kZWQgdG8gYmUgY29udmV5ZWQgb25seSB0byB0aGUgZGVzaWduYXRlZCByZWNpcGllbnQo
-cykuIEFueSB1c2UsIGRpc3NlbWluYXRpb24sIGRpc3RyaWJ1dGlvbiwgcHJpbnRpbmcsIHJldGFp
-bmluZyBvciBjb3B5aW5nIG9mIHRoaXMgZS1tYWlsIChpbmNsdWRpbmcgaXRzIGF0dGFjaG1lbnRz
-KSBieSB1bmludGVuZGVkIHJlY2lwaWVudChzKSBpcyBzdHJpY3RseSBwcm9oaWJpdGVkIGFuZCBt
-YXkgYmUgdW5sYXdmdWwuIElmIHlvdSBhcmUgbm90IGFuIGludGVuZGVkIHJlY2lwaWVudCBvZiB0
-aGlzIGUtbWFpbCwgb3IgYmVsaWV2ZSB0aGF0IHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZS1tYWls
-IGluIGVycm9yLCBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXIgaW1tZWRpYXRlbHkgKGJ5IHJlcGx5
-aW5nIHRvIHRoaXMgZS1tYWlsKSwgZGVsZXRlIGFueSBhbmQgYWxsIGNvcGllcyBvZiB0aGlzIGUt
-bWFpbCAoaW5jbHVkaW5nIGFueSBhdHRhY2htZW50cykgZnJvbSB5b3VyIHN5c3RlbSwgYW5kIGRv
-IG5vdCBkaXNjbG9zZSB0aGUgY29udGVudCBvZiB0aGlzIGUtbWFpbCB0byBhbnkgb3RoZXIgcGVy
-c29uLiBUaGFuayB5b3UhDQo=
+Wei Xu <weixugc@google.com> writes:
+
+> On Tue, Apr 5, 2022 at 7:50 PM Huang, Ying <ying.huang@intel.com> wrote:
+>>
+>> Wei Xu <weixugc@google.com> writes:
+>>
+>> > On Tue, Apr 5, 2022 at 5:49 PM Huang, Ying <ying.huang@intel.com> wrote:
+>> >>
+>> >> Wei Xu <weixugc@google.com> writes:
+>> >>
+>> >> > On Sat, Apr 2, 2022 at 1:13 AM Huang, Ying <ying.huang@intel.com> wrote:
+>> >> >>
+>> >> >> Wei Xu <weixugc@google.com> writes:
+>> >> >>
+>> >> >> > On Fri, Apr 1, 2022 at 6:54 AM Michal Hocko <mhocko@suse.com> wrote:
+>> >> >> >>
+>> >> >> >> On Thu 31-03-22 08:41:51, Yosry Ahmed wrote:
+>> >> >> >> > From: Shakeel Butt <shakeelb@google.com>
+>> >> >> >> >
+>> >> >>
+>> >> >> [snip]
+>> >> >>
+>> >> >> >> > Possible Extensions:
+>> >> >> >> > --------------------
+>> >> >> >> >
+>> >> >> >> > - This interface can be extended with an additional parameter or flags
+>> >> >> >> >   to allow specifying one or more types of memory to reclaim from (e.g.
+>> >> >> >> >   file, anon, ..).
+>> >> >> >> >
+>> >> >> >> > - The interface can also be extended with a node mask to reclaim from
+>> >> >> >> >   specific nodes. This has use cases for reclaim-based demotion in memory
+>> >> >> >> >   tiering systens.
+>> >> >> >> >
+>> >> >> >> > - A similar per-node interface can also be added to support proactive
+>> >> >> >> >   reclaim and reclaim-based demotion in systems without memcg.
+>> >> >> >> >
+>> >> >> >> > For now, let's keep things simple by adding the basic functionality.
+>> >> >> >>
+>> >> >> >> Yes, I am for the simplicity and this really looks like a bare minumum
+>> >> >> >> interface. But it is not really clear who do you want to add flags on
+>> >> >> >> top of it?
+>> >> >> >>
+>> >> >> >> I am not really sure we really need a node aware interface for memcg.
+>> >> >> >> The global reclaim interface will likely need a different node because
+>> >> >> >> we do not want to make this CONFIG_MEMCG constrained.
+>> >> >> >
+>> >> >> > A nodemask argument for memory.reclaim can be useful for memory
+>> >> >> > tiering between NUMA nodes with different performance.  Similar to
+>> >> >> > proactive reclaim, it can allow a userspace daemon to drive
+>> >> >> > memcg-based proactive demotion via the reclaim-based demotion
+>> >> >> > mechanism in the kernel.
+>> >> >>
+>> >> >> I am not sure whether nodemask is a good way for demoting pages between
+>> >> >> different types of memory.  For example, for a system with DRAM and
+>> >> >> PMEM, if specifying DRAM node in nodemask means demoting to PMEM, what
+>> >> >> is the meaning of specifying PMEM node? reclaiming to disk?
+>> >> >>
+>> >> >> In general, I have no objection to the idea in general.  But we should
+>> >> >> have a clear and consistent interface.  Per my understanding the default
+>> >> >> memcg interface is for memory, regardless of memory types.  The memory
+>> >> >> reclaiming means reduce the memory usage, regardless of memory types.
+>> >> >> We need to either extending the semantics of memory reclaiming (to
+>> >> >> include memory demoting too), or add another interface for memory
+>> >> >> demoting.
+>> >> >
+>> >> > Good point.  With the "demote pages during reclaim" patch series,
+>> >> > reclaim is already extended to demote pages as well.  For example,
+>> >> > can_reclaim_anon_pages() returns true if demotion is allowed and
+>> >> > shrink_page_list() can demote pages instead of reclaiming pages.
+>> >>
+>> >> These are in-kernel implementation, not the ABI.  So we still have
+>> >> the opportunity to define the ABI now.
+>> >>
+>> >> > Currently, demotion is disabled for memcg reclaim, which I think can
+>> >> > be relaxed and also necessary for memcg-based proactive demotion.  I'd
+>> >> > like to suggest that we extend the semantics of memory.reclaim to
+>> >> > cover memory demotion as well.  A flag can be used to enable/disable
+>> >> > the demotion behavior.
+>> >>
+>> >> If so,
+>> >>
+>> >> # echo A > memory.reclaim
+>> >>
+>> >> means
+>> >>
+>> >> a) "A" bytes memory are freed from the memcg, regardless demoting is
+>> >>    used or not.
+>> >>
+>> >> or
+>> >>
+>> >> b) "A" bytes memory are reclaimed from the memcg, some of them may be
+>> >>    freed, some of them may be just demoted from DRAM to PMEM.  The total
+>> >>    number is "A".
+>> >>
+>> >> For me, a) looks more reasonable.
+>> >>
+>> >
+>> > We can use a DEMOTE flag to control the demotion behavior for
+>> > memory.reclaim.  If the flag is not set (the default), then
+>> > no_demotion of scan_control can be set to 1, similar to
+>> > reclaim_pages().
+>>
+>> If we have to use a flag to control the behavior, I think it's better to
+>> have a separate interface (e.g. memory.demote).  But do we really need b)?
+>>
+>
+> I am fine with either approach: a separate interface similar to
+> memory.reclaim, but dedicated to demotion, or multiplexing
+> memory.reclaim for demotion with a flag.
+>
+> My understanding is that with the "demote pages during reclaim"
+> support, b) is the expected behavior, or more precisely, pages that
+> cannot be demoted may be freed or swapped out.  This is reasonable.
+> Demotion-only can also be supported via some arguments to the
+> interface and changes to demotion code in the kernel.  After all, this
+> interface is being designed to be extensible based on the discussions
+> so far.
+
+I think we should define the interface not from the current
+implementation point of view, but from the requirement point of view.
+For proactive reclaim, per my understanding, the requirement is,
+
+  we found that there's some cold pages in some workloads, so we can
+  take advantage of the proactive reclaim to reclaim some pages so that
+  other workload can use the freed memory.
+
+For proactive demotion, per my understanding, the requirement could be,
+
+  We found that there's some cold pages in fast memory (e.g. DRAM) in
+  some workloads, so we can take advantage of the proactive demotion to
+  demote some pages so that other workload can use the freed fast
+  memory.  Given the DRAM partition support Tim (Cced) is working on.
+
+Why do we need something in the middle?
+
+Best Regards,
+Huang, Ying
+
+>> > The question is then whether we want to rename memory.reclaim to
+>> > something more general.  I think this name is fine if reclaim-based
+>> > demotion is an accepted concept.
+>>
+>> Best Regards,
+>> Huang, Ying
