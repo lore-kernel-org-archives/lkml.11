@@ -2,154 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E32C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16492C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232533AbiDFUOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
+        id S232790AbiDFUO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236999AbiDFUNz (ORCPT
+        with ESMTP id S237033AbiDFUN4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:13:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8DC506EE;
-        Wed,  6 Apr 2022 11:01:09 -0700 (PDT)
-Date:   Wed, 06 Apr 2022 18:01:04 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649268067;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IndriNrjjKue7jTMRIVbOa6aEXgiAJs1mmKTKQU5o2k=;
-        b=n8LIvLG63fRvoYpG/xxua2e9y5DhIF/6fPG3gYpNwAP3J30WSQNKx0LECysc40M3oYfRzY
-        yEG//fH5BZvVv5CoKBiBpkPnmSmOzBmVPBK8RHhtwCySoserHElFnHn5CWvB1/ZSLrAVr4
-        qRE+voPF6nE/O8QTOLnAyCrhN3WQu0SmzscV8GcASLBlVVDDUclGR1FZLI0yO1fdaNQs+1
-        SrvNBfLqJtCcdxabccSWCqR6ihf/PkwizDvdhZBRFHu8wSJ3El4byEKRBe5MJdRkpiNRSm
-        xLmyZFG0ybEchdjl3DwVyByWcjHpqDut7ih453x4aol9yktuhNHtztU1NK8Tfg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649268067;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IndriNrjjKue7jTMRIVbOa6aEXgiAJs1mmKTKQU5o2k=;
-        b=ZAxYhEcigm5Sz65+61+nzBTrSsIfhWcIqJ6/Dhi7BNkxlk1HGqTkHyT9Js9Y1Cco8pnktV
-        svPF6NIKoT0lPhDA==
-From:   "tip-bot2 for Dave Hansen" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/build] x86/configs: Add x86 debugging Kconfig fragment plus docs
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220331175728.299103A0@davehans-spike.ostc.intel.com>
-References: <20220331175728.299103A0@davehans-spike.ostc.intel.com>
+        Wed, 6 Apr 2022 16:13:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C137E1B60F3;
+        Wed,  6 Apr 2022 11:28:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F27B61C57;
+        Wed,  6 Apr 2022 18:28:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 702AFC385A3;
+        Wed,  6 Apr 2022 18:28:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269681;
+        bh=Ar6wQxHGUgKLPgy00kKXXw91vno3jB1Vdh5h58ZAXlg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TG0+vkYgKTOWNP3oEE1kylw2RVQY6wuVgz6CdB43FhNN64zU9eogAo1GA3maucujA
+         5Xbok/TkpSrz1PZ17FOVKlOWOE1attGQ8/3vMh06bGdH2WmNpZkN8yCQvrREMqU+UG
+         1TP3f+myFnvtxQUkyVUNxrr+rVy/X+fKhM7mqISY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Dave Martin <dave.martin@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 05/43] arm64: capabilities: Move errata work around check on boot CPU
+Date:   Wed,  6 Apr 2022 20:26:14 +0200
+Message-Id: <20220406182436.835640694@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164926806495.389.2039548073927168895.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/build branch of tip:
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-Commit-ID:     9b5a7f4a2a8dcda461f9c7a6671150f4a8a902e8
-Gitweb:        https://git.kernel.org/tip/9b5a7f4a2a8dcda461f9c7a6671150f4a8a902e8
-Author:        Dave Hansen <dave.hansen@linux.intel.com>
-AuthorDate:    Thu, 31 Mar 2022 10:57:28 -07:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 06 Apr 2022 19:56:29 +02:00
+[ Upstream commit 5e91107b06811f0ca147cebbedce53626c9c4443 ]
 
-x86/configs: Add x86 debugging Kconfig fragment plus docs
+We trigger CPU errata work around check on the boot CPU from
+smp_prepare_boot_cpu() to make sure that we run the checks only
+after the CPU feature infrastructure is initialised. While this
+is correct, we can also do this from init_cpu_features() which
+initilises the infrastructure, and is called only on the
+Boot CPU. This helps to consolidate the CPU capability handling
+to cpufeature.c. No functional changes.
 
-The kernel has a wide variety of debugging options to help catch
-and squash bugs.  However, new debugging is added all the time and
-the existing options can be hard to find.
-
-Add a Kconfig fragment with the debugging options which tip
-maintainers expect to be used to test contributions.
-
-This should make it easier for contributors to test their code and
-find issues before submission.
-
-  [ bp: Add to "make help" output, fix DEBUG_INFO selection as pointed
-        out by Nathan Chancellor <nathan@kernel.org>. ]
-
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220331175728.299103A0@davehans-spike.ostc.intel.com
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Reviewed-by: Dave Martin <dave.martin@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/process/maintainer-tip.rst | 14 ++++++++++++++
- arch/x86/Makefile                        |  1 +
- kernel/configs/x86_debug.config          | 18 ++++++++++++++++++
- 3 files changed, 33 insertions(+)
- create mode 100644 kernel/configs/x86_debug.config
+ arch/arm64/kernel/cpufeature.c |    5 +++++
+ arch/arm64/kernel/smp.c        |    6 ------
+ 2 files changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/process/maintainer-tip.rst b/Documentation/process/maintainer-tip.rst
-index c74f4a8..572a328 100644
---- a/Documentation/process/maintainer-tip.rst
-+++ b/Documentation/process/maintainer-tip.rst
-@@ -437,6 +437,20 @@ in a private repository which allows interested people to easily pull the
- series for testing. The usual way to offer this is a git URL in the cover
- letter of the patch series.
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -476,6 +476,11 @@ void __init init_cpu_features(struct cpu
+ 		init_cpu_ftr_reg(SYS_MVFR2_EL1, info->reg_mvfr2);
+ 	}
  
-+Testing
-+^^^^^^^
-+
-+Code should be tested before submitting to the tip maintainers.  Anything
-+other than minor changes should be built, booted and tested with
-+comprehensive (and heavyweight) kernel debugging options enabled.
-+
-+These debugging options can be found in kernel/configs/x86_debug.config
-+and can be added to an existing kernel config by running:
-+
-+	make x86_debug.config
-+
-+Some of these options are x86-specific and can be left out when testing
-+on other architectures.
++	/*
++	 * Run the errata work around checks on the boot CPU, once we have
++	 * initialised the cpu feature infrastructure.
++	 */
++	update_cpu_errata_workarounds();
+ }
  
- Coding style notes
- ------------------
-diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 63d50f6..1abd7cc 100644
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -313,5 +313,6 @@ define archhelp
-   echo  ''
-   echo  '  kvm_guest.config	- Enable Kconfig items for running this kernel as a KVM guest'
-   echo  '  xen.config		- Enable Kconfig items for running this kernel as a Xen guest'
-+  echo  '  x86_debug.config	- Enable tip tree debugging options for testing'
+ static void update_cpu_ftr_reg(struct arm64_ftr_reg *reg, u64 new)
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -444,12 +444,6 @@ void __init smp_prepare_boot_cpu(void)
+ 	jump_label_init();
+ 	cpuinfo_store_boot_cpu();
+ 	save_boot_cpu_run_el();
+-	/*
+-	 * Run the errata work around checks on the boot CPU, once we have
+-	 * initialised the cpu feature infrastructure from
+-	 * cpuinfo_store_boot_cpu() above.
+-	 */
+-	update_cpu_errata_workarounds();
+ }
  
- endef
-diff --git a/kernel/configs/x86_debug.config b/kernel/configs/x86_debug.config
-new file mode 100644
-index 0000000..dcd86f3
---- /dev/null
-+++ b/kernel/configs/x86_debug.config
-@@ -0,0 +1,18 @@
-+CONFIG_X86_DEBUG_FPU=y
-+CONFIG_LOCK_STAT=y
-+CONFIG_DEBUG_VM=y
-+CONFIG_DEBUG_VM_VMACACHE=y
-+CONFIG_DEBUG_VM_RB=y
-+CONFIG_DEBUG_SLAB=y
-+CONFIG_DEBUG_KMEMLEAK=y
-+CONFIG_DEBUG_PAGEALLOC=y
-+CONFIG_SLUB_DEBUG_ON=y
-+CONFIG_KMEMCHECK=y
-+CONFIG_DEBUG_OBJECTS=y
-+CONFIG_DEBUG_OBJECTS_ENABLE_DEFAULT=1
-+CONFIG_GCOV_KERNEL=y
-+CONFIG_LOCKDEP=y
-+CONFIG_PROVE_LOCKING=y
-+CONFIG_SCHEDSTATS=y
-+CONFIG_VMLINUX_VALIDATION=y
-+CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+ static u64 __init of_get_cpu_mpidr(struct device_node *dn)
+
+
