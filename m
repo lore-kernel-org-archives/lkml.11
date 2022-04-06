@@ -2,79 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5354C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238570AbiDFRHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55106 "EHLO
+        id S238339AbiDFRHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238529AbiDFRGv (ORCPT
+        with ESMTP id S238266AbiDFRHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:06:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F58123211D;
-        Wed,  6 Apr 2022 07:30:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C282FB82436;
-        Wed,  6 Apr 2022 14:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7102FC385A8;
-        Wed,  6 Apr 2022 14:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649255413;
-        bh=icIJTMtIxjoHsHy/UFVMz3ivUvtOztilnj6bZ6ZdNwo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TOMeDQa+oCyCD1c6W54vR/9FZPMfrb+dd7KvXbXnfuUM9cnBccWWr58+q3KjM8cSi
-         B5LBok5SuXl8JNP6d5PckBNjX5Z1tv3RQ/LOQTaCglwvc2R3XeXsdKLj/tdKuuzv00
-         rvCNZKwdz3OCUXIJIRbrz5JTOpskIIn//ddXoBX2sfJjnI8XeDEXb503xIbjEW+8LM
-         sB4/7MVTANzBs99aZf3kd/jBPT5uMbso9JqRAJSddGgchgy9To0SslvteQ39tvDgsv
-         YCCr8nYwIFLz8OFBhIJkLNb8x6OmmLAiJcla3hIPPyJieQ+bRBJ4FtS7bXiOer36ga
-         ufPAs918Wf/Xg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 58D1BE4A6CB;
-        Wed,  6 Apr 2022 14:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 6 Apr 2022 13:07:41 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF23116B41
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:44:19 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bh17so4735141ejb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:44:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=UNqM0LlACzUWebKPb32nAc46OxRJa6ogRvRpwiXpenY=;
+        b=whpZ3f6EBitVqq0rstJxB66VMYokK6P1XsHnHCPNRzkc24btGAatngLwzN3FrEmk+X
+         nXT4tCx7EzcaMXTxngfAU80wkPN1yAVsJZzSkSehSs2BXtRZcANCt6m93GX/BihIB+RY
+         V7oYXx4CRRS7J6miGCAMWSNwRF8g+2l++6BEPLe7nzBKUOC+V2vfMI/s7CSmVp/9jdHg
+         2/Olc5oty19Vow4Sg9OXhlXGsSwaVffLD3aYy1+qWIQMaUVmQfNqM4kQlZSdQ670kpqP
+         vXJHa0sJFTiCf0/nKh9/Le5EEfDWZiiBQuOkp6OsMtfLFinyDWYCxFlQdT5cQN3FFnwh
+         nmVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UNqM0LlACzUWebKPb32nAc46OxRJa6ogRvRpwiXpenY=;
+        b=fkdmI/cq26cRfMhAX8a2uMem760dYveIL3SVFpUD2rLEKMjvsNMmzFJXbiiNYVAap7
+         219n466eBeuMc7N3Q+IgwOHuT/SUUelxFZZwNAdkkBIq7Uw0R4dj6gtl4vrifal+cpPM
+         gBtYUC0d5plcBaj9B40lOdxnr+bwtoQwMt5SSLfRkcfjFdSs/i+h45Tp3olIQ1mplaaq
+         R88FrLlpBqlqlLqprxGIvRY2+909QLrkREd9abwHkSsEOJdZX/XDeau3wrr7zj5Wr4cy
+         1SaFLSGC73baTPT14v/+Ahf0OV32MqnYCQsGI5ahaUgEwBNXYBghTyReN9OBMmT2ozfm
+         RkOw==
+X-Gm-Message-State: AOAM5314rxXTuvTCr8gGoWCR1/+Thuv3iKhKeAC9dCRufsmYLWNtE9dN
+        7UJ8W/AbYXA+JN038AwjGAGcwA==
+X-Google-Smtp-Source: ABdhPJweVGzt2UYsW0wgC1QYNfzk/buFhSRGS7vEy/Lzgm2Wxo+7xzpzsQtReauuNt8ndDaCKGNT3A==
+X-Received: by 2002:a17:907:3d93:b0:6e7:4d22:75c8 with SMTP id he19-20020a1709073d9300b006e74d2275c8mr8656814ejc.330.1649256258352;
+        Wed, 06 Apr 2022 07:44:18 -0700 (PDT)
+Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id h30-20020a056402095e00b00412b81dd96esm7858108edz.29.2022.04.06.07.44.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 07:44:17 -0700 (PDT)
+Message-ID: <397e30c2-18c3-93d6-16f5-b113be77f51a@linaro.org>
+Date:   Wed, 6 Apr 2022 16:44:16 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH RESEND] net: ethernet: xilinx: use of_property_read_bool()
- instead of of_get_property
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164925541335.21938.2629519087642040461.git-patchwork-notify@kernel.org>
-Date:   Wed, 06 Apr 2022 14:30:13 +0000
-References: <1649236646-4257-1-git-send-email-wangqing@vivo.com>
-In-Reply-To: <1649236646-4257-1-git-send-email-wangqing@vivo.com>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/3] dt-bindings: display: mediatek: Correct disp_aal
+ binding for MT8183
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de, airlied@linux.ie,
+        yongqiang.niu@mediatek.com, jason-jh.lin@mediatek.com,
+        nancy.lin@mediatek.com, allen-kh.cheng@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+ <20220406094654.29722-2-rex-bc.chen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220406094654.29722-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On 06/04/2022 11:46, Rex-BC Chen wrote:
+> The driver data of MT8183 and MT8173 are different.
+> The value of has_gamma for MT8173 is true while the value of MT8183 is
+> false. Therefore, the compatible of disp_aal for MT8183 is not suitable
+> for the compatible for MT8173.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed,  6 Apr 2022 02:17:26 -0700 you wrote:
-> From: Wang Qing <wangqing@vivo.com>
-> 
-> "little-endian" has no specific content, use more helper function
-> of_property_read_bool() instead of of_get_property()
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [RESEND] net: ethernet: xilinx: use of_property_read_bool() instead of of_get_property
-    https://git.kernel.org/netdev/net-next/c/be8d9d05271c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Just because one feature is not supported, it does not mean they are
+incompatible, which you claim in the patch below. Are you sure they are
+really incompatible and MT8173 fallback cannot be used?
 
 
+Best regards,
+Krzysztof
