@@ -2,79 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66376C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3783BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:54:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239719AbiDFR4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
+        id S239839AbiDFR42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239693AbiDFRzh (ORCPT
+        with ESMTP id S239767AbiDFR4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:55:37 -0400
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F214405D3;
-        Wed,  6 Apr 2022 09:05:12 -0700 (PDT)
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-e2442907a1so3029327fac.8;
-        Wed, 06 Apr 2022 09:05:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MpA4CfNVqRRzfNI0NZazohhpjC3Wdx9B0oPB6HfE+1c=;
-        b=ZCruhWHRnvWp3O8B/q7fFIEsktNyHuDsn3qz7ofQHoZ3z+pHNPqKU5ybwV4BxLSEGb
-         RAmGu0P1kYxH80xSL9gMkGgNkDsCoNxSCsCbRVjyd3oaBqIHyYk7N8tIW5Zoeh5wtJhf
-         1PtPC/w5aHo+/CP4OlFE9h6kLVRwFolXRORDuBjynt9mHDIkoKCZJpVIVFmgcpfIMymk
-         AnBfWbGeC1ETs2zJ2E5BuVx+4nkyG49PLe5kmAYC/c7L0K9BoCbV3QEWxVglKHHfdYjY
-         ZNJsFw5cEE1f8X/jfPpUK8XDqBZVBSEACQGOvy7P8RL1vtZ2OOYKmGgBwEiDXuuF4fVA
-         31SA==
-X-Gm-Message-State: AOAM533QeTLZ3TuCCmzONbYhaxP2Qm2a62nbXKJ89Eq0kAnZ0qQmu3Eo
-        tbcCD2Bn6OQ+VWaKjQcODA==
-X-Google-Smtp-Source: ABdhPJxWnogmTkLiwRUqI1DLFzJoxqP9hindg9vBS92SZbO9tvjdBwxEVyklhAyB6REgphp91XXYvw==
-X-Received: by 2002:a05:6870:5b9e:b0:cf:f6de:3e89 with SMTP id em30-20020a0568705b9e00b000cff6de3e89mr4372076oab.94.1649261111777;
-        Wed, 06 Apr 2022 09:05:11 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w39-20020a056830412700b005cda87bbdcesm7033390ott.6.2022.04.06.09.05.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 09:05:11 -0700 (PDT)
-Received: (nullmailer pid 2331636 invoked by uid 1000);
-        Wed, 06 Apr 2022 16:05:10 -0000
-Date:   Wed, 6 Apr 2022 11:05:10 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Joel Selvaraj <jo@jsfamily.in>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        David Airlie <airlied@linux.ie>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Andy Gross <agross@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH v2 2/3] dt-bindings: display: novatek,nt36672a: add
- backlight property
-Message-ID: <Yk26Nli4RXgV5KgK@robh.at.kernel.org>
-References: <20220401001810.81507-1-jo@jsfamily.in>
- <BY5PR02MB70090BB5D8C7D655BEE0642FD9E09@BY5PR02MB7009.namprd02.prod.outlook.com>
+        Wed, 6 Apr 2022 13:56:08 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 29CBB3C30F9
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:20:06 -0700 (PDT)
+Received: (qmail 192537 invoked by uid 1000); 6 Apr 2022 12:20:05 -0400
+Date:   Wed, 6 Apr 2022 12:20:05 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, CobeChen@zhaoxin.com,
+        TimGuo@zhaoxin.com, tonywwang@zhaoxin.com, weitaowang@zhaoxin.com
+Subject: Re: [PATCH] USB:Fix ehci infinite suspend-resume loop issue in
+ zhaoxin
+Message-ID: <Yk29tZpy9pLDlPj2@rowland.harvard.edu>
+References: <3d0ae3ca-9dad-bb8f-5c41-45bdcb07b9cd@zhaoxin.com>
+ <Yi9QIk+6VIWW6V/W@rowland.harvard.edu>
+ <320584eb-ef89-3759-509c-e7e9cb10f983@zhaoxin.com>
+ <YjCuOXRFZ8CjK9SD@rowland.harvard.edu>
+ <ac40c227-ea26-bccd-d254-5a2034103184@zhaoxin.com>
+ <YkxoHY2SVomGwGdh@rowland.harvard.edu>
+ <bbd9148d-5970-2233-6ee9-625e961cd2f5@zhaoxin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BY5PR02MB70090BB5D8C7D655BEE0642FD9E09@BY5PR02MB7009.namprd02.prod.outlook.com>
+In-Reply-To: <bbd9148d-5970-2233-6ee9-625e961cd2f5@zhaoxin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 01 Apr 2022 05:48:09 +0530, Joel Selvaraj wrote:
-> Add backlight property and update example to include it.
-> 
-> Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
-> ---
->  .../devicetree/bindings/display/panel/novatek,nt36672a.yaml     | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+On Wed, Apr 06, 2022 at 10:38:28AM +0800, WeitaoWang-oc@zhaoxin.com wrote:
+> On 2022/4/6 00:02, Alan Stern wrote:
+> > In fact, the resume kernel doesn't call ehci_resume at all.  Here's what
+> > it does:
+> > 
+> > 	The resume kernel boots;
+> > 
+> > 	If your patch causes STS_PCD to be set at this point, the flag
+> > 	should get cleared shortly afterward by ehci_irq;
+> > 
+> > 	ehci-hcd goes into runtime suspend;
+> > 
+> > 	The kernel reads the system image that was stored earlier when
+> > 	hibernation began;
+> > 
+> > 	After the image is loaded, the system goes into the freeze
+> > 	state (this does not call any routines in ehci-hcd);
+> On this phase, pci_pm_freeze will be called for pci device. In this
+> function, pm_runtime_resume will be called to resume already
+> runtime-suspend devices. which will cause ehci_resume to be called.
+> Thus STS_PCD flag will be set in ehci_resume function.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Aha!  I was missing that piece of information, thanks.
+
+But this still doesn't explain why check_root_hub_suspended is failing.  
+That routine checks the HCD_RH_RUNNING bit, which gets set in 
+hcd_bus_resume.  hcd_bus_resume gets called as part of resuming the root 
+hub, and in ehci-hcd this happens when ehci_irq sees that STS_PCD is set 
+and calls usb_hcd_resume_root_hub.  That routine queues a wakeup request 
+on the pm_wq work queue, which is then supposed to run hcd_resume_work 
+to actually restart the root hub.
+
+But pm_wq is a freezable work queue!  While the system is in the freeze 
+state, the work queue isn't running.  This means that the root hub 
+should remain suspended until the end of the freeze phase, and so the 
+call to check_root_hub_suspended should succeed.
+
+Can you check to see what's really happening on your system?  Something 
+must be wrong with my analysis, but I can't tell what it is.  I'm still 
+puzzled.
+
+Alan Stern
