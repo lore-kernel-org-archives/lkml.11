@@ -2,247 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F94C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 846DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233878AbiDFODi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54268 "EHLO
+        id S234038AbiDFOEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234060AbiDFODX (ORCPT
+        with ESMTP id S234178AbiDFODu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:03:23 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE48095A20;
-        Tue,  5 Apr 2022 21:50:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649220655; x=1680756655;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XT+Yu0zqAvB34KyhxTSK4J2jUzqJeBdgYuJKQre9+Fs=;
-  b=KCalozvRFFIAKT+i1S41qpEnELIEWtBrF+PUbel6RY3is0qHkNu1FCpT
-   7ABlQOYOzBu1QQRAE2U4IVhMpkeec6V5oNO32yeVqiH5oyrynRDKgTnjS
-   0dn/zqO2Gy9X6aVH70pQYH4wXzgVkSFbeopB6IJyfjnVQ5vCwFRQ/2tWe
-   RzVQ4Cs7RoDAH3WhDYO3Mfm9qS+bBWzMr31Bb88z0TNKs2vWUSUCjX/HW
-   5u4KXgh6jKGZKkkp10SU1Xjix24HIHQeWPJJLY+7zmhna4gPI2pjIo7e4
-   yzfM1MjoUQEET6Lj+T5enKZBw5h8Na5AQgimSyYFEfx4Ki3MMTVIxWoyW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089873"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="243089873"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:40 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="524302404"
-Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:36 -0700
-From:   Kai Huang <kai.huang@intel.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
-        len.brown@intel.com, tony.luck@intel.com,
-        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
-        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v3 14/21] x86/virt/tdx: Set up reserved areas for all TDMRs
-Date:   Wed,  6 Apr 2022 16:49:26 +1200
-Message-Id: <b761a1b05a87c2c291daf811c325ceb4198dfba8.1649219184.git.kai.huang@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
-References: <cover.1649219184.git.kai.huang@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 6 Apr 2022 10:03:50 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C49DBA76C5;
+        Wed,  6 Apr 2022 02:20:46 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id C78DB5C0148;
+        Wed,  6 Apr 2022 05:13:07 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 06 Apr 2022 05:13:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:date:date:from:from:in-reply-to
+        :message-id:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=guME7x
+        VTNqIwNjNs7HpvT3KtelTUAeanGasp7WKK014=; b=ZaeefLitPL2BoTp0wjxkM+
+        MadtJ9GcgOwuvYMsEy5YsWlrr57OELiAVqRXkeVRwOaB+mDZiROrexMei7Fmmtl9
+        Y2p6kntZ2Yw7j76xQ6+4TcPEY2o9BTWFtGJ/unXostYP7OiXCvgatUAGc+hh0RQr
+        5Rgj3uuVaLu7NwJe0MCjUQw0pJ9FEzuIxYL+mQr6/uvea96vkc4y9ePIc9F9pQE+
+        Jhah8NYOZNWQcLXbUe0FI+xvSe/8PtScbzfH0u8zgZfgkqrZJfiL30LOlaiPhyVN
+        kTiAe3cBF4fynl1fJAIr3yMPi0JSAF4qyBw7So9sDn5u72rx/gdpZq+yxj4zuTTg
+        ==
+X-ME-Sender: <xms:o1lNYnVjFtIu2zPi6qtdCF58hnMyaCd8iM86VzvLsrVp3Vhh7gc3wA>
+    <xme:o1lNYvmStf6Z3PgWXhvrSBMijp9uC73TtgR_d3rHTRrzHI6pz8xs8bWGVTvt_e8wE
+    Pifu2vdGQHntWXppIk>
+X-ME-Received: <xmr:o1lNYjaiR_g_GDSF1YbUNhvFuJ_uQDR5Q3OyoL5jGviXDDUbFHRsLkcYCmuXFyvouYxTtcRsf_uJZRhxkxL1zFPretsEtJMhmGc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejiedgudegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepvffkhffuffestddtredttddttdenucfhrhhomhephfhinhhnucfvhhgrihhn
+    uceofhhthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgheqnecuggftrfgrthhtvghrnh
+    eptdelteekleekkedvueejheekgfdvtdehhefhteeitefhteefgefhudehveevleelnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepfhhthhgrih
+    hnsehlihhnuhigqdhmieekkhdrohhrgh
+X-ME-Proxy: <xmx:o1lNYiUB6LQI3oNFrXm5eALEv4qYMKzaqHYbv84algSA7OkKEi9EsQ>
+    <xmx:o1lNYhl_L9im-2MLBYR_qpZhaHQj9-6m_GJ6ZYG-AHf0cN1kDtafjA>
+    <xmx:o1lNYvcvXBLeWddf3DIyLFmBm71VyZotiNxeOpJWFjHfqadaZYrTjQ>
+    <xmx:o1lNYnj9B90TAaHvLQ7PKoOSnbJ7GXOYNauujN9V5dqpHDyKWSQN6g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 6 Apr 2022 05:13:05 -0400 (EDT)
+To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     "Bart Van Assche" <bvanassche@acm.org>,
+        "Christoph Hellwig" <hch@lst.de>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Message-Id: <accf71e293ba3aed6d18c8baeb405de8dfe7c935.1649235939.git.fthain@linux-m68k.org>
+From:   Finn Thain <fthain@linux-m68k.org>
+Subject: [PATCH v2] scsi: sym53c500_cs: Stop using struct scsi_pointer
+Date:   Wed, 06 Apr 2022 19:05:39 +1000
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the last step of constructing TDMRs, create reserved area information
-for the memory region holes in each TDMR.  If any PAMT (or part of it)
-resides within a particular TDMR, also mark it as reserved.
+This driver doesn't use SCp.ptr to save a SCSI command data pointer which
+means "scsi pointer" is a complete misnomer here. Only a few members of
+struct scsi_pointer are needed so move those to private command data.
 
-All reserved areas in each TDMR must be in address ascending order,
-required by TDX architecture.
-
-Signed-off-by: Kai Huang <kai.huang@intel.com>
+Cc: Bart Van Assche <bvanassche@acm.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Finn Thain <fthain@linux-m68k.org>
 ---
- arch/x86/virt/vmx/tdx/tdx.c | 148 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 146 insertions(+), 2 deletions(-)
+The sym53c500_cs driver somehow missed out on complete scsi_pointer
+removal in Bart's recently queued patch series, unlike nsp32 for example.
+So this patch finishes the job. Compile-tested only.
 
-diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index 1b807dcbc101..bf0d13644898 100644
---- a/arch/x86/virt/vmx/tdx/tdx.c
-+++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -15,6 +15,7 @@
- #include <linux/atomic.h>
- #include <linux/slab.h>
- #include <linux/math.h>
-+#include <linux/sort.h>
- #include <asm/msr-index.h>
- #include <asm/msr.h>
- #include <asm/cpufeature.h>
-@@ -1112,6 +1113,145 @@ static int tdmrs_setup_pamt_all(struct tdmr_info **tdmr_array, int tdmr_num)
- 	return -ENOMEM;
+Changed since v1:
+ - Removed SYM53c500_priv() helper function as suggested by Christoph.
+---
+ drivers/scsi/pcmcia/sym53c500_cs.c | 52 ++++++++++++++----------------
+ 1 file changed, 25 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/scsi/pcmcia/sym53c500_cs.c b/drivers/scsi/pcmcia/sym53c500_cs.c
+index c4a838635893..5d7dfefd6f6c 100644
+--- a/drivers/scsi/pcmcia/sym53c500_cs.c
++++ b/drivers/scsi/pcmcia/sym53c500_cs.c
+@@ -192,10 +192,11 @@ struct sym53c500_data {
+ 	int fast_pio;
+ };
+ 
+-static struct scsi_pointer *sym53c500_scsi_pointer(struct scsi_cmnd *cmd)
+-{
+-	return scsi_cmd_priv(cmd);
+-}
++struct sym53c500_cmd_priv {
++	int status;
++	int message;
++	int phase;
++};
+ 
+ enum Phase {
+     idle,
+@@ -356,7 +357,7 @@ SYM53C500_intr(int irq, void *dev_id)
+ 	struct sym53c500_data *data =
+ 	    (struct sym53c500_data *)dev->hostdata;
+ 	struct scsi_cmnd *curSC = data->current_SC;
+-	struct scsi_pointer *scsi_pointer = sym53c500_scsi_pointer(curSC);
++	struct sym53c500_cmd_priv *scp = scsi_cmd_priv(curSC);
+ 	int fast_pio = data->fast_pio;
+ 
+ 	spin_lock_irqsave(dev->host_lock, flags);
+@@ -403,12 +404,11 @@ SYM53C500_intr(int irq, void *dev_id)
+ 
+ 	if (int_reg & 0x20) {		/* Disconnect */
+ 		DEB(printk("SYM53C500: disconnect intr received\n"));
+-		if (scsi_pointer->phase != message_in) {	/* Unexpected disconnect */
++		if (scp->phase != message_in) {	/* Unexpected disconnect */
+ 			curSC->result = DID_NO_CONNECT << 16;
+ 		} else {	/* Command complete, return status and message */
+-			curSC->result = (scsi_pointer->Status & 0xff) |
+-				((scsi_pointer->Message & 0xff) << 8) |
+-				(DID_OK << 16);
++			curSC->result = (scp->status & 0xff) |
++				((scp->message & 0xff) << 8) | (DID_OK << 16);
+ 		}
+ 		goto idle_out;
+ 	}
+@@ -419,7 +419,7 @@ SYM53C500_intr(int irq, void *dev_id)
+ 			struct scatterlist *sg;
+ 			int i;
+ 
+-			scsi_pointer->phase = data_out;
++			scp->phase = data_out;
+ 			VDEB(printk("SYM53C500: Data-Out phase\n"));
+ 			outb(FLUSH_FIFO, port_base + CMD_REG);
+ 			LOAD_DMA_COUNT(port_base, scsi_bufflen(curSC));	/* Max transfer size */
+@@ -438,7 +438,7 @@ SYM53C500_intr(int irq, void *dev_id)
+ 			struct scatterlist *sg;
+ 			int i;
+ 
+-			scsi_pointer->phase = data_in;
++			scp->phase = data_in;
+ 			VDEB(printk("SYM53C500: Data-In phase\n"));
+ 			outb(FLUSH_FIFO, port_base + CMD_REG);
+ 			LOAD_DMA_COUNT(port_base, scsi_bufflen(curSC));	/* Max transfer size */
+@@ -453,12 +453,12 @@ SYM53C500_intr(int irq, void *dev_id)
+ 		break;
+ 
+ 	case 0x02:		/* COMMAND */
+-		scsi_pointer->phase = command_ph;
++		scp->phase = command_ph;
+ 		printk("SYM53C500: Warning: Unknown interrupt occurred in command phase!\n");
+ 		break;
+ 
+ 	case 0x03:		/* STATUS */
+-		scsi_pointer->phase = status_ph;
++		scp->phase = status_ph;
+ 		VDEB(printk("SYM53C500: Status phase\n"));
+ 		outb(FLUSH_FIFO, port_base + CMD_REG);
+ 		outb(INIT_CMD_COMPLETE, port_base + CMD_REG);
+@@ -471,24 +471,22 @@ SYM53C500_intr(int irq, void *dev_id)
+ 
+ 	case 0x06:		/* MESSAGE-OUT */
+ 		DEB(printk("SYM53C500: Message-Out phase\n"));
+-		scsi_pointer->phase = message_out;
++		scp->phase = message_out;
+ 		outb(SET_ATN, port_base + CMD_REG);	/* Reject the message */
+ 		outb(MSG_ACCEPT, port_base + CMD_REG);
+ 		break;
+ 
+ 	case 0x07:		/* MESSAGE-IN */
+ 		VDEB(printk("SYM53C500: Message-In phase\n"));
+-		scsi_pointer->phase = message_in;
++		scp->phase = message_in;
+ 
+-		scsi_pointer->Status = inb(port_base + SCSI_FIFO);
+-		scsi_pointer->Message = inb(port_base + SCSI_FIFO);
++		scp->status = inb(port_base + SCSI_FIFO);
++		scp->message = inb(port_base + SCSI_FIFO);
+ 
+ 		VDEB(printk("SCSI FIFO size=%d\n", inb(port_base + FIFO_FLAGS) & 0x1f));
+-		DEB(printk("Status = %02x  Message = %02x\n",
+-			   scsi_pointer->Status, scsi_pointer->Message));
++		DEB(printk("Status = %02x  Message = %02x\n", scp->status, scp->message));
+ 
+-		if (scsi_pointer->Message == SAVE_POINTERS ||
+-		    scsi_pointer->Message == DISCONNECT) {
++		if (scp->message == SAVE_POINTERS || scp->message == DISCONNECT) {
+ 			outb(SET_ATN, port_base + CMD_REG);	/* Reject message */
+ 			DEB(printk("Discarding SAVE_POINTERS message\n"));
+ 		}
+@@ -500,7 +498,7 @@ SYM53C500_intr(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ 
+ idle_out:
+-	scsi_pointer->phase = idle;
++	scp->phase = idle;
+ 	scsi_done(curSC);
+ 	goto out;
  }
+@@ -548,7 +546,7 @@ SYM53C500_info(struct Scsi_Host *SChost)
  
-+static int tdmr_add_rsvd_area(struct tdmr_info *tdmr, int *p_idx,
-+			      u64 addr, u64 size)
-+{
-+	struct tdmr_reserved_area *rsvd_areas = tdmr->reserved_areas;
-+	int idx = *p_idx;
-+
-+	/* Reserved area must be 4K aligned in offset and size */
-+	if (WARN_ON(addr & ~PAGE_MASK || size & ~PAGE_MASK))
-+		return -EINVAL;
-+
-+	/* Cannot exceed maximum reserved areas supported by TDX */
-+	if (idx >= tdx_sysinfo.max_reserved_per_tdmr)
-+		return -E2BIG;
-+
-+	rsvd_areas[idx].offset = addr - tdmr->base;
-+	rsvd_areas[idx].size = size;
-+
-+	*p_idx = idx + 1;
-+
-+	return 0;
-+}
-+
-+/* Compare function called by sort() for TDMR reserved areas */
-+static int rsvd_area_cmp_func(const void *a, const void *b)
-+{
-+	struct tdmr_reserved_area *r1 = (struct tdmr_reserved_area *)a;
-+	struct tdmr_reserved_area *r2 = (struct tdmr_reserved_area *)b;
-+
-+	if (r1->offset + r1->size <= r2->offset)
-+		return -1;
-+	if (r1->offset >= r2->offset + r2->size)
-+		return 1;
-+
-+	/* Reserved areas cannot overlap.  Caller should guarantee. */
-+	WARN_ON(1);
-+	return -1;
-+}
-+
-+/* Set up reserved areas for a TDMR, including memory holes and PAMTs */
-+static int tdmr_setup_rsvd_areas(struct tdmr_info *tdmr,
-+				     struct tdmr_info **tdmr_array,
-+				     int tdmr_num)
-+{
-+	u64 start, end, prev_end;
-+	int rsvd_idx, i, ret = 0;
-+
-+	/* Mark holes between e820 RAM entries as reserved */
-+	rsvd_idx = 0;
-+	prev_end = TDMR_START(tdmr);
-+	e820_for_each_mem(i, start, end) {
-+		/* Break if this entry is after the TDMR */
-+		if (start >= TDMR_END(tdmr))
-+			break;
-+
-+		/* Exclude entries before this TDMR */
-+		if (end < TDMR_START(tdmr))
-+			continue;
-+
-+		/*
-+		 * Skip if no hole exists before this entry. "<=" is
-+		 * used because one e820 entry might span two TDMRs.
-+		 * In that case the start address of this entry is
-+		 * smaller then the start address of the second TDMR.
-+		 */
-+		if (start <= prev_end) {
-+			prev_end = end;
-+			continue;
-+		}
-+
-+		/* Add the hole before this e820 entry */
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, prev_end,
-+				start - prev_end);
-+		if (ret)
-+			return ret;
-+
-+		prev_end = end;
-+	}
-+
-+	/* Add the hole after the last RAM entry if it exists. */
-+	if (prev_end < TDMR_END(tdmr)) {
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, prev_end,
-+				TDMR_END(tdmr) - prev_end);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/*
-+	 * Walk over all TDMRs to find out whether any PAMT falls into
-+	 * the given TDMR. If yes, mark it as reserved too.
-+	 */
-+	for (i = 0; i < tdmr_num; i++) {
-+		struct tdmr_info *tmp = tdmr_array[i];
-+		u64 pamt_start, pamt_end;
-+
-+		pamt_start = tmp->pamt_4k_base;
-+		pamt_end = pamt_start + tmp->pamt_4k_size +
-+			tmp->pamt_2m_size + tmp->pamt_1g_size;
-+
-+		/* Skip PAMTs outside of the given TDMR */
-+		if ((pamt_end <= TDMR_START(tdmr)) ||
-+				(pamt_start >= TDMR_END(tdmr)))
-+			continue;
-+
-+		/* Only mark the part within the TDMR as reserved */
-+		if (pamt_start < TDMR_START(tdmr))
-+			pamt_start = TDMR_START(tdmr);
-+		if (pamt_end > TDMR_END(tdmr))
-+			pamt_end = TDMR_END(tdmr);
-+
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, pamt_start,
-+				pamt_end - pamt_start);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* TDX requires reserved areas listed in address ascending order */
-+	sort(tdmr->reserved_areas, rsvd_idx, sizeof(struct tdmr_reserved_area),
-+			rsvd_area_cmp_func, NULL);
-+
-+	return 0;
-+}
-+
-+static int tdmrs_setup_rsvd_areas_all(struct tdmr_info **tdmr_array,
-+				      int tdmr_num)
-+{
-+	int i;
-+
-+	for (i = 0; i < tdmr_num; i++) {
-+		int ret;
-+
-+		ret = tdmr_setup_rsvd_areas(tdmr_array[i], tdmr_array,
-+				tdmr_num);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+ static int SYM53C500_queue_lck(struct scsi_cmnd *SCpnt)
  {
- 	int ret;
-@@ -1128,8 +1268,12 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
- 	if (ret)
- 		goto err_free_tdmrs;
+-	struct scsi_pointer *scsi_pointer = sym53c500_scsi_pointer(SCpnt);
++	struct sym53c500_cmd_priv *scp = scsi_cmd_priv(SCpnt);
+ 	int i;
+ 	int port_base = SCpnt->device->host->io_port;
+ 	struct sym53c500_data *data =
+@@ -565,9 +563,9 @@ static int SYM53C500_queue_lck(struct scsi_cmnd *SCpnt)
+ 	VDEB(printk("\n"));
  
--	/* Return -EFAULT until constructing TDMRs is done */
--	ret = -EFAULT;
-+	ret = tdmrs_setup_rsvd_areas_all(tdmr_array, *tdmr_num);
-+	if (ret)
-+		goto err_free_pamts;
-+
-+	return 0;
-+err_free_pamts:
- 	tdmrs_free_pamt_all(tdmr_array, *tdmr_num);
- err_free_tdmrs:
- 	free_tdmrs(tdmr_array, *tdmr_num);
+ 	data->current_SC = SCpnt;
+-	scsi_pointer->phase = command_ph;
+-	scsi_pointer->Status = 0;
+-	scsi_pointer->Message = 0;
++	scp->phase = command_ph;
++	scp->status = 0;
++	scp->message = 0;
+ 
+ 	/* We are locked here already by the mid layer */
+ 	REG0(port_base);
+@@ -682,7 +680,7 @@ static struct scsi_host_template sym53c500_driver_template = {
+      .this_id			= 7,
+      .sg_tablesize		= 32,
+      .shost_groups		= SYM53C500_shost_groups,
+-     .cmd_size			= sizeof(struct scsi_pointer),
++     .cmd_size			= sizeof(struct sym53c500_cmd_priv),
+ };
+ 
+ static int SYM53C500_config_check(struct pcmcia_device *p_dev, void *priv_data)
 -- 
-2.35.1
+2.32.0
 
