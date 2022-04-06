@@ -2,202 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF87C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237825AbiDFQnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
+        id S237920AbiDFQnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238086AbiDFQm3 (ORCPT
+        with ESMTP id S238742AbiDFQnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:42:29 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2063.outbound.protection.outlook.com [40.107.212.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E90312151
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:01:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TUJGi8jCO1ud5bZQp2EBg04Q3+uWbAlOFU7G5a0aGeqCCws0/vRHGMcc753od+hsUYNTgsKejHgfkgR5duRKPWL2kvvnXfBmHrniMctYL6kmDVjfqfeOc2JnkO7PvD95aSp/ZkcgWSp7Yge/BrOTBBnIUx7sEFmZmmbyUGkyBbhX0aK6Nr+OYUPv74YfQyzHffFfjcmP7yztz6gs2YJmYzD5I3oKmtLBJlmnEDkyPHRxH22kiNP1ZQFJdF7X3xLXnrjicJVrpB1l4E4LljBL8L8ypoCCZzEnub8j65k9wkUf6NAIxA123DKWsox9yQ0m2CcfyZtGAQsFg45SDJFz2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KDhN0FPhMeObVac6cPS2p1KESO1mI0eIHt4wWyIJP9M=;
- b=XS77G+nAmA1j20syJxgmUdaAQnYng2FZnHrbK0agGLCtKU/PS2WXKHMPpKe3AOTRaIudhoFPZ6poKbJ8PXIZ9rnnqATrFU/SRrFOdmnegSu+7ecQ8OtVZu532lDgtinwb6B6+bahX4izb/+cF4VhVkmeu0JG4N7V7womaP2qEUTbWy7ZgljH79bBBuCADU1zQBjkpApjsJaXR6HOmrsWdoCVhN843mNbAVBY3bmsawkrdLZLj8WxmhteF8hHA2dtwLMAvZzJfdkyKKPCL+fHcCExqt+iGCMNU22MRZ81tpSIjpxCmRe7trYf1ChkjEt7IcW+q/4tDzKePsQR+6sMSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KDhN0FPhMeObVac6cPS2p1KESO1mI0eIHt4wWyIJP9M=;
- b=rZCaC62iJB6E2oZjhsIEwjhrWjtvqpTZtEITLwZ3YDs+if1+pcZvm14SzkWz81tUCqE8D1ciDJdR0+0U0Uw/SWrLi6BUhoQ22hPfJCu2NiIS8ET2sHHbhYONFRl0gTUAvMWS/u0dPg1UkcQ/kCUXQ/7Um90QmRhCzXBGtQ/a5d7kdYwtctOpEhwnX9ZQypclJaVdePPYzWS9hEazqUj0Ta9ENbejcNUmm9+er1aYGEOIyJJFJLPcn7KBuimfRhdBmJYhREonkWRVRs9/B/LjSHcZeqEvFyhnnx7Yra2iKKNkLiw4eAgOpbPhuqGlY1GCf2kk1fg5/r1UG/xXdiglKA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BY5PR12MB4967.namprd12.prod.outlook.com (2603:10b6:a03:1de::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Wed, 6 Apr
- 2022 14:01:45 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.021; Wed, 6 Apr 2022
- 14:01:45 +0000
-Date:   Wed, 6 Apr 2022 11:01:44 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC v2 03/11] iommu/sva: Add iommu_domain type for SVA
-Message-ID: <20220406140144.GD2120790@nvidia.com>
-References: <20220329053800.3049561-4-baolu.lu@linux.intel.com>
- <20220330190201.GB2120790@nvidia.com>
- <BN9PR11MB5276A39F481E2E31B0FCFEAE8CE39@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220402233210.GM2120790@nvidia.com>
- <BN9PR11MB527660D99D154F922B0A628B8CE79@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220406012334.GZ2120790@nvidia.com>
- <BN9PR11MB52764E3DE16E19D1F1515D008CE79@BN9PR11MB5276.namprd11.prod.outlook.com>
- <d0f6caea-0cd9-d839-c9fb-0fe49c2bad16@arm.com>
- <20220406130614.GC2120790@nvidia.com>
- <b7639218-2d10-fd71-0f4b-3af3f8fa224b@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b7639218-2d10-fd71-0f4b-3af3f8fa224b@arm.com>
-X-ClientProxiedBy: YT1PR01CA0037.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2e::6) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Wed, 6 Apr 2022 12:43:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97FA92CB3A2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:02:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649257337;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/3Bz+6mxeokIYB8L/BSNNV23dZJu+F2jesvn+3ntwnM=;
+        b=RFblemmt4yKoByv9RfTPLfnLnxRP1AW5hGbboWrViAHZqNw6LPIhkPCzRkGq7VRDnCgc6v
+        i0iMNapWLCtrDOoP4fneEC4pKztCWe7egK+nFZYx1YDUSigl3opfF6f0oggAEteFBstOIN
+        ZmneMNp34Hbw2fvTKfIgOG4rMr+iVE4=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-93-tbL6Ha74MZeqij9-oZz6Iw-1; Wed, 06 Apr 2022 11:02:16 -0400
+X-MC-Unique: tbL6Ha74MZeqij9-oZz6Iw-1
+Received: by mail-io1-f72.google.com with SMTP id h10-20020a05660224ca00b0064c77aa4477so1743489ioe.17
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 08:02:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/3Bz+6mxeokIYB8L/BSNNV23dZJu+F2jesvn+3ntwnM=;
+        b=W7retb7D+EFCnH777OFVei4fmySTBDIgPTaJazj0JfgFLBgA16H+0Ye/SRerBIPwlL
+         McFeNleDW+moZ8bVETlCNRUlitChOGDfi20h7WeaDzYXeRqI5U2ivSAtIo79Ies6Cd+3
+         HZa7xv8fn21wbjUizz7TOHj6edbIyUm3ASruTuN6FaJOH7Z5wgOwgb6lUBt7NFo1t6hv
+         ukqjIEoquH+CyMNzV9bDyaU5Y0Ugzvktjzf5jHKC3VlN+J/dOCjyIFilvtAJah7T9kw2
+         f1tgQb8MIG3MAvHfFeq1Gq3tJoQlJluwCcQ4mqcwTZJp1LRSEQU/3SaS6+Nhbq1za2Hc
+         XR8g==
+X-Gm-Message-State: AOAM533H7PFZ4zLI9obFPC7OpKbmT8CC2+muEkrjjkN37WEAgBAbMikE
+        YgMa6nNJBrljv8mkCsgpYtu33G+HnqRzDs7PEI/mtM4/LPV1xHDFHHfbFkeepB3bYoG0kbNYMOs
+        U0gUOhmvpwd4wtrgYzG28UGO+
+X-Received: by 2002:a6b:d10c:0:b0:641:63b2:9ef8 with SMTP id l12-20020a6bd10c000000b0064163b29ef8mr4264767iob.135.1649257335225;
+        Wed, 06 Apr 2022 08:02:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwouWP4dTVYHsqZxyr/OP0EkEm2M9n4n0oS+NpczhwwZJSAFO2isyLss0cd8b+zjJfVkwDOPw==
+X-Received: by 2002:a6b:d10c:0:b0:641:63b2:9ef8 with SMTP id l12-20020a6bd10c000000b0064163b29ef8mr4264750iob.135.1649257334912;
+        Wed, 06 Apr 2022 08:02:14 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id y3-20020a92c983000000b002c7dce8329fsm9394700iln.72.2022.04.06.08.02.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 08:02:14 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 11:02:12 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        kbuild-all@lists.01.org, Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Alistair Popple <apopple@nvidia.com>
+Subject: Re: [PATCH v8 15/23] mm/hugetlb: Handle pte markers in page faults
+Message-ID: <Yk2rdB7SXZf+2BDF@xz-m1.local>
+References: <20220405014909.14761-1-peterx@redhat.com>
+ <202204062154.2txNJyaf-lkp@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 41368b38-ffca-4814-a3cd-08da17d5fc4c
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4967:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB4967736DC246A24A2E10675AC2E79@BY5PR12MB4967.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bneYUgc1o8GQNIvmQ3wtyUcGFPLgNm0pcws/bDkfdvJaC2hv/lxgWyK5XeOhjiD6/fZkfBVj3CDFrSRcxRrWt5rZMe9N/ighl4UdeLoiV+rNmcTvj/4S8OhqVh+R3cApdboG4RqBwEGLdnhBTkJcFf3/bjoKw0E8Rik/XeQZkt1WTm+4Jh11k8KbEG+JVDeO1VQm/RyMKZxB5/zHBrZKhZc5kK4KwfMjKR+kr5H7P2OAJJOs1sWZ5KTbIBzxMzbBDWEgHUHfEgZHLBc1Gowk4JC1PvTgCGwL+axVkVdLvfTVV9kdqs5v3cJB4Wdi8pfqG9ajjjg5s4kuRhPpvWzEnrdbLXevlD0W1Uvj8LCqdGvjZJlk/250jDAdf3Nlip1b6gWyAEq7cGLNfS0hSUiubWNilYhhIoGd5EMfImGh55o/g3zvj6ElQsEYxLUDFe6JWpSrf3VbhBfv09+EMOQ2WafkCLGz33FpQCq/vz7ygvrSEJeei6qKCHrMh7YUrN2MN4LfjfBqgM8qR5pTZBfDgWR2deecJJMwpnMNcBkQEezypl+P5iH8Eszz08KyvnxlINsbnvasLaMi9JR3jfqLaJywoPf3K9Cb70Pqtx+86NGA51n1Na4/uUXfnUQNtNZshObHzn75+WRp306TdzyQJg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(6506007)(53546011)(6512007)(2616005)(186003)(1076003)(26005)(8936002)(7416002)(38100700002)(36756003)(4326008)(8676002)(5660300002)(2906002)(316002)(6916009)(508600001)(54906003)(6486002)(86362001)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/pm3d3X8D87CVeRh3HS9rvOtZ2GmS0aczeYSOarKE+VQgTqna2jk5LN9aK53?=
- =?us-ascii?Q?+4xRvxcjgU9QdftvL/41Ghv1HnYnfo8CLB5UGRzBnb2oLDU92GWgOjGw1472?=
- =?us-ascii?Q?HLj1M40r3skDeY8R8D4qOqxyv1pmJWj6g+hEPQrusS07VwdflzY3YfMSfq37?=
- =?us-ascii?Q?DFSxuZ87ufiBAdJlXk2OyZ22OsEtQyFIvQ6nBAjHQ9BQVIBYXu1YhuYbyZo6?=
- =?us-ascii?Q?LI+5e21SPBRaTLSfoiWdvh1PhDy6mVRDXoit3Y50K1GhJA97af4r15HLBmsM?=
- =?us-ascii?Q?sFtQ++YDcw27u1xWNUC9Evsk20PeF6fO4Etg7UDLrJ3EOItmSnYc8NWJT9nG?=
- =?us-ascii?Q?lV4+LMinVMowknu/zSHO6omNBPtcKLA4wYCXVHeZBfqOEYNkNOAf5sCTFPi2?=
- =?us-ascii?Q?4X6zl39lP7wD44bg8fZ4q4Ht9J1kgC+/IGKKupWEHOL5IeCKi61B/HWcuehW?=
- =?us-ascii?Q?6ZZZTZlMQMFwMVpS4fydzMVSmEGrpZEpuWM3fE5GLwL4GczwQJxoX5JpvLQI?=
- =?us-ascii?Q?vnklbWk8Jh/0PXrqa1RxE/RAa46gfaM5rLsckQgE+z7Q1xdFigkvR3s3Q3Uq?=
- =?us-ascii?Q?jBNJbggVZ26QX37CjNe9RpOimm5eXLXfvNiDQ+1LhSb3BVvNQdtpK+QBUmF+?=
- =?us-ascii?Q?CELiw/Cdv2MlSXkc4Im0Gjhcboj6YBhKEk0WkS0RupVDs4e+bufysNKmtEa/?=
- =?us-ascii?Q?jFvkWSXi2vdJTj3hA1M3dvQJUDQ40HwGb9qOilOO+HhVTUx9p08s5YtK8T44?=
- =?us-ascii?Q?rJCqBj7T0L2kG+SrONuUoDWeNiyrhA9LFHYTh45xWRfkGDHd1dsWUNKsA8vy?=
- =?us-ascii?Q?e4LwaQEo8MVOr/92VpaSml64eO9zcZ6TRW7oZOit40gH6KXPxSqj0MeoFUJG?=
- =?us-ascii?Q?4Ytot/sX5a0q/eg5rpHiUvzUY2wlV3IUdN2wVKI94W7ISg3xZA9y2JbksyF5?=
- =?us-ascii?Q?ner3y3UsGEKiFl2YQjJMQ0/lv7VGo3oyI/OeEPH30VCtQ6o4pMOtRa71fkxh?=
- =?us-ascii?Q?cbq4m5AMJi6JyO5h2ZWTbz3gqUyo4hSt/Btawr+87nidnZnrRkBBwhxJRSnJ?=
- =?us-ascii?Q?x478tNqd6NVAjvXjcygqrrHRCLa8E67TAdJfHUg0twUac6cPhqHiuCUNl+QR?=
- =?us-ascii?Q?aFJlCs2hVIYedkMPqhi18tDl5oXZsZHDZpPqzCzF1MQgdzdCztbLrYFhAzrE?=
- =?us-ascii?Q?mikoZa2RWkYJHIaQokCiyvUCx6dznZPUXdqFRC+3dCIZ9LBQFp4R3Wc3N5ui?=
- =?us-ascii?Q?B/CvwcBmjTQ+sZTj4JULstJN1+zMbW2eWcz7m1L3Cx8uJ2sxGuZY6xRPGHFW?=
- =?us-ascii?Q?TlGD0EBCEhkk3+0TqXY4wHdjtoaFfufMqB71WbU30JAIth4TcXZO4Zg/mtPO?=
- =?us-ascii?Q?28mfd0cxuskGiRes14qztuoW+Putl2K5fdtMfRBq4nUwvr5NP7+MB0FTPmxj?=
- =?us-ascii?Q?ykY1qFm5pU/eeLo8FLbMCAO60aaY20ypGtNCkniGMAWQvsTt1gtPP97XvhrC?=
- =?us-ascii?Q?Ah1A/jpDU5iyduKuG3xXH3eovFb7CqgvsvFkUtmq3Usvzt5P4jOEEZhy7yf9?=
- =?us-ascii?Q?mKzBkOgMN2RXwxRdlxrm2Hdi9L8YsWveb6HaeP23njyboDDvizr4QtXoY1fx?=
- =?us-ascii?Q?rMiFiHgZGjHymVmhiOz/46Nwb2JZQfuXAl50O3huQs7TOrFFn9gJj4bu/+qy?=
- =?us-ascii?Q?7Zg4tJ+yYW/nHLa5gAGEhDp3VrlPFuTxR6+mrJ6T9q9GgLr2Uzk4GP80o6sr?=
- =?us-ascii?Q?AKyfBsh6Pg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 41368b38-ffca-4814-a3cd-08da17d5fc4c
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 14:01:45.5481
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1yPXeYD5nGVqu3vIlVZNNPrSa+fTzlrV9fUkbIUIRCj8wWcPgQpw804nI1jo3mrv
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4967
+Content-Type: multipart/mixed; boundary="gQDMqriStFwDEZjG"
+Content-Disposition: inline
+In-Reply-To: <202204062154.2txNJyaf-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 02:37:40PM +0100, Robin Murphy wrote:
-> On 2022-04-06 14:06, Jason Gunthorpe wrote:
-> > On Wed, Apr 06, 2022 at 01:32:07PM +0100, Robin Murphy wrote:
-> > > a particular IOMMU instance, and potentially allocate separate domains for
-> > > separate devices to represent the same address space, much like
-> > > vfio_iommu_type1_attach_group() does.
-> > 
-> > I think this VFIO code also needs some more work, it currently assumes
-> > that if the domain ops are the same then the domains are compatible,
-> > and that is not true for ARM SMMU drivers.
+
+--gQDMqriStFwDEZjG
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+
+On Wed, Apr 06, 2022 at 09:37:00PM +0800, kernel test robot wrote:
+> Hi Peter,
 > 
-> Well, strictly it uses the ops as a "negative" heuristic that the domains
-> are not definitely incompatible, and only then consolidates domains if
-> cross-attaching actually succeeds. So I don't think it's really so bad.
-
-Oh that is sneaky, I didn't appreciate that bit of logic..
-
-> > I've been thinking of adding a domain callback 'can device attach' and
-> > replacing the ops compare with that instead.
+> Thank you for the patch! Yet something to improve:
 > 
-> Previous comment notwithstanding, much as I do tend to prefer "just try the
-> operation and see what happens" APIs, that might be more reliable in the
-> long run than trying to encode specific "sorry, you'll need to allocate a
-> separate domain for this device" vs. "this should have worked but something
-> went wrong" semantics in the return value from attach.
-
-Overall the way vfio is doing this has alot of overhead. Not only does
-it create a domain it may not use it also does this:
-
-			iommu_detach_group(domain->domain, group->iommu_group);
-			if (!iommu_attach_group(d->domain,
-						group->iommu_group)) {
-				list_add(&group->next, &d->group_list);
-				iommu_domain_free(domain->domain);
-				kfree(domain);
-				goto done;
-			}
-
-			ret = iommu_attach_group(domain->domain,
-						 group->iommu_group);
-
-So, if we already have a compatible domain VFIO does an extra domain
-alloc/dealloc and 3 extra attach/detatches per domain it tests.
-
-It is not very elegant at least..
-
-> > > It's not really worth IOMMU drivers trying to support a domain spanning
-> > > potentially-heterogeneous instances internally, since they can't reasonably
-> > > know what matters in any particular situation.
-> > 
-> > In the long run I think it will be worth optimizing. If the SMMU
-> > instances can share IOPTE memory then we get two wins - memory
-> > reduction and reduced work to read dirty bits.
-> > 
-> > The dirty read in particular is very performance sensitive so if real
-> > work loads have many SMMUs per VM it will become a pain point.
+> [auto build test ERROR on hnaz-mm/master]
+> [cannot apply to arnd-asm-generic/master linus/master linux/master v5.18-rc1 next-20220406]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
 > 
-> In the ideal case though, the SVA domains are only there to logically bridge
-> between an existing process pagetable and IOMMU instances at the API level,
-> right? Surely if we're shadowing physical pagetables for SVA we've basically
-> already lost the performance game?
+> url:    https://github.com/intel-lab-lkp/linux/commits/Peter-Xu/userfaultfd-wp-Support-shmem-and-hugetlbfs/20220405-100136
+> base:   https://github.com/hnaz/linux-mm master
+> config: s390-randconfig-r044-20220406 (https://download.01.org/0day-ci/archive/20220406/202204062154.2txNJyaf-lkp@intel.com/config)
+> compiler: s390-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/e7e7aaec811e2817cd169f0cc1d8f81bdf1f05c3
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Peter-Xu/userfaultfd-wp-Support-shmem-and-hugetlbfs/20220405-100136
+>         git checkout e7e7aaec811e2817cd169f0cc1d8f81bdf1f05c3
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    mm/hugetlb.c: In function 'hugetlb_fault':
+> >> mm/hugetlb.c:5678:13: error: implicit declaration of function 'huge_pte_none_mostly'; did you mean 'pte_none_mostly'? [-Werror=implicit-function-declaration]
+>     5678 |         if (huge_pte_none_mostly(entry)) {
+>          |             ^~~~~~~~~~~~~~~~~~~~
+>          |             pte_none_mostly
+>    cc1: some warnings being treated as errors
 
-Sorry, I was not talking about SVA with that remark, speaking
-generally about normal iommu_domains and sharing between SMMU
-instances.
+Ah, the s390 stub was forgotten again, sorry.  I hope someday s390 will
+start to include asm-generic/hugetlb.h like all the rest archs, because
+that's really from the gut feeling of how it should happen.. or the dir
+should be renamed to asm-generic-without-s390/. :(
 
-For SVA I see no issue with duplicating it per instance since it is
-very small/etc - the only drawback is that the common code has to do
-the 'can device attach' dance and keep a domain list per
-mm-struct. Which seems OK to me.
+An expected fix patch attached (to be squashed into patch "mm: Introduce
+PTE_MARKER swap entry").
 
-Jason
+Thanks,
+
+-- 
+Peter Xu
+
+--gQDMqriStFwDEZjG
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: attachment;
+	filename="0001-fixup-mm-Introduce-PTE_MARKER-swap-entry.patch"
+
+From 8b84d7f6b86c30623208eff386b4f5169f1cb0db Mon Sep 17 00:00:00 2001
+From: Peter Xu <peterx@redhat.com>
+Date: Wed, 6 Apr 2022 10:55:55 -0400
+Subject: [PATCH] fixup! mm: Introduce PTE_MARKER swap entry
+
+Signed-off-by: Peter Xu <peterx@redhat.com>
+---
+ arch/s390/include/asm/hugetlb.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/s390/include/asm/hugetlb.h b/arch/s390/include/asm/hugetlb.h
+index be99eda87f4d..32c3fd6e878e 100644
+--- a/arch/s390/include/asm/hugetlb.h
++++ b/arch/s390/include/asm/hugetlb.h
+@@ -85,6 +85,11 @@ static inline int huge_pte_none(pte_t pte)
+ 	return pte_none(pte);
+ }
+ 
++static inline int huge_pte_none_mostly(pte_t pte)
++{
++	return huge_pte_none(pte);
++}
++
+ static inline int huge_pte_write(pte_t pte)
+ {
+ 	return pte_write(pte);
+-- 
+2.32.0
+
+
+--gQDMqriStFwDEZjG--
+
