@@ -2,105 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3744CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4523C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230281AbiDFMxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
+        id S231751AbiDFMx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231994AbiDFMuv (ORCPT
+        with ESMTP id S231405AbiDFMwM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:50:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7BC957B2E
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:54:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649235258;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=C3E55v6H/hYc3LaSvLNAvhU13rJ0i/ZaskPmc70RQYw=;
-        b=eGSIlS70FhYQP2Av3B7KYFMqtsiLIQdP1MGvX2gIwumgGXUAOGrNI9l9gAG44PuAN7kFpO
-        A38BcERzW4DPxZGyCwz+KM6zLKtk6lENpkG0gF1LfQGhPomC44TaIBRwG6l6SG3QMvdoCZ
-        YVWVf/oKsHyt40Y1dprbS363q86dJIU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-513-hBdzYFkQP5SA6QJW8XVnrQ-1; Wed, 06 Apr 2022 04:54:12 -0400
-X-MC-Unique: hBdzYFkQP5SA6QJW8XVnrQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E7E35800B28;
-        Wed,  6 Apr 2022 08:54:11 +0000 (UTC)
-Received: from samus.usersys.redhat.com (unknown [10.43.17.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE7EA2166B2F;
-        Wed,  6 Apr 2022 08:54:10 +0000 (UTC)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH bpf-next] bpf/selftests: use bpf_num_possible_cpus() in per-cpu map allocations
-Date:   Wed,  6 Apr 2022 10:54:08 +0200
-Message-Id: <20220406085408.339336-1-asavkov@redhat.com>
+        Wed, 6 Apr 2022 08:52:12 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5FB2CE01;
+        Wed,  6 Apr 2022 01:54:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1649235283; x=1680771283;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8Pubj1dDiUwibywXxkRjHfOE8N365AkZr19hsnqKjAw=;
+  b=XJwk/F6ihXtv3IsOcIC9BstkLRfXJODnYxmqTcOjmQG/JNTf0HY8jfIA
+   9Wu2KNCU6qTSC0e6HSAMiY3ZzZyYoUUfoFgenf81bqAqXZwyg/kFAi5yn
+   hwZ8qOw+5kalObxWHDrGIPXfhGcmxFxN9PdOsZuOGGtiZS864NA7Sh+kh
+   2f930lQJmCbGnLe5YLwfrs2mHiPY62ufx8MUaXqUbXEn6RlZ+eieWMG4q
+   PyzkA0z9cCguMn0qGj4fQpOIHsmiLyy8juBvu0Be2yT/XxC/DnfAy4SMf
+   Xqkweu5X6Qeu6Xs8HUnnEUr+ppPzooX0Kp25FEaJrYfVjusKC8iP6aTUr
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,239,1643670000"; 
+   d="scan'208";a="23123437"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 06 Apr 2022 10:54:40 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Wed, 06 Apr 2022 10:54:40 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Wed, 06 Apr 2022 10:54:40 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1649235280; x=1680771280;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8Pubj1dDiUwibywXxkRjHfOE8N365AkZr19hsnqKjAw=;
+  b=J+DT2M047zqAESv4v7c+N9cvsJttfG7cEyLRBPRj0TuC8b/eSSJiEIeq
+   vZ3LzmIO0pAwDDdOmHEp6KMAak7aKLB5H1eK3pYMOz8KgK0mRYPDKhatM
+   Skh9Z3WSOevY3V6hTFxJAQ48XUvl/VW5paT3avLFe1eiCknR25bBAoTXl
+   30UP/cSlZ7Eg2T/ev/6J47xu1D4hUtWX7dquHNENut8IpVB2AzGkt8aKH
+   U2tNnVE9LCMW/sTcagPJxeNUHbD1/fJhgPrc+6aKtnySUACeV3mLSoaMJ
+   Vh1JZccQGt6R9ysm9gmJQVna1zTTN4+73D3NT9kRomfLhX/jHhrlIsMc0
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,239,1643670000"; 
+   d="scan'208";a="23123436"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 06 Apr 2022 10:54:40 +0200
+Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.49.14])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 027D5280065;
+        Wed,  6 Apr 2022 10:54:39 +0200 (CEST)
+Message-ID: <170e086e24860c37897825e7f2599efc78de5a38.camel@ew.tq-group.com>
+Subject: Re: [PATCH] spi: cadence-quadspi: fix protocol setup for non-1-1-X
+ operations
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Pratyush Yadav <p.yadav@ti.com>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ramuthevar Vadivel Murugan 
+        <vadivel.muruganx.ramuthevar@linux.intel.com>,
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 06 Apr 2022 10:54:37 +0200
+In-Reply-To: <20220405193721.5jf3umfn3dvv6fxd@ti.com>
+References: <20220331110819.133392-1-matthias.schiffer@ew.tq-group.com>
+         <20220401100606.iz52jbrdcz6pd5sg@ti.com>
+         <6b2bfa6614fbb9339b94a191ab933a2c25b8b4d7.camel@ew.tq-group.com>
+         <20220405193721.5jf3umfn3dvv6fxd@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bpf_map_value_size() uses num_possible_cpus() to determine map size, but
-some of the tests only allocate enough memory for online cpus. This
-results in out-of-bound writes in userspace during bpf(BPF_MAP_LOOKUP_ELEM)
-syscalls in cases when number of online cpus is lower than the number of
-possible cpus. Fix by switching from get_nprocs_conf() to
-bpf_num_possible_cpus() when determining the number of processors in
-these tests (test_progs/netcnt and test_cgroup_storage).
+On Wed, 2022-04-06 at 01:07 +0530, Pratyush Yadav wrote:
+> On 01/04/22 12:20PM, Matthias Schiffer wrote:
+> > On Fri, 2022-04-01 at 15:36 +0530, Pratyush Yadav wrote:
+> > > Hi Matthias,
+> > > 
+> > > On 31/03/22 01:08PM, Matthias Schiffer wrote:
+> > > > cqspi_set_protocol() only set the data width, but ignored the
+> > > > command
+> > > > and address width (except for 8-8-8 DTR ops), leading to
+> > > > corruption
+> > > > of
+> > > > all transfers using 1-X-X or X-X-X ops. Fix by setting the
+> > > > other
+> > > > two
+> > > > widths as well.
+> > > > 
+> > > > While we're at it, simplify the code a bit by replacing the
+> > > > CQSPI_INST_TYPE_* constants with ilog2().
+> > > > 
+> > > > Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash
+> > > > with 1-
+> > > > 4-4
+> > > > read and write operations.
+> > > > 
+> > > > Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to
+> > > > use
+> > > > spi-mem framework")
+> > > 
+> > > I think a fixes tag is wrong here. The old driver did not support
+> > > 1-
+> > > X-X 
+> > > modes either. So you are not fixing anything, you are adding a
+> > > new 
+> > > feature. I don't think we should backport this patch to stable.
+> > 
+> > Giving a precise fixes tag is a bit difficult. The referenced
+> > commit
+> > made the driver (accidentally) accept commands like 1-4-4 without
+> > handing them correctly, causing data corruption for flashs that
+> > support
+> > these modes. The data corruption is fixed by my patch.
+> 
+> Ah, you're right. I missed the fact that the original driver
+> explicitly 
+> checked for 1-1-1, 1-1-4, and 1-1-8, and returned an error for the
+> rest. 
+> So your patch does indeed fix a bug.
+> 
+> > As the change was unintended, one option would be to split this
+> > patch
+> > into two parts: One fix patch that makes cqspi_set_protocol()
+> > -EINVAL
+> > again for all commands that are not 1-1-X, and one feature patch
+> > that
+> > adds actual support for these commands.
+> > 
+> > My thought process was that making these commands work correctly
+> > can't
+> > break anything that is not already broken in current stable
+> > kernels.
+> > But if you prefer the minimal change, I can send a v2 that splits
+> > the
+> > patch.
+> 
+> Yes, but as I commented below, I would prefer you rework the driver
+> to 
+> drop cqspi_set_protocol() entirely. For doing that the 2 patch
+> approach 
+> would work best so we don't end up getting the new code backported
+> to 
+> stable as well.
 
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- tools/testing/selftests/bpf/prog_tests/netcnt.c   | 2 +-
- tools/testing/selftests/bpf/test_cgroup_storage.c | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+Okay, I tried to split my patch, however I found
+that cqspi_set_protocol() is not the right place to check for
+unsupported operations at all - if the driver ever reaches a path where
+cqspi_set_protocol() returns -EINVAL, something has already gone wrong
+(and the attemption operation will fail altogether rather than falling
+back to a slower command).
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/netcnt.c b/tools/testing/selftests/bpf/prog_tests/netcnt.c
-index 954964f0ac3d..d3915c58d0e1 100644
---- a/tools/testing/selftests/bpf/prog_tests/netcnt.c
-+++ b/tools/testing/selftests/bpf/prog_tests/netcnt.c
-@@ -25,7 +25,7 @@ void serial_test_netcnt(void)
- 	if (!ASSERT_OK_PTR(skel, "netcnt_prog__open_and_load"))
- 		return;
- 
--	nproc = get_nprocs_conf();
-+	nproc = bpf_num_possible_cpus();
- 	percpu_netcnt = malloc(sizeof(*percpu_netcnt) * nproc);
- 	if (!ASSERT_OK_PTR(percpu_netcnt, "malloc(percpu_netcnt)"))
- 		goto err;
-diff --git a/tools/testing/selftests/bpf/test_cgroup_storage.c b/tools/testing/selftests/bpf/test_cgroup_storage.c
-index d6a1be4d8020..2ffa08198d1c 100644
---- a/tools/testing/selftests/bpf/test_cgroup_storage.c
-+++ b/tools/testing/selftests/bpf/test_cgroup_storage.c
-@@ -7,6 +7,7 @@
- #include <sys/sysinfo.h>
- 
- #include "bpf_rlimit.h"
-+#include "bpf_util.h"
- #include "cgroup_helpers.h"
- #include "testing_helpers.h"
- 
-@@ -44,7 +45,7 @@ int main(int argc, char **argv)
- 	unsigned long long *percpu_value;
- 	int cpu, nproc;
- 
--	nproc = get_nprocs_conf();
-+	nproc = bpf_num_possible_cpus();
- 	percpu_value = malloc(sizeof(*percpu_value) * nproc);
- 	if (!percpu_value) {
- 		printf("Not enough memory for per-cpu area (%d cpus)\n", nproc);
--- 
-2.34.1
+I think that these checks - including the check that only 8-8-8 is
+supported with DTR - should actually happen in cqspi_supports_mem_op().
+Does that sound right?
+
+Regards,
+Matthias
+
+
+
+> 
+> > Regards,
+> > Matthias
+> > 
+> > 
+> > 
+> > > > Signed-off-by: Matthias Schiffer <
+> > > > matthias.schiffer@ew.tq-group.com
+> > > > ---
+> > > >  drivers/spi/spi-cadence-quadspi.c | 46 ++++++++---------------
+> > > > ----
+> > > > ----
+> > > >  1 file changed, 12 insertions(+), 34 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/spi/spi-cadence-quadspi.c
+> > > > b/drivers/spi/spi-
+> > > > cadence-quadspi.c
+> > > > index b0c9f62ccefb..616ada891974 100644
+> > > > --- a/drivers/spi/spi-cadence-quadspi.c
+> > > > +++ b/drivers/spi/spi-cadence-quadspi.c
+> > > > @@ -19,6 +19,7 @@
+> > > >  #include <linux/iopoll.h>
+> > > >  #include <linux/jiffies.h>
+> > > >  #include <linux/kernel.h>
+> > > > +#include <linux/log2.h>
+> > > >  #include <linux/module.h>
+> > > >  #include <linux/of_device.h>
+> > > >  #include <linux/of.h>
+> > > > @@ -102,12 +103,6 @@ struct cqspi_driver_platdata {
+> > > >  #define CQSPI_TIMEOUT_MS			500
+> > > >  #define CQSPI_READ_TIMEOUT_MS			10
+> > > >  
+> > > > -/* Instruction type */
+> > > > -#define CQSPI_INST_TYPE_SINGLE			0
+> > > > -#define CQSPI_INST_TYPE_DUAL			1
+> > > > -#define CQSPI_INST_TYPE_QUAD			2
+> > > > -#define CQSPI_INST_TYPE_OCTAL			3
+> > > > -
+> > > >  #define CQSPI_DUMMY_CLKS_PER_BYTE		8
+> > > >  #define CQSPI_DUMMY_BYTES_MAX			4
+> > > >  #define CQSPI_DUMMY_CLKS_MAX			31
+> > > > @@ -376,10 +371,6 @@ static unsigned int cqspi_calc_dummy(const
+> > > > struct spi_mem_op *op, bool dtr)
+> > > >  static int cqspi_set_protocol(struct cqspi_flash_pdata
+> > > > *f_pdata,
+> > > >  			      const struct spi_mem_op *op)
+> > > >  {
+> > > > -	f_pdata->inst_width = CQSPI_INST_TYPE_SINGLE;
+> > > > -	f_pdata->addr_width = CQSPI_INST_TYPE_SINGLE;
+> > > > -	f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
+> > > > -
+> > > >  	/*
+> > > >  	 * For an op to be DTR, cmd phase along with every
+> > > > other non-
+> > > > empty
+> > > >  	 * phase should have dtr field set to 1. If an op phase
+> > > > has
+> > > > zero
+> > > > @@ -389,32 +380,23 @@ static int cqspi_set_protocol(struct
+> > > > cqspi_flash_pdata *f_pdata,
+> > > >  		       (!op->addr.nbytes || op->addr.dtr) &&
+> > > >  		       (!op->data.nbytes || op->data.dtr);
+> > > >  
+> > > > -	switch (op->data.buswidth) {
+> > > > -	case 0:
+> > > > -		break;
+> > > > -	case 1:
+> > > > -		f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
+> > > > -		break;
+> > > > -	case 2:
+> > > > -		f_pdata->data_width = CQSPI_INST_TYPE_DUAL;
+> > > > -		break;
+> > > > -	case 4:
+> > > > -		f_pdata->data_width = CQSPI_INST_TYPE_QUAD;
+> > > > -		break;
+> > > > -	case 8:
+> > > > -		f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
+> > > > -		break;
+> > > > -	default:
+> > > > -		return -EINVAL;
+> > > > -	}
+> > > > +	f_pdata->inst_width = 0;
+> > > > +	if (op->cmd.buswidth)
+> > > > +		f_pdata->inst_width = ilog2(op->cmd.buswidth);
+> > > > +
+> > > > +	f_pdata->addr_width = 0;
+> > > > +	if (op->addr.buswidth)
+> > > > +		f_pdata->addr_width = ilog2(op->addr.buswidth);
+> > > > +
+> > > > +	f_pdata->data_width = 0;
+> > > > +	if (op->data.buswidth)
+> > > > +		f_pdata->data_width = ilog2(op->data.buswidth);
+> > > 
+> > > Honestly, I think we should get rid of cqspi_set_protocol()
+> > > entirely.
+> > > I 
+> > > see no need to store f_pdata->{instr,addr,data}_width since we 
+> > > recalculate those for each op execution anyway. So why not just
+> > > use
+> > > the 
+> > > spi_mem_op to get those values directly and be rid of all this
+> > > mess?
+> > > 
+> > > >  
+> > > >  	/* Right now we only support 8-8-8 DTR mode. */
+> > > >  	if (f_pdata->dtr) {
+> > > >  		switch (op->cmd.buswidth) {
+> > > >  		case 0:
+> > > > -			break;
+> > > >  		case 8:
+> > > > -			f_pdata->inst_width =
+> > > > CQSPI_INST_TYPE_OCTAL;
+> > > >  			break;
+> > > >  		default:
+> > > >  			return -EINVAL;
+> > > > @@ -422,9 +404,7 @@ static int cqspi_set_protocol(struct
+> > > > cqspi_flash_pdata *f_pdata,
+> > > >  
+> > > >  		switch (op->addr.buswidth) {
+> > > >  		case 0:
+> > > > -			break;
+> > > >  		case 8:
+> > > > -			f_pdata->addr_width =
+> > > > CQSPI_INST_TYPE_OCTAL;
+> > > >  			break;
+> > > >  		default:
+> > > >  			return -EINVAL;
+> > > > @@ -432,9 +412,7 @@ static int cqspi_set_protocol(struct
+> > > > cqspi_flash_pdata *f_pdata,
+> > > >  
+> > > >  		switch (op->data.buswidth) {
+> > > >  		case 0:
+> > > > -			break;
+> > > >  		case 8:
+> > > > -			f_pdata->data_width =
+> > > > CQSPI_INST_TYPE_OCTAL;
+> > > >  			break;
+> > > >  		default:
+> > > >  			return -EINVAL;
+> > > > -- 
+> > > > 2.25.1
+> > > > 
 
