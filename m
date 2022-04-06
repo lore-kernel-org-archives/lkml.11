@@ -2,568 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE12C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B362BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237796AbiDFQd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
+        id S237498AbiDFQeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237584AbiDFQdF (ORCPT
+        with ESMTP id S237894AbiDFQdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:33:05 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510952560EA;
-        Wed,  6 Apr 2022 06:52:42 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 236DqdaD073128;
-        Wed, 6 Apr 2022 08:52:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649253159;
-        bh=tdqVsvqKU9AmTaG++SOpt/8761w3XJYYQkd++Fpuo3U=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=hhFlNEHxGVWNUSpGwgMfL6OSecMZJSbLJrKw0dJvKEBUPGtmJ0IJEIUFlwTKQJmCV
-         BFHwyGzXL/08xS4pTZoZWLfm9ZoxIrLUw/KhNiObXkz+RVG15mDqlThn8UIIVBcpfq
-         t6XZpNhWrEqgp5fZI8I5qwLlJiqDlXwraQEj7WgI=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 236Dqdwh031028
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 08:52:39 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 08:52:33 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 08:52:33 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 236DqFsp079424;
-        Wed, 6 Apr 2022 08:52:30 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 2/2] drivers: usb: dwc3: Add AM62 USB wrapper driver
-Date:   Wed, 6 Apr 2022 19:22:11 +0530
-Message-ID: <20220406135214.6989-3-a-govindraju@ti.com>
+        Wed, 6 Apr 2022 12:33:35 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2135.outbound.protection.outlook.com [40.107.215.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15938BF51C;
+        Tue,  5 Apr 2022 18:20:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VrG7oOIICXRUDqHoeKEf73TgMGWo0NkRfSP1x8krrCLZZol5sj6wqeeJjNueEW7Fimv0+d5bB3igx6bETy8u5szzf/TMMgIXSqXBQEITQCaWCQq9DOsUt6y769MH1gbnSIc3ICMnqAN1Z1aTUyQ1PwA7QnZulBL+CTK5bniGxC3Howe3Cx4YkFq/lGFu/dTExSmZgarJUWx7ijAiWjW+8ycy6WYXXxQs7ZAX4ms41JbVweG27fO7LrSgyJ/5+wwm98diZFSDqtAhpnt8JpR77Gsh5gVep+Q9b9pfMNvKHYNv5If1Q2GDwZOJ9o5AVf1ySiVimBULteerNhbZXNdlPw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AYzr40+X2aVF3Ayj/CulXGvHvmrjzqpfdwE9vWNRAhw=;
+ b=cQgye6poErAu6oGgPYMPZVnbIa9fJWezwNTDhtinupQX0izNWqGDuDCywPyfvRxSdPHCulEfWm8TdHvhBCu47fS5ebajMiKgJDfAE3CZN37kuh9Sz9QPB7xOLhACShO0JiGyfZoNwsxG7uoFTt3BhrBS4B6MZnRZX15zWOPZEbfqLBqrXtACLzPIfew4GTdYBZq1xH62oXDRYPqdwUTV4D92Em0VgSZfRcaYX3e54Ujn9LZ8aqqsOa+aLSe5muZxRG345TSlvRrlbrkfej+ETnjAm8aV68TjsIMBX5fft542UHmUY5HK39EDu9+eE6kUfr+GmUSrkK3SfIsxBtxQMg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=quantatw.com; dmarc=pass action=none header.from=quantatw.com;
+ dkim=pass header.d=quantatw.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AYzr40+X2aVF3Ayj/CulXGvHvmrjzqpfdwE9vWNRAhw=;
+ b=WK4nBNTagsSvlXsjMhKPUl9i6ONiWh+HVP2H98UYIER8Xcb2U2HWnPGzV/9E5UkYVDMJpyOsy4UNPWmmUaUS5Rw8MshEaO/Iox6P4jvDpsc8bLorMSv9JP2EMdF8RoZvZcVfmkmPMMx+U5BwyDqd5rjnAvoeDPKvodfHco+XYtw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=quantatw.com;
+Received: from HK0PR04MB3282.apcprd04.prod.outlook.com (2603:1096:203:89::17)
+ by TYZPR04MB4446.apcprd04.prod.outlook.com (2603:1096:400:4::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 01:20:24 +0000
+Received: from HK0PR04MB3282.apcprd04.prod.outlook.com
+ ([fe80::9c61:c8e7:d1ad:c65f]) by HK0PR04MB3282.apcprd04.prod.outlook.com
+ ([fe80::9c61:c8e7:d1ad:c65f%6]) with mapi id 15.20.5123.031; Wed, 6 Apr 2022
+ 01:20:23 +0000
+From:   Potin Lai <potin.lai@quantatw.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/3] net: mdio: aspeed: move reg accessing part into separate functions
+Date:   Wed,  6 Apr 2022 09:20:00 +0800
+Message-Id: <20220406012002.15128-2-potin.lai@quantatw.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406135214.6989-1-a-govindraju@ti.com>
-References: <20220406135214.6989-1-a-govindraju@ti.com>
-MIME-Version: 1.0
+In-Reply-To: <20220406012002.15128-1-potin.lai@quantatw.com>
+References: <20220406012002.15128-1-potin.lai@quantatw.com>
 Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+X-ClientProxiedBy: HK2PR02CA0129.apcprd02.prod.outlook.com
+ (2603:1096:202:16::13) To HK0PR04MB3282.apcprd04.prod.outlook.com
+ (2603:1096:203:89::17)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b16e4695-8367-4e77-493d-08da176b9f7f
+X-MS-TrafficTypeDiagnostic: TYZPR04MB4446:EE_
+X-Microsoft-Antispam-PRVS: <TYZPR04MB4446AF013EA56DFF051310BD8EE79@TYZPR04MB4446.apcprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hHzOp0P9RHuHV9k3wf2tYklHanpK2NU4cQ7ESFPuejSS6IQT3naUzOG983XBcvxuMEtejZYIBqV25rIfbSZdLGh1Nj6XssBXiOsqSbtmZE0kT3MapJ0vhmheM0L9peArl1P6NFaqfozuTbUavRxcIDrmDQe2UqtYbsg4B6is4HkhWScognVGLVYwabkNxn9TcR0LZpPdS3Q6hp432g1BQiglRzphC2vZITopYEse/NT+OHJUeNhKEydRjYFBnjw9zqnM2Y0yRZYR1A+fPNHXUw9/e1E2G+CBWoRHTVVeJZSTLgtK64khkw/VSqHccHWIZlicuvBpt2D/FJM1njZdFI25Z+bUnLbIoPx35tVydBLhuOqhUGndqXE4gXQuPrIqxS7e7yl41vMNc2NEovFczDxPzssfDw38waufjP8jQcCtqCQy71MyeJdML8lB6A287o695jwTbbzLlIlpg84j4g1GcSewA2nWnREDt4nh1CScaNcoZU9d95vtf7DKNZPqE+FM2hPBYAAKN8eSYj/5U8vb/RpnL6eiQuqoTeD/qE4Sci5/nBRrOzkpxNarh9Cb+4C1lpvDSlDkno4fyIeOCMIeshx4kztH2ZRRyCncja9GO7rFqgxLh6axcgMGfOaCkG1gRHTSCd/WBbQhu7WKQoPocQ3FOtwHA1kk12VzuO1aDsNB+zy0yxx/1dqypqAh18hOUQ2/7rR49AWS1eEcqw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(66946007)(5660300002)(52116002)(38350700002)(38100700002)(6506007)(6666004)(8676002)(6512007)(66476007)(66556008)(2616005)(4326008)(110136005)(86362001)(8936002)(186003)(6486002)(26005)(7416002)(36756003)(44832011)(316002)(1076003)(2906002)(54906003)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dfXRvjpue6bVxxRjf3acT7EcfIL3cwzBRSdn42difrDFjdRKcz1sxvMN6q7F?=
+ =?us-ascii?Q?slBaPaZ0QM/qJ1Cb5ER8IygO2Z8aV1sXjwp+DNObETZIOuFO/eSwJnb1GFLh?=
+ =?us-ascii?Q?zNrDjl64REiSO5BQEJU+HVCzrzlpwKu0IQlB7TA76d8+uHR9z3XU1rJEePop?=
+ =?us-ascii?Q?y1VHbz/KEG/EsYNTZSkJxvOhjb5xDKSGQPSkrGDRRxvrNAMrWhua0HakShko?=
+ =?us-ascii?Q?WMfLg/+RJyevBgda9OPRqMLBjvyltPVUDPDPp5XIy79ND8Kwg4YZzJMw4qL0?=
+ =?us-ascii?Q?XpPgEhgQNaUfZy4sNOBLAwlOQA3jB6FIpv/KuLHdkH3DRfO6vAGyDta0hQpg?=
+ =?us-ascii?Q?XHbTz+8ExXWy2z7SAXZIt70gWmPvfJ4MqxTg8FRDTUvLaVn6lflZNbP8IpBu?=
+ =?us-ascii?Q?jc7h2vV0tV1flZIMUKq+FV6Rxk3en8bjsvKs85WbWrbMVPo1WKFliMHE6Gw1?=
+ =?us-ascii?Q?tt/XnyF9q0gDt4e9n8a6Cx7mAL/QlJVwTkQika6kU9mEXAMEqrg9UQgPKxEp?=
+ =?us-ascii?Q?yq+600eZfQKiQ3W0cpG/8YxDL4UnPaA6Ppc40tvq8IklX4vDkcAdmkf+NsiW?=
+ =?us-ascii?Q?o5zNMQxmNIEwnpbjCUHyyKNqUrqSD0jaButfQpA2KVYFJuwUsblEpgTe8HC5?=
+ =?us-ascii?Q?NrikT5IyXaND0Mrwk7pCrt4OLRj/ABvcxL5cXui5HsqmoYqLXa95S0HkFiPj?=
+ =?us-ascii?Q?QYt6AL62qv73mlnq4WaqeisTJRoMs2kl4viMZ4UGa802JN8kHBmu89H2MGEl?=
+ =?us-ascii?Q?A6HoJEsNbuuBE26+hZtgb+zfynzjmnwuQIP4Fv2P7YvMuTf8KdVsjtyZwYEs?=
+ =?us-ascii?Q?DZAUTGCl4JsM2ZgGf/R6M7kgoyZSgVYuO04lycQtiz8mWQSJl98SlJLMtxpG?=
+ =?us-ascii?Q?lUBj31finNBY1zgmaPjWAqFrEotj9Ai9btVGKVnw4flggSjXpLYi+kCgcsIk?=
+ =?us-ascii?Q?YK5OuBrZcYVkBVOs606coQy/OmOs/e/haEeAro23rNQtm7UvbTnUS0RRm8ML?=
+ =?us-ascii?Q?FFg03u2MX1PL1Z2nCbcRhTNgjApwvUgcJJ0a9CUt9EsNHF0gXOC6TdQwt9HC?=
+ =?us-ascii?Q?KJV9nSUCnuZwe91Z2nn2uNtSZrOsLbyEm0x+Q+cGnhfdUomvTyqZkq9ev10N?=
+ =?us-ascii?Q?mJrlM8dao3dp+ebYMJ3MWTMhAduSHUZHTRifiY7exDLqaJKmynEIACG22KEj?=
+ =?us-ascii?Q?sFr+FiMIvBCKCxMaquhtnhLKAvqvPe1iuoozwO7Qe2TCwkeHkpzcPaieLxvf?=
+ =?us-ascii?Q?n15Bj/5ZsT9+Oehb7k/uA6NtAJCON37hea2/igsshlg++MFwMGMU4ps0ccKG?=
+ =?us-ascii?Q?WyfDyZQLEwzf2yEyuSBt+6wNywZks6/UDMeS2pPkHhX+jeaPE0/f1HtsYjZt?=
+ =?us-ascii?Q?XNB9c4b2lkUQnvSmhdpTN+rg8CB125udcYRGmrBINgA0q5c0ABYEOoalaZyZ?=
+ =?us-ascii?Q?psUvbyA7uP7jK+ERGG5RwOsnPiy1pcjvoTAI9I8E2GemZFUPNND79XxBIkGM?=
+ =?us-ascii?Q?hMsZkLxlxoaLMsrWn8EDC+cHUUHW7j0p8SYukTsVPiL5gPE1DHke4JG1ld0L?=
+ =?us-ascii?Q?UwvwFHckGokLfJ1OQdYUmRz8DiA2oHWBrcaQehfMgmaEzAt1yqzwRJM3LOtH?=
+ =?us-ascii?Q?Q+VTioRNx1qTuXJA3Y6z0WyJrXqOL88qKWzJjSJmE1I6+UkXMqnaTXniqqI8?=
+ =?us-ascii?Q?9FPAHnw2+iug2rRbxnMw4NUL+zGWROTbmEpxpBTNC7MPaa4BPl026c7xbZup?=
+ =?us-ascii?Q?ynvayVfyCxyHvgg+24lo3ATWP2NWySU=3D?=
+X-OriginatorOrg: quantatw.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b16e4695-8367-4e77-493d-08da176b9f7f
+X-MS-Exchange-CrossTenant-AuthSource: HK0PR04MB3282.apcprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 01:20:23.7923
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bIbPlE6gPCBbyYTFnHcF8VBfOgMhNPdpkFaUQmFoV07uH4Ixk5ZmSMPXpey7k+q01JsB8w5mXLcOeBjXxzEELg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR04MB4446
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In AM62 SoC, the Designware Core USB3 IP is progammed to operate in USB2.0
-only mode. Add driver for AM62 USB DWC3 Wrapper.
+Add aspeed_mdio_op() and aseed_mdio_get_data() for register accessing.
 
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+aspeed_mdio_op() handles operations, write command to control register,
+then check and wait operations is finished (bit 31 is cleared).
+
+aseed_mdio_get_data() fetchs the result value of operation from data
+register.
+
+Signed-off-by: Potin Lai <potin.lai@quantatw.com>
 ---
+ drivers/net/mdio/mdio-aspeed.c | 70 ++++++++++++++++++----------------
+ 1 file changed, 38 insertions(+), 32 deletions(-)
 
-changes since v2:
-- Removed the implementation of detecting the role from the wrapper
-  driver and moved the implementation to using linux,extcon-usb-gpio
-  driver for role detection.
-- Updated the binding documentation and example to reflect the same.
-
-
- drivers/usb/dwc3/Kconfig     |   9 +
- drivers/usb/dwc3/Makefile    |   1 +
- drivers/usb/dwc3/dwc3-am62.c | 446 +++++++++++++++++++++++++++++++++++
- 3 files changed, 456 insertions(+)
- create mode 100644 drivers/usb/dwc3/dwc3-am62.c
-
-diff --git a/drivers/usb/dwc3/Kconfig b/drivers/usb/dwc3/Kconfig
-index c483f28b695d..cd9a734522a7 100644
---- a/drivers/usb/dwc3/Kconfig
-+++ b/drivers/usb/dwc3/Kconfig
-@@ -159,4 +159,13 @@ config USB_DWC3_XILINX
- 	  This driver handles both ZynqMP and Versal SoC operations.
- 	  Say 'Y' or 'M' if you have one such device.
+diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+index e2273588c75b..f22be2f069e9 100644
+--- a/drivers/net/mdio/mdio-aspeed.c
++++ b/drivers/net/mdio/mdio-aspeed.c
+@@ -39,34 +39,35 @@ struct aspeed_mdio {
+ 	void __iomem *base;
+ };
  
-+config USB_DWC3_AM62
-+	tristate "Texas Instruments AM62 Platforms"
-+	depends on ARCH_K3 || COMPILE_TEST
-+	default USB_DWC3
-+	help
-+	  Support TI's AM62 platforms with DesignWare Core USB3 IP.
-+	  The Designware Core USB3 IP is progammed to operate in
-+	  in USB 2.0 mode only.
-+	  Say 'Y' or 'M' here if you have one such device
- endif
-diff --git a/drivers/usb/dwc3/Makefile b/drivers/usb/dwc3/Makefile
-index 2d499de6f66a..9f66bd82b639 100644
---- a/drivers/usb/dwc3/Makefile
-+++ b/drivers/usb/dwc3/Makefile
-@@ -42,6 +42,7 @@ endif
- # and allyesconfig builds.
- ##
+-static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
++static int aspeed_mdio_op(struct mii_bus *bus, u8 st, u8 op, u8 phyad, u8 regad,
++			  u16 data)
+ {
+ 	struct aspeed_mdio *ctx = bus->priv;
+ 	u32 ctrl;
+-	u32 data;
+-	int rc;
  
-+obj-$(CONFIG_USB_DWC3_AM62)		+= dwc3-am62.o
- obj-$(CONFIG_USB_DWC3_OMAP)		+= dwc3-omap.o
- obj-$(CONFIG_USB_DWC3_EXYNOS)		+= dwc3-exynos.o
- obj-$(CONFIG_USB_DWC3_PCI)		+= dwc3-pci.o
-diff --git a/drivers/usb/dwc3/dwc3-am62.c b/drivers/usb/dwc3/dwc3-am62.c
-new file mode 100644
-index 000000000000..5700258c8deb
---- /dev/null
-+++ b/drivers/usb/dwc3/dwc3-am62.c
-@@ -0,0 +1,446 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * dwc3-am62.c - TI specific Glue layer for AM62 DWC3 USB Controller
-+ *
-+ * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com
-+ */
-+
-+#include <linux/init.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/workqueue.h>
-+#include <linux/mfd/syscon.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/clk.h>
-+#include <linux/regmap.h>
-+#include <linux/devm-helpers.h>
-+#include <linux/pinctrl/consumer.h>
-+
-+/* USB WRAPPER register offsets */
-+#define USBSS_PID			0x0
-+#define USBSS_OVERCURRENT_CTRL		0x4
-+#define USBSS_PHY_CONFIG		0x8
-+#define USBSS_PHY_TEST			0xc
-+#define USBSS_CORE_STAT			0x14
-+#define USBSS_HOST_VBUS_CTRL		0x18
-+#define USBSS_MODE_CONTROL		0x1c
-+#define USBSS_WAKEUP_CONFIG		0x30
-+#define USBSS_WAKEUP_STAT		0x34
-+#define USBSS_OVERRIDE_CONFIG		0x38
-+#define USBSS_IRQ_MISC_STATUS_RAW	0x430
-+#define USBSS_IRQ_MISC_STATUS		0x434
-+#define USBSS_IRQ_MISC_ENABLE_SET	0x438
-+#define USBSS_IRQ_MISC_ENABLE_CLR	0x43c
-+#define USBSS_IRQ_MISC_EOI		0x440
-+#define USBSS_INTR_TEST			0x490
-+#define USBSS_VBUS_FILTER		0x614
-+#define USBSS_VBUS_STAT			0x618
-+#define USBSS_DEBUG_CFG			0x708
-+#define USBSS_DEBUG_DATA		0x70c
-+#define USBSS_HOST_HUB_CTRL		0x714
-+
-+/* PHY CONFIG register bits */
-+#define USBSS_PHY_VBUS_SEL_MASK		GENMASK(2, 1)
-+#define USBSS_PHY_VBUS_SEL_SHIFT	1
-+#define USBSS_PHY_LANE_REVERSE		BIT(0)
-+
-+/* MODE CONTROL register bits */
-+#define USBSS_MODE_VALID	BIT(0)
-+
-+/* WAKEUP CONFIG register bits */
-+#define USBSS_WAKEUP_CFG_OVERCURRENT_EN	BIT(3)
-+#define USBSS_WAKEUP_CFG_LINESTATE_EN	BIT(2)
-+#define USBSS_WAKEUP_CFG_SESSVALID_EN	BIT(1)
-+#define USBSS_WAKEUP_CFG_VBUSVALID_EN	BIT(0)
-+
-+/* WAKEUP STAT register bits */
-+#define USBSS_WAKEUP_STAT_OVERCURRENT	BIT(4)
-+#define USBSS_WAKEUP_STAT_LINESTATE	BIT(3)
-+#define USBSS_WAKEUP_STAT_SESSVALID	BIT(2)
-+#define USBSS_WAKEUP_STAT_VBUSVALID	BIT(1)
-+#define USBSS_WAKEUP_STAT_CLR		BIT(0)
-+
-+/* IRQ_MISC_STATUS_RAW register bits */
-+#define USBSS_IRQ_MISC_RAW_VBUSVALID	BIT(22)
-+#define USBSS_IRQ_MISC_RAW_SESSVALID	BIT(20)
-+
-+/* IRQ_MISC_STATUS register bits */
-+#define USBSS_IRQ_MISC_VBUSVALID	BIT(22)
-+#define USBSS_IRQ_MISC_SESSVALID	BIT(20)
-+
-+/* IRQ_MISC_ENABLE_SET register bits */
-+#define USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID	BIT(22)
-+#define USBSS_IRQ_MISC_ENABLE_SET_SESSVALID	BIT(20)
-+
-+/* IRQ_MISC_ENABLE_CLR register bits */
-+#define USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID	BIT(22)
-+#define USBSS_IRQ_MISC_ENABLE_CLR_SESSVALID	BIT(20)
-+
-+/* IRQ_MISC_EOI register bits */
-+#define USBSS_IRQ_MISC_EOI_VECTOR	BIT(0)
-+
-+/* VBUS_STAT register bits */
-+#define USBSS_VBUS_STAT_SESSVALID	BIT(2)
-+#define USBSS_VBUS_STAT_VBUSVALID	BIT(0)
-+
-+/* Mask for PHY PLL REFCLK */
-+#define PHY_PLL_REFCLK_MASK	GENMASK(3, 0)
-+
-+#define DWC3_AM62_AUTOSUSPEND_DELAY	100
-+
-+struct dwc3_data {
-+	struct device *dev;
-+	void __iomem *usbss;
-+	struct clk *usb2_refclk;
-+	struct work_struct work;
-+	int vbus_irq;
-+	int rate_code;
-+	int connect;
-+	struct regmap *syscon;
-+	unsigned int offset;
-+	unsigned int vbus_divider;
-+};
-+
-+static const int dwc3_ti_rate_table[] = {	/* in KHZ */
-+	9600,
-+	10000,
-+	12000,
-+	19200,
-+	20000,
-+	24000,
-+	25000,
-+	26000,
-+	38400,
-+	40000,
-+	58000,
-+	50000,
-+	52000,
-+};
-+
-+static inline u32 dwc3_ti_readl(struct dwc3_data *data, u32 offset)
-+{
-+	return readl((data->usbss) + offset);
+-	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
+-		regnum);
+-
+-	/* Just clause 22 for the moment */
+-	if (regnum & MII_ADDR_C45)
+-		return -EOPNOTSUPP;
++	dev_dbg(&bus->dev, "%s: st: %u op: %u, phyad: %u, regad: %u, data: %u\n",
++		__func__, st, op, phyad, regad, data);
+ 
+ 	ctrl = ASPEED_MDIO_CTRL_FIRE
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_ST, ASPEED_MDIO_CTRL_ST_C22)
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_OP, MDIO_C22_OP_READ)
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_PHYAD, addr)
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_REGAD, regnum);
++		| FIELD_PREP(ASPEED_MDIO_CTRL_ST, st)
++		| FIELD_PREP(ASPEED_MDIO_CTRL_OP, op)
++		| FIELD_PREP(ASPEED_MDIO_CTRL_PHYAD, phyad)
++		| FIELD_PREP(ASPEED_MDIO_CTRL_REGAD, regad)
++		| FIELD_PREP(ASPEED_MDIO_DATA_MIIRDATA, data);
+ 
+ 	iowrite32(ctrl, ctx->base + ASPEED_MDIO_CTRL);
+ 
+-	rc = readl_poll_timeout(ctx->base + ASPEED_MDIO_CTRL, ctrl,
++	return readl_poll_timeout(ctx->base + ASPEED_MDIO_CTRL, ctrl,
+ 				!(ctrl & ASPEED_MDIO_CTRL_FIRE),
+ 				ASPEED_MDIO_INTERVAL_US,
+ 				ASPEED_MDIO_TIMEOUT_US);
+-	if (rc < 0)
+-		return rc;
 +}
 +
-+static inline void dwc3_ti_writel(struct dwc3_data *data, u32 offset, u32 value)
++static int aspeed_mdio_get_data(struct mii_bus *bus)
 +{
-+	writel(value, (data->usbss) + offset);
++	struct aspeed_mdio *ctx = bus->priv;
++	int rc;
++	u32 data;
+ 
+ 	rc = readl_poll_timeout(ctx->base + ASPEED_MDIO_DATA, data,
+ 				data & ASPEED_MDIO_DATA_IDLE,
+@@ -78,31 +79,36 @@ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+ 	return FIELD_GET(ASPEED_MDIO_DATA_MIIRDATA, data);
+ }
+ 
+-static int aspeed_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
++static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+ {
+-	struct aspeed_mdio *ctx = bus->priv;
+-	u32 ctrl;
++	int rc;
+ 
+-	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d, val: 0x%x\n",
+-		__func__, addr, regnum, val);
++	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
++		regnum);
+ 
+ 	/* Just clause 22 for the moment */
+ 	if (regnum & MII_ADDR_C45)
+ 		return -EOPNOTSUPP;
+ 
+-	ctrl = ASPEED_MDIO_CTRL_FIRE
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_ST, ASPEED_MDIO_CTRL_ST_C22)
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_OP, MDIO_C22_OP_WRITE)
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_PHYAD, addr)
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_REGAD, regnum)
+-		| FIELD_PREP(ASPEED_MDIO_CTRL_MIIWDATA, val);
++	rc = aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_READ,
++			    addr, regnum, 0);
++	if (rc < 0)
++		return rc;
+ 
+-	iowrite32(ctrl, ctx->base + ASPEED_MDIO_CTRL);
++	return aspeed_mdio_get_data(bus);
 +}
-+
-+static void connect_detect_work(struct work_struct *work)
+ 
+-	return readl_poll_timeout(ctx->base + ASPEED_MDIO_CTRL, ctrl,
+-				  !(ctrl & ASPEED_MDIO_CTRL_FIRE),
+-				  ASPEED_MDIO_INTERVAL_US,
+-				  ASPEED_MDIO_TIMEOUT_US);
++static int aspeed_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
 +{
-+	struct dwc3_data *data =
-+		container_of(work, struct dwc3_data, work);
-+	u32 vbus_state, reg;
-+	int connect = 0;
-+
-+	/* Read the status for VBUS valid register */
-+	vbus_state = dwc3_ti_readl(data, USBSS_VBUS_STAT);
-+	vbus_state &= USBSS_VBUS_STAT_VBUSVALID;
-+
-+	if (vbus_state)
-+		connect = 1;
-+
-+	/* Set or clear mode valid bit based on connect or disconnect event */
-+	if (data->connect != connect) {
-+		reg = dwc3_ti_readl(data, USBSS_MODE_CONTROL);
-+		if (connect)
-+			reg |= USBSS_MODE_VALID;
-+		else
-+			reg &= ~USBSS_MODE_VALID;
-+
-+		dwc3_ti_writel(data, USBSS_MODE_CONTROL, reg);
-+		data->connect = connect;
-+	}
-+}
-+
-+static irqreturn_t connect_detect_irq_handler(int irq, void *dev_id)
-+{
-+	struct dwc3_data *data = dev_id;
-+	u32 reg;
-+
-+	/* Clear VBUS interrupt always to aviod queuing up redundant work items */
-+	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_STATUS);
-+	reg |= USBSS_IRQ_MISC_VBUSVALID;
-+	dwc3_ti_writel(data, USBSS_IRQ_MISC_STATUS, reg);
-+
-+	queue_work(system_power_efficient_wq, &data->work);
-+
-+	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_EOI);
-+	reg &= ~USBSS_IRQ_MISC_EOI_VECTOR;
-+	dwc3_ti_writel(data, USBSS_IRQ_MISC_EOI, reg);
-+	return IRQ_HANDLED;
-+}
-+
-+static int dwc3_ti_vbus_irq_setup(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct dwc3_data *data = platform_get_drvdata(pdev);
-+	int irq, ret;
-+
-+	/* Get the misc interrupt */
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
-+
-+	ret = devm_request_irq(dev, irq, connect_detect_irq_handler, IRQF_SHARED,
-+			       dev_name(dev), data);
-+	if (ret) {
-+		dev_err(dev, "failed to required IRQ #%d-->%d\n",
-+			irq, ret);
-+		return ret;
-+	}
-+
-+	data->vbus_irq = irq;
-+
-+	return 0;
-+}
-+
-+static int phy_syscon_pll_refclk(struct dwc3_data *data)
-+{
-+	struct device *dev = data->dev;
-+	struct device_node *node = dev->of_node;
-+	struct of_phandle_args args;
-+	struct regmap *syscon;
-+	int ret;
-+
-+	syscon = syscon_regmap_lookup_by_phandle(node, "ti,syscon-phy-pll-refclk");
-+	if (IS_ERR(syscon)) {
-+		dev_err(dev, "unable to get ti,syscon-phy-pll-refclk regmap\n");
-+		return PTR_ERR(syscon);
-+	}
-+
-+	data->syscon = syscon;
-+
-+	ret = of_parse_phandle_with_fixed_args(node, "ti,syscon-phy-pll-refclk", 1,
-+					       0, &args);
-+	if (ret)
-+		return ret;
-+
-+	data->offset = args.args[0];
-+
-+	ret = regmap_update_bits(data->syscon, data->offset, PHY_PLL_REFCLK_MASK, data->rate_code);
-+	if (ret) {
-+		dev_err(dev, "failed to set phy pll reference clock rate\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void dwc3_ti_enable_irqs(struct dwc3_data *data)
-+{
-+	u32 reg;
-+
-+	/* enable VBUSVALID interrupt */
-+	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_ENABLE_SET);
-+	reg |= USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID;
-+	dwc3_ti_writel(data, USBSS_IRQ_MISC_ENABLE_SET, reg);
-+}
-+
-+static void dwc3_ti_disable_irqs(struct dwc3_data *data)
-+{
-+	u32 reg;
-+
-+	/* disable VBUSVALID interrupt */
-+	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_ENABLE_CLR);
-+	reg |= USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID;
-+	dwc3_ti_writel(data, USBSS_IRQ_MISC_ENABLE_CLR, reg);
-+}
-+
-+static int dwc3_ti_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *node = pdev->dev.of_node;
-+	struct dwc3_data *data;
-+	int i, ret;
-+	unsigned long rate;
-+	u32 reg;
-+
-+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->dev = dev;
-+	platform_set_drvdata(pdev, data);
-+
-+	data->usbss = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(data->usbss)) {
-+		dev_err(dev, "can't map IOMEM resource\n");
-+		return PTR_ERR(data->usbss);
-+	}
-+
-+	data->usb2_refclk = devm_clk_get(dev, "ref");
-+	if (IS_ERR(data->usb2_refclk)) {
-+		dev_err(dev, "can't get usb2_refclk\n");
-+		return PTR_ERR(data->usb2_refclk);
-+	}
-+
-+	/* Calculate the rate code */
-+	rate = clk_get_rate(data->usb2_refclk);
-+	rate /= 1000;	// To KHz
-+	for (i = 0; i < ARRAY_SIZE(dwc3_ti_rate_table); i++) {
-+		if (dwc3_ti_rate_table[i] == rate)
-+			break;
-+	}
-+
-+	if (i == ARRAY_SIZE(dwc3_ti_rate_table)) {
-+		dev_err(dev, "unsupported usb2_refclk rate: %lu KHz\n", rate);
-+		ret = -EINVAL;
-+		goto err_clk_disable;
-+	}
-+
-+	data->rate_code = i;
-+
-+	/* Read the syscon property and set the rate code */
-+	ret = phy_syscon_pll_refclk(data);
-+	if (ret)
-+		goto err_clk_disable;
-+
-+	/* VBUS divider select */
-+	data->vbus_divider = device_property_read_bool(dev, "ti,vbus-divider");
-+	reg = dwc3_ti_readl(data, USBSS_PHY_CONFIG);
-+	if (data->vbus_divider)
-+		reg |= 1 << USBSS_PHY_VBUS_SEL_SHIFT;
-+
-+	dwc3_ti_writel(data, USBSS_PHY_CONFIG, reg);
-+
-+	/* Initialize a work queue */
-+	ret = devm_work_autocancel(dev, &data->work, connect_detect_work);
-+	if (ret)
-+		goto err_clk_disable;
-+
-+	/* Read and set VBUS IRQ */
-+	ret = dwc3_ti_vbus_irq_setup(pdev);
-+	if (ret)
-+		goto err_clk_disable;
-+
-+	pm_runtime_set_active(dev);
-+	pm_runtime_enable(dev);
-+	/*
-+	 * Don't ignore its dependencies with its children
-+	 */
-+	pm_suspend_ignore_children(dev, false);
-+	clk_prepare_enable(data->usb2_refclk);
-+	pm_runtime_get_noresume(dev);
-+
-+	ret = of_platform_populate(node, NULL, NULL, dev);
-+	if (ret) {
-+		dev_err(dev, "failed to create dwc3 core: %d\n", ret);
-+		goto err_pm_disable;
-+	}
-+
-+	/* Enable vbus irq */
-+	dwc3_ti_enable_irqs(data);
-+
-+	connect_detect_work(&data->work);
-+
-+	/* Setting up autosuspend */
-+	pm_runtime_set_autosuspend_delay(dev, DWC3_AM62_AUTOSUSPEND_DELAY);
-+	pm_runtime_use_autosuspend(dev);
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+	return 0;
-+
-+err_pm_disable:
-+	clk_disable_unprepare(data->usb2_refclk);
-+	pm_runtime_disable(dev);
-+	pm_runtime_set_suspended(dev);
-+err_clk_disable:
-+	clk_put(data->usb2_refclk);
-+	return ret;
-+}
-+
-+static int dwc3_ti_remove_core(struct device *dev, void *c)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+
-+	platform_device_unregister(pdev);
-+	return 0;
-+}
-+
-+static int dwc3_ti_remove(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct dwc3_data *data = platform_get_drvdata(pdev);
-+	u32 reg;
-+
-+	dwc3_ti_disable_irqs(data);
-+
-+	device_for_each_child(dev, NULL, dwc3_ti_remove_core);
-+
-+	/* Clear mode valid bit */
-+	reg = dwc3_ti_readl(data, USBSS_MODE_CONTROL);
-+	reg &= ~USBSS_MODE_VALID;
-+	dwc3_ti_writel(data, USBSS_MODE_CONTROL, reg);
-+
-+	pm_runtime_put_sync(dev);
-+	clk_disable_unprepare(data->usb2_refclk);
-+	pm_runtime_disable(dev);
-+	pm_runtime_set_suspended(dev);
-+
-+	clk_put(data->usb2_refclk);
-+	platform_set_drvdata(pdev, NULL);
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM
-+static int dwc3_ti_suspend_common(struct device *dev)
-+{
-+	struct dwc3_data *data = dev_get_drvdata(dev);
-+
-+	/* disable irqs */
-+	dwc3_ti_disable_irqs(data);
-+
-+	clk_disable_unprepare(data->usb2_refclk);
-+
-+	return 0;
-+}
-+
-+static int dwc3_ti_resume_common(struct device *dev)
-+{
-+	struct dwc3_data *data = dev_get_drvdata(dev);
-+
-+	clk_prepare_enable(data->usb2_refclk);
-+
-+	/* Enable irqs */
-+	dwc3_ti_enable_irqs(data);
-+
-+	return 0;
-+}
-+
-+static UNIVERSAL_DEV_PM_OPS(dwc3_ti_pm_ops, dwc3_ti_suspend_common,
-+			    dwc3_ti_resume_common, NULL);
-+
-+#define DEV_PM_OPS	(&dwc3_ti_pm_ops)
-+#else
-+#define DEV_PM_OPS	NULL
-+#endif /* CONFIG_PM */
-+
-+static const struct of_device_id dwc3_ti_of_match[] = {
-+	{ .compatible = "ti,am62-usb"},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, dwc3_ti_of_match);
-+
-+static struct platform_driver dwc3_ti_driver = {
-+	.probe		= dwc3_ti_probe,
-+	.remove		= dwc3_ti_remove,
-+	.driver		= {
-+		.name	= "dwc3-am62",
-+		.pm	= DEV_PM_OPS,
-+		.of_match_table = dwc3_ti_of_match,
-+	},
-+};
-+
-+module_platform_driver(dwc3_ti_driver);
-+
-+MODULE_ALIAS("platform:dwc3-am62");
-+MODULE_AUTHOR("Aswath Govindraju <a-govindraju@ti.com>");
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("DesignWare USB3 TI Glue Layer");
++	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d, val: 0x%x\n",
++		__func__, addr, regnum, val);
++
++	/* Just clause 22 for the moment */
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
++	return aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_WRITE,
++			      addr, regnum, val);
+ }
+ 
+ static int aspeed_mdio_probe(struct platform_device *pdev)
 -- 
 2.17.1
 
