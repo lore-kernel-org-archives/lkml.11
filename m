@@ -2,89 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B76E4C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D094C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230401AbiDFMvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
+        id S230410AbiDFMwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbiDFMuK (ORCPT
+        with ESMTP id S229863AbiDFMuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:50:10 -0400
-X-Greylist: delayed 66 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 01:53:52 PDT
-Received: from mail.codelabs.ch (mail.codelabs.ch [IPv6:2a02:168:860f:1::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBC415DA84;
-        Wed,  6 Apr 2022 01:53:52 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.codelabs.ch (Postfix) with ESMTP id E956B220003;
-        Wed,  6 Apr 2022 10:37:05 +0200 (CEST)
-Received: from mail.codelabs.ch ([127.0.0.1])
-        by localhost (fenrir.codelabs.ch [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id USzK58Cg8Xho; Wed,  6 Apr 2022 10:37:04 +0200 (CEST)
-Received: from skyhawk.codelabs.local (unknown [IPv6:2a02:169:803:0:f7fb:8040:b3e4:bffe])
-        by mail.codelabs.ch (Postfix) with ESMTPSA id ACB1A220001;
-        Wed,  6 Apr 2022 10:37:04 +0200 (CEST)
-From:   Reto Buerki <reet@codelabs.ch>
-To:     dwmw2@infradead.org
-Cc:     x86@kernel.org, kvm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, joro@8bytes.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        maz@misterjones.org, decui@microsoft.com
-Subject: [PATCH] x86/msi: Fix msi message data shadow struct
-Date:   Wed,  6 Apr 2022 10:36:24 +0200
-Message-Id: <20220406083624.38739-2-reet@codelabs.ch>
-In-Reply-To: <20220406083624.38739-1-reet@codelabs.ch>
-References: <20201024213535.443185-13-dwmw2@infradead.org>
- <20220406083624.38739-1-reet@codelabs.ch>
+        Wed, 6 Apr 2022 08:50:54 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299FC12AB0
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:54:25 -0700 (PDT)
+Received: from kwepemi500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYJGD3StlzdZY5;
+        Wed,  6 Apr 2022 16:53:56 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500002.china.huawei.com (7.221.188.171) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 16:54:23 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 16:54:22 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [RFC PATCH -next V2 0/7]arm64: add machine check safe support
+Date:   Wed, 6 Apr 2022 09:13:04 +0000
+Message-ID: <20220406091311.3354723-1-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The x86 MSI message data is 32 bits in total and is either in
-compatibility or remappable format, see Intel Virtualization Technology
-for Directed I/O, section 5.1.2.
+This patchset is based on[1].
 
-Fixes: 6285aa50736 ("x86/msi: Provide msi message shadow structs")
-Signed-off-by: Reto Buerki <reet@codelabs.ch>
-Signed-off-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
----
- arch/x86/include/asm/msi.h | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+With the increase of memory capacity and density, the probability of
+memory error increases. The increasing size and density of server RAM
+in the data center and cloud have shown increased uncorrectable memory
+errors.
 
-diff --git a/arch/x86/include/asm/msi.h b/arch/x86/include/asm/msi.h
-index b85147d75626..d71c7e8b738d 100644
---- a/arch/x86/include/asm/msi.h
-+++ b/arch/x86/include/asm/msi.h
-@@ -12,14 +12,17 @@ int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
- /* Structs and defines for the X86 specific MSI message format */
- 
- typedef struct x86_msi_data {
--	u32	vector			:  8,
--		delivery_mode		:  3,
--		dest_mode_logical	:  1,
--		reserved		:  2,
--		active_low		:  1,
--		is_level		:  1;
--
--	u32	dmar_subhandle;
-+	union {
-+		struct {
-+			u32	vector			:  8,
-+				delivery_mode		:  3,
-+				dest_mode_logical	:  1,
-+				reserved		:  2,
-+				active_low		:  1,
-+				is_level		:  1;
-+		};
-+		u32	dmar_subhandle;
-+	};
- } __attribute__ ((packed)) arch_msi_msg_data_t;
- #define arch_msi_msg_data	x86_msi_data
- 
+Currently, the kernel has a mechanism to recover from hardware memory
+errors. This patchset provides an new recovery mechanism.
+
+For ARM64, the hardware error handling is do_sea() which divided into
+two cases:
+1. The user state consumed the memory errors, the solution is kill th
+     user process and isolate the error page.
+2. The kernel state consumed the memory errors, the solution is panic.
+
+For kernelspace, Undifferentiated panic maybe not the optimal choice,
+it can be handled better.
+
+This patchset deals with four sscenarios of hardware memory error consumed
+in kernelspace:
+1. copy_from_user.
+2. get_user.
+3. cow(copy on write).
+4. pagecache reading.
+
+These four scenarios have similarities. Although the error is consumed in
+the kernel state, but the consumed data belongs to the user state.
+
+The processing scheme is based on CONFIG_ARCH_HAS_COPY_MC and uses the
+process killing plus isolate error page to replace kernel panic.
+
+[1]https://lore.kernel.org/lkml/20220323033705.3966643-1-tongtiangen@huawei.com/
+
+Since V2:
+ 1.Consistent with PPC/x86, Using CONFIG_ARCH_HAS_COPY_MC instead of
+   ARM64_UCE_KERNEL_RECOVERY.
+ 2.Add two new scenarios, cow and pagecache reading.
+ 3.Fix two small bug(the first two patch).
+
+Tong Tiangen (7):
+  x86: fix copy_mc_to_user compile error
+  arm64: fix page_address return value in copy_highpage
+  arm64: add support for machine check error safe
+  arm64: add copy_from_user to machine check safe
+  arm64: add get_user to machine check safe
+  arm64: add cow to machine check safe
+  arm64: add pagecache reading to machine check safe
+
+ arch/arm64/Kconfig                   |  1 +
+ arch/arm64/include/asm/asm-extable.h | 25 +++++++
+ arch/arm64/include/asm/asm-uaccess.h | 16 +++++
+ arch/arm64/include/asm/esr.h         |  5 ++
+ arch/arm64/include/asm/extable.h     |  2 +-
+ arch/arm64/include/asm/page.h        | 10 +++
+ arch/arm64/include/asm/uaccess.h     | 17 ++++-
+ arch/arm64/kernel/probes/kprobes.c   |  2 +-
+ arch/arm64/lib/Makefile              |  2 +
+ arch/arm64/lib/copy_from_user.S      | 11 ++--
+ arch/arm64/lib/copy_page_mc.S        | 98 ++++++++++++++++++++++++++++
+ arch/arm64/lib/copy_to_user_mc.S     | 78 ++++++++++++++++++++++
+ arch/arm64/mm/copypage.c             | 36 ++++++++--
+ arch/arm64/mm/extable.c              | 21 +++++-
+ arch/arm64/mm/fault.c                | 30 ++++++++-
+ arch/x86/include/asm/uaccess.h       |  1 +
+ include/linux/highmem.h              |  8 +++
+ include/linux/uaccess.h              |  8 +++
+ include/linux/uio.h                  |  9 ++-
+ lib/iov_iter.c                       | 85 +++++++++++++++++++-----
+ mm/memory.c                          |  2 +-
+ 21 files changed, 432 insertions(+), 35 deletions(-)
+ create mode 100644 arch/arm64/lib/copy_page_mc.S
+ create mode 100644 arch/arm64/lib/copy_to_user_mc.S
+
 -- 
-2.30.2
+2.18.0.huawei.25
 
