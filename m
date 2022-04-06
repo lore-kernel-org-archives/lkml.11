@@ -2,249 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234560AbiDFOOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
+        id S234538AbiDFOPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234394AbiDFONd (ORCPT
+        with ESMTP id S234582AbiDFOOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:13:33 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C575C584C71
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:15:38 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id y38so3173350ybi.8
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 03:15:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aGlYozd/u0p+alDYCmgtZVDQtB4EX/1Tk30HxGGPobs=;
-        b=pIutILDmfbfBS8Bf8yziDEp5NJ48RV5jCQQ/UovICb6waLboX1s/S/sBT9MinxAFcZ
-         szGpV3w1jR2qJuYykkiYAFGMcDmcVuKsQenK0EfzgkNe5mlL5HVEsOaIBd6dizkT+l+z
-         ZXnb63dmZNn//Be19R6LliDUpKQ4j7F/DxHwzVSWCPtUIfjKFU+TYHF29Kxhs/HaVY74
-         aRC0+AJfXzcA6ZwJZchNWOGwLLoATfV9TqoPOy+ARX+B8nPGdefjjvHTsApw3F2PJsCC
-         fjXvFA3nDeAcU4xaMq3+n+yIvvBqP84aTG5lH4QK1DYe8gCgFywnf1k6nWffsz8mS3Rp
-         g4vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aGlYozd/u0p+alDYCmgtZVDQtB4EX/1Tk30HxGGPobs=;
-        b=Q+/czXbYPKLrU68hZMvaI3ioPpMvHLscKqhWorI1N6KvhhurxrtO42BD8i1kJylLBv
-         rUO1CJebPwiL8tlzfSbplUU4bOUV2x9rZrLBi92htMaHYYUP4M6xA90tefXRGvxAVFfs
-         S5O+B+gY3yC33dJVR5aJWolRqyU2iBZ82RkcsfBdDfv/NtUOK9a23Ftwrp/BeANFnO1a
-         SH+XsOGxpVtWG+DfUcC0xsEI7f/x7fRXhv75qgP+LnPaNRHkyTXzVvkZRTaibNh2f2Kp
-         /9s4a1Sjdm1TJ56X9DpPJXzRY6LWJJoXvdLjg5+Ey3k89kJlhB9y7pyyYGkn4r1VVYfF
-         Gd1A==
-X-Gm-Message-State: AOAM5314l9k1BrkS/PtM4tfYdI9kANn11S+JOtaJyuFibblgwPJR1Lsm
-        Ug6reXSGPeb/3ARKniwNkL/3j0RtS1cnpJ9smiySsA==
-X-Google-Smtp-Source: ABdhPJwWGczytXLXaFe0awziXqKzgrA3L+DnLVRUhBhfQZDOp9WwBMyGYgLlsRpyBuLb44w3Fae5khIPEGtqroP6XpQ=
-X-Received: by 2002:a25:6e85:0:b0:63d:b37a:3d3b with SMTP id
- j127-20020a256e85000000b0063db37a3d3bmr5585013ybc.128.1649240117389; Wed, 06
- Apr 2022 03:15:17 -0700 (PDT)
+        Wed, 6 Apr 2022 10:14:51 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E730E5FB7;
+        Tue,  5 Apr 2022 18:21:04 -0700 (PDT)
+X-UUID: ccf0173b3f3744f3bd37e8cb6f1ad1a9-20220406
+X-UUID: ccf0173b3f3744f3bd37e8cb6f1ad1a9-20220406
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 206969711; Wed, 06 Apr 2022 09:20:54 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 6 Apr 2022 09:20:53 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 Apr
+ 2022 09:20:52 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 09:20:49 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH] media: mediatek: vcodec: Fix v4l2 compliance decoder cmd test fail
+Date:   Wed, 6 Apr 2022 09:20:48 +0800
+Message-ID: <20220406012048.5970-1-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220405070339.801210740@linuxfoundation.org>
-In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 6 Apr 2022 15:45:05 +0530
-Message-ID: <CA+G9fYuSPtAB1xxGepBzmKa7ZFq9QR3Nk6RfhfU5vNhXGpTECg@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/913] 5.15.33-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 at 14:50, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.33 release.
-> There are 913 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.15.33-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Will return -EINVAL using standard framework api when test stateless
+decoder with cmd VIDIOC_(TRY)DECODER_CMD.
 
+Using another return value to adjust v4l2 compliance test for user
+driver(GStreamer/Chrome) won't use decoder cmd.
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Fixes: 8cdc3794b2e3 ("media: mtk-vcodec: vdec: support stateless API")
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+changes compared with v2:
+- add reviewed-by tag
+changes compared with v1:
+- add Fixes: tag
+---
+ drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+index 3859e4c651c6..69b0e797d342 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+@@ -51,8 +51,7 @@ static int vidioc_try_decoder_cmd(struct file *file, void *priv,
+ 
+ 	/* Use M2M stateless helper if relevant */
+ 	if (ctx->dev->vdec_pdata->uses_stateless_api)
+-		return v4l2_m2m_ioctl_stateless_try_decoder_cmd(file, priv,
+-								cmd);
++		return -ENOTTY;
+ 	else
+ 		return v4l2_m2m_ioctl_try_decoder_cmd(file, priv, cmd);
+ }
+-- 
+2.18.0
 
-NOTE:
-Anders enabled extra kconfigs to reproduce Shuah reported build regression
-and proposed two additional two commits for the fix.
-
-## Build
-* kernel: 5.15.33-rc1
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-5.15.y
-* git commit: 841880eaff92b260de5b0fe749c05c6371bcc78c
-* git describe: v5.15.32-914-g841880eaff92
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
-.32-914-g841880eaff92
-
-## Test Regressions (compared to v5.15.32-902-g1a1c2efda160)
-No test regressions found.
-
-## Metric Regressions (compared to v5.15.32-902-g1a1c2efda160)
-No metric regressions found.
-
-## Test Fixes (compared to v5.15.32-902-g1a1c2efda160)
-No test fixes found.
-
-## Metric Fixes (compared to v5.15.32-902-g1a1c2efda160)
-No metric fixes found.
-
-## Test result summary
-total: 101817, pass: 85899, fail: 973, skip: 13901, xfail: 1044
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 291 total, 291 passed, 0 failed
-* arm64: 41 total, 41 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 40 total, 40 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 37 total, 37 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 60 total, 54 passed, 6 failed
-* riscv: 27 total, 22 passed, 5 failed
-* s390: 21 total, 21 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 41 total, 41 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-
-* kselftest-android
-* kselftest-arm64
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
