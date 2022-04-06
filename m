@@ -2,78 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D27C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236901AbiDFP5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
+        id S236410AbiDFP5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236662AbiDFP4s (ORCPT
+        with ESMTP id S236667AbiDFP4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:56:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43B25A62A9;
-        Wed,  6 Apr 2022 06:22:38 -0700 (PDT)
+        Wed, 6 Apr 2022 11:56:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1A0147513;
+        Wed,  6 Apr 2022 06:21:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 563A5B823BF;
-        Wed,  6 Apr 2022 13:22:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C2DC385A7;
-        Wed,  6 Apr 2022 13:22:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CF886142F;
+        Wed,  6 Apr 2022 13:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E26C385A3;
+        Wed,  6 Apr 2022 13:21:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649251356;
-        bh=TLyvTgiqSYYjMHPC+UQMx0cLGBFAbPTGSNIZDD5qmEE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BRcBrf+6Ca4lrZIXmPFpnu3aoqjnUw8Z6cGxpjYO6fDettqwmZVCSZOBIDjbNq5YO
-         i5dzuDYR466yR9B0fywX8ZLS4PfkvRVA3d5dgswxve5JR04uo5sl6q1eF5FS8iRgbt
-         GwlSaGapzZSML6khLQC38qPSgzf4Vcu6K0tQvETDYD/0PA4/4eAakoulI0mdHDq+UM
-         E9gaEVbSo/U0Ob/Nj1VCvMzAms8bYJaOpLrryGksX2erF/kPMQhBcBmkF5A4NqPuoz
-         Qw94e16voGukyrwBeUu708IJvfk0MmtInmz6xMhBXUBoPGp45bobwDs9thZs76CmOW
-         M53nCiiglPPcQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nc5cH-002AfU-Jz; Wed, 06 Apr 2022 14:22:33 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     alexandru.elisei@arm.com, suzuki.poulose@arm.com,
-        Yu Zhe <yuzhe@nfschina.com>, james.morse@arm.com
-Cc:     keescook@chromium.org, ricarkol@google.com, justin.he@arm.com,
-        linux-arm-kernel@lists.infradead.org, samitolvanen@google.com,
-        kernel-janitors@vger.kernel.org, catalin.marinas@arm.com,
-        kvmarm@lists.cs.columbia.edu, will@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: arm64: vgic: remove unnecessary type castings
-Date:   Wed,  6 Apr 2022 14:22:31 +0100
-Message-Id: <164925133306.3716042.8666897986559310118.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220329102059.268983-1-yuzhe@nfschina.com>
-References: <20220328103836.2829-1-yuzhe@nfschina.com> <20220329102059.268983-1-yuzhe@nfschina.com>
+        s=k20201202; t=1649251263;
+        bh=ViYRsF890RbISR0gDdLtC5jAvfvnM2EN5LeAZe+XYW4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JGbW0mAy7/Fe/+/3EP9kURYuQpgSYTJd7TIw+HTx6WN82Wz3s+/U9ElV+3iO4j7dB
+         iW06PKf0HHRelYYrfmcwfWZb9cMp755kbYv/m6DglZ+0UV/onFn+wpgf8qA7mRjKYX
+         Ck4LXsLEUnp9JVTsJfrma2QwUfR6farHS1A2wBQrjbJ5MubYy5hgWdv4y/ax9/M33i
+         goAk/2bV+PhqZFyNfLpRcDHLW59mmceDIbr6GNFw0JpwccoO0ZjcLWwzU6AqhzCTyc
+         FsFuykkIzX9hUGRZjjxyJ+hSrjJMWGMGYoZrG6e+aXPRIfd3auTVJ8yGi+Jxs34Alk
+         W4l/BgI78ooKQ==
+Date:   Wed, 6 Apr 2022 21:20:56 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>, heiko.thiery@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH v2 1/2] arm64: dts: imx8mn-evk: use proper names for PMIC
+ outputs
+Message-ID: <20220406132056.GR129381@dragon>
+References: <20220224103030.2040048-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: alexandru.elisei@arm.com, suzuki.poulose@arm.com, yuzhe@nfschina.com, james.morse@arm.com, keescook@chromium.org, ricarkol@google.com, justin.he@arm.com, linux-arm-kernel@lists.infradead.org, samitolvanen@google.com, kernel-janitors@vger.kernel.org, catalin.marinas@arm.com, kvmarm@lists.cs.columbia.edu, will@kernel.org, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224103030.2040048-1-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 03:20:59 -0700, Yu Zhe wrote:
-> remove unnecessary casts.
+On Thu, Feb 24, 2022 at 11:30:29AM +0100, Michael Walle wrote:
+> Use the power signal names as given in the schematics of the reference
+> board.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Applied to fixes, thanks!
-
-[1/1] KVM: arm64: vgic: remove unnecessary type castings
-      commit: c707663e81ef48d279719e97fd86acef835a2671
-
-Cheers,
-
-	M.
--- 
-Without deviation from the norm, progress is not possible.
-
-
+Applied both, thanks!
