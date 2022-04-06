@@ -2,95 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95F60C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50FCC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444074AbiDFJeH (ORCPT
+        id S1384336AbiDFJdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57944 "EHLO
+        Wed, 6 Apr 2022 05:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1580385AbiDFJUz (ORCPT
+        with ESMTP id S1344855AbiDFJZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:20:55 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763DC140DFF
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:26:44 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id g20so957239edw.6
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:26:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wVrhTvL07JA+qLuxrHPB76KlfjN/HKd1U84mtNSDmA0=;
-        b=T0BGJvEhCp1XVdquKEt/pKpKuXICocX/83Jn1wmpWHLF+zAcgvEjroM6jN40LltZzX
-         eMGubAQqVa1BAfUAJ6zJ44VHTiXyP35A/O3aT2a9JHsAVd9eFDNtGArHLbyUm08Qfrok
-         /pQJpFIXc2NeHopH7wDHcDYOA8JpjD92gDXmQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wVrhTvL07JA+qLuxrHPB76KlfjN/HKd1U84mtNSDmA0=;
-        b=v+6BF24mTxiEv9/3E1JyKpxfbgehq+1jeshRY1d6+nAGfRBTw5veESRp3i111wVYcF
-         fPQ5ri8xNQj+Vy8MBrTOnItmt6VMOBdKW4fThuR0F//6j7Y0YuHZM0NeQabYeYmu+gKA
-         rcu+flsALaq3OgHJeDfEzw1VrZCiOHM5mWKjAUKbZXK/7qL/nt+XtxNDHXOguz6P+V1i
-         PQn8w1J9Rvh6aSf+8cARLPQcpq18z6n+7I1kdXSCcJ+hQDMZ1nE6ZEk8F4cWvRVsX8yr
-         UWCvWBFArLc+KJO3W+YpumsaLhQvFyYnkM2hZsiTOzjIekL2dwyNi1HLOni/MwSuoNGf
-         MizQ==
-X-Gm-Message-State: AOAM532jMGuPnNmiJZz7/nOJXlGGOyaSXxVLIQVh8j62sw2n5/bXNaT+
-        4KcnVLTzZPSwuzotXs7Zkj5o11yNk+X65o3nrYw=
-X-Google-Smtp-Source: ABdhPJweee1NV8I+cn8MRIfg+U9lhogZHkKzOG5thGkldSQIVCGVSNoMveRbaFdY8w17tPDTptcZ8g==
-X-Received: by 2002:a50:9d47:0:b0:40f:9d3d:97b6 with SMTP id j7-20020a509d47000000b0040f9d3d97b6mr6523013edk.392.1649212002774;
-        Tue, 05 Apr 2022 19:26:42 -0700 (PDT)
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
-        by smtp.gmail.com with ESMTPSA id v5-20020a50c405000000b004161123bf7asm7182389edf.67.2022.04.05.19.26.42
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 19:26:42 -0700 (PDT)
-Received: by mail-wr1-f48.google.com with SMTP id j12so1090570wrb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:26:42 -0700 (PDT)
-X-Received: by 2002:adf:e591:0:b0:206:1202:214 with SMTP id
- l17-20020adfe591000000b0020612020214mr4789813wrm.342.1649212001620; Tue, 05
- Apr 2022 19:26:41 -0700 (PDT)
+        Wed, 6 Apr 2022 05:25:34 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791CE16249D;
+        Tue,  5 Apr 2022 21:50:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649220656; x=1680756656;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=iC68qSmiZTNL7Prs9cAoa+JCPh9pm5fBnRuabYf0ICw=;
+  b=b60JoccvlOMWt730h5IrjAiZrGKl+Sek7aldvGAslijwCsXQKA+HVBhN
+   NhoYRGdJAMUQMg37Mrdy1K2Myj7YJTkjeQv1y+sONXZMrVGhXgMOSbKY/
+   x3HGW1KzeWj8hedszNg2NDITcAEDFqoilmFZBXSwYPxe4SebpAUCSvuN7
+   hATxNWi3eyyVuSf+a4HDtLM8JqdThDP/9lq5Fe/OtKmxAh9tPsxy3KYnM
+   Zvo+/RZckXfZ+gMqWuTjlgZjgIYaFPi/UX3pJNb5AZ6Z8Er8jmPfRPvRQ
+   mOrvIw7XXWOtsuZo0ABOQ5ns6hCbs6eFrwfU345GsqXO5vPbgznDF8RCo
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089887"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="243089887"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:48 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="524302447"
+Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:44 -0700
+From:   Kai Huang <kai.huang@intel.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, kai.huang@intel.com
+Subject: [PATCH v3 16/21] x86/virt/tdx: Configure TDX module with TDMRs and global KeyID
+Date:   Wed,  6 Apr 2022 16:49:28 +1200
+Message-Id: <9cbb09c01bc145c580c084b4fc27c54ada771e72.1649219184.git.kai.huang@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
 MIME-Version: 1.0
-References: <20220406014842.2771799-1-briannorris@chromium.org> <20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid>
-In-Reply-To: <20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 5 Apr 2022 19:26:28 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Wdp5ax_MhGg-=ocSPS=cs1nUCRcz+E81Z2V-w_YVuzUw@mail.gmail.com>
-Message-ID: <CAD=FV=Wdp5ax_MhGg-=ocSPS=cs1nUCRcz+E81Z2V-w_YVuzUw@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during transitions
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Elaine Zhang <zhangqing@rock-chips.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+After the TDX usable memory regions are constructed in an array of TDMRs
+and the global KeyID is reserved, configure them to the TDX module.  The
+configuration is done via TDH.SYS.CONFIG, which is one call and can be
+done on any logical cpu.
 
-On Tue, Apr 5, 2022 at 6:49 PM Brian Norris <briannorris@chromium.org> wrote:
->
-> See the previous patch ("soc: rockchip: power-domain: Manage resource
-> conflicts with firmware") for a thorough explanation of the conflicts.
-> While ARM Trusted Firmware may be modifying memory controller and
-> power-domain states, we need to block the kernel's power-domain driver.
->
-> If the power-domain driver is disabled, there is no resource conflict
-> and this becomes a no-op.
->
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
-> ---
->
->  drivers/devfreq/rk3399_dmc.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
+Signed-off-by: Kai Huang <kai.huang@intel.com>
+---
+ arch/x86/virt/vmx/tdx/tdx.c | 42 +++++++++++++++++++++++++++++++++++++
+ arch/x86/virt/vmx/tdx/tdx.h |  2 ++
+ 2 files changed, 44 insertions(+)
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index ecd65f7014e2..2bf49d3d7cfe 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -1284,6 +1284,42 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+ 	return ret;
+ }
+ 
++static int config_tdx_module(struct tdmr_info **tdmr_array, int tdmr_num,
++			     u64 global_keyid)
++{
++	u64 *tdmr_pa_array;
++	int i, array_sz;
++	int ret;
++
++	/*
++	 * TDMR_INFO entries are configured to the TDX module via an
++	 * array of the physical address of each TDMR_INFO.  TDX requires
++	 * the array itself must be 512 aligned.  Round up the array size
++	 * to 512 aligned so the buffer allocated by kzalloc() meets the
++	 * alignment requirement.
++	 */
++	array_sz = ALIGN(tdmr_num * sizeof(u64), TDMR_INFO_PA_ARRAY_ALIGNMENT);
++	tdmr_pa_array = kzalloc(array_sz, GFP_KERNEL);
++	if (!tdmr_pa_array)
++		return -ENOMEM;
++
++	for (i = 0; i < tdmr_num; i++)
++		tdmr_pa_array[i] = __pa(tdmr_array[i]);
++
++	/*
++	 * TDH.SYS.CONFIG fails when TDH.SYS.LP.INIT is not done on all
++	 * BIOS-enabled cpus.  tdx_init() only disables CPU hotplug but
++	 * doesn't do early check whether all BIOS-enabled cpus are
++	 * online, so TDH.SYS.CONFIG can fail here.
++	 */
++	ret = seamcall(TDH_SYS_CONFIG, __pa(tdmr_pa_array), tdmr_num,
++				global_keyid, 0, NULL, NULL);
++	/* Free the array as it is not required any more. */
++	kfree(tdmr_pa_array);
++
++	return ret;
++}
++
+ static int init_tdx_module(void)
+ {
+ 	struct tdmr_info **tdmr_array;
+@@ -1329,11 +1365,17 @@ static int init_tdx_module(void)
+ 	 */
+ 	tdx_global_keyid = tdx_keyid_start;
+ 
++	/* Config the TDX module with TDMRs and global KeyID */
++	ret = config_tdx_module(tdmr_array, tdmr_num, tdx_global_keyid);
++	if (ret)
++		goto out_free_pamts;
++
+ 	/*
+ 	 * Return -EFAULT until all steps of TDX module
+ 	 * initialization are done.
+ 	 */
+ 	ret = -EFAULT;
++out_free_pamts:
+ 	/*
+ 	 * Free PAMTs allocated in construct_tdmrs() when TDX module
+ 	 * initialization fails.
+diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+index 05bf9fe6bd00..d8e2800397af 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.h
++++ b/arch/x86/virt/vmx/tdx/tdx.h
+@@ -95,6 +95,7 @@ struct tdmr_reserved_area {
+ } __packed;
+ 
+ #define TDMR_INFO_ALIGNMENT	512
++#define TDMR_INFO_PA_ARRAY_ALIGNMENT	512
+ 
+ struct tdmr_info {
+ 	u64 base;
+@@ -125,6 +126,7 @@ struct tdmr_info {
+ #define TDH_SYS_INIT		33
+ #define TDH_SYS_LP_INIT		35
+ #define TDH_SYS_LP_SHUTDOWN	44
++#define TDH_SYS_CONFIG		45
+ 
+ struct tdx_module_output;
+ u64 __seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+-- 
+2.35.1
+
