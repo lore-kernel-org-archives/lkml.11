@@ -2,351 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2697BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A23C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233436AbiDFNf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45484 "EHLO
+        id S233396AbiDFNgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233378AbiDFNfk (ORCPT
+        with ESMTP id S233612AbiDFNfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:35:40 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD64144DCE7;
-        Tue,  5 Apr 2022 21:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649220586; x=1680756586;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=sGo7d12v2k3Q7y3rHHt5kkOidiqNI+CWYyie9UKnLhs=;
-  b=NhNnAw5Fa3enQgpHGNwn3fdwK8Ce76ma3lTgXCgREhEy2zXinCGpY1Zm
-   pUOSekAFroW3fUFDeM6+m/AtWQeyRM1JHzexMTn4j3bNMs9tyZlLS4oME
-   XKB6zbYTmmvBGFkMZmsQmKtFy953qVcFmDt82FVyxz8g8zK9EjuieVFQY
-   t94pVyL+3BKv7DyFv4xlE7kizGLwb+RLy8v+A5UqauhsEwR+ifFbZ37ho
-   4Ee718Mw9YD/TdTZDbxxqlDtR2d787rsrZaksExK5XaDFPy3iX4Igh+0I
-   qs4GRq54H/lEl1tUegwIQFgKs7lj3CM+P4HMrleqjpASJtIEzTHjYYo0P
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089757"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="243089757"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:49:45 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="524302081"
-Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:49:41 -0700
-From:   Kai Huang <kai.huang@intel.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
-        len.brown@intel.com, tony.luck@intel.com,
-        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
-        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v3 00/21] TDX host kernel support
-Date:   Wed,  6 Apr 2022 16:49:12 +1200
-Message-Id: <cover.1649219184.git.kai.huang@intel.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 6 Apr 2022 09:35:46 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8F7463AC7
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 21:54:32 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 235NRhH2004895;
+        Wed, 6 Apr 2022 04:54:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=1ban3eP6943JOmD8XcIWhKgViPNBZvRUteug+BlLhUQ=;
+ b=IGlVmHwgzqz1ePWmjQAnM/acRrY27rUk566whxQM943WAOaMuzskd4vCOcoAv8BkJaLX
+ NKibS6kNVemRBa2mhFUam0udCz8eiaV6v2zSoKEtCJYyiOTfbMYt7v1JRiST+bX8jlHY
+ 8NQLFjX7vB2SE6FI9if9F8j/CN641mTJjj/npDhysNyWu8cswPTikEkpPmd5ijth4T1e
+ OzhzsDHuffwxFBadqE+m5grwzom5aUp5IT99pfmBop/i+/YacoJONGmc7h6babnUS9Dv
+ hZt2XJJbLTwMMywcCmAtIrhLHENjA+X+nw8kOSKr8MAgv2MLujiPdaHcovk6ToUprQWA jA== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f6d92yswu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Apr 2022 04:54:26 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2364opZ0032824;
+        Wed, 6 Apr 2022 04:54:26 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2109.outbound.protection.outlook.com [104.47.58.109])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3f6cx46bws-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Apr 2022 04:54:26 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A7MnhnZ2vNs4HJaHAiMtJnaBZD5nk2OhxagCt2hMhaDnduQNnQNTQGC+AqizwU3EE7VTsQO9vr1UhBG327ptI2gVvPwh+lyhChRGHEZjvC62wvWAIy2rx/ue3atwMETSwnvNgkuAqrQkno5cz48f4udaHJOPz99mszfB/PGfrkAozYFT+EBdMhxJnZ0xMAkl29Mes4JArggTQeOz8iMWfR+2B0thDsAQ1uFEntFZAbLyV0RUNs/LcY1MBk0AT3S9PWJYF/hHoE1EnJZKFjPB3UkAMq2tpsAD3EddjIq+NaBpFcsrt3uQuHbQtDJwPZkKgA2fulwF/PVDp7IN6Eds/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1ban3eP6943JOmD8XcIWhKgViPNBZvRUteug+BlLhUQ=;
+ b=Xn+olLjQbEyQjy6Q5irJWmu/Hn51ouzDBarGFm09FcxT64siHoDXUys40Hs2e8v8RO5+XSm+E23N5f5b0BX2mqqjDSB+EH5JRUyulq5L9nhu615kyAJTACzt1O+O4TyFs/TrSr8toT4Qm7wAKlS2lJkXDp96IJzjfWQJY5cKL5Yxr/38Hsb3Wj0c/m/qh5Na9c1L40wV+y6e1JF3L+klQC5Av8AkU/vw4rdlJOtMn9V7eEh8lgSP7rZEmCMiRa/QB16VoveVOdKlX+fdHPDRIpOFav3wP770qXHVzpP0rTHyk0CwO7wcXuDvAxBRf2oGeVOz+AA4/AeR0Wb2+3sl8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1ban3eP6943JOmD8XcIWhKgViPNBZvRUteug+BlLhUQ=;
+ b=gEntpFwJUgUybHa2fO369tDV9Z54LE/6iFLlTisgFth7UYdadNWKJUgHVXaiwUUeL//zNZosOAdKr3Dol293c0GNBkv3M64GFW11fG+atFvrAiQuGfhiVBiZQQzo8/KIEM+zbqIoFvR87HKwf3FGfpL2R6exGQ5wuWxx/QqztZI=
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com (2603:10b6:303:6c::24)
+ by PH0PR10MB4485.namprd10.prod.outlook.com (2603:10b6:510:41::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 04:54:24 +0000
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::b5ab:1c3e:6540:d2fa]) by CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::b5ab:1c3e:6540:d2fa%9]) with mapi id 15.20.5144.019; Wed, 6 Apr 2022
+ 04:54:24 +0000
+Message-ID: <0dfe1056-3dc5-4d31-698e-e2c075ffd6ee@oracle.com>
+Date:   Wed, 6 Apr 2022 14:54:19 +1000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [RESEND PATCH v7 1/8] kernfs: Introduce interface to access
+ global kernfs_open_file_mutex.
+Content-Language: en-US
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     tj@kernel.org, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org
+References: <20220317072612.163143-1-imran.f.khan@oracle.com>
+ <20220317072612.163143-2-imran.f.khan@oracle.com>
+ <YjOpedPDj+3KCJjk@zeniv-ca.linux.org.uk>
+ <10b5d071-7f69-da59-6395-064550c6c6cb@oracle.com>
+ <YkxRDJ2ynEHGdjeT@zeniv-ca.linux.org.uk>
+From:   Imran Khan <imran.f.khan@oracle.com>
+In-Reply-To: <YkxRDJ2ynEHGdjeT@zeniv-ca.linux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR02CA0070.namprd02.prod.outlook.com
+ (2603:10b6:a03:54::47) To CO1PR10MB4468.namprd10.prod.outlook.com
+ (2603:10b6:303:6c::24)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 88d1ae0a-18d3-4d3a-9cfb-08da1789856b
+X-MS-TrafficTypeDiagnostic: PH0PR10MB4485:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR10MB44851B072CADB543E2462595B0E79@PH0PR10MB4485.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4LAfsli1jNMMPUQNpolJ+Z1hjm9xB64n/RGqOGO8CAEVYddOZN0PWZyJf2tt1Wru/jzLaxSM3eacOrUDYt333WisydimT9Me4h9fUSIaQYxSt4dj1UgbNyMTeLvzg548/WxmgSkZDHBRG3PHeRqdoxyXgG2qN9H1T5ZV565IHBLU2yTWXNU07UGXh7FqwdjF3wdcnFHtmqgT7UYfI+66asPFkbJ0yflm6FoHfgtEeHPbZ9/j5Di+lLoKPM2IgFULjlrnG/JzINZIz3mzxOMsNx2zIc9Q1bDzRYlJNtfj0+RbHZE1JdeHRQpyulUEeFdM1mdzqNkvEmDOwoohTUZZPRYKnVrYhcux3iQokxpgnlT5dOfuQVO04J+YDP+GPFOEVl511X5KbELIZus3nkVDV3zvu1kl6cjlXyYYSdeQOhm/vz6DzsYNiLGirs9oOY4nifU8bqzEwGrewXVBqCazzdtXY+dlkWtNqMSvIGQCrBOhtJ7Tj0ERQNiEbsrQ/M8yJ7rcG9UZ+9XyCoCpu289302fN6YdVVgbz04UgbI7iaCTrI/dZ8idXGR+ZuvCYcgwhsB/8dQWNd4D94UUHHw2lJtm+dimIAbwWmqUTRvGveSyUQHjyv13xlQuX6kv0Cq0kCToPb+78A0SHag4lGx90Om/qRpVeEdmVNKmqO2mITnkpUYsZSPXLC+5WF+gXHWNBhvfl7eEWwFFOxJAu3CkItX2RjHfQqc/PHDbwEKGkiOmsBTbt9EEKDfGEoflKWefMnotdwsAJKHy2iuK5b2r/pQcIJWP8TJu8UDZHcH1Ex1oFSoujfBcZ1W8xyTupLUqfaHxu7qceDiWzQodwChIwg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(26005)(6916009)(966005)(8676002)(66476007)(6486002)(2616005)(66946007)(508600001)(36756003)(4326008)(66556008)(31686004)(316002)(186003)(53546011)(86362001)(6512007)(2906002)(6506007)(83380400001)(38100700002)(8936002)(31696002)(5660300002)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d3pueTY3Yi9EQ3dWT3QycGYvU1J0R3Z2M05ZQzJxQTV1cjN2dVBmZWhkQzNx?=
+ =?utf-8?B?ZGFaOWplaDBidlJrbENHbElTeDRNL0R4ejRuMmtHMGR6NzhRVHh0M0FWdWlU?=
+ =?utf-8?B?K0dZVk01QTc2aXFwWmUxM3RjSHJBTjIyd3FXYjlDcGJNOENvaWEvQjB1emk2?=
+ =?utf-8?B?S2EwMFJsOUhJRTI2Z2lCTUJJZEZTOUVuWDgxeCtpcWw5NzF4OGJ5R1dZZUhC?=
+ =?utf-8?B?emlDNEhWK3FXaUc4VnFRSENKS01vME9OZ2pNcEV4eFk3aEVSY3UxTWtVUmJO?=
+ =?utf-8?B?b0plSisvcXFsSWwyaGRRZVZCTThZTnR2NS9uZDhhbXZEcmFocGJQZ2x2T2sr?=
+ =?utf-8?B?K1Qyd1BLemd6WnpYSlltbWgxbHBVTVJ2ZXNQRUtlelNSTk5uTzJCWXpKeWFH?=
+ =?utf-8?B?OEowU0taQkE3TGVBc1F5cGRZT3BtcWdYQzhRS2gzaHdmUEFFclk4TUkvOWZF?=
+ =?utf-8?B?TVgzWmxudElCSDlvdmVpekw3Q1ZvY1hvSmQyNjF4NTlqWnQrNWJIcXpEN0pu?=
+ =?utf-8?B?YSs3c2NkamNRK1E4QVIxQXVYZEg2QjIxVXZpS2Y1K3NiY29tWFQ3V08wTlZQ?=
+ =?utf-8?B?TE1wNDc3Rm9EdEdCU0pYZldOWm1iNWhKR1N0SHZ3Nkg3WHhlZ2lmZ003RkUz?=
+ =?utf-8?B?SW94c0l5NHRLaHlHUUZJd050ZnVUd2hQZE5VeEpFTm1RZzdmUzNrMmdDZlQ5?=
+ =?utf-8?B?MlhQZjRKNDQ1NFc4a1RyaVNmZDBMNlZvWmFXNFVXMVUzVkZOb0ExU0FjSXRl?=
+ =?utf-8?B?eXkvbWdqY0Q2cjdXWUdyaFBUcnp5K1JFY0E5azFRZS9aK2NIVHBYK3BlN0Fv?=
+ =?utf-8?B?VzBSZ255SkRjOTArU2kzRUIwODh5L2JHZUQzQnhHN2oxM0Q4S1A2T1Y3Rnll?=
+ =?utf-8?B?MUQ4RjhIQittSWZtWHduR01vUjNuTktFWTl3cFNGdzJvSmxIK1pHc0g2U1l2?=
+ =?utf-8?B?TkR0bFExZm54VytNTFFOOWswbUpuWnplVFlCNENFWno0dHlVM0szR1krcmtO?=
+ =?utf-8?B?R0dXNnU2K3J6anhaVGFuTEVpMjNpZW15KzJJK2p6YjlyUk1TM3gra3RrdFdt?=
+ =?utf-8?B?Ump2VHFJK2RUVXg4OWh6by85Yy9RMmJKT3VjMXl6NVoxdEEwblU1WWEyYkh1?=
+ =?utf-8?B?Mi94NFhIcHVHUkdxdXNpZkVoczJQRjRlaWJpMzNaV0tvOE9DTlIxU2h1STUr?=
+ =?utf-8?B?Z2NqQkl5SXU1RDBGUkpVUjQ4WUlLRkhGdloyTW5tUER0RFByQTJlRkxOMlVD?=
+ =?utf-8?B?T01ZMGEvZ2I3dFg2Z0UvSTU0dmtaTnV1RVZwWVJIRVA0ODgyZ3RYL0lnYi9m?=
+ =?utf-8?B?bXUwRERDTGNCQm1vcjdwTW1KRVBSQm8xU2s1T256WVNJQit1N1IwUlhMM3lI?=
+ =?utf-8?B?YzlmSFN6MHc3ZjV4N3MxS2lINTUrTlpkR1BjMkVzRGMyMXU1bDYxbkpFZjNO?=
+ =?utf-8?B?N3ZQend1NFJ1K1ZDS2VqNEFWcFIycWc5UzVHWGc3aTUrbFBwT0hjdUxjcG9q?=
+ =?utf-8?B?NjQxRmlMZ3crNncyTW9TdldXTlhNc2ZZblI3ckhYNFZwMFBzUGJUUUJLaDZm?=
+ =?utf-8?B?SlE0WVM3cEwvdWU3SUtRb3IxWmE0SGZKNTlQMzBPbjVWTHhrRmZseG1xZmFx?=
+ =?utf-8?B?QjlJaGtsWGJZUWtMMkZPL1BFNzZqWkVtclhIdVYyZ3duSDJtVmEybEd4RXdC?=
+ =?utf-8?B?VzAra2ZaQWtIa285WHlEd2svRFpBeFZmcHBiVE9zaU9peE85STc5dXZPOTQv?=
+ =?utf-8?B?SWdGS1RKZTBsRmU4SnpNWXczVFVkQnBBOEZTYUlLanROUnRWWklFMG9hY1RX?=
+ =?utf-8?B?REtweGRtVGZzcUE2dkR1U212RjRwZjlmYUFtY1B1Y09ZemJvaklqcklyU2NI?=
+ =?utf-8?B?VndvZzNPUTNmZ3JpWjR3enNzcU9ueVhUT2dmZzB6UzRQMDFiZlY3SFhnUHlL?=
+ =?utf-8?B?UGsvSFJOREhqdXkvZVpoMmVGTnZucWd0YXdJcSsyaVR6UU9Kb0NPSGltb294?=
+ =?utf-8?B?ejN4NnQ3N1BNdVZ4Tmx5UGp1RTNtWitNOHdiWVQweXJ3MDdTZDZsK3VKUURk?=
+ =?utf-8?B?QmtNM0hCN09jOUlaby80dGlIbmJLSDlsN2ZmN2JNMndDcHdCREh5VUlrcFc0?=
+ =?utf-8?B?RGZrOTJLZkpnbFU5dUNpa29INHpCaHNnVG1qeVlIZGh1OFZRNWtMNVRpSUJm?=
+ =?utf-8?B?d0tOTWx6am9ZVGFXRHJqeVV6cUd4OEZQa2t2eGpRd0tsbFByNFpmT0RBNHBD?=
+ =?utf-8?B?MHNVblgxNnY5RDQvQll1dEhrOEc3Uld2cE5PWHJkbXlHV1B2MEVHVUp5Z2wx?=
+ =?utf-8?B?Qm1tQWpVeEVsQmRsaksxQkx2VkxmS2hobHNvVEcvRm1vZmYxcXZ6Z2lHbk1z?=
+ =?utf-8?Q?/iuup3TT6siDxfF4=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88d1ae0a-18d3-4d3a-9cfb-08da1789856b
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4468.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 04:54:24.4133
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RuzxBqXCX5LYiL35EbZOpErhlaDLE1hwFHSbE2sJuei5zfQ/KH5o1z/IGA/K4AAgSPbd451wkKU8hRFiMtSKIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB4485
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
+ definitions=2022-04-06_01:2022-04-04,2022-04-06 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 spamscore=0
+ phishscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204060020
+X-Proofpoint-ORIG-GUID: zq0LL_yrTA7sjjCq7hpzsK_W-f1trciL
+X-Proofpoint-GUID: zq0LL_yrTA7sjjCq7hpzsK_W-f1trciL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Intel Trusted Domain Extensions (TDX) protects guest VMs from malicious
-host and certain physical attacks.  This series provides support for
-initializing the TDX module in the host kernel.  KVM support for TDX is
-being developed separately[1].
+Hello Al,
 
-The code has been tested on couple of TDX-capable machines.  I would
-consider it as ready for review. I highly appreciate if anyone can help
-to review this series (from high level design to detail implementations).
-For Intel reviewers (CC'ed), please help to review, and I would
-appreciate Reviewed-by or Acked-by tags if the patches look good to you.
+On 6/4/22 12:24 am, Al Viro wrote:
+[...]
+> 
+> What for?  Again, have kernfs_drain_open_files() do this:
+> {
+>         struct kernfs_open_node *on;
+> 	struct kernfs_open_file *of;
+> 
+> 	if (!(kn->flags & (KERNFS_HAS_MMAP | KERNFS_HAS_RELEASE)))
+> 		return;
+> 	if (rcu_dereference(kn->attr.open) == NULL)
+> 		return;
+> 	mutex_lock(&kernfs_open_file_mutex);
+> 	// now ->attr.open is stable (all stores are under kernfs_open_file_mutex)
+> 	on = rcu_dereference(kn->attr.open);
+> 	if (!on) {
+> 		mutex_unlock(&kernfs_open_file_mutex);
+> 		return;
+> 	}
+> 	// on->files contents is stable
+> 	list_for_each_entry(of, &on->files, list) {
+> 		struct inode *inode = file_inode(of->file);
+> 
+> 		if (kn->flags & KERNFS_HAS_MMAP)
+> 			unmap_mapping_range(inode->i_mapping, 0, 0, 1);
+> 
+> 		if (kn->flags & KERNFS_HAS_RELEASE)
+> 			kernfs_release_file(kn, of);
+> 	}
+> 	mutex_unlock(&kernfs_open_file_mutex);
+> }
+> 
 
-Thanks in advance.
+I did something similar in in [1], except that I was traversing
+on->files under rcu_read_lock and this was a source of confusion.
 
-This series is based on Kirill's TDX guest series[2]. The reason is host
-side SEAMCALL implementation can share TDCALL's implementation which is
-implemented in TDX guest series.
+> What's the problem?  The caller has already guaranteed that no additions will
+> happen.  Once we'd grabbed kernfs_open_file_mutex, we know that
+> 	* kn->attr.open value won't change until we drop the mutex
+> 	* nothing gets removed from kn->attr.open->files until we drop the mutex
+> so we can bloody well walk that list, blocking as much as we want.
+> 
+> We don't need rcu_read_lock() there - we are already holding the mutex used
+> by writers for exclusion among themselves.  RCU *allows* lockless readers,
+> it doesn't require all readers to be such.  kernfs_notify() can be made
+> lockless, this one can't and that's fine.
+> 
 
-You can find TDX related specs here:
-https://software.intel.com/content/www/us/en/develop/articles/intel-trust-domain-extensions.html
+Thanks for explaining this. I missed the exclusiveness being provided by
+kernfs_open_file_mutex in this case.
 
-You can also find this series in below repo in github:
-https://github.com/intel/tdx/tree/host-upstream
+> BTW, speaking of kernfs_notify() - can calls of that come from NMI handlers?
+> If not, I'd consider using llist for kernfs_notify_list...
 
-Changelog history:
+I see it gets invoked from 3 places only: cgroup_file_notify,
+sysfs_notify and sysfs_notify_dirent. So kernfs_notify should not be
+getting invoked in NMI context. I will make the llist transition in next
+version.
 
-- V2 -> v3:
+Thanks,
+-- Imran
 
- - Rebased to latest TDX guest code, which is based on 5.18-rc1.
- - Addressed comments from Isaku.
-  - Fixed memory leak and unnecessary function argument in the patch to
-    configure the key for the global keyid (patch 17).
-  - Enhanced a little bit to the patch to get TDX module and CMR
-    information (patch 09).
-  - Fixed an unintended change in the patch to allocate PAMT (patch 13).
- - Addressed comments from Kevin:
-  - Slightly improvement on commit message to patch 03.
- - Removed WARN_ON_ONCE() in the check of cpus_booted_once_mask in
-   seamrr_enabled() (patch 04).
- - Changed documentation patch to add TDX host kernel support materials
-   to Documentation/x86/tdx.rst together with TDX guest staff, instead
-   of a standalone file (patch 21)
-
-- RFC (v1) -> v2:
-  - Rebased to Kirill's latest TDX guest code.
-  - Fixed two issues that are related to finding all RAM memory regions
-    based on e820.
-  - Minor improvement on comments and commit messages.
-
-V2:
-https://lore.kernel.org/lkml/cover.1647167475.git.kai.huang@intel.com/T/
-RFC (v1):
-https://lore.kernel.org/all/e0ff030a49b252d91c789a89c303bb4206f85e3d.1646007267.git.kai.huang@intel.com/T/
-
-== Background ==
-
-Intel Trusted Domain Extensions (TDX) protects guest VMs from malicious
-host and certain physical attacks.  To support TDX, a new CPU mode called
-Secure Arbitration Mode (SEAM) is added to Intel processors.
-
-SEAM is an extension to the existing VMX architecture.  It defines a new
-VMX root operation (SEAM VMX root) and a new VMX non-root operation (SEAM
-VMX non-root).
-
-SEAM VMX root operation is designed to host a CPU-attested, software
-module called the 'TDX module' which implements functions to manage
-crypto protected VMs called Trust Domains (TD).  SEAM VMX root is also
-designed to host a CPU-attested, software module called the 'Intel
-Persistent SEAMLDR (Intel P-SEAMLDR)' to load and update the TDX module.
-
-Host kernel transits to either the P-SEAMLDR or the TDX module via a new
-SEAMCALL instruction.  SEAMCALLs are host-side interface functions
-defined by the P-SEAMLDR and the TDX module around the new SEAMCALL
-instruction.  They are similar to a hypercall, except they are made by
-host kernel to the SEAM software modules.
-
-TDX leverages Intel Multi-Key Total Memory Encryption (MKTME) to crypto
-protect TD guests.  TDX reserves part of MKTME KeyID space as TDX private
-KeyIDs, which can only be used by software runs in SEAM.  The physical
-address bits for encoding TDX private KeyID are treated as reserved bits
-when not in SEAM operation.  The partitioning of MKTME KeyIDs and TDX
-private KeyIDs is configured by BIOS.
-
-Before being able to manage TD guests, the TDX module must be loaded
-and properly initialized using SEAMCALLs defined by TDX architecture.
-This series assumes both the P-SEAMLDR and the TDX module are loaded by
-BIOS before the kernel boots.
-
-There's no CPUID or MSR to detect either the P-SEAMLDR or the TDX module.
-Instead, detecting them can be done by using P-SEAMLDR's SEAMLDR.INFO
-SEAMCALL to detect P-SEAMLDR.  The success of this SEAMCALL means the
-P-SEAMLDR is loaded.  The P-SEAMLDR information returned by this
-SEAMCALL further tells whether TDX module is loaded.
-
-The TDX module is initialized in multiple steps:
-
-        1) Global initialization;
-        2) Logical-CPU scope initialization;
-        3) Enumerate the TDX module capabilities;
-        4) Configure the TDX module about usable memory ranges and
-           global KeyID information;
-        5) Package-scope configuration for the global KeyID;
-        6) Initialize TDX metadata for usable memory ranges based on 4).
-
-Step 2) requires calling some SEAMCALL on all "BIOS-enabled" (in MADT
-table) logical cpus, otherwise step 4) will fail.  Step 5) requires
-calling SEAMCALL on at least one cpu on all packages.
-
-TDX module can also be shut down at any time during module's lifetime, by
-calling SEAMCALL on all "BIOS-enabled" logical cpus.
-
-== Design Considerations ==
-
-1. Lazy TDX module initialization on-demand by caller
-
-None of the steps in the TDX module initialization process must be done
-during kernel boot.  This series doesn't initialize TDX at boot time, but
-instead, provides two functions to allow caller to detect and initialize
-TDX on demand:
-
-        if (tdx_detect())
-                goto no_tdx;
-        if (tdx_init())
-                goto no_tdx;
-
-This approach has below pros:
-
-1) Initializing the TDX module requires to reserve ~1/256th system RAM as
-metadata.  Enabling TDX on demand allows only to consume this memory when
-TDX is truly needed (i.e. when KVM wants to create TD guests).
-
-2) Both detecting and initializing the TDX module require calling
-SEAMCALL.  However, SEAMCALL requires CPU being already in VMX operation
-(VMXON has been done).  So far, KVM is the only user of TDX, and it
-already handles VMXON/VMXOFF.  Therefore, letting KVM to initialize TDX
-on-demand avoids handling VMXON/VMXOFF (which is not that trivial) in
-core-kernel.  Also, in long term, likely a reference based VMXON/VMXOFF
-approach is needed since more kernel components will need to handle
-VMXON/VMXONFF.
-
-3) It is more flexible to support "TDX module runtime update" (not in
-this series).  After updating to the new module at runtime, kernel needs
-to go through the initialization process again.  For the new module,
-it's possible the metadata allocated for the old module cannot be reused
-for the new module, and needs to be re-allocated again.
-
-2. Kernel policy on TDX memory
-
-Host kernel is responsible for choosing which memory regions can be used
-as TDX memory, and configuring those memory regions to the TDX module by
-using an array of "TD Memory Regions" (TDMR), which is a data structure
-defined by TDX architecture.
-
-The first generation of TDX essentially guarantees that all system RAM
-memory regions (excluding the memory below 1MB) can be used as TDX
-memory.  To avoid having to modify the page allocator to distinguish TDX
-and non-TDX allocation, this series chooses to use all system RAM as TDX
-memory.
-
-E820 table is used to find all system RAM entries.  Following
-e820__memblock_setup(), both E820_TYPE_RAM and E820_TYPE_RESERVED_KERN
-types are treated as TDX memory, and contiguous ranges in the same NUMA
-node are merged together (similar to memblock_add()) before trimming the
-non-page-aligned part.
-
-X86 Legacy PMEMs (E820_TYPE_PRAM) also unconditionally treated as TDX
-memory as underneath they are RAM and can be potentially used as TD guest
-memory.
-
-Memblock is not used to find all RAM regions as: 1) it is gone after
-kernel boots; 2) it doesn't have legacy PMEM.
-
-3. Memory hotplug
-
-The first generation of TDX architecturally doesn't support memory
-hotplug.  And the first generation of TDX-capable platforms don't support
-physical memory hotplug.  Since it physically cannot happen, this series
-doesn't add any check in ACPI memory hotplug code path to disable it.
-
-A special case of memory hotplug is adding NVDIMM as system RAM using
-kmem driver.  However the first generation of TDX-capable platforms
-cannot enable TDX and NVDIMM simultaneously, so in practice this cannot
-happen either.
-
-Another case is admin can use 'memmap' kernel command line to create
-legacy PMEMs and use them as TD guest memory, or theoretically, can use
-kmem driver to add them as system RAM.  To avoid having to change memory
-hotplug code to prevent this from happening, this series always include
-legacy PMEMs when constructing TDMRs so they are also TDX memory.
-
-4. CPU hotplug
-
-The first generation of TDX architecturally doesn't support ACPI CPU
-hotplug.  All logical cpus are enabled by BIOS in MADT table.  Also, the
-first generation of TDX-capable platforms don't support ACPI CPU hotplug
-either.  Since this physically cannot happen, this series doesn't add any
-check in ACPI CPU hotplug code path to disable it.
-
-Also, only TDX module initialization requires all BIOS-enabled cpus are
-online.  After the initialization, any logical cpu can be brought down
-and brought up to online again later.  Therefore this series doesn't
-change logical CPU hotplug either.
-
-5. TDX interaction with kexec()
-
-If TDX is ever enabled and/or used to run any TD guests, the cachelines
-of TDX private memory, including PAMTs, used by TDX module need to be
-flushed before transiting to the new kernel otherwise they may silently
-corrupt the new kernel.  Similar to SME, this series flushes cache in
-stop_this_cpu().
-
-The TDX module can be initialized only once during its lifetime.  The
-first generation of TDX doesn't have interface to reset TDX module to
-uninitialized state so it can be initialized again.
-
-This implies:
-
-  - If the old kernel fails to initialize TDX, the new kernel cannot
-    use TDX too unless the new kernel fixes the bug which leads to
-    initialization failure in the old kernel and can resume from where
-    the old kernel stops. This requires certain coordination between
-    the two kernels.
-
-  - If the old kernel has initialized TDX successfully, the new kernel
-    may be able to use TDX if the two kernels have the exactly same
-    configurations on the TDX module. It further requires the new kernel
-    to reserve the TDX metadata pages (allocated by the old kernel) in
-    its page allocator. It also requires coordination between the two
-    kernels.  Furthermore, if kexec() is done when there are active TD
-    guests running, the new kernel cannot use TDX because it's extremely
-    hard for the old kernel to pass all TDX private pages to the new
-    kernel.
-
-Given that, this series doesn't support TDX after kexec() (except the
-old kernel doesn't attempt to initialize TDX at all).
-
-And this series doesn't shut down TDX module but leaves it open during
-kexec().  It is because shutting down TDX module requires CPU being in
-VMX operation but there's no guarantee of this during kexec().  Leaving
-the TDX module open is not the best case, but it is OK since the new
-kernel won't be able to use TDX anyway (therefore TDX module won't run
-at all).
-
-[1] https://lore.kernel.org/lkml/772b20e270b3451aea9714260f2c40ddcc4afe80.1646422845.git.isaku.yamahata@intel.com/T/
-[2] https://github.com/intel/tdx/tree/guest-upstream
-
-
-Kai Huang (21):
-  x86/virt/tdx: Detect SEAM
-  x86/virt/tdx: Detect TDX private KeyIDs
-  x86/virt/tdx: Implement the SEAMCALL base function
-  x86/virt/tdx: Add skeleton for detecting and initializing TDX on
-    demand
-  x86/virt/tdx: Detect P-SEAMLDR and TDX module
-  x86/virt/tdx: Shut down TDX module in case of error
-  x86/virt/tdx: Do TDX module global initialization
-  x86/virt/tdx: Do logical-cpu scope TDX module initialization
-  x86/virt/tdx: Get information about TDX module and convertible memory
-  x86/virt/tdx: Add placeholder to coveret all system RAM as TDX memory
-  x86/virt/tdx: Choose to use all system RAM as TDX memory
-  x86/virt/tdx: Create TDMRs to cover all system RAM
-  x86/virt/tdx: Allocate and set up PAMTs for TDMRs
-  x86/virt/tdx: Set up reserved areas for all TDMRs
-  x86/virt/tdx: Reserve TDX module global KeyID
-  x86/virt/tdx: Configure TDX module with TDMRs and global KeyID
-  x86/virt/tdx: Configure global KeyID on all packages
-  x86/virt/tdx: Initialize all TDMRs
-  x86: Flush cache of TDX private memory during kexec()
-  x86/virt/tdx: Add kernel command line to opt-in TDX host support
-  Documentation/x86: Add documentation for TDX host support
-
- .../admin-guide/kernel-parameters.txt         |    6 +
- Documentation/x86/tdx.rst                     |  326 +++-
- arch/x86/Kconfig                              |   14 +
- arch/x86/Makefile                             |    2 +
- arch/x86/include/asm/tdx.h                    |   15 +
- arch/x86/kernel/cpu/intel.c                   |    3 +
- arch/x86/kernel/process.c                     |   15 +-
- arch/x86/virt/Makefile                        |    2 +
- arch/x86/virt/vmx/Makefile                    |    2 +
- arch/x86/virt/vmx/tdx/Makefile                |    2 +
- arch/x86/virt/vmx/tdx/seamcall.S              |   52 +
- arch/x86/virt/vmx/tdx/tdx.c                   | 1717 +++++++++++++++++
- arch/x86/virt/vmx/tdx/tdx.h                   |  137 ++
- 13 files changed, 2279 insertions(+), 14 deletions(-)
- create mode 100644 arch/x86/virt/Makefile
- create mode 100644 arch/x86/virt/vmx/Makefile
- create mode 100644 arch/x86/virt/vmx/tdx/Makefile
- create mode 100644 arch/x86/virt/vmx/tdx/seamcall.S
- create mode 100644 arch/x86/virt/vmx/tdx/tdx.c
- create mode 100644 arch/x86/virt/vmx/tdx/tdx.h
-
--- 
-2.35.1
-
+[1]
+https://lore.kernel.org/lkml/20220324103040.584491-3-imran.f.khan@oracle.com/
