@@ -2,414 +2,384 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB0A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 456DAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbiDFLiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
+        id S231688AbiDFLiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbiDFLgE (ORCPT
+        with ESMTP id S237067AbiDFLfo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:36:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7539B55EC28;
-        Wed,  6 Apr 2022 01:26:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEA9AB8217A;
-        Wed,  6 Apr 2022 08:26:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9ECAC385A1;
-        Wed,  6 Apr 2022 08:26:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649233566;
-        bh=Ymk7QEwTWtxLtglZ/kVZ7oXbV1jngz0ne3LZXF3qN58=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EhuiVl2ozJ62KSuAu1eWt28SAUjl15znk0X4qLpeXGWTHFt9lib5FBguL+6N5UI1D
-         kPrF5Q2k/7Bb0Jm2ztlzNwmEi73Y3IeOrjGfZxw4vgo+tV6EJWggM+2RtPURsYszZl
-         g6Exytm9f2xuRajtiVlTHYqybPnJWQ8MBTLsvV6yyibyKMkiaMc1u2n31wS41k029h
-         cyGweIQEoQHR4EGkoZW6ZsprjQ94hTyEQJ/l6WP0jwiv5A6DZShWb+OX10e+hwrNrn
-         W0Kf1Z6FYnSibK1BULuLejBRXWvcN8NcErxpn6EnvECfSJQ62p47eanSL3HuxMeVNl
-         m0vCk1U/4x97Q==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 02/17] net/mlx5: Delete metadata handling logic
-Date:   Wed,  6 Apr 2022 11:25:37 +0300
-Message-Id: <fe67a1de4fc6032a940e18c8a6461a1ccf902fc4.1649232994.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
-References: <cover.1649232994.git.leonro@nvidia.com>
+        Wed, 6 Apr 2022 07:35:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4197255F379
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:26:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649233568;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Oyb93w6KMaE64fW9Bnhk+vRYks2SIuiIn8MgtpHllZE=;
+        b=faTO5QaR0UgzKV/jMPlRh862msZsuwIucgg8vqizsMXZADrPiWHTQvdyi1O2Tes8v6ARFH
+        a01XJsP3rUd7AGcinx4HayuCxPT217LOO4ttgkDue9JK9jbs6ME24AC2S8cRDJj9vz/5Je
+        bMB0Wqh21xf03xVX9ukk5ZvRQr/WwWM=
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+ [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-202-wkAtHXjxOS6QiXcTgwSICQ-1; Wed, 06 Apr 2022 04:26:06 -0400
+X-MC-Unique: wkAtHXjxOS6QiXcTgwSICQ-1
+Received: by mail-pg1-f199.google.com with SMTP id x5-20020a637c05000000b003817f40e072so1074256pgc.17
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 01:26:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=Oyb93w6KMaE64fW9Bnhk+vRYks2SIuiIn8MgtpHllZE=;
+        b=b2PzDrQzaZo7QGDKmon841rgZPdDa9tWnadXRXFC8wRyMx4jc2dtR7wN1Hq6lSNd7g
+         Nz3ZewInIzS3/U3rm6vWC+D7NmuG5nQRh1lkjD3F+CA34H+UrviEu6Fs6kWVc0G55yp9
+         mLZ964vghEqClM8grjvyCxSCVddjaMchk11CT5Tg5OUzrg6ha/eupnoVHUnTOOhU9f0J
+         zQSMNG7inKbOj/zqxvZI9lqSwhDbEIn51eHMkpvFR3Ga9Ej4cpKW/d+vekJcbMqQpw8g
+         WCRoohhw6bXssAlmqEPqdsn2Q3zsJlTluS1fK72LQkJUAaERupH739NodA5d7hPWQxDb
+         Kv/g==
+X-Gm-Message-State: AOAM5339O231ACnzO8azTB8dPqkm8H7GCKVPKra1BNtycFnpqbClQ2rd
+        lga8EMVaZ5nrmKiQmfM7G/lvPPg+8pwusTxSrsl7ZxgFs3hmUmS7ppRkLgMgk7jmNyLQrmpDL7H
+        KvXCWMH9o0JpUbicpezV0Ea5e
+X-Received: by 2002:a17:90a:1197:b0:1bf:65ff:f542 with SMTP id e23-20020a17090a119700b001bf65fff542mr8571420pja.5.1649233565764;
+        Wed, 06 Apr 2022 01:26:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx5XvDYJxsHh0I7U/bWcDjp1JEEdYIUbdweHxDGrVuiR+l6YefDRbyFOkQpn+nc+nffAsuTEw==
+X-Received: by 2002:a17:90a:1197:b0:1bf:65ff:f542 with SMTP id e23-20020a17090a119700b001bf65fff542mr8571396pja.5.1649233565451;
+        Wed, 06 Apr 2022 01:26:05 -0700 (PDT)
+Received: from [10.72.12.58] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id i6-20020a633c46000000b003817d623f72sm15750046pgn.24.2022.04.06.01.26.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 01:26:04 -0700 (PDT)
+Message-ID: <3ee76fe8-e43d-f8d4-0e81-91ba6853101f@redhat.com>
+Date:   Wed, 6 Apr 2022 16:25:56 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH RESEND V2 3/3] vdpa/mlx5: Use consistent RQT size
+Content-Language: en-US
+From:   Jason Wang <jasowang@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>
+Cc:     "hdanton@sina.com" <hdanton@sina.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220329042109.4029-1-jasowang@redhat.com>
+ <20220329042109.4029-3-jasowang@redhat.com>
+ <20220404063241-mutt-send-email-mst@kernel.org>
+ <DM8PR12MB5400ED1195FE612BBC67CB62ABE59@DM8PR12MB5400.namprd12.prod.outlook.com>
+ <20220404072402-mutt-send-email-mst@kernel.org>
+ <b6f21ec6-2374-69de-c21b-8e917dae8f82@redhat.com>
+In-Reply-To: <b6f21ec6-2374-69de-c21b-8e917dae8f82@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
 
-Remove specific to FPGS IPsec metadata handling logic which is not
-required for mlx5 NICs devices.
+在 2022/4/6 上午10:35, Jason Wang 写道:
+>
+> 在 2022/4/4 下午7:24, Michael S. Tsirkin 写道:
+>> On Mon, Apr 04, 2022 at 11:07:36AM +0000, Eli Cohen wrote:
+>>>> From: Michael S. Tsirkin <mst@redhat.com>
+>>>> Sent: Monday, April 4, 2022 1:35 PM
+>>>> To: Jason Wang <jasowang@redhat.com>
+>>>> Cc: Eli Cohen <elic@nvidia.com>; hdanton@sina.com; 
+>>>> virtualization@lists.linux-foundation.org; 
+>>>> linux-kernel@vger.kernel.org
+>>>> Subject: Re: [PATCH RESEND V2 3/3] vdpa/mlx5: Use consistent RQT size
+>>>>
+>>>> On Tue, Mar 29, 2022 at 12:21:09PM +0800, Jason Wang wrote:
+>>>>> From: Eli Cohen <elic@nvidia.com>
+>>>>>
+>>>>> The current code evaluates RQT size based on the configured number of
+>>>>> virtqueues. This can raise an issue in the following scenario:
+>>>>>
+>>>>> Assume MQ was negotiated.
+>>>>> 1. mlx5_vdpa_set_map() gets called.
+>>>>> 2. handle_ctrl_mq() is called setting cur_num_vqs to some value, 
+>>>>> lower
+>>>>>     than the configured max VQs.
+>>>>> 3. A second set_map gets called, but now a smaller number of VQs 
+>>>>> is used
+>>>>>     to evaluate the size of the RQT.
+>>>>> 4. handle_ctrl_mq() is called with a value larger than what the 
+>>>>> RQT can
+>>>>>     hold. This will emit errors and the driver state is compromised.
+>>>>>
+>>>>> To fix this, we use a new field in struct mlx5_vdpa_net to hold the
+>>>>> required number of entries in the RQT. This value is evaluated in
+>>>>> mlx5_vdpa_set_driver_features() where we have the negotiated features
+>>>>> all set up.
+>>>>>
+>>>>> In addtion
+>>>> addition?
+>>> Do you need me to send another version?
+>> It's a bit easier that way but I can handle it manually too.
+>
+>
+> Let me send a new version with this fixed.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../ethernet/mellanox/mlx5/core/accel/accel.h |  36 ----
- .../mellanox/mlx5/core/en_accel/ipsec.h       |   6 -
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  | 199 ------------------
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h  |   3 -
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   1 -
- 5 files changed, 245 deletions(-)
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/accel.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/accel.h b/drivers/net/ethernet/mellanox/mlx5/core/accel/accel.h
-deleted file mode 100644
-index 82b185121edb..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/accel/accel.h
-+++ /dev/null
-@@ -1,36 +0,0 @@
--#ifndef __MLX5E_ACCEL_H__
--#define __MLX5E_ACCEL_H__
--
--#ifdef CONFIG_MLX5_ACCEL
--
--#include <linux/skbuff.h>
--#include <linux/netdevice.h>
--
--static inline bool is_metadata_hdr_valid(struct sk_buff *skb)
--{
--	__be16 *ethtype;
--
--	if (unlikely(skb->len < ETH_HLEN + MLX5E_METADATA_ETHER_LEN))
--		return false;
--	ethtype = (__be16 *)(skb->data + ETH_ALEN * 2);
--	if (*ethtype != cpu_to_be16(MLX5E_METADATA_ETHER_TYPE))
--		return false;
--	return true;
--}
--
--static inline void remove_metadata_hdr(struct sk_buff *skb)
--{
--	struct ethhdr *old_eth;
--	struct ethhdr *new_eth;
--
--	/* Remove the metadata from the buffer */
--	old_eth = (struct ethhdr *)skb->data;
--	new_eth = (struct ethhdr *)(skb->data + MLX5E_METADATA_ETHER_LEN);
--	memmove(new_eth, old_eth, 2 * ETH_ALEN);
--	/* Ethertype is already in its new place */
--	skb_pull_inline(skb, MLX5E_METADATA_ETHER_LEN);
--}
--
--#endif /* CONFIG_MLX5_ACCEL */
--
--#endif /* __MLX5E_EN_ACCEL_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index 6164c7f59efb..282d3abab8c5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -116,7 +116,6 @@ struct mlx5e_ipsec_sa_entry {
- 	struct mlx5e_ipsec_rule ipsec_rule;
- };
- 
--void mlx5e_ipsec_build_inverse_table(void);
- int mlx5e_ipsec_init(struct mlx5e_priv *priv);
- void mlx5e_ipsec_cleanup(struct mlx5e_priv *priv);
- void mlx5e_ipsec_build_netdev(struct mlx5e_priv *priv);
-@@ -125,11 +124,6 @@ struct xfrm_state *mlx5e_ipsec_sadb_rx_lookup(struct mlx5e_ipsec *dev,
- 					      unsigned int handle);
- 
- #else
--
--static inline void mlx5e_ipsec_build_inverse_table(void)
--{
--}
--
- static inline int mlx5e_ipsec_init(struct mlx5e_priv *priv)
- {
- 	return 0;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-index b56fea142c24..28e0500d4a48 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-@@ -37,75 +37,13 @@
- #include "accel/ipsec_offload.h"
- #include "en_accel/ipsec_rxtx.h"
- #include "en_accel/ipsec.h"
--#include "accel/accel.h"
- #include "en.h"
- 
--enum {
--	MLX5E_IPSEC_RX_SYNDROME_DECRYPTED = 0x11,
--	MLX5E_IPSEC_RX_SYNDROME_AUTH_FAILED = 0x12,
--	MLX5E_IPSEC_RX_SYNDROME_BAD_PROTO = 0x17,
--};
--
--struct mlx5e_ipsec_rx_metadata {
--	unsigned char   nexthdr;
--	__be32		sa_handle;
--} __packed;
--
- enum {
- 	MLX5E_IPSEC_TX_SYNDROME_OFFLOAD = 0x8,
- 	MLX5E_IPSEC_TX_SYNDROME_OFFLOAD_WITH_LSO_TCP = 0x9,
- };
- 
--struct mlx5e_ipsec_tx_metadata {
--	__be16 mss_inv;         /* 1/MSS in 16bit fixed point, only for LSO */
--	__be16 seq;             /* LSBs of the first TCP seq, only for LSO */
--	u8     esp_next_proto;  /* Next protocol of ESP */
--} __packed;
--
--struct mlx5e_ipsec_metadata {
--	unsigned char syndrome;
--	union {
--		unsigned char raw[5];
--		/* from FPGA to host, on successful decrypt */
--		struct mlx5e_ipsec_rx_metadata rx;
--		/* from host to FPGA */
--		struct mlx5e_ipsec_tx_metadata tx;
--	} __packed content;
--	/* packet type ID field	*/
--	__be16 ethertype;
--} __packed;
--
--#define MAX_LSO_MSS 2048
--
--/* Pre-calculated (Q0.16) fixed-point inverse 1/x function */
--static __be16 mlx5e_ipsec_inverse_table[MAX_LSO_MSS];
--
--static inline __be16 mlx5e_ipsec_mss_inv(struct sk_buff *skb)
--{
--	return mlx5e_ipsec_inverse_table[skb_shinfo(skb)->gso_size];
--}
--
--static struct mlx5e_ipsec_metadata *mlx5e_ipsec_add_metadata(struct sk_buff *skb)
--{
--	struct mlx5e_ipsec_metadata *mdata;
--	struct ethhdr *eth;
--
--	if (unlikely(skb_cow_head(skb, sizeof(*mdata))))
--		return ERR_PTR(-ENOMEM);
--
--	eth = (struct ethhdr *)skb_push(skb, sizeof(*mdata));
--	skb->mac_header -= sizeof(*mdata);
--	mdata = (struct mlx5e_ipsec_metadata *)(eth + 1);
--
--	memmove(skb->data, skb->data + sizeof(*mdata),
--		2 * ETH_ALEN);
--
--	eth->h_proto = cpu_to_be16(MLX5E_METADATA_ETHER_TYPE);
--
--	memset(mdata->content.raw, 0, sizeof(mdata->content.raw));
--	return mdata;
--}
--
- static int mlx5e_ipsec_remove_trailer(struct sk_buff *skb, struct xfrm_state *x)
- {
- 	unsigned int alen = crypto_aead_authsize(x->data);
-@@ -244,40 +182,6 @@ void mlx5e_ipsec_set_iv(struct sk_buff *skb, struct xfrm_state *x,
- 	skb_store_bits(skb, iv_offset, &seqno, 8);
- }
- 
--static void mlx5e_ipsec_set_metadata(struct sk_buff *skb,
--				     struct mlx5e_ipsec_metadata *mdata,
--				     struct xfrm_offload *xo)
--{
--	struct ip_esp_hdr *esph;
--	struct tcphdr *tcph;
--
--	if (skb_is_gso(skb)) {
--		/* Add LSO metadata indication */
--		esph = ip_esp_hdr(skb);
--		tcph = inner_tcp_hdr(skb);
--		netdev_dbg(skb->dev, "   Offloading GSO packet outer L3 %u; L4 %u; Inner L3 %u; L4 %u\n",
--			   skb->network_header,
--			   skb->transport_header,
--			   skb->inner_network_header,
--			   skb->inner_transport_header);
--		netdev_dbg(skb->dev, "   Offloading GSO packet of len %u; mss %u; TCP sp %u dp %u seq 0x%x ESP seq 0x%x\n",
--			   skb->len, skb_shinfo(skb)->gso_size,
--			   ntohs(tcph->source), ntohs(tcph->dest),
--			   ntohl(tcph->seq), ntohl(esph->seq_no));
--		mdata->syndrome = MLX5E_IPSEC_TX_SYNDROME_OFFLOAD_WITH_LSO_TCP;
--		mdata->content.tx.mss_inv = mlx5e_ipsec_mss_inv(skb);
--		mdata->content.tx.seq = htons(ntohl(tcph->seq) & 0xFFFF);
--	} else {
--		mdata->syndrome = MLX5E_IPSEC_TX_SYNDROME_OFFLOAD;
--	}
--	mdata->content.tx.esp_next_proto = xo->proto;
--
--	netdev_dbg(skb->dev, "   TX metadata syndrome %u proto %u mss_inv %04x seq %04x\n",
--		   mdata->syndrome, mdata->content.tx.esp_next_proto,
--		   ntohs(mdata->content.tx.mss_inv),
--		   ntohs(mdata->content.tx.seq));
--}
--
- void mlx5e_ipsec_handle_tx_wqe(struct mlx5e_tx_wqe *wqe,
- 			       struct mlx5e_accel_tx_ipsec_state *ipsec_st,
- 			       struct mlx5_wqe_inline_seg *inlseg)
-@@ -363,7 +267,6 @@ bool mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 	struct xfrm_offload *xo = xfrm_offload(skb);
- 	struct mlx5e_ipsec_sa_entry *sa_entry;
--	struct mlx5e_ipsec_metadata *mdata;
- 	struct xfrm_state *x;
- 	struct sec_path *sp;
- 
-@@ -392,19 +295,8 @@ bool mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
- 			goto drop;
- 		}
- 
--	if (MLX5_CAP_GEN(priv->mdev, fpga)) {
--		mdata = mlx5e_ipsec_add_metadata(skb);
--		if (IS_ERR(mdata)) {
--			atomic64_inc(&priv->ipsec->sw_stats.ipsec_tx_drop_metadata);
--			goto drop;
--		}
--	}
--
- 	sa_entry = (struct mlx5e_ipsec_sa_entry *)x->xso.offload_handle;
- 	sa_entry->set_iv_op(skb, x, xo);
--	if (MLX5_CAP_GEN(priv->mdev, fpga))
--		mlx5e_ipsec_set_metadata(skb, mdata, xo);
--
- 	mlx5e_ipsec_set_state(priv, skb, x, xo, ipsec_st);
- 
- 	return true;
-@@ -414,79 +306,6 @@ bool mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
- 	return false;
- }
- 
--static inline struct xfrm_state *
--mlx5e_ipsec_build_sp(struct net_device *netdev, struct sk_buff *skb,
--		     struct mlx5e_ipsec_metadata *mdata)
--{
--	struct mlx5e_priv *priv = netdev_priv(netdev);
--	struct xfrm_offload *xo;
--	struct xfrm_state *xs;
--	struct sec_path *sp;
--	u32 sa_handle;
--
--	sp = secpath_set(skb);
--	if (unlikely(!sp)) {
--		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_sp_alloc);
--		return NULL;
--	}
--
--	sa_handle = be32_to_cpu(mdata->content.rx.sa_handle);
--	xs = mlx5e_ipsec_sadb_rx_lookup(priv->ipsec, sa_handle);
--	if (unlikely(!xs)) {
--		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_sadb_miss);
--		return NULL;
--	}
--
--	sp = skb_sec_path(skb);
--	sp->xvec[sp->len++] = xs;
--	sp->olen++;
--
--	xo = xfrm_offload(skb);
--	xo->flags = CRYPTO_DONE;
--	switch (mdata->syndrome) {
--	case MLX5E_IPSEC_RX_SYNDROME_DECRYPTED:
--		xo->status = CRYPTO_SUCCESS;
--		if (likely(priv->ipsec->no_trailer)) {
--			xo->flags |= XFRM_ESP_NO_TRAILER;
--			xo->proto = mdata->content.rx.nexthdr;
--		}
--		break;
--	case MLX5E_IPSEC_RX_SYNDROME_AUTH_FAILED:
--		xo->status = CRYPTO_TUNNEL_ESP_AUTH_FAILED;
--		break;
--	case MLX5E_IPSEC_RX_SYNDROME_BAD_PROTO:
--		xo->status = CRYPTO_INVALID_PROTOCOL;
--		break;
--	default:
--		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_syndrome);
--		return NULL;
--	}
--	return xs;
--}
--
--struct sk_buff *mlx5e_ipsec_handle_rx_skb(struct net_device *netdev,
--					  struct sk_buff *skb, u32 *cqe_bcnt)
--{
--	struct mlx5e_ipsec_metadata *mdata;
--	struct xfrm_state *xs;
--
--	if (!is_metadata_hdr_valid(skb))
--		return skb;
--
--	/* Use the metadata */
--	mdata = (struct mlx5e_ipsec_metadata *)(skb->data + ETH_HLEN);
--	xs = mlx5e_ipsec_build_sp(netdev, skb, mdata);
--	if (unlikely(!xs)) {
--		kfree_skb(skb);
--		return NULL;
--	}
--
--	remove_metadata_hdr(skb);
--	*cqe_bcnt -= MLX5E_METADATA_ETHER_LEN;
--
--	return skb;
--}
--
- enum {
- 	MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_DECRYPTED,
- 	MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_AUTH_FAILED,
-@@ -541,21 +360,3 @@ void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
- 		atomic64_inc(&priv->ipsec->sw_stats.ipsec_rx_drop_syndrome);
- 	}
- }
--
--void mlx5e_ipsec_build_inverse_table(void)
--{
--	u16 mss_inv;
--	u32 mss;
--
--	/* Calculate 1/x inverse table for use in GSO data path.
--	 * Using this table, we provide the IPSec accelerator with the value of
--	 * 1/gso_size so that it can infer the position of each segment inside
--	 * the GSO, and increment the ESP sequence number, and generate the IV.
--	 * The HW needs this value in Q0.16 fixed-point number format
--	 */
--	mlx5e_ipsec_inverse_table[1] = htons(0xFFFF);
--	for (mss = 2; mss < MAX_LSO_MSS; mss++) {
--		mss_inv = div_u64(1ULL << 32, mss) >> 16;
--		mlx5e_ipsec_inverse_table[mss] = htons(mss_inv);
--	}
--}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-index 428881e0adcb..0ae4e12ce528 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
-@@ -53,9 +53,6 @@ struct mlx5e_accel_tx_ipsec_state {
- 
- #ifdef CONFIG_MLX5_EN_IPSEC
- 
--struct sk_buff *mlx5e_ipsec_handle_rx_skb(struct net_device *netdev,
--					  struct sk_buff *skb, u32 *cqe_bcnt);
--
- void mlx5e_ipsec_inverse_table_init(void);
- void mlx5e_ipsec_set_iv_esn(struct sk_buff *skb, struct xfrm_state *x,
- 			    struct xfrm_offload *xo);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 0a303879d0f4..83365d04050b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5693,7 +5693,6 @@ int mlx5e_init(void)
- {
- 	int ret;
- 
--	mlx5e_ipsec_build_inverse_table();
- 	mlx5e_build_ptys2ethtool_map();
- 	ret = auxiliary_driver_register(&mlx5e_driver);
- 	if (ret)
--- 
-2.35.1
+Ok, it looks like if I use git-send-email when From:tag is not me. The 
+patch will be sent as a attachment as spotted by Maxime.
+
+Eli, would you please send a v3 with my acked-by? (Since I don't want to 
+change the author)
+
+Thanks
+
+
+>
+>
+>>
+>>> If so, let's wait for Jason's reply.
+>> Right.
+>>
+>>>>> to that, we take into consideration the max capability of RQT
+>>>>> entries early when the device is added so we don't need to take 
+>>>>> consider
+>>>>> it when creating the RQT.
+>>>>>
+>>>>> Last, we remove the use of mlx5_vdpa_max_qps() which just returns the
+>>>>> max_vas / 2 and make the code clearer.
+>>>>>
+>>>>> Fixes: 52893733f2c5 ("vdpa/mlx5: Add multiqueue support")
+>>>>> Signed-off-by: Eli Cohen <elic@nvidia.com>
+>>>> Jason I don't have your ack or S.O.B on this one.
+>
+>
+> My bad, for some reason, I miss that.
+>
+> Will fix.
+>
+> Thanks
+>
+>
+>>>>
+>>>>
+>>>>> ---
+>>>>>   drivers/vdpa/mlx5/net/mlx5_vnet.c | 61 
+>>>>> +++++++++++--------------------
+>>>>>   1 file changed, 21 insertions(+), 40 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c 
+>>>>> b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>> index 53b8c1a68f90..61bec1ed0bc9 100644
+>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>> @@ -161,6 +161,7 @@ struct mlx5_vdpa_net {
+>>>>>       struct mlx5_flow_handle *rx_rule_mcast;
+>>>>>       bool setup;
+>>>>>       u32 cur_num_vqs;
+>>>>> +    u32 rqt_size;
+>>>>>       struct notifier_block nb;
+>>>>>       struct vdpa_callback config_cb;
+>>>>>       struct mlx5_vdpa_wq_ent cvq_ent;
+>>>>> @@ -204,17 +205,12 @@ static __virtio16 cpu_to_mlx5vdpa16(struct 
+>>>>> mlx5_vdpa_dev *mvdev, u16 val)
+>>>>>       return __cpu_to_virtio16(mlx5_vdpa_is_little_endian(mvdev), 
+>>>>> val);
+>>>>>   }
+>>>>>
+>>>>> -static inline u32 mlx5_vdpa_max_qps(int max_vqs)
+>>>>> -{
+>>>>> -    return max_vqs / 2;
+>>>>> -}
+>>>>> -
+>>>>>   static u16 ctrl_vq_idx(struct mlx5_vdpa_dev *mvdev)
+>>>>>   {
+>>>>>       if (!(mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_MQ)))
+>>>>>           return 2;
+>>>>>
+>>>>> -    return 2 * mlx5_vdpa_max_qps(mvdev->max_vqs);
+>>>>> +    return mvdev->max_vqs;
+>>>>>   }
+>>>>>
+>>>>>   static bool is_ctrl_vq_idx(struct mlx5_vdpa_dev *mvdev, u16 idx)
+>>>>> @@ -1236,25 +1232,13 @@ static void teardown_vq(struct 
+>>>>> mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *
+>>>>>   static int create_rqt(struct mlx5_vdpa_net *ndev)
+>>>>>   {
+>>>>>       __be32 *list;
+>>>>> -    int max_rqt;
+>>>>>       void *rqtc;
+>>>>>       int inlen;
+>>>>>       void *in;
+>>>>>       int i, j;
+>>>>>       int err;
+>>>>> -    int num;
+>>>>> -
+>>>>> -    if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_MQ)))
+>>>>> -        num = 1;
+>>>>> -    else
+>>>>> -        num = ndev->cur_num_vqs / 2;
+>>>>>
+>>>>> -    max_rqt = min_t(int, roundup_pow_of_two(num),
+>>>>> -            1 << MLX5_CAP_GEN(ndev->mvdev.mdev, log_max_rqt_size));
+>>>>> -    if (max_rqt < 1)
+>>>>> -        return -EOPNOTSUPP;
+>>>>> -
+>>>>> -    inlen = MLX5_ST_SZ_BYTES(create_rqt_in) + max_rqt * 
+>>>>> MLX5_ST_SZ_BYTES(rq_num);
+>>>>> +    inlen = MLX5_ST_SZ_BYTES(create_rqt_in) + ndev->rqt_size * 
+>>>>> MLX5_ST_SZ_BYTES(rq_num);
+>>>>>       in = kzalloc(inlen, GFP_KERNEL);
+>>>>>       if (!in)
+>>>>>           return -ENOMEM;
+>>>>> @@ -1263,12 +1247,12 @@ static int create_rqt(struct mlx5_vdpa_net 
+>>>>> *ndev)
+>>>>>       rqtc = MLX5_ADDR_OF(create_rqt_in, in, rqt_context);
+>>>>>
+>>>>>       MLX5_SET(rqtc, rqtc, list_q_type, 
+>>>>> MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q);
+>>>>> -    MLX5_SET(rqtc, rqtc, rqt_max_size, max_rqt);
+>>>>> +    MLX5_SET(rqtc, rqtc, rqt_max_size, ndev->rqt_size);
+>>>>>       list = MLX5_ADDR_OF(rqtc, rqtc, rq_num[0]);
+>>>>> -    for (i = 0, j = 0; i < max_rqt; i++, j += 2)
+>>>>> -        list[i] = cpu_to_be32(ndev->vqs[j % (2 * num)].virtq_id);
+>>>>> +    for (i = 0, j = 0; i < ndev->rqt_size; i++, j += 2)
+>>>>> +        list[i] = cpu_to_be32(ndev->vqs[j % 
+>>>>> ndev->cur_num_vqs].virtq_id);
+>>>>>
+>>>>> -    MLX5_SET(rqtc, rqtc, rqt_actual_size, max_rqt);
+>>>>> +    MLX5_SET(rqtc, rqtc, rqt_actual_size, ndev->rqt_size);
+>>>>>       err = mlx5_vdpa_create_rqt(&ndev->mvdev, in, inlen, 
+>>>>> &ndev->res.rqtn);
+>>>>>       kfree(in);
+>>>>>       if (err)
+>>>>> @@ -1282,19 +1266,13 @@ static int create_rqt(struct mlx5_vdpa_net 
+>>>>> *ndev)
+>>>>>   static int modify_rqt(struct mlx5_vdpa_net *ndev, int num)
+>>>>>   {
+>>>>>       __be32 *list;
+>>>>> -    int max_rqt;
+>>>>>       void *rqtc;
+>>>>>       int inlen;
+>>>>>       void *in;
+>>>>>       int i, j;
+>>>>>       int err;
+>>>>>
+>>>>> -    max_rqt = min_t(int, roundup_pow_of_two(ndev->cur_num_vqs / 2),
+>>>>> -            1 << MLX5_CAP_GEN(ndev->mvdev.mdev, log_max_rqt_size));
+>>>>> -    if (max_rqt < 1)
+>>>>> -        return -EOPNOTSUPP;
+>>>>> -
+>>>>> -    inlen = MLX5_ST_SZ_BYTES(modify_rqt_in) + max_rqt * 
+>>>>> MLX5_ST_SZ_BYTES(rq_num);
+>>>>> +    inlen = MLX5_ST_SZ_BYTES(modify_rqt_in) + ndev->rqt_size * 
+>>>>> MLX5_ST_SZ_BYTES(rq_num);
+>>>>>       in = kzalloc(inlen, GFP_KERNEL);
+>>>>>       if (!in)
+>>>>>           return -ENOMEM;
+>>>>> @@ -1305,10 +1283,10 @@ static int modify_rqt(struct mlx5_vdpa_net 
+>>>>> *ndev, int num)
+>>>>>       MLX5_SET(rqtc, rqtc, list_q_type, 
+>>>>> MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q);
+>>>>>
+>>>>>       list = MLX5_ADDR_OF(rqtc, rqtc, rq_num[0]);
+>>>>> -    for (i = 0, j = 0; i < max_rqt; i++, j += 2)
+>>>>> +    for (i = 0, j = 0; i < ndev->rqt_size; i++, j += 2)
+>>>>>           list[i] = cpu_to_be32(ndev->vqs[j % num].virtq_id);
+>>>>>
+>>>>> -    MLX5_SET(rqtc, rqtc, rqt_actual_size, max_rqt);
+>>>>> +    MLX5_SET(rqtc, rqtc, rqt_actual_size, ndev->rqt_size);
+>>>>>       err = mlx5_vdpa_modify_rqt(&ndev->mvdev, in, inlen, 
+>>>>> ndev->res.rqtn);
+>>>>>       kfree(in);
+>>>>>       if (err)
+>>>>> @@ -1582,7 +1560,7 @@ static virtio_net_ctrl_ack 
+>>>>> handle_ctrl_mq(struct mlx5_vdpa_dev *mvdev, u8 cmd)
+>>>>>
+>>>>>           newqps = mlx5vdpa16_to_cpu(mvdev, mq.virtqueue_pairs);
+>>>>>           if (newqps < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
+>>>>> -            newqps > mlx5_vdpa_max_qps(mvdev->max_vqs))
+>>>>> +            newqps > ndev->rqt_size)
+>>>>>               break;
+>>>>>
+>>>>>           if (ndev->cur_num_vqs == 2 * newqps) {
+>>>>> @@ -1946,7 +1924,7 @@ static int setup_virtqueues(struct 
+>>>>> mlx5_vdpa_dev *mvdev)
+>>>>>       int err;
+>>>>>       int i;
+>>>>>
+>>>>> -    for (i = 0; i < 2 * mlx5_vdpa_max_qps(mvdev->max_vqs); i++) {
+>>>>> +    for (i = 0; i < mvdev->max_vqs; i++) {
+>>>>>           err = setup_vq(ndev, &ndev->vqs[i]);
+>>>>>           if (err)
+>>>>>               goto err_vq;
+>>>>> @@ -2017,9 +1995,11 @@ static int 
+>>>>> mlx5_vdpa_set_driver_features(struct vdpa_device *vdev, u64 features)
+>>>>>
+>>>>>       ndev->mvdev.actual_features = features & 
+>>>>> ndev->mvdev.mlx_features;
+>>>>>       if (ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_MQ))
+>>>>> -        ndev->cur_num_vqs = 2 * mlx5vdpa16_to_cpu(mvdev, 
+>>>>> ndev->config.max_virtqueue_pairs);
+>>>>> +        ndev->rqt_size = mlx5vdpa16_to_cpu(mvdev, 
+>>>>> ndev->config.max_virtqueue_pairs);
+>>>>>       else
+>>>>> -        ndev->cur_num_vqs = 2;
+>>>>> +        ndev->rqt_size = 1;
+>>>>> +
+>>>>> +    ndev->cur_num_vqs = 2 * ndev->rqt_size;
+>>>>>
+>>>>>       update_cvq_info(mvdev);
+>>>>>       return err;
+>>>>> @@ -2486,7 +2466,7 @@ static void init_mvqs(struct mlx5_vdpa_net 
+>>>>> *ndev)
+>>>>>       struct mlx5_vdpa_virtqueue *mvq;
+>>>>>       int i;
+>>>>>
+>>>>> -    for (i = 0; i < 2 * mlx5_vdpa_max_qps(ndev->mvdev.max_vqs); 
+>>>>> ++i) {
+>>>>> +    for (i = 0; i < ndev->mvdev.max_vqs; ++i) {
+>>>>>           mvq = &ndev->vqs[i];
+>>>>>           memset(mvq, 0, offsetof(struct mlx5_vdpa_virtqueue, ri));
+>>>>>           mvq->index = i;
+>>>>> @@ -2606,7 +2586,8 @@ static int mlx5_vdpa_dev_add(struct 
+>>>>> vdpa_mgmt_dev *v_mdev, const char *name,
+>>>>>           return -EOPNOTSUPP;
+>>>>>       }
+>>>>>
+>>>>> -    max_vqs = MLX5_CAP_DEV_VDPA_EMULATION(mdev, 
+>>>>> max_num_virtio_queues);
+>>>>> +    max_vqs = min_t(int, MLX5_CAP_DEV_VDPA_EMULATION(mdev, 
+>>>>> max_num_virtio_queues),
+>>>>> +            1 << MLX5_CAP_GEN(mdev, log_max_rqt_size));
+>>>>>       if (max_vqs < 2) {
+>>>>>           dev_warn(mdev->device,
+>>>>>                "%d virtqueues are supported. At least 2 are 
+>>>>> required\n",
+>>>>> @@ -2670,7 +2651,7 @@ static int mlx5_vdpa_dev_add(struct 
+>>>>> vdpa_mgmt_dev *v_mdev, const char *name,
+>>>>>           ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_NET_F_MAC);
+>>>>>       }
+>>>>>
+>>>>> -    config->max_virtqueue_pairs = cpu_to_mlx5vdpa16(mvdev, 
+>>>>> mlx5_vdpa_max_qps(max_vqs));
+>>>>> +    config->max_virtqueue_pairs = cpu_to_mlx5vdpa16(mvdev, 
+>>>>> max_vqs / 2);
+>>>>>       mvdev->vdev.dma_dev = &mdev->pdev->dev;
+>>>>>       err = mlx5_vdpa_alloc_resources(&ndev->mvdev);
+>>>>>       if (err)
+>>>>> @@ -2697,7 +2678,7 @@ static int mlx5_vdpa_dev_add(struct 
+>>>>> vdpa_mgmt_dev *v_mdev, const char *name,
+>>>>>       ndev->nb.notifier_call = event_handler;
+>>>>>       mlx5_notifier_register(mdev, &ndev->nb);
+>>>>>       mvdev->vdev.mdev = &mgtdev->mgtdev;
+>>>>> -    err = _vdpa_register_device(&mvdev->vdev, 2 * 
+>>>>> mlx5_vdpa_max_qps(max_vqs) + 1);
+>>>>> +    err = _vdpa_register_device(&mvdev->vdev, max_vqs + 1);
+>>>>>       if (err)
+>>>>>           goto err_reg;
+>>>>>
+>>>>> -- 
+>>>>> 2.18.1
 
