@@ -2,248 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA27EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E991C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239170AbiDFRaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
+        id S238969AbiDFRaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239046AbiDFR31 (ORCPT
+        with ESMTP id S239245AbiDFRaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:29:27 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBB71890EC;
-        Wed,  6 Apr 2022 08:32:24 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 236FUcaT017647;
-        Thu, 7 Apr 2022 00:30:41 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 236FUcaT017647
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649259042;
-        bh=0vAwzB4aGyJFEM5zmDhwb6m/m6Tw0cUV0f5AgYItiEc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qyntsPxQozyfGwkcuzj9xCcA+HMQSeWSv7RUUgWW8DhNikQgth0c3QI7eO/jSeK/h
-         9fyJY+fOljn09vtGuEzSrugrOY4ID8gE/jDxRrf1q+9WNNwVgGWuvPPInkOgLGrj9S
-         8BUunydI2tbWVWvxU7DmugjzeSqzZen2wJHzmWxjjAcRF17HNEnOVGTlSu9/ekNrnT
-         E77ZVXFdTgxjSmhdC2PXS8U9KaoMXl7C6fOkrwkjNpsXAJO3Wd+7ztQe2HvgJTCj3Z
-         yfeiKhkOer59EmA5CoYRukM2YpeQkSHO19wbeXHmJZ1EP1Odvp9waYXaNVSbuEFTF6
-         fZzefYBnBnewA==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sami Tolvanen <samitolvanen@google.com>
-Subject: [PATCH 4/7] kbuild: split the second line of *.mod into *.usyms
-Date:   Thu,  7 Apr 2022 00:30:20 +0900
-Message-Id: <20220406153023.500847-5-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220406153023.500847-1-masahiroy@kernel.org>
-References: <20220406153023.500847-1-masahiroy@kernel.org>
+        Wed, 6 Apr 2022 13:30:13 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CAD1136643
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:33:41 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id q14so3696261ljc.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 08:33:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=V2MKXaDi/1jNYC/yBJ1BrH+QH08TMzML0ERK28N60DY=;
+        b=SLAyyGFjinRL8kaGFHMoza109mTD3uqyOJGHii9BPON0ZPD8zZ2GegVCMABiZIf92u
+         mwJXveOBoX3NpkmgodISPHevXOGq7XiOcgfR00OXb/1sTCN5v/eCljZDTh0j/xYyEmCE
+         i/dxVYR7ZSv7AHEIffHQTAorD19scopZBLnVbMDqEbcc4lEYFFX3gyiZUd1HQxBEgXPD
+         6bF8LStWUJzYpZnZH1X6cdcrEeLnusqLziJVEcNjhFqOv9IrtZVifv82qv5l6e5MqULN
+         IEoq0jnK0LUT34ETn1ZAebxZnSpE5SSVxsRx9BnmWm9a9Yf+EH4QHb8CcojpbN71phbo
+         tWtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=V2MKXaDi/1jNYC/yBJ1BrH+QH08TMzML0ERK28N60DY=;
+        b=kqOk+pwvoKvF7/0XvAk/07Anlq+ydt2YceOenew/VV1iBYEaIuGJLZlXwzoyXk5ycP
+         TjY0bP0Hzydty6IrhPWfyU15deCU1sy1u/GlRkNmuPj5bAY+pn9fWRwQjVoZ6X/q1ieB
+         hB1Heop2KsM8mo1bfpj7BmH7NvRqkQ219QjnbxK9HhrUgUN2XT+V48I9OBxnBkvjozQb
+         q1K/yURvYhRhH34gn7N4EZ2gvBKh83fLcWzET6KptQs4XwAU26krvZpGDFaO+xE6Lj0W
+         vbupshfxMeGaSmxpxxmZc2E1qsJD4VsLLHizrCQLIXQF44/w32pgGGkRqnnYD5xuPRXQ
+         kxmw==
+X-Gm-Message-State: AOAM532WfYdUububHo849AA5+O24JDwcvtAJqwC6SI2nwRqbZS0YRpkY
+        +uaw5XIj3FCTQceq3aF5inpLj10dyVkcd+APb7e8iA==
+X-Google-Smtp-Source: ABdhPJzreYUYPZpbVpzkaPv5TENoYSI5dAupQC5/q42OXgAWYqF9DUZh8BLgg57J3IYFZOeGcNNC0cXGZ9hbHJddLsc=
+X-Received: by 2002:a2e:b8cc:0:b0:249:a2b5:8e16 with SMTP id
+ s12-20020a2eb8cc000000b00249a2b58e16mr5867735ljp.381.1649259219699; Wed, 06
+ Apr 2022 08:33:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1649244204-23471-1-git-send-email-zgpeng@tencent.com>
+ <CAKfTPtDh7qFpdjsEBvT34WEgW8uGbdwsZnyXjq4KpAcOse9Pew@mail.gmail.com> <CAE5vP3=ZPGV=PuYb-WJsoQ8tX4yDAjajT_WRU+7gAiW54XgX_g@mail.gmail.com>
+In-Reply-To: <CAE5vP3=ZPGV=PuYb-WJsoQ8tX4yDAjajT_WRU+7gAiW54XgX_g@mail.gmail.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Wed, 6 Apr 2022 17:33:28 +0200
+Message-ID: <CAKfTPtA8VjZ-F3vdiKJtpij6PUxu_OR7-54cG6NcS_K7guHF6g@mail.gmail.com>
+Subject: Re: [PATCH] sched/fair: Return the busiest group only if imbalance is meaningful
+To:     =?UTF-8?B?5b2t5b+X5Yia?= <zgpeng.linux@gmail.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org,
+        Benjamin Segall <bsegall@google.com>, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The *.mod files have two lines; the first line lists the member objects
-of the module, and the second line, if CONFIG_TRIM_UNUSED_KSYMS=y, lists
-the undefined symbols.
+On Wed, 6 Apr 2022 at 17:07, =E5=BD=AD=E5=BF=97=E5=88=9A <zgpeng.linux@gmai=
+l.com> wrote:
+>
+> YES. The following are specific scenarios where negative values occur:
+>
+>
+>
+> The scheduler domain contains four groups, namely groupA, groupB, groupC,=
+ and groupD;
+>
+> The types and avg_load conditions of the four groups are as follows
+>
+>
+>
+> GroupA    TYPE=3D group_fully_busy     avg_load=3D10        [local group]
+>
+>
+>
+> GroupB    TYPE=3D group_has_spare     avg_load=3D1
+>
+> GroupC    TYPE=3D group_has_spare     avg_load=3D1
+>
+> GroupD    TYPE=3D group_overloaded    avg_load=3D20      [busiest group]
+>
+>
+>
+> The CPU that calls load_balance is located in groupA, and update_sd_lb_st=
+ats will select the busiest group in GroupB, groupC, and
+>
+> groupD, that is, gorupD. Under this condition, other judgments in the fin=
+d_busiest_group function will be bypassed and the
+>
+> calculate_imbalance function will be called. The judgment in the middle o=
+f the calculate_imbalance function cannot stop this
+>
+> situation, and it will go to the imbalance calculate logic at the end of =
+the function.At this time, the domain's avg_load=3D8, but
+>
+>  the local_groupthe's avg_load=3D10; The negative value is therefore gene=
+rated.
 
-Currently, we generate *.mod after constructing composite modules,
-otherwise, we cannot compute the second line. No prerequisite is
-required to print the first line.
+I think that this case should be covered by an additional test in
+calculate_imbalance because we should not try to pull load in groupA
+if it's already above  the average load. Something like below should
+cover this
 
-They are orthogonal. Splitting them into separate commands will ease
-further cleanups.
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -9469,6 +9469,16 @@ static inline void calculate_imbalance(struct
+lb_env *env, struct sd_lb_stats *s
 
-This commit splits the list of undefined symbols out to *.usyms files.
-
-Previously, the list of undefined symbols ended up with a very long
-line, but now it has one symbol per line.
-
-Use sed like we did before commit 7d32358be8ac ("kbuild: avoid split
-lines in .mod files").
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
----
-
- .gitignore                  |  1 +
- Makefile                    |  2 +-
- scripts/Makefile.build      | 17 +++++++++--------
- scripts/adjust_autoksyms.sh |  2 +-
- scripts/gen_autoksyms.sh    | 18 +++++++++++-------
- scripts/mod/sumversion.c    | 11 ++---------
- 6 files changed, 25 insertions(+), 26 deletions(-)
-
-diff --git a/.gitignore b/.gitignore
-index 7afd412dadd2..265959544978 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -45,6 +45,7 @@
- *.symversions
- *.tab.[ch]
- *.tar
-+*.usyms
- *.xz
- *.zst
- Module.symvers
-diff --git a/Makefile b/Makefile
-index d9336e783be3..82ee893909e9 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1848,7 +1848,7 @@ clean: $(clean-dirs)
- 		-o -name '*.ko.*' \
- 		-o -name '*.dtb' -o -name '*.dtbo' -o -name '*.dtb.S' -o -name '*.dt.yaml' \
- 		-o -name '*.dwo' -o -name '*.lst' \
--		-o -name '*.su' -o -name '*.mod' \
-+		-o -name '*.su' -o -name '*.mod' -o -name '*.usyms' \
- 		-o -name '.*.d' -o -name '.*.tmp' -o -name '*.mod.c' \
- 		-o -name '*.lex.c' -o -name '*.tab.[ch]' \
- 		-o -name '*.asn1.[ch]' \
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 857329844789..6ae92d119dfa 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -85,7 +85,8 @@ ifdef need-builtin
- targets-for-builtin += $(obj)/built-in.a
- endif
- 
--targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
-+targets-for-modules := $(foreach x, mod $(if $(CONFIG_TRIM_UNUSED_KSYMS), usyms), \
-+				$(patsubst %.o, %.$x, $(filter %.o, $(obj-m))))
- 
- ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- targets-for-modules += $(patsubst %.o, %.prelink.o, $(filter %.o, $(obj-m)))
-@@ -256,9 +257,6 @@ endif
- ifdef CONFIG_TRIM_UNUSED_KSYMS
- cmd_gen_ksymdeps = \
- 	$(CONFIG_SHELL) $(srctree)/scripts/gen_ksymdeps.sh $@ >> $(dot-target).cmd
--
--# List module undefined symbols
--undefined_syms = $(NM) $< | $(AWK) '$$1 == "U" { printf("%s%s", x++ ? " " : "", $$2) }';
- endif
- 
- define rule_cc_o_c
-@@ -305,14 +303,17 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
- 	$(call if_changed,cc_prelink_modules)
- endif
- 
--cmd_mod = { \
--	echo $(addprefix $(obj)/, $(call real-search, $*.o, .o, -objs -y -m)); \
--	$(undefined_syms) echo; \
--	} > $@
-+cmd_mod = echo $(addprefix $(obj)/, $(call real-search, $*.o, .o, -objs -y -m)) > $@
- 
- $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o FORCE
- 	$(call if_changed,mod)
- 
-+# List module undefined symbols
-+cmd_undefined_syms = $(NM) $< | sed -n 's/^  *U //p' > $@
+                sds->avg_load =3D (sds->total_load * SCHED_CAPACITY_SCALE) =
+/
+                                sds->total_capacity;
 +
-+$(obj)/%.usyms: $(obj)/%$(mod-prelink-ext).o FORCE
-+	$(call if_changed,undefined_syms)
++               /*
++                * Don't pull any tasks if this group is already above the
++                * domain average load.
++                */
++               if (local->avg_load >=3D sds->avg_load) {
++                       env->imbalance =3D 0;
++                       return;
++               }
 +
- quiet_cmd_cc_lst_c = MKLST   $@
-       cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
- 		     $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
-diff --git a/scripts/adjust_autoksyms.sh b/scripts/adjust_autoksyms.sh
-index 59fdb875e818..f1b5ac818411 100755
---- a/scripts/adjust_autoksyms.sh
-+++ b/scripts/adjust_autoksyms.sh
-@@ -35,7 +35,7 @@ case "$KBUILD_VERBOSE" in
- esac
- 
- # Generate a new symbol list file
--$CONFIG_SHELL $srctree/scripts/gen_autoksyms.sh "$new_ksyms_file"
-+$CONFIG_SHELL $srctree/scripts/gen_autoksyms.sh --modorder "$new_ksyms_file"
- 
- # Extract changes between old and new list and touch corresponding
- # dependency files.
-diff --git a/scripts/gen_autoksyms.sh b/scripts/gen_autoksyms.sh
-index 120225c541c5..faacf7062122 100755
---- a/scripts/gen_autoksyms.sh
-+++ b/scripts/gen_autoksyms.sh
-@@ -2,13 +2,10 @@
- # SPDX-License-Identifier: GPL-2.0-only
- 
- # Create an autoksyms.h header file from the list of all module's needed symbols
--# as recorded on the second line of *.mod files and the user-provided symbol
--# whitelist.
-+# as recorded in *.usyms files and the user-provided symbol whitelist.
- 
- set -e
- 
--output_file="$1"
--
- # Use "make V=1" to debug this script.
- case "$KBUILD_VERBOSE" in
- *1*)
-@@ -16,6 +13,15 @@ case "$KBUILD_VERBOSE" in
- 	;;
- esac
- 
-+read_modorder=
-+
-+if [ "$1" = --modorder ]; then
-+	shift
-+	read_modorder=1
-+fi
-+
-+output_file="$1"
-+
- needed_symbols=
- 
- # Special case for modversions (see modpost.c)
-@@ -41,10 +47,8 @@ cat > "$output_file" << EOT
- 
- EOT
- 
--[ -f modules.order ] && modlist=modules.order || modlist=/dev/null
--
- {
--	sed 's/ko$/mod/' $modlist | xargs -n1 sed -n -e '2p'
-+	[ -n "${read_modorder}" ] && sed 's/ko$/usyms/' modules.order | xargs cat
- 	echo "$needed_symbols"
- 	[ -n "$ksym_wl" ] && cat "$ksym_wl"
- } | sed -e 's/ /\n/g' | sed -n -e '/^$/!p' |
-diff --git a/scripts/mod/sumversion.c b/scripts/mod/sumversion.c
-index 905c0ec291e1..0125698f2037 100644
---- a/scripts/mod/sumversion.c
-+++ b/scripts/mod/sumversion.c
-@@ -387,7 +387,7 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
- /* Calc and record src checksum. */
- void get_src_version(const char *modname, char sum[], unsigned sumlen)
- {
--	char *buf, *pos, *firstline;
-+	char *buf;
- 	struct md4_ctx md;
- 	char *fname;
- 	char filelist[PATH_MAX + 1];
-@@ -397,15 +397,8 @@ void get_src_version(const char *modname, char sum[], unsigned sumlen)
- 
- 	buf = read_text_file(filelist);
- 
--	pos = buf;
--	firstline = get_line(&pos);
--	if (!firstline) {
--		warn("bad ending versions file for %s\n", modname);
--		goto free;
--	}
--
- 	md4_init(&md);
--	while ((fname = strsep(&firstline, " "))) {
-+	while ((fname = strsep(&buf, " \n"))) {
- 		if (!*fname)
- 			continue;
- 		if (!(is_static_library(fname)) &&
--- 
-2.32.0
+                /*
+                 * If the local group is more loaded than the selected
+                 * busiest group don't try to pull any tasks.
 
+>
+>
+> Vincent Guittot <vincent.guittot@linaro.org> =E4=BA=8E2022=E5=B9=B44=E6=
+=9C=886=E6=97=A5=E5=91=A8=E4=B8=89 20:59=E5=86=99=E9=81=93=EF=BC=9A
+>>
+>> On Wed, 6 Apr 2022 at 13:23, zgpeng <zgpeng.linux@gmail.com> wrote:
+>> >
+>> > When calculate_imbalance function calculate the imbalance, it may
+>> > actually get a negative number. In this case, it is meaningless to
+>>
+>> We should not return a negative imbalance but I suppose this can
+>> happen when we are using the avg_load metrics to calculate imbalance.
+>> Have you faced a use case where imbalance is negative ?
+>>
+>> > return the so-called busiest group and continue to search for the
+>> > busiest cpu later. Therefore, only when the imbalance is greater
+>> > than 0 should return the busiest group, otherwise return NULL.
+>> >
+>> > Signed-off-by: zgpeng <zgpeng@tencent.com>
+>> > Reviewed-by: Samuel Liao <samuelliao@tencent.com>
+>> > ---
+>> >  kernel/sched/fair.c | 2 +-
+>> >  1 file changed, 1 insertion(+), 1 deletion(-)
+>> >
+>> > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>> > index 601f8bd..9f75303 100644
+>> > --- a/kernel/sched/fair.c
+>> > +++ b/kernel/sched/fair.c
+>> > @@ -9639,7 +9639,7 @@ static struct sched_group *find_busiest_group(st=
+ruct lb_env *env)
+>> >  force_balance:
+>> >         /* Looks like there is an imbalance. Compute it */
+>> >         calculate_imbalance(env, &sds);
+>> > -       return env->imbalance ? sds.busiest : NULL;
+>> > +       return env->imbalance > 0 ? sds.busiest : NULL;
+>> >
+>> >  out_balanced:
+>> >         env->imbalance =3D 0;
+>> > --
+>> > 2.9.5
+>> >
