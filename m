@@ -2,138 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 697CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62115C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235794AbiDFPJo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:09:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        id S235501AbiDFPKe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235777AbiDFPJh (ORCPT
+        with ESMTP id S235790AbiDFPKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:09:37 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED39F472F07
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:04:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649246650; x=1680782650;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=uEpWVDG9mHAzC3vQt8/6DshQkU5+A/w706L6sIKCmZ4=;
-  b=Wbo+Z5XO48d1xnJXvfuaF9Ew3HN9KKbRGwSeqCDE5SC+gRzfLuHDjslQ
-   rO0TgXP1ZRWVAMlXTUk9CSyhST1CzYjOhXlWswSbGZi9s2gmYHOqoJoKM
-   HAOHjdpODydczu6xYKYnFzG74d1SR6XNATIhMFPC+hKP+Ue5gFE+mv0TU
-   hbOMQ4jICPF+M8Ae2TONoAlUQc9vzS5BfANfsuBRuqXI4syZXhyvuY1wk
-   S0PLleJy8eFWbakFc3MZpRIFEO/6X0ILqrdPjaSvxX/oM5iskvMYloB7K
-   lmoTsw+zPmRn7Lv91UROVHHzLTeJ8+f4lBrDmdxk4RV4H5UgGsKBvmMM5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240958360"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="240958360"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 04:54:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="722484316"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 06 Apr 2022 04:54:00 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nc4Ea-0004NR-32;
-        Wed, 06 Apr 2022 11:54:00 +0000
-Date:   Wed, 6 Apr 2022 19:53:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Walker Chen <walker.chen@starfivetech.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Michael Yan <michael.yan@starfivetech.com>,
-        Jenny Zhang <jenny.zhang@starfivetech.com>
-Subject: [esmil:visionfive 39/55] sound/soc/starfive/pwmdac.h:145:6: warning:
- no previous prototype for 'sf_pwmdac_pcm_push_tx'
-Message-ID: <202204061929.5OKjyPph-lkp@intel.com>
+        Wed, 6 Apr 2022 11:10:12 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA57728CA93;
+        Wed,  6 Apr 2022 05:08:17 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 318E01F454CE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649245528;
+        bh=Fewgg+W6G1clWAEhEVkkn/lbkFWCF9MXpHqn8lun8+U=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=W0PyamTsuvA78l+/qDMNGB6+50vsfBr9RtR3NmgbT0TpB0CLcmKhN3U7kOED1i6j5
+         4+luSQam5SOsryOX1O7J4La7JDlAFG0pBGud0XvHsMv6oaLx4ZOBHwj9YTmpfpjY7k
+         t2OWz3k2yeyD2DPbW/THzfBJ6dKVKPCHFDfOVyL55k5fBwgB+mCtCmsW6oxi3ZSCb0
+         E2xnpJh2X1rqd4mYjf+kP1TFxVs0WxfPxionk63hhXfPvYetGY4acG5czvaTsgJpBb
+         /cZL7/mTkLhfHPFTUQOPWijqhkXc2FF/YNXd2TdT8gRcM/9QU9jvCxKkyqNV8kh+NH
+         lYINv/Sd3khPQ==
+Message-ID: <a263e572-35ec-9671-50e3-dbc71b55b6cd@collabora.com>
+Date:   Wed, 6 Apr 2022 13:45:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] arm64: dts: mediatek: mt8173: Add gce-client-reg handle
+ to disp-mutex
+Content-Language: en-US
+To:     robh+dt@kernel.org
+Cc:     krzysztof.kozlowski@canonical.com, matthias.bgg@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+References: <20220228110329.245366-1-angelogioacchino.delregno@collabora.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220228110329.245366-1-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   7ff84520cb688edd6028a4ac3de3ed684eb22794
-commit: 46f456a9a328b4f2904920484bb3cf5afb654cdc [39/55] ASoC: starfive: Add StarFive JH7100 audio drivers
-config: h8300-randconfig-r004-20220406 (https://download.01.org/0day-ci/archive/20220406/202204061929.5OKjyPph-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/esmil/linux/commit/46f456a9a328b4f2904920484bb3cf5afb654cdc
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 46f456a9a328b4f2904920484bb3cf5afb654cdc
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=h8300 SHELL=/bin/bash sound/soc/
+Il 28/02/22 12:03, AngeloGioacchino Del Regno ha scritto:
+> Add a gce client reg handle to the disp mutex to enable MT8173
+> platforms to use MediaTek's CMDQ for extra performance.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8173.dtsi | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> index 291db4fcbb25..9eaea1156e25 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> @@ -1278,6 +1278,7 @@ mutex: mutex@14020000 {
+>   			interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_LOW>;
+>   			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
+>   			clocks = <&mmsys CLK_MM_MUTEX_32K>;
+> +			mediatek,gce-client-reg = <&gce SUBSYS_1402XXXX 0 0x1000>;
+>   			mediatek,gce-events = <CMDQ_EVENT_MUTEX0_STREAM_EOF>,
+>                                                 <CMDQ_EVENT_MUTEX1_STREAM_EOF>;
+>   		};
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hello, this is a friendly ping to avoid forgetting about this patch.
 
-All warnings (new ones prefixed by >>):
+As a note, this was successfully tested on MT8173 Acer Chromebook R13 (Elm).
 
-   In file included from include/linux/err.h:5,
-                    from include/linux/clk.h:12,
-                    from sound/soc/starfive/pwmdac.c:7:
-   include/linux/scatterlist.h: In function 'sg_set_buf':
-   include/asm-generic/page.h:89:51: warning: ordered comparison of pointer with null pointer [-Wextra]
-      89 | #define virt_addr_valid(kaddr)  (((void *)(kaddr) >= (void *)PAGE_OFFSET) && \
-         |                                                   ^~
-   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
-      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
-         |                                             ^
-   include/linux/scatterlist.h:160:9: note: in expansion of macro 'BUG_ON'
-     160 |         BUG_ON(!virt_addr_valid(buf));
-         |         ^~~~~~
-   include/linux/scatterlist.h:160:17: note: in expansion of macro 'virt_addr_valid'
-     160 |         BUG_ON(!virt_addr_valid(buf));
-         |                 ^~~~~~~~~~~~~~~
-   In file included from sound/soc/starfive/pwmdac.c:19:
-   sound/soc/starfive/pwmdac.h: At top level:
->> sound/soc/starfive/pwmdac.h:145:6: warning: no previous prototype for 'sf_pwmdac_pcm_push_tx' [-Wmissing-prototypes]
-     145 | void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~
->> sound/soc/starfive/pwmdac.h:146:6: warning: no previous prototype for 'sf_pwmdac_pcm_pop_rx' [-Wmissing-prototypes]
-     146 | void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev) { }
-         |      ^~~~~~~~~~~~~~~~~~~~
->> sound/soc/starfive/pwmdac.h:147:5: warning: no previous prototype for 'sf_pwmdac_pcm_register' [-Wmissing-prototypes]
-     147 | int sf_pwmdac_pcm_register(struct platform_device *pdev)
-         |     ^~~~~~~~~~~~~~~~~~~~~~
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
-   Depends on HAS_IOMEM && DRM && MMU
-   Selected by
-   - DRM_SSD130X && HAS_IOMEM && DRM
-
-
-vim +/sf_pwmdac_pcm_push_tx +145 sound/soc/starfive/pwmdac.h
-
-   137	
-   138	
-   139	
-   140	#if IS_ENABLED(CONFIG_SND_STARFIVE_PWMDAC_PCM)
-   141	void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev);
-   142	void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev);
-   143	int sf_pwmdac_pcm_register(struct platform_device *pdev);
-   144	#else
- > 145	void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev) { }
- > 146	void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev) { }
- > 147	int sf_pwmdac_pcm_register(struct platform_device *pdev)
-   148	{
-   149		return -EINVAL;
-   150	}
-   151	#endif
-   152	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Cheers,
+Angelo
