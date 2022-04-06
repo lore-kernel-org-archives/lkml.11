@@ -2,115 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF875C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E9CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243431AbiDFJra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
+        id S240444AbiDFJuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 05:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239440AbiDFJqR (ORCPT
+        with ESMTP id S1351892AbiDFJsM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:46:17 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8D3334123;
-        Tue,  5 Apr 2022 20:29:12 -0700 (PDT)
-X-UUID: 5086c79da67943cfa6bcfb5a68627ddb-20220406
-X-UUID: 5086c79da67943cfa6bcfb5a68627ddb-20220406
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 456243619; Wed, 06 Apr 2022 11:29:06 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 6 Apr 2022 11:29:04 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 11:29:04 +0800
-Message-ID: <751374a287a70831c09da51daef1ee286285359b.camel@mediatek.com>
-Subject: Re: [PATCH v10 2/4] dt-bindings: display: mediatek: change to use
- enum for mutex
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>
-CC:     <devicetree@vger.kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <airlied@linux.ie>, <jassisinghbrar@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <yongqiang.niu@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <fparent@baylibre.com>, <linux-mediatek@lists.infradead.org>,
-        <hsinyi@chromium.org>, <linux-arm-kernel@lists.infradead.org>
-Date:   Wed, 6 Apr 2022 11:29:04 +0800
-In-Reply-To: <20220406030009.2357-3-rex-bc.chen@mediatek.com>
-References: <20220406030009.2357-1-rex-bc.chen@mediatek.com>
-         <20220406030009.2357-3-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 6 Apr 2022 05:48:12 -0400
+Received: from out203-205-221-233.mail.qq.com (out203-205-221-233.mail.qq.com [203.205.221.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D027FDE07
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649217351;
+        bh=mwJyGvDfqq8uz4P7M9BPqtkY2gmLd8B4s+4UJ8k46Po=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=VLIsPgaBJS2Q9MPV1XRhJO96s4iNSZz8n059YkaslVEiMKv0kG0qsH41S5Yd2f5jL
+         QbnBF9H37d231AcVWURqfQhcT7ptzczvHSTQcP4haEJRysD+mcjv6BtbYRnFU9OeCm
+         SgwB0Gji501M7/rV2VoX/wvRLBivU3KAdk8fS8+k=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
+        id DF0B5296; Wed, 06 Apr 2022 11:55:48 +0800
+X-QQ-mid: xmsmtpt1649217348t5lxnp1rd
+Message-ID: <tencent_833C53E9E95F05049BD9297781E387622005@qq.com>
+X-QQ-XMAILINFO: OakVxA/3u/8RDSac4O7zy62FMOR3lSEOvmucN4D2cPuQzKt5rqAaNqpPE6Noad
+         fn/jWG2MdLT7Me1MnSo71Em3/Z9T20ZjsG6m37esCCDGV1TLT/EsrwSh4R69H1J9CzR7BrZyIgd9
+         7PJxqi3vGN4e/Uh7sjOfjMlqnv3dFn41h/jaL3PAl4mXDZq7lPmQ8B9zRuVCDSEVm62X39rbv4br
+         My79ylFsg0NByYii9a0FXUx22jNjCl70HSzFG01pwR62rhw+Bq0PyIBgnXKxSgC9sYOKKvLTth5P
+         eDQce9do1iPFJgYO5tGOvtpSY7MFgQQQ1emn6CttC9lFaQpmS/f+34MYnxZLd4/rlPg1GDzWKFV/
+         LZP9tYo2n6KJ1PHzahwKh/+lzdxKSJCQHrJpN2tWFUogB+dTpAHmGSZ3kijnj28Z05XCue8RBTva
+         2hi6A40p4PW6GfcA3/5WNdCEizK/6CRfsafcj7CUeCNqC7NQS89IW+KTSnRHZmXsuW+l5Spf1myP
+         c9AkYfzkloTUs7TVnysDJluZHYOmMg8UYaeWc4GzroODWrpMb2bGA/LXxEe5M8YV6vxBxKmC5mdd
+         HtegzntO1d1obtEtX9p7TutsWZx4bCsqwhwXKXToz3xpeLd1IeUlfdh6i+qhdp2T24oWynrrt1y/
+         8yfrxaLqvkS8X86WuCsyIULFvibDh0BGfXL08aM/mm0B8HjEaTI4E9CQM33CJeIpAysf/w2tYBYO
+         W0Vp3CikRz0H0GJRR1m2BN69lNTZNwdZRbjWtYZJgQKWUHVinLSOwzQouGl2YPFwG/HBki8ELeN+
+         TDzybsZHsPSKG+PQtGAhf8azaYQEUIPZGhVDtKXtcstpK36V41rM61dndM8yStBqE4vv3W9dSJMd
+         EYMbe0Kyb8G6hOqEYbZBqB0m5EU3P0sRanb+EtbDl3qJtKx0J4AEJAco2xdOR1OTVYhl1zGCEphx
+         GuNd9GsrpEE47eJYptCRZmGc7q928EVii4dPb7J5Q=
+From:   xkernel.wang@foxmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH v3 2/3] staging: rtl8712: change the type of _r8712_init_recv_priv()
+Date:   Wed,  6 Apr 2022 11:55:37 +0800
+X-OQ-MSGID: <20220406035537.12913-1-xkernel.wang@foxmail.com>
+In-Reply-To: <tencent_8289F062A5E3FF2C104466AF5C5A0E1B0A07@qq.com>
+References: <tencent_8289F062A5E3FF2C104466AF5C5A0E1B0A07@qq.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Rex:
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-On Wed, 2022-04-06 at 11:00 +0800, Rex-BC Chen wrote:
-> All single entry cases in mutex can be merged as a single enum.
+There is a memory allocation in _r8712_init_recv_priv().  
+However, since the original type of this function is `void`, its error 
+status can not be feedbacked to its caller.
+Therefore, to make the error of allocation failures propagate to its 
+caller easily, this patch changes the type of this function to `int`.
 
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ChangeLog:
+v1->v2 remove kmemleak_not_leak().
+v2->v3 update the description.
+ drivers/staging/rtl8712/recv_osdep.h   | 2 +-
+ drivers/staging/rtl8712/rtl871x_recv.c | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-> 
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> ---
->  .../display/mediatek/mediatek,mutex.yaml      | 24 +++++++--------
-> ----
->  1 file changed, 9 insertions(+), 15 deletions(-)
-> 
-> diff --git
-> a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y
-> aml
-> b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y
-> aml
-> index 00e6a1041a9b..b470fbb1b40a 100644
-> ---
-> a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y
-> aml
-> +++
-> b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.y
-> aml
-> @@ -23,21 +23,15 @@ description: |
->  
->  properties:
->    compatible:
-> -    oneOf:
-> -      - items:
-> -          - const: mediatek,mt2701-disp-mutex
-> -      - items:
-> -          - const: mediatek,mt2712-disp-mutex
-> -      - items:
-> -          - const: mediatek,mt8167-disp-mutex
-> -      - items:
-> -          - const: mediatek,mt8173-disp-mutex
-> -      - items:
-> -          - const: mediatek,mt8183-disp-mutex
-> -      - items:
-> -          - const: mediatek,mt8192-disp-mutex
-> -      - items:
-> -          - const: mediatek,mt8195-disp-mutex
-> +    enum:
-> +      - mediatek,mt2701-disp-mutex
-> +      - mediatek,mt2712-disp-mutex
-> +      - mediatek,mt8167-disp-mutex
-> +      - mediatek,mt8173-disp-mutex
-> +      - mediatek,mt8183-disp-mutex
-> +      - mediatek,mt8192-disp-mutex
-> +      - mediatek,mt8195-disp-mutex
-> +
->    reg:
->      maxItems: 1
->  
-
+diff --git a/drivers/staging/rtl8712/recv_osdep.h b/drivers/staging/rtl8712/recv_osdep.h
+index d8c1fa7..f5b97c5 100644
+--- a/drivers/staging/rtl8712/recv_osdep.h
++++ b/drivers/staging/rtl8712/recv_osdep.h
+@@ -18,7 +18,7 @@
+ #include "drv_types.h"
+ #include <linux/skbuff.h>
+ 
+-void _r8712_init_recv_priv(struct recv_priv *precvpriv,
++int _r8712_init_recv_priv(struct recv_priv *precvpriv,
+ 			   struct _adapter *padapter);
+ void _r8712_free_recv_priv(struct recv_priv *precvpriv);
+ void r8712_recv_entry(union recv_frame *precv_frame);
+diff --git a/drivers/staging/rtl8712/rtl871x_recv.c b/drivers/staging/rtl8712/rtl871x_recv.c
+index c23f6b3..3464ee2 100644
+--- a/drivers/staging/rtl8712/rtl871x_recv.c
++++ b/drivers/staging/rtl8712/rtl871x_recv.c
+@@ -44,7 +44,7 @@ void _r8712_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
+ 	_init_queue(&psta_recvpriv->defrag_q);
+ }
+ 
+-void _r8712_init_recv_priv(struct recv_priv *precvpriv,
++int _r8712_init_recv_priv(struct recv_priv *precvpriv,
+ 			   struct _adapter *padapter)
+ {
+ 	sint i;
+@@ -60,8 +60,7 @@ void _r8712_init_recv_priv(struct recv_priv *precvpriv,
+ 				sizeof(union recv_frame) + RXFRAME_ALIGN_SZ,
+ 				GFP_ATOMIC);
+ 	if (!precvpriv->pallocated_frame_buf)
+-		return;
+-	kmemleak_not_leak(precvpriv->pallocated_frame_buf);
++		return -ENOMEM;
+ 	precvpriv->precv_frame_buf = precvpriv->pallocated_frame_buf +
+ 				    RXFRAME_ALIGN_SZ -
+ 				    ((addr_t)(precvpriv->pallocated_frame_buf) &
+@@ -77,6 +76,7 @@ void _r8712_init_recv_priv(struct recv_priv *precvpriv,
+ 	}
+ 	precvpriv->rx_pending_cnt = 1;
+ 	r8712_init_recv_priv(precvpriv, padapter);
++	return 0;
+ }
+ 
+ void _r8712_free_recv_priv(struct recv_priv *precvpriv)
+-- 
