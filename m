@@ -2,117 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE353C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 591C1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233035AbiDFTvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56236 "EHLO
+        id S232712AbiDFTv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232774AbiDFTup (ORCPT
+        with ESMTP id S232890AbiDFTuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:50:45 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD1C18649C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:34:32 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id h11so4445540ljb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:34:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HSwp1BDG0k7X/+K+RwJOW/sVCMMxMSEnJISgNBGi2bg=;
-        b=Ys/1WSnGhYSt2OK9wL+F2ZyDI0KN3bD3nkQ7cSEAfHt1sAJ+3HACDKvwFqmgSO0McZ
-         QFScanM5uUJaQB9Dg7NYmvPo2C65E+TWz5N6SYM8r9Roi/wG86Rh7LzBhbgvInT42DFQ
-         7Qn1qPwmokjVsWFL7xBCD7dR5M2pNWfz9LutvoFMBLrdy9yPU0pbuHgbnhyGep2+PxlF
-         B+WXQTlzC15jmupuOPCyOclnMpoFIGqpDpOFln7aOg1ado+Q4UuO8F1YYm+el0+4BD9G
-         8Afv9mb1mWYGKWv/eaktdDgf0tWjnHCB0QK0RS14sBPVGz+3igXdnZum3nr2wGmSxHnv
-         Op4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HSwp1BDG0k7X/+K+RwJOW/sVCMMxMSEnJISgNBGi2bg=;
-        b=N7PzB23zjc33DdUsb9uHBosKwona8noknznFzxjbSp+6ZodjTCKgrRA7jPNSmm81lC
-         tkBcfNffmh3T4MSUuC/53QxngKpulVsOuad3WZm4FzGNRPezEq2iFwy22BdzaSalfy4x
-         Dlu8rQr7IOcg6wstTYdel5jYf3OWJDFG7xFwnLJoGvf52umhQAsN2Rf1+XTML00vyL5J
-         mJeb2aEUXVMLFXNzJP4NHtF1hq4GzYteJ5CSPxVViEHeLSUm0MsLufb3X/GxysD0VNhJ
-         KIgRAGhmAEXnp+K2917v7NdyvXterBZFQCWIaOxFQPOGKgpeiG3jPpQbS8jnA7sd9xZO
-         8GHw==
-X-Gm-Message-State: AOAM532paex0uAPA6IdGxisHF5+lfI7v0eEg7X+unEuSonFQ6VjXjIr9
-        Q5jL9rfVTkj4VbLn3axJpTu35d16ke4B3XfXhB8wKw==
-X-Google-Smtp-Source: ABdhPJwumCsczWpIy24fNgQlHvwaiW2/ShuvoT5gCcoB1T6IdJSpe3MINoXCfDWffgbKbUzSewBdIR9qz3k8q2Uxfpw=
-X-Received: by 2002:a05:651c:b1e:b0:249:95d3:7832 with SMTP id
- b30-20020a05651c0b1e00b0024995d37832mr6253661ljr.426.1649270070676; Wed, 06
- Apr 2022 11:34:30 -0700 (PDT)
+        Wed, 6 Apr 2022 15:50:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4362E216A56;
+        Wed,  6 Apr 2022 10:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6C15B824E6;
+        Wed,  6 Apr 2022 17:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6FAAAC385A3;
+        Wed,  6 Apr 2022 17:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649265612;
+        bh=Mo8HirllIynk/z8CgfkYFr8U2nZhqSzLoJnSPMEkdKc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PeKFiO72mWGWyUeFzVUOvAhDJ1IQt8fp0nSbB/BY5edlC2n4AiR1okEfvfImJtCbD
+         7oSEsIeAzWcfiItk+Okk0aEiMFwaXWlitF1IXmvJi3TfzsfawdqV1rkhORDa3GIU1A
+         S/8WZdgi8lBDW6MLjNBBDzMaJROw3COQJnhTTLBBgaD30S8ZoYdt/1e6mAwIbal+R+
+         f029O143joNsXcBWh7EpaBUTTkinQhSIdrrBuMSrJuMS0kfsx3SELZ56c04ZTLpHOT
+         asuEOUdwOCoFA+QAoQk81p082YhCJOhmunmJdwOPe+Uum1xHtoPVKDcy/qlnXz1shJ
+         J4sLX+8iF6w7A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5252BE85D53;
+        Wed,  6 Apr 2022 17:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220330164306.2376085-1-pgonda@google.com> <CAL715W+S-SJwXBhYO=_T-9uAPLt6cQ-Hn+_+ehefAh6+kQ_zOA@mail.gmail.com>
- <YkYdlfYM/FWlMqMg@google.com> <CAL715WLhy7EkJCyO7vzak3O8iw8GDRHkPF8aRtDedPXO1vx_Qw@mail.gmail.com>
- <Yk3bSmQTspjZHUZf@google.com>
-In-Reply-To: <Yk3bSmQTspjZHUZf@google.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Wed, 6 Apr 2022 12:34:19 -0600
-Message-ID: <CAMkAt6obVDW_LFvQzUYw6v7okiNq1KAbUOMoM3bN6zeJUGg6Xw@mail.gmail.com>
-Subject: Re: [PATCH] KVM: SEV: Add cond_resched() to loop in sev_clflush_pages()
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Mingwei Zhang <mizhang@google.com>, kvm <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH][next] libbpf: Fix spelling mistake "libaries" -> "libraries"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164926561233.23950.5713179481350505645.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Apr 2022 17:20:12 +0000
+References: <20220406080835.14879-1-colin.i.king@gmail.com>
+In-Reply-To: <20220406080835.14879-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 12:26 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Wed, Apr 06, 2022, Mingwei Zhang wrote:
-> > Hi Sean,
-> >
-> > > > > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> > > > > index 75fa6dd268f0..c2fe89ecdb2d 100644
-> > > > > --- a/arch/x86/kvm/svm/sev.c
-> > > > > +++ b/arch/x86/kvm/svm/sev.c
-> > > > > @@ -465,6 +465,7 @@ static void sev_clflush_pages(struct page *pages[], unsigned long npages)
-> > > > >                 page_virtual = kmap_atomic(pages[i]);
-> > > > >                 clflush_cache_range(page_virtual, PAGE_SIZE);
-> > > > >                 kunmap_atomic(page_virtual);
-> > > > > +               cond_resched();
-> > > >
-> > > > If you add cond_resched() here, the frequency (once per 4K) might be
-> > > > too high. You may want to do it once per X pages, where X could be
-> > > > something like 1G/4K?
-> > >
-> > > No, every iteration is perfectly ok.  The "cond"itional part means that this will
-> > > reschedule if and only if it actually needs to be rescheduled, e.g. if the task's
-> > > timeslice as expired.  The check for a needed reschedule is cheap, using
-> > > cond_resched() in tight-ish loops is ok and intended, e.g. KVM does a reched
-> > > check prior to enterring the guest.
-> >
-> > Double check on the code again. I think the point is not about flag
-> > checking. Obviously branch prediction could really help. The point I
-> > think is the 'call' to cond_resched(). Depending on the kernel
-> > configuration, cond_resched() may not always be inlined, at least this
-> > is my understanding so far? So if that is true, then it still might
-> > not always be the best to call cond_resched() that often.
->
-> Eh, compared to the cost of 64 back-to-back CLFLUSHOPTs, the cost of __cond_resched()
-> is peanuts.  Even accounting for the rcu_all_qs() work, it's still dwarfed by the
-> cost of flushing data from the cache.  E.g. based on Agner Fog's wonderful uop
-> latencies[*], the actual flush time for a single page is going to be upwards of
-> 10k cycles, whereas __cond_resched() is going to well under 100 cycles in the happy
-> case of no work.  Even if those throughput numbers are off by an order of magnitude,
-> e.g. CLFLUSHOPT can complete in 15 cycles, that's still ~1k cycles.
->
-> Peter, don't we also theoretically need cond_resched() in the loops in
-> sev_launch_update_data()?  AFAICT, there's no articifical restriction on the size
-> of the payload, i.e. the kernel is effectively relying on userspace to not update
-> large swaths of memory.
+Hello:
 
-Yea we probably do want to cond_resched() in the for loop inside of
-sev_launch_update_data(). Ithink in  sev_dbg_crypt() userspace could
-request a large number of pages to be decrypted/encrypted for
-debugging but se have a call to sev_pin_memory() in the loop so that
-will have a cond_resded() inside of __get_users_pages(). Or should we
-have a cond_resded() inside of the loop in sev_dbg_crypt() too?
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
 
->
-> [*] https://www.agner.org/optimize/instruction_tables.pdf
+On Wed,  6 Apr 2022 09:08:35 +0100 you wrote:
+> There is a spelling mistake in a pr_warn message. Fix it.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  tools/lib/bpf/usdt.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [next] libbpf: Fix spelling mistake "libaries" -> "libraries"
+    https://git.kernel.org/bpf/bpf-next/c/a8d600f6bcd4
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
