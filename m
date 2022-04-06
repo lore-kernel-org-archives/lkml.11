@@ -2,116 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 826DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236274AbiDFPnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59972 "EHLO
+        id S236420AbiDFPnu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236794AbiDFPnK (ORCPT
+        with ESMTP id S236258AbiDFPnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:43:10 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74281C3164;
-        Wed,  6 Apr 2022 05:59:59 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id h4so3046045wrc.13;
-        Wed, 06 Apr 2022 05:59:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=cKbluJ9oRbV4IzOTY69trizh7tqvmPKxd4J/L2rG+nI=;
-        b=P0x6pqt8WbboX3Y1Pi4vFYM/6OKvCijMRDM3Vwkq89j9xj8QTT3R/NjqayAG1zJbo2
-         HfzSfxnjsLtQS9RpsQEGJ3ovGq8rXMsYhbRIMx/kQNcToNnQ5PLh5kQLKWH30Wj3/iZO
-         O1X13b5X/RyHM6JCoEWpTDimQzZQPtLbUC0H7wKKJwq/sXnZIlV+uFASPf6bbupKe0S+
-         /dDursx8MZUdNBBmh9+6WynHA1HwE3ixFFXwU3K0MZFL8yK4xZ86NcS3GZb8Sw+Rgtwd
-         gCgFiWae41xfCOcRJ1VJQANeZoraD2/sStgFY2zOsG8XBmGv3GeO01wvdMi8KBL8WsLn
-         ZXrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cKbluJ9oRbV4IzOTY69trizh7tqvmPKxd4J/L2rG+nI=;
-        b=lDFn7xjdODTFgRdQsJWufR+L9Kd7UND58R24Gu8V7xnsgOC9SzenBXYPGgo9fPGoev
-         g6HNTIXE/KQLwW8me8oCXsC98Tk4W0Oc2h3YgpJfnEOL9SgB1aLQWBHC+afyKJA75igh
-         C18AmPvi3UCA6z9QYWTSzXgGFJPmwXJMKSpZUP8G2LimUtQSBvpVX6TfOoAp/Q1AMKZn
-         2jz9yp71Ec77zujPLWeANt2qGbNm0qy40jFUVtQCpBspy6v4jfSawiZrnj2Pbldv29I3
-         KoIeT+mrmEU4U09v+rl/KhvJ7egr++zV1lFtRz4ZJkZE0ClplFerbpyyd4SG3X7aR5Jn
-         +10Q==
-X-Gm-Message-State: AOAM533YmXNDPZqUH4WAOiGl19hQPFttcfsqwQDX1b3Y9I1Btf6YONib
-        0jTDUpnXLWpy0RqDJZeeKLU=
-X-Google-Smtp-Source: ABdhPJyoXsbMi9rvSVSNemi3NQF4PH7yNOVWoEhFZN9luwp5ynOblzVSGl2nh+NtaZRzWvWsr84eFQ==
-X-Received: by 2002:a5d:628c:0:b0:206:e8b:d4ea with SMTP id k12-20020a5d628c000000b002060e8bd4eamr6533204wru.675.1649249998233;
-        Wed, 06 Apr 2022 05:59:58 -0700 (PDT)
-Received: from orome (pd9e518f7.dip0.t-ipconnect.de. [217.229.24.247])
-        by smtp.gmail.com with ESMTPSA id v13-20020adfe28d000000b0020375f27a5asm15175843wri.4.2022.04.06.05.59.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 05:59:56 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 14:59:54 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Sagar Kamble <skamble@nvidia.com>
-Cc:     jonathanh@nvidia.com, digetx@gmail.com, yangyingliang@huawei.com,
-        ndesaulniers@google.com, pshete@nvidia.com, nathan@kernel.org,
-        kkartik@nvidia.com, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] soc/tegra: fuse: Add nvmem cell lookup entries for
- tegra194
-Message-ID: <Yk2Oyt/8nyIiXAUp@orome>
-References: <1648123728-16737-1-git-send-email-skamble@nvidia.com>
+        Wed, 6 Apr 2022 11:43:18 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186E34E6F74;
+        Wed,  6 Apr 2022 06:11:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649250681; x=1680786681;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xrVO3PD15uLGC0xOV5+sEkLrkVM/AfGYyeEPTlYt8Po=;
+  b=ZhlbYAiyr4LRl54UxngjZEx8/nKQKs2w8QrjL26baI0/32kOR5qri8Lb
+   K/zrERCQjTucs48sZqavlgVzx6IkIbMZsHX39dP3n3HOcrxM2mfWRBC/F
+   FX9irX4MRSxHuckcDWgSZ7SpyLcmpt/mwlCLZ/il6pEmdi+U+QlLqQ5WH
+   xeIqDY+uqwoG7F2+qkuj0ka/S8AMQXg/5yCJs8Q7uPwyR2nOI0AGYayXF
+   pYKhhhA0x4PDWCFHXlRU0C8yO5K+ui4QTY77QH0lf9qAR4HYoXUeZRdST
+   2vzYnh99AfkqQ5VqWsDUf5YioeaaPVzOmcKQhbDSQrO5CibciPDZlDjCP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261032517"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="261032517"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:09:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="642045293"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 06 Apr 2022 06:09:54 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 626B216D; Wed,  6 Apr 2022 16:05:55 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Michael Walle <michael@walle.cc>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+Subject: [PATCH v5 1/4] device property: Allow error pointer to be passed to fwnode APIs
+Date:   Wed,  6 Apr 2022 16:05:49 +0300
+Message-Id: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="fb8UKwPtxs0r3Jfw"
-Content-Disposition: inline
-In-Reply-To: <1648123728-16737-1-git-send-email-skamble@nvidia.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Some of the fwnode APIs might return an error pointer instead of NULL
+or valid fwnode handle. The result of such API call may be considered
+optional and hence the test for it is usually done in a form of
 
---fb8UKwPtxs0r3Jfw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+	fwnode = fwnode_find_reference(...);
+	if (IS_ERR(fwnode))
+		...error handling...
 
-On Thu, Mar 24, 2022 at 05:38:48PM +0530, Sagar Kamble wrote:
-> Add nvmem cell lookup entries for below fuse cells:
->  - gcplex-config-fuse
->  - pdi0
->  - pdi1
->=20
-> Also include the device name prefix "gpu-" in the names of the gpu fuse
-> cells in nvmem_cell_info.
->=20
-> Signed-off-by: Sagar Kamble <skamble@nvidia.com>
-> ---
->  drivers/soc/tegra/fuse/fuse-tegra.c   |  8 ++++----
->  drivers/soc/tegra/fuse/fuse-tegra30.c | 17 ++++++++++++++++-
->  2 files changed, 20 insertions(+), 5 deletions(-)
+Nevertheless the resulting fwnode may have bumped the reference count
+and hence caller of the above API is obliged to call fwnode_handle_put().
+Since fwnode may be not valid either as NULL or error pointer the check
+has to be performed there. This approach uglifies the code and adds
+a point of making a mistake, i.e. forgetting about error point case.
 
-Applied, thanks.
+To prevent this, allow an error pointer to be passed to the fwnode APIs.
 
-Thierry
+Fixes: 83b34afb6b79 ("device property: Introduce fwnode_find_reference()")
+Reported-by: Nuno Sá <nuno.sa@analog.com>
+Tested-by: Nuno Sá <nuno.sa@analog.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v5: fixed return value in _get_reference_args() for secondary check (Michael)
+ drivers/base/property.c | 89 +++++++++++++++++++++++------------------
+ include/linux/fwnode.h  | 10 ++---
+ 2 files changed, 56 insertions(+), 43 deletions(-)
 
---fb8UKwPtxs0r3Jfw
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index c0e94cce9c29..3376d3971a93 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -47,12 +47,14 @@ bool fwnode_property_present(const struct fwnode_handle *fwnode,
+ {
+ 	bool ret;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return false;
++
+ 	ret = fwnode_call_bool_op(fwnode, property_present, propname);
+-	if (ret == false && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_bool_op(fwnode->secondary, property_present,
+-					 propname);
+-	return ret;
++	if (ret)
++		return ret;
++
++	return fwnode_call_bool_op(fwnode->secondary, property_present, propname);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_present);
+ 
+@@ -232,15 +234,16 @@ static int fwnode_property_read_int_array(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return -EINVAL;
++
+ 	ret = fwnode_call_int_op(fwnode, property_read_int_array, propname,
+ 				 elem_size, val, nval);
+-	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_int_op(
+-			fwnode->secondary, property_read_int_array, propname,
+-			elem_size, val, nval);
++	if (ret != -EINVAL)
++		return ret;
+ 
+-	return ret;
++	return fwnode_call_int_op(fwnode->secondary, property_read_int_array, propname,
++				  elem_size, val, nval);
+ }
+ 
+ /**
+@@ -371,14 +374,16 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return -EINVAL;
++
+ 	ret = fwnode_call_int_op(fwnode, property_read_string_array, propname,
+ 				 val, nval);
+-	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_int_op(fwnode->secondary,
+-					 property_read_string_array, propname,
+-					 val, nval);
+-	return ret;
++	if (ret != -EINVAL)
++		return ret;
++
++	return fwnode_call_int_op(fwnode->secondary, property_read_string_array, propname,
++				  val, nval);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_read_string_array);
+ 
+@@ -480,15 +485,19 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return -ENOENT;
++
+ 	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
+ 				 nargs, index, args);
++	if (ret == 0)
++		return ret;
+ 
+-	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
+-					 prop, nargs_prop, nargs, index, args);
++	if (IS_ERR_OR_NULL(fwnode->secondary))
++		return -ENOENT;
+ 
+-	return ret;
++	return fwnode_call_int_op(fwnode->secondary, get_reference_args, prop, nargs_prop,
++				  nargs, index, args);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_get_reference_args);
+ 
+@@ -635,12 +644,13 @@ EXPORT_SYMBOL_GPL(fwnode_count_parents);
+ struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
+ 					    unsigned int depth)
+ {
+-	unsigned int i;
+-
+ 	fwnode_handle_get(fwnode);
+ 
+-	for (i = 0; i < depth && fwnode; i++)
++	do {
++		if (depth-- == 0)
++			break;
+ 		fwnode = fwnode_get_next_parent(fwnode);
++	} while (fwnode);
+ 
+ 	return fwnode;
+ }
+@@ -659,17 +669,17 @@ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
+ bool fwnode_is_ancestor_of(struct fwnode_handle *test_ancestor,
+ 				  struct fwnode_handle *test_child)
+ {
+-	if (!test_ancestor)
++	if (IS_ERR_OR_NULL(test_ancestor))
+ 		return false;
+ 
+ 	fwnode_handle_get(test_child);
+-	while (test_child) {
++	do {
+ 		if (test_child == test_ancestor) {
+ 			fwnode_handle_put(test_child);
+ 			return true;
+ 		}
+ 		test_child = fwnode_get_next_parent(test_child);
+-	}
++	} while (test_child);
+ 	return false;
+ }
+ 
+@@ -698,7 +708,7 @@ fwnode_get_next_available_child_node(const struct fwnode_handle *fwnode,
+ {
+ 	struct fwnode_handle *next_child = child;
+ 
+-	if (!fwnode)
++	if (IS_ERR_OR_NULL(fwnode))
+ 		return NULL;
+ 
+ 	do {
+@@ -722,16 +732,16 @@ struct fwnode_handle *device_get_next_child_node(struct device *dev,
+ 	const struct fwnode_handle *fwnode = dev_fwnode(dev);
+ 	struct fwnode_handle *next;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return NULL;
++
+ 	/* Try to find a child in primary fwnode */
+ 	next = fwnode_get_next_child_node(fwnode, child);
+ 	if (next)
+ 		return next;
+ 
+ 	/* When no more children in primary, continue with secondary */
+-	if (fwnode && !IS_ERR_OR_NULL(fwnode->secondary))
+-		next = fwnode_get_next_child_node(fwnode->secondary, child);
+-
+-	return next;
++	return fwnode_get_next_child_node(fwnode->secondary, child);
+ }
+ EXPORT_SYMBOL_GPL(device_get_next_child_node);
+ 
+@@ -798,6 +808,9 @@ EXPORT_SYMBOL_GPL(fwnode_handle_put);
+  */
+ bool fwnode_device_is_available(const struct fwnode_handle *fwnode)
+ {
++	if (IS_ERR_OR_NULL(fwnode))
++		return false;
++
+ 	if (!fwnode_has_op(fwnode, device_is_available))
+ 		return true;
+ 
+@@ -988,14 +1001,14 @@ fwnode_graph_get_next_endpoint(const struct fwnode_handle *fwnode,
+ 		parent = fwnode_graph_get_port_parent(prev);
+ 	else
+ 		parent = fwnode;
++	if (IS_ERR_OR_NULL(parent))
++		return NULL;
+ 
+ 	ep = fwnode_call_ptr_op(parent, graph_get_next_endpoint, prev);
++	if (ep)
++		return ep;
+ 
+-	if (IS_ERR_OR_NULL(ep) &&
+-	    !IS_ERR_OR_NULL(parent) && !IS_ERR_OR_NULL(parent->secondary))
+-		ep = fwnode_graph_get_next_endpoint(parent->secondary, NULL);
+-
+-	return ep;
++	return fwnode_graph_get_next_endpoint(parent->secondary, NULL);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_graph_get_next_endpoint);
+ 
+diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+index 3a532ba66f6c..7defac04f9a3 100644
+--- a/include/linux/fwnode.h
++++ b/include/linux/fwnode.h
+@@ -148,12 +148,12 @@ struct fwnode_operations {
+ 	int (*add_links)(struct fwnode_handle *fwnode);
+ };
+ 
+-#define fwnode_has_op(fwnode, op)				\
+-	((fwnode) && (fwnode)->ops && (fwnode)->ops->op)
++#define fwnode_has_op(fwnode, op)					\
++	(!IS_ERR_OR_NULL(fwnode) && (fwnode)->ops && (fwnode)->ops->op)
++
+ #define fwnode_call_int_op(fwnode, op, ...)				\
+-	(fwnode ? (fwnode_has_op(fwnode, op) ?				\
+-		   (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : -ENXIO) : \
+-	 -EINVAL)
++	(fwnode_has_op(fwnode, op) ?					\
++	 (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : (IS_ERR_OR_NULL(fwnode) ? -EINVAL : -ENXIO))
+ 
+ #define fwnode_call_bool_op(fwnode, op, ...)		\
+ 	(fwnode_has_op(fwnode, op) ?			\
+-- 
+2.35.1
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJNjsoACgkQ3SOs138+
-s6F1sxAAhIJvgEn1IJfP6Zem11DQRMrS9o6IzvY0fCXHQlnL9j3laM0YQGUbPkvv
-rnahGW7J/Sh7qBNy7+g2VpxowWz9qTuW+73zD+dRu6aQLZe6gWgqSLXKhw9hLfcj
-kAbc2qirNTqEki/JjMBwyh9XgrH+5pS7eholS03+aW8qZx4S3wPFl1V2YBLELp46
-iPiiboF/7C8SqUgfdHUO5kC5Ac+BWpqcopBk2Xuh7+scO1VgGck5Hdja1tWoidoZ
-QZ/9oG++hQP8yqFCGzneIiHaGHyofwT9i4SWlyiOfO+iiIPm5mm4Gd/34/4+6Lnp
-5PiRH+qUMi+WBTU6enS99KIpPwu6DTStbSvGyEppapqJu3JiIoUMxGsN3o4SedEu
-R2bcrOqXzP4Oa1kegaWsFE13NKDFLODMDdDKYg7PUuGj4s8NSDL6mCTsC/XqvVXe
-TenKO5d1y3VEIYWKWYRfMYBJGGZT4qLofF695TqOE6NJ7L5eEVU8yg2Qdx25x58W
-/5P5Kpbnsqa1h1SN1yL77XTgJroehXzD+vOkRqp5XZ0/FbRzmU2z758I0WZuDkyd
-Vr8K2QRVZF1bROaVWAgoNC358Pe7N7eqjN6kz1Mz99WP7ENm6Yo8dRjvQpsMiBA8
-pgdvfj8Uu9UhX+PgsoDeNe77q4UK5wlPqbzT4yI2KP4IYPggPy0=
-=b689
------END PGP SIGNATURE-----
-
---fb8UKwPtxs0r3Jfw--
