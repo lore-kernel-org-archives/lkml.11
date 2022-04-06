@@ -2,200 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BEBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B596BC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447302AbiDFJhm (ORCPT
+        id S1456634AbiDFJiD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49778 "EHLO
+        Wed, 6 Apr 2022 05:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452377AbiDFJeq (ORCPT
+        with ESMTP id S1572986AbiDFJe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:34:46 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9F5141D8D
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 23:17:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649225875; x=1680761875;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Naa24ktxw2UZOhiet3D4DF5IbUq9hEaWxUtScFptzPY=;
-  b=DGf9OXtxc/WxSGEdS6xLhbotf65nT+15UVcRc04kMWUZl61DABDhXI1g
-   zHBahDf8ObS5bPUpxWJf84Epon17Yy35jkeg+ZYi2fP2Xmk/LQkB0qddW
-   NzuxPpz1NVNpsT5R2/0y5hxaI87eJAWqwytv55ZV32t8MdyB2pIy6BXLP
-   mD9yosuss3HXY6VBthCh+HqaXnEoSAtcmmjDsRtH3Gnyq0MSkYK2blbD7
-   cuzofn1JjJPDmy1bopjbCK4+tKRgIGW3DjE0TzdtCtWVfawdKSOgBqBkH
-   9NnVx4B/QUUvE3Ur9AhDJBJYoXuQhDJeC8KQx1GQMO5H73U7CmfTp9eW9
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="321657139"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="321657139"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 23:17:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="505601654"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2022 23:17:50 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbyzF-00048D-V8;
-        Wed, 06 Apr 2022 06:17:49 +0000
-Date:   Wed, 6 Apr 2022 14:16:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Xu <peterx@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Cc:     kbuild-all@lists.01.org, Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Alistair Popple <apopple@nvidia.com>, peterx@redhat.com
-Subject: Re: [PATCH v8 10/23] mm/shmem: Handle uffd-wp during fork()
-Message-ID: <202204061453.OXOxSh6e-lkp@intel.com>
-References: <20220405014855.14468-1-peterx@redhat.com>
+        Wed, 6 Apr 2022 05:34:57 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E89062A13
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 23:19:14 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id k23so2124951ejd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 23:19:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=m27zJUa0hUUwtRXnhRp6D7XxaujvdIa/9+L7Kmi7OFw=;
+        b=BPH9+Z3kr7zvAWWA4yfUUO3TcJNju39QUV/9+CoH/guctJPX6fRcgRAdhqT4i9Jr8Z
+         NFd4TtLX+Z+8MoqjjeCN3efaw97bob0mGVrO+DX+/YOrHM4h1BBsjEZtJ1PDebrQMKjZ
+         yJoQ8jBuh5xAjgPjL+DDHhiU9BO3sm4yF3/oDroYGMXvxgpE6GRa5KdnDZFOlS1rbDr8
+         Ne++IpU9YzJXZzRWULu2sTdINW3kBmh391dxh7BPrinY7IwhjyZrkMnp5VQMsekIc6/U
+         2sNlWx0D0vM76lqC7xZuVCaGIw35UGXzv1VwoAPCYXzdUDK1w+tVpFEsKm9yhvCOtdkl
+         L/Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=m27zJUa0hUUwtRXnhRp6D7XxaujvdIa/9+L7Kmi7OFw=;
+        b=ZGq+Ar5PviHnWEkeTyKDz3RGHgpquuX8L6iTwih+tvTN0DKMxzB+RDbPi+OLqtFDDv
+         ohW8nKXi4RbEUQGGbjA4VUGYp62pvosYxUMcKdO26cHdZ4T6HnMRMZCbfZtpO+N1ZDG3
+         JC695gxq5+gZHmIi87Y3rYJ/0UcwUsGDsPGmtH0bC098ywOL7DTEbyEWXSpRgPPfcCLp
+         jHlh8Zl40DLeD1f7eTZYwiakGvaRFPlYdSdtUuB7F89QssPMWcBXGsXpRHb46amSz9Nl
+         gms/tu8Gql/oBsvP2WvoKEyAtFCLHRtM/ZQNWg81tQ3Jok21ZwXhKHmO8UPS845PfQYB
+         SKyw==
+X-Gm-Message-State: AOAM531IeMgxG6hpqFvmIEzMw7qQ2EmZNq6T20X+X9jRjlyCRYIjDM6c
+        3G5KZ0LjktJEZp1CxDkdYhk=
+X-Google-Smtp-Source: ABdhPJzbVQ8/OwGlOVZ3+2MKzr8wTDXkN5t0bdWEb8X9/9VaHHvUAu6voeu4k67V9vFVF0LTTaMf5A==
+X-Received: by 2002:a17:907:8a1c:b0:6df:ecd6:b6ea with SMTP id sc28-20020a1709078a1c00b006dfecd6b6eamr6745695ejc.530.1649225952609;
+        Tue, 05 Apr 2022 23:19:12 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id q3-20020a50da83000000b0041cdd6e92b1sm2475251edj.27.2022.04.05.23.19.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 23:19:12 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH 1/5] staging: r8188eu: use round_up() instead of RND4()
+Date:   Wed,  6 Apr 2022 08:18:55 +0200
+Message-Id: <20220406061859.9011-2-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406061859.9011-1-straube.linux@gmail.com>
+References: <20220406061859.9011-1-straube.linux@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405014855.14468-1-peterx@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+Use in-kernel round_up() instead of custom RND4().
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_security.c     | 6 +++---
+ drivers/staging/r8188eu/core/rtw_xmit.c         | 4 ++--
+ drivers/staging/r8188eu/hal/rtl8188eu_xmit.c    | 2 +-
+ drivers/staging/r8188eu/include/osdep_service.h | 1 -
+ 4 files changed, 6 insertions(+), 7 deletions(-)
 
-[auto build test WARNING on hnaz-mm/master]
-[cannot apply to arnd-asm-generic/master linus/master linux/master v5.18-rc1 next-20220405]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Peter-Xu/userfaultfd-wp-Support-shmem-and-hugetlbfs/20220405-100136
-base:   https://github.com/hnaz/linux-mm master
-config: ia64-buildonly-randconfig-r005-20220405 (https://download.01.org/0day-ci/archive/20220406/202204061453.OXOxSh6e-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/49e56558a1f453907d2813e1ba94d91f9d102e73
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Peter-Xu/userfaultfd-wp-Support-shmem-and-hugetlbfs/20220405-100136
-        git checkout 49e56558a1f453907d2813e1ba94d91f9d102e73
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from arch/ia64/include/asm/pgtable.h:153,
-                    from include/linux/pgtable.h:6,
-                    from arch/ia64/include/asm/uaccess.h:40,
-                    from include/linux/uaccess.h:11,
-                    from arch/ia64/include/asm/sections.h:11,
-                    from include/linux/interrupt.h:21,
-                    from include/linux/kernel_stat.h:9,
-                    from mm/memory.c:42:
-   arch/ia64/include/asm/mmu_context.h: In function 'reload_context':
-   arch/ia64/include/asm/mmu_context.h:127:48: warning: variable 'old_rr4' set but not used [-Wunused-but-set-variable]
-     127 |         unsigned long rr0, rr1, rr2, rr3, rr4, old_rr4;
-         |                                                ^~~~~~~
-   In file included from include/linux/mm_inline.h:9,
-                    from mm/memory.c:44:
-   include/linux/userfaultfd_k.h: In function 'pte_marker_entry_uffd_wp':
-   include/linux/userfaultfd_k.h:260:16: error: implicit declaration of function 'is_pte_marker_entry' [-Werror=implicit-function-declaration]
-     260 |         return is_pte_marker_entry(entry) &&
-         |                ^~~~~~~~~~~~~~~~~~~
-   include/linux/userfaultfd_k.h:261:14: error: implicit declaration of function 'pte_marker_get' [-Werror=implicit-function-declaration]
-     261 |             (pte_marker_get(entry) & PTE_MARKER_UFFD_WP);
-         |              ^~~~~~~~~~~~~~
-   include/linux/userfaultfd_k.h:261:38: error: 'PTE_MARKER_UFFD_WP' undeclared (first use in this function)
-     261 |             (pte_marker_get(entry) & PTE_MARKER_UFFD_WP);
-         |                                      ^~~~~~~~~~~~~~~~~~
-   include/linux/userfaultfd_k.h:261:38: note: each undeclared identifier is reported only once for each function it appears in
-   In file included from include/linux/mm_inline.h:10,
-                    from mm/memory.c:44:
-   include/linux/swapops.h: At top level:
-   include/linux/swapops.h:289:20: error: conflicting types for 'is_pte_marker_entry'; have 'bool(swp_entry_t)' {aka '_Bool(swp_entry_t)'}
-     289 | static inline bool is_pte_marker_entry(swp_entry_t entry)
-         |                    ^~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/mm_inline.h:9,
-                    from mm/memory.c:44:
-   include/linux/userfaultfd_k.h:260:16: note: previous implicit declaration of 'is_pte_marker_entry' with type 'int()'
-     260 |         return is_pte_marker_entry(entry) &&
-         |                ^~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/mm_inline.h:10,
-                    from mm/memory.c:44:
-   include/linux/swapops.h:294:26: error: conflicting types for 'pte_marker_get'; have 'pte_marker(swp_entry_t)' {aka 'long unsigned int(swp_entry_t)'}
-     294 | static inline pte_marker pte_marker_get(swp_entry_t entry)
-         |                          ^~~~~~~~~~~~~~
-   In file included from include/linux/mm_inline.h:9,
-                    from mm/memory.c:44:
-   include/linux/userfaultfd_k.h:261:14: note: previous implicit declaration of 'pte_marker_get' with type 'int()'
-     261 |             (pte_marker_get(entry) & PTE_MARKER_UFFD_WP);
-         |              ^~~~~~~~~~~~~~
->> mm/memory.c:1238:1: warning: no previous prototype for 'vma_needs_copy' [-Wmissing-prototypes]
-    1238 | vma_needs_copy(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma)
-         | ^~~~~~~~~~~~~~
-   In file included from include/linux/mm_inline.h:9,
-                    from mm/memory.c:44:
-   include/linux/userfaultfd_k.h: In function 'pte_marker_entry_uffd_wp':
-   include/linux/userfaultfd_k.h:262:1: error: control reaches end of non-void function [-Werror=return-type]
-     262 | }
-         | ^
-   cc1: some warnings being treated as errors
-
-
-vim +/vma_needs_copy +1238 mm/memory.c
-
-  1231	
-  1232	/*
-  1233	 * Return true if the vma needs to copy the pgtable during this fork().  Return
-  1234	 * false when we can speed up fork() by allowing lazy page faults later until
-  1235	 * when the child accesses the memory range.
-  1236	 */
-  1237	bool
-> 1238	vma_needs_copy(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma)
-  1239	{
-  1240		/*
-  1241		 * Always copy pgtables when dst_vma has uffd-wp enabled even if it's
-  1242		 * file-backed (e.g. shmem). Because when uffd-wp is enabled, pgtable
-  1243		 * contains uffd-wp protection information, that's something we can't
-  1244		 * retrieve from page cache, and skip copying will lose those info.
-  1245		 */
-  1246		if (userfaultfd_wp(dst_vma))
-  1247			return true;
-  1248	
-  1249		if (src_vma->vm_flags & (VM_HUGETLB | VM_PFNMAP | VM_MIXEDMAP))
-  1250			return true;
-  1251	
-  1252		if (src_vma->anon_vma)
-  1253			return true;
-  1254	
-  1255		/*
-  1256		 * Don't copy ptes where a page fault will fill them correctly.  Fork
-  1257		 * becomes much lighter when there are big shared or private readonly
-  1258		 * mappings. The tradeoff is that copy_page_range is more efficient
-  1259		 * than faulting.
-  1260		 */
-  1261		return false;
-  1262	}
-  1263	
-
+diff --git a/drivers/staging/r8188eu/core/rtw_security.c b/drivers/staging/r8188eu/core/rtw_security.c
+index 2cdcdfd5ca5c..7462eaab8d2e 100644
+--- a/drivers/staging/r8188eu/core/rtw_security.c
++++ b/drivers/staging/r8188eu/core/rtw_security.c
+@@ -63,7 +63,7 @@ void rtw_wep_encrypt(struct adapter *padapter, struct xmit_frame *pxmitframe)
+ 				arc4_crypt(ctx, payload + length, crc.f1, 4);
+ 
+ 				pframe += pxmitpriv->frag_len;
+-				pframe = (u8 *)RND4((size_t)(pframe));
++				pframe = (u8 *)round_up((size_t)pframe, 4);
+ 			}
+ 		}
+ 	}
+@@ -504,7 +504,7 @@ u32 rtw_tkip_encrypt(struct adapter *padapter, struct xmit_frame *pxmitframe)
+ 					arc4_crypt(ctx, payload + length, crc.f1, 4);
+ 
+ 					pframe += pxmitpriv->frag_len;
+-					pframe = (u8 *)RND4((size_t)(pframe));
++					pframe = (u8 *)round_up((size_t)pframe, 4);
+ 				}
+ 			}
+ 		} else {
+@@ -1133,7 +1133,7 @@ u32 rtw_aes_encrypt(struct adapter *padapter, struct xmit_frame *pxmitframe)
+ 
+ 					aes_cipher(prwskey, pattrib->hdrlen, pframe, length);
+ 					pframe += pxmitpriv->frag_len;
+-					pframe = (u8 *)RND4((size_t)(pframe));
++					pframe = (u8 *)round_up((size_t)pframe, 4);
+ 				}
+ 			}
+ 		} else {
+diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+index aede8ef8b098..0f84d9ade0a3 100644
+--- a/drivers/staging/r8188eu/core/rtw_xmit.c
++++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+@@ -642,7 +642,7 @@ static s32 xmitframe_addmic(struct adapter *padapter, struct xmit_frame *pxmitfr
+ 			payload = pframe;
+ 
+ 			for (curfragnum = 0; curfragnum < pattrib->nr_frags; curfragnum++) {
+-				payload = (u8 *)RND4((size_t)(payload));
++				payload = (u8 *)round_up((size_t)payload, 4);
+ 
+ 				payload = payload + pattrib->hdrlen + pattrib->iv_len;
+ 				if ((curfragnum + 1) == pattrib->nr_frags) {
+@@ -987,7 +987,7 @@ s32 rtw_xmitframe_coalesce(struct adapter *padapter, struct sk_buff *pkt, struct
+ 
+ 		addr = (size_t)(pframe);
+ 
+-		mem_start = (unsigned char *)RND4(addr) + hw_hdr_offset;
++		mem_start = (unsigned char *)round_up(addr, 4) + hw_hdr_offset;
+ 		memcpy(mem_start, pbuf_start + hw_hdr_offset, pattrib->hdrlen);
+ 	}
+ 
+diff --git a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
+index 55032d7ae7e3..87095eff107b 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
++++ b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
+@@ -347,7 +347,7 @@ static s32 rtw_dump_xframe(struct adapter *adapt, struct xmit_frame *pxmitframe)
+ 
+ 		mem_addr += w_sz;
+ 
+-		mem_addr = (u8 *)RND4(((size_t)(mem_addr)));
++		mem_addr = (u8 *)round_up((size_t)mem_addr, 4);
+ 	}
+ 
+ 	rtw_free_xmitframe(pxmitpriv, pxmitframe);
+diff --git a/drivers/staging/r8188eu/include/osdep_service.h b/drivers/staging/r8188eu/include/osdep_service.h
+index fca8f3d116c2..56e5cbfec1f1 100644
+--- a/drivers/staging/r8188eu/include/osdep_service.h
++++ b/drivers/staging/r8188eu/include/osdep_service.h
+@@ -95,7 +95,6 @@ static inline void flush_signals_thread(void)
+ }
+ 
+ #define _RND(sz, r) ((((sz)+((r)-1))/(r))*(r))
+-#define RND4(x)	(((x >> 2) + (((x & 3) == 0) ?  0: 1)) << 2)
+ 
+ static inline u32 _RND4(u32 sz)
+ {
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
