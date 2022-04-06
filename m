@@ -2,95 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C44C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231747AbiDFL6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34760 "EHLO
+        id S231787AbiDFL7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:59:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231556AbiDFL5F (ORCPT
+        with ESMTP id S232253AbiDFL5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:57:05 -0400
-Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDD8379712
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:10:45 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 007BE187E7
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:10:45 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id buA8nijLX9AGSbuA8nJWpH; Tue, 05 Apr 2022 20:08:44 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=RJbl8upYZ+kU9hig0Q7Q/kvmBiEp0eBxPoTLOhcVj3s=; b=xkzv2jv0j9BngmCVA5P5BAakEt
-        BizHfFvIeDlg0TTgiMFd7cGZRYIhduC3tKmg7r5DYwx+hCNAQhCPY7YD7fFsdl0eUNDGfQs380kkR
-        F9aKqgTGngmbW+RsfHwAKOJo/xU1sKYbsFOUzpZqe3HMiAGryPpfw3lGcvttKmZpi6ESjg7JxJkBq
-        u5HD3l0IQK98SUdoaCJfQoo0gA0E1RVThzQdboOCo3In+2vG6IkvMXCuXBP3y1cUUnUrEuR3EmVzL
-        4+pGCONPaMk0p1GwJj/uGm1ASuCZKZZzCBUL/51BnsvcuamReJTe5bhfdV8McUfSH8K1Ee25a8Ym3
-        lRxBjn6Q==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57878 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nbuA7-001LPv-LL; Wed, 06 Apr 2022 01:08:43 +0000
-Date:   Tue, 5 Apr 2022 18:08:42 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.16 0000/1017] 5.16.19-rc1 review
-Message-ID: <20220406010842.GC1133386@roeck-us.net>
-References: <20220405070354.155796697@linuxfoundation.org>
+        Wed, 6 Apr 2022 07:57:44 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B1A5255D7
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:26:54 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id qh7so2331639ejb.11
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:26:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yuM6R8v8TiPq5FdXnzgHGP6cxLXx2tfXvc1fPQGyPBI=;
+        b=p6Pc0ixT7qxKXk+mxDu2v4XYCIZeEosUb3J0LRs+z66/uFVsXJwBQcIHLeAJCLEZqm
+         BDP+rEgxhCs10j5/OzaNq75QgoD5JDu54ZWzYoVZGhIEObUWPAbMNWX0eSeBAkgR9QUh
+         HmwNWIexmyxLuiIXhCIcls/oPEWhm6QUWRaIefiArso7wXQJT7x9S1c755ixecS9fAZW
+         Nb56Ykvbmf3dAY/A8PtcXLpyBHu3vy/jboCZEMr++Db2ISpbG7ZILEf4iyLuOqbz9Cgh
+         cfpuxhjQMP26bNGNhfJRM1N1Y+frlLWH7WpI2sGqvy6bqioT9sItLEM9UyNKOafhwh6d
+         NJxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yuM6R8v8TiPq5FdXnzgHGP6cxLXx2tfXvc1fPQGyPBI=;
+        b=P3BtEkke6xAITDdU40XwCFOeWZReqOyly6kcr6gbQlW6OS4xLns7VBQev+kg9wVVdx
+         EPlNUVUoaaWL2V72l3jU270pik5Vn/JVWY6mRRmzCxOMjJNO3e3aMh9BgDdxhnUXOnRD
+         70pXOXJB5hAJ9k/M4tqt4oJ4oLwj6VU+1STCbSby7TeAAxUrKDIpdggGDwqo2Mt5Ppqv
+         fZT6tY9AGZ8Y6Mwwypry4wkBmuINm7jJgTkDOn7hVbP6wtrWCCacRKGA1tm8p5Z4VBka
+         AANRU5vaJHUPESCS82FQdt/IPwNPx8mK29lJbu5M8BuaviEC5PmErw0TZAEud6c0dSbA
+         enBQ==
+X-Gm-Message-State: AOAM530au62lU4u6OnnEBnCEoaX0/0xkfZvudjp+NmFj+D5b9e15WhaV
+        BxIK/Y0ItJRS4sHLdEkyg7pfkA==
+X-Google-Smtp-Source: ABdhPJwkyCtsJH2vwIdQXVVX2u6O4ZU+EN9y3XsOqCwJVzVWy6LcXdfv65/APnX6lC9vhfF9bwaN9Q==
+X-Received: by 2002:a17:907:c16:b0:6db:682:c8c9 with SMTP id ga22-20020a1709070c1600b006db0682c8c9mr7206485ejc.153.1649230013464;
+        Wed, 06 Apr 2022 00:26:53 -0700 (PDT)
+Received: from [192.168.0.182] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id o12-20020a50c90c000000b0041907e62024sm7510979edh.85.2022.04.06.00.26.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 00:26:53 -0700 (PDT)
+Message-ID: <315c957b-8d22-dcef-a5b8-36e92f0897be@linaro.org>
+Date:   Wed, 6 Apr 2022 09:26:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nbuA7-001LPv-LL
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57878
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 38
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] i2c: add binding to prevent device detection
+Content-Language: en-US
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     "wsa@kernel.org" <wsa@kernel.org>, kernel <kernel@axis.com>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220405121627.1560949-1-vincent.whitchurch@axis.com>
+ <20220405121627.1560949-2-vincent.whitchurch@axis.com>
+ <e3247f0f-5d3d-d981-699e-7dcedb30f881@linaro.org>
+ <20220405141255.GD28574@axis.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220405141255.GD28574@axis.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 09:15:13AM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.19 release.
-> There are 1017 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 05/04/2022 16:12, Vincent Whitchurch wrote:
+> On Tue, Apr 05, 2022 at 03:57:16PM +0200, Krzysztof Kozlowski wrote:
+>> On 05/04/2022 14:16, Vincent Whitchurch wrote:
+>>>  Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
+>>
+>> Use the subject matching the subsystem (git log --oneline -- .......).
 > 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
+> I did look at the git log when writing the subject, but there's a bunch
+> of variation there so I went for the subject prefix which Wolfram
+> himself used since I assumed he would be the one applying these patches.
 > 
+> $ git log -n5 --oneline origin/master -- Documentation/devicetree/bindings/i2c/i2c.txt
+> 6881e493b08f dt-bindings: net: New binding mctp-i2c-controller
+> 168290fb2675 i2c: add binding to mark a bus as supporting SMBus-Alert
+> e6277308ac21 i2c: add binding to mark a bus as SMBus
+> db36e827d876 dt-bindings: i2c: add generic properties for GPIO bus recovery
+> fad5972a1eca i2c: add 'single-master' property to generic bindings
 
-Build results:
-	total: 155 pass: 155 fail: 0
-Qemu test results:
-	total: 488 pass: 488 fail: 0
+The proper command for a subsystem is:
+git log --oneline -- Documentation/devicetree/bindings/i2c/
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+and then you see mostly different pattern.
 
-Guenter
+Other way, like for example Mark Brown prefers, is:
+i2c: dt-bindings:
+It would be fine as well, but the point is that you did not include the
+dt-bindings prefix here at all and almost always I ignore all such emails.
+
+>>>  1 file changed, 4 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/i2c/i2c.txt b/Documentation/devicetree/bindings/i2c/i2c.txt
+>>> index fc3dd7ec0445..5f7bdf4851e8 100644
+>>> --- a/Documentation/devicetree/bindings/i2c/i2c.txt
+>>> +++ b/Documentation/devicetree/bindings/i2c/i2c.txt
+>>> @@ -72,6 +72,10 @@ wants to support one of the below features, it should adapt these bindings.
+>>>  	this information to adapt power management to keep the arbitration awake
+>>>  	all the time, for example. Can not be combined with 'single-master'.
+>>>  
+>>> +- no-detect
+>>> +	states that the system should not attempt to automatically detect
+>>> +	devices which are not explicitly specified as child nodes.
+>>
+>> Focus on the hardware, not on system and behavior. The hardware property
+>> is that bus is completely described in Devicetree or detection does not
+>> work correctly. I guess the property name could stay like this, but the
+>> description could be rephrased.
+> 
+> I'm having a hard time drawing the line between hardware and the
+> "system" here.  The bus being completely described in devicetree doesn't
+> sound like a hardware property to me, but, yes, I can change the
+> description to say that.
+
+Then you need to come up with better description. :) By system I
+understood here Operating System, therefore a Software piece or pieces.
+Bindings should not rather focus on hardware instead of referencing
+software. Software actually not matter for the bindings... There is
+quite clear distinction between hardware and operating system...
+
+Can you explain why do you think "bus being completely described" is not
+a hardware description? Bindings and DTS describe hardware, so one of
+parts of such description is whether nodes and other properties are
+present. If all child nodes are present in DT - no-detect - and this is
+a purely hardware point of view. No software here.
+
+Best regards,
+Krzysztof
