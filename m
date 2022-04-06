@@ -2,120 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:12:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4480C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233906AbiDFUOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
+        id S234045AbiDFUOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234960AbiDFUNM (ORCPT
+        with ESMTP id S234327AbiDFUMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:13:12 -0400
+        Wed, 6 Apr 2022 16:12:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDB52EC506;
-        Wed,  6 Apr 2022 10:30:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC73262431;
+        Wed,  6 Apr 2022 11:09:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F67DB824DF;
-        Wed,  6 Apr 2022 17:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18936C385A3;
-        Wed,  6 Apr 2022 17:30:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649266214;
-        bh=7lnEc/dVbTGKJwcO+vpl8TJuBka5jKqU+BsGyNZKjcQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AvWc6IzVyufeZxhslT9jaoj3tbw7OzPJAdI8asHAw+4zMLK7sXziQSy6RG1qKY6Te
-         GWZf5PjXZt4aUBkYWPibMXeNLXr1J/TqzoUoYBEA9G7CCqVmIG7Th6wugd5H58yAPh
-         SRO++MeGBOKkFxD9KpahDomQgA7xuN65YohsMMKPPzt2G9GHROPO4NSMbJQaNSOtHs
-         i+gOtIvzDu1RHXg71a5Yem0sCysOv0QBTfdfEd0sh1Mv/IMf1Vz/XgfM4yLKlljDBs
-         mSBr41cY8Zq4JMNztD/9bYsjbdivEkZjsc2H1p4PAS7ixEl4nPIV0gi3dNTDddDSSX
-         IIN3ZMj4EKdAQ==
-Received: by wens.tw (Postfix, from userid 1000)
-        id 3FD635FC39; Thu,  7 Apr 2022 01:30:11 +0800 (CST)
-From:   Chen-Yu Tsai <wens@kernel.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/4] drm/ssd130x: Add support for SINO WEALTH SH1106
-Date:   Thu,  7 Apr 2022 01:29:52 +0800
-Message-Id: <20220406172956.3953-1-wens@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F951B82004;
+        Wed,  6 Apr 2022 18:09:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6F7C385A9;
+        Wed,  6 Apr 2022 18:09:27 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Josef Bacik <josef@toxicpanda.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>,
+        Will Deacon <will@kernel.org>, linux-fsdevel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/3] mm: Add fault_in_subpage_writeable() to probe at sub-page granularity
+Date:   Wed,  6 Apr 2022 19:09:20 +0100
+Message-Id: <20220406180922.1522433-2-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220406180922.1522433-1-catalin.marinas@arm.com>
+References: <20220406180922.1522433-1-catalin.marinas@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wens@csie.org>
+On hardware with features like arm64 MTE or SPARC ADI, an access fault
+can be triggered at sub-page granularity. Depending on how the
+fault_in_writeable() function is used, the caller can get into a
+live-lock by continuously retrying the fault-in on an address different
+from the one where the uaccess failed.
 
-Hi everyone,
+In the majority of cases progress is ensured by the following
+conditions:
 
-This series adds support for SH1106 to the ssd130x OLED display
-driver.
+1. copy_to_user_nofault() guarantees at least one byte access if the
+   user address is not faulting.
 
-Changes since v1:
+2. The fault_in_writeable() loop is resumed from the first address that
+   could not be accessed by copy_to_user_nofault().
 
-- Fixed ordering of SINO WEALTH in vendor prefix list
+If the loop iteration is restarted from an earlier (initial) point, the
+loop is repeated with the same conditions and it would live-lock.
 
-- Updated allOf:if: blocks in DT binding, i.e. added default values for
-  solomon,dclk-{div,frq}
+Introduce an arch-specific probe_subpage_writeable() and call it from
+the newly added fault_in_subpage_writeable() function. The arch code
+with sub-page faults will have to implement the specific probing
+functionality.
 
-- Added SSD130X_PAGE_COL_START_{HIGH,LOW}_SET and used that to set the
-  bitfields for the two commands.
-  I didn't feel SSD130X_PAGE_COL_START_{HIGH,LOW}_MASK was needed, as
-  it was the same between both commands.
+Note that no other fault_in_subpage_*() functions are added since they
+have no callers currently susceptible to a live-lock.
 
-- Added SH110x to the SSD130X Kconfig help texts
-  There are SH110[789] as well, but they don't seem to be easy to find.
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+---
+ arch/Kconfig            |  7 +++++++
+ include/linux/pagemap.h |  1 +
+ include/linux/uaccess.h | 22 ++++++++++++++++++++++
+ mm/gup.c                | 29 +++++++++++++++++++++++++++++
+ 4 files changed, 59 insertions(+)
 
-
-The SINO WEALTH SH1106 is an OLED display driver that is somewhat
-compatible with the SSD1306. It supports a slightly wider display,
-at 132 instead of 128 pixels. The basic commands are the same, but
-the SH1106 doesn't support the horizontal or vertical address modes.
-
-This driver chip is found in some cheap 1.3" OLED panel modules. It
-acts as a substitute for the SSD1306.
-
-Patch 1 adds an entry to the vendor prefixes for SINO WEALTH
-Eletronics Ltd.
-
-Patch 2 adds an entry for SH1106 to the ssd1307fb binding.
-
-Patch 3 adds support for the base "page addressing mode" to the ssd130x
-driver.
-
-Patch 4 adds support for the SH1106 to the ssd130x driver.
-
-Please have a look.
-
-
-Thanks
-ChenYu
-
-
-Chen-Yu Tsai (4):
-  dt-bindings: vendor-prefixes: Add prefix for SINO WEALTH Eletronics
-    Ltd.
-  dt-bindings: display: ssd1307fb: Add entry for SINO WEALTH SH1106
-  drm/ssd130x: Support page addressing mode
-  drm/ssd130x: Add support for SINO WEALTH SH1106
-
- .../bindings/display/solomon,ssd1307fb.yaml   | 13 ++++
- .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
- drivers/gpu/drm/solomon/Kconfig               |  9 ++-
- drivers/gpu/drm/solomon/ssd130x-i2c.c         | 11 +++
- drivers/gpu/drm/solomon/ssd130x.c             | 73 +++++++++++++++++--
- drivers/gpu/drm/solomon/ssd130x.h             |  2 +
- 6 files changed, 99 insertions(+), 11 deletions(-)
-
--- 
-2.34.1
-
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 29b0167c088b..b34032279926 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -24,6 +24,13 @@ config KEXEC_ELF
+ config HAVE_IMA_KEXEC
+ 	bool
+ 
++config ARCH_HAS_SUBPAGE_FAULTS
++	bool
++	help
++	  Select if the architecture can check permissions at sub-page
++	  granularity (e.g. arm64 MTE). The probe_user_*() functions
++	  must be implemented.
++
+ config HOTPLUG_SMT
+ 	bool
+ 
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index 993994cd943a..6165283bdb6f 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -1046,6 +1046,7 @@ void folio_add_wait_queue(struct folio *folio, wait_queue_entry_t *waiter);
+  * Fault in userspace address range.
+  */
+ size_t fault_in_writeable(char __user *uaddr, size_t size);
++size_t fault_in_subpage_writeable(char __user *uaddr, size_t size);
+ size_t fault_in_safe_writeable(const char __user *uaddr, size_t size);
+ size_t fault_in_readable(const char __user *uaddr, size_t size);
+ 
+diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+index 546179418ffa..8bbb2dabac19 100644
+--- a/include/linux/uaccess.h
++++ b/include/linux/uaccess.h
+@@ -231,6 +231,28 @@ static inline bool pagefault_disabled(void)
+  */
+ #define faulthandler_disabled() (pagefault_disabled() || in_atomic())
+ 
++#ifndef CONFIG_ARCH_HAS_SUBPAGE_FAULTS
++
++/**
++ * probe_subpage_writeable: probe the user range for write faults at sub-page
++ *			    granularity (e.g. arm64 MTE)
++ * @uaddr: start of address range
++ * @size: size of address range
++ *
++ * Returns 0 on success, the number of bytes not probed on fault.
++ *
++ * It is expected that the caller checked for the write permission of each
++ * page in the range either by put_user() or GUP. The architecture port can
++ * implement a more efficient get_user() probing if the same sub-page faults
++ * are triggered by either a read or a write.
++ */
++static inline size_t probe_subpage_writeable(void __user *uaddr, size_t size)
++{
++	return 0;
++}
++
++#endif /* CONFIG_ARCH_HAS_SUBPAGE_FAULTS */
++
+ #ifndef ARCH_HAS_NOCACHE_UACCESS
+ 
+ static inline __must_check unsigned long
+diff --git a/mm/gup.c b/mm/gup.c
+index f598a037eb04..501bc150792c 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -1648,6 +1648,35 @@ size_t fault_in_writeable(char __user *uaddr, size_t size)
+ }
+ EXPORT_SYMBOL(fault_in_writeable);
+ 
++/**
++ * fault_in_subpage_writeable - fault in an address range for writing
++ * @uaddr: start of address range
++ * @size: size of address range
++ *
++ * Fault in a user address range for writing while checking for permissions at
++ * sub-page granularity (e.g. arm64 MTE). This function should be used when
++ * the caller cannot guarantee forward progress of a copy_to_user() loop.
++ *
++ * Returns the number of bytes not faulted in (like copy_to_user() and
++ * copy_from_user()).
++ */
++size_t fault_in_subpage_writeable(char __user *uaddr, size_t size)
++{
++	size_t faulted_in;
++
++	/*
++	 * Attempt faulting in at page granularity first for page table
++	 * permission checking. The arch-specific probe_subpage_writeable()
++	 * functions may not check for this.
++	 */
++	faulted_in = size - fault_in_writeable(uaddr, size);
++	if (faulted_in)
++		faulted_in -= probe_subpage_writeable(uaddr, faulted_in);
++
++	return size - faulted_in;
++}
++EXPORT_SYMBOL(fault_in_subpage_writeable);
++
+ /*
+  * fault_in_safe_writeable - fault in an address range for writing
+  * @uaddr: start of address range
