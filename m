@@ -2,90 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44408C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE19C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiDFTfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
+        id S231215AbiDFTgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232225AbiDFTfb (ORCPT
+        with ESMTP id S231795AbiDFTfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:35:31 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58B311D7A0
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:22:36 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id k23so5714245ejd.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:22:36 -0700 (PDT)
+        Wed, 6 Apr 2022 15:35:53 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E166BD6D;
+        Wed,  6 Apr 2022 10:19:28 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id k2so3435841edj.9;
+        Wed, 06 Apr 2022 10:19:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I61gN2qyHfQVc0lXEisvsSshJTx/hjGvwxAqAi4L41M=;
-        b=mQeh1ZOB58Xp4ghWny/k9KagUmjj7tiQrxMEkzUU8AJtPIWT6WZZImN6wIvKB8KyCY
-         A+hfHCQRcqO8rt2v+B0p5bo2Ioej5IWO6pqGWAFrePNIh7OycZhNQN2PgTZEYp/436TO
-         MXaI8aC3+9Jy1vuwCdE1lfKHGYHFWwZpy+v1Xc7g7YPd1aJc5WqVDN7Va+vSIIxu7PhB
-         yRqXmT0fOhmCC8Y2+wTvL6VubWMkh7k4997DFqWVm+qGMewJq+Xkp5CV+/0s0oYrG6sz
-         n74SRu3wu1GpsLv4QIfaUeo6DqAVx29Xe5Rl2QgWqaX3+tsxsrtvbknlWwJ8AQmyNpdn
-         zXTQ==
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=vdE7ENdk50E008niFssMoI/ouBHi+zXp0XKAL9+sLMU=;
+        b=MLX8eLxI0+AXuN+l8u9PcFmRJgkQ8kt9A0wrp+VwWRqy23mMFhLT8whzsf7t000Ncc
+         97Xt8KXreXtmlAyc/43AWxy5o4JoMImIo7MTazY8o9DuT3xSLfJ81UArwUm9a7pT4ZwC
+         CEwip7418fGB8AT2ch6oEoiUwjOOD+dbHRDMFCqll0ZnjyqmH6rfwMFwR0th5ZtEW9/s
+         g2zt/ziGlxVPZz9XFEu89z4Buc5QwGtHq046NsieugzH5lE37pIxdWY+Vjt6VDsOBSUV
+         JlMRIarD6IZoAweQZVuW9y8wLuvDffwIMwVKCUg6g7iOa/ikjZfQHe9BQ8Kra7HRsLVd
+         7nhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I61gN2qyHfQVc0lXEisvsSshJTx/hjGvwxAqAi4L41M=;
-        b=EaqvoLDqc9GOLK0fW/FSRtMUkDC0/mdj8uOglHhAt7WE0oBVTpKRblfAQDpc6GGVOi
-         zy7IpoLa2pDhNFokkxcHOCkXAlL5xNBNPeF6HCpBRk1T1GiphK9hNTHB0KRQ9ercsx3X
-         lo5beGIxBIysbCc/lhh+PN7VWuAX7NaP5+HG76BYePv/B48XxRRR0MBAkbz6fOI7QMNw
-         xH7cnl9njeTU1TLlL6E+duay8edMKAOpG4mVpTlL/rreP8ziY/G3qWGAEPhrJZ+BjimP
-         +hpCF4alshAEsNpSCIGTIFcpQ8Xnjq3hx8zIhptTqEXsURAzIAMzt5xLFjUwGW3IHP5h
-         Mt3g==
-X-Gm-Message-State: AOAM532yjMw/OLoMLs0w9zYOLjMqH5BFH5it4KyPoHSV9eSM2xY/EbbR
-        LkhowOciMM11pmqRStFl0mU=
-X-Google-Smtp-Source: ABdhPJzZHiAnJyLP+Iks60sV0TEElSwYYK4adIyA/DBg3K62WmoCz8LytOn97+kMRFDrFe7ZBShkgA==
-X-Received: by 2002:a17:907:7f8d:b0:6db:7227:daea with SMTP id qk13-20020a1709077f8d00b006db7227daeamr9338204ejc.100.1649265755199;
-        Wed, 06 Apr 2022 10:22:35 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id da19-20020a056402177300b00413583e0996sm7912730edb.14.2022.04.06.10.22.34
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=vdE7ENdk50E008niFssMoI/ouBHi+zXp0XKAL9+sLMU=;
+        b=TUeKNzDFKbXSm6MgsCNTmHCarWovjj6Vo8xSkbmkMcjfktQc6tLsIIA4pQq3dtqWzG
+         rjCZC/+AoACeU0RLyj/hjm+M+LTwq/wR5BVZyXVdQlWR3K98RYZ8gLl8H7GEjNWMTafi
+         ayPn8Cj9wksEpmfFHFwB9pUn1QSfa9dVpwRrw/gB3jeb2jf3OY+FP4ZcovMi5R8FVuuZ
+         OudkdTi721FuJkNPlekmxTRpbxEsYbIhG1lw1MNuX+qNXqy274Mpvs1ORrzTc4CPd38V
+         rw5hkYss7VctLPmmEGff/+HlOynhNGS+Dnfghw0KTLrd43r0o7PzPMh70+/DpwOEkZhF
+         RBQg==
+X-Gm-Message-State: AOAM530Q0xc+9LELaep1aHg2n+af4CiCNTWjKgkvj7bjL2kzaDvSGpbq
+        5vllsV5uOJTRqqanhvPm5Kk=
+X-Google-Smtp-Source: ABdhPJwP6YnvLsavwQYRZtElYmnNa4TOvdQSidjbmDbmGHxOqnd2mnzm7WQStOVEdLTqWKYyw+6tLA==
+X-Received: by 2002:aa7:d718:0:b0:41c:d766:7e74 with SMTP id t24-20020aa7d718000000b0041cd7667e74mr9982157edq.38.1649265566939;
+        Wed, 06 Apr 2022 10:19:26 -0700 (PDT)
+Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
+        by smtp.googlemail.com with ESMTPSA id sb15-20020a1709076d8f00b006dfe4cda58fsm6749791ejc.95.2022.04.06.10.19.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:22:34 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH v2 0/5] staging: r8188eu: use round_up()
-Date:   Wed,  6 Apr 2022 19:22:14 +0200
-Message-Id: <20220406172219.15565-1-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 06 Apr 2022 10:19:26 -0700 (PDT)
+Message-ID: <c18a2b359046a14250cafa5a619dbe53f2872b5a.camel@gmail.com>
+Subject: Re: [PATCH  v2 0/4] rpmb subsystem, uapi and virtio-rpmb driver
+From:   Bean Huo <huobean@gmail.com>
+To:     Alex =?ISO-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, maxim.uvarov@linaro.org,
+        joakim.bech@linaro.org, ulf.hansson@linaro.org,
+        ilias.apalodimas@linaro.org, arnd@linaro.org,
+        ruchika.gupta@linaro.org, tomas.winkler@intel.com,
+        yang.huang@intel.com, bing.zhu@intel.com,
+        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
+        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        bvanassche@acm.org
+Date:   Wed, 06 Apr 2022 19:19:24 +0200
+In-Reply-To: <87ee2ajuky.fsf@linaro.org>
+References: <20220405093759.1126835-1-alex.bennee@linaro.org>
+         <8b3ce88f65fd11523a4d2daab3c617f7089eb1ce.camel@gmail.com>
+         <87r16bk013.fsf@linaro.org>
+         <aeb64d1c4bbddfd8463c07a40ab1fc78be0d158d.camel@gmail.com>
+         <87ee2ajuky.fsf@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series converts the driver to use the in-kernel round_up()
-and PTR_ALIGN() instead of custom _RND* implementations.
+On Wed, 2022-04-06 at 12:22 +0100, Alex Benn=C3=A9e wrote:
+>=20
+> Bean Huo <huobean@gmail.com> writes:
+>=20
+> > On Tue, 2022-04-05 at 16:43 +0100, Alex Benn=C3=A9e wrote:
+> > >=20
+> > > Bean Huo <huobean@gmail.com> writes:
+> > >=20
+> > > > Hi Alex,
+> > > >=20
+> > > > Thanks for this unified RPMB interface, I wanted to verify this
+> > > > on
+> > > > our
+> > > > UFS, it seems you didn't add the UFS access interface in this
+> > > > version=20
+> > > > from your userspace tools, right?
+> > >=20
+> > > No I didn't but it should be easy enough to add some function
+> > > pointer
+> > > redirection everywhere one of the op_* functions calls a vrpmb_*
+> > > function. Do you already have a UFS RPMB device driver?
+> > >=20
+> >=20
+> > Hi Alex,
+> > Thanks for your feedback.
+> >=20
+> > We now access UFS RPMB through the RPMB LUN BSG device, RPMB is a
+> > well-
+> > known LU and we have a userspace tool to access it.
+> >=20
+> > I see that if we're going to use your interface, "static struct
+> > rpmb_ops" should be registered from a lower-level driver, for
+> > example
+> > in a UFS driver, yes there should be no problem with this
+> > registration,
+> > but I don't know with the current way Compared, what are the
+> > advantages
+> > to add a driver. maybe the main advantage is that we will have an
+> > unified user space tool for RPMB. right?
+>=20
+> Pretty much. The main issue for virtio-rpmb is it doesn't really fit
+> neatly into the block stack because all it does is the RPMB part so a
+> non-block orientate API makes sense.
+>=20
+> Can you point be to where the UFS driver does it's current RPMB
+> stuff?
+>=20
 
-Tested on x86_64 with Inter-Tech DMG-02.
+It's the SCSI BSG driver, in fact, we don't have a dedicated UFS RPMB
+driver in the kernel. RPMB is a well known LU, we are using userspace
+tools to issue SCSI commands directly to the UFS RPMB LU via ioctl()
+from the BSG device node in the /dev/sg/ folder.
 
-v2:
-use PTR_ALIGN in patch 1/5
+Here is the BSG part of the code in the userspace tools:
 
-Michael Straube (5):
-  staging: r8188eu: use PTR_ALIGN() instead of RND4()
-  staging: r8188eu: use round_up() instead of _RND4()
-  staging: r8188eu: use round_up() instead of _RND8()
-  staging: r8188eu: use round_up() instead of _RND128()
-  staging: r8188eu: remove unused _RND* from osdep_service.h
+        io_hdr_v4.guard =3D 'Q';                                       =20
+        io_hdr_v4.protocol =3D BSG_PROTOCOL_SCSI;                      =20
+        io_hdr_v4.subprotocol =3D BSG_SUB_PROTOCOL_SCSI_CMD;           =20
+        io_hdr_v4.response =3D (__u64)sense_buffer;                    =20
+        io_hdr_v4.max_response_len =3D SENSE_BUFF_LEN;                 =20
+        io_hdr_v4.request_len =3D cmd_len;                             =20
+        io_hdr_v4.request =3D (__u64)cdb;                              =20
+                                                                           =
+                                              =20
+                                                                           =
+     =20
+        ioctl(fd, SG_IO, &io_hdr_v4))
+...
 
- drivers/staging/r8188eu/core/rtw_cmd.c        |  2 +-
- drivers/staging/r8188eu/core/rtw_security.c   |  6 +--
- drivers/staging/r8188eu/core/rtw_xmit.c       |  7 +--
- drivers/staging/r8188eu/hal/rtl8188eu_xmit.c  |  8 ++--
- drivers/staging/r8188eu/hal/usb_ops_linux.c   |  2 +-
- .../staging/r8188eu/include/osdep_service.h   | 43 -------------------
- 6 files changed, 11 insertions(+), 57 deletions(-)
 
--- 
-2.35.1
+> >=20
+> > Kind regards,
+> > Bean
+>=20
+>=20
 
