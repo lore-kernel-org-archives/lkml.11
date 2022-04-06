@@ -2,188 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D44C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:50:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235302AbiDFOwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50560 "EHLO
+        id S235208AbiDFOwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235202AbiDFOv4 (ORCPT
+        with ESMTP id S235086AbiDFOwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:51:56 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58270473BC2;
-        Wed,  6 Apr 2022 04:27:01 -0700 (PDT)
-Received: from [192.168.100.1] ([82.142.17.26]) by mrelayeu.kundenserver.de
- (mreue011 [213.165.67.103]) with ESMTPSA (Nemesis) id
- 1MaInF-1nWAdL1wZR-00WETf; Wed, 06 Apr 2022 13:26:34 +0200
-Message-ID: <465da893-4e7b-33e4-2859-032724bae42f@vivier.eu>
-Date:   Wed, 6 Apr 2022 13:26:33 +0200
+        Wed, 6 Apr 2022 10:52:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE2DC4E1D32
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649244452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=czYEG2s79Hy9lOqd5LLDvlb+7Wd1zq0rVYS2W8uDgNg=;
+        b=ChZBS4TJYROx3tC2sSHgWqZDnA/22Tk5WS6NDRJ9+pEft9s6mQ8BK53B8heRvOz7gumppA
+        U3cdL72ueh0LXR6v+nHFDYzOVe+I52c/2McVZGCkcJ+8DOvJaYhNbbUEudBcNlRJ1t4V9p
+        wb3MG08/2x8PQQ3gJKzJzOPgebMRh+0=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-635-gcU8zlkrO1q_Jpu_Awuteg-1; Wed, 06 Apr 2022 07:27:31 -0400
+X-MC-Unique: gcU8zlkrO1q_Jpu_Awuteg-1
+Received: by mail-ed1-f70.google.com with SMTP id p14-20020a05640243ce00b0041cbccbe008so1046186edc.16
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 04:27:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=czYEG2s79Hy9lOqd5LLDvlb+7Wd1zq0rVYS2W8uDgNg=;
+        b=i4b/LkRE19EnapGifX7+xH5VvzAyyrRnzRC+EnSVlX9YfiVapWFCThLdcSFsl9ySYp
+         C6R9VNXOlqYh3G6zGwZLNhL0OSq8zKojyYeXm6YUvWULZCdYMgGvAb97abxumEygh+up
+         XfXHUXDzGsyxTxaZD5JItahW15BSs4IPMGuzsjFY0GmVLAPwZOlTB0CF5FftRRBtax++
+         W2SqpgYuK02jGjhZfCOYy1KBEcLdHCC6VwtHsNGAMe6zF6om66wYE+jzs5aRjpgFQ4Z9
+         ejFFSydo+zwyrXp7YP4bWSAd9xGZdNWKS1rI1pt9VZC5KTRXgkzS4XzfjQxVsCrI74cl
+         phrA==
+X-Gm-Message-State: AOAM533Kbw+9kUC0TX4GdxYP387Wb+nJtJYysv1fUTCXzhmjzUpx86VB
+        HAhBTxFLoef9F5JuopIBWN4pNsuAx8DCQVhvI4kW89KvwOJj+CYQlhxwOm88p4gDUuFA6C4H+gr
+        QREgg4sEVaoqMafh7iKOGRQSg
+X-Received: by 2002:a17:907:9812:b0:6da:aaaf:7713 with SMTP id ji18-20020a170907981200b006daaaaf7713mr7711219ejc.163.1649244450531;
+        Wed, 06 Apr 2022 04:27:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy8HAC0KpxmXUr9bLApoRMWeOYc6NTMP+nuUIR4pCaODB25UIn0SgREcn3NFeWM8Zc4/BXArg==
+X-Received: by 2002:a17:907:9812:b0:6da:aaaf:7713 with SMTP id ji18-20020a170907981200b006daaaaf7713mr7711198ejc.163.1649244450308;
+        Wed, 06 Apr 2022 04:27:30 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id s4-20020a170906a18400b006db0a78bde8sm6521509ejy.87.2022.04.06.04.27.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 04:27:29 -0700 (PDT)
+Message-ID: <9cfd5d2f-55e4-f8fc-701b-5917941e0269@redhat.com>
+Date:   Wed, 6 Apr 2022 13:27:27 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v15 4/5] clocksource/drivers: Add a goldfish-timer
- clocksource
-Content-Language: fr
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-rtc@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Stultz <john.stultz@linaro.org>,
+Subject: Re: [RFC PATCH v5 027/104] KVM: TDX: initialize VM with TDX specific
+ parameters
+Content-Language: en-US
+To:     Xiaoyao Li <xiaoyao.li@intel.com>, Kai Huang <kai.huang@intel.com>,
+        isaku.yamahata@intel.com, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220310090048.1933020-1-laurent@vivier.eu>
- <20220310090048.1933020-5-laurent@vivier.eu>
- <f87deb83-7f1f-5acf-b6c6-040fcd02c0be@vivier.eu>
- <768c4fe5-fd36-8e4a-a9c2-1c799af3ed44@linaro.org>
-From:   Laurent Vivier <laurent@vivier.eu>
-In-Reply-To: <768c4fe5-fd36-8e4a-a9c2-1c799af3ed44@linaro.org>
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <c3b37cf5c83f92be0e153075d81a80729bf1031e.1646422845.git.isaku.yamahata@intel.com>
+ <509fb6fb5c581e6bf14149dff17d7426a6b061f2.camel@intel.com>
+ <6e370d39-fcb6-c158-e5fb-690cd3802150@redhat.com>
+ <36df723c-4794-69a8-8d12-ea371a7865df@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <36df723c-4794-69a8-8d12-ea371a7865df@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:1Ddi8//vR+pwaFfa7/frty7H56BT91Uw6bSWiXvRoxv3+2QDHwq
- aJhlfY0cZkwVtNsmta6//MbumzSy9AB+GZ0QMoOHNVAdAu6qP1h4tNFSBRyvY9qLuEHrFka
- aKm0XDrrCFzkiO3FxvRJqN2Cu+pHjP5vWe9VyELfS/Q4oo4mq7tU707/cvGufgHtPcWhile
- VdoiNIUhvCCqkBd6KKxBw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:c6JeBJh3TZI=:O+yOSPNxA+7PCAAfgUNYya
- 2URfVShTV5NexDqUmzjTjgad6UX4DQhxPdCiHzDOC9K9ZtEoYKOTpZQGPv5gbsOVXPPJtO7yO
- 3dUASVhnHEwMtUJ3NxuYqGWQR119ZOROEv+Uf/I8gXV4tTSUjoCrALmnujxD65betlhja40ut
- Jzr6mJIxWI+PLVu/CujfsYByeg9WaXbDKduXAEial/riAVCg1WRav4T4lPQSBqhoA8OM81fPu
- qu/Ks1nlT09fj7/rnG/bUC485cZY2HITD6LlDK4vvm3ekOSUZMxhmMgQlncBzSQuB9BiCK9JY
- DSFS3SClaY/d3MnViDdZ+Tdrz1qa2f+ztLoj/7DzQ81jC/+Dy+KN3ZqAaLrjxZnvjZK+7TaN0
- lmeGu3Fxt4QODsabthTWmIwjODHOIDMP8/nndhO/ZkKU+JbX8XqMMKqvBKXrj907Su7xNtq20
- NV8LVxW093UHEJkdoW4H208/b1gzJ2Cfjq0Wd4g064niXdOZnNpPquVg11EshcDBfR9U8qKLe
- bo9nfGeb8AxhP2wkUXKflgARU3ynjNmud3yLDrWd8hxMF1qUP0n3B6CK/0/zPSsUXgPxoKSl3
- agKJpOH64FzlDPzWB9gGz4CtDg9hjwZMbmaVECCt2z+BHFJRgP4URuJDVijV9MCfEBJEEOUot
- Stt4L0uJnDCjei3AbUSGo0I8PGlfSev4r7sUAgOsqT+KU0+5nmO400F7owPaX39kxc/0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 06/04/2022 à 12:27, Daniel Lezcano a écrit :
-> 
-> Hi Laurent,
-> 
-> 
-> On 01/04/2022 12:20, Laurent Vivier wrote:
+On 4/6/22 04:06, Xiaoyao Li wrote:
 >>
->> Daniel ?
+>> Indeed, it would be easier to use the existing cpuid data in struct 
+>> kvm_vcpu, because right now there is no way to ensure that they are 
+>> consistent.
 >>
->> Thanks,
->> Laurent
->>
->> Le 10/03/2022 à 10:00, Laurent Vivier a écrit :
->>> Add a clocksource based on the goldfish-rtc device.
->>>
->>> Move the timer register definition to <clocksource/timer-goldfish.h>
->>>
->>> This kernel implementation is based on the QEMU upstream implementation:
->>>
->>>     https://git.qemu.org/?p=qemu.git;a=blob_plain;f=hw/rtc/goldfish_rtc.c
->>>
->>> goldfish-timer is a high-precision signed 64-bit nanosecond timer.
->>> It is part of the 'goldfish' virtual hardware platform used to run
->>> some emulated Android systems under QEMU.
->>> This timer only supports oneshot event.
->>>
->>> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
->>> ---
->>>   drivers/clocksource/Kconfig          |   7 ++
->>>   drivers/clocksource/Makefile         |   1 +
->>>   drivers/clocksource/timer-goldfish.c | 153 +++++++++++++++++++++++++++
->>>   drivers/rtc/rtc-goldfish.c           |  13 +--
->>>   include/clocksource/timer-goldfish.h |  31 ++++++
->>>   5 files changed, 193 insertions(+), 12 deletions(-)
->>>   create mode 100644 drivers/clocksource/timer-goldfish.c
->>>   create mode 100644 include/clocksource/timer-goldfish.h
->>>
->>> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
->>> index cfb8ea0df3b1..94f00374cebb 100644
->>> --- a/drivers/clocksource/Kconfig
->>> +++ b/drivers/clocksource/Kconfig
->>> @@ -721,4 +721,11 @@ config MICROCHIP_PIT64B
->>>         modes and high resolution. It is used as a clocksource
->>>         and a clockevent.
->>> +config GOLDFISH_TIMER
->>> +    bool "Clocksource using goldfish-rtc"
->>> +    depends on M68K || COMPILE_TEST
->>> +    depends on RTC_DRV_GOLDFISH
->>> +    help
->>> +      Support for the timer/counter of goldfish-rtc
->>> +
->>>   endmenu
->>> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
->>> index fa5f624eadb6..12f5d7e8cc2d 100644
->>> --- a/drivers/clocksource/Makefile
->>> +++ b/drivers/clocksource/Makefile
->>> @@ -89,3 +89,4 @@ obj-$(CONFIG_GX6605S_TIMER)        += timer-gx6605s.o
->>>   obj-$(CONFIG_HYPERV_TIMER)        += hyperv_timer.o
->>>   obj-$(CONFIG_MICROCHIP_PIT64B)        += timer-microchip-pit64b.o
->>>   obj-$(CONFIG_MSC313E_TIMER)        += timer-msc313e.o
->>> +obj-$(CONFIG_GOLDFISH_TIMER)        += timer-goldfish.o
->>> diff --git a/drivers/clocksource/timer-goldfish.c b/drivers/clocksource/timer-goldfish.c
->>> new file mode 100644
->>> index 000000000000..0512d5eabc82
->>> --- /dev/null
->>> +++ b/drivers/clocksource/timer-goldfish.c
->>> @@ -0,0 +1,153 @@
->>> +// SPDX-License-Identifier: GPL-2.0
->>> +
->>> +#include <linux/interrupt.h>
->>> +#include <linux/ioport.h>
->>> +#include <linux/clocksource.h>
->>> +#include <linux/clockchips.h>
->>> +#include <linux/module.h>
->>> +#include <linux/slab.h>
->>> +#include <linux/goldfish.h>
+>> Why is KVM_SET_CPUID2 not enough?  Are there any modifications done by 
+>> KVM that affect the measurement?
 > 
-> Not related to this patch: would it make sense to move it to linux/soc/... ?
+> Then we get the situation that KVM_TDX_INIT_VM must be called after 1 
+> vcpu is created. It seems illogical that it has chance to fail the VM 
+> scope initialization after 1 vcpu is successfully created.
 
-I don't know. goldfish is not really a soc. I didn't really find a good place where it should be.
+I see.  Yeah, it makes sense to have the CPUID in KVM_TDX_INIT_VM then.
 
-> 
-> 
->>> +#include <clocksource/timer-goldfish.h>
->>> +
->>> +struct goldfish_timer {
->>> +    struct clocksource cs;
->>> +    struct clock_event_device ced;
->>> +    struct resource res;
->>> +    void __iomem *base;
->>> +};
->>> +
->>> +static struct goldfish_timer *ced_to_gf(struct clock_event_device *ced)
->>> +{
->>> +    return container_of(ced, struct goldfish_timer, ced);
->>> +}
->>> +
->>> +static struct goldfish_timer *cs_to_gf(struct clocksource *cs)
->>> +{
->>> +    return container_of(cs, struct goldfish_timer, cs);
->>> +}
->>> +
->>> +static u64 goldfish_timer_read(struct clocksource *cs)
->>> +{
->>> +    struct goldfish_timer *timerdrv = cs_to_gf(cs);
->>> +    void __iomem *base = timerdrv->base;
->>> +    u32 time_low, time_high;
->>> +    u64 ticks;
->>> +
->>> +    /*
->>> +     * time_low: get low bits of current time and update time_high
->>> +     * time_high: get high bits of time at last time_low read
->>> +     */
->>> +    time_low = gf_ioread32(base + TIMER_TIME_LOW);
->>> +    time_high = gf_ioread32(base + TIMER_TIME_HIGH);
-> 
-> There is a risk here to have the counter rolling over between low and high reading, no ?
+Paolo
 
-No, because value of high is frozen when we read low, so the 64bit value doesn't move between the 
-two ioread32().
-
-Thanks,
-Laurent
