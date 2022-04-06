@@ -2,200 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A99C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2375DC43219
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244033AbiDFHKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
+        id S243057AbiDFHKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 03:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1576860AbiDFGqR (ORCPT
+        with ESMTP id S1454542AbiDFGoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:46:17 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA5E1B217C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:02:15 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id v13so1128203ilg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 22:02:15 -0700 (PDT)
+        Wed, 6 Apr 2022 02:44:14 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49B01C16FE
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 21:44:22 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id m67-20020a1ca346000000b0038e6a1b218aso864557wme.2
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 21:44:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ODFzchJR5kzOOfH4oglWE4R0LrU8T2pOGN5A8BVCo3U=;
-        b=iMReHv3tyRw5iMCz8nsm/TtFplAGB7XpTHYj0K2oYkopUO6t4HwextVI8qORbbaGVj
-         EcG+otqi5GlQjjflDzYc/8/cPtEpyqO3dNxlnzJKfu+IR7lNPe3753enKC7p/QIJaoQB
-         E5bNM6wedRbxPbQly/PW5sdWT1jhLumZ1DhChya1ZXjop4FkX/srSN03RigmnkAbxSQy
-         DsSFdZpZENI96/TGkG9xn3EbM1mQlUIGBUGMiA696nNZ5U+rNv3/rX/Ged9OUqbcn0oA
-         2C4qiqpazawaBhaYDkL8Mltvia8Eze08LMWcaSxYL81rjiQFUnfKupEslHqjwoJoipBd
-         dhMw==
+        bh=e1+rSoTUFj3WU/eLBjLIgKZMH01AWeNOKksTlBoI6QI=;
+        b=DZ356kbwx5IGdFHW0oHIMS7b7EvtD/qoADxDb3OCAQsNy1e/3rk+O6v1Hin+9fHM+w
+         8YqIdfgn96Z+8lR/e9ASQ3ksjl+FNnPdAdUm2+RQdYwNoXTgTXoMmEGa76DCWF7gfBUL
+         oKQ9OsGLPk05HGzDi42x5w+msAtGdWaYaIqrEJiF5vYr3hbgkZSJu2/xuBheXSzuSkdD
+         WOxPvzQ8Q5YPN+/86k1RZ4stBMQRuQfdD8rd6KFDKmkv3h4E0v/yX7tZksqWzQGW4eaL
+         4TRxoR7LGSY9TJroykH/kpFBz83Ju2+XPgxlkW7QvV2C0PW4k18tlPzNGrBG1qnKcloJ
+         Rl8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ODFzchJR5kzOOfH4oglWE4R0LrU8T2pOGN5A8BVCo3U=;
-        b=perrSSW056Wc99FS7wzz0Q7npRh335cOzkfUEx5KY3cDZKedaDkEYBH4TbIk6u1xBs
-         GsnAu8zRdL8wbCsYM+p5XFZcGHVF8kQEeYlh3tTFmv+vMuObRUNxCscqSdjl7UHTLI8v
-         Hh+lP24knEwe5JRrSp02OTuhkEF8la7oL8cLJ9KhBPlptE4jIXQrQ329wqcM98lpR2lN
-         fHzqe7NAP3adzbQicWOwLeMguF2UlAReJMzxa2NxwO8x3lNT/+NkwS8hZdFLNugVdm2f
-         3JtOiwo6t1TL4WNGg84A/wMvY5O/MsmvGIKffZ7gTgHKAC4QUrVglanO3tfZ0hKa3j0b
-         wJ9g==
-X-Gm-Message-State: AOAM533Z6Lb4lp3opHHLJdghftDnPdrLJkhxw0pIOFW+XAdmTlBwSe60
-        vPaxB7mV8UtkH8slQvYnFZS1shN4KUFqe8+y2A0NhA==
-X-Google-Smtp-Source: ABdhPJwmuOvaNZWgsnAQnzJtXTjwwmG83FNEFBIyD4x+uWELL3Nws5M3TxO3jqYqbmSel0TB3jot31p6pdHCt7GwWqw=
-X-Received: by 2002:a92:cd8b:0:b0:2c9:ded9:f20d with SMTP id
- r11-20020a92cd8b000000b002c9ded9f20dmr3149531ilb.300.1649221334940; Tue, 05
- Apr 2022 22:02:14 -0700 (PDT)
+        bh=e1+rSoTUFj3WU/eLBjLIgKZMH01AWeNOKksTlBoI6QI=;
+        b=4bsE2fYQzrm7Zq3C6rGOvCpMnbHIHXD2cTRdgpGBzuRWmq0NvlCg+txL8l9VAcEPjM
+         QKZDzVrRYdL2zqH0jw542t/8PXhVZfRYu3g+wF8qfot719T6HkMCSDZns9WAwVwJiGf2
+         mqwfdqdpgDqZVQEIltJrOBdiWeU9g0VDh/nrejgA9sj/FKkqBb/6exiImsVAyoksqKJ2
+         dy8A23H8tYn7no2NVRh5qb2WT5B0tGVrSDVBFe6daW7kLQDss3C5sVs82VuCwYpERPOp
+         5Bt8m1m0z6kk+7rSHpcu1izUErBPfV3FOfcFYMWrru6FBV6M5YJM7mCoRHSm/jA+tjHA
+         4UPA==
+X-Gm-Message-State: AOAM532CF81KFnpiiulqpCNeVj2oU84kHbrSd88Na+YphccoN0mh8tHJ
+        PPXq68geGLtcTAgjT9phW6lQcpUWKQcXXzMtwZhHaeHWXrM=
+X-Google-Smtp-Source: ABdhPJzUeoLh2rgohUoRmso6+QuCiyytCmkErXglSSd5mbHd/aI3A9xMIPS+cvm8RRGxxq/lcUpM6xrBahrJyk5gvpg=
+X-Received: by 2002:a05:600c:6004:b0:38c:6c00:4316 with SMTP id
+ az4-20020a05600c600400b0038c6c004316mr5854562wmb.6.1649220261185; Tue, 05 Apr
+ 2022 21:44:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220331084151.2600229-1-yosryahmed@google.com>
- <YkcEMdsi9G5y8mX4@dhcp22.suse.cz> <CAAPL-u_i-Mp-Bo7LtP_4aJscY=1JHG_y1H_-A7N_HRAgtz+arg@mail.gmail.com>
- <87y20nzyw4.fsf@yhuang6-desk2.ccr.corp.intel.com> <CAAPL-u8wjtBRE7KZyZjoQ0eTJecnW35uEXAE3KU0M+AvL=5-ug@mail.gmail.com>
- <87o81fujdc.fsf@yhuang6-desk2.ccr.corp.intel.com> <CAAPL-u_6XqQYtLAMNFvEo+0XU2VR=XYm0T9btL=g6rVVW2h93w@mail.gmail.com>
- <87bkxfudrk.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <87bkxfudrk.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Wei Xu <weixugc@google.com>
-Date:   Tue, 5 Apr 2022 22:02:03 -0700
-Message-ID: <CAAPL-u_FVEVE+wTBNYfDibLVKsRuOwEnpigYYRiZ2MbeUs1u8w@mail.gmail.com>
-Subject: Re: [PATCH resend] memcg: introduce per-memcg reclaim interface
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Cgroups <cgroups@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+References: <20220405190619.540177-1-dlatypov@google.com>
+In-Reply-To: <20220405190619.540177-1-dlatypov@google.com>
+From:   David Gow <davidgow@google.com>
+Date:   Wed, 6 Apr 2022 12:44:10 +0800
+Message-ID: <CABVgOSmJ+oOLqK-yVtr-AhtOSQ8RxMo9hB0uLR6-p_mBrME3Hg@mail.gmail.com>
+Subject: Re: [PATCH] lib/Kconfig.debug: change KUnit tests to default to KUNIT_ALL_TESTS
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Jonathan Corbet <corbet@lwn.net>, Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Greg Thelen <gthelen@google.com>
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 7:50 PM Huang, Ying <ying.huang@intel.com> wrote:
+On Wed, Apr 6, 2022 at 3:06 AM Daniel Latypov <dlatypov@google.com> wrote:
 >
-> Wei Xu <weixugc@google.com> writes:
+> This is in line with Documentation/dev-tools/kunit/style.rst.
+> Some of these tests predate that so they don't follow this convention.
 >
-> > On Tue, Apr 5, 2022 at 5:49 PM Huang, Ying <ying.huang@intel.com> wrote:
-> >>
-> >> Wei Xu <weixugc@google.com> writes:
-> >>
-> >> > On Sat, Apr 2, 2022 at 1:13 AM Huang, Ying <ying.huang@intel.com> wrote:
-> >> >>
-> >> >> Wei Xu <weixugc@google.com> writes:
-> >> >>
-> >> >> > On Fri, Apr 1, 2022 at 6:54 AM Michal Hocko <mhocko@suse.com> wrote:
-> >> >> >>
-> >> >> >> On Thu 31-03-22 08:41:51, Yosry Ahmed wrote:
-> >> >> >> > From: Shakeel Butt <shakeelb@google.com>
-> >> >> >> >
-> >> >>
-> >> >> [snip]
-> >> >>
-> >> >> >> > Possible Extensions:
-> >> >> >> > --------------------
-> >> >> >> >
-> >> >> >> > - This interface can be extended with an additional parameter or flags
-> >> >> >> >   to allow specifying one or more types of memory to reclaim from (e.g.
-> >> >> >> >   file, anon, ..).
-> >> >> >> >
-> >> >> >> > - The interface can also be extended with a node mask to reclaim from
-> >> >> >> >   specific nodes. This has use cases for reclaim-based demotion in memory
-> >> >> >> >   tiering systens.
-> >> >> >> >
-> >> >> >> > - A similar per-node interface can also be added to support proactive
-> >> >> >> >   reclaim and reclaim-based demotion in systems without memcg.
-> >> >> >> >
-> >> >> >> > For now, let's keep things simple by adding the basic functionality.
-> >> >> >>
-> >> >> >> Yes, I am for the simplicity and this really looks like a bare minumum
-> >> >> >> interface. But it is not really clear who do you want to add flags on
-> >> >> >> top of it?
-> >> >> >>
-> >> >> >> I am not really sure we really need a node aware interface for memcg.
-> >> >> >> The global reclaim interface will likely need a different node because
-> >> >> >> we do not want to make this CONFIG_MEMCG constrained.
-> >> >> >
-> >> >> > A nodemask argument for memory.reclaim can be useful for memory
-> >> >> > tiering between NUMA nodes with different performance.  Similar to
-> >> >> > proactive reclaim, it can allow a userspace daemon to drive
-> >> >> > memcg-based proactive demotion via the reclaim-based demotion
-> >> >> > mechanism in the kernel.
-> >> >>
-> >> >> I am not sure whether nodemask is a good way for demoting pages between
-> >> >> different types of memory.  For example, for a system with DRAM and
-> >> >> PMEM, if specifying DRAM node in nodemask means demoting to PMEM, what
-> >> >> is the meaning of specifying PMEM node? reclaiming to disk?
-> >> >>
-> >> >> In general, I have no objection to the idea in general.  But we should
-> >> >> have a clear and consistent interface.  Per my understanding the default
-> >> >> memcg interface is for memory, regardless of memory types.  The memory
-> >> >> reclaiming means reduce the memory usage, regardless of memory types.
-> >> >> We need to either extending the semantics of memory reclaiming (to
-> >> >> include memory demoting too), or add another interface for memory
-> >> >> demoting.
-> >> >
-> >> > Good point.  With the "demote pages during reclaim" patch series,
-> >> > reclaim is already extended to demote pages as well.  For example,
-> >> > can_reclaim_anon_pages() returns true if demotion is allowed and
-> >> > shrink_page_list() can demote pages instead of reclaiming pages.
-> >>
-> >> These are in-kernel implementation, not the ABI.  So we still have
-> >> the opportunity to define the ABI now.
-> >>
-> >> > Currently, demotion is disabled for memcg reclaim, which I think can
-> >> > be relaxed and also necessary for memcg-based proactive demotion.  I'd
-> >> > like to suggest that we extend the semantics of memory.reclaim to
-> >> > cover memory demotion as well.  A flag can be used to enable/disable
-> >> > the demotion behavior.
-> >>
-> >> If so,
-> >>
-> >> # echo A > memory.reclaim
-> >>
-> >> means
-> >>
-> >> a) "A" bytes memory are freed from the memcg, regardless demoting is
-> >>    used or not.
-> >>
-> >> or
-> >>
-> >> b) "A" bytes memory are reclaimed from the memcg, some of them may be
-> >>    freed, some of them may be just demoted from DRAM to PMEM.  The total
-> >>    number is "A".
-> >>
-> >> For me, a) looks more reasonable.
-> >>
-> >
-> > We can use a DEMOTE flag to control the demotion behavior for
-> > memory.reclaim.  If the flag is not set (the default), then
-> > no_demotion of scan_control can be set to 1, similar to
-> > reclaim_pages().
+> With this and commit b0841b51cac9 ("kunit: arch/um/configs: Enable
+> KUNIT_ALL_TESTS by default"), kunit.py will now run these tests by
+> default. This hopefully makes it easier to run and maintain the tests.
+> If any of these were to start failing, people would notice much quicker.
 >
-> If we have to use a flag to control the behavior, I think it's better to
-> have a separate interface (e.g. memory.demote).  But do we really need b)?
+> Note: this commit doesn't update LINEAR_RANGES_TEST since that would
+> select its dependency (LINEAR_RANGES). We don't want KUNIT_ALL_TESTS
+> to enable anything other than test kconfigs.
 >
+> Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> ---
 
-I am fine with either approach: a separate interface similar to
-memory.reclaim, but dedicated to demotion, or multiplexing
-memory.reclaim for demotion with a flag.
+I'd forgotten these were missing KUNIT_ALL_TESTS support, thanks!
 
-My understanding is that with the "demote pages during reclaim"
-support, b) is the expected behavior, or more precisely, pages that
-cannot be demoted may be freed or swapped out.  This is reasonable.
-Demotion-only can also be supported via some arguments to the
-interface and changes to demotion code in the kernel.  After all, this
-interface is being designed to be extensible based on the discussions
-so far.
+Reviewed-by: David Gow <davidgow@google.com>
 
-> > The question is then whether we want to rename memory.reclaim to
-> > something more general.  I think this name is fine if reclaim-based
-> > demotion is an accepted concept.
->
-> Best Regards,
-> Huang, Ying
+Cheers,
+-- David
