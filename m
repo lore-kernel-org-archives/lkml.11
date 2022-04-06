@@ -2,109 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73619C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233544AbiDFNdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
+        id S233629AbiDFNdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbiDFNcH (ORCPT
+        with ESMTP id S233653AbiDFNck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:32:07 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8748A6799A4
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:31:49 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5C97C23A;
-        Wed,  6 Apr 2022 03:22:13 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.10.98])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1A93D3F718;
-        Wed,  6 Apr 2022 03:22:10 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 11:22:07 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Vincenzo Frascino <vincenzo.frascino@arm.com>
-Subject: Re: [RFC PATCH -next V2 2/7] arm64: fix page_address return value in
- copy_highpage
-Message-ID: <Yk1pz7IYwEyGDVNV@FVFF77S0Q05N>
-References: <20220406091311.3354723-1-tongtiangen@huawei.com>
- <20220406091311.3354723-3-tongtiangen@huawei.com>
+        Wed, 6 Apr 2022 09:32:40 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EF767C7E7;
+        Wed,  6 Apr 2022 03:32:27 -0700 (PDT)
+X-UUID: 95c2eb6cf8af432bb27dcc2009b10b31-20220406
+X-UUID: 95c2eb6cf8af432bb27dcc2009b10b31-20220406
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2147457778; Wed, 06 Apr 2022 18:05:22 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 6 Apr 2022 18:05:21 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 18:05:20 +0800
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <nfraprado@collabora.com>, <tzungbi@google.com>
+CC:     <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
+        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
+        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Jiaxin Yu <jiaxin.yu@mediatek.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [v9 4/4] ASoC: mediatek: mt8192: support rt1015p_rt5682s
+Date:   Wed, 6 Apr 2022 18:05:14 +0800
+Message-ID: <20220406100514.11269-5-jiaxin.yu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220406100514.11269-1-jiaxin.yu@mediatek.com>
+References: <20220406100514.11269-1-jiaxin.yu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406091311.3354723-3-tongtiangen@huawei.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 09:13:06AM +0000, Tong Tiangen wrote:
-> Function page_address return void, fix it.
-> 
-> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+To support machine that only choose one of the rt5682s and rt5682 as
+headset codec, adds new compatible string "mt8192_mt6359_rt1015p_rt5682s".
+Meanwhile, using macros to simplifies card name and compatible name.
 
-This looks like a sensible cleanup, but the commit title and message aren't
-that clear.
+Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+---
+ sound/soc/mediatek/Kconfig                    |  1 +
+ .../mt8192/mt8192-mt6359-rt1015-rt5682.c      | 61 ++++++++++++-------
+ 2 files changed, 40 insertions(+), 22 deletions(-)
 
-Can you please make this:
+diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
+index ae838bbc7933..9e5ce1a82639 100644
+--- a/sound/soc/mediatek/Kconfig
++++ b/sound/soc/mediatek/Kconfig
+@@ -179,6 +179,7 @@ config SND_SOC_MT8192_MT6359_RT1015_RT5682
+ 	select SND_SOC_RT1015
+ 	select SND_SOC_RT1015P
+ 	select SND_SOC_RT5682_I2C
++	select SND_SOC_RT5682S
+ 	select SND_SOC_DMIC
+ 	help
+ 	  This adds ASoC driver for Mediatek MT8192 boards
+diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+index 4a11f687d416..2c71bd8a2db8 100644
+--- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
++++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+@@ -28,6 +28,14 @@
+ #define RT1015_DEV0_NAME	"rt1015.1-0028"
+ #define RT1015_DEV1_NAME	"rt1015.1-0029"
+ 
++#define RT1015_RT5682_CARD_NAME "mt8192_mt6359_rt1015_rt5682"
++#define RT1015P_RT5682_CARD_NAME "mt8192_mt6359_rt1015p_rt5682"
++#define RT1015P_RT5682S_CARD_NAME "mt8192_mt6359_rt1015p_rt5682s"
++
++#define RT1015_RT5682_OF_NAME "mediatek,mt8192_mt6359_rt1015_rt5682"
++#define RT1015P_RT5682_OF_NAME "mediatek,mt8192_mt6359_rt1015p_rt5682"
++#define RT1015P_RT5682S_OF_NAME "mediatek,mt8192_mt6359_rt1015p_rt5682s"
++
+ struct mt8192_mt6359_priv {
+ 	struct snd_soc_jack headset_jack;
+ 	struct snd_soc_jack hdmi_jack;
+@@ -68,8 +76,8 @@ static int mt8192_rt1015_i2s_hw_params(struct snd_pcm_substream *substream,
+ 	return snd_soc_dai_set_sysclk(cpu_dai, 0, mclk_fs, SND_SOC_CLOCK_OUT);
+ }
+ 
+-static int mt8192_rt5682_i2s_hw_params(struct snd_pcm_substream *substream,
+-				       struct snd_pcm_hw_params *params)
++static int mt8192_rt5682x_i2s_hw_params(struct snd_pcm_substream *substream,
++					struct snd_pcm_hw_params *params)
+ {
+ 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+ 	struct snd_soc_card *card = rtd->card;
+@@ -118,8 +126,8 @@ static const struct snd_soc_ops mt8192_rt1015_i2s_ops = {
+ 	.hw_params = mt8192_rt1015_i2s_hw_params,
+ };
+ 
+-static const struct snd_soc_ops mt8192_rt5682_i2s_ops = {
+-	.hw_params = mt8192_rt5682_i2s_hw_params,
++static const struct snd_soc_ops mt8192_rt5682x_i2s_ops = {
++	.hw_params = mt8192_rt5682x_i2s_hw_params,
+ };
+ 
+ static int mt8192_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+@@ -950,7 +958,7 @@ static struct snd_soc_dai_link mt8192_mt6359_dai_links[] = {
+ 		.init = mt8192_rt5682_init,
+ 		.be_hw_params_fixup = mt8192_i2s_hw_params_fixup,
+ 		SND_SOC_DAILINK_REG(i2s8),
+-		.ops = &mt8192_rt5682_i2s_ops,
++		.ops = &mt8192_rt5682x_i2s_ops,
+ 	},
+ 	{
+ 		.name = "I2S9",
+@@ -959,7 +967,7 @@ static struct snd_soc_dai_link mt8192_mt6359_dai_links[] = {
+ 		.ignore_suspend = 1,
+ 		.be_hw_params_fixup = mt8192_i2s_hw_params_fixup,
+ 		SND_SOC_DAILINK_REG(i2s9),
+-		.ops = &mt8192_rt5682_i2s_ops,
++		.ops = &mt8192_rt5682x_i2s_ops,
+ 	},
+ 	{
+ 		.name = "CONNSYS_I2S",
+@@ -1039,7 +1047,7 @@ static struct snd_soc_codec_conf rt1015_amp_conf[] = {
+ };
+ 
+ static struct snd_soc_card mt8192_mt6359_rt1015_rt5682_card = {
+-	.name = "mt8192_mt6359_rt1015_rt5682",
++	.name = RT1015_RT5682_CARD_NAME,
+ 	.owner = THIS_MODULE,
+ 	.dai_link = mt8192_mt6359_dai_links,
+ 	.num_links = ARRAY_SIZE(mt8192_mt6359_dai_links),
+@@ -1053,14 +1061,13 @@ static struct snd_soc_card mt8192_mt6359_rt1015_rt5682_card = {
+ 	.num_configs = ARRAY_SIZE(rt1015_amp_conf),
+ };
+ 
+-static const struct snd_soc_dapm_widget
+-mt8192_mt6359_rt1015p_rt5682_widgets[] = {
++static const struct snd_soc_dapm_widget mt8192_mt6359_rt1015p_rt5682x_widgets[] = {
+ 	SND_SOC_DAPM_SPK("Speakers", NULL),
+ 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
+ 	SND_SOC_DAPM_MIC("Headset Mic", NULL),
+ };
+ 
+-static const struct snd_soc_dapm_route mt8192_mt6359_rt1015p_rt5682_routes[] = {
++static const struct snd_soc_dapm_route mt8192_mt6359_rt1015p_rt5682x_routes[] = {
+ 	/* speaker */
+ 	{ "Speakers", NULL, "Speaker" },
+ 	/* headset */
+@@ -1069,23 +1076,22 @@ static const struct snd_soc_dapm_route mt8192_mt6359_rt1015p_rt5682_routes[] = {
+ 	{ "IN1P", NULL, "Headset Mic" },
+ };
+ 
+-static const struct snd_kcontrol_new mt8192_mt6359_rt1015p_rt5682_controls[] = {
++static const struct snd_kcontrol_new mt8192_mt6359_rt1015p_rt5682x_controls[] = {
+ 	SOC_DAPM_PIN_SWITCH("Speakers"),
+ 	SOC_DAPM_PIN_SWITCH("Headphone Jack"),
+ 	SOC_DAPM_PIN_SWITCH("Headset Mic"),
+ };
+ 
+-static struct snd_soc_card mt8192_mt6359_rt1015p_rt5682_card = {
+-	.name = "mt8192_mt6359_rt1015p_rt5682",
++static struct snd_soc_card mt8192_mt6359_rt1015p_rt5682x_card = {
+ 	.owner = THIS_MODULE,
+ 	.dai_link = mt8192_mt6359_dai_links,
+ 	.num_links = ARRAY_SIZE(mt8192_mt6359_dai_links),
+-	.controls = mt8192_mt6359_rt1015p_rt5682_controls,
+-	.num_controls = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682_controls),
+-	.dapm_widgets = mt8192_mt6359_rt1015p_rt5682_widgets,
+-	.num_dapm_widgets = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682_widgets),
+-	.dapm_routes = mt8192_mt6359_rt1015p_rt5682_routes,
+-	.num_dapm_routes = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682_routes),
++	.controls = mt8192_mt6359_rt1015p_rt5682x_controls,
++	.num_controls = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682x_controls),
++	.dapm_widgets = mt8192_mt6359_rt1015p_rt5682x_widgets,
++	.num_dapm_widgets = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682x_widgets),
++	.dapm_routes = mt8192_mt6359_rt1015p_rt5682x_routes,
++	.num_dapm_routes = ARRAY_SIZE(mt8192_mt6359_rt1015p_rt5682x_routes),
+ };
+ 
+ static int mt8192_mt6359_card_set_be_link(struct snd_soc_card *card,
+@@ -1119,6 +1125,13 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	card->dev = &pdev->dev;
+ 
++	if (of_device_is_compatible(pdev->dev.of_node, RT1015P_RT5682_OF_NAME))
++		card->name = RT1015P_RT5682_CARD_NAME;
++	else if (of_device_is_compatible(pdev->dev.of_node, RT1015P_RT5682S_OF_NAME))
++		card->name = RT1015P_RT5682S_CARD_NAME;
++	else
++		dev_dbg(&pdev->dev, "No need to set card name\n");
++
+ 	hdmi_codec = of_parse_phandle(pdev->dev.of_node, "mediatek,hdmi-codec", 0);
+ 	if (!hdmi_codec)
+ 		dev_dbg(&pdev->dev, "The machine has no hdmi-codec\n");
+@@ -1209,12 +1222,16 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ #ifdef CONFIG_OF
+ static const struct of_device_id mt8192_mt6359_dt_match[] = {
+ 	{
+-		.compatible = "mediatek,mt8192_mt6359_rt1015_rt5682",
++		.compatible = RT1015_RT5682_OF_NAME,
+ 		.data = &mt8192_mt6359_rt1015_rt5682_card,
+ 	},
+ 	{
+-		.compatible = "mediatek,mt8192_mt6359_rt1015p_rt5682",
+-		.data = &mt8192_mt6359_rt1015p_rt5682_card,
++		.compatible = RT1015P_RT5682_OF_NAME,
++		.data = &mt8192_mt6359_rt1015p_rt5682x_card,
++	},
++	{
++		.compatible = RT1015P_RT5682S_OF_NAME,
++		.data = &mt8192_mt6359_rt1015p_rt5682x_card,
+ 	},
+ 	{}
+ };
+-- 
+2.25.1
 
-| arm64: fix types in copy_highpage()
-|
-| In copy_highpage() the `kto` and `kfrom` local variables are pointers to
-| struct page, but these are used to hold arbitrary pointers to kernel memory.
-| Each call to page_address() returns a void pointer to memory associated with
-| the relevant page, and copy_page() expects void pointers to this memory.
-|
-| This inconsistency was introduced in commit:
-|
-|   2563776b41c31908 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
-|
-| ... and while this doesn't appear to be harmful in practice it is clearly wrong.
-|
-| Correct this by making `kto` and `kfrom` void pointers.
-|
-| Fixes: 2563776b41c31908 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
-
-With that:
-
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-
-Thanks,
-Mark.
-
-> ---
->  arch/arm64/mm/copypage.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
-> index b5447e53cd73..0dea80bf6de4 100644
-> --- a/arch/arm64/mm/copypage.c
-> +++ b/arch/arm64/mm/copypage.c
-> @@ -16,8 +16,8 @@
->  
->  void copy_highpage(struct page *to, struct page *from)
->  {
-> -	struct page *kto = page_address(to);
-> -	struct page *kfrom = page_address(from);
-> +	void *kto = page_address(to);
-> +	void *kfrom = page_address(from);
->  
->  	copy_page(kto, kfrom);
->  
-> -- 
-> 2.18.0.huawei.25
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
