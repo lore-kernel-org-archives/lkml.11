@@ -2,64 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB54C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234744AbiDFVFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
+        id S234998AbiDFVFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236605AbiDFVDp (ORCPT
+        with ESMTP id S233946AbiDFVEi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:03:45 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF601EE9EA
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:35:27 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id z8so3495741oix.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:35:27 -0700 (PDT)
+        Wed, 6 Apr 2022 17:04:38 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976BA2EF140
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:38:36 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id z6so4327232iot.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:38:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linuxfoundation.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QVhp+oyIa/ZllpX8afFD131iOJTpV5esF+kDy6nIUFY=;
-        b=HgxbkHUhuJvQIkFDYaw/Dp2LQE2zRcf1CkgHx1kUrq0xvW/V/GEu7+AjF8VCb8IGOP
-         nitc6UvlE6MaW9iwZ1qvYWipMLuuxAA3wMBe/Dmitmz4ZPCFlTWrqOY8g7IVkDN7fs/u
-         lqW3P2lqjbzxYE8Nd+h/VX85rry5jYlkSiw1U=
+        bh=vGHNAGNQJ+jili+nDe/Ec5j5ASwqbtr085CgGssJUDU=;
+        b=I0xeLq/G4IGv2sgI720zwJl21NVzHNM0zXEmIIoNpVWVvAuiDk++aM58zqwTTspPp/
+         nx+uQRw6RU+ZMJaEglvXfzu7kMuQEurl1j67Rb2Q1T5MyE0s5r15Zt6XyN672AWgpnCb
+         MwNjLn8PPJY1qY9bP3MJ56sF3OPkym0v8KiGQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=QVhp+oyIa/ZllpX8afFD131iOJTpV5esF+kDy6nIUFY=;
-        b=GT50VBEDeNjV2GbD98hzlGtnLX17/x22vVols4uDZYzQXRYHLgtZsYtryPzuYz9boU
-         +5bC8Zh8kaGBaMj8+YLsNYPl4mMLGUxBfVQlYNl+MNIlbQ7cKTNERbq9/sYVhjGvdbAS
-         UEVEFC2MtVS3PsU6dEmM+V7o2XRQzRJTUS0nGDlp13kB57VROtx9kVCXN3wxmMh970rh
-         kKrLnFIZROcTPY+2wsxOKASeC20hi84sm9GuU4TTYktqR9GOuvqE3ujjyMkPRd/mmLkD
-         ZsZUm6nmioSGBDE/lygzw6PeOal76j0tjxTX8KAG8crvOEhf+VGOAJU8rajpBNPWSbLs
-         ylLg==
-X-Gm-Message-State: AOAM5325i6iRgny7UMyiaGIlyIiH+cZeq4uJKIq6HUjmkemtW73G1+fd
-        m3cw4LdA5uYwdAk4CSveR5VboQ==
-X-Google-Smtp-Source: ABdhPJzm/gKiGpEr+gwntVR94hfCF6tfBlp1C8ybj2Wd8yVQtgbSoJw+PS/dD3rllmcpuI0r0eDpfw==
-X-Received: by 2002:a05:6808:613:b0:2ec:f542:4a7b with SMTP id y19-20020a056808061300b002ecf5424a7bmr4301008oih.76.1649273726860;
-        Wed, 06 Apr 2022 12:35:26 -0700 (PDT)
+        bh=vGHNAGNQJ+jili+nDe/Ec5j5ASwqbtr085CgGssJUDU=;
+        b=mgbOpLIe3tqYsl4X9lDdRWQqYIO5ddk7Yxjpy5jO6X8k5Rq0hgp/97Cr6j2N/Qi0rD
+         Orugw4G+8AUIOGLHcBxNWecX6UNfP60rLJpWENhqmcLKtW950t3S3XP+8XBIjyV322sm
+         nBv5N0CyZEhY0SZjA3I/1zYxgmTiVLNbxBN7UVaAos7SewcELv6X49S+bcGq+AIGbTHU
+         4urf+Nn4zMgg6OEXQHRYqSQTf2RTpY5gGtUW2e2egBYjSWXID7jYTDYk3wIkH677f+GA
+         KmvEhhPIRQUFtpbPylP94f3haLuxENCQ8FQmVK/MenpCuGI97/jypi9u0qgyZp1CMJg0
+         5Ryg==
+X-Gm-Message-State: AOAM533bx7k1rl4RAXZWtA8TvsdK9EQRj64z0MuJJ4wnmqOVxDnwzGir
+        sEFKH/c+ktp+nuyfkA9ispRQGQ==
+X-Google-Smtp-Source: ABdhPJysv2MloHTozqtk5nZiHOCb1+hWcKHSHjfhz5NKnhYsEEK3VKL1DiiZ7tK4C6bXa/5onGGRfA==
+X-Received: by 2002:a5d:83d2:0:b0:64c:fbd3:e792 with SMTP id u18-20020a5d83d2000000b0064cfbd3e792mr4841279ior.59.1649273914715;
+        Wed, 06 Apr 2022 12:38:34 -0700 (PDT)
 Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id o19-20020a056870969300b000dea1b17aacsm2536208oaq.36.2022.04.06.12.35.26
+        by smtp.gmail.com with ESMTPSA id k3-20020a0566022a4300b0064ca623b65esm11875297iov.4.2022.04.06.12.38.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 12:35:26 -0700 (PDT)
+        Wed, 06 Apr 2022 12:38:34 -0700 (PDT)
 Subject: Re: [PATCH v2] selftest/vm clarify error statement in gup_test
-To:     Sidhartha Kumar <sidhartha.kumar@oracle.com>, shuah@kernel.org,
-        akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+To:     Matthew Wilcox <willy@infradead.org>,
+        Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Cc:     shuah@kernel.org, akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
         Shuah Khan <skhan@linuxfoundation.org>
 References: <20220405214809.3351223-1-sidhartha.kumar@oracle.com>
+ <YkzDoBUAhydtvnR0@casper.infradead.org>
 From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <c0ba950a-9210-1a73-dc6b-6655fcda9878@linuxfoundation.org>
-Date:   Wed, 6 Apr 2022 13:35:25 -0600
+Message-ID: <bc04ce83-eed8-f35e-9816-bdd9d0ac1470@linuxfoundation.org>
+Date:   Wed, 6 Apr 2022 13:38:33 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20220405214809.3351223-1-sidhartha.kumar@oracle.com>
+In-Reply-To: <YkzDoBUAhydtvnR0@casper.infradead.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,27 +68,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 3:48 PM, Sidhartha Kumar wrote:
-> Print three possible reasons /sys/kernel/debug/gup_test
-> cannot be opened to help users of this test diagnose
-> failures.
+On 4/5/22 4:33 PM, Matthew Wilcox wrote:
+> On Tue, Apr 05, 2022 at 09:48:09PM +0000, Sidhartha Kumar wrote:
+>> -		perror("open");
+>> -		exit(1);
+>> +		switch (errno) {
+>> +		case EACCES:
+>> +			if (getuid())
+>> +				printf("Please run this test as root\n");
 > 
-> Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
-> ---
-> v2:
-> - Add support for skipping the test due to unmet dependencies.
-> - Use errno to print a more specific message.
-> - Add check for root privileges.
-> - dropped CC to stable.
->   tools/testing/selftests/vm/gup_test.c     | 22 +++++++++++++--
->   tools/testing/selftests/vm/run_vmtests.sh | 33 ++++++++++++++++-------
->   2 files changed, 44 insertions(+), 11 deletions(-)
+> Shouldn't all these be fprintf(stderr, ...); ?
+> 
 > 
 
-Thank you for fixing the reporting and adding tests for dependencies
-and skip conditions.
-
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+printf() is consistent with the other messages in this file. Either
+works.
 
 thanks,
 -- Shuah
