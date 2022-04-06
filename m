@@ -2,81 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4226C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66376C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239539AbiDFRzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
+        id S239719AbiDFR4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239691AbiDFRza (ORCPT
+        with ESMTP id S239693AbiDFRzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:55:30 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F103C8C36
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:20:23 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id y19-20020a056e02119300b002c2d3ef05bfso2021821ili.18
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:20:23 -0700 (PDT)
+        Wed, 6 Apr 2022 13:55:37 -0400
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F214405D3;
+        Wed,  6 Apr 2022 09:05:12 -0700 (PDT)
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-e2442907a1so3029327fac.8;
+        Wed, 06 Apr 2022 09:05:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=LPDWwLlqsdkU08oFWKxHzU6RAOblUfdn4Uz94Jc/vec=;
-        b=wKFsvYPJ/SgxrWbfD2xfsE4D8NkZfytbmj0uT7ur6rMX02KI/5YtvSypQHfa3YjN61
-         pgV4l/uquGB3a1Y7/WLsZh07wJxrddrazrj52Jyda5L7SK7hrlREqOtTPZjP7bCRDP9i
-         Hu+8PRCKd6BSZzIYiOvGDWlFUhcSoEAruqw0hs6D78hF3l/GZpUqJgcAnnGGNJKs+b5q
-         tlibHGkQBCqgV7ONTLU4hpGhRiX1jIXUFEDAyQuAAFRaard19CSw9SbuqgP09BqrbZDS
-         urSN/T4EI7XeFLuk0xlgM86nj7BYR+/Mqbv/FzzdYdNJlE9MEcFNigI8my3sGeTjbQN+
-         oAoA==
-X-Gm-Message-State: AOAM530aKUUlbTcHobXfBBNYzgAU2TcDFGYNxE4DRyft6DYUE+8cpNdM
-        lwKFgZBU5zZL4CrKHG94vMw8PTNukjqhG8wevjvlKCeVCTxu
-X-Google-Smtp-Source: ABdhPJybY8vgvTKMRiNccae0QC/VP+OHClBhZJ4ZVV687OjbRUQ5PiLnMtqB43Gzv8vfuLCtaMYjfVILFwqwuOyL8UFqvPnXw7fa
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MpA4CfNVqRRzfNI0NZazohhpjC3Wdx9B0oPB6HfE+1c=;
+        b=ZCruhWHRnvWp3O8B/q7fFIEsktNyHuDsn3qz7ofQHoZ3z+pHNPqKU5ybwV4BxLSEGb
+         RAmGu0P1kYxH80xSL9gMkGgNkDsCoNxSCsCbRVjyd3oaBqIHyYk7N8tIW5Zoeh5wtJhf
+         1PtPC/w5aHo+/CP4OlFE9h6kLVRwFolXRORDuBjynt9mHDIkoKCZJpVIVFmgcpfIMymk
+         AnBfWbGeC1ETs2zJ2E5BuVx+4nkyG49PLe5kmAYC/c7L0K9BoCbV3QEWxVglKHHfdYjY
+         ZNJsFw5cEE1f8X/jfPpUK8XDqBZVBSEACQGOvy7P8RL1vtZ2OOYKmGgBwEiDXuuF4fVA
+         31SA==
+X-Gm-Message-State: AOAM533QeTLZ3TuCCmzONbYhaxP2Qm2a62nbXKJ89Eq0kAnZ0qQmu3Eo
+        tbcCD2Bn6OQ+VWaKjQcODA==
+X-Google-Smtp-Source: ABdhPJxWnogmTkLiwRUqI1DLFzJoxqP9hindg9vBS92SZbO9tvjdBwxEVyklhAyB6REgphp91XXYvw==
+X-Received: by 2002:a05:6870:5b9e:b0:cf:f6de:3e89 with SMTP id em30-20020a0568705b9e00b000cff6de3e89mr4372076oab.94.1649261111777;
+        Wed, 06 Apr 2022 09:05:11 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id w39-20020a056830412700b005cda87bbdcesm7033390ott.6.2022.04.06.09.05.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 09:05:11 -0700 (PDT)
+Received: (nullmailer pid 2331636 invoked by uid 1000);
+        Wed, 06 Apr 2022 16:05:10 -0000
+Date:   Wed, 6 Apr 2022 11:05:10 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Joel Selvaraj <jo@jsfamily.in>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Andy Gross <agross@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v2 2/3] dt-bindings: display: novatek,nt36672a: add
+ backlight property
+Message-ID: <Yk26Nli4RXgV5KgK@robh.at.kernel.org>
+References: <20220401001810.81507-1-jo@jsfamily.in>
+ <BY5PR02MB70090BB5D8C7D655BEE0642FD9E09@BY5PR02MB7009.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1a84:b0:2ca:d62:ebf8 with SMTP id
- k4-20020a056e021a8400b002ca0d62ebf8mr4533187ilv.120.1649262022655; Wed, 06
- Apr 2022 09:20:22 -0700 (PDT)
-Date:   Wed, 06 Apr 2022 09:20:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000008dae05dbfebd85@google.com>
-Subject: [syzbot] upstream build error (17)
-From:   syzbot <syzbot+6b36bab98e240873fd5a@syzkaller.appspotmail.com>
-To:     bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        mingo@redhat.com, pbonzini@redhat.com, seanjc@google.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BY5PR02MB70090BB5D8C7D655BEE0642FD9E09@BY5PR02MB7009.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Fri, 01 Apr 2022 05:48:09 +0530, Joel Selvaraj wrote:
+> Add backlight property and update example to include it.
+> 
+> Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
+> ---
+>  .../devicetree/bindings/display/panel/novatek,nt36672a.yaml     | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-syzbot found the following issue on:
-
-HEAD commit:    3e732ebf7316 Merge tag 'for_linus' of git://git.kernel.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10ca0687700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=eba855fbe3373b4f
-dashboard link: https://syzkaller.appspot.com/bug?extid=6b36bab98e240873fd5a
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6b36bab98e240873fd5a@syzkaller.appspotmail.com
-
-arch/x86/kvm/emulate.c:3332:5: error: stack frame size (2552) exceeds limit (2048) in function 'emulator_task_switch' [-Werror,-Wframe-larger-than]
-sound/usb/mixer_s1810c.c:543:5: error: stack frame size (2072) exceeds limit (2048) in function 'snd_sc1810_init_mixer' [-Werror,-Wframe-larger-than]
-drivers/block/loop.c:1524:12: error: stack frame size (2648) exceeds limit (2048) in function 'lo_ioctl' [-Werror,-Wframe-larger-than]
-crypto/ecc.c:1362:6: error: stack frame size (3640) exceeds limit (2048) in function 'ecc_point_mult_shamir' [-Werror,-Wframe-larger-than]
-crypto/ecc.c:1280:13: error: stack frame size (3832) exceeds limit (2048) in function 'ecc_point_mult' [-Werror,-Wframe-larger-than]
-fs/ocfs2/dlm/dlmdomain.c:2101:19: error: stack frame size (2104) exceeds limit (2048) in function 'dlm_register_domain' [-Werror,-Wframe-larger-than]
-net/qrtr/ns.c:661:13: error: stack frame size (3096) exceeds limit (2048) in function 'qrtr_ns_worker' [-Werror,-Wframe-larger-than]
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Acked-by: Rob Herring <robh@kernel.org>
