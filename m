@@ -2,80 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5109C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237749AbiDFQdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        id S237906AbiDFQdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237802AbiDFQcU (ORCPT
+        with ESMTP id S238330AbiDFQc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:32:20 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1084B3F15F8;
-        Tue,  5 Apr 2022 18:32:44 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Wed, 6 Apr 2022 12:32:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112C6220B0A;
+        Tue,  5 Apr 2022 18:23:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KY6T65Vntz4xXS;
-        Wed,  6 Apr 2022 11:32:42 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649208762;
-        bh=Rxxn1TD2UuepLVLS1hwWe9JcrPraf9Iiaa5Ny2qSNaw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=POlWXFTfFDSukK/5umCIKmt8FS0l7ph+FeMDUjz6xirkctNMlI6turW4LwC20ylCD
-         CmMiyF2VcEuYMZJa/oJiJSf0fUsrx3xedWm25kS2H+d7DDPcLg1cD6vwSPX9qUHzrO
-         vugQB9vrnv2j7WSn54uvOUv62e8gRTRT0+7YyTSPwNDR3XllEImr50GPwrjBss5NHE
-         WPmXvU9np/YIhDgwk2iT63shZnXOGDXFzBc/WYcSSQCvGGrTSydOrR9vP45SVUr4tA
-         TwRl82WwMr6K4H4cUne7omHlcicmomQxBCMF4v93RmPNXkqWQSNpijszlr+5Iajynl
-         StXD0T6gJIRQw==
-Date:   Wed, 6 Apr 2022 11:32:42 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Peter Chen <peter.chen@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: please clean up the usb-chipidea-fixes/next trees
-Message-ID: <20220406113242.3d7aefbd@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C96D619B3;
+        Wed,  6 Apr 2022 01:23:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9027AC385A1;
+        Wed,  6 Apr 2022 01:23:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649208236;
+        bh=y610PixkxE0FbqCL6lBrY29URlY0CZAXClPdmkzBRr8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mPT1GL31n6ypgG8+0qeuiomp4TGySTjAhFA1JoBIEH4K6CR2KfpyHO0IfL9ksSOyo
+         v1o9u56Y/wVLQCrdJzucyk86wNkIe5XNeC/Vb+XHGU0ASvnAKTdfdt6klXsKbbTjdD
+         AdCjGtPjCp9IpQVGCZzS8EhDuF6lBOfUwbM4hma6sppIYVWSMhp9zMP6D+I7SHobpV
+         68YfptgKuHu/pfZ/xKk6/DSmloIy5b85XZ+zQE58B4lRS7Gy+P+TwxHRQ/EWLyriga
+         PAxTJ0yjK+XOmAMZ0Eg077Rs85AQsgqjk9sgvGaSbxSCLUTQ5TPjy9gwenbIKvBX4h
+         jb5R27IhVqK+A==
+Date:   Wed, 6 Apr 2022 09:23:48 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Jander <david@protonic.nl>, devicetree@vger.kernel.org,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v1 1/8] ARM: dts: imx6qdl-vicut1/vicutgo: Set default
+ backlight brightness to maximum
+Message-ID: <20220406012348.GE129381@dragon>
+References: <20220221095312.3692669-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/.mfo3fXxDzL/nFbg7+KZ.0e";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221095312.3692669-1-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/.mfo3fXxDzL/nFbg7+KZ.0e
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon, Feb 21, 2022 at 10:53:05AM +0100, Oleksij Rempel wrote:
+> From: David Jander <david@protonic.nl>
+> 
+> Recover default behavior of the device and set maximal brightness
+> 
+> Signed-off-by: David Jander <david@protonic.nl>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  arch/arm/boot/dts/imx6dl-victgo.dts   | 2 +-
+>  arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
+> index 227c952543d4..e6134efbfabd 100644
+> --- a/arch/arm/boot/dts/imx6dl-victgo.dts
+> +++ b/arch/arm/boot/dts/imx6dl-victgo.dts
+> @@ -28,7 +28,7 @@ backlight: backlight {
+>  		pwms = <&pwm1 0 5000000 0>;
+>  		brightness-levels = <0 16 64 255>;
+>  		num-interpolated-steps = <16>;
+> -		default-brightness-level = <1>;
+> +		default-brightness-level = <48>;
 
-Hi all,
+Please take a look at the documentation of the property.
 
-[Try again to an address that may work ...]
+  default-brightness-level:
+    description:
+      The default brightness level (index into the array defined by the
+      "brightness-levels" property).
 
-The usb-chipidea-fixes and -next trees have not been updated since Oct,
-2021 and the -fixes tree is generating a conflict when merged.  Please
-clean them it up WRT Linus' tree as the only patches in them have been
-merged as other commits.
+Shawn
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/.mfo3fXxDzL/nFbg7+KZ.0e
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJM7boACgkQAVBC80lX
-0GxM4QgAozPVYrwAvoW2lTiAICEVaP8psjHfXi7yX3n6XOTpjR8wUp2iKxvlbC2D
-NazdATRNOAslPWH7tLegAmYGZvRcYSbezPWdOGC8qZLS9LGShtz0Brby2wF4b9It
-y68uRcpvWr92XJs4uNotDQI0XfDq0IKQPL0n31agN0Bz5hh/ta3mIuiZJJ0WNRZ9
-f6HKkXd8BiA/MVTK6dauE7wNGAINpB5OHB/4gzfK89nENpF6mpTLTzB38QZyoQaa
-r0/H2Zry1a6Rw828IzUH6+08eB+PyIZb7ZvvYJk7OsW5JCXVmxj+HPX162+jZBKU
-v2lRL+2RxqavCtSExDFRLe/OnAUVsQ==
-=HKB9
------END PGP SIGNATURE-----
-
---Sig_/.mfo3fXxDzL/nFbg7+KZ.0e--
+>  		power-supply = <&reg_3v3>;
+>  		enable-gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
+>  	};
+> diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+> index 1ac7e13249d2..c1d06bc28c67 100644
+> --- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+> @@ -23,7 +23,7 @@ backlight: backlight {
+>  		pwms = <&pwm1 0 5000000 0>;
+>  		brightness-levels = <0 16 64 255>;
+>  		num-interpolated-steps = <16>;
+> -		default-brightness-level = <1>;
+> +		default-brightness-level = <48>;
+>  		power-supply = <&reg_3v3>;
+>  		enable-gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
+>  	};
+> -- 
+> 2.30.2
+> 
