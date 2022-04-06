@@ -2,108 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C12BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA23C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231714AbiDFTaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50608 "EHLO
+        id S231683AbiDFTbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232504AbiDFT2W (ORCPT
+        with ESMTP id S231210AbiDFTam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:28:22 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FAE1196D62
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:22:40 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id x20so3443546edi.12
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:22:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=B+W0ovMUi1rIKA0H93ONQhbPqTAcvMIJLIIKO5SgqwQ=;
-        b=IzSY30tgeyKhJuKVSko7726mC81nlvAkiLdzsHO/ZwKLkKoHDRbmlJjHKuYL1Epend
-         rs/Aqq7xdrjRZLwegY34CwXuxl2+zVh61xNV32DA/KHraAHU9EAzvpcnemAEyZFKOzWA
-         Ofi4K2bGrWCXUsD4ztxL/uwDCjD/DrVAxhzbkXA4JHVsnDmjdR+5jbxUBD2y+6qOlH1T
-         Ak+gDSxY//HWNaSnUOcVu/DYS2XZu5ZzwqJtdDXYTZ43H/kYjRFFjb4Duhx51/zG6i5c
-         48IZillBqMKk3h4fth3Szwm86RUPZjYhsT3ITtKe7NaleefGYdmauqxXrUrPBBswSsDN
-         jLbw==
+        Wed, 6 Apr 2022 15:30:42 -0400
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EFE68989;
+        Wed,  6 Apr 2022 11:23:29 -0700 (PDT)
+Received: by mail-ot1-f52.google.com with SMTP id w17-20020a056830111100b005b22c584b93so2264228otq.11;
+        Wed, 06 Apr 2022 11:23:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=B+W0ovMUi1rIKA0H93ONQhbPqTAcvMIJLIIKO5SgqwQ=;
-        b=t/7RAcYsog0A0xgM8HvD8k7bJP0s5NsyBtqreI0Fjl2/c8Aiw2LfFsOJsKwl8/CcaW
-         UrUmRGFQp9lnAiXNzPRlJv9c7kjOsYILhCAG7QCEDV5BIvlpMnG8mlJJtr4BIkOY1kEc
-         kiCG41fXfMcAqBUCGU+f5GiqlJEay+YF6sf4QQ2fjbD1hCR2qAxQy8u6f4jJntzb3M2i
-         9LQobleyoRwD53zBKHLDMYKqZ7Fp6h5JwkarRdp8AIzvkWs+fIrD5gmaVOYLoeq92w9J
-         1PPB5HBzvBd59SAmI1X9F08iDfS/Cbw3UHqktjXo5zE0Xsn5ED5GQ1LyBgKyq5WrJLBt
-         xG8A==
-X-Gm-Message-State: AOAM531yRL0bMIaxXWvUvyD2ZSFbBVdl23LIRJii+PfR4InnSz6k70Ak
-        9w8PJ4CTJX1H6lOazUj4JS8=
-X-Google-Smtp-Source: ABdhPJyV9ip0vEfW8t15CaHBNwMXTEUy7+OTeQqIbWiHb4nBZQ9DWREueTCro87PMdTdruq9R4xykg==
-X-Received: by 2002:a05:6402:10d5:b0:408:f881:f0f3 with SMTP id p21-20020a05640210d500b00408f881f0f3mr9857798edu.112.1649265759220;
-        Wed, 06 Apr 2022 10:22:39 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id da19-20020a056402177300b00413583e0996sm7912730edb.14.2022.04.06.10.22.38
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tWsk24R9WrkUYNjf3D7RLbL4lCjrTiP3ymYMdxnXVDQ=;
+        b=UK2XZPVbo7Kw2UqKzoFKYFqgoAvKT3c9ihl+5zavwwL0X1rCS/3mtWVRlgQ3h36o1W
+         A/CzgxzDvQBG/7BtnoiGN2DKGx1RWe1L7wUadwqPu2SL1X+/ZV5lYUxStZfR8l0j+9LW
+         YBavZKNmQIwF8+32lRzFju+Cbz/vcROunKNnk3z2oQHxdI+6rSAD+pILe6wjsI802ETj
+         z0/P92ODQl8OqrMYXiW7hNQJckT8eLsZ4wtSSixxXEZ36N2WrbBQ0J0DABLgwB9uM8lV
+         OaN0Ycz1DNe0tMXBCRLkJS4Rymkx7Cz1vUVE7KpsQl4ftxvCqDXj1UBacsGYtIGRbiW3
+         B09A==
+X-Gm-Message-State: AOAM531pm2Nz7MxCv5E5SLyCG8rPzmfegaW60snAk1ojqiMoDDbFSBjA
+        W1z4Fh5jp+BrUA7pPWQpJua5RMna3w==
+X-Google-Smtp-Source: ABdhPJy9M1zOkqd3RzsV06ddwdvy4gKJmDyI2VGRvx/GwLNK9Cu4loHT5QwLjSZWYqqHEny4n1Ob6g==
+X-Received: by 2002:a9d:12c1:0:b0:5b2:6181:a20f with SMTP id g59-20020a9d12c1000000b005b26181a20fmr3663470otg.242.1649269408891;
+        Wed, 06 Apr 2022 11:23:28 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id e12-20020a4aa60c000000b00324bb45d7ecsm6196484oom.48.2022.04.06.11.23.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:22:38 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH v2 5/5] staging: r8188eu: remove unused _RND* from osdep_service.h
-Date:   Wed,  6 Apr 2022 19:22:19 +0200
-Message-Id: <20220406172219.15565-6-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406172219.15565-1-straube.linux@gmail.com>
-References: <20220406172219.15565-1-straube.linux@gmail.com>
+        Wed, 06 Apr 2022 11:23:28 -0700 (PDT)
+Received: (nullmailer pid 2536610 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:23:27 -0000
+Date:   Wed, 6 Apr 2022 13:23:27 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+Cc:     Mark Brown <broonie@kernel.org>, Pratyush Yadav <p.yadav@ti.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-spi@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>,
+        git@xilinx.com, saikrishna12468@gmail.com, sgoud@xilinx.com
+Subject: Re: [PATCH 1/2] dt-bindings: spi: cadence-quadspi: Add reset-gpios
+ for Xilinx Versal OSPI
+Message-ID: <Yk3an4F0s2p0vxKi@robh.at.kernel.org>
+References: <1649156437-15609-1-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
+ <1649156437-15609-2-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649156437-15609-2-git-send-email-lakshmi.sai.krishna.potthuri@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the unused macro _RND() and the unused functions _RND256(),
-_RND512() from osdep_service.h.
+On Tue, Apr 05, 2022 at 04:30:36PM +0530, Sai Krishna Potthuri wrote:
+> Add reset-gpios property to the properties list and marked as required
+> for Xilinx Versal OSPI compatible. This is used to perform the HW reset
+> for OSPI flash device.
+> 
+> Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+> ---
+>  Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
+> index 0a537fa3a641..56001eaf6365 100644
+> --- a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
+> +++ b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
+> @@ -19,6 +19,7 @@ allOf:
+>      then:
+>        required:
+>          - power-domains
+> +        - reset-gpios
+>  
+>  properties:
+>    compatible:
+> @@ -78,6 +79,12 @@ properties:
+>    power-domains:
+>      maxItems: 1
+>  
+> +  reset-gpios:
+> +    description:
+> +      Contains a phandle and GPIO specifier for reset with the default active
+> +      state.
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
-v2: no changes
+Other than 'for reset' that's every GPIO property. Just drop unless you 
+have something specific to cdns,qspi-nor to say.
 
- .../staging/r8188eu/include/osdep_service.h    | 18 ------------------
- 1 file changed, 18 deletions(-)
+However, a reset for the flash device belongs in the flash device node, 
+not the controller node.
 
-diff --git a/drivers/staging/r8188eu/include/osdep_service.h b/drivers/staging/r8188eu/include/osdep_service.h
-index f6c55f6c9e1a..f1f3e3ba5377 100644
---- a/drivers/staging/r8188eu/include/osdep_service.h
-+++ b/drivers/staging/r8188eu/include/osdep_service.h
-@@ -94,24 +94,6 @@ static inline void flush_signals_thread(void)
- 		flush_signals(current);
- }
- 
--#define _RND(sz, r) ((((sz)+((r)-1))/(r))*(r))
--
--static inline u32 _RND256(u32 sz)
--{
--	u32	val;
--
--	val = ((sz >> 8) + ((sz & 255) ? 1: 0)) << 8;
--	return val;
--}
--
--static inline u32 _RND512(u32 sz)
--{
--	u32	val;
--
--	val = ((sz >> 9) + ((sz & 511) ? 1: 0)) << 9;
--	return val;
--}
--
- struct rtw_netdev_priv_indicator {
- 	void *priv;
- 	u32 sizeof_priv;
--- 
-2.35.1
-
+Rob
