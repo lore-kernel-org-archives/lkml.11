@@ -2,356 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A19FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE87C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:07:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233854AbiDFUJe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
+        id S231908AbiDFUJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233767AbiDFUIX (ORCPT
+        with ESMTP id S233841AbiDFUIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:08:23 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2AA87644;
-        Wed,  6 Apr 2022 10:52:00 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236Hj4Yi025382;
-        Wed, 6 Apr 2022 17:51:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=BcR3gIKzSiOjVh7Agu1X/eiZNgo2PdhBaIDwVK9ABaA=;
- b=HVUm6hhtNaDDJh7RPIlOMVAAD/Jtmkx+9xPzhJD/WwvUhlrEdJFL4dTjqeZwbg57SRFt
- gHmsw+q4OOxvHOfRqTfViH1Z91bvmx0dA/4dp61Mm7YxsqkeBB3zpLWB8k54tM4UEl5h
- +T7fjGqkh2qfizngWbaRiVqqzDbgaDTFSbsjMQbLO5pWOd5X/A3mKoGQ6r/NKGU8LuW9
- lzBPH0we2ihLpGmuRP/v2Y9a/dlf8oA0EsKVkAu9yS2vtvwPbw7MX2Wd6tfF4lKw9vTY
- GAgruWZNhs2UWclzoIWMX/V1u2p4k4kXLsr9BsKHsICMh00xITz6FCnNi04k6LGQAvd2 9A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f8twg8usf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 17:51:46 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 236HjZKA028010;
-        Wed, 6 Apr 2022 17:51:46 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f8twg8uru-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 17:51:46 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 236Hh9TQ018159;
-        Wed, 6 Apr 2022 17:51:43 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3f6e4908md-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 17:51:43 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 236Hpekg39846192
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Apr 2022 17:51:40 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 98ABD4C04A;
-        Wed,  6 Apr 2022 17:51:40 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0C9844C046;
-        Wed,  6 Apr 2022 17:51:35 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.211.90.125])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Apr 2022 17:51:34 +0000 (GMT)
-From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-To:     acme@kernel.org, jolsa@kernel.org, disgoel@linux.vnet.ibm.com
-Cc:     mpe@ellerman.id.au, linux-perf-users@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, maddy@linux.vnet.ibm.com,
-        rnsastry@linux.ibm.com, kjain@linux.ibm.com,
-        linux-kernel@vger.kernel.org, srikar@linux.vnet.ibm.com,
-        irogers@google.com
-Subject: [PATCH v2 3/4] tools/perf: Fix perf numa bench to fix usage of affinity for machines with #CPUs > 1K
-Date:   Wed,  6 Apr 2022 23:21:12 +0530
-Message-Id: <20220406175113.87881-4-atrajeev@linux.vnet.ibm.com>
+        Wed, 6 Apr 2022 16:08:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B3F29C97E;
+        Wed,  6 Apr 2022 11:28:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D56661BCB;
+        Wed,  6 Apr 2022 18:28:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 297C8C385A3;
+        Wed,  6 Apr 2022 18:28:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269734;
+        bh=zTA/gwxscYLWt3/KQ7o9xr51+1aDngsucM7Pk5mFjtY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sQAOaSZlA0NiexhkvHJZajLSLZSblqsyYFqzE+rw1bCKJsIRv64GO9DLJTo5UZi2z
+         z6bMD9zM/ThQAPXzK606sDQVDC2dIYiQgrlXsJIHmqL24bBqrN1EcAcXmVlf/H958S
+         x0JYQtXvCSrPw3s105g9ov+qhxosJM+ZLZckknhI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 37/43] arm64: entry: Add macro for reading symbol addresses from the trampoline
+Date:   Wed,  6 Apr 2022 20:26:46 +0200
+Message-Id: <20220406182437.757706906@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
-References: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: ex8HKKw-QfxWNZJs90VonxTYaJTMYmbv
-X-Proofpoint-GUID: J6NBuQE-ikpceLtDq9RlGplaO45gb9dJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_09,2022-04-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 malwarescore=0 mlxscore=0
- bulkscore=0 lowpriorityscore=0 mlxlogscore=999 clxscore=1015 phishscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204060087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-perf bench numa testcase fails on systems with CPU's
-more than 1K.
+From: James Morse <james.morse@arm.com>
 
-Testcase: perf bench numa mem -p 1 -t 3 -P 512 -s 100 -zZ0qcm --thp  1
-Snippet of code:
-<<>>
-perf: bench/numa.c:302: bind_to_node: Assertion `!(ret)' failed.
-Aborted (core dumped)
-<<>>
+commit b28a8eebe81c186fdb1a0078263b30576c8e1f42 upstream.
 
-bind_to_node function uses "sched_getaffinity" to save the original
-cpumask and this call is returning EINVAL ((invalid argument).
-This happens because the default mask size in glibc is 1024.
-To overcome this 1024 CPUs mask size limitation of cpu_set_t,
-change the mask size using the CPU_*_S macros ie, use CPU_ALLOC to
-allocate cpumask, CPU_ALLOC_SIZE for size. Apart from fixing this
-for "orig_mask", apply same logic to "mask" as well which is used to
-setaffinity so that mask size is large enough to represent number
-of possible CPU's in the system.
+The trampoline code needs to use the address of symbols in the wider
+kernel, e.g. vectors. PC-relative addressing wouldn't work as the
+trampoline code doesn't run at the address the linker expected.
 
-sched_getaffinity is used in one more place in perf numa bench. It
-is in "bind_to_cpu" function. Apply the same logic there also. Though
-currently no failure is reported from there, it is ideal to change
-getaffinity to work with such system configurations having CPU's more
-than default mask size supported by glibc.
+tramp_ventry uses a literal pool, unless CONFIG_RANDOMIZE_BASE is
+set, in which case it uses the data page as a literal pool because
+the data page can be unmapped when running in user-space, which is
+required for CPUs vulnerable to meltdown.
 
-Also fix "sched_setaffinity" to use mask size which is large enough
-to represent number of possible CPU's in the system.
+Pull this logic out as a macro, instead of adding a third copy
+of it.
 
-Fixed all places where "bind_cpumask" which is part of "struct
-thread_data" is used such that bind_cpumask works in all configuration.
-
-Tested-by: Disha Goel <disgoel@linux.vnet.ibm.com>
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Reported-by: Disha Goel <disgoel@linux.vnet.ibm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+[ Removed SDEI for stable backport ]
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/bench/numa.c | 97 ++++++++++++++++++++++++++++++-----------
- 1 file changed, 71 insertions(+), 26 deletions(-)
+ arch/arm64/kernel/entry.S |   22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
-index f2640179ada9..29e41e32bd88 100644
---- a/tools/perf/bench/numa.c
-+++ b/tools/perf/bench/numa.c
-@@ -54,7 +54,7 @@
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -921,6 +921,15 @@ __ni_sys_trace:
+ 	sub	\dst, \dst, PAGE_SIZE
+ 	.endm
  
- struct thread_data {
- 	int			curr_cpu;
--	cpu_set_t		bind_cpumask;
-+	cpu_set_t		*bind_cpumask;
- 	int			bind_node;
- 	u8			*process_data;
- 	int			process_nr;
-@@ -266,46 +266,71 @@ static bool node_has_cpus(int node)
- 	return ret;
- }
++	.macro tramp_data_read_var	dst, var
++#ifdef CONFIG_RANDOMIZE_BASE
++	tramp_data_page		\dst
++	add	\dst, \dst, #:lo12:__entry_tramp_data_\var
++	ldr	\dst, [\dst]
++#else
++	ldr	\dst, =\var
++#endif
++	.endm
  
--static cpu_set_t bind_to_cpu(int target_cpu)
-+static cpu_set_t *bind_to_cpu(int target_cpu)
- {
--	cpu_set_t orig_mask, mask;
-+	int nrcpus = numa_num_possible_cpus();
-+	cpu_set_t *orig_mask, *mask;
-+	size_t size;
- 	int ret;
- 
--	ret = sched_getaffinity(0, sizeof(orig_mask), &orig_mask);
--	BUG_ON(ret);
-+	orig_mask = CPU_ALLOC(nrcpus);
-+	BUG_ON(!orig_mask);
-+	size = CPU_ALLOC_SIZE(nrcpus);
-+	CPU_ZERO_S(size, orig_mask);
-+
-+	ret = sched_getaffinity(0, size, orig_mask);
-+	if (ret) {
-+		CPU_FREE(orig_mask);
-+		BUG_ON(ret);
-+	}
- 
--	CPU_ZERO(&mask);
-+	mask = CPU_ALLOC(nrcpus);
-+	BUG_ON(!mask);
-+	CPU_ZERO_S(size, mask);
- 
- 	if (target_cpu == -1) {
- 		int cpu;
- 
- 		for (cpu = 0; cpu < g->p.nr_cpus; cpu++)
--			CPU_SET(cpu, &mask);
-+			CPU_SET_S(cpu, size, mask);
- 	} else {
- 		BUG_ON(target_cpu < 0 || target_cpu >= g->p.nr_cpus);
--		CPU_SET(target_cpu, &mask);
-+		CPU_SET_S(target_cpu, size, mask);
- 	}
- 
--	ret = sched_setaffinity(0, sizeof(mask), &mask);
-+	ret = sched_setaffinity(0, size, mask);
-+	CPU_FREE(mask);
- 	BUG_ON(ret);
- 
- 	return orig_mask;
- }
- 
--static cpu_set_t bind_to_node(int target_node)
-+static cpu_set_t *bind_to_node(int target_node)
- {
--	cpu_set_t orig_mask, mask;
-+	int nrcpus = numa_num_possible_cpus();
-+	cpu_set_t *orig_mask, *mask;
-+	size_t size;
- 	int cpu;
- 	int ret;
- 
--	ret = sched_getaffinity(0, sizeof(orig_mask), &orig_mask);
--	BUG_ON(ret);
-+	orig_mask = CPU_ALLOC(nrcpus);
-+	BUG_ON(!orig_mask);
-+	size = CPU_ALLOC_SIZE(nrcpus);
-+	CPU_ZERO_S(size, orig_mask);
-+
-+	ret = sched_getaffinity(0, size, orig_mask);
-+	if (ret) {
-+		CPU_FREE(orig_mask);
-+		BUG_ON(ret);
-+	}
- 
--	CPU_ZERO(&mask);
-+	mask = CPU_ALLOC(nrcpus);
-+	BUG_ON(!mask);
-+	CPU_ZERO_S(size, mask);
- 
- 	if (target_node == NUMA_NO_NODE) {
- 		for (cpu = 0; cpu < g->p.nr_cpus; cpu++)
--			CPU_SET(cpu, &mask);
-+			CPU_SET_S(cpu, size, mask);
- 	} else {
- 		struct bitmask *cpumask = numa_allocate_cpumask();
- 
-@@ -313,24 +338,29 @@ static cpu_set_t bind_to_node(int target_node)
- 		if (!numa_node_to_cpus(target_node, cpumask)) {
- 			for (cpu = 0; cpu < (int)cpumask->size; cpu++) {
- 				if (numa_bitmask_isbitset(cpumask, cpu))
--					CPU_SET(cpu, &mask);
-+					CPU_SET_S(cpu, size, mask);
- 			}
- 		}
- 		numa_free_cpumask(cpumask);
- 	}
- 
--	ret = sched_setaffinity(0, sizeof(mask), &mask);
-+	ret = sched_setaffinity(0, size, mask);
-+	CPU_FREE(mask);
- 	BUG_ON(ret);
- 
- 	return orig_mask;
- }
- 
--static void bind_to_cpumask(cpu_set_t mask)
-+static void bind_to_cpumask(cpu_set_t *mask)
- {
- 	int ret;
-+	size_t size = CPU_ALLOC_SIZE(numa_num_possible_cpus());
- 
--	ret = sched_setaffinity(0, sizeof(mask), &mask);
--	BUG_ON(ret);
-+	ret = sched_setaffinity(0, size, mask);
-+	if (ret) {
-+		CPU_FREE(mask);
-+		BUG_ON(ret);
-+	}
- }
- 
- static void mempol_restore(void)
-@@ -376,7 +406,7 @@ do {							\
- static u8 *alloc_data(ssize_t bytes0, int map_flags,
- 		      int init_zero, int init_cpu0, int thp, int init_random)
- {
--	cpu_set_t orig_mask;
-+	cpu_set_t *orig_mask;
- 	ssize_t bytes;
- 	u8 *buf;
- 	int ret;
-@@ -434,6 +464,7 @@ static u8 *alloc_data(ssize_t bytes0, int map_flags,
- 	/* Restore affinity: */
- 	if (init_cpu0) {
- 		bind_to_cpumask(orig_mask);
-+		CPU_FREE(orig_mask);
- 		mempol_restore();
- 	}
- 
-@@ -589,6 +620,7 @@ static int parse_setup_cpu_list(void)
- 		BUG_ON(bind_cpu_0 > bind_cpu_1);
- 
- 		for (bind_cpu = bind_cpu_0; bind_cpu <= bind_cpu_1; bind_cpu += step) {
-+			size_t size = CPU_ALLOC_SIZE(g->p.nr_cpus);
- 			int i;
- 
- 			for (i = 0; i < mul; i++) {
-@@ -608,10 +640,12 @@ static int parse_setup_cpu_list(void)
- 					tprintf("%2d", bind_cpu);
- 				}
- 
--				CPU_ZERO(&td->bind_cpumask);
-+				td->bind_cpumask = CPU_ALLOC(g->p.nr_cpus);
-+				BUG_ON(!td->bind_cpumask);
-+				CPU_ZERO_S(size, td->bind_cpumask);
- 				for (cpu = bind_cpu; cpu < bind_cpu+bind_len; cpu++) {
- 					BUG_ON(cpu < 0 || cpu >= g->p.nr_cpus);
--					CPU_SET(cpu, &td->bind_cpumask);
-+					CPU_SET_S(cpu, size, td->bind_cpumask);
- 				}
- 				t++;
- 			}
-@@ -1241,7 +1275,7 @@ static void *worker_thread(void *__tdata)
- 		 * by migrating to CPU#0:
- 		 */
- 		if (first_task && g->p.perturb_secs && (int)(stop.tv_sec - last_perturbance) >= g->p.perturb_secs) {
--			cpu_set_t orig_mask;
-+			cpu_set_t *orig_mask;
- 			int target_cpu;
- 			int this_cpu;
- 
-@@ -1265,6 +1299,7 @@ static void *worker_thread(void *__tdata)
- 				printf(" (injecting perturbalance, moved to CPU#%d)\n", target_cpu);
- 
- 			bind_to_cpumask(orig_mask);
-+			CPU_FREE(orig_mask);
- 		}
- 
- 		if (details >= 3) {
-@@ -1398,21 +1433,31 @@ static void init_thread_data(void)
- 
- 	for (t = 0; t < g->p.nr_tasks; t++) {
- 		struct thread_data *td = g->threads + t;
-+		size_t cpuset_size = CPU_ALLOC_SIZE(g->p.nr_cpus);
- 		int cpu;
- 
- 		/* Allow all nodes by default: */
- 		td->bind_node = NUMA_NO_NODE;
- 
- 		/* Allow all CPUs by default: */
--		CPU_ZERO(&td->bind_cpumask);
-+		td->bind_cpumask = CPU_ALLOC(g->p.nr_cpus);
-+		BUG_ON(!td->bind_cpumask);
-+		CPU_ZERO_S(cpuset_size, td->bind_cpumask);
- 		for (cpu = 0; cpu < g->p.nr_cpus; cpu++)
--			CPU_SET(cpu, &td->bind_cpumask);
-+			CPU_SET_S(cpu, cpuset_size, td->bind_cpumask);
- 	}
- }
- 
- static void deinit_thread_data(void)
- {
- 	ssize_t size = sizeof(*g->threads)*g->p.nr_tasks;
-+	int t;
-+
-+	/* Free the bind_cpumask allocated for thread_data */
-+	for (t = 0; t < g->p.nr_tasks; t++) {
-+		struct thread_data *td = g->threads + t;
-+		CPU_FREE(td->bind_cpumask);
-+	}
- 
- 	free_data(g->threads, size);
- }
--- 
-2.35.1
+ #define BHB_MITIGATION_NONE	0
+ #define BHB_MITIGATION_LOOP	1
+@@ -951,13 +960,7 @@ __ni_sys_trace:
+ 	b	.
+ 2:
+ 	tramp_map_kernel	x30
+-#ifdef CONFIG_RANDOMIZE_BASE
+-	tramp_data_page		x30
+-	isb
+-	ldr	x30, [x30]
+-#else
+-	ldr	x30, =vectors
+-#endif
++	tramp_data_read_var	x30, vectors
+ 	prfm	plil1strm, [x30, #(1b - \vector_start)]
+ 	msr	vbar_el1, x30
+ 	isb
+@@ -1037,7 +1040,12 @@ END(tramp_exit_compat)
+ 	.align PAGE_SHIFT
+ 	.globl	__entry_tramp_data_start
+ __entry_tramp_data_start:
++__entry_tramp_data_vectors:
+ 	.quad	vectors
++#ifdef CONFIG_ARM_SDE_INTERFACE
++__entry_tramp_data___sdei_asm_trampoline_next_handler:
++	.quad	__sdei_asm_handler
++#endif /* CONFIG_ARM_SDE_INTERFACE */
+ 	.popsection				// .rodata
+ #endif /* CONFIG_RANDOMIZE_BASE */
+ #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
+
 
