@@ -2,155 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D15CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230513AbiDFLyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
+        id S230225AbiDFLzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbiDFLxP (ORCPT
+        with ESMTP id S231251AbiDFLyy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:53:15 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BD11F1605;
-        Wed,  6 Apr 2022 00:09:04 -0700 (PDT)
-X-UUID: c835b0a0749d4d8195d7d630a6eceb4f-20220406
-X-UUID: c835b0a0749d4d8195d7d630a6eceb4f-20220406
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1601077540; Wed, 06 Apr 2022 15:08:59 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 6 Apr 2022 15:08:58 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 Apr
- 2022 15:08:58 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 15:08:58 +0800
-Message-ID: <ae8ba0030d42d078580233f1710c592992e7d778.camel@mediatek.com>
-Subject: Re: [PATCH v2,1/2] dt-bindings: display: mediatek: dpi: Add
- compatible for MediaTek MT8186
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     CK Hu <ck.hu@mediatek.com>, <xinlei.lee@mediatek.com>,
-        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <jitao.shi@mediatek.com>
-Date:   Wed, 6 Apr 2022 15:08:58 +0800
-In-Reply-To: <4940e2e4ecb5f9f6857dc960ea5dbe43c551df77.camel@mediatek.com>
-References: <1648727917-3099-1-git-send-email-xinlei.lee@mediatek.com>
-         <1648727917-3099-2-git-send-email-xinlei.lee@mediatek.com>
-         <e0d5a344c8ec1f92357bd9d5b8782dded862c549.camel@mediatek.com>
-         <4940e2e4ecb5f9f6857dc960ea5dbe43c551df77.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 6 Apr 2022 07:54:54 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2FC2DBFE7;
+        Wed,  6 Apr 2022 00:16:42 -0700 (PDT)
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KYG2L3gttz67tDy;
+        Wed,  6 Apr 2022 15:13:30 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 09:16:27 +0200
+Received: from [10.47.80.129] (10.47.80.129) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
+ 2022 08:16:26 +0100
+Message-ID: <febb03e4-ea1d-c7e1-58a6-fa564c902af0@huawei.com>
+Date:   Wed, 6 Apr 2022 08:16:25 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v2 2/2] libata: Inline ata_qc_new_init() in
+ ata_scsi_qc_new()
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Christoph Hellwig <hch@lst.de>
+CC:     <linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-scsi@vger.kernel.org>
+References: <1649083990-207133-1-git-send-email-john.garry@huawei.com>
+ <1649083990-207133-3-git-send-email-john.garry@huawei.com>
+ <20220405055252.GA23698@lst.de>
+ <f7bbb09f-562f-fce2-cd16-a1c67fc334b5@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <f7bbb09f-562f-fce2-cd16-a1c67fc334b5@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
+X-Originating-IP: [10.47.80.129]
+X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-06 at 14:38 +0800, CK Hu wrote:
-> Hi,
+On 06/04/2022 02:48, Damien Le Moal wrote:
+> On 4/5/22 14:52, Christoph Hellwig wrote:
+>> On Mon, Apr 04, 2022 at 10:53:10PM +0800, John Garry wrote:
+>>> From: Christoph Hellwig <hch@lst.de>
+>>>
+>>> It is a bit pointless to have ata_qc_new_init() in libata-core.c 
+>>> since it
+>>> pokes scsi internals, so inline it in ata_scsi_qc_new() (in 
+>>> libata-scsi.c).
+>>>
+>>> <Christoph, please provide signed-off-by>
+>>> [jpg, Take Christoph's change from list and form into a patch]
+>>> Signed-off-by: John Garry <john.garry@huawei.com>
+>>
+>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>>
+>> Although I still think merging the two patches into one to avoid all
+>> the churn would be much better.
 > 
-> On Fri, 2022-04-01 at 09:38 +0800, Rex-BC Chen wrote:
-> > On Thu, 2022-03-31 at 19:58 +0800, xinlei.lee@mediatek.com wrote:
-> > > From: Xinlei Lee <xinlei.lee@mediatek.com>
-> > > 
-> > > Add dt-binding documentation of dpi for MediaTek MT8186 SoC.
-> > > 
-> > > Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> > > ---
-> > >  .../devicetree/bindings/display/mediatek/mediatek,dpi.yaml      
-> > >  |
-> > > 1
-> > > +
-> > >  1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git
-> > > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi
-> > > .y
-> > > am
-> > > l
-> > > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi
-> > > .y
-> > > am
-> > > l
-> > > index dd2896a40ff0..a73044c50b5f 100644
-> > > ---
-> > > a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi
-> > > .y
-> > > am
-> > > l
-> > > +++
-> > > b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi
-> > > .y
-> > > am
-> > > l
-> > > @@ -22,6 +22,7 @@ properties:
-> > >        - mediatek,mt7623-dpi
-> > >        - mediatek,mt8173-dpi
-> > >        - mediatek,mt8183-dpi
-> > > +      - mediatek,mt8186-dpi
-> > >        - mediatek,mt8192-dpi
-> > >  
-> > >    reg:
-> > 
-> > Hello Xinlei,
-> > 
-> > From the dts we use, the dpi node needs other properties for
-> > MT8186.
-> > Please send another patch and add these properties to binding.
-> > 
-> > assigned-clocks = <&topckgen CLK_TOP_DPI>;
-> > assigned-clock-parents = <&topckgen CLK_TOP_TVDPLL_D2>;
-> 
-> According to [1], the assigned-clocks is initial value. Without this
-> initial value, I think driver would set this clock again, wouldn't
-> it?
-> 
-> [1] 
-> 
-https://www.kernel.org/doc/Documentation/devicetree/bindings/clock/clock-bindings.txt
-> 
-> Regards,
-> CK
-> 
+> I agree. Let's merge these 2 patches.
 
-Hello CK,
+I'd say that they are distinct changes.
 
-OK, Thanks for your explanation.
+Anyway, if that is the preference then who shall be the author? 
+Considering I did most effort I will be and add Christoph as 
+co-developed-by - please let me know if not ok.
 
-
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-
-BRs,
-Rex
-> > 
-> > Thanks
-> > 
-> > BRs,
-> > Rex
-> > 
-> > 
-> > _______________________________________________
-> > Linux-mediatek mailing list
-> > Linux-mediatek@lists.infradead.org
-> > 
-> 
-> 
-https://urldefense.com/v3/__http://lists.infradead.org/mailman/listinfo/linux-mediatek__;!!CTRNKA9wMg0ARbw!wtF15QZZTCzWfRpxNLjZ1VQQ54i40D8STuOo0h18dtz3es-ksLfYQGTEFlb7lg$
-> >  
-> 
-> 
-
+thanks,
+John
