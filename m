@@ -2,92 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E17EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:51:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233766AbiDFNxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55046 "EHLO
+        id S233809AbiDFNxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233539AbiDFNwJ (ORCPT
+        with ESMTP id S234434AbiDFNwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:52:09 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652066E7D22;
-        Wed,  6 Apr 2022 04:36:27 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id kw18so2264235pjb.5;
-        Wed, 06 Apr 2022 04:36:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=JcF6EDWJWC7sbBnSp03RvONvYWLvss+hA7JZkXhjV6w=;
-        b=YiOhUqRcgU4VJpElBAe5F6VKY1oprfxuE+lHfLjrL71/0m8KfGPyGnRBv2ZNFrYSes
-         SoMhSNCnBCmLHQ8qu3Zddnc6VJoT8DNJHJJTjrxYDDJK67ICnaey9MKSd+TOQHqNy2A9
-         i3G46lHjJdD6ntktMmQ272ejyaNk35Sgu4EJLEb2jTMdt2IkNQsoaT4apdvFBEVI43MA
-         Zn8GOR9EcTxxiSVk1dR6h+b+BuAUcdtXOfkho0D+jQ1C6x8Sbce0oE2Sxpmjs+xDN0lN
-         kkZnqC3hw8FlC1Ch4g1lrzTOnYYyIMP/enflEzlshtu9tkc+spJxHSfmtcLUcPVOAYGN
-         ouAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=JcF6EDWJWC7sbBnSp03RvONvYWLvss+hA7JZkXhjV6w=;
-        b=XhNsMVSZYaQJwIeNv2+7s0WKKUL2qeVE5VmbyeaLF6TkHpw1tlAKhBGJEPZezTBtMu
-         ApBLERUeqOO3y55SoUwjwzfQWsoPpuzAc2CIpWH603VFtS8PFsMUMl5AudJ4QLKwMjw4
-         wmlK/bg/q0NFa0pPT+HRkb8u3JKxSZRtFM51Ro1JDjul/DtamJ/9Nv69HgIsvg6N0rgJ
-         bcBLRX/a841fLsUxAOy7UWzUp5y8rcXFG/m1zWHDT5XA29QgJI4hY+gQsU282F5G4aee
-         F+uUEtxL6pDSlfkRrBsaMC1kgh/J3/3ec349XH02iE5VhmtF+O0AF07oni1Noa/2VK4l
-         3KOw==
-X-Gm-Message-State: AOAM531wxvXq6p2NJpzzHXdJx1gkyF1nQN18fQCgkHkFPR+yzaRw77O/
-        NF0EMgj1OSsnD131pZzqIoTJNsNkGh6weDM9buk=
-X-Google-Smtp-Source: ABdhPJxGicsQzFGdKqXuiIngjVJRYlBuQ6c4HZ/RsOyjSHWsQ+o/XZ7uRGxIyWf9lP9pV4BdOmTpHQ==
-X-Received: by 2002:a17:902:f547:b0:156:c07d:821e with SMTP id h7-20020a170902f54700b00156c07d821emr7961722plf.36.1649244969430;
-        Wed, 06 Apr 2022 04:36:09 -0700 (PDT)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
-        by smtp.gmail.com with ESMTPSA id x29-20020aa79a5d000000b004f0ef1822d3sm18857882pfj.128.2022.04.06.04.36.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 04:36:08 -0700 (PDT)
-Message-ID: <624d7b28.1c69fb81.7a3e7.15bb@mx.google.com>
-Date:   Wed, 06 Apr 2022 04:36:08 -0700 (PDT)
-X-Google-Original-Date: Wed, 06 Apr 2022 11:36:02 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-Subject: RE: [PATCH 5.16 0000/1017] 5.16.19-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Wed, 6 Apr 2022 09:52:51 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0DF57A89E;
+        Wed,  6 Apr 2022 04:40:26 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iAKI124025;
+        Wed, 6 Apr 2022 04:44:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649238250;
+        bh=4Z/SWcBdgq7gJXZF6aYCxpS+F1uJ0waLtD4QLHJH0F4=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=qzDoZRJGYv4ZT2wUdA1kWyW0e7Cd2oVKOZwUtvd4g2dpM7HWa0DsG6FiMyRytmQyf
+         UYyQoh3tJKe5hespHNrqNkbNByZC2pEUOC2Arw8qqIO1sylO0ytm+q8MsDl6s/2r+o
+         muZ++ndTfBNz3sBmoC+Z57XILV6anPN1xD7ZNW+g=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iAJ6069701
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Apr 2022 04:44:10 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Apr 2022 04:44:10 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Apr 2022 04:44:10 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369i86x107588;
+        Wed, 6 Apr 2022 04:44:09 -0500
+From:   Puranjay Mohan <p-mohan@ti.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <vigneshr@ti.com>, <kishon@ti.com>
+Subject: [RFC 03/13] remoteproc: pru: Make sysfs entries read-only for PRU client driven boots
+Date:   Wed, 6 Apr 2022 15:13:48 +0530
+Message-ID: <20220406094358.7895-4-p-mohan@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
+References: <20220406094358.7895-1-p-mohan@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  5 Apr 2022 09:15:13 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.16.19 release.
-> There are 1017 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.19-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+From: Suman Anna <s-anna@ti.com>
 
-5.16.19-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+The PRU remoteproc driver is not configured for 'auto-boot' by default,
+and allows to be booted either by in-kernel PRU client drivers or by
+userspace using the generic remoteproc sysfs interfaces. The sysfs
+interfaces should not be permitted to change the remoteproc firmwares
+or states when a PRU is being managed by an in-kernel client driver.
+Use the newly introduced remoteproc generic 'sysfs_read_only' flag to
+provide these restrictions by setting and clearing it appropriately
+during the PRU acquire and release steps.
+
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+---
+ drivers/remoteproc/pru_rproc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/remoteproc/pru_rproc.c b/drivers/remoteproc/pru_rproc.c
+index 7a35b400287a..9fed3e0372d3 100644
+--- a/drivers/remoteproc/pru_rproc.c
++++ b/drivers/remoteproc/pru_rproc.c
+@@ -231,6 +231,7 @@ struct rproc *pru_rproc_get(struct device_node *np, int index,
+ 	}
+ 
+ 	pru->client_np = np;
++	rproc->sysfs_read_only = true;
+ 
+ 	mutex_unlock(&pru->lock);
+ 
+@@ -265,6 +266,7 @@ void pru_rproc_put(struct rproc *rproc)
+ 	}
+ 
+ 	pru->client_np = NULL;
++	rproc->sysfs_read_only = false;
+ 	mutex_unlock(&pru->lock);
+ 
+ 	put_device(&rproc->dev);
+-- 
+2.17.1
 
