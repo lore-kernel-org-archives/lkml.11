@@ -2,145 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70097C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AFC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235798AbiDFPL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53366 "EHLO
+        id S235824AbiDFPLe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235534AbiDFPLT (ORCPT
+        with ESMTP id S235584AbiDFPLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 11:11:19 -0400
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D963B19E3A9
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:11:07 -0700 (PDT)
-Received: by mail-pj1-f53.google.com with SMTP id l4-20020a17090a49c400b001c6840df4a3so2537248pjm.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:11:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VxvVdkfuigSD3d66lzCfSLqAWuJHzoxORHDZPeqJF20=;
-        b=gk7I0dlOY5WPCoG3b9ssw9G/zUZAVZVhKwSj1GQpWxKfK4U/SDf5qRArFLruvhHAG4
-         4P1l76QSu5NHDh9jGLhDyx1w35dD+1nqtkDyymhGzVwPNqvb8PxF9M9xpcaosAJI11N0
-         ypXPXx5KRUjx49Da7bbuyh0RROCxksK7lvw8TELhxxuV3kT+1ntAHCT5gcV3h1I7tJwM
-         ChrTm6lFfbaWqxVJjoo+pazTLkvB1CA6tm/OeELa5I5BaZdB9jbeefQAbPfs/FqLY/Fp
-         nhV0qRCEHZScFi3sqXQhLIbe6K0JnF8xY7aLMbcNL+Qu021bl86o6ln0jXdBUkPkvB0K
-         Z7cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VxvVdkfuigSD3d66lzCfSLqAWuJHzoxORHDZPeqJF20=;
-        b=dv2cDVqGsrcdpUThobHjC+9UpjTFuZTOltanR+LDohJdNWD4zZzJVHVIMr1Q2qX/nn
-         u2TklEnWTmgWDTp8Q8yna84A7f3s6oUb/HWv+fg0Or2cM7R/lJvpNS4tpYG5ZNDa8MV+
-         y5TuoQsD028zbB4uMpe8raz4pzda77eAW3x1nafqhi9X1lTPlou7juP/DHUem21FaFOE
-         rhJ8MRahDZRYo1iJ+vx1KUmS/3xl5gLrfCK0gJJ3OsOLZhN9PV3sfL5Q7+ZaJqBTURgJ
-         O0I6UUJewuKfwcWS9RDzMhxvpEDTkeUKvkJ5uZ0RZyRSlMEYtZ8eIUGHkp/uqRhP7Lt5
-         5UYQ==
-X-Gm-Message-State: AOAM533Bbf03wpT70ZzB4l8j46o3E6Llw3pXTpHAdLbyabea+vZPpCxV
-        3G8gktX3U2a0dhg6xZW/DwM=
-X-Google-Smtp-Source: ABdhPJzPv/0s/hoXyGUY/9nqEVuptmFoaFod8nip9pDQC/6pHYBrhMCyczDafCZIp0OrrjUqAMCzgw==
-X-Received: by 2002:a17:902:7296:b0:151:62b1:e2b0 with SMTP id d22-20020a170902729600b0015162b1e2b0mr8189883pll.165.1649246964817;
-        Wed, 06 Apr 2022 05:09:24 -0700 (PDT)
-Received: from hyeyoo ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id j8-20020a17090a060800b001c7936791d1sm5417690pjj.7.2022.04.06.05.09.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 05:09:23 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 21:09:14 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>, roman.gushchin@linux.dev
-Subject: Re: [PATCH 01/10] mm/slab: Decouple ARCH_KMALLOC_MINALIGN from
- ARCH_DMA_MINALIGN
-Message-ID: <Yk2C6jLR8BSeHRkm@hyeyoo>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
- <20220405135758.774016-2-catalin.marinas@arm.com>
- <YkzX1nM0Ca7apVBt@hyeyoo>
- <CAK8P3a1K0=jwYEHVu=X7oAWk9dzaOYAdFsidwVRKCJVReSV3+g@mail.gmail.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A409D1C8D9F;
+        Wed,  6 Apr 2022 05:11:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B57CD618B3;
+        Wed,  6 Apr 2022 12:07:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E864FC385A1;
+        Wed,  6 Apr 2022 12:07:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649246868;
+        bh=iGoGpsovgQGm3f51J9VzIGQSvftAriIikJJODGcShQM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=H3dYPeC9xFmaac+uA8gZ4+yYQRjdsWrb7yyDY27NluUTJp9CVXAjyWQ5lKhiUOpMI
+         n833ozeQFlfHPewyjYMSRp8JZtimSk4qebyz1Kqk3Jrip+O1AJETjVjURgr4K1Z2N5
+         ivEsSXT/GKb26kyYYfihsm8jFhd3tugNCtSZV5jEPL96R1E9C6ICJd9PGZjIArsABY
+         GvdUuzw31o/1IJLQn/LHwj80t+B08Mjzgw4w7n25PrM6YM5jc2r/FAksTzkMArp+LI
+         RXIdKzrFH3c4qLHf/+0GyJ2UL9kfSU/Ixg1iwrERC4+2bnfXLlmVTWFm3aa1XWnspr
+         hnIHOxWC44p/g==
+From:   guoren@kernel.org
+To:     palmer@rivosinc.com, arnd@arndb.de
+Cc:     linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>
+Subject: [PATCH] riscv: cmpxchg: Cleanup unnecessary definition
+Date:   Wed,  6 Apr 2022 20:07:35 +0800
+Message-Id: <20220406120735.661142-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a1K0=jwYEHVu=X7oAWk9dzaOYAdFsidwVRKCJVReSV3+g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 09:29:19AM +0200, Arnd Bergmann wrote:
-> On Wed, Apr 6, 2022 at 1:59 AM Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
-> >
-> > On Tue, Apr 05, 2022 at 02:57:49PM +0100, Catalin Marinas wrote:
-> > > In preparation for supporting a dynamic kmalloc() minimum alignment,
-> > > allow architectures to define ARCH_KMALLOC_MINALIGN independently of
-> > > ARCH_DMA_MINALIGN. In addition, always define ARCH_DMA_MINALIGN even if
-> > > an architecture does not override it.
-> > >
-> >
-> > [ +Cc slab maintainer/reviewers ]
-> >
-> > I get why you want to set minimum alignment of kmalloc() dynamically.
-> > That's because cache line size can be different and we cannot statically
-> > know that, right?
-> >
-> > But I don't get why you are trying to decouple ARCH_KMALLOC_MINALIGN
-> > from ARCH_DMA_MINALIGN. kmalloc'ed buffer is always supposed to be DMA-safe.
-> >
-> > I'm afraid this series may break some archs/drivers.
-> >
-> > in Documentation/dma-api-howto.rst:
-> > > 2) ARCH_DMA_MINALIGN
-> > >
-> > >   Architectures must ensure that kmalloc'ed buffer is
-> > >   DMA-safe. Drivers and subsystems depend on it. If an architecture
-> > >   isn't fully DMA-coherent (i.e. hardware doesn't ensure that data in
-> > >   the CPU cache is identical to data in main memory),
-> > >   ARCH_DMA_MINALIGN must be set so that the memory allocator
-> > >   makes sure that kmalloc'ed buffer doesn't share a cache line with
-> > >   the others. See arch/arm/include/asm/cache.h as an example.
-> > >
-> > >   Note that ARCH_DMA_MINALIGN is about DMA memory alignment
-> > >   constraints. You don't need to worry about the architecture data
-> > >   alignment constraints (e.g. the alignment constraints about 64-bit
-> > >   objects).
-> >
-> > If I'm missing something, please let me know :)
-> 
-> It helps in two ways:
-> 
-> - you can start with a relatively large hardcoded ARCH_DMA_MINALIGN
->   of 128 or 256 bytes, depending on what the largest possible line size
->   is for any machine you want to support, and then drop that down to
->   32 or 64 bytes based on runtime detection. This should always be safe,
->   and it means a very sizable chunk of wasted memory can be recovered.
->
+From: Guo Ren <guoren@linux.alibaba.com>
 
-I agree this part.
+The cmpxchg32 & cmpxchg32_local have been never used in linux, so
+let's remove them from cmpxchg.h.
 
-> - On systems that are fully cache coherent, there is no need to align
->   kmallloc() allocations for DMA safety at all, on these, we can drop the
->   size even below the cache line. This does not apply on most of the
->   cheaper embedded or mobile SoCs, but it helps a lot on the machines
->   you'd find in a data center.
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+---
+ arch/riscv/include/asm/cmpxchg.h | 12 ------------
+ 1 file changed, 12 deletions(-)
 
-Now I get the point. Thank you for explanation!
-Going to review this series soon.
-
-> 
->         Arnd
-
+diff --git a/arch/riscv/include/asm/cmpxchg.h b/arch/riscv/include/asm/cmpxchg.h
+index 36dc962f6343..12debce235e5 100644
+--- a/arch/riscv/include/asm/cmpxchg.h
++++ b/arch/riscv/include/asm/cmpxchg.h
+@@ -348,18 +348,6 @@
+ #define arch_cmpxchg_local(ptr, o, n)					\
+ 	(__cmpxchg_relaxed((ptr), (o), (n), sizeof(*(ptr))))
+ 
+-#define cmpxchg32(ptr, o, n)						\
+-({									\
+-	BUILD_BUG_ON(sizeof(*(ptr)) != 4);				\
+-	arch_cmpxchg((ptr), (o), (n));					\
+-})
+-
+-#define cmpxchg32_local(ptr, o, n)					\
+-({									\
+-	BUILD_BUG_ON(sizeof(*(ptr)) != 4);				\
+-	arch_cmpxchg_relaxed((ptr), (o), (n))				\
+-})
+-
+ #define arch_cmpxchg64(ptr, o, n)					\
+ ({									\
+ 	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
 -- 
-Thanks,
-Hyeonggon
+2.25.1
+
