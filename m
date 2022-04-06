@@ -2,96 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB459C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78707C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238234AbiDFQqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
+        id S237795AbiDFQqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238074AbiDFQqE (ORCPT
+        with ESMTP id S238207AbiDFQqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:46:04 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E850E322815;
-        Wed,  6 Apr 2022 08:00:20 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D26C712FC;
-        Wed,  6 Apr 2022 08:00:19 -0700 (PDT)
-Received: from [10.57.10.15] (unknown [10.57.10.15])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CFE863F73B;
-        Wed,  6 Apr 2022 08:00:18 -0700 (PDT)
-Message-ID: <718ca801-b9db-ac33-d224-9c569aab7446@arm.com>
-Date:   Wed, 6 Apr 2022 16:00:17 +0100
+        Wed, 6 Apr 2022 12:46:37 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC0241F62F
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:08:33 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id ot30so4451672ejb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:08:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=citymesh-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=0vB0HGTZga7f1q5BSSNIpY7EWpeHhv69aCzFJKru474=;
+        b=YR4saWBL03E5JaVc5I7gV8BN7YddSjnralclSOIA6N4CT86w8Y+PrzP2yiWNIYoyZM
+         oOmgZhEt7oeM0Al7wehEE9ouNObjhMHFCyMBxsibfCG1e3Tov9AU2WFrgVEMLUMw/hoP
+         n9RCd8vAADzKkDqum4k8a/tPXDIyJp7voCAViQpsRROlOWrlnPgVca5aanhGOI1btz2h
+         7qskbxHhy6FSG5HhYgePw18LUjQR/m4Ut6ak5P8Osjb5mq0Y88CmThNYnL4QHTJXnKeu
+         0uFO8OQDuflKtWMKqFfCe1Xxgo3jXicCZZuRnIZ1XN6Uw9hLHBGE5lBIfvRHqdXjg6Ij
+         I8gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=0vB0HGTZga7f1q5BSSNIpY7EWpeHhv69aCzFJKru474=;
+        b=MPmg0qShfPM/Z/kjhiCwhm+PU2nnkiBYfBtcpwDJCDmdivp/bd/h2CJH68PGZH2Gxa
+         NJB7GT4HmiIK1K0qpZ0YyeQv51QrwVgsMo83Ta6im+HDPhRF1oPaj3QvPKq6Cu+lakyh
+         dAlZHJ66ZGNy3+tZTOxYCf27u2CdNKNb9aFF0BnoDwtE75gcHxUyaO2jTvzrJy9FFz9y
+         LLpy8AVH2+8wJHgINoL1PPR443sVjl8Z2gghRiV+1V+8WdgvLeZ7zwlChZ44i8L6MOH1
+         x0LEUjJZQI2KPA+fkGNEQH0eRe06zUyFHBhzKQwx2bRfA8meS+c0nIPSHDlxqgIsn1Rs
+         /IDg==
+X-Gm-Message-State: AOAM531CorlRYz+Kkzmi6Q0z5fUyfhPCiCLpUF7IsKPzoII987IQUOIh
+        ZHo17FHtM3GNabyDvm1LmLCfng==
+X-Google-Smtp-Source: ABdhPJw9oE6Losxsk+Z0emo1fbJJlduNDMQ8sX3pFzKkyVHy5fezPiUDK0Jq4fmiAF1JkWQdHNjQzg==
+X-Received: by 2002:a17:907:7815:b0:6ce:5242:1280 with SMTP id la21-20020a170907781500b006ce52421280mr8545575ejc.217.1649254111344;
+        Wed, 06 Apr 2022 07:08:31 -0700 (PDT)
+Received: from [10.202.0.7] ([31.31.140.89])
+        by smtp.gmail.com with ESMTPSA id e26-20020a50ec9a000000b004193fe50151sm8228591edr.9.2022.04.06.07.08.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 07:08:30 -0700 (PDT)
+Message-ID: <7873617a-b2ab-1f26-55ac-d98229aa4485@citymesh.com>
+Date:   Wed, 6 Apr 2022 16:08:29 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: perf tool: About "perf arm64: Inject missing frames when using
- 'perf record --call-graph=fp'"
+ Thunderbird/91.5.0
+Subject: Re: PCI: Race condition in pci_create_sysfs_dev_files (can't boot)
 Content-Language: en-US
-From:   James Clark <james.clark@arm.com>
-To:     John Garry <john.garry@huawei.com>, alexandre.truong@arm.com
-Cc:     linux-perf-users@vger.kernel.org,
-        "jolsa@kernel.org >> Jiri Olsa" <jolsa@kernel.org>,
-        german.gomez@arm.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-References: <5f1d8b3f-0afa-2724-4ff1-f061939c68c5@huawei.com>
- <2dc4266f-02b1-0937-a884-dfa037cc7ffd@arm.com>
-In-Reply-To: <2dc4266f-02b1-0937-a884-dfa037cc7ffd@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From:   Koen Vandeputte <koen.vandeputte@citymesh.com>
+To:     =?UTF-8?Q?Krzysztof_Ha=c5=82asa?= <khalasa@piap.pl>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Dexuan Cui <dexuan.linux@gmail.com>,
+        =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>,
+        Piotr Dymacz <pepe2k@gmail.com>
+References: <20220208234023.GA505306@bhelgaas> <m3czjovdqn.fsf@t19.piap.pl>
+ <46ae7788-dade-3ff4-a353-985544f12c19@citymesh.com>
+In-Reply-To: <46ae7788-dade-3ff4-a353-985544f12c19@citymesh.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-
-On 06/04/2022 10:08, James Clark wrote:
-> 
-> 
-> On 05/04/2022 15:04, John Garry wrote:
->> Hi Alexandre,
+On 01.04.22 15:50, Koen Vandeputte wrote:
+>
+> On 15.02.22 07:35, Krzysztof Hałasa wrote:
+>> Hi Bjorn,
 >>
->> I notice that with commit b9f6fbb3b2c2 ("perf arm64: Inject missing frames when using 'perf record --call-graph=fp'") that I get messages spewing the console when running perf record+report, as below:
+>> Bjorn Helgaas <helgaas@kernel.org> writes:
 >>
->> john@ubuntu:~/linux$sudo tools/perf/perf record -ag fio null12.fio
->> john@ubuntu:~/linux$sudo tools/perf/perf report > report
->> unwind: can't read reg 29
->> unwind: can't read reg 29
->> unwind: can't read reg 29
->> unwind: can't read reg 29
->> ...
+>>> Koen collected some interesting logs at
+>>> https://lore.kernel.org/all/cd4812f0-1de3-0582-936c-ba30906595af@citymesh.com/ 
+>>>
+>>> They're from v5.10, which was before all of Krzysztof W's nice work
+>>> converting to static attributes, but Koen's log shows the error
+>>> happening in the pci_sysfs_init() initcall, which is *after*
+>>> imx6_pcie_probe():
+>>>
+>>>    imx6_pcie_probe                # probably device initcall (level 6)
+>>>      ...
+>>>        pci_create_sysfs_dev_files
+>>>
+>>>    pci_sysfs_init                 # late initcall (level 7)
+>>>      pci_create_sysfs_dev_files
+>>>        "sysfs: cannot create duplicate filename"
+>> Well, imx6_pcie_probe() is called indirectly by
+>> platform_driver_register(). I guess it doesn't know about the initcall
+>> ordering, after it's registered.
 >>
->> Do you know the possible cause? I haven't checked...
-> 
-> Hi John,
-> 
-> I'm going to look into this today. I expect the cause is because we only record
-> the link register for this change and then do a best effort unwind to see if
-> we can get the return address just from that. So I don't think this is a major issue,
-> probably the outcome will be that I mask any of these errors just for this call
-> to libunwind that we added. The other main call to libunwind should still print
-> these errors.
-> 
-> One thing that is interesting is why we didn't see this when we were testing
-> the patch before, and we've also found it a little bit difficult to reproduce here.
-> So there might be more to it than just masking the error, but I'm not sure yet.
-> 
-> Either way, I don't expect that any unwinding is broken, just that it's
-> printing an annoying message.
-> 
-
-In my case it was showing the error because I'd installed libc debug symbols which
-explains why we might have missed it before. Also it's looking for the frame pointer
-register which doesn't make sense to save because that would be used to look into
-the stack which isn't recorded.
-
-So for that reason I think suppressing the error is the best thing to do. I've sent
-"[PATCH] perf: Don't show unwind error messages when augmenting frame pointer stack"
-
-> James
-> 
+>> It looks like the problem is the imx6_pcie_probe() (via
+>> dw_pcie_host_init() -> pci_host_probe()) is interfering with
+>> pci_sysfs_init(). This may eventually cause some invalid memory access
+>> as well.
 >>
->> Thanks,
->> john
+>> BTW I thought for a moment that maybe 5.14 is free from this. I was
+>> wrong. The problem doesn't manifest itself on my custom i.MX6 device
+>> (using Tinyrex CPU module from Voipac/Fedevel, perhaps because I don't
+>> use any PCI devices there). It does on Ventana SBC from Gateworks,
+>> though. BTW the above (and below) is v5.16.
+>>
+>> It goes like this:
+>> [0.096212] do_initcall_level: 6
+>> [0.105625] imx6_pcie_init
+>> [0.106106] imx6_pcie_probe <<<<<<<<<<<<<<<<<<<<<
+>> [0.106412] imx6q-pcie 1ffc000.pcie: host bridge /soc/pcie@1ffc000 
+>> ranges:
+>>
+>> [0.322613] imx6q-pcie 1ffc000.pcie: Link up
+>> [0.322776] imx6q-pcie 1ffc000.pcie: PCI host bridge to bus 0000:00
+>> [0.322790] pci_bus 0000:00: root bus resource [bus 00-ff]
+>>
+>> [0.405251] do_initcall_level: 6 ENDs but imx6_pcie_probe() still active
+>> [0.405262] do_initcall_level: 7
+>>
+>> [0.410393] pci_sysfs_init <<<<<<<<<<<<<<<<<<<<<
+>> [0.410423] pci 0000:00:00.0: pci_create_sysfs_dev_files
+>>
+>> [0.410532] [<8068091c>] (pci_create_sysfs_dev_files)
+>> [0.410551] [<80918710>] (pci_sysfs_init)
+>> [0.410568] [<8010166c>] (do_one_initcall)
+>>
+>> [0.410717] pci_sysfs_init END <<<<<<<<<<<<<<<<<<<<<
+>>
+>> [0.533843] [<803f1c74>] (pci_bus_add_devices)
+>> [0.533862] [<803f574c>] (pci_host_probe)
+>> [0.533879] [<80414310>] (dw_pcie_host_init)
+>> [0.533895] [<80681ac8>] (imx6_pcie_probe)
+>> [0.533915] [<8045e9e4>] (platform_probe)
+>> (Repeats multiple times, I guess for each PCI device)
+>>
+>> [0.543893] imx6_pcie_probe END <<<<<<<<<<<<<<<<<<<<<
+>>
+>> [0.692244] do_initcall_level: 7 END
+>
+>
+> Hi all,
+>
+> Any update on this topic?
+> I just tested kernel 5.15 on imx6 (gateworks Ventana 5200) and as soon 
+> as I connect a pcie device on one of the ports,
+>
+> following happens:
+>
+> https://pastebin.com/raw/mgfSvTRB
+>
+> Any idea if this is related?
+>
+>
+> Thanks,
+>
+> Koen
+>
+Hi all,
+
+I tested a bit more today and simply let the board reboot all day long.
+After roughly 20 reboots, it suddenly booted once stable without any 
+errors/warnings.
+
+Looks like a race condition ..
+
+Any idea?
+
+Thanks,
+
+Koen
+
