@@ -2,85 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA42C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BACAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232771AbiDFMSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        id S232822AbiDFMSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbiDFMQ6 (ORCPT
+        with ESMTP id S233349AbiDFMSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:16:58 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8769B820C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:57:15 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 125so1535730pgc.11
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:57:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+5TeASqScFwwkP3ga5oGCfohTpgutsvPzGxNFkO13C4=;
-        b=dKMdohNSUNb1VV4EpSBldV0sxbC2qZcFKgj5JaUcxsPdt0jQu/TBh1EIQDcjqPz3im
-         I6io8uSg1yVclSAioT1LBzSS+4Fmn3XmEknTCM0HKGKAHSsjQE/FLd5s6cSNl6mWVnGd
-         j3GGYE3G8VAJvz0Ji14eQVy51TxNTduEWsFIIYYuICTt2xWtf2U+HsW+i8to+tCUTVAt
-         /SFiOTT/VlLEmCkdw+GTFYdDRRCspkItDeYpigR4kSSHovt9Tr5mEl6ibyp6RfLDzPiR
-         NvDx0xl2wgqVS/FeXCOhhqO7haiZVIzmFkfTG/ArAqvVhNfEe/AkaHLgXQpXxCZzLymV
-         QI9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+5TeASqScFwwkP3ga5oGCfohTpgutsvPzGxNFkO13C4=;
-        b=lxYeFkcLWhDZvlXeBxtrNFySsANieumMMbgVDGcgPDNsPv9nPOenNaYDXeEhPDtEFX
-         P3uNtXE3lws7eUyWJwb6FDKGpDTrADV+CxQFezgiof+9+WA/u4hhFyT2VWSASQ0x/yNN
-         sf32lAGWyBCIv95hNZud13XQFnQlmNOL5ACp4McD55z2+3ts5I+/wSbR1FwqKqYXrHiG
-         Rldl1kxBg+BYOk4psB5EI5NNKiTzSZPKISXjwIMiLGSr0LvvkiqJPRg6Zy9T5JePIDbZ
-         ZMry25505oHl990XLOW4SS56HBBqXF6tZx2JfBNYo42OQhIO/abXb/e8ZUo48hPRkQu/
-         0GvQ==
-X-Gm-Message-State: AOAM531YqlgmkoXePjBEjEyINU/ZsISSl4TrR44TErzghGFJ2dugfkR+
-        38lYjrd8118CIEMPwIQHi0H+mb5pVoLP3w==
-X-Google-Smtp-Source: ABdhPJzGqOpLo+4QhJgiWLy/NvhEnE0UleX/xsTu79qPm1CYo/cT8O/eV9l1Ao5V/SZS0+a+44GtGQ==
-X-Received: by 2002:a65:6e9a:0:b0:382:1804:35c8 with SMTP id bm26-20020a656e9a000000b00382180435c8mr6197058pgb.584.1649231835203;
-        Wed, 06 Apr 2022 00:57:15 -0700 (PDT)
-Received: from slim.das-security.cn ([103.84.139.52])
-        by smtp.gmail.com with ESMTPSA id q18-20020aa78432000000b004fb0a5aa2c7sm18922949pfn.183.2022.04.06.00.57.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 00:57:14 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     eli.billauer@gmail.com, arnd@arndb.de, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] char: xillybus: fix a refcount leak in cleanup_dev()
-Date:   Wed,  6 Apr 2022 15:57:03 +0800
-Message-Id: <20220406075703.23464-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 6 Apr 2022 08:18:15 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505C550E459
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:02:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=BAvepl+m4lr4VUIlMDK9326Co7aN
+        ArbKAWcyhN4afso=; b=nL7rIFi0g1Gsg5GL+LUrgVEpQYDnJCkVlcHQNOeVYX+y
+        T+TW2ZWIodS/ULoqjVQRsNm/3BrKi+qAOE5zFOlaJltd7WQNruNAcKQE6HLWE/hw
+        ZqoZgWuHY9DtGPmMENxWFhxUqkFsXlps1Uol3wIL0uIR9V5MWWcwwtDcy52oYX4=
+Received: (qmail 2628494 invoked from network); 6 Apr 2022 10:02:12 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 6 Apr 2022 10:02:12 +0200
+X-UD-Smtp-Session: l3s3148p1@PEhhx/fbSpQgAQnoAH8rAO83AtqmbDBd
+Date:   Wed, 6 Apr 2022 10:02:11 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     linux-mmc@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 08/10] mmc: core: improve API to make clear hw_reset
+ from bus_ops is for cards
+Message-ID: <Yk1JA4TWO9bTt0kb@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>, linux-mmc@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220321115059.21803-1-wsa+renesas@sang-engineering.com>
+ <20220321115059.21803-9-wsa+renesas@sang-engineering.com>
+ <CAPDyKFqwgxhRPBabxfUTC+8UVegWrTg3F0nRn3PoToiO2DWtvQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="WmgP1hItt5WDz7hZ"
+Content-Disposition: inline
+In-Reply-To: <CAPDyKFqwgxhRPBabxfUTC+8UVegWrTg3F0nRn3PoToiO2DWtvQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-usb_get_dev is called in xillyusb_probe. So it is better to call
-usb_put_dev before xdev is released.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- drivers/char/xillybus/xillyusb.c | 1 +
- 1 file changed, 1 insertion(+)
+--WmgP1hItt5WDz7hZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
-index dc3551796e5e..39bcbfd908b4 100644
---- a/drivers/char/xillybus/xillyusb.c
-+++ b/drivers/char/xillybus/xillyusb.c
-@@ -549,6 +549,7 @@ static void cleanup_dev(struct kref *kref)
- 	if (xdev->workq)
- 		destroy_workqueue(xdev->workq);
- 
-+	usb_put_dev(xdev->udev);
- 	kfree(xdev->channels); /* Argument may be NULL, and that's fine */
- 	kfree(xdev);
- }
--- 
-2.25.1
 
+> > To make it unambiguous that bus_ops->hw_reset() is for cards and not for
+> > controllers, we a) add 'card' to the function name and b) make the
+> > function argument mmc_card instead of mmc_host. All users are converted,
+> > too.
+>=20
+> Again b) is sufficient in my opinion. All bus_ops are for cards, while
+> host_ops are for hosts.
+
+Okay, this argument I buy right away.
+
+> Also, there may be some corner cases where b) can't be done, like the
+> ->remove() bus_ops for example. In that case, we either have to make
+> more re-structuring of the code of simply live with that there may be
+> some special cases.
+
+With the above argument, I could even imaging to simply drop this patch?
+That keeps 'host' consistently as the default argument? All given that
+'bus_ops' are for cards anyway.
+
+
+--WmgP1hItt5WDz7hZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJNSQMACgkQFA3kzBSg
+KbZerRAApvClAIJvXDjBVi5cIAt85vX1GGEV2WMs29A02GLYHBpBp+U3Et/rsA6o
+DWg+xLV8zJTZw+D2RJOAvM8lq6nMmTiGn67byy79huhwUr6DtYlvKKIIizR7Ae4M
+niV0TXz1vv97qd4RdfJ8SjRyNoFAJOsJIt7zGkuuXviaBIc+5GwJyWYdM48Klgqc
+9B8JUutPyHmxbwIeH+lUZfaY87WTTypBWQehJJIZN5+vcFyVz/l93OL8wf727VDX
+LujbAf2WlvFTLjrHs6QPSuq2IUlbILazWBcILMOKlYMFLy8+ETvX99x1rj5pV4Bv
+l6p5Q+KOW428FyjMBoYOMYzlI+BNL2Ym9f1oM6vAuOfoZbtMENq6RDy67w5oovgm
+DH8QMzyszLrASjzu4y/drWm3/d9Pge8FkhTF1RRi7jL0NnAMFtu51AzIiSN1OKlv
+O87LZVSQTRcNo4/KhazHyMv6TxM1Ev7zRKvMkm/+/5OcoVZynBTDv46A/CNGA1oU
+q2kggc5f69xTaQKAxOGwFJrdYvucqf3s11XiIdLdYU3jjcQmbKMLBruahi4x/WUr
+zMh25xweGmwm2lvAGzs1fm3sZmw2lHwa0G0EeawGW6ctCK8l6iUD6xwGrXV09LcQ
+9u7aJsJGkzYoMu+DSR/YJj+peBAIjA0fdwfYet37fjXcBr+vcFY=
+=Fe4Y
+-----END PGP SIGNATURE-----
+
+--WmgP1hItt5WDz7hZ--
