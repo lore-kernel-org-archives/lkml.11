@@ -2,143 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5026C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC451C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346686AbiDFFsw (ORCPT
+        id S1352984AbiDFFua (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44626 "EHLO
+        Wed, 6 Apr 2022 01:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2361243AbiDFEZm (ORCPT
+        with ESMTP id S1446731AbiDFE5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 00:25:42 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D64B2C;
-        Tue,  5 Apr 2022 17:34:08 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KY59V1grWz4xY1;
-        Wed,  6 Apr 2022 10:34:06 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649205247;
-        bh=QqgDmsFvSYcgWUESimdJ8L2VbsOjXioSTdWO5yoK+sc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=rLk73Ha/H0NukY3HR2rCuYtPehs1SnGxxMUO12TO+iC+BdxvU/NtX8VODTKI18Ire
-         dHn7QTHafzv+jbWMpLJlUZW559uyF6T8bxANz9yOXmvZhQnnieKsvog0Yys9f37AV6
-         ARfxov3RnOGAke0TatW4FcMNxZ1IxleoVEnMXdUtoH16ANL0VUGWOqQqFzYXUNdgQf
-         Zd3BTmfgxZAySLkJQH5lguNtOANau84S6KSV0Q0/tLWu5CyQp+Dt2e/QA6b54ftK+n
-         aRwNLOLNGQFl6iNBdRCX87QQBsorL/n5ayAPweM5ytoWpHA6Df0xQkmwnn4qKaM/jq
-         uQYTsVdfTZPig==
-Date:   Wed, 6 Apr 2022 10:34:05 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alex Deucher <alexdeucher@gmail.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the amdgpu tree with the drm-misc tree
-Message-ID: <20220406103405.299c06b9@canb.auug.org.au>
+        Wed, 6 Apr 2022 00:57:44 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1518202155
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:46:25 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649205983;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mhpo2Erwb4Hr62Oe++KrjfRdUmCMgVLEH3CRGWnSUZU=;
+        b=VVCsLwCe9WroduPZLTOprTutk2/LjIHSHCoAMcbDcDQf3TSRxDVLJ9paBfFKHyEYYjolzw
+        SeCqLE8Ym+eiEKX2EEvkBb9/2wwVp6+fTjvcbGuK0ZZXlzxCYQ43tIu90Lni2hbxl+x1SC
+        rdgj5x7Z+ORnTN4gLLhIWZbZ47EntLimz8muiIsGNescmkqDk9F3nDe/lgGIY4y94XzV/B
+        A87NsTFKqxXN4SuHdLy6fby9+5b8lDMYC3WBqDSLIgjc8YlSrVsDrabcqe9mLzECKfi02y
+        k7ECoAxDmfL9I/befIKDot+182tTutJGU5ejv/KeOsVjknrNzIqkGcR4W8e1ew==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649205983;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mhpo2Erwb4Hr62Oe++KrjfRdUmCMgVLEH3CRGWnSUZU=;
+        b=bigqMih2qo6UghO2aXG8VmXwyOAhcsqT19RjrMOzUYbpYh3rmGh4257RDT8mWJhU/H2+Sq
+        I9BiGflJ0eD58KAg==
+To:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, mbenes@suse.cz, x86@kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: drivers/gpu/drm/i915/i915.prelink.o: warning: objtool:
+ __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR:
+ vlv_allow_gt_wake.cold+0x0
+In-Reply-To: <20220406000500.5hlaqy5zrdqsg5mg@treble>
+References: <202204041241.Hw855BWm-lkp@intel.com>
+ <YkxLqznOz0ldTz5a@hirez.programming.kicks-ass.net>
+ <20220406000500.5hlaqy5zrdqsg5mg@treble>
+Date:   Wed, 06 Apr 2022 02:46:22 +0200
+Message-ID: <87czhv11k1.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/HS+hEAkeP/V.TjBE.IFp.s9";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/HS+hEAkeP/V.TjBE.IFp.s9
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Apr 05 2022 at 17:05, Josh Poimboeuf wrote:
+> On Tue, Apr 05, 2022 at 04:01:15PM +0200, Peter Zijlstra wrote:
+>
+> But objtool is complaining about a real problem (albeit with a cryptic
+> warning).  I don't think we want to paper over that. See patch.
+>
+> Also, are in-tree users of trace_printk() even allowed??
 
-Hi all,
+See the comment in the header file you are patching:
 
-Today's linux-next merge of the amdgpu tree got a conflict in:
+ * This is intended as a debugging tool for the developer only.
+ * Please refrain from leaving trace_printks scattered around in
+ * your code. (Extra memory is used for special buffers that are
+ * allocated when trace_printk() is used.)
 
-  drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+....
 
-between commit:
+> From: Josh Poimboeuf <jpoimboe@redhat.com>
+> Subject: [PATCH] tracing: Fix _THIS_IP_ usage in trace_printk()
+>
+> do_trace_printk() uses the _THIS_IP_ macro to save the current
+> instruction pointer as an argument to a called function.  However,
+> because _THIS_IP_ relies on an empty label hack to get the IP, the
+> compiler is actually free to place the label anywhere in the function,
+> including at the very end -- which, since the label doesn't actually
+> have any code, is technically at the beginning of whatever function
+> happens to come next.
+>
+> For example:
+>
+>       1d89:	48 c7 c7 00 00 00 00 	mov    $0x0,%rdi
+>   			1d8c: R_X86_64_32S	.text.unlikely+0x1d3a
+>       1d90:	e8 00 00 00 00       	callq  1d95 <__intel_wait_for_register_fw.cold+0xd4>
+>   			1d91: R_X86_64_PLT32	__trace_bprintk-0x4
+>       1d95:	e8 00 00 00 00       	callq  1d9a <__intel_wait_for_register_fw.cold+0xd9>
+>   			1d96: R_X86_64_PLT32	__sanitizer_cov_trace_pc-0x4
+>       1d9a:	bf 01 00 00 00       	mov    $0x1,%edi
+>       1d9f:	e8 00 00 00 00       	callq  1da4 <__intel_wait_for_register_fw.cold+0xe3>
+>   			1da0: R_X86_64_PLT32	ftrace_dump-0x4
+>       1da4:	31 f6                	xor    %esi,%esi
+>       1da6:	bf 09 00 00 00       	mov    $0x9,%edi
+>       1dab:	e8 00 00 00 00       	callq  1db0 <__intel_wait_for_register_fw.cold+0xef>
+>   			1dac: R_X86_64_PLT32	add_taint-0x4
+>       1db0:	90                   	nop
+>       1db1:	0f 0b                	ud2
+>
+>   0000000000001db3 <vlv_allow_gt_wake.cold>:
+>
+> In this case _THIS_IP_ causes the instruction at 0x1d89 to reference the
+> next function.  This results in a semi-cryptic objtool warning:
+>
+>   warning: objtool: __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR: vlv_allow_gt_wake.cold+0x
+>
+> While _THIS_IP_ is inherently imprecise, we can at least coddle the
+> compiler into putting the label *before* the call by using _THIS_IP_
+> immediately before the call instead of as an argument to the call.
+>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> ---
+>  include/linux/kernel.h | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+> index 08ba5995aa8b..c399b29840eb 100644
+> --- a/include/linux/kernel.h
+> +++ b/include/linux/kernel.h
+> @@ -390,13 +390,15 @@ do {									\
+>  	static const char *trace_printk_fmt __used			\
+>  		__section("__trace_printk_fmt") =			\
+>  		__builtin_constant_p(fmt) ? fmt : NULL;			\
+> +	unsigned long __ip;						\
+>  									\
+>  	__trace_printk_check_format(fmt, ##args);			\
+>  									\
+> +	__ip = _THIS_IP_;						\
+>  	if (__builtin_constant_p(fmt))					\
+> -		__trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);	\
+> +		__trace_bprintk(__ip, trace_printk_fmt, ##args);	\
+>  	else								\
+> -		__trace_printk(_THIS_IP_, fmt, ##args);			\
+> +		__trace_printk(__ip, fmt, ##args);			\
+>  } while (0)
+>  
+>  extern __printf(2, 3)
 
-  fee2ede15542 ("drm/ttm: rework bulk move handling v5")
+This covers the trace_printk() case which uses do_trace_printk(), but
+the same problem exists in trace_puts() and ftrace_vprintk()...., no?
 
-from the drm-misc tree and commit:
+Thanks,
 
-  184a69ca4d41 ("drm/amdgpu: separate VM PT handling into amdgpu_vm_pt.c")
-
-from the amdgpu tree.
-
-I fixed it up (I used this file from the latter and added the following
-patch) and can carry the fix as necessary. This is now fixed as far as
-linux-next is concerned, but any non trivial conflicts should be mentioned
-to your upstream maintainer when your tree is submitted for merging.
-You may also want to consider cooperating with the maintainer of the
-conflicting tree to minimise any particularly complex conflicts.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Wed, 6 Apr 2022 10:28:53 +1000
-Subject: [PATCH] fix up for "drm/ttm: rework bulk move handling v5"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c b/drivers/gpu/drm/am=
-d/amdgpu/amdgpu_vm_pt.c
-index 958d7ed97882..a29933fa001f 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c
-@@ -630,7 +630,14 @@ static void amdgpu_vm_pt_free(struct amdgpu_vm_bo_base=
- *entry)
-=20
- 	if (!entry->bo)
- 		return;
-+
- 	shadow =3D amdgpu_bo_shadowed(entry->bo);
-+	if (shadow) {
-+		ttm_bo_set_bulk_move(&shadow->tbo, NULL);
-+		amdgpu_bo_unref(&shadow);
-+	}
-+
-+	ttm_bo_set_bulk_move(&entry->bo->tbo, NULL);
- 	entry->bo->vm_bo =3D NULL;
- 	list_del(&entry->vm_status);
- 	amdgpu_bo_unref(&shadow);
-@@ -653,8 +660,6 @@ static void amdgpu_vm_pt_free_dfs(struct amdgpu_device =
-*adev,
- 	struct amdgpu_vm_pt_cursor cursor;
- 	struct amdgpu_vm_bo_base *entry;
-=20
--	vm->bulk_moveable =3D false;
--
- 	for_each_amdgpu_vm_pt_dfs_safe(adev, vm, start, cursor, entry)
- 		amdgpu_vm_pt_free(entry);
-=20
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/HS+hEAkeP/V.TjBE.IFp.s9
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJM3/0ACgkQAVBC80lX
-0Gxogwf/exk2DdA1yDjnxFuGFmWqyrQlc0z7MS+nraBxW/sGxr0WCISIaq3m71tn
-cB46hEIgHt/Ob0BtV+gDLmTHihgasmCZ4xCdmo7MY9XmG7xcs8+VSwk7OPL1B4RN
-Bx32107zw/Qa0wce1GPJQbnGOznqqG+AfYUvLkc9LBBaKNM4pfhpnqKLfcKvil2Z
-HVSqiVinejMJNHI14fJhhFJDKAkbS8sLhDXBnTYaiEvyHMILz2fDQ/j19cxEwBre
-ac1rWzhYvCsQz4dc3J+Z8pvXL/BV3mdQ2jKDVGerrh6hiX6oyUZ7TcRNi6QU1tyk
-RWI2Sk04O8v1VBB0T2uEgLmrmCIKFA==
-=7nog
------END PGP SIGNATURE-----
-
---Sig_/HS+hEAkeP/V.TjBE.IFp.s9--
+        tglx
