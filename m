@@ -2,159 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD193C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE4C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239654AbiDFR6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
+        id S239690AbiDFR6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239711AbiDFR5J (ORCPT
+        with ESMTP id S239703AbiDFR45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:57:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36AF9C31C3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:06:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649261212;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4FhXBUnLq/AeYpcQ43hIiOOWtFlBWzfoVNvi0Bsh0Mg=;
-        b=Bj7jYjRTgA27PWqK4phuuDKm0/fOdZmtyPdtONAVvAE/B7at75HMgS7yeLEwoLZlxyy6mC
-        oycH+2iEoxdVTbcFQ9THAFoqLm6or6Fu9p2bpiHLsRIq++NIS/fgIGy/2tiCjs10j4cPQ7
-        ENdDKaoNJPhEceKi7vOxQBMYE4WZe2I=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-583--lmWiG-UNke42XNIkdXcfg-1; Wed, 06 Apr 2022 12:06:51 -0400
-X-MC-Unique: -lmWiG-UNke42XNIkdXcfg-1
-Received: by mail-wr1-f70.google.com with SMTP id x17-20020adfbb51000000b002060ff71a3bso652534wrg.22
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:06:50 -0700 (PDT)
+        Wed, 6 Apr 2022 13:56:57 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC503BD268
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:07:35 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bq8so5233667ejb.10
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:07:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q5SnuaC22PldZRl1d3Eesck9g+lJ9ywG2BO0iv4qtAA=;
+        b=mGeKs2QuURmKkxOKfwU7nymtX1Z4tONudklyyl8lXb6C7L+tbbrRLnIboUqmAEuSaD
+         Xmm7fNbVrmcLMuiXw7ANrqGt/jxkiaaZmK7sYjE66WgBurnW5w8HXYnHzHfdME9bVvaI
+         raxaj9z3Qxul/sAOy6YCTHtEIWLZtV++HOPw7kIU/RbLW354/u+1ngukB8fntfn8heUG
+         HXpyDuPaE5HCg9FeEkHwriJYNBo2lndx65zlX79DBmQq6pDc33aBTrKtJ6D55JfcR0qC
+         WOUGXvQNqHXKdsoK7XLaRyyk8x75+2C1AoGrlmn8wWtF2JRU05e5WFtrp4gOsoVR5+xG
+         PCaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4FhXBUnLq/AeYpcQ43hIiOOWtFlBWzfoVNvi0Bsh0Mg=;
-        b=QmVUTOvidpEYk+3vcCPTJgg7uGbUAcW6OO/p6DVhzrKlxIN9ek/8FmX7F/V8+YNO4/
-         kHOhg53wOZbkRZZtXCTXrS3TkKlyz8Qwvob4bekWO96Tb3OF4UCopHQE8WB6E88wxpim
-         C5znNavIapcWYVKvtEheYjrsWIKOaqz6WJsSV970Ca4cLRI8iWTFv1L2e0F3FmvVOfds
-         EREGMPtYfmzP6pHKhh3DUN5AqwM14ZtOFZOmjaLDKGM4kxg5/B3FfiruEelPrQaQzTjh
-         iA97+HVRqI8C8Oo9e7C+PeSVHOTwB8IipQp7NMHqR+7ng2zxQsZtedUffXh08XsNW4df
-         R8hA==
-X-Gm-Message-State: AOAM533kB9r0BZzIQOdpyKkHV0/ScneJECWCOrvgjjxlgQ33qaZtsAsj
-        0gj6HHJmVmUGT5Csod479WCnk6P0ir5ZzvrUyKRRBpwFeR5w6Wib/P4RZG6OOTEXg8AvGwATqS7
-        tyUowSdpcwP+TPsfYKnqvWA2e0KIoLgmpr9NabO5+bL5sBIODk8z0DUG0T81c9CWhHqUVJfSSnY
-        g=
-X-Received: by 2002:adf:dd4d:0:b0:203:f178:b78b with SMTP id u13-20020adfdd4d000000b00203f178b78bmr7137246wrm.93.1649261209890;
-        Wed, 06 Apr 2022 09:06:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxjTyMg4XL89qFWV3gB2V/HQc1uQjBder3TeH9rKQDOsGox6TANK3aF+8wdzRe76EhPl9Zl5g==
-X-Received: by 2002:adf:dd4d:0:b0:203:f178:b78b with SMTP id u13-20020adfdd4d000000b00203f178b78bmr7137221wrm.93.1649261209641;
-        Wed, 06 Apr 2022 09:06:49 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f1-20020a1c6a01000000b0038c9f6a3634sm5038899wmc.7.2022.04.06.09.06.48
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q5SnuaC22PldZRl1d3Eesck9g+lJ9ywG2BO0iv4qtAA=;
+        b=iMwXCJ4fZwg9qYr3U2BjjdsY+ox4m4YixTfq2n4NittBPqm0MkSDek6Fg1O29WR1JP
+         1iXpV1AqjSKM0A4NlhDPJdgw2JMtSHGwjA8HdM1gcDBtEis8S0H8486MN3X3wIXwqzZs
+         959QkfnLB5ai5VWa4F1A+utlaRGGuLv8SD/C3xYQEclzmLUdLhoPsBBJ7eGjSKwoSIhK
+         NGL92W67z6dpWwUZ1mdVkraAHHUwRZZzMKWUXbWHer8TGApHo9KO3RWApXLeTYCNog+X
+         39rvvlr2ZgUk3lxqUB/GqPRIN6pFRXinvwmC8giwK6lHVJm/AF1ToLXPXNPwlo3B18CL
+         ev3Q==
+X-Gm-Message-State: AOAM531GbwieHfdCpO4X5iP4tC/IXLe9ULm2fFw3jEusLc4fHdDjcloi
+        WD7VUxJ0prH3x85FkYGpc8xRCQ==
+X-Google-Smtp-Source: ABdhPJyNn39Uw60jASVPnLd8b+rNxkCM7+kvFHVOPHbddwf86sq0l+rzrRi8lRWBlgeWUZ/dN8N72g==
+X-Received: by 2002:a17:906:1603:b0:6ce:362:c938 with SMTP id m3-20020a170906160300b006ce0362c938mr9100103ejd.253.1649261254169;
+        Wed, 06 Apr 2022 09:07:34 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id lb4-20020a170907784400b006e0d13f65e5sm6680044ejc.167.2022.04.06.09.07.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 09:06:49 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Zack Rusin <zackr@vmware.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ilya Trukhanov <lahvuun@gmail.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Peter Jones <pjones@redhat.com>, linux-fbdev@vger.kernel.org,
-        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org
-Subject: [RFC PATCH 5/5] Revert "fbdev: Prevent probing generic drivers if a FB is already registered"
-Date:   Wed,  6 Apr 2022 18:06:32 +0200
-Message-Id: <20220406160632.496684-6-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406160632.496684-1-javierm@redhat.com>
-References: <20220406160632.496684-1-javierm@redhat.com>
+        Wed, 06 Apr 2022 09:07:33 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: vendor-prefixes: add Enclustra
+Date:   Wed,  6 Apr 2022 18:07:28 +0200
+Message-Id: <20220406160728.720902-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+Add vendor prefix for Enclustra GmbH (https://www.enclustra.com).
 
-This reverts commit fb561bf9abde49f7e00fdbf9ed2ccf2d86cac8ee.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-With
-
-commit 27599aacbaefcbf2af7b06b0029459bbf682000d
-Author: Thomas Zimmermann <tzimmermann@suse.de>
-Date:   Tue Jan 25 10:12:18 2022 +0100
-
-    fbdev: Hot-unplug firmware fb devices on forced removal
-
-this should be fixed properly and we can remove this somewhat hackish
-check here (e.g. this won't catch drm drivers if fbdev emulation isn't
-enabled).
-
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Zack Rusin <zackr@vmware.com>
-Cc: Javier Martinez Canillas <javierm@redhat.com>
-Cc: Zack Rusin <zackr@vmware.com>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Ilya Trukhanov <lahvuun@gmail.com>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Peter Jones <pjones@redhat.com>
-Cc: linux-fbdev@vger.kernel.org
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
 
- drivers/video/fbdev/efifb.c    | 11 -----------
- drivers/video/fbdev/simplefb.c | 11 -----------
- 2 files changed, 22 deletions(-)
+Hi Rob,
 
-diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
-index ea42ba6445b2..edca3703b964 100644
---- a/drivers/video/fbdev/efifb.c
-+++ b/drivers/video/fbdev/efifb.c
-@@ -351,17 +351,6 @@ static int efifb_probe(struct platform_device *dev)
- 	char *option = NULL;
- 	efi_memory_desc_t md;
- 
--	/*
--	 * Generic drivers must not be registered if a framebuffer exists.
--	 * If a native driver was probed, the display hardware was already
--	 * taken and attempting to use the system framebuffer is dangerous.
--	 */
--	if (num_registered_fb > 0) {
--		dev_err(&dev->dev,
--			"efifb: a framebuffer is already registered\n");
--		return -EINVAL;
--	}
--
- 	if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI || pci_dev_disabled)
- 		return -ENODEV;
- 
-diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-index 94fc9c6d0411..0ef41173325a 100644
---- a/drivers/video/fbdev/simplefb.c
-+++ b/drivers/video/fbdev/simplefb.c
-@@ -413,17 +413,6 @@ static int simplefb_probe(struct platform_device *pdev)
- 	struct simplefb_par *par;
- 	struct resource *res, *mem;
- 
--	/*
--	 * Generic drivers must not be registered if a framebuffer exists.
--	 * If a native driver was probed, the display hardware was already
--	 * taken and attempting to use the system framebuffer is dangerous.
--	 */
--	if (num_registered_fb > 0) {
--		dev_err(&pdev->dev,
--			"simplefb: a framebuffer is already registered\n");
--		return -EINVAL;
--	}
--
- 	if (fb_get_options("simplefb", NULL))
- 		return -ENODEV;
- 
+Could you pick it up directly?
+
+This was missed from old patchset:
+https://lore.kernel.org/linux-devicetree/20211227133131.134369-1-krzysztof.kozlowski@canonical.com/
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 01430973ecec..113ff50eb46e 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -383,6 +383,8 @@ patternProperties:
+     description: Empire Electronix
+   "^emtrion,.*":
+     description: emtrion GmbH
++  "^enclustra,.*":
++    description: Enclustra GmbH
+   "^endless,.*":
+     description: Endless Mobile, Inc.
+   "^ene,.*":
 -- 
-2.35.1
+2.32.0
 
