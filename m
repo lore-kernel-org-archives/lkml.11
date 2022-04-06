@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42EDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240384AbiDFSLf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
+        id S240200AbiDFSLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240105AbiDFSIz (ORCPT
+        with ESMTP id S240142AbiDFSIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 14:08:55 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E95171A4D6D;
-        Wed,  6 Apr 2022 09:46:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1073D1AA04D;
+        Wed,  6 Apr 2022 09:46:39 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D01D41516;
-        Wed,  6 Apr 2022 09:46:36 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 927931516;
+        Wed,  6 Apr 2022 09:46:39 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2EE443F73B;
-        Wed,  6 Apr 2022 09:46:36 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E55E43F73B;
+        Wed,  6 Apr 2022 09:46:38 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     James Morse <james.morse@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>
-Subject: [stable:PATCH v4.9.309 39/43] KVM: arm64: Add templates for BHB mitigation sequences
-Date:   Wed,  6 Apr 2022 17:45:42 +0100
-Message-Id: <20220406164546.1888528-39-james.morse@arm.com>
+Subject: [stable:PATCH v4.9.309 42/43] arm64: add ID_AA64ISAR2_EL1 sys register
+Date:   Wed,  6 Apr 2022 17:45:45 +0100
+Message-Id: <20220406164546.1888528-42-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220406164546.1888528-1-james.morse@arm.com>
 References: <0220406164217.1888053-1-james.morse@arm.com>
@@ -38,233 +38,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KVM writes the Spectre-v2 mitigation template at the beginning of each
-vector when a CPU requires a specific sequence to run.
+commit 9e45365f1469ef2b934f9d035975dbc9ad352116 upstream.
 
-Because the template is copied, it can not be modified by the alternatives
-at runtime. As the KVM template code is intertwined with the bp-hardening
-callbacks, all templates must have a bp-hardening callback.
+This is a new ID register, introduced in 8.7.
 
-Add templates for calling ARCH_WORKAROUND_3 and one for each value of K
-in the brancy-loop. Identify these sequences by a new parameter
-template_start, and add a copy of install_bp_hardening_cb() that is able to
-install them.
-
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Cc: Alexandru Elisei <alexandru.elisei@arm.com>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Reiji Watanabe <reijiw@google.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211210165432.8106-3-joey.gouly@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm64/include/asm/cpucaps.h |  3 +-
- arch/arm64/include/asm/kvm_mmu.h |  2 +-
- arch/arm64/include/asm/mmu.h     |  6 +++
- arch/arm64/kernel/bpi.S          | 50 ++++++++++++++++++++++
- arch/arm64/kernel/cpu_errata.c   | 71 +++++++++++++++++++++++++++++++-
- 5 files changed, 128 insertions(+), 4 deletions(-)
+ arch/arm64/include/asm/cpu.h    | 1 +
+ arch/arm64/include/asm/sysreg.h | 1 +
+ arch/arm64/kernel/cpufeature.c  | 9 +++++++++
+ arch/arm64/kernel/cpuinfo.c     | 1 +
+ 4 files changed, 12 insertions(+)
 
-diff --git a/arch/arm64/include/asm/cpucaps.h b/arch/arm64/include/asm/cpucaps.h
-index d4a46764c1ad..9935e55a3cc7 100644
---- a/arch/arm64/include/asm/cpucaps.h
-+++ b/arch/arm64/include/asm/cpucaps.h
-@@ -39,7 +39,8 @@
- #define ARM64_SSBD				18
- #define ARM64_MISMATCHED_CACHE_TYPE		19
- #define ARM64_WORKAROUND_1188873		20
-+#define ARM64_SPECTRE_BHB			21
+diff --git a/arch/arm64/include/asm/cpu.h b/arch/arm64/include/asm/cpu.h
+index 889226b4c6e1..c7f17e663e72 100644
+--- a/arch/arm64/include/asm/cpu.h
++++ b/arch/arm64/include/asm/cpu.h
+@@ -36,6 +36,7 @@ struct cpuinfo_arm64 {
+ 	u64		reg_id_aa64dfr1;
+ 	u64		reg_id_aa64isar0;
+ 	u64		reg_id_aa64isar1;
++	u64		reg_id_aa64isar2;
+ 	u64		reg_id_aa64mmfr0;
+ 	u64		reg_id_aa64mmfr1;
+ 	u64		reg_id_aa64mmfr2;
+diff --git a/arch/arm64/include/asm/sysreg.h b/arch/arm64/include/asm/sysreg.h
+index cc06bbabed22..dc03704ccc79 100644
+--- a/arch/arm64/include/asm/sysreg.h
++++ b/arch/arm64/include/asm/sysreg.h
+@@ -70,6 +70,7 @@
  
--#define ARM64_NCAPS				21
-+#define ARM64_NCAPS				22
+ #define SYS_ID_AA64ISAR0_EL1		sys_reg(3, 0, 0, 6, 0)
+ #define SYS_ID_AA64ISAR1_EL1		sys_reg(3, 0, 0, 6, 1)
++#define SYS_ID_AA64ISAR2_EL1		sys_reg(3, 0, 0, 6, 2)
  
- #endif /* __ASM_CPUCAPS_H */
-diff --git a/arch/arm64/include/asm/kvm_mmu.h b/arch/arm64/include/asm/kvm_mmu.h
-index ff721659eb94..4a2c95854856 100644
---- a/arch/arm64/include/asm/kvm_mmu.h
-+++ b/arch/arm64/include/asm/kvm_mmu.h
-@@ -362,7 +362,7 @@ static inline void *kvm_get_hyp_vector(void)
- 	struct bp_hardening_data *data = arm64_get_bp_hardening_data();
- 	void *vect = kvm_ksym_ref(__kvm_hyp_vector);
- 
--	if (data->fn) {
-+	if (data->template_start) {
- 		vect = __bp_harden_hyp_vecs_start +
- 		       data->hyp_vectors_slot * SZ_2K;
- 
-diff --git a/arch/arm64/include/asm/mmu.h b/arch/arm64/include/asm/mmu.h
-index 5eff1c49270d..f4377b005cba 100644
---- a/arch/arm64/include/asm/mmu.h
-+++ b/arch/arm64/include/asm/mmu.h
-@@ -45,6 +45,12 @@ typedef void (*bp_hardening_cb_t)(void);
- struct bp_hardening_data {
- 	int			hyp_vectors_slot;
- 	bp_hardening_cb_t	fn;
-+
-+	/*
-+	 * template_start is only used by the BHB mitigation to identify the
-+	 * hyp_vectors_slot sequence.
-+	 */
-+	const char *template_start;
+ #define SYS_ID_AA64MMFR0_EL1		sys_reg(3, 0, 0, 7, 0)
+ #define SYS_ID_AA64MMFR1_EL1		sys_reg(3, 0, 0, 7, 1)
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index b4a6f881c3c0..82590761db64 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -98,6 +98,10 @@ static const struct arm64_ftr_bits ftr_id_aa64isar0[] = {
+ 	ARM64_FTR_END,
  };
  
- #ifdef CONFIG_HARDEN_BRANCH_PREDICTOR
-diff --git a/arch/arm64/kernel/bpi.S b/arch/arm64/kernel/bpi.S
-index dc4eb154e33b..313f2b59eef9 100644
---- a/arch/arm64/kernel/bpi.S
-+++ b/arch/arm64/kernel/bpi.S
-@@ -73,3 +73,53 @@ ENTRY(__smccc_workaround_1_smc_end)
- ENTRY(__smccc_workaround_1_hvc_start)
- 	smccc_workaround_1	hvc
- ENTRY(__smccc_workaround_1_hvc_end)
++static const struct arm64_ftr_bits ftr_id_aa64isar2[] = {
++	ARM64_FTR_END,
++};
 +
-+ENTRY(__smccc_workaround_3_smc_start)
-+	sub     sp, sp, #(8 * 4)
-+	stp     x2, x3, [sp, #(8 * 0)]
-+	stp     x0, x1, [sp, #(8 * 2)]
-+	mov     w0, #ARM_SMCCC_ARCH_WORKAROUND_3
-+	smc     #0
-+	ldp     x2, x3, [sp, #(8 * 0)]
-+	ldp     x0, x1, [sp, #(8 * 2)]
-+	add     sp, sp, #(8 * 4)
-+ENTRY(__smccc_workaround_3_smc_end)
-+
-+ENTRY(__spectre_bhb_loop_k8_start)
-+	sub     sp, sp, #(8 * 2)
-+	stp     x0, x1, [sp, #(8 * 0)]
-+	mov     x0, #8
-+2:	b       . + 4
-+	subs    x0, x0, #1
-+	b.ne    2b
-+	dsb     nsh
-+	isb
-+	ldp     x0, x1, [sp, #(8 * 0)]
-+	add     sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k8_end)
-+
-+ENTRY(__spectre_bhb_loop_k24_start)
-+	sub     sp, sp, #(8 * 2)
-+	stp     x0, x1, [sp, #(8 * 0)]
-+	mov     x0, #24
-+2:	b       . + 4
-+	subs    x0, x0, #1
-+	b.ne    2b
-+	dsb     nsh
-+	isb
-+	ldp     x0, x1, [sp, #(8 * 0)]
-+	add     sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k24_end)
-+
-+ENTRY(__spectre_bhb_loop_k32_start)
-+	sub     sp, sp, #(8 * 2)
-+	stp     x0, x1, [sp, #(8 * 0)]
-+	mov     x0, #32
-+2:	b       . + 4
-+	subs    x0, x0, #1
-+	b.ne    2b
-+	dsb     nsh
-+	isb
-+	ldp     x0, x1, [sp, #(8 * 0)]
-+	add     sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k32_end)
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 0d08249cbdab..acccc685b670 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -74,6 +74,14 @@ extern char __smccc_workaround_1_smc_start[];
- extern char __smccc_workaround_1_smc_end[];
- extern char __smccc_workaround_1_hvc_start[];
- extern char __smccc_workaround_1_hvc_end[];
-+extern char __smccc_workaround_3_smc_start[];
-+extern char __smccc_workaround_3_smc_end[];
-+extern char __spectre_bhb_loop_k8_start[];
-+extern char __spectre_bhb_loop_k8_end[];
-+extern char __spectre_bhb_loop_k24_start[];
-+extern char __spectre_bhb_loop_k24_end[];
-+extern char __spectre_bhb_loop_k32_start[];
-+extern char __spectre_bhb_loop_k32_end[];
+ static const struct arm64_ftr_bits ftr_id_aa64pfr0[] = {
+ 	ARM64_FTR_BITS(FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV3_SHIFT, 4, 0),
+ 	ARM64_FTR_BITS(FTR_NONSTRICT, FTR_LOWER_SAFE, ID_AA64PFR0_CSV2_SHIFT, 4, 0),
+@@ -332,6 +336,7 @@ static const struct __ftr_reg_entry {
+ 	/* Op1 = 0, CRn = 0, CRm = 6 */
+ 	ARM64_FTR_REG(SYS_ID_AA64ISAR0_EL1, ftr_id_aa64isar0),
+ 	ARM64_FTR_REG(SYS_ID_AA64ISAR1_EL1, ftr_aa64raz),
++	ARM64_FTR_REG(SYS_ID_AA64ISAR2_EL1, ftr_id_aa64isar2),
  
- static void __copy_hyp_vect_bpi(int slot, const char *hyp_vecs_start,
- 				const char *hyp_vecs_end)
-@@ -87,12 +95,14 @@ static void __copy_hyp_vect_bpi(int slot, const char *hyp_vecs_start,
- 	flush_icache_range((uintptr_t)dst, (uintptr_t)dst + SZ_2K);
- }
+ 	/* Op1 = 0, CRn = 0, CRm = 7 */
+ 	ARM64_FTR_REG(SYS_ID_AA64MMFR0_EL1, ftr_id_aa64mmfr0),
+@@ -459,6 +464,7 @@ void __init init_cpu_features(struct cpuinfo_arm64 *info)
+ 	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
+ 	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
+ 	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
++	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
+ 	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
+@@ -570,6 +576,8 @@ void update_cpu_features(int cpu,
+ 				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
+ 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
+ 				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
++	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
++				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
  
-+static DEFINE_SPINLOCK(bp_lock);
-+static int last_slot = -1;
-+
- static void __install_bp_hardening_cb(bp_hardening_cb_t fn,
- 				      const char *hyp_vecs_start,
- 				      const char *hyp_vecs_end)
- {
--	static int last_slot = -1;
--	static DEFINE_SPINLOCK(bp_lock);
-+
- 	int cpu, slot = -1;
+ 	/*
+ 	 * Differing PARange support is fine as long as all peripherals and
+@@ -689,6 +697,7 @@ static u64 __raw_read_system_reg(u32 sys_id)
+ 	case SYS_ID_AA64MMFR2_EL1:	return read_cpuid(ID_AA64MMFR2_EL1);
+ 	case SYS_ID_AA64ISAR0_EL1:	return read_cpuid(ID_AA64ISAR0_EL1);
+ 	case SYS_ID_AA64ISAR1_EL1:	return read_cpuid(ID_AA64ISAR1_EL1);
++	case SYS_ID_AA64ISAR2_EL1:	return read_cpuid(ID_AA64ISAR2_EL1);
  
- 	spin_lock(&bp_lock);
-@@ -113,6 +123,7 @@ static void __install_bp_hardening_cb(bp_hardening_cb_t fn,
- 
- 	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
- 	__this_cpu_write(bp_hardening_data.fn, fn);
-+	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
- 	spin_unlock(&bp_lock);
- }
- #else
-@@ -544,3 +555,59 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
- 	{
- 	}
- };
-+
-+#ifdef CONFIG_KVM
-+static const char *kvm_bhb_get_vecs_end(const char *start)
-+{
-+	if (start == __smccc_workaround_3_smc_start)
-+		return __smccc_workaround_3_smc_end;
-+	else if (start == __spectre_bhb_loop_k8_start)
-+		return __spectre_bhb_loop_k8_end;
-+	else if (start == __spectre_bhb_loop_k24_start)
-+		return __spectre_bhb_loop_k24_end;
-+	else if (start == __spectre_bhb_loop_k32_start)
-+		return __spectre_bhb_loop_k32_end;
-+
-+	return NULL;
-+}
-+
-+void kvm_setup_bhb_slot(const char *hyp_vecs_start)
-+{
-+	int cpu, slot = -1;
-+	const char *hyp_vecs_end;
-+
-+	if (!IS_ENABLED(CONFIG_KVM) || !is_hyp_mode_available())
-+		return;
-+
-+	hyp_vecs_end = kvm_bhb_get_vecs_end(hyp_vecs_start);
-+	if (WARN_ON_ONCE(!hyp_vecs_start || !hyp_vecs_end))
-+		return;
-+
-+	spin_lock(&bp_lock);
-+	for_each_possible_cpu(cpu) {
-+		if (per_cpu(bp_hardening_data.template_start, cpu) == hyp_vecs_start) {
-+			slot = per_cpu(bp_hardening_data.hyp_vectors_slot, cpu);
-+			break;
-+		}
-+	}
-+
-+	if (slot == -1) {
-+		last_slot++;
-+		BUG_ON(((__bp_harden_hyp_vecs_end - __bp_harden_hyp_vecs_start)
-+			/ SZ_2K) <= last_slot);
-+		slot = last_slot;
-+		__copy_hyp_vect_bpi(slot, hyp_vecs_start, hyp_vecs_end);
-+	}
-+
-+	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
-+	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
-+	spin_unlock(&bp_lock);
-+}
-+#else
-+#define __smccc_workaround_3_smc_start NULL
-+#define __spectre_bhb_loop_k8_start NULL
-+#define __spectre_bhb_loop_k24_start NULL
-+#define __spectre_bhb_loop_k32_start NULL
-+
-+void kvm_setup_bhb_slot(const char *hyp_vecs_start) { };
-+#endif
+ 	case SYS_CNTFRQ_EL0:		return read_cpuid(CNTFRQ_EL0);
+ 	case SYS_CTR_EL0:		return read_cpuid(CTR_EL0);
+diff --git a/arch/arm64/kernel/cpuinfo.c b/arch/arm64/kernel/cpuinfo.c
+index b3d5b3e8fbcb..4c09f87650f4 100644
+--- a/arch/arm64/kernel/cpuinfo.c
++++ b/arch/arm64/kernel/cpuinfo.c
+@@ -335,6 +335,7 @@ static void __cpuinfo_store_cpu(struct cpuinfo_arm64 *info)
+ 	info->reg_id_aa64dfr1 = read_cpuid(ID_AA64DFR1_EL1);
+ 	info->reg_id_aa64isar0 = read_cpuid(ID_AA64ISAR0_EL1);
+ 	info->reg_id_aa64isar1 = read_cpuid(ID_AA64ISAR1_EL1);
++	info->reg_id_aa64isar2 = read_cpuid(ID_AA64ISAR2_EL1);
+ 	info->reg_id_aa64mmfr0 = read_cpuid(ID_AA64MMFR0_EL1);
+ 	info->reg_id_aa64mmfr1 = read_cpuid(ID_AA64MMFR1_EL1);
+ 	info->reg_id_aa64mmfr2 = read_cpuid(ID_AA64MMFR2_EL1);
 -- 
 2.30.2
 
