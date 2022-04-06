@@ -2,69 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD9FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349394AbiDFK7m (ORCPT
+        id S1350420AbiDFLDI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        Wed, 6 Apr 2022 07:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236568AbiDFK6b (ORCPT
+        with ESMTP id S241614AbiDFLCR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:58:31 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 362004F512D;
-        Wed,  6 Apr 2022 00:24:26 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.90,239,1643641200"; 
-   d="scan'208";a="116907861"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 06 Apr 2022 16:24:25 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id E4C9241D1F25;
-        Wed,  6 Apr 2022 16:24:23 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] clocksource/drivers/renesas-ostm: Add support for RZ/V2L SoC
-Date:   Wed,  6 Apr 2022 08:24:17 +0100
-Message-Id: <20220406072417.14185-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 6 Apr 2022 07:02:17 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A20528D10
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:29:37 -0700 (PDT)
+Received: from mail-wr1-f45.google.com ([209.85.221.45]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Mw9Lu-1nsZaW0HZ6-00s6Zi for <linux-kernel@vger.kernel.org>; Wed, 06 Apr
+ 2022 09:29:36 +0200
+Received: by mail-wr1-f45.google.com with SMTP id m30so1847161wrb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:29:36 -0700 (PDT)
+X-Gm-Message-State: AOAM532P/fXUxY7BOSmVH0Q7fTc8Mn3OTAWZhdzEpjf6x/jNxBHoXUyH
+        WMjNQBKtDmaY+PcNTBUV2FDMqSD8SNNB6pw1u4k=
+X-Google-Smtp-Source: ABdhPJzyKGu3dTz7c5wCMIgY8RrIo/iPoFC4jg/w0bCaH/HFgYzcAZoBaAjqJoBHz9Ym+MjmIi1iL6FIKFnTMAWf6Vc=
+X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
+ e12-20020a056000178c00b002040648b4c4mr5325019wrg.219.1649230175681; Wed, 06
+ Apr 2022 00:29:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
+ <20220405135758.774016-2-catalin.marinas@arm.com> <YkzX1nM0Ca7apVBt@hyeyoo>
+In-Reply-To: <YkzX1nM0Ca7apVBt@hyeyoo>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 6 Apr 2022 09:29:19 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1K0=jwYEHVu=X7oAWk9dzaOYAdFsidwVRKCJVReSV3+g@mail.gmail.com>
+Message-ID: <CAK8P3a1K0=jwYEHVu=X7oAWk9dzaOYAdFsidwVRKCJVReSV3+g@mail.gmail.com>
+Subject: Re: [PATCH 01/10] mm/slab: Decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Pekka Enberg <penberg@kernel.org>, roman.gushchin@linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:So8h0q9ZQICwqajKA7j398ySPx4gnTPbhPGpZie+33Zigmexopl
+ wSZmniBKQ0uIGXvbmFrT9K+Y10U4VM+UL6jXszHDMaveFq3nGa3woJDbH3+KLk9N8qU7FWW
+ HWLS84Ip/+/TSIwnuKhOBrm9kA77xV7hK4SFos1xlP+0qm9E/zhBKv5t3fHiIhRz7E7T1iJ
+ SC4KVpTMICvFF7Fa2Z/UA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:easS4jZt73c=:R0u25Ml8TVTrQg81cUg1Kd
+ UbE1c4mBHm5Ub9TSNuIFb1Q+cNHVGZtAQI7t0Ajf4q3SA8dk+YiHiFBE6tWhCCBXkblq4D2Zf
+ 0oA3RPzv/WARltUFvidfFzHDgx8Htwxqf893dEE8xvRcfY3B+cM3z5i4clWXash6h2KCZo2ga
+ dhmgry5dvnhb1UjI+A/pxv6NL/aameEgGnuGrPt6/WNvuzWn8E3nHopWY32ruwx4yRjk3rV4l
+ uGM65pBTfuZP86pAGBtnIgRld74YIjD6u6thEEdcC3G5Ly1417/B7Dw1MVfv1NzFbBbfEhEiU
+ vQ2RXYqmEtDx8oKSTzE3POV1KkDPZaAACH57jBiD8Z6Xi5M0v+vnOGJNJHSr+8Is2hT8VFON/
+ 3KbNE45omKqeVSPTPVw8l4oKXtMYDgk69eH4Nm+KW00aTxnctVuPJfeCNjIr8PtQ2hbvzLtSc
+ q5GVnNr/oO0w9/OWiLvNSXh62PzeM2U5oVk5hri3F1470byaRK+/BdXIphxpCDOpm1yk0XrAX
+ 2redUoIRjS8pdplL5q5HhivImHlLVG0p6n9IkDIKH8BdU4kew/4yBWikMtnJLHpwbOElZSejE
+ 3LuOUV3/KDfSb1a/gv6NU7QIKrtDVXp58w6t8bHe2NihfUtD2LOORPgKNTQQm3IoeKqpRZ1hl
+ wbzrmKPOc1PHOfqCnWVJud2PSSIZuhxTYVZx3aoNICarJgqf6M0CAh6wCwQa/YZ+CalKjAJ3T
+ IEiEU3JGzuQJAkBSLqnLh91YReh/dWOO8sY9x1V2Jlp5TLTS40CAWsUSs3YWf4QNr13aaZwTK
+ ThJo3/VIr5FFMgMt5D9vEf8kQzZx2cxFcJBsfM2BkvSMleEeDA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The OSTM block is identical on Renesas RZ/G2L and RZ/V2L SoC's, so instead
-of adding dependency for each SoC's add dependency on ARCH_RZG2L. The
-ARCH_RZG2L config option is already selected by ARCH_R9A07G044 and
-ARCH_R9A07G054.
+On Wed, Apr 6, 2022 at 1:59 AM Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+>
+> On Tue, Apr 05, 2022 at 02:57:49PM +0100, Catalin Marinas wrote:
+> > In preparation for supporting a dynamic kmalloc() minimum alignment,
+> > allow architectures to define ARCH_KMALLOC_MINALIGN independently of
+> > ARCH_DMA_MINALIGN. In addition, always define ARCH_DMA_MINALIGN even if
+> > an architecture does not override it.
+> >
+>
+> [ +Cc slab maintainer/reviewers ]
+>
+> I get why you want to set minimum alignment of kmalloc() dynamically.
+> That's because cache line size can be different and we cannot statically
+> know that, right?
+>
+> But I don't get why you are trying to decouple ARCH_KMALLOC_MINALIGN
+> from ARCH_DMA_MINALIGN. kmalloc'ed buffer is always supposed to be DMA-safe.
+>
+> I'm afraid this series may break some archs/drivers.
+>
+> in Documentation/dma-api-howto.rst:
+> > 2) ARCH_DMA_MINALIGN
+> >
+> >   Architectures must ensure that kmalloc'ed buffer is
+> >   DMA-safe. Drivers and subsystems depend on it. If an architecture
+> >   isn't fully DMA-coherent (i.e. hardware doesn't ensure that data in
+> >   the CPU cache is identical to data in main memory),
+> >   ARCH_DMA_MINALIGN must be set so that the memory allocator
+> >   makes sure that kmalloc'ed buffer doesn't share a cache line with
+> >   the others. See arch/arm/include/asm/cache.h as an example.
+> >
+> >   Note that ARCH_DMA_MINALIGN is about DMA memory alignment
+> >   constraints. You don't need to worry about the architecture data
+> >   alignment constraints (e.g. the alignment constraints about 64-bit
+> >   objects).
+>
+> If I'm missing something, please let me know :)
 
-With the above change OSTM will be enabled on RZ/V2L SoC.
+It helps in two ways:
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/clocksource/renesas-ostm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+- you can start with a relatively large hardcoded ARCH_DMA_MINALIGN
+  of 128 or 256 bytes, depending on what the largest possible line size
+  is for any machine you want to support, and then drop that down to
+  32 or 64 bytes based on runtime detection. This should always be safe,
+  and it means a very sizable chunk of wasted memory can be recovered.
 
-diff --git a/drivers/clocksource/renesas-ostm.c b/drivers/clocksource/renesas-ostm.c
-index 21d1392637b8..8da972dc1713 100644
---- a/drivers/clocksource/renesas-ostm.c
-+++ b/drivers/clocksource/renesas-ostm.c
-@@ -224,7 +224,7 @@ static int __init ostm_init(struct device_node *np)
- 
- TIMER_OF_DECLARE(ostm, "renesas,ostm", ostm_init);
- 
--#ifdef CONFIG_ARCH_R9A07G044
-+#ifdef CONFIG_ARCH_RZG2L
- static int __init ostm_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
--- 
-2.17.1
+- On systems that are fully cache coherent, there is no need to align
+  kmallloc() allocations for DMA safety at all, on these, we can drop the
+  size even below the cache line. This does not apply on most of the
+  cheaper embedded or mobile SoCs, but it helps a lot on the machines
+  you'd find in a data center.
 
+        Arnd
