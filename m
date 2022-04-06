@@ -2,93 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34FB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B651C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233914AbiDFNxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
+        id S234013AbiDFNyM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233702AbiDFNxk (ORCPT
+        with ESMTP id S233956AbiDFNxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:53:40 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C14482518;
-        Wed,  6 Apr 2022 02:04:16 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id 10so3190844qtz.11;
-        Wed, 06 Apr 2022 02:04:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QpQISEJkMsGGUwWRkm895SJQ98zg+L5bbS31/XzrGiA=;
-        b=V/6a3hS7tQXXpoy3SEUCEWutQNX53bEKd8bYeS10mTop+OOgF6uyYIIWO2Y5qiJSwA
-         ZZzHpdNr7A/CUPLIEv3WQNOInS18DXZ5VdUQYSMCYyIkj3vK3vNw/8cPq+twLPh24NZH
-         381QADyI0AW/n15t5v21gGYxQrVUgGAQ/Ve1OW7byz/x78tsANCUkbyjU6oYEQKZRp26
-         gYetu6u+ketH/fhXx4/jQj6sVxr470FhQxOGdn3drH40eH+2/vnxYU5Z6Tg2HH2rsuZC
-         VuvtomEGcHAaFC3hNTchBNELrvaA5Zd/fJly/1cJV/Ik8ESQeYWiMmgMAHU8bQ11b4Af
-         GBRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QpQISEJkMsGGUwWRkm895SJQ98zg+L5bbS31/XzrGiA=;
-        b=5rgw2WxBPgjroEDdWsiR/AITUoDajFy4xN/hKEjjHnKqonKIJyo4UbrMSlurmz7j6B
-         4XgEuAXJggjI5Pdh18uvrnEJfupCTk/CnLxB9MwIz9jrz12yNjQ2i2ZAnLtfSd8SQD+i
-         wnj74tS+lfkF5hHB/xAAByA2dcyHGYjzvONjrp74TU46uPYK/1WHtniLqTPEcZSdlNP1
-         t6eWcLJC7YGIzaU2QG/bKRXD3Yn/cOz5QdpNIVbk4iAdyE41FOeCWfoq30RNwZl//zNX
-         2Yih1jUeWpRldUEIICAMok+EvJ9bLxxN9ncYOGhfddTCwTSDNAMY1BKR7O1H85+XN2et
-         a3rg==
-X-Gm-Message-State: AOAM530K44oyV3GO8OgL/70wP7p2Jq4ZDM2rxSRAHD5OHGhSpmPzqsxd
-        ePRll/258GsSmao3kdWUPv8x1t0kGfU=
-X-Google-Smtp-Source: ABdhPJwrHVOg7ApX3nRah3rsmk5CCi45Or8wzbEtr1NeXRWyz+taAotR4/9/9EkDW8QeYpzq5ZmXSQ==
-X-Received: by 2002:a05:620a:16b7:b0:67d:3abc:e4d2 with SMTP id s23-20020a05620a16b700b0067d3abce4d2mr4733235qkj.702.1649235851020;
-        Wed, 06 Apr 2022 02:04:11 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s21-20020a05620a16b500b0067b1205878esm9161645qkj.7.2022.04.06.02.04.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 02:04:10 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     clm@fb.com, josef@toxicpanda.com
-Cc:     dsterba@suse.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] Btrfs: remove redundant judgment
-Date:   Wed,  6 Apr 2022 09:04:04 +0000
-Message-Id: <20220406090404.2488787-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 6 Apr 2022 09:53:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5201959ED;
+        Tue,  5 Apr 2022 18:59:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78E9160ABF;
+        Wed,  6 Apr 2022 01:59:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7CC7C385AE;
+        Wed,  6 Apr 2022 01:59:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649210368;
+        bh=pDwgEh6KmeCPgKnTyof6KSyznbNRaJiPPR8oySZr3rc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=capxQEI0O5lXiCZ51wrnI6lHYT0Rwe0rlsse+qJyO3lag9aPOIjkMZJspSuV/naGy
+         1Uxm1Z0GsGXU+urhiW6rlMyafUJb6VSxu4BRKPvxuXrBm4fA8V3ukjjo81Ut9/xXOd
+         NqEGgjgLUR2xTdDTkMKVuh4Nq5ONoordnW/Xa1YVhQO1xVSpT6MUo60svO97kCkoZs
+         DacL3aR+LmTLVHXRN4hOqhjHAz1ty7W8+nPZlJqYT0td+ybhB6RqQNGZO97K334AL+
+         uPPVPcYCxJ3aN6qYyuSOxxghrOuFjXEiT0HeaIqepHeEYeJ0ac8egcarB2XiJzC2uv
+         yJMy48iqbsXug==
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-e2442907a1so1055545fac.8;
+        Tue, 05 Apr 2022 18:59:28 -0700 (PDT)
+X-Gm-Message-State: AOAM5319how0a6zrVIUYuwQEoae5PzDsEEk8FSGj+tPsSgvTUFbkKikk
+        sFcz9BaZxQueTgBze5LBernzGEw7GU70DsqxHq4=
+X-Google-Smtp-Source: ABdhPJyWss1xlGBkA+PCf/HgdAp6TEkP4sbTxbCSm6ZcXecPsMrAuDs3F6O7hTv2eW1CSEDxRr7c5QC//7WPFwPAPc4=
+X-Received: by 2002:a05:6870:ec90:b0:de:33ac:8100 with SMTP id
+ eo16-20020a056870ec9000b000de33ac8100mr3008585oab.192.1649210367798; Tue, 05
+ Apr 2022 18:59:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220221095312.3692669-1-o.rempel@pengutronix.de> <20220406012348.GE129381@dragon>
+In-Reply-To: <20220406012348.GE129381@dragon>
+From:   Shawn Guo <shawnguo@kernel.org>
+Date:   Wed, 6 Apr 2022 09:59:17 +0800
+X-Gmail-Original-Message-ID: <CAJBJ56+bmpmDYP+PP3NN+CKkJT8Ls-FLeUBxFxwNLqVbbgHbOQ@mail.gmail.com>
+Message-ID: <CAJBJ56+bmpmDYP+PP3NN+CKkJT8Ls-FLeUBxFxwNLqVbbgHbOQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/8] ARM: dts: imx6qdl-vicut1/vicutgo: Set default
+ backlight brightness to maximum
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Jander <david@protonic.nl>, devicetree@vger.kernel.org,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>,
+        dri-devel@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+On Wed, Apr 6, 2022 at 9:23 AM Shawn Guo <shawnguo@kernel.org> wrote:
+>
+> On Mon, Feb 21, 2022 at 10:53:05AM +0100, Oleksij Rempel wrote:
+> > From: David Jander <david@protonic.nl>
+> >
+> > Recover default behavior of the device and set maximal brightness
+> >
+> > Signed-off-by: David Jander <david@protonic.nl>
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > ---
+> >  arch/arm/boot/dts/imx6dl-victgo.dts   | 2 +-
+> >  arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
+> > index 227c952543d4..e6134efbfabd 100644
+> > --- a/arch/arm/boot/dts/imx6dl-victgo.dts
+> > +++ b/arch/arm/boot/dts/imx6dl-victgo.dts
+> > @@ -28,7 +28,7 @@ backlight: backlight {
+> >               pwms = <&pwm1 0 5000000 0>;
+> >               brightness-levels = <0 16 64 255>;
+> >               num-interpolated-steps = <16>;
+> > -             default-brightness-level = <1>;
+> > +             default-brightness-level = <48>;
+>
+> Please take a look at the documentation of the property.
+>
+>   default-brightness-level:
+>     description:
+>       The default brightness level (index into the array defined by the
+>       "brightness-levels" property).
 
-iput() has already handled null and non-null parameter. so there is no
-need to use if().
+Ah, never mind, I missed 'num-interpolated-steps' there.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
----
- fs/btrfs/tree-log.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
-index 273998153fcc..c46696896f03 100644
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -894,8 +894,7 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
- 	btrfs_update_inode_bytes(BTRFS_I(inode), nbytes, drop_args.bytes_found);
- 	ret = btrfs_update_inode(trans, root, BTRFS_I(inode));
- out:
--	if (inode)
--		iput(inode);
-+	iput(inode);
- 	return ret;
- }
- 
--- 
-2.25.1
-
+Shawn
