@@ -2,99 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9024C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B30EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236500AbiDFPmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
+        id S236220AbiDFPnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235878AbiDFPmT (ORCPT
+        with ESMTP id S236459AbiDFPmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:42:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8F455CD37
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:13:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D05D9B82390
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 13:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F2DDC385A3;
-        Wed,  6 Apr 2022 13:13:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649250792;
-        bh=Gr86iCI3VLTV0BP5gVR9+UdZVYOqcPq/2Fvr8u+Rih0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DGW0sKpXgw71/A/bPedf4y1FZqAkOr9Ful3kNG4vaqmeuk1mbbnow5wB3ZMnk+RFB
-         Q7SqOIFFXugALMWXlbhoTNW+CVrbWjwD8REtIg0mdOWF5qA9e/CzfDIdD2EGXphGmU
-         nn4hGYwVuduaB9jkORXjwc07sDtg8TPwgUHeOfiCgMbrv7237qXeIdNjzjdgOk/NsY
-         k4RPd6rnsi8Yq2GiFOKloIKkUOdoZ/OL+LxKUhRJBsdHqi/UUMYtoV6lqYmkZBQUh9
-         NaNm/NCHA9KbgF3i9xA1OInRUxTM/mmQU4d6fxexQDbVvmn7Ip+6ns8Tac8Ihg4+NQ
-         fbBzmiTwhYilA==
-Date:   Wed, 6 Apr 2022 14:13:09 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Detlev Casanova <detlev.casanova@collabora.com>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-kernel@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH v1 1/1] regulator/rpi-panel-attiny: Get rid of duplicate
- of_node assignment
-Message-ID: <Yk2R5el6fUm4FQo5@sirena.org.uk>
-References: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
- <Yk2PNas3YIGQLZ04@smile.fi.intel.com>
+        Wed, 6 Apr 2022 11:42:23 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471A0383A31
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:59:18 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id k21so3964133lfe.4
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:59:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BYXa8PFombRep9engE5rxdSOyyjwdVOdpF8aMt9fJa4=;
+        b=M59yDwO2o4yzklFtm1AMD2UQOlXvO3HNwryTxlWbl7F02YmLU8T5zlClxUwOc2LvWU
+         mTtElYRwMaTfqO1YKDeXCg3rxMzLc+MnJYO0fd5NDA9oko+X+n1IcXHnWIxXhTayWSLK
+         am2xSnSC1UAkXkUFu/IO2iBZKUEjC719BEFcq+JxjP0iJjn04b5tPrXsBhtvn/Po6RxZ
+         qfjJiJQCkcfyiDANBAH1RxIp52GBWosM9qR78rDD6C33D/MkmSNb2JcBiLzPpTamqfyU
+         L1jgRJnQ/5RBYofUF5ZuF0PLgUSNuEY0Jqb1NNrPYLSSivPFLTQU0VfaR+QNpd2dW9Xs
+         NBtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BYXa8PFombRep9engE5rxdSOyyjwdVOdpF8aMt9fJa4=;
+        b=vhCoqKXH+dghoxd8u1I4jfLN1eaFfAggYJ/KEH4EZ19MWx5UuXU6DSQwTC0r/U5Sl7
+         7JlofAA943F8kU0cyLHa+Hqhe2IDXv1qJayJc8ZUiWrZM4qjRPTdD5lc2tHDkjZpO3yJ
+         jsza4eDG+c8hXOxEGdX3vtBB10h6NwnD5SSmZ0G3zXyaorkpOmY2AtvowyHhek/0X6/M
+         TbKlQpgCrG/i5jmLZsniC7zUFkIhMe4+3UlAu/EVboSqvZoVbcROgOk2/t9xfY8dZNin
+         StX7ez51U8mI0Sx1loSSIo+xqxXnrnnkE0/iDL3rlkTD5e4zpZ8q/vRQ+h3rYNFh/KZO
+         9UUg==
+X-Gm-Message-State: AOAM531Q0xot2K/1MEQ1WeUCVHyZvp5L7ZMndFKtgwYSV9/jrCyXF4r7
+        aL7fAnRrmGUCsihi36/bdrVY2m3YUikNpNfHDxa56g==
+X-Google-Smtp-Source: ABdhPJw48YGXp2udx4i6v8NHf4/QDTBgScbw2w19gAG/EarGScJwWfKy9eKhX0mne5GSqPHsxp0AIQIYSEtf4+WPRsA=
+X-Received: by 2002:a05:6512:3f86:b0:44a:f5bf:ec9a with SMTP id
+ x6-20020a0565123f8600b0044af5bfec9amr5958675lfa.490.1649249956530; Wed, 06
+ Apr 2022 05:59:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="NbfDmBCK550LI/U9"
-Content-Disposition: inline
-In-Reply-To: <Yk2PNas3YIGQLZ04@smile.fi.intel.com>
-X-Cookie: <Culus-> libc6 is not essential :|
+References: <1649244204-23471-1-git-send-email-zgpeng@tencent.com>
+In-Reply-To: <1649244204-23471-1-git-send-email-zgpeng@tencent.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Wed, 6 Apr 2022 14:59:05 +0200
+Message-ID: <CAKfTPtDh7qFpdjsEBvT34WEgW8uGbdwsZnyXjq4KpAcOse9Pew@mail.gmail.com>
+Subject: Re: [PATCH] sched/fair: Return the busiest group only if imbalance is meaningful
+To:     zgpeng <zgpeng.linux@gmail.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 6 Apr 2022 at 13:23, zgpeng <zgpeng.linux@gmail.com> wrote:
+>
+> When calculate_imbalance function calculate the imbalance, it may
+> actually get a negative number. In this case, it is meaningless to
 
---NbfDmBCK550LI/U9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+We should not return a negative imbalance but I suppose this can
+happen when we are using the avg_load metrics to calculate imbalance.
+Have you faced a use case where imbalance is negative ?
 
-On Wed, Apr 06, 2022 at 04:01:41PM +0300, Andy Shevchenko wrote:
-> On Fri, Mar 25, 2022 at 08:45:08PM +0200, Andy Shevchenko wrote:
-> > GPIO library does copy the of_node from the parent device of
-> > the GPIO chip, there is no need to repeat this in the individual
-> > drivers. Remove these assignment all at once.
-> >=20
-> > For the details one may look into the of_gpio_dev_init() implementation.
->=20
-> Any comments on this? Can it be applied now?
-
-Please don't send content free pings and please allow a reasonable time
-for review.  People get busy, go on holiday, attend conferences and so=20
-on so unless there is some reason for urgency (like critical bug fixes)
-please allow at least a couple of weeks for review.  If there have been
-review comments then people may be waiting for those to be addressed.
-
-Sending content free pings adds to the mail volume (if they are seen at
-all) which is often the problem and since they can't be reviewed
-directly if something has gone wrong you'll have to resend the patches
-anyway, so sending again is generally a better approach though there are
-some other maintainers who like them - if in doubt look at how patches
-for the subsystem are normally handled.
-
---NbfDmBCK550LI/U9
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJNkeEACgkQJNaLcl1U
-h9DXsAf7BOK5omSdOooKbQLgdj9ov+/a6Q4aFuHudnlGJeh9ayaojABcc4SA2Drw
-7ZmtsASXvWpDXlHbNMzAD6lysjUo7FE+v00xRO7uBtcKNAelGKAlInt5EkqaL0Qd
-g8LKTLnGTv0aIRLvVVvh5WYkVLeF/1YPlVTFEV+5O+qbMOXomUSZbNpjTKKACMRS
-2HYcGe3okbqEpoxztzVMEIvl/RpY4p9VsYLuN4Zb2nY0HxSkgfNoVB9zGC69paze
-l9WnPERLRH26PSzBeGlH4H0sSdaSk17/4RJEVuL/CJrGNr2bbWcrTkIuoW1fzuQy
-clj9lAh7mJEN+4S9DtvT8HVB5laFnw==
-=Gavw
------END PGP SIGNATURE-----
-
---NbfDmBCK550LI/U9--
+> return the so-called busiest group and continue to search for the
+> busiest cpu later. Therefore, only when the imbalance is greater
+> than 0 should return the busiest group, otherwise return NULL.
+>
+> Signed-off-by: zgpeng <zgpeng@tencent.com>
+> Reviewed-by: Samuel Liao <samuelliao@tencent.com>
+> ---
+>  kernel/sched/fair.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 601f8bd..9f75303 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -9639,7 +9639,7 @@ static struct sched_group *find_busiest_group(struct lb_env *env)
+>  force_balance:
+>         /* Looks like there is an imbalance. Compute it */
+>         calculate_imbalance(env, &sds);
+> -       return env->imbalance ? sds.busiest : NULL;
+> +       return env->imbalance > 0 ? sds.busiest : NULL;
+>
+>  out_balanced:
+>         env->imbalance = 0;
+> --
+> 2.9.5
+>
