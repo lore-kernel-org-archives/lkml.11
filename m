@@ -2,114 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 927E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D2D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233775AbiDFUEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
+        id S232717AbiDFUEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235593AbiDFUDx (ORCPT
+        with ESMTP id S235245AbiDFUDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:03:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6F21FF205;
-        Wed,  6 Apr 2022 11:27:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 6 Apr 2022 16:03:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1B89FCBE6
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:19:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649265567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=s7v+/Smwki1rqF8Y2TeWuoafwlE31yyfXOgyMdnzrfM=;
+        b=AxFXvKfcjoqCubeiKb/4MlG0hkFlpUDtOBvNw7RhPy70o2b3zLT6wO2mBxVF49qyc0vbKq
+        Q+pB4RLxzuAsTFzKNvjf6LB6qnfKfNu4ShT63/FQsyBiEnNTt0hz/UcCdVY4UV+J5fRdv9
+        bwOG5cckBTM2k2rfi7jX27FBGp76BFU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-647-pCbAu8F3M_OzppVhmOgOSA-1; Wed, 06 Apr 2022 13:19:24 -0400
+X-MC-Unique: pCbAu8F3M_OzppVhmOgOSA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84FE761B89;
-        Wed,  6 Apr 2022 18:27:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 935F9C385A5;
-        Wed,  6 Apr 2022 18:27:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269670;
-        bh=TEO1ws/joQIZlBlf0QTXMmwaDURYuXSVRVRTRhqI9DI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=znpkq99dOhVAghgYw7ANzbsqI0s7urmGc5oUtuPlinSgyI1lOmOzeYMFgyVzz8vAT
-         j386/XoQOF0n07g7YoDsHAVVaadXguQd03WQfB1ML7ECaM0Jh5BG2swc6S/eGbydWp
-         /7VhCSfpLAvlmhz8o6QEsE7YfdnD3UFeSxuxrN1k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 26/43] arm64: entry: Make the trampoline cleanup optional
-Date:   Wed,  6 Apr 2022 20:26:35 +0200
-Message-Id: <20220406182437.441263260@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F28171C01700;
+        Wed,  6 Apr 2022 17:19:23 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 47A33401E77;
+        Wed,  6 Apr 2022 17:19:23 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Qiuhao Li <qiuhao@sysec.org>, Gaoning Pan <pgn@zju.edu.cn>,
+        Yongkang Jia <kangel@zju.edu.cn>, stable@vger.kernel.org
+Subject: [PATCH] KVM: avoid NULL pointer dereference in kvm_dirty_ring_push
+Date:   Wed,  6 Apr 2022 13:19:23 -0400
+Message-Id: <20220406171923.14712-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+kvm_vcpu_release() will call kvm_dirty_ring_free(), freeing
+ring->dirty_gfns and setting it to NULL.  Afterwards, it calls
+kvm_arch_vcpu_destroy().
 
-commit d739da1694a0eaef0358a42b76904b611539b77b upstream.
+However, if closing the file descriptor races with KVM_RUN in such away
+that vcpu->arch.st.preempted == 0, the following call stack leads to a
+NULL pointer dereference in kvm_dirty_run_push():
 
-Subsequent patches will add additional sets of vectors that use
-the same tricks as the kpti vectors to reach the full-fat vectors.
-The full-fat vectors contain some cleanup for kpti that is patched
-in by alternatives when kpti is in use. Once there are additional
-vectors, the cleanup will be needed in more cases.
+ mark_page_dirty_in_slot+0x192/0x270 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3171
+ kvm_steal_time_set_preempted arch/x86/kvm/x86.c:4600 [inline]
+ kvm_arch_vcpu_put+0x34e/0x5b0 arch/x86/kvm/x86.c:4618
+ vcpu_put+0x1b/0x70 arch/x86/kvm/../../../virt/kvm/kvm_main.c:211
+ vmx_free_vcpu+0xcb/0x130 arch/x86/kvm/vmx/vmx.c:6985
+ kvm_arch_vcpu_destroy+0x76/0x290 arch/x86/kvm/x86.c:11219
+ kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
 
-But on big/little systems, the cleanup would be harmful if no
-trampoline vector were in use. Instead of forcing CPUs that don't
-need a trampoline vector to use one, make the trampoline cleanup
-optional.
+The fix is to release the dirty page ring after kvm_arch_vcpu_destroy
+has run.
 
-Entry at the top of the vectors will skip the cleanup. The trampoline
-vectors can then skip the first instruction, triggering the cleanup
-to run.
-
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Qiuhao Li <qiuhao@sysec.org>
+Reported-by: Gaoning Pan <pgn@zju.edu.cn>
+Reported-by: Yongkang Jia <kangel@zju.edu.cn>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/arm64/kernel/entry.S |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ virt/kvm/kvm_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -76,16 +76,20 @@
- 	.align 7
- .Lventry_start\@:
- #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--alternative_if ARM64_UNMAP_KERNEL_AT_EL0
- 	.if	\el == 0
-+	/*
-+	 * This must be the first instruction of the EL0 vector entries. It is
-+	 * skipped by the trampoline vectors, to trigger the cleanup.
-+	 */
-+	b	.Lskip_tramp_vectors_cleanup\@
- 	.if	\regsize == 64
- 	mrs	x30, tpidrro_el0
- 	msr	tpidrro_el0, xzr
- 	.else
- 	mov	x30, xzr
- 	.endif
-+.Lskip_tramp_vectors_cleanup\@:
- 	.endif
--alternative_else_nop_endif
- #endif
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 70e05af5ebea..b22f380e3347 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -434,8 +434,8 @@ static void kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
  
- 	sub	sp, sp, #S_FRAME_SIZE
-@@ -934,7 +938,7 @@ __ni_sys_trace:
- #endif
- 	prfm	plil1strm, [x30, #(1b - tramp_vectors)]
- 	msr	vbar_el1, x30
--	add	x30, x30, #(1b - tramp_vectors)
-+	add	x30, x30, #(1b - tramp_vectors + 4)
- 	isb
- 	ret
- .org 1b + 128	// Did we overflow the ventry slot?
-
+ static void kvm_vcpu_destroy(struct kvm_vcpu *vcpu)
+ {
+-	kvm_dirty_ring_free(&vcpu->dirty_ring);
+ 	kvm_arch_vcpu_destroy(vcpu);
++	kvm_dirty_ring_free(&vcpu->dirty_ring);
+ 
+ 	/*
+ 	 * No need for rcu_read_lock as VCPU_RUN is the only place that changes
+-- 
+2.31.1
 
