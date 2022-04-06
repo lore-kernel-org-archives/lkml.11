@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E28B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E393C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232195AbiDFNI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
+        id S231756AbiDFNId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232203AbiDFNHY (ORCPT
+        with ESMTP id S232340AbiDFNHa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:07:24 -0400
+        Wed, 6 Apr 2022 09:07:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9990450D24C;
-        Wed,  6 Apr 2022 02:41:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956A3320D86;
+        Wed,  6 Apr 2022 02:41:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D37CB61615;
-        Wed,  6 Apr 2022 09:41:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D79C385A9;
-        Wed,  6 Apr 2022 09:41:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24C6261551;
+        Wed,  6 Apr 2022 09:41:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12E50C385A5;
+        Wed,  6 Apr 2022 09:41:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649238066;
-        bh=t1R7yY7ERx45DK/Kh01d2HvOQlzbGo2a7CpMAwLKtzE=;
+        s=k20201202; t=1649238078;
+        bh=jY1ehkq5K86uPGP2fbD9b7UNiEgcBssb2Z6xVzhvgOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GEopZCeKO1hm0WlvdGOamuRkUKo7U3mQoCRS83zfaeEESpZXTNz0nPKQ5pafCMVI0
-         tOIYnN78We7ZqMRZidwwttosr5pMeYCrVgQS7+qMhhNusLzdolRAzxXOtcNMjIzDrt
-         0aHYeK4A/l3oUEBj9UCfafWa2yGG58upQPT5NTw4vVPTKBcJKHseYvmkdBie/8dciR
-         KGxcSz+iTbJo8nzp/gxb4mBXlqTBrLdtlHtkH9ComlBm6HV9AGh7wZkVT6IFkBM2M8
-         in0QmMm8A1jQIu/LwAiiSksdHfnm978Eh62Nn45+/qG+HFySmzXJwDfQSwk/ae5t9r
-         Yvfv54IPxsG9A==
+        b=Qewqs5cU6vn3Hr5ZL5IZfDPle+lvcjQeoT+14QXxLmx3hqiYIaQmXztHXdJACgVKx
+         6uHnmF0Kvd5oCAB7xg8SSzI+sUfiFDI+fIIrr4gzLJJsVbznVptknp5rdc9SvSmacm
+         AmDwssmM8oszBkhwThSJ3uwrPUz6CAWq30vz/ayYn2sPPbHwSE+FyXXtZzWtx8GQQc
+         1mAqoyEL3VUWQNLtTWitAre7CdrOP1n1Fno8YUVIb2tnzMY4+Z2gso2Z0/xUUnl5GM
+         t14/tB5NH8kQqwhmYkg57uBMR+DmwWg6H4Iie3RUUyWbnb8/GoqWUl/PGl7Sf4FKnB
+         SCC0e0TPi7uKw==
 From:   Vinod Koul <vkoul@kernel.org>
 To:     Rob Clark <robdclark@gmail.com>
 Cc:     linux-arm-msm@vger.kernel.org,
@@ -43,9 +43,9 @@ Cc:     linux-arm-msm@vger.kernel.org,
         Abhinav Kumar <quic_abhinavk@quicinc.com>,
         linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         freedreno@lists.freedesktop.org
-Subject: [PATCH v7 06/14] drm/msm/disp/dpu1: Add DSC support in hw_ctl
-Date:   Wed,  6 Apr 2022 15:10:23 +0530
-Message-Id: <20220406094031.1027376-7-vkoul@kernel.org>
+Subject: [PATCH v7 09/14] drm/msm: Add missing num_dspp field documentation
+Date:   Wed,  6 Apr 2022 15:10:26 +0530
+Message-Id: <20220406094031.1027376-10-vkoul@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220406094031.1027376-1-vkoul@kernel.org>
 References: <20220406094031.1027376-1-vkoul@kernel.org>
@@ -55,87 +55,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Later gens of hardware have DSC bits moved to hw_ctl, so configure these
-bits so that DSC would work there as well
+Somehow documentation for num_dspp was missed, so add that
 
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c | 11 ++++++++++-
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h |  2 ++
- 2 files changed, 12 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/msm_drv.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-index 3584f5ee6bb3..dc27579bb5f6 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-@@ -25,6 +25,8 @@
- #define   CTL_MERGE_3D_ACTIVE           0x0E4
- #define   CTL_INTF_ACTIVE               0x0F4
- #define   CTL_MERGE_3D_FLUSH            0x100
-+#define   CTL_DSC_ACTIVE                0x0E8
-+#define   CTL_DSC_FLUSH                0x104
- #define   CTL_INTF_FLUSH                0x110
- #define   CTL_INTF_MASTER               0x134
- #define   CTL_FETCH_PIPE_ACTIVE         0x0FC
-@@ -34,6 +36,7 @@
- 
- #define DPU_REG_RESET_TIMEOUT_US        2000
- #define  MERGE_3D_IDX   23
-+#define  DSC_IDX        22
- #define  INTF_IDX       31
- #define CTL_INVALID_BIT                 0xffff
- #define CTL_DEFAULT_GROUP_ID		0xf
-@@ -126,7 +129,6 @@ static u32 dpu_hw_ctl_get_pending_flush(struct dpu_hw_ctl *ctx)
- 
- static inline void dpu_hw_ctl_trigger_flush_v1(struct dpu_hw_ctl *ctx)
- {
--
- 	if (ctx->pending_flush_mask & BIT(MERGE_3D_IDX))
- 		DPU_REG_WRITE(&ctx->hw, CTL_MERGE_3D_FLUSH,
- 				ctx->pending_merge_3d_flush_mask);
-@@ -511,6 +513,9 @@ static void dpu_hw_ctl_intf_cfg_v1(struct dpu_hw_ctl *ctx,
- 	if ((test_bit(DPU_CTL_VM_CFG, &ctx->caps->features)))
- 		mode_sel = CTL_DEFAULT_GROUP_ID  << 28;
- 
-+	if (cfg->dsc)
-+		DPU_REG_WRITE(&ctx->hw, CTL_DSC_FLUSH, cfg->dsc);
-+
- 	if (cfg->intf_mode_sel == DPU_CTL_MODE_SEL_CMD)
- 		mode_sel |= BIT(17);
- 
-@@ -522,6 +527,10 @@ static void dpu_hw_ctl_intf_cfg_v1(struct dpu_hw_ctl *ctx,
- 	if (cfg->merge_3d)
- 		DPU_REG_WRITE(c, CTL_MERGE_3D_ACTIVE,
- 			      BIT(cfg->merge_3d - MERGE_3D_0));
-+	if (cfg->dsc) {
-+		DPU_REG_WRITE(&ctx->hw, CTL_FLUSH, DSC_IDX);
-+		DPU_REG_WRITE(c, CTL_DSC_ACTIVE, cfg->dsc);
-+	}
- }
- 
- static void dpu_hw_ctl_intf_cfg(struct dpu_hw_ctl *ctx,
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-index ac1544474022..97f326dff0af 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-@@ -40,6 +40,7 @@ struct dpu_hw_stage_cfg {
-  * @merge_3d:              3d merge block used
-  * @intf_mode_sel:         Interface mode, cmd / vid
-  * @stream_sel:            Stream selection for multi-stream interfaces
-+ * @dsc:                   DSC BIT masks used
+diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+index 2a3280df7b12..bf2ccff97562 100644
+--- a/drivers/gpu/drm/msm/msm_drv.h
++++ b/drivers/gpu/drm/msm/msm_drv.h
+@@ -102,6 +102,7 @@ enum msm_event_wait {
+  * @num_lm:       number of layer mixers used
+  * @num_enc:      number of compression encoder blocks used
+  * @num_intf:     number of interfaces the panel is mounted on
++ * @num_dspp:     number of dspp blocks used
   */
- struct dpu_hw_intf_cfg {
- 	enum dpu_intf intf;
-@@ -47,6 +48,7 @@ struct dpu_hw_intf_cfg {
- 	enum dpu_merge_3d merge_3d;
- 	enum dpu_ctl_mode_sel intf_mode_sel;
- 	int stream_sel;
-+	unsigned int dsc;
- };
- 
- /**
+ struct msm_display_topology {
+ 	u32 num_lm;
 -- 
 2.34.1
 
