@@ -2,174 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0663EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346515AbiDFKV0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
+        id S240319AbiDFKXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378803AbiDFKUB (ORCPT
+        with ESMTP id S243496AbiDFKWD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:20:01 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CE59281816;
-        Tue,  5 Apr 2022 21:15:53 -0700 (PDT)
-Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
-        by maillog.nuvoton.com (Postfix) with ESMTP id B56A41C8112A;
-        Wed,  6 Apr 2022 12:15:52 +0800 (CST)
-Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
- (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 6 Apr
- 2022 12:15:52 +0800
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS03.nuvoton.com
- (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1847.3; Wed, 6 Apr 2022
- 12:15:52 +0800
-Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS01.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Wed, 6 Apr 2022 12:15:52 +0800
-Message-ID: <6cf25693-38dd-3b3d-8f38-649fc208ac90@nuvoton.com>
-Date:   Wed, 6 Apr 2022 12:15:52 +0800
+        Wed, 6 Apr 2022 06:22:03 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9445216249F;
+        Tue,  5 Apr 2022 21:50:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649220657; x=1680756657;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=PxZ+GxynIkoMLEUiFgS85yx4Qd2Ez7/qEzRgLcnxHFY=;
+  b=ev6BxZpAiHMSpmj7Bemzw9NgL/mYTQdHLJDqKaZgTdrhgPecD5v6vX2N
+   AQtCwWZZdwitVHpuyX9lJgoiuaSXrqo4hWTSShr4Qv5VbmprRzULupuXG
+   ugCdqfg3Q2J+InpP7rWMHirv+DastwUQmXGZR1/fgkJqO7PdyGCyk/tmO
+   285ngxAmRlQXArQbiyL+ewW+sQlxJVDH2uUdBfQ1NpudF8Npo/mu0uV9A
+   DkRmrme5qpxDQo5CSIxftfT/Yv+gyz+lYZoaAm/UDngHPOX+YGxm3CZTV
+   VkPhrkVZ3qjKc+Ke6EiVRTwyEqgqx1rLmVKJJkBGRY0IlJ2a2ddmTbvNg
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089893"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="243089893"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:52 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="524302458"
+Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:48 -0700
+From:   Kai Huang <kai.huang@intel.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, kai.huang@intel.com
+Subject: [PATCH v3 17/21] x86/virt/tdx: Configure global KeyID on all packages
+Date:   Wed,  6 Apr 2022 16:49:29 +1200
+Message-Id: <ccf14e7fef0a3eab6ad877204ddc1113763c8a63.1649219184.git.kai.huang@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/3] dt-bindings: clock: Document MA35D1 clock controller
- bindings
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
-        "soc@kernel.org" <soc@kernel.org>, MS10 CFLi0 <CFLi0@nuvoton.com>
-References: <20220331024256.14762-1-ychuang3@nuvoton.com>
- <20220331024256.14762-3-ychuang3@nuvoton.com>
- <YkYRGNr1o087/6MM@robh.at.kernel.org>
-From:   Jacky Huang <ychuang3@nuvoton.com>
-In-Reply-To: <YkYRGNr1o087/6MM@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Before TDX module can use the global KeyID to access TDX metadata, the
+key of the global KeyID must be configured on all physical packages via
+TDH.SYS.KEY.CONFIG.  This SEAMCALL cannot run concurrently on different
+cpus since it exclusively acquires the TDX module.
 
+Implement a helper to run SEAMCALL on one (any) cpu for all packages in
+serialized way, and run TDH.SYS.KEY.CONFIG on all packages using the
+helper.
 
-On 2022/4/1 上午 04:37, Rob Herring wrote:
-> On Thu, Mar 31, 2022 at 10:42:55AM +0800, Jacky Huang wrote:
->> Add documentation to describe Nuvoton MA35D1 clock driver bindings.
->>
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->> ---
->>   .../bindings/clock/nuvoton,ma35d1-clk.yaml    | 59 +++++++++++++++++++
->>   1 file changed, 59 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
->> new file mode 100644
->> index 000000000000..bf5474b10420
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
->> @@ -0,0 +1,59 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: https://apc01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fschemas%2Fclock%2Fnuvoton%2Cma35d1-clk.yaml%23&amp;data=04%7C01%7Cychuang3%40nuvoton.com%7C2af0b5b253d14b24de4e08da1356520e%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637843795866047143%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=imev20A0MjoKYaL8o%2FXx3b%2FeCbSnXxVEjs9XqCLQZo0%3D&amp;reserved=0
->> +$schema: https://apc01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fmeta-schemas%2Fcore.yaml%23&amp;data=04%7C01%7Cychuang3%40nuvoton.com%7C2af0b5b253d14b24de4e08da1356520e%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637843795866047143%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=zYcNQdhT2KPxQeVzPJ8Tm5gzRxk6Z0j7O6Cy01LWDRU%3D&amp;reserved=0
->> +
->> +title: Nuvoton MA35D1 Clock Control Module Binding
->> +
->> +maintainers:
->> +  - Chi-Fang Li <cfli0@nuvoton.com>
->> +  - Jacky Huang <ychuang3@nuvoton.com>
->> +
->> +description: |
->> +  The MA35D1 clock controller generates clocks for the whole chip,
->> +  including system clocks and all peripheral clocks.
->> +
->> +  See also:
->> +    dt-bindings/clock/ma35d1-clk.h
->> +
->> +properties:
->> +  compatible:
->> +    const: nuvoton,ma35d1-clk
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  "#clock-cells":
->> +    const: 1
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +  assigned-clocks:
->> +    maxItems: 4
-> These aren't usually in the clock controller...
+The TDX module uses the global KeyID to initialize its metadata (PAMTs).
+Before TDX module can do that, all cachelines of PAMTs must be flushed.
+Otherwise, they may silently corrupt the PAMTs later initialized by the
+TDX module.
 
-"clocks" is actually not used. I will remove it.
+Use wbinvd to flush cache as PAMTs can be potentially large (~1/256th of
+system RAM).
 
-Does the "aren't usually" include "assigned-clocks"?
-I saw it in other vendors.
-For example rk3399.dtsi
-It presents in cru: clock-controller@ff760000 node.
+Flush cache before configuring the global KeyID on all packages, as
+suggested by TDX specification.  In practice, the current generation of
+TDX doesn't use the global KeyID in TDH.SYS.KEY.CONFIG.  Therefore in
+practice flushing cache can be done after configuring the global KeyID
+is done on all packages.  But the future generation of TDX may change
+this behaviour, so just follow TDX specification's suggestion to flush
+cache before configuring the global KeyID on all packages.
 
-We use "assigned-clocks" to declare the four output PLLs of the clock 
-controller.
+Signed-off-by: Kai Huang <kai.huang@intel.com>
+---
+ arch/x86/virt/vmx/tdx/tdx.c | 96 ++++++++++++++++++++++++++++++++++++-
+ arch/x86/virt/vmx/tdx/tdx.h |  1 +
+ 2 files changed, 96 insertions(+), 1 deletion(-)
 
->
->> +
->> +  assigned-clock-rates:
->> +    maxItems: 4
->> +
->> +  clock-pll-mode:
->> +    maxItems: 4
-> What's this? Not a standard property. Needs a type, description, and
-> vendor prefix.
-
-clock-pll-mode is a vendor specific property.
-I would modify it as the following:
-
-   nuvoton,clk-pll-mode:
-     A list of PLL operation mode corresponding to DDRPLL, APLL, EPLL, 
-and VPLL
-     in sequential.
-     $ref: /schemas/types.yaml#/definitions/uint32-array
-     minItems: 4
-     maxItems: 4
-     items:
-       enum: [ 0, 1, 2 ]
-
-Is it OK?
-
-
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - "#clock-cells"
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  # clock control module node:
->> +  - |
->> +    #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
->> +
->> +    clk: clock-controller@40460200 {
->> +        compatible = "nuvoton,ma35d1-clk";
->> +        reg = <0x40460200 0x100>;
->> +        #clock-cells = <1>;
->> +    };
->> +...
->> -- 
->> 2.30.2
->>
->>
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index 2bf49d3d7cfe..bb15122fb8bd 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -23,6 +23,7 @@
+ #include <asm/virtext.h>
+ #include <asm/e820/api.h>
+ #include <asm/pgtable.h>
++#include <asm/smp.h>
+ #include <asm/tdx.h>
+ #include "tdx.h"
+ 
+@@ -398,6 +399,46 @@ static int seamcall_on_each_cpu(struct seamcall_ctx *sc)
+ 	return atomic_read(&sc->err);
+ }
+ 
++/*
++ * Call the SEAMCALL on one (any) cpu for each physical package in
++ * serialized way.  Return immediately in case of any error while
++ * calling SEAMCALL on any cpu.
++ *
++ * Note for serialized calls 'struct seamcall_ctx::err' doesn't have
++ * to be atomic, but for simplicity just reuse it instead of adding
++ * a new one.
++ */
++static int seamcall_on_each_package_serialized(struct seamcall_ctx *sc)
++{
++	cpumask_var_t packages;
++	int cpu, ret = 0;
++
++	if (!zalloc_cpumask_var(&packages, GFP_KERNEL))
++		return -ENOMEM;
++
++	for_each_online_cpu(cpu) {
++		if (cpumask_test_and_set_cpu(topology_physical_package_id(cpu),
++					packages))
++			continue;
++
++		ret = smp_call_function_single(cpu, seamcall_smp_call_function,
++				sc, true);
++		if (ret)
++			break;
++
++		/*
++		 * Doesn't have to use atomic_read(), but it doesn't
++		 * hurt either.
++		 */
++		ret = atomic_read(&sc->err);
++		if (ret)
++			break;
++	}
++
++	free_cpumask_var(packages);
++	return ret;
++}
++
+ static inline bool p_seamldr_ready(void)
+ {
+ 	return !!p_seamldr_info.p_seamldr_ready;
+@@ -1320,6 +1361,21 @@ static int config_tdx_module(struct tdmr_info **tdmr_array, int tdmr_num,
+ 	return ret;
+ }
+ 
++static int config_global_keyid(void)
++{
++	struct seamcall_ctx sc = { .fn = TDH_SYS_KEY_CONFIG };
++
++	/*
++	 * Configure the key of the global KeyID on all packages by
++	 * calling TDH.SYS.KEY.CONFIG on all packages.
++	 *
++	 * TDH.SYS.KEY.CONFIG may fail with entropy error (which is
++	 * a recoverable error).  Assume this is exceedingly rare and
++	 * just return error if encountered instead of retrying.
++	 */
++	return seamcall_on_each_package_serialized(&sc);
++}
++
+ static int init_tdx_module(void)
+ {
+ 	struct tdmr_info **tdmr_array;
+@@ -1370,6 +1426,37 @@ static int init_tdx_module(void)
+ 	if (ret)
+ 		goto out_free_pamts;
+ 
++	/*
++	 * The same physical address associated with different KeyIDs
++	 * has separate cachelines.  Before using the new KeyID to access
++	 * some memory, the cachelines associated with the old KeyID must
++	 * be flushed, otherwise they may later silently corrupt the data
++	 * written with the new KeyID.  After cachelines associated with
++	 * the old KeyID are flushed, CPU speculative fetch using the old
++	 * KeyID is OK since the prefetched cachelines won't be consumed
++	 * by CPU core.
++	 *
++	 * TDX module initializes PAMTs using the global KeyID to crypto
++	 * protect them from malicious host.  Before that, the PAMTs are
++	 * used by kernel (with KeyID 0) and the cachelines associated
++	 * with the PAMTs must be flushed.  Given PAMTs are potentially
++	 * large (~1/256th of system RAM), just use WBINVD on all cpus to
++	 * flush the cache.
++	 *
++	 * In practice, the current generation of TDX doesn't use the
++	 * global KeyID in TDH.SYS.KEY.CONFIG.  Therefore in practice,
++	 * the cachelines can be flushed after configuring the global
++	 * KeyID on all pkgs is done.  But the future generation of TDX
++	 * may change this, so just follow the suggestion of TDX spec to
++	 * flush cache before TDH.SYS.KEY.CONFIG.
++	 */
++	wbinvd_on_all_cpus();
++
++	/* Config the key of global KeyID on all packages */
++	ret = config_global_keyid();
++	if (ret)
++		goto out_free_pamts;
++
+ 	/*
+ 	 * Return -EFAULT until all steps of TDX module
+ 	 * initialization are done.
+@@ -1380,8 +1467,15 @@ static int init_tdx_module(void)
+ 	 * Free PAMTs allocated in construct_tdmrs() when TDX module
+ 	 * initialization fails.
+ 	 */
+-	if (ret)
++	if (ret) {
++		/*
++		 * Part of PAMTs may already have been initialized by
++		 * TDX module.  Flush cache before returning them back
++		 * to kernel.
++		 */
++		wbinvd_on_all_cpus();
+ 		tdmrs_free_pamt_all(tdmr_array, tdmr_num);
++	}
+ out_free_tdmrs:
+ 	/*
+ 	 * TDMRs are only used during initializing TDX module.  Always
+diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+index d8e2800397af..bba8cabea4bb 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.h
++++ b/arch/x86/virt/vmx/tdx/tdx.h
+@@ -122,6 +122,7 @@ struct tdmr_info {
+ /*
+  * TDX module SEAMCALL leaf functions
+  */
++#define TDH_SYS_KEY_CONFIG	31
+ #define TDH_SYS_INFO		32
+ #define TDH_SYS_INIT		33
+ #define TDH_SYS_LP_INIT		35
+-- 
+2.35.1
 
