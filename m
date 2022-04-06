@@ -2,95 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB819C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE5DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237715AbiDFQdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
+        id S237749AbiDFQdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238249AbiDFQcx (ORCPT
+        with ESMTP id S237802AbiDFQcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:32:53 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B603119481D;
-        Wed,  6 Apr 2022 06:52:25 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 236DqJL0112009;
-        Wed, 6 Apr 2022 08:52:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649253139;
-        bh=AQtmCU8nSw+pQUsM07priatShylKCYZ0upOcmmY/1FU=;
-        h=From:To:CC:Subject:Date;
-        b=BqUeqp/+TzacMy9jQdjsNvRJiB2MJW4gyzBCjAM5Zb2wiMY30Kzu1HQR750uVaXvv
-         cKRwXviWs8eXflbgweaBlWQ/krr+SgJNeLGKfP4c1QLyoHDR2THNJi+UTinNxA61Us
-         JPLeAc0sCR7JnmQ3CTXegxcOAGfIX1nsDXFhy9vQ=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 236DqJmB089706
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 08:52:19 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 08:52:19 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 08:52:19 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 236DqFsn079424;
-        Wed, 6 Apr 2022 08:52:16 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 0/2] AM62: Add support for AM62 USB wrapper driver
-Date:   Wed, 6 Apr 2022 19:22:09 +0530
-Message-ID: <20220406135214.6989-1-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 6 Apr 2022 12:32:20 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1084B3F15F8;
+        Tue,  5 Apr 2022 18:32:44 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KY6T65Vntz4xXS;
+        Wed,  6 Apr 2022 11:32:42 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649208762;
+        bh=Rxxn1TD2UuepLVLS1hwWe9JcrPraf9Iiaa5Ny2qSNaw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=POlWXFTfFDSukK/5umCIKmt8FS0l7ph+FeMDUjz6xirkctNMlI6turW4LwC20ylCD
+         CmMiyF2VcEuYMZJa/oJiJSf0fUsrx3xedWm25kS2H+d7DDPcLg1cD6vwSPX9qUHzrO
+         vugQB9vrnv2j7WSn54uvOUv62e8gRTRT0+7YyTSPwNDR3XllEImr50GPwrjBss5NHE
+         WPmXvU9np/YIhDgwk2iT63shZnXOGDXFzBc/WYcSSQCvGGrTSydOrR9vP45SVUr4tA
+         TwRl82WwMr6K4H4cUne7omHlcicmomQxBCMF4v93RmPNXkqWQSNpijszlr+5Iajynl
+         StXD0T6gJIRQw==
+Date:   Wed, 6 Apr 2022 11:32:42 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Peter Chen <peter.chen@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: please clean up the usb-chipidea-fixes/next trees
+Message-ID: <20220406113242.3d7aefbd@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: multipart/signed; boundary="Sig_/.mfo3fXxDzL/nFbg7+KZ.0e";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following series of patches add support for AM62 USB wrapper driver
-and its corresponding bindings.
+--Sig_/.mfo3fXxDzL/nFbg7+KZ.0e
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-changes since v2:
-- Removed the implementation of detecting the role from the wrapper
-  driver and moved the implementation to using linux,extcon-usb-gpio
-  driver for role detection.
-- Updated the binding documentation and example to reflect the same.
+Hi all,
 
-changes since v1:
-- Fixed the error with dev_pm_ops uninitialization, in patch 2.
-  This was reported by kernel test bot
-- In patch 1, made correction in grammer of clocks property description
-  and added maxItems in the interrupts property based on comments
-  received from Roger
-- In patch 1, corrected the title, fixed the description of
-  ti,syscon-phy-pll-refclk, added pattern properties and child node
-  in the example based on the comments from Krzysztof. 
+[Try again to an address that may work ...]
 
-Aswath Govindraju (2):
-  dt-bindings: usb: Add documentation for AM62 USB Wrapper module
-  drivers: usb: dwc3: Add AM62 USB wrapper driver
+The usb-chipidea-fixes and -next trees have not been updated since Oct,
+2021 and the -fixes tree is generating a conflict when merged.  Please
+clean them it up WRT Linus' tree as the only patches in them have been
+merged as other commits.
 
- .../devicetree/bindings/usb/ti,am62-usb.yaml  | 115 +++++
- drivers/usb/dwc3/Kconfig                      |   9 +
- drivers/usb/dwc3/Makefile                     |   1 +
- drivers/usb/dwc3/dwc3-am62.c                  | 446 ++++++++++++++++++
- 4 files changed, 571 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
- create mode 100644 drivers/usb/dwc3/dwc3-am62.c
+--=20
+Cheers,
+Stephen Rothwell
 
--- 
-2.17.1
+--Sig_/.mfo3fXxDzL/nFbg7+KZ.0e
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJM7boACgkQAVBC80lX
+0GxM4QgAozPVYrwAvoW2lTiAICEVaP8psjHfXi7yX3n6XOTpjR8wUp2iKxvlbC2D
+NazdATRNOAslPWH7tLegAmYGZvRcYSbezPWdOGC8qZLS9LGShtz0Brby2wF4b9It
+y68uRcpvWr92XJs4uNotDQI0XfDq0IKQPL0n31agN0Bz5hh/ta3mIuiZJJ0WNRZ9
+f6HKkXd8BiA/MVTK6dauE7wNGAINpB5OHB/4gzfK89nENpF6mpTLTzB38QZyoQaa
+r0/H2Zry1a6Rw828IzUH6+08eB+PyIZb7ZvvYJk7OsW5JCXVmxj+HPX162+jZBKU
+v2lRL+2RxqavCtSExDFRLe/OnAUVsQ==
+=HKB9
+-----END PGP SIGNATURE-----
+
+--Sig_/.mfo3fXxDzL/nFbg7+KZ.0e--
