@@ -2,104 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3829C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4345DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbiDFL4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
+        id S231546AbiDFL6a convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230466AbiDFLzH (ORCPT
+        with ESMTP id S232031AbiDFL5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:55:07 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0FC35C043;
-        Wed,  6 Apr 2022 00:19:03 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYG8B5vHfzdZZl;
-        Wed,  6 Apr 2022 15:18:34 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 15:19:01 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
-        <joro@8bytes.org>, <john.garry@huawei.com>,
-        <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
-        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>
-CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
-        <yangyicong@hisilicon.com>
-Subject: [PATCH v6 1/7] iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to identity
-Date:   Wed, 6 Apr 2022 15:17:24 +0800
-Message-ID: <20220406071730.41031-2-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220406071730.41031-1-yangyicong@hisilicon.com>
-References: <20220406071730.41031-1-yangyicong@hisilicon.com>
+        Wed, 6 Apr 2022 07:57:35 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45023709F9;
+        Wed,  6 Apr 2022 00:25:00 -0700 (PDT)
+Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MadC8-1o9hDu41F4-00c5U0; Wed, 06 Apr 2022 09:24:57 +0200
+Received: by mail-wm1-f42.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso1043042wmn.1;
+        Wed, 06 Apr 2022 00:24:56 -0700 (PDT)
+X-Gm-Message-State: AOAM533CI/PKZm8wa6ZzCWiJZvRVVj9pNqVSm9+IVTqNtjAr3UoMvJxF
+        J+QKINwty/RDjsW5hTQhv/zBoMQF9BsUEcHQ8Pk=
+X-Google-Smtp-Source: ABdhPJwu5LvNECmW4HyBVpv2Cer4xxd1JvOZpZs+VR8+dhKNlRWp+EIRBOEzkloFndgC0TmlXfWSyv+rVVHS3rSKUo4=
+X-Received: by 2002:a7b:cd13:0:b0:38b:f39c:1181 with SMTP id
+ f19-20020a7bcd13000000b0038bf39c1181mr6437333wmj.20.1649229896617; Wed, 06
+ Apr 2022 00:24:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+References: <20220310195229.109477-1-nick.hawkins@hpe.com> <20220310195229.109477-9-nick.hawkins@hpe.com>
+ <eb66cc83-2da9-8e19-db69-633e34fef946@canonical.com> <PH0PR84MB1718C31DB71AA2A67FEC5F6E88119@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <b1cc2566-cd78-7cb4-f8a5-d6fc8065fe6e@canonical.com> <PH0PR84MB1718292B1C11F4FE83326A5388119@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <fb4def96-4b20-604f-d15d-fef87eb2232d@canonical.com> <PH0PR84MB1718A2CFBFC90C9C0CAA5515881E9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a0fCE_NM=z68d1m9BTfuKixh1pKLw3gn+Sr7SxKb6UJAg@mail.gmail.com>
+ <PH0PR84MB17181C316E55073EBC28C386881E9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <PH0PR84MB17185ADBA824F9CC9EB3E022881F9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a1080yz9jggOrwz2iQ1sAB2Xe2Emh22uCuqRok60BQSiA@mail.gmail.com>
+ <PH0PR84MB17186189F5025374AA39584D88E19@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a2b+ESAAkc=_2hqx0kOxwYVS6mNjMGBKhhipaSj_5jV9g@mail.gmail.com>
+ <PH0PR84MB17182115D57EF6032782659C88E09@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a1Cc+2oY9djdp11PuOW+TBQ0zf+p8QaDY3aerk1QqaG-g@mail.gmail.com>
+ <PH0PR84MB1718925AA3C8FA998C486D7C88E59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+ <CAK8P3a3RSST6yvv8Oy13RFd6eZ6cS5yX9TOuK6wxXKUO-qdQ=Q@mail.gmail.com> <PH0PR84MB1718C7447207BF210FBB477788E49@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+In-Reply-To: <PH0PR84MB1718C7447207BF210FBB477788E49@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 6 Apr 2022 09:24:40 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3jr-FkyxLff2cK4=X-4AShnKkeYMRKsvUg=2W0bTviiQ@mail.gmail.com>
+Message-ID: <CAK8P3a3jr-FkyxLff2cK4=X-4AShnKkeYMRKsvUg=2W0bTviiQ@mail.gmail.com>
+Subject: Re: [PATCH v3 09/10] arch: arm: boot: dts: Introduce HPE GXP Device tree
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Olof Johansson <olof@lixom.net>,
+        "soc@kernel.org" <soc@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:hcnm1TFtV4LkuQMWF8cELx0T4BhQx6EAhi4quU+/u9iF33hJC55
+ /76vtVx5gh05jtCDOGw7V63xRWEjDcDYj2pikjspANGs5Nx7mXEI/cdg7KZpwi+VRCgN991
+ Ju+lDuMrZTGDSG8iWaRnT9uXnsSr0XLeJEP/u0jn2FiI5dGghRIw7lkR/sRc/lJU4yafPZp
+ 9VKyxeJ48jncHyNj6UJ3Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hYT6ewNd+/w=:6moe45jsoTjDgHVLcBepkT
+ mLDsDSrNCUWq7iuP/pi/3LkhDI/a9CbpFXDLc0qvGvpMBmLR7EPUDQi9kLPBvX8uwzHgpcAeB
+ F+AYChYT6Z+Du0y1dT7KJhcE3XtCfISFbTuSXuqaG/7QNa2lRBlOnbGKlswGrkghyKU+jmi5Q
+ ILYGgPB+dXBz9lELRJHgAqk/sBpA/AhBLRS0c7VcFqfB8OQpOmfXKh2AE0vLLSgTYBBRpBsWa
+ zMYsAkCea1PYAzRg1/Jr+iPeUziLfSjwHtX6lyfqgFZD+p8GEqitmN5H8afb3eEyobA0MdrHd
+ nuKTn2m+jshReX2VG25Ox/7WM9XxEQecLqqmZBihxm//P3mGqX5JfsP/LFn3YyUJRd51YHy99
+ fttMHwDRQ/iO81FQVK/5TrFhwQ98azrSwKJX1vZNaPiMpH4n98XmMx8GbKGGjinJ68uvkYUg9
+ U35Dhy8ALt3zKR9kIKEChVSrWheo0MuHZcjhYLdbiUeRL8GFIv41Izmbq6nPkOV67N6ghUzRD
+ OMW2+eZwnXlkjXVb3rK9SKgdoX3EU+Kckah2yKmGR/aqeCbe2nnEPDGKbXo+/0oA0Oh+WizyN
+ 2qLt3kHzCQlXHBJgE3o9nqgYaqppV1vEWrJzUXH2qSNSO/0cmWzGq3oXoZouq+dVES2OrGKhP
+ bK5n5Z1xFDpoib8URfmArKvIKEw1pPiBeirPObwal7gmdSUPnVKc8HfwZUBAsaBmmcrA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DMA operations of HiSilicon PTT device can only work properly with
-identical mappings. So add a quirk for the device to force the domain
-as passthrough.
+On Tue, Apr 5, 2022 at 11:21 PM Hawkins, Nick <nick.hawkins@hpe.com> wrote:
+>
+> > Right, it is possible to make this work, but it's not recommended, and you have to work around the sanity checks in the code that try to keep you from doing it wrong, as well as any tooling that tries to check for these in the DT.
+>
+> I found an example in the kernel where the timer creates a child watchdog device and passes it the base address when creating it. I used this to model the gxp-timer and gxp-wdt. The following files were what I have referenced:
+> drivers/watchdog/ixp4xx_wdt.c
+> drivers/clocksource/timer-ixp4xx.c
 
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Yes, I think that is a good example.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 627a3ed5ee8f..5ec15ae2a9b1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2839,6 +2839,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
- 	}
- }
- 
-+#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
-+					 (pdev)->device == 0xa12e)
-+
-+static int arm_smmu_def_domain_type(struct device *dev)
-+{
-+	if (dev_is_pci(dev)) {
-+		struct pci_dev *pdev = to_pci_dev(dev);
-+
-+		if (IS_HISI_PTT_DEVICE(pdev))
-+			return IOMMU_DOMAIN_IDENTITY;
-+	}
-+
-+	return 0;
-+}
-+
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -2856,6 +2871,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.sva_unbind		= arm_smmu_sva_unbind,
- 	.sva_get_pasid		= arm_smmu_sva_get_pasid,
- 	.page_response		= arm_smmu_page_response,
-+	.def_domain_type	= arm_smmu_def_domain_type,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- 	.owner			= THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--- 
-2.24.0
+> This seems very similar to what you suggested previously except I do not see a private interface in there between the parent and the child device. Is it mandatory to have the private interface between the two? If it is, what would you recommend that interface be? So far without the private interface I am not seeing any issues accessing the registers.
 
+I would count passing a register address to the child device as a
+private interface.
+It's a minimalistic one, but that is not a bad thing here.
+
+         Arnd
