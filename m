@@ -2,97 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C18C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:23:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236282AbiDFLXY convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36868 "EHLO
+        id S236897AbiDFLZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231220AbiDFLWJ (ORCPT
+        with ESMTP id S233997AbiDFLYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:22:09 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC3547CDE4;
-        Wed,  6 Apr 2022 00:43:33 -0700 (PDT)
-Received: from mail-wr1-f41.google.com ([209.85.221.41]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MFsd7-1nmEnM3hqJ-00HNtg; Wed, 06 Apr 2022 09:43:31 +0200
-Received: by mail-wr1-f41.google.com with SMTP id w4so1820729wrg.12;
-        Wed, 06 Apr 2022 00:43:31 -0700 (PDT)
-X-Gm-Message-State: AOAM533IjTKvRVuFr1hpf6jVR0dbpC0/ev/LOyYjVm64OGy6k0xQK0PI
-        v8edVyjyzWFukyGufgdR/NfbTxoZYWajygNpRG4=
-X-Google-Smtp-Source: ABdhPJypJul9cdCELa/1AnvYtkz00lmeff9mRrfOlzOzJtIgInlf166z4d0cq68yNgLel+5mgKe5/LD/ixwy4Exk7RQ=
-X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
- e12-20020a056000178c00b002040648b4c4mr5368683wrg.219.1649231011518; Wed, 06
- Apr 2022 00:43:31 -0700 (PDT)
+        Wed, 6 Apr 2022 07:24:40 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59D25540E8
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:06:03 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id q19so1948722wrc.6
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 01:06:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=L78jN7S0NWr7Tauf3Ih4qh+7uPsQd7xS6nlswionrbw=;
+        b=tFrclb85P+yDQkunEBt4+9y41xI11mXcCn8t3IYd57D9qw29K7Y8ivEVlaEWBhpsWv
+         /vdMWzVJc+k4YrD5fQIgH9S+UmPtpz8WN0p2c2lcrIXQ6wHAWMb1nHLFimETRNSD4BlX
+         upF57yEBGGkvOryz1tTc4481e04lFY+aKz/3wrchw5xwvGPQdNFTNkVtyZTxH5E/5P36
+         Cq0pGUsrzfFje8D7WAI8lF+mfiEIHqBhYPKl0QJ31f9qAP64yRQxXpViYL6bY0rP2uiN
+         wf84cBx4wyyfPkfbKzmAKIIYuXcZCIjVs8e8tGoWS4fodxp7uOH6C/rLjaTfmwjZgskS
+         eYhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=L78jN7S0NWr7Tauf3Ih4qh+7uPsQd7xS6nlswionrbw=;
+        b=bzf+HlX7qbJKCA/zKNheEsp3/ZUXFmoYHku96jhh2xhcxK0TIp+rWf8kVyGy/DfHc9
+         wIrhpTKzloElKHjaK8ltpoI41ngAu2Gqxe0lUsBYr9mfduObBEqB8l4XVEF4hEao1LWn
+         C/C8UBNbNze+vOaVZSJ5ptz8er3HcD1mTEu+dXGIrN1Yw/zRK2qYrsciH2vPrqR8n/df
+         RrFmdYi/cA60FAhNz3P1RVx6AI3DxvjZ9DwQO9xytXOzU/0h9Yj+ThZJjDGmWlfvO8PH
+         aQhc04OtyNqqA1zX8pFnVyakHSbyRU22owg3+dw3f5YLu2jHhTHSNyz+nv1V311kpzwX
+         v2Gg==
+X-Gm-Message-State: AOAM531Z0ypVyEW2czvtQiuXmZdlhuOjMom1aweN/PmBfaxCKxo2I57A
+        eKWqHmU4C7BhTQgF24BiWQrE8w==
+X-Google-Smtp-Source: ABdhPJyCCo7+pi/Naf0wendiSYRd/uC8NueeO1SUa9RWQLul9eAhpzG6vDq90XQ2LgrW9D2NpK4vhg==
+X-Received: by 2002:a05:6000:15c5:b0:204:901:af44 with SMTP id y5-20020a05600015c500b002040901af44mr5658822wry.714.1649232362033;
+        Wed, 06 Apr 2022 01:06:02 -0700 (PDT)
+Received: from ?IPV6:2a01:e34:ed2f:f020:261f:c14c:d23b:d177? ([2a01:e34:ed2f:f020:261f:c14c:d23b:d177])
+        by smtp.googlemail.com with ESMTPSA id g6-20020a5d5406000000b001f049726044sm13666184wrv.79.2022.04.06.01.06.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 01:06:01 -0700 (PDT)
+Message-ID: <3d74d7e2-1f52-11d8-e458-b7074bc4c070@linaro.org>
+Date:   Wed, 6 Apr 2022 10:06:00 +0200
 MIME-Version: 1.0
-References: <20220307091923.9909-1-ychuang3@nuvoton.com> <20220307091923.9909-4-ychuang3@nuvoton.com>
- <2669852c-5bb6-1edf-bf58-ea815f54d50f@kernel.org> <ef8efda1-e985-0684-470f-7acf9b8a5e93@nuvoton.com>
-In-Reply-To: <ef8efda1-e985-0684-470f-7acf9b8a5e93@nuvoton.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 6 Apr 2022 09:43:15 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1Gbr4PoJbPy3BEQ=T3iJo9kQdjes7+0UK5vnc4CDckSw@mail.gmail.com>
-Message-ID: <CAK8P3a1Gbr4PoJbPy3BEQ=T3iJo9kQdjes7+0UK5vnc4CDckSw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] arm64: dts: nuvoton: Add initial support for MA35D1
-To:     Jacky Huang <ychuang3@nuvoton.com>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "soc@kernel.org" <soc@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:cod3+ULkmqjUacHdjf5UZW7aCbxyF+7tIg50DqEUz8mEsXgH0sl
- uZKrEa6zhJMhYJ+vGs9nAV1CW04UrMXbEVt0YCqzrDyWToIib8QKuNBFmMDcg/Q3ETQOFth
- oJK9Xp+jE0vgxkzxalCpqTdd7uQrP+B4YIybLbsDzACQqOoZ9kVXTHxpKJLnEvKwBN0i9Lm
- 3wb9zc3rsZUkeo/BkXBSQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:R5IAkjZISys=:FngXoHQq/KgkR9R5mahVcA
- tRM+t/sQsia7jhhwHJjc8DxunLAd8SwsJtA4kbZzkEk+sks8gtes3EIbkmzfj9eQKN3ssHxaT
- VEh2zd187vBhBzauTLu64YJjRJeD0dmKI3/6Qt4fsAqcPRQluT62AaQLTHQSoLN5N6XK2VEoe
- oJFNmkx2jr3amWhBDOx76iA6Siz8b6yMlWlikjRtLAhI+Mt3WdnhhXOaGwbhK+k4KwDNprEn1
- pqID0q0ITYy0VTdNhM1nvaw0lRD/pYX/aiHRYqdbDu2e1u6tEmus9cQ5CsQa4U/DG4qm64KB9
- GlpZGzMQ6+aPamjFLeeQrOUmFMV8Iev760I1+GbtQbAYr7ZAMFGDg5k3mYSb+CZ6HF28BRQvo
- NUM5XppSwArBHs4B5/VKpgFnuiLeNFcTWKQLjVUL8AFbtDZqLr6Qd81QaaD250KDyvbX5YyDg
- 2x/PhGu+qA/BlPWYxbsS0L8fL/u9KNSiYzMh25Fcyh9w/yMJLd+c8WhDz8a2JCwJQTYMXLgDX
- 1pftjyCeO/s/SeEmUK377d/NNccKtoQdI6TqFBQWJlSek36O3YfQ0m/EysRUZakb6Kgh73ZR/
- kVfdDJlFd8SCetz2Js0xLDmYAgnHsAPRoBA3XV9iiyygBaXEibGX6fe0di420kp41iByQNdmV
- glv9LFocZn3eom/ZVN36Rnp3LMfgo+cad2eTRG5tYzah488eM5AM2CxtIBj2SqtKFemd05C3b
- ne5cE6mtnWccz8HtvWQJvBGLej4znt75LRlcHLPYth2gIYQkLAjJfpyQOGxI+c8jAWsodtbD9
- XFts5fc6XHqhBjKyOF5rvHisCR/Y61aEuT7tfM9DWvMmV7sLe8=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v10 1/2] dt-bindings: timer: Add bindings for Intel Keem
+ Bay SoC Timer
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzk@kernel.org>, shruthi.sanil@intel.com,
+        tglx@linutronix.de, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     andriy.shevchenko@linux.intel.com, mgross@linux.intel.com,
+        srikanth.thokala@intel.com, lakshmi.bai.raja.subramanian@intel.com,
+        mallikarjunappa.sangannavar@intel.com
+References: <20220322130005.16045-1-shruthi.sanil@intel.com>
+ <20220322130005.16045-2-shruthi.sanil@intel.com>
+ <7e711327-bcb8-4c7f-5537-425ba1a79e62@linaro.org>
+ <71e82477-16fb-2e7a-e5a9-e22327f31e77@kernel.org>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <71e82477-16fb-2e7a-e5a9-e22327f31e77@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 4:58 AM Jacky Huang <ychuang3@nuvoton.com> wrote:
-> On 2022/3/7 下午 06:25, Krzysztof Kozlowski wrote:
-> > On 07/03/2022 10:19, Jacky Huang wrote:
->
-> I would add the following to end of arch/arm64/Kconfig.platforms, and
-> add the
-> modification to this patch series.
->
-> config ARCH_MA35D1
->      bool "Nuvoton MA35D1 SOC Family"
->      select PINCTRL
->      select PINCTRL_MA35D1
->      select PM
->      select GPIOLIB
->      select SOC_BUS
->      select VIDEOMODE_HELPERS
->      select FB_MODE_HELPERS
->      help
->        This enables support for Nuvoton MA35D1 SOC Family.
 
-Selecting SOC_BUS and the gpio/pinctrl stuff is ok, but please don't
-select the video helpers from the platform config, those should not
-be essential for building a kernel.
+Hi Rob,
 
-       Arnd
+On 30/03/2022 13:55, Krzysztof Kozlowski wrote:
+> On 30/03/2022 13:44, Daniel Lezcano wrote:
+>> On 22/03/2022 14:00, shruthi.sanil@intel.com wrote:
+>>> From: Shruthi Sanil <shruthi.sanil@intel.com>
+>>>
+>>> Add Device Tree bindings for the Timer IP, which can be used as
+>>> clocksource and clockevent device in the Intel Keem Bay SoC.
+>>>
+>>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+>>> Signed-off-by: Shruthi Sanil <shruthi.sanil@intel.com>
+>>
+>>
+>> In order to pick this binding I need an ack from Rob or Krzysztof (added
+>> to the recipients)
+> 
+> Rob was looking into this and there were some comments around v8, so I
+> will leave it to him.
+
+whenever possible could you review this patch, so I can merge the series 
+which has been a long on the mailing list ?
+
+Thanks
+
+   -- Daniel
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
