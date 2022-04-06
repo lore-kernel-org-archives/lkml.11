@@ -2,175 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D5EC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 071ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231431AbiDFTc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        id S229728AbiDFTdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231626AbiDFTcC (ORCPT
+        with ESMTP id S232038AbiDFTct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:32:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 007D81B9FC5;
-        Wed,  6 Apr 2022 11:27:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FEBAB8253C;
-        Wed,  6 Apr 2022 18:27:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E94D2C385A3;
-        Wed,  6 Apr 2022 18:27:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269640;
-        bh=q+CDZVRrCXAK8ZiYWzkHLt6sYUFD4HaQ4RysPdfvcjk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SpHwCgj0X32OP6ZcTcw/pcdSG8xHLNyH962EaF2iug6j6Tpp3c7vhlPsspaZk/aUe
-         pQlPUkltjKJiOEMUc1V2gTRwBrVzAdgRNyPpz7+idu9P1g95BY2nwcq0LwG1iTcCsV
-         nQ2QC1g/8D7CcNgLok4maWVj3rKx5x6DHQHzHVuk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 16/43] arm64: arch_timer: Add workaround for ARM erratum 1188873
-Date:   Wed,  6 Apr 2022 20:26:25 +0200
-Message-Id: <20220406182437.155996244@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 6 Apr 2022 15:32:49 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5AD43441B2;
+        Wed,  6 Apr 2022 11:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YGjX529UM3G1Sm5ZEV/Cp3ZmPunyP2OAVWthxaOm0TE=; b=tFJFatXB6xPNnIMbja6SvXD6Cu
+        bXU3vUUO2xXCQztEU1jTleEdty4GRLL6fyovwu4ho7/XnxRC1YoSxvItgGIztyc6J2Yjr4HUEetQZ
+        rNCnT4wt2/HAhtlf+zClghovZH7e4bhX8oK2ntrborSlj/r0U+pQu3ADTxv2fYmtBfz0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ncAXN-00EVLu-E7; Wed, 06 Apr 2022 20:37:49 +0200
+Date:   Wed, 6 Apr 2022 20:37:49 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
+        mathieu.poirier@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        nm@ti.com, ssantosh@kernel.org, s-anna@ti.com,
+        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, vigneshr@ti.com,
+        kishon@ti.com
+Subject: Re: [RFC 13/13] net: ti: icssg-prueth: Add ICSSG ethernet driver
+Message-ID: <Yk3d/cC36fhNmfY2@lunn.ch>
+References: <20220406094358.7895-1-p-mohan@ti.com>
+ <20220406094358.7895-14-p-mohan@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406094358.7895-14-p-mohan@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <marc.zyngier@arm.com>
+> +static int emac_phy_connect(struct prueth_emac *emac)
+> +{
+> +	struct prueth *prueth = emac->prueth;
+> +
+> +	/* connect PHY */
+> +	emac->phydev = of_phy_connect(emac->ndev, emac->phy_node,
+> +				      &emac_adjust_link, 0, emac->phy_if);
 
-commit 95b861a4a6d94f64d5242605569218160ebacdbe upstream.
+> +static int prueth_config_rgmiidelay(struct prueth *prueth,
+> +				    struct device_node *eth_np,
+> +				    phy_interface_t phy_if)
+> +{
+> +	struct device *dev = prueth->dev;
+> +	struct regmap *ctrl_mmr;
+> +	u32 rgmii_tx_id = 0;
+> +	u32 icssgctrl_reg;
+> +
+> +	if (!phy_interface_mode_is_rgmii(phy_if))
+> +		return 0;
+> +
+> +	ctrl_mmr = syscon_regmap_lookup_by_phandle(eth_np, "ti,syscon-rgmii-delay");
+> +	if (IS_ERR(ctrl_mmr)) {
+> +		dev_err(dev, "couldn't get ti,syscon-rgmii-delay\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (of_property_read_u32_index(eth_np, "ti,syscon-rgmii-delay", 1,
+> +				       &icssgctrl_reg)) {
+> +		dev_err(dev, "couldn't get ti,rgmii-delay reg. offset\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (phy_if == PHY_INTERFACE_MODE_RGMII_ID ||
+> +	    phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
+> +		rgmii_tx_id |= ICSSG_CTRL_RGMII_ID_MODE;
+> +
+> +	regmap_update_bits(ctrl_mmr, icssgctrl_reg, ICSSG_CTRL_RGMII_ID_MODE, rgmii_tx_id);
+> +
+> +	return 0;
+> +}
+>
 
-When running on Cortex-A76, a timer access from an AArch32 EL0
-task may end up with a corrupted value or register. The workaround for
-this is to trap these accesses at EL1/EL2 and execute them there.
+O.K, so this does not do what i initially thought it was doing. I was
+thinking it was to fine tune the delay, ti,syscon-rgmii-delay would be
+a small pico second value to allow the 2ns delay to be tuned to the
+board.
 
-This only affects versions r0p0, r1p0 and r2p0 of the CPU.
+But now i think this is actually inserting the full 2ns delay?
 
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/Kconfig                   |   12 ++++++++++++
- arch/arm64/include/asm/cpucaps.h     |    3 ++-
- arch/arm64/include/asm/cputype.h     |    2 ++
- arch/arm64/kernel/cpu_errata.c       |    8 ++++++++
- drivers/clocksource/arm_arch_timer.c |   15 +++++++++++++++
- 5 files changed, 39 insertions(+), 1 deletion(-)
+The problem is, you also pass phy_if to of_phy_connect() so the PHY
+will also insert the delay if requested. So you end up with double
+delays for rgmii_id and rgmii_txid.
 
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -441,6 +441,18 @@ config ARM64_ERRATUM_1024718
- 
- 	  If unsure, say Y.
- 
-+config ARM64_ERRATUM_1188873
-+	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
-+	default y
-+	help
-+	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
-+
-+	  Affected Cortex-A76 cores (r0p0, r1p0, r2p0) could cause
-+	  register corruption when accessing the timer registers from
-+	  AArch32 userspace.
-+
-+	  If unsure, say Y.
-+
- config CAVIUM_ERRATUM_22375
- 	bool "Cavium erratum 22375, 24313"
- 	default y
---- a/arch/arm64/include/asm/cpucaps.h
-+++ b/arch/arm64/include/asm/cpucaps.h
-@@ -38,7 +38,8 @@
- #define ARM64_HARDEN_BRANCH_PREDICTOR		17
- #define ARM64_SSBD				18
- #define ARM64_MISMATCHED_CACHE_TYPE		19
-+#define ARM64_WORKAROUND_1188873		20
- 
--#define ARM64_NCAPS				20
-+#define ARM64_NCAPS				21
- 
- #endif /* __ASM_CPUCAPS_H */
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -85,6 +85,7 @@
- #define ARM_CPU_PART_CORTEX_A75		0xD0A
- #define ARM_CPU_PART_CORTEX_A35		0xD04
- #define ARM_CPU_PART_CORTEX_A55		0xD05
-+#define ARM_CPU_PART_CORTEX_A76		0xD0B
- 
- #define APM_CPU_PART_POTENZA		0x000
- 
-@@ -102,6 +103,7 @@
- #define MIDR_CORTEX_A75 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A75)
- #define MIDR_CORTEX_A35 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35)
- #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
-+#define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
- #define MIDR_CAVIUM_THUNDERX2 MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX2)
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -533,6 +533,14 @@ const struct arm64_cpu_capabilities arm6
- 		.matches = has_ssbd_mitigation,
- 	},
- #endif
-+#ifdef CONFIG_ARM64_ERRATUM_1188873
-+	{
-+		/* Cortex-A76 r0p0 to r2p0 */
-+		.desc = "ARM erratum 1188873",
-+		.capability = ARM64_WORKAROUND_1188873,
-+		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 2, 0),
-+	},
-+#endif
- 	{
- 	}
- };
---- a/drivers/clocksource/arm_arch_timer.c
-+++ b/drivers/clocksource/arm_arch_timer.c
-@@ -130,6 +130,13 @@ static u64 notrace fsl_a008585_read_cntv
- }
- #endif
- 
-+#ifdef CONFIG_ARM64_ERRATUM_1188873
-+static u64 notrace arm64_1188873_read_cntvct_el0(void)
-+{
-+	return read_sysreg(cntvct_el0);
-+}
-+#endif
-+
- #ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
- const struct arch_timer_erratum_workaround *timer_unstable_counter_workaround = NULL;
- EXPORT_SYMBOL_GPL(timer_unstable_counter_workaround);
-@@ -148,6 +155,14 @@ static const struct arch_timer_erratum_w
- 		.read_cntvct_el0 = fsl_a008585_read_cntvct_el0,
- 	},
- #endif
-+#ifdef CONFIG_ARM64_ERRATUM_1188873
-+	{
-+		.match_type = ate_match_local_cap_id,
-+		.id = (void *)ARM64_WORKAROUND_1188873,
-+		.desc = "ARM erratum 1188873",
-+		.read_cntvct_el0 = arm64_1188873_read_cntvct_el0,
-+	},
-+#endif
- };
- 
- typedef bool (*ate_match_fn_t)(const struct arch_timer_erratum_workaround *,
+The general recommendation is that the PHY inserts the delay, based on
+phy-mode. The MAC does not add a delay, so i suggest you always write
+0 here, just to ensure the system is in a deterministic state, and the
+bootloader and not being messing around with things.
 
-
+	   Andrew
