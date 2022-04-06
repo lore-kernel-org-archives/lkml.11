@@ -2,107 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D5CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232452AbiDFMYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
+        id S233136AbiDFMYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234652AbiDFMXf (ORCPT
+        with ESMTP id S234308AbiDFMXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:23:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABA713F86;
-        Wed,  6 Apr 2022 01:09:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8B1960B1E;
-        Wed,  6 Apr 2022 08:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B65C3C385A1;
-        Wed,  6 Apr 2022 08:09:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649232576;
-        bh=goZBLwAg/DZhzYNdKCEzCGND7F9xwBbARNccVJHZ20o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=c7MFHBL8kTnITP06VCPKeg+RSuNthXQrEzl+3zsnZC7CwNsjzGGqO90VIPWO42YI2
-         9CY1aZA1U4L3uSSb51+WK9/+o6J4ETlBUxGn6R6Rcbs2Na6wJNZU0hmfKGIqoiUJfd
-         BiCg8k8fLTOYwlZSjM8+PyRBY1F0TgbGqq96F+Nw=
-Date:   Wed, 6 Apr 2022 10:09:33 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     David Stevens <stevensd@chromium.org>
-Cc:     linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC] PCI: sysfs: add bypass for config read admin check
-Message-ID: <Yk1KveOnYfSrUJLD@kroah.com>
-References: <20220406071131.2930035-1-stevensd@google.com>
+        Wed, 6 Apr 2022 08:23:14 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E69116D;
+        Wed,  6 Apr 2022 01:08:38 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id d29so1930947wra.10;
+        Wed, 06 Apr 2022 01:08:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Oy67HKB+CH5MprbImCqTy7TMJ9Sc0ffSgIQtidsk7ic=;
+        b=NbUT5qTkF0/yhbtTMiRU91oFoO0A54Mr1tlwna16DC4OO0Rr/LNqXcYHCszzOaUxjV
+         6/x2ZV853pL7kHV4/RSDr8FsYGEWC0U2h5TULHMl5Tl5AkhueCmCKJp1FXV4PeLwtQJP
+         unoNRURHRC1IpADCz0yElwjJtGKB4cw5VSJ7vK+CAnF8zgtDgj4uWlV7TrvPCYZTBwBr
+         6dIYnop/zOV07tgWx4e7/ff8WqO6BSL+ahSr/4rDLUPJ7yBviKCuYO66ThgWTnazwt3u
+         QR46MaoMWWyaltmwYP4iv66YyBURkogn2t0/JLY3nFhP/Jhs8hT6ydJNUglysMoF3zDy
+         qDUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Oy67HKB+CH5MprbImCqTy7TMJ9Sc0ffSgIQtidsk7ic=;
+        b=f7QK6LOR/Zp4ke41y6ZPkcl63JsVzIQhUvg3UnpKVxFBEbKAUTWdV5bOnhzrQ436K4
+         vy3PxKbuJqr9TRJtBjO+Uf96j/rpPL9MyTAg7YOO8f28ArK3Ty92j3FZ+axmCoPpUHzO
+         gIGhZwPvp2+Yw5ZM275TQtCeWMj8HYTZy+Lq5p4LID1Uh3VSpLUDb0IEofg/dbvgbKMI
+         mkETjljV4jjsSWjo4TQR2ibtAifZADF92GZP3qDMZI2/rYrCo3jqQVAyd/SpmjivNvfg
+         rNfvlPZf4bR36t+rosfwwQcwdZYj38msFUrkOrZm7JVw32nDr+pLAYw9A/LZccEDaSRV
+         LFWw==
+X-Gm-Message-State: AOAM533igNL7u77mDyftQLa+tk2FI4x2YWVGz5Ze5M4gF+gE4uWxDdL5
+        VOz0hz83moKmqh5u5Gv/vbs=
+X-Google-Smtp-Source: ABdhPJyGUySVImbWHPE8ZMHJL80liCjqLWjiWY9DChxMxo3AEPwcFSHgFeTYEXGDgCP96GwANq5Omg==
+X-Received: by 2002:a5d:6d8b:0:b0:203:f9b4:be1d with SMTP id l11-20020a5d6d8b000000b00203f9b4be1dmr5704571wrs.298.1649232517257;
+        Wed, 06 Apr 2022 01:08:37 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id l3-20020a1ced03000000b0038ce57d28a1sm4035390wmh.26.2022.04.06.01.08.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 01:08:36 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] libbpf: Fix spelling mistake "libaries" -> "libraries"
+Date:   Wed,  6 Apr 2022 09:08:35 +0100
+Message-Id: <20220406080835.14879-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406071131.2930035-1-stevensd@google.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 04:11:31PM +0900, David Stevens wrote:
-> From: David Stevens <stevensd@chromium.org>
-> 
-> Add a moduleparam that can be set to bypass the check that limits users
-> without CAP_SYS_ADMIN to only being able to read the first 64 bytes of
-> the config space. This allows systems without problematic hardware to be
-> configured to allow users without CAP_SYS_ADMIN to read PCI
-> capabilities.
-> 
-> Signed-off-by: David Stevens <stevensd@chromium.org>
-> ---
->  drivers/pci/pci-sysfs.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> index 602f0fb0b007..162423b3c052 100644
-> --- a/drivers/pci/pci-sysfs.c
-> +++ b/drivers/pci/pci-sysfs.c
-> @@ -28,10 +28,17 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/msi.h>
->  #include <linux/of.h>
-> +#include <linux/moduleparam.h>
->  #include "pci.h"
->  
->  static int sysfs_initialized;	/* = 0 */
->  
-> +static bool allow_unsafe_config_reads;
-> +module_param_named(allow_unsafe_config_reads,
-> +		   allow_unsafe_config_reads, bool, 0644);
-> +MODULE_PARM_DESC(allow_unsafe_config_reads,
-> +		 "Enable full read access to config space without CAP_SYS_ADMIN.");
+There is a spelling mistake in a pr_warn message. Fix it.
 
-No, this is not the 1990's, please do not add system-wide module
-parameters like this.  Especially ones that circumvent security
-protections.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ tools/lib/bpf/usdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Also, where did you document this new option?
+diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
+index 1bce2eab5e89..c5acf2824fcc 100644
+--- a/tools/lib/bpf/usdt.c
++++ b/tools/lib/bpf/usdt.c
+@@ -687,7 +687,7 @@ static int collect_usdt_targets(struct usdt_manager *man, Elf *elf, const char *
+ 			 * to shared libraries with no PID filter.
+ 			 */
+ 			if (pid < 0) {
+-				pr_warn("usdt: attaching to shared libaries without specific PID is not supported on current kernel\n");
++				pr_warn("usdt: attaching to shared libraries without specific PID is not supported on current kernel\n");
+ 				err = -ENOTSUP;
+ 				goto err_out;
+ 			}
+-- 
+2.35.1
 
-Why not just add this to a LSM instead?
-
->  /* show configuration fields */
->  #define pci_config_attr(field, format_string)				\
->  static ssize_t								\
-> @@ -696,7 +703,8 @@ static ssize_t pci_read_config(struct file *filp, struct kobject *kobj,
->  	u8 *data = (u8 *) buf;
->  
->  	/* Several chips lock up trying to read undefined config space */
-> -	if (file_ns_capable(filp, &init_user_ns, CAP_SYS_ADMIN))
-> +	if (allow_unsafe_config_reads ||
-> +	    file_ns_capable(filp, &init_user_ns, CAP_SYS_ADMIN))
-
-This feels really dangerous.  What benifit are you getting here by
-allowing an unpriviliged user to read this information?
-
-What userspace problem are you trying to solve here that deserves this
-change?
-
-thanks,
-
-greg k-h
