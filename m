@@ -2,105 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31EDCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbiDFTXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        id S231329AbiDFTZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231267AbiDFTVc (ORCPT
+        with ESMTP id S229472AbiDFTYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:21:32 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DFF27FC8F;
-        Wed,  6 Apr 2022 10:57:37 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236GnQo5000971;
-        Wed, 6 Apr 2022 17:57:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=EIZq0sEIJfeT9I1Gb/BlkG7lb68M6yMU1xY9qv8gko4=;
- b=HCMx6RCatU8Mp6xEbENFmX+GMruYA+tG6wMu11gINCI2+9YsnTHg/QljyByAHTw3MSJl
- 9uocU14EVTdeokB6f7IPOkcJZ2E4utRC7Ixh3M+kTFa2DBj2m1FEKe0vTOBuEvBrQkWo
- 0CMncOqGt4sgUxdoMcrKfV02/h3ik805ihOlKaOg7RB9l8AvAutn49d7+bXF0lqgS5kf
- xHVbyHi+4siDF2E/qKbogAmaPfk9ZZdeR8eznS2WT2gX1JefPj6PTWJilKH5G7/1JgJz
- BEzgro8q+G5yCsW+7KULBiogpA4ASCiy50D7jDFoQMKFDXE+hXx6+Mv1UuuYG1hI0MfO jg== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f8ya1btrv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 17:57:27 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 236HrDxV027660;
-        Wed, 6 Apr 2022 17:57:25 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3f6e4908sx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 17:57:25 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 236HvNPf35520920
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Apr 2022 17:57:23 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 21BF44C044;
-        Wed,  6 Apr 2022 17:57:23 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C0FD14C040;
-        Wed,  6 Apr 2022 17:57:17 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.211.90.125])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Apr 2022 17:57:17 +0000 (GMT)
-From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-To:     shuah@kernel.org, linux-kselftest@vger.kernel.org,
-        disgoel@linux.vnet.ibm.com
-Cc:     acme@kernel.org, jolsa@kernel.org, mpe@ellerman.id.au,
-        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, maddy@linux.vnet.ibm.com,
-        kjain@linux.ibm.com, srikar@linux.vnet.ibm.com
-Subject: [PATCH] testing/selftests/mqueue: Fix mq_perf_tests to free the allocated cpu set
-Date:   Wed,  6 Apr 2022 23:27:15 +0530
-Message-Id: <20220406175715.87937-1-atrajeev@linux.vnet.ibm.com>
+        Wed, 6 Apr 2022 15:24:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A9F298C94;
+        Wed,  6 Apr 2022 11:28:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDAA2B8253A;
+        Wed,  6 Apr 2022 18:28:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1708AC385A6;
+        Wed,  6 Apr 2022 18:28:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269720;
+        bh=2vVMkLKKtoDEGqV4JxmKdLS68YjrOYjEzEXKZGmjmno=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Dn0T/nChUKjCDqLzWnl0ptoKqg47bZ16SLUSxkawGYzNSmv++O+6PHs+vyzd9Zuh3
+         1OQhDPbOBmycZbby9y0lm5/4Ee53iCvaa3tTpKV8m8S9X4xigJz81TDt8i9ijwDlTT
+         Sxp/YYvDFk6djJb5nCXXQ4/6FRiE1IuLh7GUbgnQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 32/43] arm64: entry: Make the kpti trampolines kpti sequence optional
+Date:   Wed,  6 Apr 2022 20:26:41 +0200
+Message-Id: <20220406182437.613744275@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: SWGsCKz1tXs5MUdS4yLCeeuWiySXqxwh
-X-Proofpoint-ORIG-GUID: SWGsCKz1tXs5MUdS4yLCeeuWiySXqxwh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_09,2022-04-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 adultscore=0 priorityscore=1501 suspectscore=0 bulkscore=0
- phishscore=0 clxscore=1011 impostorscore=0 spamscore=0 mlxscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204060087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The selftest "mqueue/mq_perf_tests.c" use CPU_ALLOC to allocate
-CPU set. This cpu set is used further in pthread_attr_setaffinity_np
-and by pthread_create in the code. But in current code, allocated
-cpu set is not freed. Fix this by adding CPU_FREE after its usage
-is done.
+From: James Morse <james.morse@arm.com>
 
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+commit c47e4d04ba0f1ea17353d85d45f611277507e07a upstream.
+
+Spectre-BHB needs to add sequences to the vectors. Having one global
+set of vectors is a problem for big/little systems where the sequence
+is costly on cpus that are not vulnerable.
+
+Making the vectors per-cpu in the style of KVM's bh_harden_hyp_vecs
+requires the vectors to be generated by macros.
+
+Make the kpti re-mapping of the kernel optional, so the macros can be
+used without kpti.
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/mqueue/mq_perf_tests.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/kernel/entry.S |   17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/mqueue/mq_perf_tests.c b/tools/testing/selftests/mqueue/mq_perf_tests.c
-index b019e0b8221c..17c41f216bef 100644
---- a/tools/testing/selftests/mqueue/mq_perf_tests.c
-+++ b/tools/testing/selftests/mqueue/mq_perf_tests.c
-@@ -732,6 +732,7 @@ int main(int argc, char *argv[])
- 		pthread_attr_destroy(&thread_attr);
- 	}
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -921,9 +921,10 @@ __ni_sys_trace:
+ 	sub	\dst, \dst, PAGE_SIZE
+ 	.endm
  
-+	CPU_FREE(cpu_set);
- 	if (!continuous_mode) {
- 		pthread_join(cpu_threads[0], &retval);
- 		shutdown((long)retval, "perf_test_thread()", __LINE__);
--- 
-2.35.1
+-	.macro tramp_ventry, vector_start, regsize
++	.macro tramp_ventry, vector_start, regsize, kpti
+ 	.align	7
+ 1:
++	.if	\kpti == 1
+ 	.if	\regsize == 64
+ 	msr	tpidrro_el0, x30	// Restored in kernel_ventry
+ 	.endif
+@@ -945,8 +946,12 @@ __ni_sys_trace:
+ #endif
+ 	prfm	plil1strm, [x30, #(1b - \vector_start)]
+ 	msr	vbar_el1, x30
+-	add	x30, x30, #(1b - \vector_start + 4)
+ 	isb
++	.else
++	ldr	x30, =vectors
++	.endif // \kpti == 1
++
++	add	x30, x30, #(1b - \vector_start + 4)
+ 	ret
+ .org 1b + 128	// Did we overflow the ventry slot?
+ 	.endm
+@@ -963,15 +968,15 @@ __ni_sys_trace:
+ 	eret
+ 	.endm
+ 
+-	.macro	generate_tramp_vector
++	.macro	generate_tramp_vector,	kpti
+ .Lvector_start\@:
+ 	.space	0x400
+ 
+ 	.rept	4
+-	tramp_ventry	.Lvector_start\@, 64
++	tramp_ventry	.Lvector_start\@, 64, \kpti
+ 	.endr
+ 	.rept	4
+-	tramp_ventry	.Lvector_start\@, 32
++	tramp_ventry	.Lvector_start\@, 32, \kpti
+ 	.endr
+ 	.endm
+ 
+@@ -982,7 +987,7 @@ __ni_sys_trace:
+ 	.pushsection ".entry.tramp.text", "ax"
+ 	.align	11
+ ENTRY(tramp_vectors)
+-	generate_tramp_vector
++	generate_tramp_vector	kpti=1
+ END(tramp_vectors)
+ 
+ ENTRY(tramp_exit_native)
+
 
