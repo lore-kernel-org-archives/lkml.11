@@ -2,113 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9184C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:14:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235902AbiDFPQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32946 "EHLO
+        id S235626AbiDFPQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235734AbiDFPQa (ORCPT
+        with ESMTP id S235759AbiDFPQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:16:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D44C265EAA
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:16:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649247318;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kB1T+ZnqR2/L037KmDjJiiYzrhgcu2TNRn7h+cl2h1Q=;
-        b=Ssdyj+AkDcJvgflY7B0DavsWApsLQgsY9oSlS8g5c5CASfUw4DEvSRGGHZ4u4R+uGMkDg5
-        MOveifUhM9M2hy6qlRqjDlxDelTD6TgL7TPt4mcLwu02dGVBB5jy/tKdk/aNRpatNEURlS
-        dkqQMhp51XcNb2KguyWfDyWGZjOb9Zk=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-372-NVV-rqNPMjmD6bT48ZKlWw-1; Wed, 06 Apr 2022 07:53:40 -0400
-X-MC-Unique: NVV-rqNPMjmD6bT48ZKlWw-1
-Received: by mail-wm1-f71.google.com with SMTP id r64-20020a1c2b43000000b0038b59eb1940so2133827wmr.0
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 04:53:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kB1T+ZnqR2/L037KmDjJiiYzrhgcu2TNRn7h+cl2h1Q=;
-        b=k5wieS+r1heDnhX0wOkiagF8ME69xD7Tgf7nxaXCnu3k2oGHqW0ylDQH4cjq8zwbtr
-         uHGUnD1mjEtOsGx0RacG8MfMlPp+4MwgzG38IQcj7Uu1WXQ0HFX1iThu5IK2XGz5rNUH
-         JVCYuzVWsM+uK4GLgmhUbp4cv27qZfzGobm3t3uBGxJzsAYjodA/KL7nAw502WSg8Ttv
-         BOuu/KX6klfsZ4tx3ZVD+92JC+xigNhCS+HlHxtN530l1NmCjX26GcxUWgqg1P4aLGxC
-         IWZSg5va3hyvr9G9+FYa40AmbhBO3dfEtsNPwEmf9+zvW3blYVwOYbM51g7BJKV2D+R0
-         Fcrg==
-X-Gm-Message-State: AOAM5311iHvbmXvSsOriafXuchU2W8VECi1S2UysWmeEpK9HYCXabRSD
-        ejpV2yIB07FZWt/Cg0jH6Pbk8CPUzYc9ubeKYd6SAg+xUXkAiXLju52Oh46F4x17qlpwJZ9W9Pj
-        p/DeCAWg39MW4HJydkhJbQnGW
-X-Received: by 2002:adf:eb48:0:b0:203:f854:86cc with SMTP id u8-20020adfeb48000000b00203f85486ccmr6312035wrn.102.1649246019001;
-        Wed, 06 Apr 2022 04:53:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy2+5QZG87zHPtKHombCPhUvvOUvDWdcIY4nG1TjUzIlk1J6N8DJq0jnyTF+14SRheRL60Wcw==
-X-Received: by 2002:adf:eb48:0:b0:203:f854:86cc with SMTP id u8-20020adfeb48000000b00203f85486ccmr6312018wrn.102.1649246018821;
-        Wed, 06 Apr 2022 04:53:38 -0700 (PDT)
-Received: from redhat.com ([2.55.138.162])
-        by smtp.gmail.com with ESMTPSA id r4-20020a05600c35c400b0038cbd8c41e9sm4594698wmq.12.2022.04.06.04.53.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 04:53:38 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 07:53:35 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, sgarzare@redhat.com,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH V2 2/5] virtio: use virtio_reset_device() when possible
-Message-ID: <20220406074440-mutt-send-email-mst@kernel.org>
-References: <20220406083538.16274-1-jasowang@redhat.com>
- <20220406083538.16274-3-jasowang@redhat.com>
+        Wed, 6 Apr 2022 11:16:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18115267AEA;
+        Wed,  6 Apr 2022 05:16:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5629BCE22F5;
+        Wed,  6 Apr 2022 12:09:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C4FFC385A1;
+        Wed,  6 Apr 2022 12:09:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649246947;
+        bh=ksBAr8NMYRRobAattf5M1b7e3FecoUcE07XRZT2Dck0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=f6+BNh3hZkJcNrIACGR//OU57LJSFiyPwSvuX2EPOpUAHfD0lLkCv5GiUSlyfVHmi
+         /Ll2oo5Ym9IVrwqyhpexjl4bAu+2SpYCcYzfTjAhripG1XqB8DA4SnvHTN95JtulHa
+         npX0tchFxvbu7aph/DjGTUNYI75p5HEY3G6LgjsI=
+Date:   Wed, 6 Apr 2022 14:09:05 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     dann frazier <dann.frazier@canonical.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Toan Le <toan@os.amperecomputing.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>
+Subject: Re: [PATCH 5.16 0199/1017] PCI: xgene: Revert "PCI: xgene: Fix IB
+ window setup"
+Message-ID: <Yk2C4cZDtlVDDWqG@kroah.com>
+References: <20220405070354.155796697@linuxfoundation.org>
+ <20220405070400.156176848@linuxfoundation.org>
+ <YkxjbVp3W2LeVIeL@xps13.dannf>
+ <Ykx1o2PbNzGlp1ds@kroah.com>
+ <CALdTtnv2w5d0N4ez7JTsxaWMa6v2c5j9-guVjkUq33=UDNFMGA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220406083538.16274-3-jasowang@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALdTtnv2w5d0N4ez7JTsxaWMa6v2c5j9-guVjkUq33=UDNFMGA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 04:35:35PM +0800, Jason Wang wrote:
-> This allows us to do common extension without duplicating codes.
-
-codes -> code
-
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/virtio/virtio.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+On Tue, Apr 05, 2022 at 11:07:53AM -0600, dann frazier wrote:
+> On Tue, Apr 5, 2022 at 11:00 AM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Tue, Apr 05, 2022 at 09:42:37AM -0600, dann frazier wrote:
+> > > On Tue, Apr 05, 2022 at 09:18:32AM +0200, Greg Kroah-Hartman wrote:
+> > > > From: Marc Zyngier <maz@kernel.org>
+> > > >
+> > > > commit 825da4e9cec68713fbb02dc6f71fe1bf65fe8050 upstream.
+> > > >
+> > > > Commit c7a75d07827a ("PCI: xgene: Fix IB window setup") tried to
+> > > > fix the damages that 6dce5aa59e0b ("PCI: xgene: Use inbound resources
+> > > > for setup") caused, but actually didn't improve anything for some
+> > > > plarforms (at least Mustang and m400 are still broken).
+> > > >
+> > > > Given that 6dce5aa59e0b has been reverted, revert this patch as well,
+> > > > restoring the PCIe support on XGene to its pre-5.5, working state.
+> > > >
+> > > > Link: https://lore.kernel.org/r/YjN8pT5e6/8cRohQ@xps13.dannf
+> > > > Link: https://lore.kernel.org/r/20220321104843.949645-3-maz@kernel.org
+> > > > Fixes: c7a75d07827a ("PCI: xgene: Fix IB window setup")
+> > > > Signed-off-by: Marc Zyngier <maz@kernel.org>
+> > > > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > > > Cc: stable@vger.kernel.org
+> > > > Cc: Rob Herring <robh@kernel.org>
+> > > > Cc: Toan Le <toan@os.amperecomputing.com>
+> > > > Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > > > Cc: Krzysztof Wilczyński <kw@linux.com>
+> > > > Cc: Bjorn Helgaas <bhelgaas@google.com>
+> > > > Cc: Stéphane Graber <stgraber@ubuntu.com>
+> > > > Cc: dann frazier <dann.frazier@canonical.com>
+> > > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > ---
+> > > >  drivers/pci/controller/pci-xgene.c |    2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > Hi Greg,
+> > >
+> > >   I don't think it makes sense to apply this to 5.10.y, 5.15.y &
+> > > 5.16.y w/o also applying a backport of 1874b6d7ab1, because without
+> > > that we will regress support for Stéphane's X-Gene2-based systems. The
+> > > backport of 1874b6d7ab1 was rejected for these trees because it doesn't
+> > > apply cleanly, but I've just submitted new versions that do.
+> >
+> > Where were those patches sent to?  I don't seem to see them on the
+> > stable list, did I miss them?
 > 
-> diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
-> index 75c8d560bbd3..8dde44ea044a 100644
-> --- a/drivers/virtio/virtio.c
-> +++ b/drivers/virtio/virtio.c
-> @@ -430,7 +430,7 @@ int register_virtio_device(struct virtio_device *dev)
->  
->  	/* We always start by resetting the device, in case a previous
->  	 * driver messed it up.  This also tests that code path a little. */
-> -	dev->config->reset(dev);
-> +	virtio_reset_device(dev);
->  
->  	/* Acknowledge that we've seen the device. */
->  	virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
-> @@ -496,7 +496,7 @@ int virtio_device_restore(struct virtio_device *dev)
->  
->  	/* We always start by resetting the device, in case a previous
->  	 * driver messed it up. */
-> -	dev->config->reset(dev);
-> +	virtio_reset_device(dev);
->  
->  	/* Acknowledge that we've seen the device. */
->  	virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
-> -- 
-> 2.25.1
+> These are the message IDs:
+> <20220405142505.1268999-1-dann.frazier@canonical.com>
+> <20220405153419.1330755-1-dann.frazier@canonical.com>
+> 
+> I've just bounced them directly to you as well. Thanks Greg!
 
+Got them now, vger was being a bit slow due to the onslaught of patches
+I had sent it.
+
+greg k-h
