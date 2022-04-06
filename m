@@ -2,125 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B11C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237654AbiDFQb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
+        id S237593AbiDFQbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:31:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237734AbiDFQal (ORCPT
+        with ESMTP id S237706AbiDFQai (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:30:41 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4B12EF17E
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:44:20 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649209459;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0FQc76hjkumZRb0ef3sm4lyuJ9dDneJQs2XYFpXinew=;
-        b=213m3rZ0KLU5Eu0hBKewzbweOZpySZN6OV61gHJimd/7JeEreR71y3Ey0y35wKxn4WJrzI
-        TFdGe1p/602glRhZx+wBjf4nc9XvKV8Hi9OGH9S/b1UjWDSzk1FKEH8+vmp56Kb0bV2W9l
-        UFHFvlX/yUCmHioI8bEoP7cx6Bt/ARs7eD7n/A6aIeYmTVNC1SjiouR4ACO5CNmd7HzFah
-        fu14BJSyaD/Br0lv7RVox4Aec98GwcFkY0NCuqr8XrOok1R8veUjE+VmQBhKydGZ79RqfX
-        6+cmkZsrcL8ktGXfj4rI1epqU9A4C0/nZZBB2OqrL1FiIOAevQ3VTy6IlDZqjA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649209459;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0FQc76hjkumZRb0ef3sm4lyuJ9dDneJQs2XYFpXinew=;
-        b=EYz1XW4YJ5aPrJtrGMIWZkcekdSxXo4QFhSDh+PbKmMOwBcWReyVnH3jdH/AnruKBHEH7o
-        XC6RaRq4LPl0UbDw==
-To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Karny, Wyes" <Wyes.Karny@amd.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Carroll, Lewis" <Lewis.Carroll@amd.com>,
-        "Shenoy, Gautham Ranjal" <gautham.shenoy@amd.com>,
-        "Narayan, Ananth" <Ananth.Narayan@amd.com>,
-        "Rao, Bharata Bhasker" <bharata@amd.com>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "metze@samba.org" <metze@samba.org>,
-        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>
-Subject: RE: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
-In-Reply-To: <BL1PR12MB515702C06E483DF4EB78A7ADE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
-References: <20220405130021.557880-1-wyes.karny@amd.com>
- <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
- <7cdc2103-c6d4-e1b6-9804-6739112eee4d@intel.com>
- <BL1PR12MB515745615F4C92627033CD5BE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
- <5873a444-bb32-f0d5-27f1-173f469baf21@intel.com>
- <BL1PR12MB515702C06E483DF4EB78A7ADE2E49@BL1PR12MB5157.namprd12.prod.outlook.com>
-Date:   Wed, 06 Apr 2022 03:44:18 +0200
-Message-ID: <87a6cz0yvh.ffs@tglx>
+        Wed, 6 Apr 2022 12:30:38 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F76941FD0A;
+        Tue,  5 Apr 2022 18:48:15 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R721e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=ashimida@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0V9JJspu_1649209690;
+Received: from 192.168.193.179(mailfrom:ashimida@linux.alibaba.com fp:SMTPD_---0V9JJspu_1649209690)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 06 Apr 2022 09:48:11 +0800
+Message-ID: <2bda020e-cc1b-ecf2-be23-9b7ed5d61945@linux.alibaba.com>
+Date:   Tue, 5 Apr 2022 18:48:09 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+From:   Dan Li <ashimida@linux.alibaba.com>
+Subject: Re: [PATCH v4 2/2] lkdtm: Add Shadow Call Stack tests
+To:     catalin.marinas@arm.com, will@kernel.org, keescook@chromium.org,
+        arnd@arndb.de, gregkh@linuxfoundation.org, nathan@kernel.org,
+        ndesaulniers@google.com, shuah@kernel.org, mark.rutland@arm.com,
+        ojeda@kernel.org, akpm@linux-foundation.org, elver@google.com,
+        luc.vanoostenryck@gmail.com, samitolvanen@google.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, linux-kselftest@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        Dan Li <ashimida@linux.alibaba.com>
+References: <20220303074339.86337-1-ashimida@linux.alibaba.com>
+ <20220314135329.80621-1-ashimida@linux.alibaba.com>
+Content-Language: en-US
+In-Reply-To: <20220314135329.80621-1-ashimida@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mario,
+Hi Kees,
 
-On Tue, Apr 05 2022 at 20:40, Mario Limonciello wrote:
+Gentile ping for this :).
 
-> [Public]
+I also saw the discussion on llvm-project, use address of labels as a
+parameter doesn't seem to be stable.
 
-Really useful information that your post is public while some of the
-earlier posts in this _public_ thread were marked '[AMD confidential]'.
+Do we need to split it into two cases here?
 
->> >> This seem _bit_ at odds with the commit message (and the AMD SSBD
->> >> whitepaper):
->> >>
->> >>>     Add the necessary synchronization logic for AMD family 17H.
->> >> So, is X86_FEATURE_ZEN for family==0x17, or family>=0x17?
->> > There are Zen family CPUs and APUs from family 0x19.  Perhaps at the
->> > time of the whitepaper there weren't yet though.
->> 
->> Is this a gap in the documentation, then?  Is there some documentation
->> of the availability of SSBD mitigations on family 0x19?
->
-> It looks like a misinterpretation of the document.
-
-Not at all. The document does not mention family 19h at all. So where is
-the misinterpretation?
-
-Dave was asking for documentation for family 0x19, right?
-
-> Notice it mentions in Non-architectural MSRs explicitly:
->
-> "some models of family 17h have logic that allow loads to bypass older stores 
-> but lack the architectural SPEC_CTRL or VIRT_SPEC_CTR"
-
-That's relevant to Dave's question in which way? 
-
-> But that is not for all family 17h nor for family 19h.  You can see earlier in
-> the document the method to detect presence for SSBD which applies to the
-> rest of 17h and 19h.
-
-We know how to read this document. But this document does not mention
-anything else than family 17h. So what are you talking about?
-
-> That code in amd_set_core_ssb_state is only used for one of the
-> mitigation codepaths without MSR support, not for all Zen CPUs.
-
-Again, how is that relevant to the legitimate question whether that
-document applies to family 17h only or to 17h+ which includes 19h?
-
-We need to make a decison about what X86_FEATURE_ZEN means. Is it that
-hard to give an authoritive answer?
+Link: https://github.com/llvm/llvm-project/issues/54328
 
 Thanks,
+Dan
 
-        tglx
+
+On 3/14/22 06:53, Dan Li wrote:
+> Add tests for SCS (Shadow Call Stack) based backward CFI.
+> 
+> Signed-off-by: Dan Li <ashimida@linux.alibaba.com>
+> ---
+>   arch/arm64/include/asm/compiler.h       | 18 ++++++
+>   drivers/misc/lkdtm/cfi.c                | 84 +++++++++++++++++++++++++
+>   drivers/misc/lkdtm/core.c               |  1 +
+>   drivers/misc/lkdtm/lkdtm.h              |  1 +
+>   include/linux/compiler-clang.h          |  1 +
+>   include/linux/compiler-gcc.h            |  2 +
+>   include/linux/compiler_types.h          |  4 ++
+>   tools/testing/selftests/lkdtm/tests.txt |  1 +
+>   8 files changed, 112 insertions(+)
+> 
+> diff --git a/arch/arm64/include/asm/compiler.h b/arch/arm64/include/asm/compiler.h
+> index dc3ea4080e2e..96590fb4a8de 100644
+> --- a/arch/arm64/include/asm/compiler.h
+> +++ b/arch/arm64/include/asm/compiler.h
+> @@ -8,6 +8,24 @@
+>   #define ARM64_ASM_PREAMBLE
+>   #endif
+>   
+> +#ifndef __ASSEMBLY__
+> +#ifdef __KERNEL__
+> +
+> +#ifdef CONFIG_ARM64_PTR_AUTH_KERNEL
+> +
+> +#ifdef CONFIG_ARM64_BTI_KERNEL
+> +# define __no_ptrauth __attribute__((target("branch-protection=bti")))
+> +#elif defined(CONFIG_CC_HAS_BRANCH_PROT_PAC_RET)
+> +# define __no_ptrauth __attribute__((target("branch-protection=none")))
+> +#elif defined(CONFIG_CC_HAS_SIGN_RETURN_ADDRESS)
+> +# define __no_ptrauth __attribute__((target("sign-return-address=none")))
+> +#endif
+> +
+> +#endif /* CONFIG_ARM64_PTR_AUTH_KERNEL */
+> +
+> +#endif /* __KERNEL__ */
+> +#endif /* __ASSEMBLY__ */
+> +
+>   /*
+>    * The EL0/EL1 pointer bits used by a pointer authentication code.
+>    * This is dependent on TBI0/TBI1 being enabled, or bits 63:56 would also apply.
+> diff --git a/drivers/misc/lkdtm/cfi.c b/drivers/misc/lkdtm/cfi.c
+> index c9aeddef1044..468ba2f26f74 100644
+> --- a/drivers/misc/lkdtm/cfi.c
+> +++ b/drivers/misc/lkdtm/cfi.c
+> @@ -41,3 +41,87 @@ void lkdtm_CFI_FORWARD_PROTO(void)
+>   	pr_err("FAIL: survived mismatched prototype function call!\n");
+>   	pr_expected_config(CONFIG_CFI_CLANG);
+>   }
+> +
+> +#ifdef CONFIG_ARM64
+> +/*
+> + * This function is used to modify its return address. The PAC needs to be turned
+> + * off here to ensure that the modification of the return address will not be blocked.
+> + */
+> +static noinline __no_ptrauth
+> +void lkdtm_scs_set_lr(unsigned long *expected, unsigned long *addr)
+> +{
+> +	/* Use of volatile is to make sure final write isn't seen as a dead store. */
+> +	unsigned long * volatile *ret_addr = (unsigned long **)__builtin_frame_address(0) + 1;
+> +
+> +	/* Make sure we've found the right place on the stack before writing it. */
+> +	if (*ret_addr == expected)
+> +		*ret_addr = addr;
+> +}
+> +
+> +/* Function with __noscs attribute attempts to modify its return address. */
+> +static noinline __no_ptrauth __noscs
+> +void lkdtm_noscs_set_lr(unsigned long *expected, unsigned long *addr)
+> +{
+> +	/* Use of volatile is to make sure final write isn't seen as a dead store. */
+> +	unsigned long * volatile *ret_addr = (unsigned long **)__builtin_frame_address(0) + 1;
+> +
+> +	/* Make sure we've found the right place on the stack before writing it. */
+> +	if (*ret_addr == expected)
+> +		*ret_addr = addr;
+> +}
+> +#else
+> +static inline void lkdtm_noscs_set_lr(unsigned long *expected, unsigned long *addr) { }
+> +static inline void lkdtm_scs_set_lr(unsigned long *expected, unsigned long *addr) { }
+> +#endif
+> +
+> +static volatile unsigned int force_label;
+> +
+> +/*
+> + * This first checks whether a function with the __noscs attribute under
+> + * the current platform can directly modify its return address, and if so,
+> + * checks whether scs takes effect.
+> + */
+> +void __no_optimize lkdtm_CFI_BACKWARD_SHADOW(void)
+> +{
+> +	void *array[] = {&&unexpected, &&expected, &&good_scs, &&bad_scs};
+> +
+> +	if (force_label && (force_label < sizeof(array))) {
+> +		/*
+> +		 * Call them with "NULL" first to avoid
+> +		 * arguments being treated as constants in -02.
+> +		 */
+> +		lkdtm_noscs_set_lr(NULL, NULL);
+> +		lkdtm_scs_set_lr(NULL, NULL);
+> +		goto *array[force_label];
+> +	}
+> +
+> +	/* Keep labels in scope to avoid compiler warnings. */
+> +	do {
+> +		/* Verify the "normal" condition of LR corruption working. */
+> +		pr_info("Trying to corrupt lr in a function without scs protection ...\n");
+> +		lkdtm_noscs_set_lr(&&unexpected, &&expected);
+> +
+> +unexpected:
+> +		/*
+> +		 * If lr cannot be modified, the following check is meaningless,
+> +		 * returns directly.
+> +		 */
+> +		pr_err("XPASS: Unexpectedly survived lr corruption without scs?!\n");
+> +		break;
+> +
+> +expected:
+> +		pr_info("ok: lr corruption redirected without scs.\n");
+> +
+> +		/* Verify that SCS is in effect. */
+> +		pr_info("Trying to corrupt lr in a function with scs protection ...\n");
+> +		lkdtm_scs_set_lr(&&good_scs, &&bad_scs);
+> +
+> +good_scs:
+> +		pr_info("ok: scs takes effect.\n");
+> +		break;
+> +
+> +bad_scs:
+> +		pr_err("FAIL: return address rewritten!\n");
+> +		pr_expected_config(CONFIG_SHADOW_CALL_STACK);
+> +	} while (0);
+> +}
+> diff --git a/drivers/misc/lkdtm/core.c b/drivers/misc/lkdtm/core.c
+> index f69b964b9952..7af7268b82e4 100644
+> --- a/drivers/misc/lkdtm/core.c
+> +++ b/drivers/misc/lkdtm/core.c
+> @@ -178,6 +178,7 @@ static const struct crashtype crashtypes[] = {
+>   	CRASHTYPE(USERCOPY_KERNEL),
+>   	CRASHTYPE(STACKLEAK_ERASING),
+>   	CRASHTYPE(CFI_FORWARD_PROTO),
+> +	CRASHTYPE(CFI_BACKWARD_SHADOW),
+>   	CRASHTYPE(FORTIFIED_OBJECT),
+>   	CRASHTYPE(FORTIFIED_SUBOBJECT),
+>   	CRASHTYPE(FORTIFIED_STRSCPY),
+> diff --git a/drivers/misc/lkdtm/lkdtm.h b/drivers/misc/lkdtm/lkdtm.h
+> index d6137c70ebbe..a66fba949ab5 100644
+> --- a/drivers/misc/lkdtm/lkdtm.h
+> +++ b/drivers/misc/lkdtm/lkdtm.h
+> @@ -157,6 +157,7 @@ void lkdtm_STACKLEAK_ERASING(void);
+>   
+>   /* cfi.c */
+>   void lkdtm_CFI_FORWARD_PROTO(void);
+> +void lkdtm_CFI_BACKWARD_SHADOW(void);
+>   
+>   /* fortify.c */
+>   void lkdtm_FORTIFIED_OBJECT(void);
+> diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
+> index 3c4de9b6c6e3..2db37db36651 100644
+> --- a/include/linux/compiler-clang.h
+> +++ b/include/linux/compiler-clang.h
+> @@ -68,3 +68,4 @@
+>   
+>   #define __nocfi		__attribute__((__no_sanitize__("cfi")))
+>   #define __cficanonical	__attribute__((__cfi_canonical_jump_table__))
+> +#define __no_optimize	__attribute__((optnone))
+> diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> index deff5b308470..28d1b0ec6656 100644
+> --- a/include/linux/compiler-gcc.h
+> +++ b/include/linux/compiler-gcc.h
+> @@ -162,3 +162,5 @@
+>   #if GCC_VERSION < 90100
+>   #undef __alloc_size__
+>   #endif
+> +
+> +#define __no_optimize	__attribute__((optimize("-O0")))
+> diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+> index 3c1795fdb568..f5ad83f7ea2f 100644
+> --- a/include/linux/compiler_types.h
+> +++ b/include/linux/compiler_types.h
+> @@ -257,6 +257,10 @@ struct ftrace_likely_data {
+>   # define __nocfi
+>   #endif
+>   
+> +#ifndef __no_ptrauth
+> +# define __no_ptrauth
+> +#endif
+> +
+>   #ifndef __cficanonical
+>   # define __cficanonical
+>   #endif
+> diff --git a/tools/testing/selftests/lkdtm/tests.txt b/tools/testing/selftests/lkdtm/tests.txt
+> index 6b36b7f5dcf9..12df67a3b419 100644
+> --- a/tools/testing/selftests/lkdtm/tests.txt
+> +++ b/tools/testing/selftests/lkdtm/tests.txt
+> @@ -73,6 +73,7 @@ USERCOPY_STACK_BEYOND
+>   USERCOPY_KERNEL
+>   STACKLEAK_ERASING OK: the rest of the thread stack is properly erased
+>   CFI_FORWARD_PROTO
+> +CFI_BACKWARD_SHADOW ok: scs takes effect
+>   FORTIFIED_STRSCPY
+>   FORTIFIED_OBJECT
+>   FORTIFIED_SUBOBJECT
