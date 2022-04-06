@@ -2,91 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4080C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9024C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236269AbiDFPlq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
+        id S236500AbiDFPmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236251AbiDFPkX (ORCPT
+        with ESMTP id S235878AbiDFPmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:40:23 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C92626A0B5
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649249764; x=1680785764;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=i4Z8WedwVdvezLTFVD9PQEY/BenOcNbiAfsHFxkmaZw=;
-  b=XDWekrp0yxcxR+Cuyx+10TQa6m667hiQBJyIrUiIrpbOCIQB6TnVJuRA
-   pkKoGzfMQJGbnLiEqcO4DJ5zNd6CrCocSIKqUCr7weA1TS9a9rO3SR66f
-   EDa7KZmlTRmTXnmMzyGNlh32ibBZ+bDNB3hgDttI+3m7q83/p75JtK/iW
-   BJx9x2osZoKXsIBGVqj66MrrD+OguQ3PN68b08KEWyoTN7O63kf/uTqDq
-   FiPR7MF9S8YWcpYcnTnEJOxGJb5MS8mRX9hQ7caFqwLuB5U+49bMpb+Cj
-   jYKtkIodLumMOPFsU+nc7bS6cku80Uym7LJTJfb7I47vQBBN00r62Fiht
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240968187"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="240968187"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 05:56:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="505717737"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 06 Apr 2022 05:56:02 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nc5Cb-0004QC-HG;
-        Wed, 06 Apr 2022 12:56:01 +0000
-Date:   Wed, 6 Apr 2022 20:55:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:robh/linux/dt/pop-pci-nodes 2/2] ia64-linux-ld:
- of.c:undefined reference to `of_attach_node'
-Message-ID: <202204062042.zlTRFO9x-lkp@intel.com>
+        Wed, 6 Apr 2022 11:42:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8F455CD37
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:13:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D05D9B82390
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 13:13:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F2DDC385A3;
+        Wed,  6 Apr 2022 13:13:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649250792;
+        bh=Gr86iCI3VLTV0BP5gVR9+UdZVYOqcPq/2Fvr8u+Rih0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DGW0sKpXgw71/A/bPedf4y1FZqAkOr9Ful3kNG4vaqmeuk1mbbnow5wB3ZMnk+RFB
+         Q7SqOIFFXugALMWXlbhoTNW+CVrbWjwD8REtIg0mdOWF5qA9e/CzfDIdD2EGXphGmU
+         nn4hGYwVuduaB9jkORXjwc07sDtg8TPwgUHeOfiCgMbrv7237qXeIdNjzjdgOk/NsY
+         k4RPd6rnsi8Yq2GiFOKloIKkUOdoZ/OL+LxKUhRJBsdHqi/UUMYtoV6lqYmkZBQUh9
+         NaNm/NCHA9KbgF3i9xA1OInRUxTM/mmQU4d6fxexQDbVvmn7Ip+6ns8Tac8Ihg4+NQ
+         fbBzmiTwhYilA==
+Date:   Wed, 6 Apr 2022 14:13:09 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Detlev Casanova <detlev.casanova@collabora.com>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-kernel@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>
+Subject: Re: [PATCH v1 1/1] regulator/rpi-panel-attiny: Get rid of duplicate
+ of_node assignment
+Message-ID: <Yk2R5el6fUm4FQo5@sirena.org.uk>
+References: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
+ <Yk2PNas3YIGQLZ04@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="NbfDmBCK550LI/U9"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Yk2PNas3YIGQLZ04@smile.fi.intel.com>
+X-Cookie: <Culus-> libc6 is not essential :|
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block robh/linux/dt/pop-pci-nodes
-head:   b9198a9525a97d05b0bb2a7282fede92d7d2d93d
-commit: b9198a9525a97d05b0bb2a7282fede92d7d2d93d [2/2] PCI: Create DT nodes if they don't exist
-config: ia64-randconfig-r025-20220406 (https://download.01.org/0day-ci/archive/20220406/202204062042.zlTRFO9x-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/b9198a9525a97d05b0bb2a7282fede92d7d2d93d
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block robh/linux/dt/pop-pci-nodes
-        git checkout b9198a9525a97d05b0bb2a7282fede92d7d2d93d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--NbfDmBCK550LI/U9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-All errors (new ones prefixed by >>):
+On Wed, Apr 06, 2022 at 04:01:41PM +0300, Andy Shevchenko wrote:
+> On Fri, Mar 25, 2022 at 08:45:08PM +0200, Andy Shevchenko wrote:
+> > GPIO library does copy the of_node from the parent device of
+> > the GPIO chip, there is no need to repeat this in the individual
+> > drivers. Remove these assignment all at once.
+> >=20
+> > For the details one may look into the of_gpio_dev_init() implementation.
+>=20
+> Any comments on this? Can it be applied now?
 
-   ia64-linux-ld: drivers/pci/of.o: in function `make_dev_node':
-   of.c:(.text+0x1a72): undefined reference to `of_attach_node'
->> ia64-linux-ld: of.c:(.text+0x1b62): undefined reference to `of_attach_node'
-   ia64-linux-ld: drivers/pci/of.o: in function `make_bus_node':
-   of.c:(.text+0x1c62): undefined reference to `of_attach_node'
-   ia64-linux-ld: drivers/pci/of.o: in function `pci_set_bus_of_node':
-   of.c:(.text+0x1ff2): undefined reference to `of_attach_node'
+Please don't send content free pings and please allow a reasonable time
+for review.  People get busy, go on holiday, attend conferences and so=20
+on so unless there is some reason for urgency (like critical bug fixes)
+please allow at least a couple of weeks for review.  If there have been
+review comments then people may be waiting for those to be addressed.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Sending content free pings adds to the mail volume (if they are seen at
+all) which is often the problem and since they can't be reviewed
+directly if something has gone wrong you'll have to resend the patches
+anyway, so sending again is generally a better approach though there are
+some other maintainers who like them - if in doubt look at how patches
+for the subsystem are normally handled.
+
+--NbfDmBCK550LI/U9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJNkeEACgkQJNaLcl1U
+h9DXsAf7BOK5omSdOooKbQLgdj9ov+/a6Q4aFuHudnlGJeh9ayaojABcc4SA2Drw
+7ZmtsASXvWpDXlHbNMzAD6lysjUo7FE+v00xRO7uBtcKNAelGKAlInt5EkqaL0Qd
+g8LKTLnGTv0aIRLvVVvh5WYkVLeF/1YPlVTFEV+5O+qbMOXomUSZbNpjTKKACMRS
+2HYcGe3okbqEpoxztzVMEIvl/RpY4p9VsYLuN4Zb2nY0HxSkgfNoVB9zGC69paze
+l9WnPERLRH26PSzBeGlH4H0sSdaSk17/4RJEVuL/CJrGNr2bbWcrTkIuoW1fzuQy
+clj9lAh7mJEN+4S9DtvT8HVB5laFnw==
+=Gavw
+-----END PGP SIGNATURE-----
+
+--NbfDmBCK550LI/U9--
