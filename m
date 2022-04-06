@@ -2,103 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D543C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77246C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:13:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbiDFNOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45228 "EHLO
+        id S232805AbiDFNPD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233719AbiDFNMy (ORCPT
+        with ESMTP id S233027AbiDFNNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:12:54 -0400
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1685F90BE;
-        Wed,  6 Apr 2022 02:50:19 -0700 (PDT)
-Received: by mail-ed1-f54.google.com with SMTP id g20so1932702edw.6;
-        Wed, 06 Apr 2022 02:50:19 -0700 (PDT)
+        Wed, 6 Apr 2022 09:13:55 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB246D760F
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:48:37 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-de3eda6b5dso1697136fac.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 20:48:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MFmTgxf9WBcNk7Ma/JrKZuUBcy9vPCSbw8pZ9uClHTw=;
+        b=YypRbhtO8BcBmRggboLh9kUJpIeTfFXGKoZsD0ZnoejSfdmmzYTQpP/JfEecm8Y500
+         iJPawkPorpBAekDKLBjzjXCYRoNb8eJH5KnsRc6fKXdcf1TxA/m+CzW/SD1eE6tkqpOM
+         1JRh0QR/OrOvj0toPdgpiEGpVp15+yWg07ogk1JYPsFggabu2oCVws2py+0UrpX23EHP
+         yptHVd51tf46p3eE1TKalnflMbpXBkQ5gNFy8kBVpmM49WAhoFM+zWRnklugDEXdkbbV
+         YJp7r2LY3UX7IqqDvI5gE5Zhqm7VN3wb2VqRTBRvAgMAomXyjzvG3O+2Xl+CtIjVHcTf
+         WLzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PO8bgVYc+6yq/GV1chIgW+khCSDiG15QhmYnAA0FTmY=;
-        b=jJY4a1XyPEMAt4EXBRXTFwKg733D9QCnjp+tvaRH5ix3czCPMdBiaFhGrl6pXlKB/9
-         pIgnjxa8JfFVfQAwgIa+yBy47KMzwTPmkxQnuQvzyrn+oEZQxnluyC4h/IPHa7c4z2NR
-         rCTvZe15XxY1xU7J16/Cyfwek8+3rskF/9+/Y7ujEb9T748yip38DNllJ7bxo5hEoyaS
-         vDkrYzSsQy274lfuHEItbgQ1lc4RQtexBjLz75X6JcBPnvEMSKR+KAUAHnR7/qEwx0ny
-         e8YLXLYjEoATiKiQJu1bMgT4Jl5h3FA2TZ/bv7Ga4xThOfLL+0tskUwvOT+0sY0JCjeW
-         OhaA==
-X-Gm-Message-State: AOAM532vz4Dw9LxDqYjIgDKvXTV7NrhizPwW7qr1CpZnTk1DayB8jxj+
-        XlFzVyBFD+jgT/b/jPUVL70=
-X-Google-Smtp-Source: ABdhPJwDepzSDc+UC30gZbKsINVUj0Z32NzckEH9QLPfmT3vbdsNLWRBxxyj70khlKjB9SmuoiVNsA==
-X-Received: by 2002:a50:ed0b:0:b0:41c:cf60:a882 with SMTP id j11-20020a50ed0b000000b0041ccf60a882mr7956124eds.12.1649238539608;
-        Wed, 06 Apr 2022 02:48:59 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id sb15-20020a1709076d8f00b006dfe4cda58fsm6356961ejc.95.2022.04.06.02.48.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 02:48:59 -0700 (PDT)
-Message-ID: <98c359ba-9563-3da0-d968-ae40cee9d45f@kernel.org>
-Date:   Wed, 6 Apr 2022 11:48:56 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MFmTgxf9WBcNk7Ma/JrKZuUBcy9vPCSbw8pZ9uClHTw=;
+        b=dci00KTffaJyLdvnrO9WXg4a9wrBMzWy5cN6OdMVKi0PR1dh08X2nvdpync6EyY74C
+         uFlGE7VjlSYjl4KWxH27ENPEiC5CQGPrmZyb8relgCMfMZbhw48sNnDplPPrmRrySFt9
+         XpTcJiHXluVFl4M+n08vdaSvvUmBhEtxebmKN3LXlt6fOLhX3KrJDjhCy4bQFXQj5SsM
+         F8LI9Q8ACQGrxdJgMtDqtXvT7wMwVvsND0/vSaFLb0J9zVBiMOE9lBfYWDj288gpJbYF
+         fRzyftTSKqjy3lYTUi30dvxBoi6s2D+T/OjOgNSfZx6evIkQh9o/IqKCstCaI2u5o/Ae
+         5H8w==
+X-Gm-Message-State: AOAM530miJvOQZDPRigiyNqmojflK0TTpcKWEWkbDv2h9cgfV9qxf73/
+        5R1d8C7fy5ZOzUE9kkQLvHdkSUwUxlKx4c08KZO1cA==
+X-Google-Smtp-Source: ABdhPJyxAr5hj9JV2vfWacQoXf6sk62oN5mHLsY6YCWNGSyPaLtPyyxS5o+87kuYsiIBa5Fm1g/g/5aaLq72FwNzkuo=
+X-Received: by 2002:a05:6870:95a4:b0:d7:18b5:f927 with SMTP id
+ k36-20020a05687095a400b000d718b5f927mr2948940oao.45.1649216916747; Tue, 05
+ Apr 2022 20:48:36 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt and
- console_write
-Content-Language: en-US
-To:     Jaewon Kim <jaewon02.kim@samsung.com>,
-        'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-Cc:     'Krzysztof Kozlowski' <krzk@kernel.org>,
-        'Alim Akhtar' <alim.akhtar@samsung.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        'Chanho Park' <chanho61.park@samsung.com>
-References: <20220406082216.11206-1-jaewon02.kim@samsung.com>
- <CGME20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f@epcas2p2.samsung.com>
- <20220406082216.11206-2-jaewon02.kim@samsung.com>
- <Yk1NmTdUgMcSIq1O@kroah.com> <042701d84991$ca50d410$5ef27c30$@samsung.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <042701d84991$ca50d410$5ef27c30$@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20211020120431.776494-1-hikalium@chromium.org>
+ <874k9bdcrk.wl-maz@kernel.org> <CACTzKb+vVU0Ymh2Nx5B6kSydBsJ6AgrbQMF39RFvqoHpvL_riw@mail.gmail.com>
+ <87zgpgqnvm.wl-maz@kernel.org>
+In-Reply-To: <87zgpgqnvm.wl-maz@kernel.org>
+From:   Hikaru Nishida <hikalium@google.com>
+Date:   Wed, 6 Apr 2022 12:48:25 +0900
+Message-ID: <CAKULNjVkBDuBn4x=S646nZoKYqSn95ToFsZT_ioVfz0-MsZhxg@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 0/5] x86/kvm: Virtual suspend time injection support
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Hikaru Nishida <hikalium@chromium.org>,
+        linux-kernel@vger.kernel.org, dme@dme.org,
+        Thomas Gleixner <tglx@linutronix.de>, mlevitsk@redhat.com,
+        linux@roeck-us.net, pbonzini@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Suleiman Souhlal <suleiman@google.com>,
+        Sergey Senozhatsky <senozhatsky@google.com>,
+        kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Juergen Gross <jgross@suse.com>,
+        Kees Cook <keescook@chromium.org>,
+        Lai Jiangshan <laijs@linux.alibaba.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        KVM list <kvm@vger.kernel.org>, linux-doc@vger.kernel.org,
+        x86@kernel.org, Sangwhan Moon <sxm@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06. 04. 22, 10:39, Jaewon Kim wrote:
-> On 22. 4. 6. 17:21, Greg Kroah-Hartman wrote:
->> On Wed, Apr 06, 2022 at 05:22:16PM +0900, Jaewon Kim wrote:
->>> The console_write and IRQ handler can run concurrently.
->>> Problems may occurs console_write is continuously executed while the
->>> IRQ handler is running.
->>>
->>> Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
->>> ---
->>>   drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
->>>   1 file changed, 12 insertions(+)
->>>
->>> diff --git a/drivers/tty/serial/samsung_tty.c
->>> b/drivers/tty/serial/samsung_tty.c
->>> index e1585fbae909..9db479d728b5 100644
->>> --- a/drivers/tty/serial/samsung_tty.c
->>> +++ b/drivers/tty/serial/samsung_tty.c
->>> @@ -2480,12 +2480,24 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
->>>   			     unsigned int count)
->>>   {
->>>   	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
->>> +	unsigned long flags;
->>> +	bool locked = 1;
->>
->> "1" is not a boolean :)
-> 
-> return value of spin_trylock() is 1 or 0.
-> It seems better to keep it as an int than to change it to bool.
-> I will return it to int.
+Hi Marc,
 
-Hi, no, do not that. Simply use bool/true/false.
+Thanks for the reply! (And sorry for a late reply...)
 
-thanks,
--- 
-js
-suse labs
+On Sun, Dec 5, 2021 at 2:30 AM Marc Zyngier <maz@kernel.org> wrote:
+>
+> Hi Hikaru,
+>
+> Apologies for the much delayed reply.
+>
+> > The problems described by Thomas in the thread was:
+> > - User space or kernel space can observe the stale timestamp before
+> > the adjustment
+> >   - Moving CLOCK_MONOTONIC forward will trigger all sorts of timeouts,
+> > watchdogs, etc...
+> > - The last attempt to make CLOCK_MONOTONIC behave like CLOCK_BOOTTIME
+> > was reverted within 3 weeks. a3ed0e4393d6 ("Revert: Unify
+> > CLOCK_MONOTONIC and CLOCK_BOOTTIME")
+> >   - CLOCK_MONOTONIC correctness (stops during the suspend) should be maintained.
+> >
+> > I agree with the points above. And, the current CLOCK_MONOTONIC
+> > behavior in the KVM guest is not aligned with the statements above.
+> > (it advances during the host's suspension.)
+> > This causes the problems described above (triggering watchdog
+> > timeouts, etc...) so my patches are going to fix this by 2 steps
+> > roughly:
+> > 1. Stopping the guest's clocks during the host's suspension
+> > 2. Adjusting CLOCK_BOOTTIME later
+> > This will make the clocks behave like the host does, not making
+> > CLOCK_MONOTONIC behave like CLOCK_BOOTTIME.
+> >
+> > First one is a bit tricky since the guest can use a timestamp counter
+> > in each CPUs (TSC in x86) and we need to adjust it without stale
+> > values are observed by the guest kernel to prevent rewinding of
+> > CLOCK_MONOTONIC (which is our top priority to make the kernel happy).
+> > To achieve this, my patch adjusts TSCs (and a kvm-clock) before the
+> > first vcpu runs of each vcpus after the resume.
+> >
+> > Second one is relatively safe: since jumping CLOCK_BOOTTIME forward
+> > can happen even before my patches when suspend/resume happens, and
+> > that will not break the monotonicity of the clocks, we can do that
+> > through IRQ.
+> >
+> > [1] shows the flow of the adjustment logic, and [2] shows how the
+> > clocks behave in the guest and the host before/after my patches.
+> > The numbers on each step in [1] corresponds to the timing shown in [2].
+> > The left side of [2] is showing the behavior of the clocks before the
+> > patches, and the right side shows after the patches. Also, upper
+> > charts show the guest clocks, and bottom charts are host clocks.
+> >
+> > Before the patches(left side), CLOCK_MONOTONIC seems to be jumped from
+> > the guest's perspective after the host's suspension. As Thomas says,
+> > large jumps of CLOCK_MONOTONIC may lead to watchdog timeouts and other
+> > bad things that we want to avoid.
+> > With the patches(right side), both clocks will be adjusted (t=4,5) as
+> > if they are stopped during the suspension. This adjustment is done by
+> > the host side and invisible to the guest since it is done before the
+> > first vcpu run after the resume. After that, CLOCK_BOOTTIME will be
+> > adjusted from the guest side, triggered by the IRQ sent from the host.
+> >
+> > [1]: https://hikalium.com/files/kvm_virt_suspend_time_seq.png
+> > [2]: https://hikalium.com/files/kvm_virt_suspend_time_clocks.png
+>
+> Thanks for the very detailed explanation. You obviously have though
+> about this, and it makes sense.
+>
+> My worry is that this looks to be designed for the needs of Linux on
+> x86, and does not match the reality of KVM on arm64, where there is no
+> KVM clock (there is no need for it, and I have no plan to support it),
+> and there is more than a single counter visible to the guest (at least
+> two, and up to four with NV, all with various offsets). This also
+> deals with concepts that are Linux-specific. How would it work for
+> another (arbitrary) guest operating system?
+
+Whether the architecture has a kvm-clock or not will not be a problem.
+The high-level requirements for implementing this feature are:
+- host hypervisor can adjust the offset of the virtualized hardware
+clocks (tsc and kvm-clock in x86, generic timer in aarch64)
+- host hypervisor can notify guest kernel about the host suspension
+(interrupts etc.)
+- host hypervisor can share the duration to be injected with the guest
+(by shared memory or registers etc...)
+so I believe it can be implemented on aarch64 as well.
+
+This logic is only designed for Linux since the problem we want to
+solve is linux specific.
+(CLOCK_MONOTONIC vs CLOCK_BOOTTIME)
+
+>
+> Can we please take a step back and look at what we want to expose from
+> a hypervisor PoV? It seems to me that all we want is:
+>
+> (1) tell the guest that time has moved forward
+> (2) tell the guest by how much time has moved forward
+>
+> In a way, this isn't different from stolen time, only that it affects
+> the whole VM and not just a single CPU (and for a much longer quantum
+> of time).
+>
+
+(1) and (2) in the above may be implemented out of the host kernel,
+but there is another most important step (0) is existed:
+
+(0) adjust the clocks to compensate for how much the clocks have
+incremented over a period of suspension, *before* any vcpu resume.
+
+(0) is not possible to be done from outside of the host kernel (as far
+as I tried) since there is no way to ensure that we can do the
+adjustment "before the first vcpu runs after the host's resume" in the
+userland.
+Suspending a VM from VMM before the host's suspend will not always
+work, since we can't guarantee that the VMM stopped the VM before the
+host kernel enters into suspend.
+That's why we implemented this feature with a modification in the host side.
+
+As described in the above, just telling the guest about the time has
+moved forward is not enough to solve the problem (a large jump of
+CLOCK_MONOTONIC forward after the host's suspension will happen, which
+can cause bad things like watchdog timeouts etc...).
+
+> How the event is handled by the guest (what it means for its clocks
+> and all that) is a guest problem. Why should KVM itself adjust the
+> counters? This goes against what the architecture specifies (the
+> counter is in an always-on domain that keeps counting when suspended),
+> and KVM must preserve the architectural guarantees instead of
+> deviating from them.
+>
+
+The counters need to be adjusted by KVM because:
+1. We cannot adjust the guest's CLOCK_MONOTONIC from the guest side
+since it breaks its monotonicity.
+2. The counters are used by the guest userland to provide a fast
+interface to read the clocks (vdso)
+so the only way to adjust the counters without breaking their
+monotonicity is doing that adjustment outside of the guest.
+
+Let's think about this in a different way... For VM migrations, TSC
+offset can be modified since we need to adjust it.
+My patches are doing a similar thing, maybe we can say our patches are
+doing "VM migration on the timeline". In this perspective, the
+architectural restriction from the guest side is not broken since we
+can consider that the VM has been time-traveled forward.
+
+> > > Assuming you solve these, you should model the guest memory access
+> > > similarly to what we do for stolen time. As for injecting an
+> > > interrupt, why can't this be a userspace thing?
+> >
+> > Since CLOCK_BOOTTIME is calculated by adding a gap
+> > (tk->monotonic_to_boot) to CLOCK_MONOTONIC, and there are no way to
+> > change the value from the outside of the guest kernel, we should
+> > implement some mechanism in the kernel to adjust it.
+> > (Actually, I tried to add a sysfs interface to modify the gap [3], but
+> > I learned that that is not a good idea...)
+>
+> It is not what I was suggesting.
+>
+> My suggestion was to have a shared memory between the VMM and the
+> guest again, similar to the way we handle stolen time), let the VMM
+> expose the drift in this shared memory, and inject an interrupt from
+> userspace to signify a wake-up. All this requires is that on suspend,
+> you force the vcpus to exit. On resume, the VMM update the guest
+> visible drift, posts an interrupt, and let things rip.
+>
+> This requires very minimal KVM support, and squarely places the logic
+> in the guest. Why doesn't this work?
+
+Is there a way to know the host is going to suspend from host'
+userland applications?
+If there is a way to do that, it may be possible to implement the
+feature outside of KVM but my knowledge about the Linux kernel was not
+enough to find out how to do that. I would really appreciate it if you
+could tell me how to do that.
+
+>
+> Another question is maybe even more naive: on bare metal, we don't
+> need any of this. The system suspends, resumes, and recovers well
+> enough. Nobody hides anything, and yet everything works just fine.
+> That's because the kernel knows it is being suspended, and it acts
+> accordingly. It looks to me that there is some value in following the
+> same principles, even if this means that the host suspend has to
+> synchronise with the guest being suspended.
+>
+> Thanks,
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
+
+Thank you,
+--
+Hikaru Nishida
