@@ -2,100 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 546A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:49:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA7B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbiDFLu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
+        id S231148AbiDFLvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiDFLuk (ORCPT
+        with ESMTP id S231163AbiDFLup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:50:40 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E23E1A12BF
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 23:53:23 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2365Gjw0040013;
-        Wed, 6 Apr 2022 06:53:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=h0MJqzIp4IiyGaH/dxNKIQcAGh7f72MS8MNvzz3eEaA=;
- b=il38V/64sHKg42/Y0raPVlOuuy00uD0tlqqyyAAlP9TVtMW0R1cFfroT+SB9N6klYZqd
- PaZpZ+LfIwqLvQ7QRIxK4dryvPg1iZpvJpu6slbOzoOcGPXipMcGBG+jn67mzd4wcRao
- 7yaarKs2kSIA4rpJ6KrOk4kGVHCqwaTxVGoi9JRDxfaM3TKk6Dlcf3rcEKV+N5HZfy2Y
- mvyH7JtGt63cRH+bwKIBzv8e/rOPWb2vYoyJ65sh1YiWOAxR6LY3GGIsj3248hm5TG0T
- D/G0BQ7C6VQq3wNOOT8FsKgx9ykbaXe8NAkmE+seMRqIk8kLRqDGJolPz0Ji0DrGzn2/ oQ== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f8tfjv6cg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 06:53:15 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2366nDU8004045;
-        Wed, 6 Apr 2022 06:53:13 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06fra.de.ibm.com with ESMTP id 3f6drhnymk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 06:53:13 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2366rIUB47317476
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Apr 2022 06:53:18 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E97F64203F;
-        Wed,  6 Apr 2022 06:53:10 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 945A342047;
-        Wed,  6 Apr 2022 06:53:10 +0000 (GMT)
-Received: from ozlabs.au.ibm.com (unknown [9.192.253.14])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Apr 2022 06:53:10 +0000 (GMT)
-Received: from [9.43.195.169] (unknown [9.43.195.169])
+        Wed, 6 Apr 2022 07:50:45 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DC51C9454;
+        Tue,  5 Apr 2022 23:54:11 -0700 (PDT)
+Received: from [IPV6:2a01:e0a:120:3210:ff63:de1f:2a77:5241] (unknown [IPv6:2a01:e0a:120:3210:ff63:de1f:2a77:5241])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ozlabs.au.ibm.com (Postfix) with ESMTPSA id E550D600A7;
-        Wed,  6 Apr 2022 16:53:04 +1000 (AEST)
-Message-ID: <3dcd1283-4243-b7d1-142b-7654a161ee07@linux.ibm.com>
-Date:   Wed, 6 Apr 2022 16:53:02 +1000
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 8091E1F44519;
+        Wed,  6 Apr 2022 07:54:09 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649228050;
+        bh=tqnMuI8tFUvTxaTXTOvtQ2qzTn9cKLNn18CehTYmq8w=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=hpbelg9ITQRa7aKF8ZvmRAihh+Xif2IZ1f80s4ReZW/+hjfUjbf6YDv0q+uTSAAyU
+         +hp+8WaicFUXLVxHALbFU932x/O6gAmvj2w3STI3dwKIPTyEQbU63eAFAijijUcX5a
+         7QQB0Ed4hvVe1vByawUjFE1muivhK0HdFyqeMdjcToNxpvOg5X90+fExd/Atfomwox
+         XZS4lRr3b+/3cIbpuJgdJqsqjK55zAYRosi7aupAcwRd/Yluf91gLoLCkZzmWhfLeK
+         P00ix/kzuCyg8he3Oxjp8uUq1LYP4VLO5WrBtyecAbkLYNBxowyjPZXPkQXSvLTRWR
+         g/RXf+JtfVQaw==
+Message-ID: <bf938b83-2b57-95b3-4bcb-f967bbb46413@collabora.com>
+Date:   Wed, 6 Apr 2022 08:54:07 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH] cxl/ocxl: Prepare cleanup of powerpc's asm/prom.h
+Subject: Re: [RFC PATCH 0/8] media: hantro: Add 10-bit support
 Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-References: <a2bae89b280e7a7cb87889635d9911d6a245e780.1648833388.git.christophe.leroy@csgroup.eu>
- <d6cb3408-49a4-3c35-6ce0-3b35fd88bb9e@linux.ibm.com>
- <2147ad9f-2844-cef9-e804-e44cb619103e@csgroup.eu>
-From:   Andrew Donnellan <ajd@linux.ibm.com>
-In-Reply-To: <2147ad9f-2844-cef9-e804-e44cb619103e@csgroup.eu>
+To:     =?UTF-8?Q?Jernej_=c5=a0krabec?= <jernej.skrabec@gmail.com>,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de
+Cc:     mchehab@kernel.org, nicolas@ndufresne.ca, hverkuil-cisco@xs4all.nl,
+        gregkh@linuxfoundation.org, wens@csie.org, samuel@sholland.org,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <20220227144926.3006585-1-jernej.skrabec@gmail.com>
+ <b6987a9a-56af-f63f-b60a-37df141d6e89@collabora.com>
+ <4386971.LvFx2qVVIh@jernej-laptop>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <4386971.LvFx2qVVIh@jernej-laptop>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 9WskZlLECUlMlLXSfKbwwtwa5PMr2DZC
-X-Proofpoint-GUID: 9WskZlLECUlMlLXSfKbwwtwa5PMr2DZC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_02,2022-04-05_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 adultscore=0 impostorscore=0 bulkscore=0 mlxlogscore=825
- suspectscore=0 mlxscore=0 spamscore=0 clxscore=1015 priorityscore=1501
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204060028
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/4/22 16:52, Christophe Leroy wrote:
-> Thanks. Can you take the patch through your tree ?
 
-We don't have a tree of our own, we rely on mpe to take it through powerpc.
+Le 05/04/2022 à 20:40, Jernej Škrabec a écrit :
+> Hi Benjamin!
+>
+> Dne torek, 05. april 2022 ob 18:07:41 CEST je Benjamin Gaignard napisal(a):
+>> Le 27/02/2022 à 15:49, Jernej Skrabec a écrit :
+>>> First two patches add 10-bit formats to UAPI, third extends filtering
+>>> mechanism, fourth fixes incorrect assumption, fifth moves register
+>>> configuration code to proper place, sixth and seventh enable 10-bit
+>>> VP9 decoding on Allwinner H6 and last increases core frequency on
+>>> Allwinner H6.
+>>>
+>>> I'm sending this as RFC to get some comments:
+>>> 1. format definitions - are fourcc's ok? are comments/descriptions ok?
+>>> 2. is extended filtering mechanism ok?
+>>>
+>>> I would also like if these patches are tested on some more HW.
+>>> Additionally, can someone test tiled P010?
+>>>
+>>> Please take a look.
+>> Hi Jernej,
+>>
+>> I have create a branch to test this series with VP9 and HEVC:
+>> https://gitlab.collabora.com/benjamin.gaignard/for-upstream/-/tree/10bit_imx
+>> 8m Feel free to pick what I may need in it.
+>>
+>> That doesn't improve fluster scores, I think more dev are still needed in
+>> GST before getting something fully functional.
+>> Anyway I able to select P010 pixel format if the input is a 10bit bitstream.
+> What kind of improvements do you expect? Actually, this series is designed to
+> change nothing for platforms, where 10-bit format is not added into the list
+> of supported formats. I think reasons are quite obvious. First, not every
+> device may support 10-bit output. Second, as you might already figured it out,
+> registers in this series are set only for legacy cores. I have no idea, what
+> needs to be done for newer ones, since I don't have them. Anyway, I tested
+> this with fluster and only one additional test passes, because it is the only
+> one for 10-bit YUV420.
 
--- 
-Andrew Donnellan              OzLabs, ADL Canberra
-ajd@linux.ibm.com             IBM Australia Limited
+In this series you will find that I have added the registers for the new cores,
+fix hevc to be able to use 10-bit, and enable that in IMX8M.
+
+Regards,
+Benjamin
+
+>
+> Best regards,
+> Jernej
+>
+>
