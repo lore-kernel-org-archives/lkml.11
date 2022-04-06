@@ -2,78 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 798F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:14:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232823AbiDFNPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45228 "EHLO
+        id S231837AbiDFNQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233072AbiDFNOD (ORCPT
+        with ESMTP id S232716AbiDFNPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:14:03 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DEA31D66DF;
-        Wed,  6 Apr 2022 02:52:31 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KYJbY3GntzBrxP;
-        Wed,  6 Apr 2022 17:08:57 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 17:13:02 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 6 Apr
- 2022 17:13:07 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <dri-devel@lists.freedesktop.org>
-CC:     <jagan@amarulasolutions.com>, <m.szyprowski@samsung.com>,
-        <robert.foss@linaro.org>
-Subject: [PATCH -next] drm/exynos: mic: fix return value check in exynos_mic_probe()
-Date:   Wed, 6 Apr 2022 17:22:00 +0800
-Message-ID: <20220406092200.2581262-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 6 Apr 2022 09:15:42 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9B3558303
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:52:53 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2e64a6b20eeso20272407b3.3
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 02:52:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/yHrnn97lLsdzLQ/tiQKfs1ZiFY5fV3TRpR81okhiyk=;
+        b=IcLxWDEf7+C8DspiQndRuhI1XrlNQ2QQ/vDOajpEGHJu3NRx9sfwGDTDtS0WUu6sqZ
+         wBo+d0lDWjRBzFlNTZXFyWhgilrFzdFEoegRa+TpnTQiLI6UPGPZ29VYj7LPEdhCQpfK
+         tpenov1vJgo/oau07ISFuxSGQ+UTG5ZXwUjsj1XXVqy5MEytputwLCTU5CxnFzpUwdYP
+         KDBxJXcw0GaepeCI1sz8aoqzwBz+wpNkCG81WKJ4l/Y+1eiupXw7+EnP/14GM5v6lnuI
+         80XpGQIVj1QEVUWpHIBgOevRQbVwbcfilrR2Sk7BLLwSfnCK9FgOnK8sur+wEm6j/n4P
+         5/7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/yHrnn97lLsdzLQ/tiQKfs1ZiFY5fV3TRpR81okhiyk=;
+        b=RKj5GKkn/hWqhSTCCptTP4h0Leb/DdhrREA7h7gsrglHCNNlNRp6evtQTn21EUjtQK
+         uCM3ggpBclo1B1Q1TploCbLhN97Vz91USuz/Jku/hvOMBOPqyt43Ojz2u4vBzFQS15VL
+         Z1hJzB/lpzTMdT0wj+CnJvTE2h/es7HAJrcgYavaJ4oNPMEa/R19HOt8EIDY19V6qCDj
+         H7TYOLQpIyM6Mn53mwwrDmjeG0+51TKH3JLbv4nWBLjlMGUu8kHjDKuuYltGu+KgCZjx
+         pyTXd9gJsl3LJQHH3C521lUJiD+lOKqolgyAcT2vaXyCHkdQhGzREGGZ6zYVly/ws7TA
+         0YuA==
+X-Gm-Message-State: AOAM533KDhIrmXCAZT1k5rRuKluN9VO+LEWiqeF8HLxtOzWVEYUKpQoj
+        B7t+QgGG7ezhkaDKNAKGH9z5LsdIiH2KQhSKt3pYVg==
+X-Google-Smtp-Source: ABdhPJxKvEHiCkKRBJfSRTHKYHTAYUapsFaOhZ68x2epxJghJ37F36ttuJtyOr4x6Yonqn3l7MHm9HrN2VXKDeTCpTc=
+X-Received: by 2002:a0d:d0c1:0:b0:2dc:5950:c72f with SMTP id
+ s184-20020a0dd0c1000000b002dc5950c72fmr6000563ywd.185.1649238748644; Wed, 06
+ Apr 2022 02:52:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+References: <20220405070339.801210740@linuxfoundation.org> <4273d632-9686-3809-2ef0-e87bb431f798@linuxfoundation.org>
+In-Reply-To: <4273d632-9686-3809-2ef0-e87bb431f798@linuxfoundation.org>
+From:   Anders Roxell <anders.roxell@linaro.org>
+Date:   Wed, 6 Apr 2022 11:52:18 +0200
+Message-ID: <CADYN=9+=Z=9g2r6-14kY9OQets+K=tzVeejiqTJyDJgKctddYw@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/913] 5.15.33-rc1 review
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        ranjani.sridharan@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If of_graph_get_remote_node() fails, it returns NULL pointer, replaces
-IS_ERR() check with NULL pointer check.
+On Wed, 6 Apr 2022 at 01:06, Shuah Khan <skhan@linuxfoundation.org> wrote:
+>
+> On 4/5/22 1:17 AM, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.15.33 release.
+> > There are 913 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> >
+> > Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> > Anything received after that time might be too late.
+> >
+> > The whole patch series can be found in one patch at:
+> >       https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.33-rc1.gz
+> > or in the git tree and branch at:
+> >       git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> > and the diffstat can be found below.
+> >
+> > thanks,
+> >
+> > greg k-h
+> >
+>
+> Build failed on my system. The following is the problem commit. There
+> are no changes to the config between 5.15.32 and this build.
+>
+> Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+>      ASoC: SOF: Intel: hda: Remove link assignment limitation
 
-Fixes: dd8b6803bc49 ("exynos: drm: dsi: Attach in_bridge in MIC driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/gpu/drm/exynos/exynos_drm_mic.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I saw the same build error, after applying the following patches it
+builds fine again.
 
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_mic.c b/drivers/gpu/drm/exynos/exynos_drm_mic.c
-index 9e06f8e2a863..43fc357a6682 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_mic.c
-+++ b/drivers/gpu/drm/exynos/exynos_drm_mic.c
-@@ -434,9 +434,9 @@ static int exynos_mic_probe(struct platform_device *pdev)
- 
- 	remote = of_graph_get_remote_node(dev->of_node, 1, 0);
- 	mic->next_bridge = of_drm_find_bridge(remote);
--	if (IS_ERR(mic->next_bridge)) {
-+	if (!mic->next_bridge) {
- 		DRM_DEV_ERROR(dev, "mic: Failed to find next bridge\n");
--		ret = PTR_ERR(mic->next_bridge);
-+		ret = -EINVAL;
- 		goto err;
- 	}
- 
--- 
-2.25.1
+a792bfc1c2bc ("ASoC: SOF: Intel: hda-stream: limit PROCEN workaround")
+81ed6770ba67 ("ASoC: SOF: Intel: hda: expose get_chip_info()")
 
+
+Cheers,
+Anders
+
+>
+>    CC [M]  sound/soc/sof/intel/hda-dai.o
+> sound/soc/sof/intel/hda-dai.c: In function =E2=80=98hda_link_stream_assig=
+n=E2=80=99:
+> sound/soc/sof/intel/hda-dai.c:86:24: error: implicit declaration of funct=
+ion =E2=80=98get_chip_info=E2=80=99; did you mean =E2=80=98get_group_info=
+=E2=80=99? [-Werror=3Dimplicit-function-declaration]
+>     86 |                 chip =3D get_chip_info(sdev->pdata);
+>        |                        ^~~~~~~~~~~~~
+>        |                        get_group_info
+> sound/soc/sof/intel/hda-dai.c:86:22: error: assignment to =E2=80=98const =
+struct sof_intel_dsp_desc *=E2=80=99 from =E2=80=98int=E2=80=99 makes point=
+er from integer without a cast [-Werror=3Dint-conversion]
+>     86 |                 chip =3D get_chip_info(sdev->pdata);
+>        |                      ^
+> sound/soc/sof/intel/hda-dai.c:94:35: error: =E2=80=98const struct sof_int=
+el_dsp_desc=E2=80=99 has no member named =E2=80=98quirks=E2=80=99
+>     94 |                         if (!(chip->quirks & SOF_INTEL_PROCEN_FM=
+T_QUIRK)) {
+>        |                                   ^~
+> sound/soc/sof/intel/hda-dai.c:94:46: error: =E2=80=98SOF_INTEL_PROCEN_FMT=
+_QUIRK=E2=80=99 undeclared (first use in this function)
+>     94 |                         if (!(chip->quirks & SOF_INTEL_PROCEN_FM=
+T_QUIRK)) {
+>        |                                              ^~~~~~~~~~~~~~~~~~~=
+~~~~~~~
+> sound/soc/sof/intel/hda-dai.c:94:46: note: each undeclared identifier is =
+reported only once for each function it appears in
+> cc1: all warnings being treated as errors
+> make[4]: *** [scripts/Makefile.build:287: sound/soc/sof/intel/hda-dai.o] =
+Error 1
+> make[3]: *** [scripts/Makefile.build:549: sound/soc/sof/intel] Error 2
+> make[2]: *** [scripts/Makefile.build:549: sound/soc/sof] Error 2
+> make[1]: *** [scripts/Makefile.build:549: sound/soc] Error 2
+> make: *** [Makefile:1846: sound] Error 2
+>
+> thanks,
+> -- Shuah
