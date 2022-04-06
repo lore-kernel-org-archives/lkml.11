@@ -2,90 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF04C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233971AbiDFUP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
+        id S231199AbiDFUPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236982AbiDFUNz (ORCPT
+        with ESMTP id S237205AbiDFUOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:13:55 -0400
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3131140A1;
-        Wed,  6 Apr 2022 10:44:59 -0700 (PDT)
-Received: by mail-ot1-f42.google.com with SMTP id a17-20020a9d3e11000000b005cb483c500dso2205336otd.6;
-        Wed, 06 Apr 2022 10:44:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UQGAhVkoMVchgmtJMVhAtK7JRG3UaGk6gAi1FHksJok=;
-        b=CxQ0tfR/V0mUHbcjblolrvkLrAtOuBoAnQSQ9ujIar9o8fprzjeQkvLC6lTvTlxSi3
-         aH0gqT9y4k3T9r8rDk7LBi5FS6ImS1jEw7AO/Jfbl/23gFYCdNYYaY79Or+wZxKs1Ibd
-         KjS12E7UQ5/3ZtUZK4wV0fwuKLhzpET28ovQ28EAXCLPkaM8YqtfUNMw724ic/Jqd+md
-         mxzn9VBcicTAUW44xqPREQwA/WLcvOxpJP/DBADaqK7//GpMZlbnkFN1JEjiGpyTgh+L
-         u4lt8ZhbFfegDDjNsysJ7k3g9VtwE/xkWpL1h2d4s0oiGXhpQi2Ms/cBZny5u5TqyRdp
-         fvpg==
-X-Gm-Message-State: AOAM530EAr7Xcj9g6P8BdZpRKKk7zk4Pybo5vE0vQSn/EpTJkQ3+3CJJ
-        oyvKF2CdpEyaygGwjUB2zg==
-X-Google-Smtp-Source: ABdhPJxmVkSyx43KIty/v1EZpatUCR4dvx3Ts6J5KNstYq0qO+8+CbAh29CaRQszr4r5SfRUiJs+4A==
-X-Received: by 2002:a05:6830:82a:b0:5b2:36d5:1603 with SMTP id t10-20020a056830082a00b005b236d51603mr3472144ots.240.1649267098688;
-        Wed, 06 Apr 2022 10:44:58 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id e4-20020a056870920400b000e1bdf90ba5sm6236468oaf.22.2022.04.06.10.44.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:44:58 -0700 (PDT)
-Received: (nullmailer pid 2481314 invoked by uid 1000);
-        Wed, 06 Apr 2022 17:44:57 -0000
-Date:   Wed, 6 Apr 2022 12:44:57 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Subject: Re: [PATCH v3 1/2] spi: dt-bindings: qcom,spi-geni-qcom: convert to
- dtschema
-Message-ID: <Yk3RmTJD5XHX1hIM@robh.at.kernel.org>
-References: <20220404064017.68634-1-krzysztof.kozlowski@linaro.org>
+        Wed, 6 Apr 2022 16:14:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818B1206ECC;
+        Wed,  6 Apr 2022 11:27:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A29461B89;
+        Wed,  6 Apr 2022 18:27:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A61C385A3;
+        Wed,  6 Apr 2022 18:27:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269648;
+        bh=ido5XWirC7wGX5X7OFgAK+kAjOjCTzq4qFG7/JRJ8ds=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XjCrRLspXuECB1DXnVvxblNXIRtA+fv6BaguUie0mUWCXdoo49pr5URg7qc89Yo0M
+         OVAfRJkylGsfOkF/Wi+xSztdj57bOgXfCGOa72xRCu4oDmGHLbcFZFZshAGBKPNgRD
+         Xvnesj8RtrQotnqomj/DRKiUbXl0+R/aBP/CY6lY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 19/43] arm64: Make ARM64_ERRATUM_1188873 depend on COMPAT
+Date:   Wed,  6 Apr 2022 20:26:28 +0200
+Message-Id: <20220406182437.241430826@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404064017.68634-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 04 Apr 2022 08:40:16 +0200, Krzysztof Kozlowski wrote:
-> Convert the GENI based Qualcomm Universal Peripheral (QUP) Serial
-> Peripheral Interface (SPI) bindings to DT Schema.
-> 
-> The original bindings in TXT were not complete, so add during conversion
-> properties already used in DTS and/or in the driver: dmas,
-> interconnects, operating points and power-domains.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Changes since v2:
-> 1. Drop reg-names.
-> 
-> Changes since v1:
-> 1. Correct $ref path and remove interconnect minItems (Kuldeep).
-> 2. Remove child tpm device from example.
-> 3. Pad reg hex addresses with 00.
-> ---
->  .../bindings/spi/qcom,spi-geni-qcom.txt       |  39 ------
->  .../bindings/spi/qcom,spi-geni-qcom.yaml      | 116 ++++++++++++++++++
->  2 files changed, 116 insertions(+), 39 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.txt
->  create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
-> 
+From: Marc Zyngier <marc.zyngier@arm.com>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+commit c2b5bba3967a000764e9148e6f020d776b7ecd82 upstream.
+
+Since ARM64_ERRATUM_1188873 only affects AArch32 EL0, it makes some
+sense that it should depend on COMPAT.
+
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -444,6 +444,7 @@ config ARM64_ERRATUM_1024718
+ config ARM64_ERRATUM_1188873
+ 	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
+ 	default y
++	depends on COMPAT
+ 	select ARM_ARCH_TIMER_OOL_WORKAROUND
+ 	help
+ 	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
+
+
