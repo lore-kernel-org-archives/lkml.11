@@ -2,198 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC203C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 535EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbiDFOPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
+        id S234595AbiDFOQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234648AbiDFOP2 (ORCPT
+        with ESMTP id S234600AbiDFOQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:15:28 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72AF58049C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:16:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649240186; x=1680776186;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=6GizAQMbkbxuJ2LyNHkWHRdcu08MFq/YD+5rvP7Rido=;
-  b=SNEN91G57yN/BBDsnCkbdaBGM67952Baa89L/Kj6tPIRA18UUgwhP3/D
-   BRuc7RyWF/KkZXBydFv9p6mUaqBuFrWno6RAFAl4+7gimTuU6zNpEBwiB
-   rGcOOcVgsLV/wIbPIVF64zOj5mYTif8VQW4vMonZdC62LTzchf9LC8yGR
-   8rEqX0I0D7MpOkgfbsm/LoJxNNnmuG6RYltWk8aaz5RX2+s+n/8kIvmAv
-   YS/RF+O2GoUb0HrhM+tUhv88FJBXiqe5yEtNmLtnIYZKRnZeiQLhFII96
-   cS+f0Mkmqk/Wm3+j/NiP2We6DJKslYIMFaoFkrLrJthJNxVWr3VttD+FX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="241590668"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="241590668"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 03:07:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="658468322"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 06 Apr 2022 03:07:57 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nc2Zx-0004If-7D;
-        Wed, 06 Apr 2022 10:07:57 +0000
-Date:   Wed, 06 Apr 2022 18:07:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/build] BUILD SUCCESS
- 9f61ccc85afb061f65dd8ede7b8d4845b2f2dfce
-Message-ID: <624d6653.DHSKpkWzjey8gX8d%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 6 Apr 2022 10:16:35 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFEE942BBA3
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:49:21 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso1259276pjh.3
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 18:49:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/YAk+fWUU+ETvZMAahO94+Nmhx8ga8SOKFjIYbyRo2A=;
+        b=TdiuHKaZORaWPGQTvEUC06LmhEQ2Hv4BGNuu+2WWjop40q0AwxKFUcVd+SuxV1iC2f
+         fqTGkOvq2So+26pvLbXOPbG++jhun+FsmlEBb7ZVx0joMcOhwx6tONZKnOGOSWcLcAfc
+         /hqRG+wM3LeeAcZ6vYUV1vNuR2rb/C7Aet6wY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/YAk+fWUU+ETvZMAahO94+Nmhx8ga8SOKFjIYbyRo2A=;
+        b=io3wni3UFXlhh+FBegAIdj35BjEihWdWho/MozR6o97dyMd3F2/LUCaWJ7w1YpGHOO
+         VMFEJ019qthkT8XvQfGGyMLuTGcxy8yjn5JOM88OZ/4R1f5xRVhwmZknfRRQc0WPWG3X
+         bRfxFoPGngUX0GhQa8yJ7CpD1aajirBopWg38GVLLJktLc5EAVB0s0VXowrIrZ2WLDJ6
+         VljGbFPHX7cJ05g5coHZCVTHllvrBtYtPsd0b0or/2M7UuFUdcgdXy5CFhAc1mdFG++8
+         IinMCeggmLeycwUmlsLNPNZ5lnOxIhAmMgbQnmyR8ayDVlfuHhBmaEwM/vPJXbpwiXrQ
+         XZbw==
+X-Gm-Message-State: AOAM530j6DLyJpdf7FbrlcRtqzWoTaX6rp0ShSfJQj4fgFc7QBj0NixG
+        M19usrEEAUnIhRvjllAHG2WtkQ==
+X-Google-Smtp-Source: ABdhPJxRiO+aF5ru+VVliawznjkQgTfqyIcNS4jn2oAT5iUCxwlpZhGj0CMVfVLc/UCVkgor6cxH+g==
+X-Received: by 2002:a17:90a:c253:b0:1c9:ada2:f28d with SMTP id d19-20020a17090ac25300b001c9ada2f28dmr7240326pjx.17.1649209761200;
+        Tue, 05 Apr 2022 18:49:21 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:6903:769c:e1f5:9c25])
+        by smtp.gmail.com with UTF8SMTPSA id t69-20020a638148000000b0039822f39a40sm13620410pgd.25.2022.04.05.18.49.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 18:49:20 -0700 (PDT)
+From:   Brian Norris <briannorris@chromium.org>
+To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Elaine Zhang <zhangqing@rock-chips.com>,
+        linux-pm@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Brian Norris <briannorris@chromium.org>
+Subject: [RFC PATCH 0/2] rockchip / devfreq: Coordinate DRAM controller resources between ATF and kernel
+Date:   Tue,  5 Apr 2022 18:48:40 -0700
+Message-Id: <20220406014842.2771799-1-briannorris@chromium.org>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/build
-branch HEAD: 9f61ccc85afb061f65dd8ede7b8d4845b2f2dfce  x86/configs: Add x86 debugging Kconfig fragment plus docs
+On Rockchip RK3399, there are a few hardware resources that are shared
+between firmware (ARM Trusted Firmware) and kernel (power domain
+driver) that need to be coordinated properly for DRAM DVFS to work
+reliably. See patch 1 for plenty more description.
 
-elapsed time: 733m
+These fixes are based in part on the specification in the RK3399, and in
+part based on extrapolation and observation. Any confirmation about the
+behavior of PMU_CRU_GATEDIS_CON0, etc., is welcome.
 
-configs tested: 120
-configs skipped: 4
+Otherwise, see the patches.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Regards,
+Brian
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-m68k                        m5407c3_defconfig
-powerpc                     pq2fads_defconfig
-sparc64                          alldefconfig
-m68k                            q40_defconfig
-arm                           tegra_defconfig
-arc                            hsdk_defconfig
-arm                        shmobile_defconfig
-m68k                        mvme16x_defconfig
-riscv                            allmodconfig
-mips                  maltasmvp_eva_defconfig
-mips                      loongson3_defconfig
-mips                           gcw0_defconfig
-m68k                       bvme6000_defconfig
-i386                             alldefconfig
-arm                        spear6xx_defconfig
-sh                     sh7710voipgw_defconfig
-sh                        sh7757lcr_defconfig
-arm                          badge4_defconfig
-sh                            shmin_defconfig
-sh                            migor_defconfig
-sh                      rts7751r2d1_defconfig
-openrisc                  or1klitex_defconfig
-mips                         mpc30x_defconfig
-xtensa                  nommu_kc705_defconfig
-sparc                       sparc64_defconfig
-arm                          iop32x_defconfig
-riscv             nommu_k210_sdcard_defconfig
-arm                        mvebu_v7_defconfig
-sh                 kfr2r09-romimage_defconfig
-mips                           xway_defconfig
-xtensa                    xip_kc705_defconfig
-mips                          rb532_defconfig
-m68k                        m5307c3_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220405
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-h8300                            allyesconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220406
-s390                 randconfig-r044-20220406
-riscv                randconfig-r042-20220406
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
 
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220405
-riscv                randconfig-c006-20220405
-mips                 randconfig-c004-20220405
-arm                  randconfig-c002-20220405
-powerpc                        fsp2_defconfig
-arm                       spear13xx_defconfig
-arm                         palmz72_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220405
-riscv                randconfig-r042-20220405
-hexagon              randconfig-r041-20220405
+Brian Norris (2):
+  soc: rockchip: power-domain: Manage resource conflicts with firmware
+  PM / devfreq: rk3399_dmc: Block PMU during transitions
+
+ drivers/devfreq/rk3399_dmc.c      |  13 ++++
+ drivers/soc/rockchip/pm_domains.c | 118 ++++++++++++++++++++++++++++++
+ include/soc/rockchip/pm_domains.h |  25 +++++++
+ 3 files changed, 156 insertions(+)
+ create mode 100644 include/soc/rockchip/pm_domains.h
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1.1094.g7c7d902a7c-goog
+
