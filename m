@@ -2,77 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38322C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiDFTSc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
+        id S230305AbiDFTUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230194AbiDFTQk (ORCPT
+        with ESMTP id S230201AbiDFTTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:16:40 -0400
-Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EC124A769
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:09:01 -0700 (PDT)
-Received: from omf18.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay02.hostedemail.com (Postfix) with ESMTP id 07CFB2A7F6;
-        Wed,  6 Apr 2022 18:08:59 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 783B831;
-        Wed,  6 Apr 2022 18:08:57 +0000 (UTC)
-Message-ID: <963000ce7e7c8f94697be460441747f25f9247cb.camel@perches.com>
-Subject: Re: [PATCH] staging: rtl8712: remove Unnecessary parentheses
-From:   Joe Perches <joe@perches.com>
-To:     Julia Lawall <julia.lawall@inria.fr>,
-        Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-Cc:     outreachy@lists.linux.dev, Larry.Finger@lwfinger.net,
-        florian.c.schilhabel@googlemail.com, gregkh@linuxfoundation.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Date:   Wed, 06 Apr 2022 11:08:54 -0700
-In-Reply-To: <alpine.DEB.2.22.394.2204061735340.2349@hadrien>
-References: <20220406152858.14076-1-eng.alaamohamedsoliman.am@gmail.com>
-         <alpine.DEB.2.22.394.2204061735340.2349@hadrien>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Wed, 6 Apr 2022 15:19:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020853CA7A;
+        Wed,  6 Apr 2022 11:27:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E32361C57;
+        Wed,  6 Apr 2022 18:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A286BC385A3;
+        Wed,  6 Apr 2022 18:27:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269657;
+        bh=ejhMxYp+bTl9pUk5eEDWIBvq4Kx8VMzluZrsbuLj5bE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RaGizz7VlIx81BtJl9jLnMVjDMXY/Kyka8zspK3yoQ4ityY34NoWFNAEnm7DyATzh
+         evOkVUYyKEjroCQ0y0CUMs/xdP3l2svZdVyp+yE747Vh0yyo/J2PX8AOVmwCRoeUrZ
+         oHiDqUtR5Yp7pS06JwMkh0lPwK9tm5vsJmwYbsKs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 21/43] arm64: Add part number for Arm Cortex-A77
+Date:   Wed,  6 Apr 2022 20:26:30 +0200
+Message-Id: <20220406182437.298125664@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: 7ebx3n8azbfjsxn1qbw3dag7hmyo373w
-X-Rspamd-Server: rspamout02
-X-Rspamd-Queue-Id: 783B831
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19eR1puJVlPgSNNQQO83yH/i+xmSYM57Ko=
-X-HE-Tag: 1649268537-592042
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-06 at 17:37 +0200, Julia Lawall wrote:
-> If you want to capitalize something in the subject, it could be the first
-> word.  Capitalizing the second word is a bit strange.
-> 
-> On Wed, 6 Apr 2022, Alaa Mohamed wrote:
-> 
-> > Reported by checkpatch:
-> > 
-> > CHECK: Unnecessary parentheses
-> 
-> Indicating that the problem was detected by checkpatch is good.  But
-> actually, the parentheses all have the same property.  So you could use
-> the log message to describe what kind of unnecessary parentheses were
-> removed.  That would help the maintainer know what to look for.
-[]
+From: Rob Herring <robh@kernel.org>
 
-> > diff --git a/drivers/staging/rtl8712/rtl871x_ioctl_linux.c b/drivers/staging/rtl8712/rtl871x_ioctl_linux.c
-[]
-> > @@ -82,9 +82,9 @@ static inline void handle_pairwise_key(struct sta_info *psta,
-> >  	       (param->u.crypt. key_len > 16 ? 16 : param->u.crypt.key_len));
-> >  	if (strcmp(param->u.crypt.alg, "TKIP") == 0) { /* set mic key */
-> >  		memcpy(psta->tkiptxmickey. skey,
+commit 8a6b88e66233f5f1779b0a1342aa9dc030dddcd5 upstream.
 
-Also, the space after the periods here are not great either.
+Add the MIDR part number info for the Arm Cortex-A77.
 
-		memcpy(psta->tkiptxmickey. skey,
-vs
-		memcpy(psta->tkiptxmickey.skey,
+Signed-off-by: Rob Herring <robh@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20201028182839.166037-1-robh@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/include/asm/cputype.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -87,6 +87,7 @@
+ #define ARM_CPU_PART_CORTEX_A55		0xD05
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
++#define ARM_CPU_PART_CORTEX_A77		0xD0D
+ 
+ #define APM_CPU_PART_POTENZA		0x000
+ 
+@@ -106,6 +107,7 @@
+ #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
+ #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
++#define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_CAVIUM_THUNDERX2 MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX2)
 
 
