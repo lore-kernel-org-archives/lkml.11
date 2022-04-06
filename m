@@ -2,132 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3486DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A214C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiDFKBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:01:47 -0400
+        id S1346935AbiDFKE4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:04:56 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244309AbiDFKAY (ORCPT
+        with ESMTP id S244241AbiDFKEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:00:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8293A4B3386
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 23:28:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649226529;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l/O6WJnzHeES5MzV1iHizq7+45V776U6yPTcrafzRys=;
-        b=F3MBjAZxdmG7U0BXiXbyjSLxdakTuLOO8ABuOd5kNDIdCC6GQkvxfyfmuF2nfA+7u9D0KO
-        SqEsgXDzGitHRlNZVjfmq/dPX7qgYeHcrLDPPz9FLeRkw1YaOGyeXnGsTzJXBWBHLSVhqH
-        k18newDT0wFNLzheKFK/DhFtsz+L8GA=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-563-fJWpoN9aN5yisBIgDISQmA-1; Wed, 06 Apr 2022 02:28:48 -0400
-X-MC-Unique: fJWpoN9aN5yisBIgDISQmA-1
-Received: by mail-pj1-f70.google.com with SMTP id rm11-20020a17090b3ecb00b001c713925e58so3187859pjb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 23:28:48 -0700 (PDT)
+        Wed, 6 Apr 2022 06:04:22 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9138340BF62;
+        Tue,  5 Apr 2022 18:36:33 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id o20so642927pla.13;
+        Tue, 05 Apr 2022 18:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dQGt0hnIOOf7L1JuGQZGg/PcLeKIC3qip1gbK+mzCmQ=;
+        b=N5sYcPCxeFzL+oR6KcDkZZPbAtqkL7S5r/QcUwlEHafidZcrSl0JxLSg4JdgUN9HwP
+         h16r3YCdRmpRkncFnQSoNxGZKKx69bfEoEHZ+fOVw2V8891iLIHMqg3rSZUFMlsoJGkp
+         OAPGxAFEqpTpsdxL6PX10XpmyHSLPo8wiK70IFuOHa+8rO7d0hc9cy4BXfrm5+I1Oeqx
+         wh2JEb8r4MoGNYhkSLQO468DG0of51JTHZsL5sTV/OBOvIiXzFLmqH1PzWBRq7BIYFGl
+         1Y2RhKY5EVPOK7KVgANGkc5K1cIzht5gWbb4KPsWkyx/IUpFUfjGHhOoEbumyysrHigd
+         jGKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=l/O6WJnzHeES5MzV1iHizq7+45V776U6yPTcrafzRys=;
-        b=tU3cSg+AH5a3h/CbnfNMwseEOJuikRtNKJdWZGe+s4MRoVGj8luEQfhwMKcmMhKhML
-         tCcaXFj6Q6fvt9aQD1MnvmiFNF9LW/I20t/c68vLVtXcSfgUt0FuTsiyCZRKIkAR2XE2
-         vwhhSJcohiA3kk8u2qKLC80h3mBLZQwviB55BDnnjWgmmI/OMrSRWqzc/guaX749iumV
-         yISrKlrut+iLCjNNeD+8ZVvfdkWjfPmyX4tGBc3/mjmbbP/H9TzjTtoorfNMomG1vaKN
-         vn8yv98F6vc5hbfhr0dT6nMsP103XzFg9ngiDL0zvPWNDzX6Uht4iz3xIs23CDTSxB5Z
-         0qXw==
-X-Gm-Message-State: AOAM530JDjVEUYt0Uyf4uLP8hZukd2Gh+G7NcgH7Fj6K1YITBLwp+2Ux
-        n0ROy0VCisgZQe6AYnl8LuARoBsxjLjzSpgDyS9+s5nl0op8mRAgjmCEowOgUxNmDC++V4nvWy+
-        R4skGszjAiMsdMTKE6GDxRMEIqBwnmN6m2A3+VkGqt9R13K3F8fRTNlNv57LRgnXd7umUEfTyCA
-        ==
-X-Received: by 2002:a17:903:1210:b0:151:fa59:95ef with SMTP id l16-20020a170903121000b00151fa5995efmr7366395plh.57.1649226526833;
-        Tue, 05 Apr 2022 23:28:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxZvWs4H8FX933o5QmfCgBqAZoT7G4kIpX1kSIZuQfv64mCK+4K29iDcIHPX48Uz7K6jAic+g==
-X-Received: by 2002:a17:903:1210:b0:151:fa59:95ef with SMTP id l16-20020a170903121000b00151fa5995efmr7366376plh.57.1649226526509;
-        Tue, 05 Apr 2022 23:28:46 -0700 (PDT)
-Received: from [10.72.13.31] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f15-20020a056a001acf00b004fb2ad05521sm17845124pfv.215.2022.04.05.23.28.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 23:28:45 -0700 (PDT)
-Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
- inodes
-To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220401133243.1075-1-lhenriques@suse.de>
-From:   Xiubo Li <xiubli@redhat.com>
-Message-ID: <d6407dd1-b6df-4de4-fe37-71b765b2088a@redhat.com>
-Date:   Wed, 6 Apr 2022 14:28:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dQGt0hnIOOf7L1JuGQZGg/PcLeKIC3qip1gbK+mzCmQ=;
+        b=VvLYFbuZX1bfOygnhJNBiPcC0p+7P5KvTCu5o9QDpNVJhDsaZReLmTH9u1uyhwTvjO
+         CbFYG0V4WUivh8/IbhgpudmT6hxuuUiOlLklAYMALRBnVdhWszEN5WZtHPcOFx/uJOTi
+         FHTX3O4tz64BFIrtjUofiXr/CXPcnX+GbOGYlBGvXYE3HEa5KZJK5UHZ0WjmX2V0zO64
+         WU+KFGitmIaMtEU+8BKrp2cJalvUpH91TzmajLfzryRCS7cAhf3Twku2mHluV4xKTRYO
+         Z4d3sLv9hz3b5C4tXYMLuKnE2fPVIk85r/3rnxZwpLBpHDB53Ri6ZOTB5wlZ7BB971/q
+         Yctw==
+X-Gm-Message-State: AOAM532Xyh8jBMPr8n/9zdleesHlJqjS627VTCF8fqc11UGIU6D99uda
+        dhai6+Y0v8u4fJOivQCgcIkb+6eHIKGLa6sh+Rk=
+X-Google-Smtp-Source: ABdhPJw5QFM+vNDCFa2VadQ1b8E1P6bLhj+BMc/5gCwJv919kaUP05fclMh98ha1+H76fQksEzyOCgJcGXD0VIDz0A4=
+X-Received: by 2002:a17:902:da84:b0:154:3b08:4523 with SMTP id
+ j4-20020a170902da8400b001543b084523mr6437007plx.65.1649208992907; Tue, 05 Apr
+ 2022 18:36:32 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220401133243.1075-1-lhenriques@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+From:   Zan Aziz <zanaziz313@gmail.com>
+Date:   Tue, 5 Apr 2022 19:36:21 -0600
+Message-ID: <CAFU3qobksUSEOs9BQFFKieWH2HrpFqDVj+iKJOsrESy5MhLGgQ@mail.gmail.com>
+Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 4/1/22 9:32 PM, Luís Henriques wrote:
-> When doing DIO on an encrypted node, we need to invalidate the page cache in
-> the range being written to, otherwise the cache will include invalid data.
+On Tue, Apr 5, 2022 at 12:40 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> Signed-off-by: Luís Henriques <lhenriques@suse.de>
-> ---
->   fs/ceph/file.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
+> This is the start of the stable review cycle for the 5.17.2 release.
+> There are 1126 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> Changes since v1:
-> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
-> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
 >
-> Note: I'm not really sure this last change is required, it doesn't really
-> affect generic/647 result, but seems to be the most correct.
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.2-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
 >
-> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-> index 5072570c2203..b2743c342305 100644
-> --- a/fs/ceph/file.c
-> +++ b/fs/ceph/file.c
-> @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
->   	if (ret < 0)
->   		return ret;
->   
-> -	ceph_fscache_invalidate(inode, false);
-> +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
->   	ret = invalidate_inode_pages2_range(inode->i_mapping,
->   					    pos >> PAGE_SHIFT,
->   					    (pos + count - 1) >> PAGE_SHIFT);
-
-The above has already invalidated the pages, why doesn't it work ?
-
--- Xiubo
-
-> @@ -1895,6 +1895,15 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
->   		req->r_inode = inode;
->   		req->r_mtime = mtime;
->   
-> +		if (IS_ENCRYPTED(inode) && (iocb->ki_flags & IOCB_DIRECT)) {
-> +			ret = invalidate_inode_pages2_range(
-> +				inode->i_mapping,
-> +				write_pos >> PAGE_SHIFT,
-> +				(write_pos + write_len - 1) >> PAGE_SHIFT);
-> +			if (ret < 0)
-> +				dout("invalidate_inode_pages2_range returned %d\n", ret);
-> +		}
-> +
->   		/* Set up the assertion */
->   		if (rmw) {
->   			/*
+> thanks,
 >
+> greg k-h
+Hi Greg,
 
+Compiled and booted on my test system Lenovo P50s: Intel Core i7
+No emergency and critical messages in the dmesg
+
+./perf bench sched all
+# Running sched/messaging benchmark...
+# 20 sender and receiver processes per group
+# 10 groups == 400 processes run
+
+     Total time: 0.440 [sec]
+
+# Running sched/pipe benchmark...
+# Executed 1000000 pipe operations between two processes
+
+     Total time: 8.552 [sec]
+
+       8.552299 usecs/op
+         116927 ops/sec
+
+Tested-by: Zan Aziz <zanaziz313@gmail.com>
+
+Thanks
+-Zan
