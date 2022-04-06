@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C639CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B347C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352487AbiDFKyw (ORCPT
+        id S1347206AbiDFKzo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
+        Wed, 6 Apr 2022 06:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236696AbiDFKxu (ORCPT
+        with ESMTP id S235926AbiDFKyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:53:50 -0400
+        Wed, 6 Apr 2022 06:54:40 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEBE2DBFD1;
-        Wed,  6 Apr 2022 00:16:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8675149A6;
+        Wed,  6 Apr 2022 00:16:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649229400; x=1680765400;
-  h=from:to:cc:subject:date:message-id;
-  bh=Vl5j/pBxlHz62sLl5o4S7qA+aF8cOf+Iuq5127cXBMM=;
-  b=IA08wZ3TQ+ZpYcRoeRCB91bk9y/8wG3Iy4W4KHo2ZcH27dXIHQJExwBn
-   8S3Xn8DGplxni/33s+LQePVh1U7TquPN/WDEJKSBLbHFQLIOh3UtjjCfJ
-   EoGMxBQpEONn0e49cfwuYghWyK3UrUakZ3JVPd3jiV3kJcG5ckkMWLPL1
-   U=;
+  t=1649229413; x=1680765413;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=9TeuMS7+p5ddyvbPjNkA+5PT44Jh0Ru6bQlomVn3lo4=;
+  b=HNiycbBQKPYzYVP0pDqCSs7Lqp+pAf0xphrIGahiThF+kQXe/P3nEJh0
+   bmnAqiFJp4gMuK9WlTTo1utqPObxhSG5U0JMFjSqhX6OEl5Gy1gW2yoV5
+   J2LFlRQr1y21oWeLICl91tzphwjpPCece39ycC1Iz4rmHgSsGYqG7r6y6
+   w=;
 Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 06 Apr 2022 00:16:26 -0700
+  by alexa-out.qualcomm.com with ESMTP; 06 Apr 2022 00:16:37 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 06 Apr 2022 00:16:24 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 06 Apr 2022 00:16:35 -0700
 X-QCInternal: smtphost
 Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 06 Apr 2022 12:46:10 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 06 Apr 2022 12:46:33 +0530
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id DE96E3B51; Wed,  6 Apr 2022 12:46:09 +0530 (+0530)
+        id A941F3B51; Wed,  6 Apr 2022 12:46:32 +0530 (+0530)
 From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org,
         Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [V3 0/3] arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
-Date:   Wed,  6 Apr 2022 12:45:59 +0530
-Message-Id: <1649229362-31183-1-git-send-email-quic_vnivarth@quicinc.com>
+Subject: [V3 2/3] arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
+Date:   Wed,  6 Apr 2022 12:46:01 +0530
+Message-Id: <1649229362-31183-3-git-send-email-quic_vnivarth@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649229362-31183-1-git-send-email-quic_vnivarth@quicinc.com>
+References: <1649229362-31183-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -52,22 +55,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 WLAN rail was leaking power during RBSC/sleep even after turning BT off.
 Change sleep pinctrl configuration to handle same.
 
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 ---
 v3: apply same change to active state and other sc7280*.dts* as well
 v2: used bias-bus-hold as per review comments
 v1: intial patch used bias-disable for sleep pinctrl in sc7280-idp only
 ---
-
-Vijaya Krishna Nivarthi (3):
-  arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
-  arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
-  arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
-
  arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts | 12 ++++++------
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi                   | 12 ++++++------
- arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi                 | 13 ++++++++-----
- 3 files changed, 20 insertions(+), 17 deletions(-)
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts
+index 1779d96..eb43ce5 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts
+@@ -859,10 +859,10 @@ ap_ec_spi: &spi8 {
+ 
+ &qup_uart7_cts {
+ 	/*
+-	 * Configure a pull-down on CTS to match the pull of
+-	 * the Bluetooth module.
++	 * Configure a bias-bus-hold on CTS to lower power usage
++	 * when BT is turned off.
+ 	 */
+-	bias-pull-down;
++	bias-bus-hold;
+ };
+ 
+ &qup_uart7_rts {
+@@ -1267,10 +1267,10 @@ ap_ec_spi: &spi8 {
+ 		pins = "gpio28";
+ 		function = "gpio";
+ 		/*
+-		 * Configure a pull-down on CTS to match the pull of
+-		 * the Bluetooth module.
++		 * Configure a bias-bus-hold on CTS to lower power usage
++		 * when BT is turned off.
+ 		 */
+-		bias-pull-down;
++		bias-bus-hold;
+ 	};
+ 
+ 	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
 -- 
 Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
