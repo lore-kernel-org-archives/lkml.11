@@ -2,122 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B836DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B73CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236093AbiDFP0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
+        id S235819AbiDFP0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236046AbiDFP0D (ORCPT
+        with ESMTP id S235989AbiDFP0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:26:03 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD794E81FB;
-        Wed,  6 Apr 2022 05:24:31 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id n19-20020a9d7113000000b005cd9cff76c3so1608319otj.1;
-        Wed, 06 Apr 2022 05:24:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=encaLqHcBH6foBnrbFxZ2i6K7G7Yn7crS2vxrpfT+uY=;
-        b=I/dd6AWAR8pHJ3oZYLJYf9SClhq/KmGq7qylijYmLA77gSBEBddKrBVVTi2VqIRPv3
-         qTAnMP4PLty3za3QnwGGwZ5RgC/oqqR1YuBuz6zC0Fd1/F087GI3eu2ybA3hvB/aT4wB
-         M/ui8Q+KyKbLliO4U4zum9KYqJxS+75ZNtz/Tpn+rb9EloOLFnzJd5Hi/UwINV3Ssqfn
-         wPYuSrwJ7YwG4myQHQlxIcCD9pObfuzwnDYZjloGVwE789CFPHEwyOA4yGeVNEuZOCte
-         m87yfGICIk8v8X53GJg+0ZvbBwCDBTiepCniNrij9+GpwPh/1Z9E5s8kGx6RoBoT/gV2
-         veOA==
+        Wed, 6 Apr 2022 11:26:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DADA35FB0D2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649247900;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dicVFjsXOIL9hOndQjIV/DVmY/a3j1A4etYvxOxmSgQ=;
+        b=EHZpyBiT5wD+Ld+1o8JJzRi5eNFzJEFwcxqwMRQYtaSoJzd8uASFhtL/5CM2963QGPRMZV
+        yN2rIrJX6YiWZj89abcFC0feDNb9kV2Ef3oMV2Gdhy6MRlkvARZXbDTWGOxP3Qthgen7TA
+        uM3ydObB8/WQNw9yeNiOoSIXaC2HQIU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-219-pYPjC8IkNmOoBi7ACrpfvg-1; Wed, 06 Apr 2022 07:59:38 -0400
+X-MC-Unique: pYPjC8IkNmOoBi7ACrpfvg-1
+Received: by mail-wm1-f69.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso608704wma.8
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 04:59:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=encaLqHcBH6foBnrbFxZ2i6K7G7Yn7crS2vxrpfT+uY=;
-        b=nk/k83B1WrOMdleKpt/vv42I/dVCHl2x7S6b4YG4+7WkN64H0jFSCNwNIL7QWIAMlK
-         YyRFK0vd4DFAVRvM8uTKTpstUD+HaNqRf3IYViMggxiiEEWJ/V/VYfFwB1Fh2Q18H1rA
-         eT+uBO2OiPcd6kyiUQwXZlZgtopyiKCsbaO0W260PZR5KK9KFuusA4tvLhw7ry9uWlK9
-         +2m2SB/3RA+jMoBQU0Cj5NDdtL8b+EiT8HNdKsCK10tiXP/JXFh225B8eyrIIs2FGV1t
-         AEJDx1VUglmYNuV5C7Xuk+eHKj7v1ko2cN0fU/BfJiCP11iS/qmVTctwYbWL1dFS6iA+
-         B3Fw==
-X-Gm-Message-State: AOAM53141DBhmoUzymqv5HCH71Nvd8db91QMGf6elxm9aWqWoqhMYAcO
-        VuHDvp8wtoI0IGxZKbPPtYc=
-X-Google-Smtp-Source: ABdhPJzfuUCYVbipdZsd9M6/L296AWUeysgoZNl5fvgy8K8+GU78LuJDiWcSmJzpnPLjDGm4lsi0lw==
-X-Received: by 2002:a9d:1b68:0:b0:5c9:5da1:3752 with SMTP id l95-20020a9d1b68000000b005c95da13752mr2811618otl.354.1649247871210;
-        Wed, 06 Apr 2022 05:24:31 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id x1-20020a4ae781000000b00320d5d238efsm6033772oov.3.2022.04.06.05.24.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 05:24:30 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <18719038-4eef-4792-e961-6550bb9f0d55@roeck-us.net>
-Date:   Wed, 6 Apr 2022 05:24:29 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dicVFjsXOIL9hOndQjIV/DVmY/a3j1A4etYvxOxmSgQ=;
+        b=l7ylINmXNCbnPmGVSg89ENAJdz44ltwxYwobnY9NiOYTNsekgYnUlXYBsKBWBhBRzy
+         TVt7lkxVRiGirBXnzKETZ2rqPax4CLhZTQQzGLi9X3+3N/J+M4piGAGhiOkzZ5TW4bhY
+         4e/aIzTf4COg4G3K5zjFVSxZ7DKII2z1Twz3D8nl5WRCkMsHco1pujKyqiIsa9Ueoh9v
+         /02Luspg/sSq7ftxUYE7/PjvSbipHmefvv/foFiK5UDytwfQsz2/DSk6NCcyTMk4k9NI
+         caVIihWcLq1PF/sOmD02SoIY0Cx/KjApRf7tZp2s6ddMoK5uqthyfMp3GBLuQk2mJS2i
+         e05w==
+X-Gm-Message-State: AOAM5329s8ylw73QJna6laF39Tgtp8d+hX2OBtZqjpHJ3fJq632YFadN
+        BEn8ugIJxNUxhI8yjcBd8YUMoBWN6BBXJiExEBb7a9zpwTh7OnJzxBLIl8hpuaJB3U4eSlXBcbz
+        AFGhz9pOT0uIOzY85U5ChyOhb
+X-Received: by 2002:adf:fc90:0:b0:206:e7b:cd63 with SMTP id g16-20020adffc90000000b002060e7bcd63mr6304657wrr.511.1649246377514;
+        Wed, 06 Apr 2022 04:59:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyXEb2qJOGVPTkba/SZuCnqqnQUU7IQyRanDtldo58dlWits4116YDR77kPcSHcn0/MUmK+Vg==
+X-Received: by 2002:adf:fc90:0:b0:206:e7b:cd63 with SMTP id g16-20020adffc90000000b002060e7bcd63mr6304642wrr.511.1649246377324;
+        Wed, 06 Apr 2022 04:59:37 -0700 (PDT)
+Received: from redhat.com ([2.55.179.195])
+        by smtp.gmail.com with ESMTPSA id u13-20020a05600c19cd00b0038cb84f4218sm5055607wmq.27.2022.04.06.04.59.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 04:59:36 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 07:59:32 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
+        peterz@infradead.org, sgarzare@redhat.com,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH V2 3/5] virtio: introduce config op to synchronize vring
+ callbacks
+Message-ID: <20220406075405-mutt-send-email-mst@kernel.org>
+References: <20220406083538.16274-1-jasowang@redhat.com>
+ <20220406083538.16274-4-jasowang@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] hwmon: (tmp401) Support extended temperature range
-Content-Language: en-US
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Camel Guo <camel.guo@axis.com>, Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     kernel@axis.com, Camel Guo <camelg@axis.com>,
-        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220406092901.408861-1-camel.guo@axis.com>
- <c2a1776d-1499-8b84-15cd-b09908ebd0e5@roeck-us.net>
-In-Reply-To: <c2a1776d-1499-8b84-15cd-b09908ebd0e5@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406083538.16274-4-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/6/22 05:12, Guenter Roeck wrote:
-> On 4/6/22 02:29, Camel Guo wrote:
->> From: Camel Guo <camelg@axis.com>
->>
->> This patch only applies to tmp431 and devicetree configuration.
->>
->> Signed-off-by: Camel Guo <camelg@axis.com>
->> ---
->>   Documentation/hwmon/tmp401.rst | 13 +++++++++++++
->>   drivers/hwmon/tmp401.c         |  5 +++++
->>   2 files changed, 18 insertions(+)
->>
->> diff --git a/Documentation/hwmon/tmp401.rst b/Documentation/hwmon/tmp401.rst
->> index 3aacf3d3bdf3..d12e9c9ba40f 100644
->> --- a/Documentation/hwmon/tmp401.rst
->> +++ b/Documentation/hwmon/tmp401.rst
->> @@ -78,3 +78,16 @@ some additional features.
->>   TMP432 is compatible with TMP401 and TMP431. It supports two external
->>   temperature sensors.
->> +
->> +Device tree
->> +-----------
->> +TMP431 has support for the device tree parameter "extended-range" which enables
->> +the extended range in the chip.
->> +
-> 
-> There is no practical reason to limit support for this to TMP431,
-> nor does the actual code make such a distinction.
-> 
->> +Example:
->> +
->> +main-temp@4c {
->> +  compatible = "ti,tmp431";
->> +  reg = <0x4c>;
->> +  extended-range;
->> +};
-> 
-> This is not an acceptable way to describe devicetree properties.
-> You would have to write a bindings document
-> (Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml)
-> and describe the property there.
-> 
+On Wed, Apr 06, 2022 at 04:35:36PM +0800, Jason Wang wrote:
+> This patch introduce
 
-... and that should be modeled after ti,tmp421.yaml and also support
-other configuration parameters, specifically beta compensation and
-n-factor correction.
+introduces
 
-Guenter
+> a new
+
+new
+
+> virtio config ops to vring
+> callbacks. Transport specific method is required to call
+> synchornize_irq() on the IRQs. For the transport that doesn't provide
+> synchronize_vqs(), use synchornize_rcu() as a fallback.
+> 
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  include/linux/virtio_config.h | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+> index b341dd62aa4d..08b73d9bbff2 100644
+> --- a/include/linux/virtio_config.h
+> +++ b/include/linux/virtio_config.h
+> @@ -57,6 +57,8 @@ struct virtio_shm_region {
+>   *		include a NULL entry for vqs unused by driver
+>   *	Returns 0 on success or error status
+>   * @del_vqs: free virtqueues found by find_vqs().
+> + * @synchronize_vqs: synchronize with the virtqueue callbacks.
+> + *	vdev: the virtio_device
+
+I think I prefer synchronize_callbacks
+
+>   * @get_features: get the array of feature bits for this device.
+>   *	vdev: the virtio_device
+>   *	Returns the first 64 feature bits (all we currently need).
+> @@ -89,6 +91,7 @@ struct virtio_config_ops {
+>  			const char * const names[], const bool *ctx,
+>  			struct irq_affinity *desc);
+>  	void (*del_vqs)(struct virtio_device *);
+> +	void (*synchronize_vqs)(struct virtio_device *);
+>  	u64 (*get_features)(struct virtio_device *vdev);
+>  	int (*finalize_features)(struct virtio_device *vdev);
+>  	const char *(*bus_name)(struct virtio_device *vdev);
+> @@ -217,6 +220,19 @@ int virtio_find_vqs_ctx(struct virtio_device *vdev, unsigned nvqs,
+>  				      desc);
+>  }
+>  
+> +/**
+> + * virtio_synchronize_vqs - synchronize with virtqueue callbacks
+> + * @vdev: the device
+> + */
+> +static inline
+> +void virtio_synchronize_vqs(struct virtio_device *dev)
+> +{
+> +	if (dev->config->synchronize_vqs)
+> +		dev->config->synchronize_vqs(dev);
+> +	else
+> +		synchronize_rcu();
+
+I am not sure about this fallback and the latency impact.
+Maybe synchronize_rcu_expedited is better here.
+
+> +}
+> +
+>  /**
+>   * virtio_device_ready - enable vq use in probe function
+>   * @vdev: the device
+> -- 
+> 2.25.1
+
