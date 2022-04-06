@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD04EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C7ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240304AbiDFSLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
+        id S240185AbiDFSLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240109AbiDFSIW (ORCPT
+        with ESMTP id S239957AbiDFSIN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:08:22 -0400
+        Wed, 6 Apr 2022 14:08:13 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 303FB1FCF7;
-        Wed,  6 Apr 2022 09:46:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9080C19A578;
+        Wed,  6 Apr 2022 09:46:32 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1754923A;
-        Wed,  6 Apr 2022 09:46:35 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7191B23A;
+        Wed,  6 Apr 2022 09:46:32 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6A3FD3F73B;
-        Wed,  6 Apr 2022 09:46:34 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C44EA3F73B;
+        Wed,  6 Apr 2022 09:46:31 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     James Morse <james.morse@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>
-Subject: [stable:PATCH v4.9.309 37/43] arm64: entry: Add macro for reading symbol addresses from the trampoline
-Date:   Wed,  6 Apr 2022 17:45:40 +0100
-Message-Id: <20220406164546.1888528-37-james.morse@arm.com>
+Subject: [stable:PATCH v4.9.309 34/43] arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
+Date:   Wed,  6 Apr 2022 17:45:37 +0100
+Message-Id: <20220406164546.1888528-34-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220406164546.1888528-1-james.morse@arm.com>
 References: <0220406164217.1888053-1-james.morse@arm.com>
@@ -38,75 +38,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit b28a8eebe81c186fdb1a0078263b30576c8e1f42 upstream.
+commit aff65393fa1401e034656e349abd655cfe272de0 upstream.
 
-The trampoline code needs to use the address of symbols in the wider
-kernel, e.g. vectors. PC-relative addressing wouldn't work as the
-trampoline code doesn't run at the address the linker expected.
+kpti is an optional feature, for systems not using kpti a set of
+vectors for the spectre-bhb mitigations is needed.
 
-tramp_ventry uses a literal pool, unless CONFIG_RANDOMIZE_BASE is
-set, in which case it uses the data page as a literal pool because
-the data page can be unmapped when running in user-space, which is
-required for CPUs vulnerable to meltdown.
+Add another set of vectors, __bp_harden_el1_vectors, that will be
+used if a mitigation is needed and kpti is not in use.
 
-Pull this logic out as a macro, instead of adding a third copy
-of it.
+The EL1 ventries are repeated verbatim as there is no additional
+work needed for entry from EL1.
 
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-[ Removed SDEI for stable backport ]
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm64/kernel/entry.S | 22 +++++++++++++++-------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+ arch/arm64/kernel/entry.S | 34 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index 6e637315fd80..ec46c89759a8 100644
+index b9a757216a80..b732480007a4 100644
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -921,6 +921,15 @@ __ni_sys_trace:
- 	sub	\dst, \dst, PAGE_SIZE
- 	.endm
- 
-+	.macro tramp_data_read_var	dst, var
-+#ifdef CONFIG_RANDOMIZE_BASE
-+	tramp_data_page		\dst
-+	add	\dst, \dst, #:lo12:__entry_tramp_data_\var
-+	ldr	\dst, [\dst]
-+#else
-+	ldr	\dst, =\var
-+#endif
-+	.endm
- 
- #define BHB_MITIGATION_NONE	0
- #define BHB_MITIGATION_LOOP	1
-@@ -951,13 +960,7 @@ __ni_sys_trace:
- 	b	.
- 2:
- 	tramp_map_kernel	x30
--#ifdef CONFIG_RANDOMIZE_BASE
--	tramp_data_page		x30
--	isb
--	ldr	x30, [x30]
--#else
--	ldr	x30, =vectors
--#endif
-+	tramp_data_read_var	x30, vectors
- 	prfm	plil1strm, [x30, #(1b - \vector_start)]
- 	msr	vbar_el1, x30
- 	isb
-@@ -1037,7 +1040,12 @@ END(tramp_exit_compat)
- 	.align PAGE_SHIFT
- 	.globl	__entry_tramp_data_start
- __entry_tramp_data_start:
-+__entry_tramp_data_vectors:
- 	.quad	vectors
-+#ifdef CONFIG_ARM_SDE_INTERFACE
-+__entry_tramp_data___sdei_asm_trampoline_next_handler:
-+	.quad	__sdei_asm_handler
-+#endif /* CONFIG_ARM_SDE_INTERFACE */
- 	.popsection				// .rodata
+@@ -924,10 +924,11 @@ __ni_sys_trace:
+ 	.macro tramp_ventry, vector_start, regsize, kpti
+ 	.align	7
+ 1:
+-	.if	\kpti == 1
+ 	.if	\regsize == 64
+ 	msr	tpidrro_el0, x30	// Restored in kernel_ventry
+ 	.endif
++
++	.if	\kpti == 1
+ 	/*
+ 	 * Defend against branch aliasing attacks by pushing a dummy
+ 	 * entry onto the return stack and using a RET instruction to
+@@ -1010,6 +1011,37 @@ __entry_tramp_data_start:
  #endif /* CONFIG_RANDOMIZE_BASE */
  #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
+ 
++/*
++ * Exception vectors for spectre mitigations on entry from EL1 when
++ * kpti is not in use.
++ */
++	.macro generate_el1_vector
++.Lvector_start\@:
++	kernel_ventry	1, sync_invalid			// Synchronous EL1t
++	kernel_ventry	1, irq_invalid			// IRQ EL1t
++	kernel_ventry	1, fiq_invalid			// FIQ EL1t
++	kernel_ventry	1, error_invalid		// Error EL1t
++
++	kernel_ventry	1, sync				// Synchronous EL1h
++	kernel_ventry	1, irq				// IRQ EL1h
++	kernel_ventry	1, fiq_invalid			// FIQ EL1h
++	kernel_ventry	1, error_invalid		// Error EL1h
++
++	.rept	4
++	tramp_ventry	.Lvector_start\@, 64, kpti=0
++	.endr
++	.rept 4
++	tramp_ventry	.Lvector_start\@, 32, kpti=0
++	.endr
++	.endm
++
++	.pushsection ".entry.text", "ax"
++	.align	11
++ENTRY(__bp_harden_el1_vectors)
++	generate_el1_vector
++END(__bp_harden_el1_vectors)
++	.popsection
++
+ /*
+  * Special system call wrappers.
+  */
 -- 
 2.30.2
 
