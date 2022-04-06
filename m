@@ -2,105 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 124BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231679AbiDFMfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
+        id S232252AbiDFMfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232935AbiDFMbq (ORCPT
+        with ESMTP id S233622AbiDFMdS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:31:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B501621A0EC;
-        Wed,  6 Apr 2022 01:26:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B6A160BBC;
-        Wed,  6 Apr 2022 08:26:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E474FC385A9;
-        Wed,  6 Apr 2022 08:26:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649233581;
-        bh=xr9ehIzB/NufyUUmJObt5E7/ADYvqnVGS1WjCAn3n7o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=duYGvNgO2c/7ESg2X+pseYZcAu113bXILQDxFmUzZbBEF4ZxMObQGsjvPrvgp22Jh
-         f1BH226n3SaBFHjH8JFTAvefvdS/jZtn9rXsKK+Mf7t6FC5EAIPtYx2he2sol0HXN2
-         C13XCF9DsyMl8dyrsgjXmN5x3Rcs4j8Ge9jPjqqMXCvhu+s/t5E7Zc9mDdVc3wLoZL
-         O5ZJDQW4TK6TZd1cJ6ooDAacoNtIzFUsPSn9dtUt3FJldvWAHlL2A919xWzvwnXtJx
-         RXi1CjHn4Iu87s2d3MNEKwPaHbjcUXKGSX8GZKiOeWgFwCBxewLI+Ye44Kw0ceJ3+3
-         5Bfa2la/7URsQ==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 04/17] net/mlx5: Remove XFRM no_trailer flag
-Date:   Wed,  6 Apr 2022 11:25:39 +0300
-Message-Id: <636d75421e1ca4254a062537eea001ab0e50e19b.1649232994.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
-References: <cover.1649232994.git.leonro@nvidia.com>
+        Wed, 6 Apr 2022 08:33:18 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283B92DCC87;
+        Wed,  6 Apr 2022 01:31:48 -0700 (PDT)
+Received: from canpemm500005.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KYHjz45tKzDqMd;
+        Wed,  6 Apr 2022 16:29:27 +0800 (CST)
+Received: from [10.174.178.134] (10.174.178.134) by
+ canpemm500005.china.huawei.com (7.192.104.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 16:31:46 +0800
+Subject: Re: [PATCH -next] ext4: Fix symlink file size not match to file
+ content
+To:     Jan Kara <jack@suse.cz>
+CC:     Ye Bin <yebin10@huawei.com>, <tytso@mit.edu>,
+        <adilger.kernel@dilger.ca>, <linux-ext4@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lczerner@redhat.com>
+References: <20220321113408.4112428-1-yebin10@huawei.com>
+ <20220321113703.cibgeac5ipslg3df@quack3.lan>
+ <5b3e0bb7-370b-a950-1d2f-b0e31357cc01@huawei.com>
+ <20220321151141.hypnhr6o4vng2sa6@quack3.lan>
+From:   Zhang Yi <yi.zhang@huawei.com>
+Message-ID: <75227a4a-2e32-463a-ade7-57c37a3fbf4b@huawei.com>
+Date:   Wed, 6 Apr 2022 16:31:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220321151141.hypnhr6o4vng2sa6@quack3.lan>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.134]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500005.china.huawei.com (7.192.104.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On 2022/3/21 23:11, Jan Kara wrote:
+> Hello Yi!
+> 
+> On Mon 21-03-22 22:38:49, Zhang Yi wrote:
+>> On 2022/3/21 19:37, Jan Kara wrote:
+>>> On Mon 21-03-22 19:34:08, Ye Bin wrote:
+>>>> We got issue as follows:
+>>>> [home]# fsck.ext4  -fn  ram0yb
+>>>> e2fsck 1.45.6 (20-Mar-2020)
+>>>> Pass 1: Checking inodes, blocks, and sizes
+>>>> Pass 2: Checking directory structure
+>>>> Symlink /p3/d14/d1a/l3d (inode #3494) is invalid.
+>>>> Clear? no
+>>>> Entry 'l3d' in /p3/d14/d1a (3383) has an incorrect filetype (was 7, should be 0).
+>>>> Fix? no
+>>>>
+>>>> As symlink file size not match to file content. If symlink data block
+>>>> writback failed, will call ext4_finish_bio to end io. In this path don't
+>>>> mark buffer error. When umount do checkpoint can't detect buffer error,
+>>>> then will cleanup jounral. Actually, correct data maybe in journal area.
+>>>> To solve this issue, mark buffer error when detect bio error in
+>>>> ext4_finish_bio.
+>>>
+>>> Thanks for the patch! Let me rephrase the text a bit:
+>>>
+>>> As the symlink file size does not match the file content. If the writeback
+>>> of the symlink data block failed, ext4_finish_bio() handles the end of IO.
+>>> However this function fails to mark the buffer with BH_write_io_error and
+>>> so when unmount does journal checkpoint it cannot detect the writeback
+>>> error and will cleanup the journal. Thus we've lost the correct data in the
+>>> journal area. To solve this issue, mark the buffer as BH_write_io_error in
+>>> ext4_finish_bio().
+>>>
+>>
+>> Thinking about this issue in depth, the symlink data block is one kind of
+>> metadata, but the page mapping of such block is belongs to the ext4 inode,
+>> it's not coordinate to other metadata blocks, e.g. directory block and extents
+>> block. This is why we have already fix the same issue of other metadata blocks
+>> in commit fcf37549ae19e9 "jbd2: ensure abort the journal if detect IO error
+>> when writing original buffer back" but missing the case of symlink data block.
+>> So, after Ye Bin's fix, I think it's worth to unify the symlink data block
+>> mapping to bdev, any suggestions?
+> 
+> Well, symlink with external block is essentially a case of data=journal
+> data block. So even if we would handle symlinks, we would still need to
+> deal with other inodes with journalled data. Also we need to keep the> symlink contents in the page cache to make it simple for generic VFS code
+> handling symlinks. So I don't see how we could substantially unify
+> things...
+> 
 
-Only FPGA needed this NO_TRAILER flag, so remove this assignment.
+Yeah, this fix is still needed for other regular file's journalled data when we
+mounted filesystem with data=jouranl mode. But if we just consider whether if we
+could unify the journal mode of ext4's metadata blocks, it seems that using
+data=journal mode for symlink's external data block is also complicated and
+confused in the creating procedure. Instead, if we use ext4_bread(), it make
+things clear, and it seems also has no side effect of reading symlinks. I write
+a RFC patch to do this, please take a look at my latest mail "[RFC PATCH] ext4:
+convert symlink external data block mapping to bdev".
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c      | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h      | 1 -
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c | 2 --
- 3 files changed, 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 213fbf63dde9..13f6fed74950 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -426,8 +426,6 @@ int mlx5e_ipsec_init(struct mlx5e_priv *priv)
- 	hash_init(ipsec->sadb_rx);
- 	spin_lock_init(&ipsec->sadb_rx_lock);
- 	ipsec->en_priv = priv;
--	ipsec->no_trailer = !!(mlx5_accel_ipsec_device_caps(priv->mdev) &
--			       MLX5_ACCEL_IPSEC_CAP_RX_NO_TRAILER);
- 	ipsec->wq = alloc_ordered_workqueue("mlx5e_ipsec: %s", 0,
- 					    priv->netdev->name);
- 	if (!ipsec->wq) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index 51ae6145b6fe..6e4f0dbbd4e4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -81,7 +81,6 @@ struct mlx5e_ipsec_tx;
- struct mlx5e_ipsec {
- 	struct mlx5e_priv *en_priv;
- 	DECLARE_HASHTABLE(sadb_rx, MLX5E_IPSEC_SADB_RX_BITS);
--	bool no_trailer;
- 	spinlock_t sadb_rx_lock; /* Protects sadb_rx */
- 	struct mlx5e_ipsec_sw_stats sw_stats;
- 	struct mlx5e_ipsec_stats stats;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-index 28e0500d4a48..8e0cf5e65100 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-@@ -347,8 +347,6 @@ void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
- 	switch (MLX5_IPSEC_METADATA_SYNDROM(ipsec_meta_data)) {
- 	case MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_DECRYPTED:
- 		xo->status = CRYPTO_SUCCESS;
--		if (WARN_ON_ONCE(priv->ipsec->no_trailer))
--			xo->flags |= XFRM_ESP_NO_TRAILER;
- 		break;
- 	case MLX5E_IPSEC_OFFLOAD_RX_SYNDROME_AUTH_FAILED:
- 		xo->status = CRYPTO_TUNNEL_ESP_AUTH_FAILED;
--- 
-2.35.1
-
+Thanks,
+Yi.
