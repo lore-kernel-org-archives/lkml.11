@@ -2,185 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE92C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234847AbiDFOfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55618 "EHLO
+        id S234963AbiDFOgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235206AbiDFOfY (ORCPT
+        with ESMTP id S235196AbiDFOgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:35:24 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D38329261;
-        Tue,  5 Apr 2022 19:53:37 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KY8DN2BWCzgYF8;
-        Wed,  6 Apr 2022 10:51:48 +0800 (CST)
-Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 6 Apr 2022 10:36:20 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123B1412F88
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:00:49 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2369U3LH017684;
+        Wed, 6 Apr 2022 05:01:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=sPI0KE262NMl5/Dd//VQ2u+CPs7TTFSV0fZrVrMi8pU=;
+ b=iNLU6lLlA9LTbz034bLu9e6yO6hks9uAqdmCLlJX/mwQ0QGVovSOjUQd6WgtxyGUAP2f
+ KhCuWjYST7x/EdMjbHQY+H7XS4mMp/x+UUSA6uycll49gM4o1/AZ5BTZRa0/99B93gnV
+ sL3LkzqXpjJ10jG1jJT9IGyNdqivhIA9P+s1i1GqPKdHIZ0TOa2sM0H6SwgRybffJJ0M
+ r6B5dDYW7iBwfHjKNqcvR5L2r2E5S4XVJhwDomzrooW3poVTteiXc5Yf6p0pTejiO6PE
+ eH9waaxewp6EuafkhGkwjn+u9vQ3NVSvteYe0MP7UZ9IT18im9QgZxR5bk4FNd5Iziqu hQ== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3f6jwnvryv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 06 Apr 2022 05:01:23 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 10:53:31 +0800
-From:   Liao Chang <liaochang1@huawei.com>
-To:     <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
-        <liaochang1@huawei.com>, <tglx@linutronix.de>, <clg@kaod.org>,
-        <nitesh@redhat.com>, <edumazet@google.com>, <peterz@infradead.org>,
-        <joshdon@google.com>, <masahiroy@kernel.org>, <nathan@kernel.org>,
-        <akpm@linux-foundation.org>, <vbabka@suse.cz>,
-        <gustavoars@kernel.org>, <arnd@arndb.de>, <chris@chrisdown.name>,
-        <dmitry.torokhov@gmail.com>, <linux@rasmusvillemoes.dk>,
-        <daniel@iogearbox.net>, <john.ogness@linutronix.de>,
-        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <heying24@huawei.com>, <guohanjun@huawei.com>,
-        <weiyongjun1@huawei.com>
-Subject: [RFC 2/3] softirq: Do throttling when softirqs use up its bandwidth
-Date:   Wed, 6 Apr 2022 10:52:40 +0800
-Message-ID: <20220406025241.191300-3-liaochang1@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406025241.191300-1-liaochang1@huawei.com>
-References: <20220406025241.191300-1-liaochang1@huawei.com>
+ 2022 11:01:21 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Wed, 6 Apr 2022 11:01:21 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id A8E0FB1A;
+        Wed,  6 Apr 2022 10:01:21 +0000 (UTC)
+Date:   Wed, 6 Apr 2022 10:01:21 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+CC:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <patches@opensource.cirrus.com>,
+        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ASoC: wm8731: Disable the regulator when probing fails
+Message-ID: <20220406100121.GV38351@ediswmail.ad.cirrus.com>
+References: <20220405121038.4094051-1-zheyuma97@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.53]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220405121038.4094051-1-zheyuma97@gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: S2HnYa2CZmleDIUjLpESqyKuo9NJ9nV_
+X-Proofpoint-GUID: S2HnYa2CZmleDIUjLpESqyKuo9NJ9nV_
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When kernel is about to handle pending softirqs, it will check firstly
-whether softirq already use up its CPU bandwidth, Once the total duration
-of softirq handling exceed the max value in the user-specified time window,
-softirq will be throttled for a while, the throttling will be removed
-when time window expires.
+On Tue, Apr 05, 2022 at 08:10:38PM +0800, Zheyu Ma wrote:
+> When the driver fails during probing, the driver should disable the
+> regulator, not just handle it in wm8731_hw_init().
+> 
+> The following log reveals it:
+> 
+> [   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+> [   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
+> [   17.824467] Call Trace:
+> [   17.824774]  <TASK>
+> [   17.825040]  regulator_bulk_free+0x82/0xe0
+> [   17.825514]  devres_release_group+0x319/0x3d0
+> [   17.825882]  i2c_device_probe+0x766/0x940
+> [   17.829198]  i2c_register_driver+0xb5/0x130
+> 
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> ---
 
-On then other hand, kernel will update the runtime of softirq on given CPU
-before __do_softirq() function returns.
+Mark just merged a big chain overhauling a lot of this driver, at
+the very least this patch is going to require a rebase on top of
+that lot.
 
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
----
- kernel/softirq.c | 70 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
-
-diff --git a/kernel/softirq.c b/kernel/softirq.c
-index 8aac9e2631fd..6de6db794ac5 100644
---- a/kernel/softirq.c
-+++ b/kernel/softirq.c
-@@ -75,6 +75,49 @@ struct softirq_throttle {
- 	raw_spinlock_t lock;
- } si_throttle;
- 
-+struct softirq_runtime {
-+	bool	throttled;
-+	unsigned long	duration;
-+	unsigned long	expires;
-+	raw_spinlock_t lock;
-+};
-+static DEFINE_PER_CPU(struct softirq_runtime, softirq_runtime);
-+
-+static void forward_softirq_expires(struct softirq_runtime *si_runtime)
-+{
-+	si_runtime->throttled = false;
-+	si_runtime->duration = 0UL;
-+	si_runtime->expires = jiffies +
-+		msecs_to_jiffies(si_throttle.period - si_throttle.runtime);
-+}
-+
-+static void update_softirq_runtime(unsigned long duration)
-+{
-+	struct softirq_runtime *si_runtime = this_cpu_ptr(&softirq_runtime);
-+
-+	raw_spin_lock(&si_runtime->lock);
-+	si_runtime->duration += jiffies_to_msecs(duration);
-+	if ((si_runtime->duration >= si_throttle.runtime) &&
-+		time_before(jiffies, si_runtime->expires)) {
-+		si_runtime->throttled = true;
-+	}
-+	raw_spin_unlock(&si_runtime->lock);
-+}
-+
-+static bool softirq_runtime_exceeded(void)
-+{
-+	struct softirq_runtime *si_runtime = this_cpu_ptr(&softirq_runtime);
-+
-+	if ((unsigned int)si_throttle.runtime >= si_throttle.period)
-+		return false;
-+
-+	raw_spin_lock(&si_runtime->lock);
-+	if (!time_before(jiffies, si_runtime->expires))
-+		forward_softirq_expires(si_runtime);
-+	raw_spin_unlock(&si_runtime->lock);
-+	return si_runtime->throttled;
-+}
-+
- static int softirq_throttle_validate(void)
- {
- 	if (((int)sysctl_softirq_period_ms <= 0) ||
-@@ -88,10 +131,18 @@ static int softirq_throttle_validate(void)
- static void softirq_throttle_update(void)
- {
- 	unsigned long flags;
-+	struct softirq_runtime *si_runtime;
- 
- 	raw_spin_lock_irqsave(&si_throttle.lock, flags);
- 	si_throttle.period = sysctl_softirq_period_ms;
- 	si_throttle.runtime = sysctl_softirq_runtime_ms;
-+
-+	for_each_possible_cpu(cpu, &) {
-+		si_runtime = per_cpu_ptr(&softirq_runtime, cpu);
-+		raw_spin_lock(&si_runtime->lock);
-+		forward_softirq_expires(si_runtime);
-+		raw_spin_unlock(&si_runtime->lock);
-+	}
- 	raw_spin_unlock_irqrestore(&si_throttle.lock, flags);
- }
- 
-@@ -129,9 +180,17 @@ int softirq_throttle_handler(struct ctl_table *table, int write, void *buffer,
- 
- static void softirq_throttle_init(void)
- {
-+	struct softirq_runtime *si_runtime;
-+
- 	si_throttle.period = sysctl_softirq_period_ms;
- 	si_throttle.runtime = sysctl_softirq_runtime_ms;
- 	raw_spin_lock_init(&si_throttle.lock);
-+
-+	for_each_possible_cpu(cpu) {
-+		si_runtime = per_cpu_ptr(&softirq_runtime, cpu);
-+		forward_softirq_expires(si_runtime);
-+		raw_spin_lock_init(&si_runtime->lock);
-+	}
- }
- #endif
- 
-@@ -592,6 +651,13 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
- 	__u32 pending;
- 	int softirq_bit;
- 
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+	bool exceeded = softirq_runtime_exceeded();
-+
-+	if (exceeded)
-+		return;
-+#endif
-+
- 	/*
- 	 * Mask out PF_MEMALLOC as the current task context is borrowed for the
- 	 * softirq. A softirq handled, such as network RX, might set PF_MEMALLOC
-@@ -652,6 +718,10 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
- 		wakeup_softirqd();
- 	}
- 
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+	update_softirq_runtime(jiffies - (end - MAX_SOFTIRQ_TIME));
-+#endif
-+
- 	account_softirq_exit(current);
- 	lockdep_softirq_end(in_hardirq);
- 	softirq_handle_end();
--- 
-2.17.1
-
+Thanks,
+Charles
