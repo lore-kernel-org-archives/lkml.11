@@ -2,309 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 826DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B39C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236420AbiDFPnu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
+        id S236251AbiDFPn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236258AbiDFPnS (ORCPT
+        with ESMTP id S236261AbiDFPnk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:43:18 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186E34E6F74;
-        Wed,  6 Apr 2022 06:11:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649250681; x=1680786681;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xrVO3PD15uLGC0xOV5+sEkLrkVM/AfGYyeEPTlYt8Po=;
-  b=ZhlbYAiyr4LRl54UxngjZEx8/nKQKs2w8QrjL26baI0/32kOR5qri8Lb
-   K/zrERCQjTucs48sZqavlgVzx6IkIbMZsHX39dP3n3HOcrxM2mfWRBC/F
-   FX9irX4MRSxHuckcDWgSZ7SpyLcmpt/mwlCLZ/il6pEmdi+U+QlLqQ5WH
-   xeIqDY+uqwoG7F2+qkuj0ka/S8AMQXg/5yCJs8Q7uPwyR2nOI0AGYayXF
-   pYKhhhA0x4PDWCFHXlRU0C8yO5K+ui4QTY77QH0lf9qAR4HYoXUeZRdST
-   2vzYnh99AfkqQ5VqWsDUf5YioeaaPVzOmcKQhbDSQrO5CibciPDZlDjCP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261032517"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="261032517"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:09:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="642045293"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 Apr 2022 06:09:54 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 626B216D; Wed,  6 Apr 2022 16:05:55 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Michael Walle <michael@walle.cc>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH v5 1/4] device property: Allow error pointer to be passed to fwnode APIs
-Date:   Wed,  6 Apr 2022 16:05:49 +0300
-Message-Id: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 6 Apr 2022 11:43:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DF234E6F66
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:11:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649250617;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yd6as5x4Uder5Km5LfKQ4Jc4Svl079Qfrglg3q3KIGk=;
+        b=HpSae94zP5Mh/o4U9jcoJgPQD3oJOP2oDtFkkPjVj4lX/NgVzy5cuNTStVVNGn0CaxTgqL
+        MVq/gJ/CzfiaJy+qsz9X+tME/fgEuHJWN3ChDvpwpswkBhBhijSKPDyqhp9XM+L6ME7vb0
+        baDpc0M+AdGa0irgCnTp1yfSklIZAC8=
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
+ [209.85.210.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-640-vbbORDxsOwKnBDYmN34Sag-1; Wed, 06 Apr 2022 09:10:16 -0400
+X-MC-Unique: vbbORDxsOwKnBDYmN34Sag-1
+Received: by mail-pf1-f197.google.com with SMTP id 138-20020a621690000000b004fa807ac59aso1511220pfw.19
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 06:10:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=yd6as5x4Uder5Km5LfKQ4Jc4Svl079Qfrglg3q3KIGk=;
+        b=M8Ie6Cy4PSXdiPy/e6r5LOjovELkMlfnfv4XL7RLAmm0fn5RrkCbm220rqbXOCVvV/
+         9Nmt2v38PTLCpRHA+ZLqYlF/P8jTWqdtAtvZs2yFny+87rIA0PLfNRe0PedD7ZkC8aMb
+         iJ2kuydy7NACWfH7t4hyx8o6WyNydM3FlpWchnuXhGj/777VX0qRxmpD3bEktopQQES9
+         6DM57hj67C0hsdp95ezgvN2cbVIB4KkAay6xy0oaKFfJS5ZRum71ww6Y4sJFaGYBLgFx
+         KTcVs12qCxATeU7DRQlw3KrroNS2m4Xl6TkY0gnxzXMXSjKyLOt7dWerA7WGJ7VOkub2
+         VVjQ==
+X-Gm-Message-State: AOAM530kjbwZut56vJmEacUhZLKf2EaMwUTx+aZAoX/iMW1GaEy1CB31
+        oOHARxFtWS4kQHZMEq1pN91lq/TcywThijEuR08CsnsNyYqFdtVr9Pv+imEr5oIi4mo/X6ZDjHs
+        s50ybziuBfpr3l/ioTiigJBvW1eESFRBDq1LDFEnQfm/BhfYnUASLQklT05eKmRATA7DUsJv3Ow
+        ==
+X-Received: by 2002:a17:902:ec8c:b0:154:2e86:dd51 with SMTP id x12-20020a170902ec8c00b001542e86dd51mr8499226plg.99.1649250614718;
+        Wed, 06 Apr 2022 06:10:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzvbAXpSSJUN/XclP4SvB61CbwxC/5xeSpV0OVsNgIMTBh7V98gA3lkyZQfVkB3JKBtgVNG1g==
+X-Received: by 2002:a17:902:ec8c:b0:154:2e86:dd51 with SMTP id x12-20020a170902ec8c00b001542e86dd51mr8499189plg.99.1649250614344;
+        Wed, 06 Apr 2022 06:10:14 -0700 (PDT)
+Received: from [10.72.13.31] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id h20-20020a056a001a5400b004fb1b4b010asm19651730pfv.162.2022.04.06.06.10.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 06:10:13 -0700 (PDT)
+Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
+ inodes
+To:     Jeff Layton <jlayton@kernel.org>,
+        =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>
+Cc:     Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220401133243.1075-1-lhenriques@suse.de>
+ <d6407dd1-b6df-4de4-fe37-71b765b2088a@redhat.com>
+ <878rsia391.fsf@brahms.olymp>
+ <6ba91390-83e8-8702-2729-dc432abd3cc5@redhat.com>
+ <87zgky8n0o.fsf@brahms.olymp>
+ <6306fba71325483a1ea22fa73250c8777ea647d7.camel@kernel.org>
+From:   Xiubo Li <xiubli@redhat.com>
+Message-ID: <321104e6-36db-c143-a7ba-58f9199e6fb7@redhat.com>
+Date:   Wed, 6 Apr 2022 21:10:08 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <6306fba71325483a1ea22fa73250c8777ea647d7.camel@kernel.org>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the fwnode APIs might return an error pointer instead of NULL
-or valid fwnode handle. The result of such API call may be considered
-optional and hence the test for it is usually done in a form of
 
-	fwnode = fwnode_find_reference(...);
-	if (IS_ERR(fwnode))
-		...error handling...
+On 4/6/22 7:48 PM, Jeff Layton wrote:
+> On Wed, 2022-04-06 at 12:33 +0100, Luís Henriques wrote:
+>> Xiubo Li <xiubli@redhat.com> writes:
+>>
+>>> On 4/6/22 6:57 PM, Luís Henriques wrote:
+>>>> Xiubo Li <xiubli@redhat.com> writes:
+>>>>
+>>>>> On 4/1/22 9:32 PM, Luís Henriques wrote:
+>>>>>> When doing DIO on an encrypted node, we need to invalidate the page cache in
+>>>>>> the range being written to, otherwise the cache will include invalid data.
+>>>>>>
+>>>>>> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+>>>>>> ---
+>>>>>>     fs/ceph/file.c | 11 ++++++++++-
+>>>>>>     1 file changed, 10 insertions(+), 1 deletion(-)
+>>>>>>
+>>>>>> Changes since v1:
+>>>>>> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
+>>>>>> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+>>>>>>
+>>>>>> Note: I'm not really sure this last change is required, it doesn't really
+>>>>>> affect generic/647 result, but seems to be the most correct.
+>>>>>>
+>>>>>> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+>>>>>> index 5072570c2203..b2743c342305 100644
+>>>>>> --- a/fs/ceph/file.c
+>>>>>> +++ b/fs/ceph/file.c
+>>>>>> @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
+>>>>>>     	if (ret < 0)
+>>>>>>     		return ret;
+>>>>>>     -	ceph_fscache_invalidate(inode, false);
+>>>>>> +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
+>>>>>>     	ret = invalidate_inode_pages2_range(inode->i_mapping,
+>>>>>>     					    pos >> PAGE_SHIFT,
+>>>>>>     					    (pos + count - 1) >> PAGE_SHIFT);
+>>>>> The above has already invalidated the pages, why doesn't it work ?
+>>>> I suspect the reason is because later on we loop through the number of
+>>>> pages, call copy_page_from_iter() and then ceph_fscrypt_encrypt_pages().
+>>> Checked the 'copy_page_from_iter()', it will do the kmap for the pages but will
+>>> kunmap them again later. And they shouldn't update the i_mapping if I didn't
+>>> miss something important.
+>>>
+>>> For 'ceph_fscrypt_encrypt_pages()' it will encrypt/dencrypt the context inplace,
+>>> IMO if it needs to map the page and it should also unmap it just like in
+>>> 'copy_page_from_iter()'.
+>>>
+>>> I thought it possibly be when we need to do RMW, it may will update the
+>>> i_mapping when reading contents, but I checked the code didn't find any
+>>> place is doing this. So I am wondering where tha page caches come from ? If that
+>>> page caches really from reading the contents, then we should discard it instead
+>>> of flushing it back ?
+>>>
+>>> BTW, what's the problem without this fixing ? xfstest fails ?
+>> Yes, generic/647 fails if you run it with test_dummy_encryption.  And I've
+>> also checked that the RMW code was never executed in this test.
+>>
+>> But yeah I have assumed (perhaps wrongly) that the kmap/kunmap could
+>> change the inode->i_mapping.
+>>
+> No, kmap/unmap are all about high memory and 32-bit architectures. Those
+> functions are usually no-ops on 64-bit arches.
 
-Nevertheless the resulting fwnode may have bumped the reference count
-and hence caller of the above API is obliged to call fwnode_handle_put().
-Since fwnode may be not valid either as NULL or error pointer the check
-has to be performed there. This approach uglifies the code and adds
-a point of making a mistake, i.e. forgetting about error point case.
+Yeah, right.
 
-To prevent this, allow an error pointer to be passed to the fwnode APIs.
+So they do nothing here.
 
-Fixes: 83b34afb6b79 ("device property: Introduce fwnode_find_reference()")
-Reported-by: Nuno SÃ¡ <nuno.sa@analog.com>
-Tested-by: Nuno SÃ¡ <nuno.sa@analog.com>
-Acked-by: Nuno SÃ¡ <nuno.sa@analog.com>
-Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v5: fixed return value in _get_reference_args() for secondary check (Michael)
- drivers/base/property.c | 89 +++++++++++++++++++++++------------------
- include/linux/fwnode.h  | 10 ++---
- 2 files changed, 56 insertions(+), 43 deletions(-)
+>> In my debugging this seemed to be the case
+>> for the O_DIRECT path.  That's why I added this extra call here.
+>>
+> I agree with Xiubo that we really shouldn't need to invalidate multiple
+> times.
+>
+> I guess in this test, we have a DIO write racing with an mmap read
+> Probably what's happening is either that we can't invalidate the page
+> because it needs to be cleaned, or the mmap read is racing in just after
+> the invalidate occurs but before writeback.
 
-diff --git a/drivers/base/property.c b/drivers/base/property.c
-index c0e94cce9c29..3376d3971a93 100644
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -47,12 +47,14 @@ bool fwnode_property_present(const struct fwnode_handle *fwnode,
- {
- 	bool ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return false;
-+
- 	ret = fwnode_call_bool_op(fwnode, property_present, propname);
--	if (ret == false && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_bool_op(fwnode->secondary, property_present,
--					 propname);
--	return ret;
-+	if (ret)
-+		return ret;
-+
-+	return fwnode_call_bool_op(fwnode->secondary, property_present, propname);
- }
- EXPORT_SYMBOL_GPL(fwnode_property_present);
- 
-@@ -232,15 +234,16 @@ static int fwnode_property_read_int_array(const struct fwnode_handle *fwnode,
- {
- 	int ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return -EINVAL;
-+
- 	ret = fwnode_call_int_op(fwnode, property_read_int_array, propname,
- 				 elem_size, val, nval);
--	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_int_op(
--			fwnode->secondary, property_read_int_array, propname,
--			elem_size, val, nval);
-+	if (ret != -EINVAL)
-+		return ret;
- 
--	return ret;
-+	return fwnode_call_int_op(fwnode->secondary, property_read_int_array, propname,
-+				  elem_size, val, nval);
- }
- 
- /**
-@@ -371,14 +374,16 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
- {
- 	int ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return -EINVAL;
-+
- 	ret = fwnode_call_int_op(fwnode, property_read_string_array, propname,
- 				 val, nval);
--	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_int_op(fwnode->secondary,
--					 property_read_string_array, propname,
--					 val, nval);
--	return ret;
-+	if (ret != -EINVAL)
-+		return ret;
-+
-+	return fwnode_call_int_op(fwnode->secondary, property_read_string_array, propname,
-+				  val, nval);
- }
- EXPORT_SYMBOL_GPL(fwnode_property_read_string_array);
- 
-@@ -480,15 +485,19 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
- {
- 	int ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return -ENOENT;
-+
- 	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
- 				 nargs, index, args);
-+	if (ret == 0)
-+		return ret;
- 
--	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
--					 prop, nargs_prop, nargs, index, args);
-+	if (IS_ERR_OR_NULL(fwnode->secondary))
-+		return -ENOENT;
- 
--	return ret;
-+	return fwnode_call_int_op(fwnode->secondary, get_reference_args, prop, nargs_prop,
-+				  nargs, index, args);
- }
- EXPORT_SYMBOL_GPL(fwnode_property_get_reference_args);
- 
-@@ -635,12 +644,13 @@ EXPORT_SYMBOL_GPL(fwnode_count_parents);
- struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
- 					    unsigned int depth)
- {
--	unsigned int i;
--
- 	fwnode_handle_get(fwnode);
- 
--	for (i = 0; i < depth && fwnode; i++)
-+	do {
-+		if (depth-- == 0)
-+			break;
- 		fwnode = fwnode_get_next_parent(fwnode);
-+	} while (fwnode);
- 
- 	return fwnode;
- }
-@@ -659,17 +669,17 @@ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
- bool fwnode_is_ancestor_of(struct fwnode_handle *test_ancestor,
- 				  struct fwnode_handle *test_child)
- {
--	if (!test_ancestor)
-+	if (IS_ERR_OR_NULL(test_ancestor))
- 		return false;
- 
- 	fwnode_handle_get(test_child);
--	while (test_child) {
-+	do {
- 		if (test_child == test_ancestor) {
- 			fwnode_handle_put(test_child);
- 			return true;
- 		}
- 		test_child = fwnode_get_next_parent(test_child);
--	}
-+	} while (test_child);
- 	return false;
- }
- 
-@@ -698,7 +708,7 @@ fwnode_get_next_available_child_node(const struct fwnode_handle *fwnode,
- {
- 	struct fwnode_handle *next_child = child;
- 
--	if (!fwnode)
-+	if (IS_ERR_OR_NULL(fwnode))
- 		return NULL;
- 
- 	do {
-@@ -722,16 +732,16 @@ struct fwnode_handle *device_get_next_child_node(struct device *dev,
- 	const struct fwnode_handle *fwnode = dev_fwnode(dev);
- 	struct fwnode_handle *next;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return NULL;
-+
- 	/* Try to find a child in primary fwnode */
- 	next = fwnode_get_next_child_node(fwnode, child);
- 	if (next)
- 		return next;
- 
- 	/* When no more children in primary, continue with secondary */
--	if (fwnode && !IS_ERR_OR_NULL(fwnode->secondary))
--		next = fwnode_get_next_child_node(fwnode->secondary, child);
--
--	return next;
-+	return fwnode_get_next_child_node(fwnode->secondary, child);
- }
- EXPORT_SYMBOL_GPL(device_get_next_child_node);
- 
-@@ -798,6 +808,9 @@ EXPORT_SYMBOL_GPL(fwnode_handle_put);
-  */
- bool fwnode_device_is_available(const struct fwnode_handle *fwnode)
- {
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return false;
-+
- 	if (!fwnode_has_op(fwnode, device_is_available))
- 		return true;
- 
-@@ -988,14 +1001,14 @@ fwnode_graph_get_next_endpoint(const struct fwnode_handle *fwnode,
- 		parent = fwnode_graph_get_port_parent(prev);
- 	else
- 		parent = fwnode;
-+	if (IS_ERR_OR_NULL(parent))
-+		return NULL;
- 
- 	ep = fwnode_call_ptr_op(parent, graph_get_next_endpoint, prev);
-+	if (ep)
-+		return ep;
- 
--	if (IS_ERR_OR_NULL(ep) &&
--	    !IS_ERR_OR_NULL(parent) && !IS_ERR_OR_NULL(parent->secondary))
--		ep = fwnode_graph_get_next_endpoint(parent->secondary, NULL);
--
--	return ep;
-+	return fwnode_graph_get_next_endpoint(parent->secondary, NULL);
- }
- EXPORT_SYMBOL_GPL(fwnode_graph_get_next_endpoint);
- 
-diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-index 3a532ba66f6c..7defac04f9a3 100644
---- a/include/linux/fwnode.h
-+++ b/include/linux/fwnode.h
-@@ -148,12 +148,12 @@ struct fwnode_operations {
- 	int (*add_links)(struct fwnode_handle *fwnode);
- };
- 
--#define fwnode_has_op(fwnode, op)				\
--	((fwnode) && (fwnode)->ops && (fwnode)->ops->op)
-+#define fwnode_has_op(fwnode, op)					\
-+	(!IS_ERR_OR_NULL(fwnode) && (fwnode)->ops && (fwnode)->ops->op)
-+
- #define fwnode_call_int_op(fwnode, op, ...)				\
--	(fwnode ? (fwnode_has_op(fwnode, op) ?				\
--		   (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : -ENXIO) : \
--	 -EINVAL)
-+	(fwnode_has_op(fwnode, op) ?					\
-+	 (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : (IS_ERR_OR_NULL(fwnode) ? -EINVAL : -ENXIO))
- 
- #define fwnode_call_bool_op(fwnode, op, ...)		\
- 	(fwnode_has_op(fwnode, op) ?			\
--- 
-2.35.1
+This sounds a possible case.
+
+
+> In any case, it might be interesting to see whether you're getting
+> -EBUSY back from the new invalidate_inode_pages2 calls with your patch.
+>
+If it's really this case maybe this should be retried some where ?
+
+-- Xiubo
+
 
