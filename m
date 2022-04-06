@@ -2,325 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F84C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233580AbiDFUBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        id S233362AbiDFUEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233109AbiDFUAO (ORCPT
+        with ESMTP id S235409AbiDFUDu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:00:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7AD26F23D;
-        Wed,  6 Apr 2022 11:27:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D4BFB8252B;
-        Wed,  6 Apr 2022 18:27:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D6DC385A1;
-        Wed,  6 Apr 2022 18:27:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269631;
-        bh=TmtFHpzi96JGPweioQRkEhgwGppePS7U0Q7YQwfl/SE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WiwguteeAMpGucc/ye2PJJKjSsQscqV1YpvEzq87AWsZJvPrJtfPpa6utoygmvL05
-         b/EHPYuhWsFzBnVaPPHItx+a6m9smu1vwsh9+cIaAt1MS36GkHLK0t1I7CNViiy4lU
-         ttXUiXCGePD77NbWnOuSGsP2LQz9yd4U0h2uiodk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ding Tianhong <dingtianhong@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 13/43] clocksource/drivers/arm_arch_timer: Introduce generic errata handling infrastructure
-Date:   Wed,  6 Apr 2022 20:26:22 +0200
-Message-Id: <20220406182437.070605313@linuxfoundation.org>
+        Wed, 6 Apr 2022 16:03:50 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA4F60DBA;
+        Wed,  6 Apr 2022 10:52:05 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236GESm1030105;
+        Wed, 6 Apr 2022 17:51:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=hWy5I10SyMCKmhD0+kEodm/y+gl5qzddelF/Lh2wtH0=;
+ b=gpCaxE2L4xXcID7HaSzkpTPuYGz8qFLUrwDxZg5+5F0pcGcIWZJaKndpwofexWytg+XR
+ OCfsHHmyh6S+9NRP8dJKBQ8DR/bUU2HAF68vPoWSE95rJNqjq+6KnoWzSKqurm17PiLw
+ VCTZmocNtP0TJn40CdQslYfJSWL1gTzaBDxHj87l514TBUeTWvNtMvBJIoTySaLP0u4o
+ 1Tc+qxMpacYBnIPJHRZkqMXPLYCOkCNoq2l3n5H7eP0nz3GQGNkNoHFuOQavbwxm8/wY
+ TxslO25B3idxtkwMfGy4Qmj211X7M20UC4aghIuv6P6Ra6fi4U+XlYlWT9/wfdxXa5Wv 5A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f95epwyq6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 17:51:53 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 236Hgf9d011564;
+        Wed, 6 Apr 2022 17:51:52 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f95epwypm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 17:51:52 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 236Hhi6M019355;
+        Wed, 6 Apr 2022 17:51:50 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3f6drhr7k4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 17:51:49 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 236HpllX43057440
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 6 Apr 2022 17:51:47 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DAE814C04A;
+        Wed,  6 Apr 2022 17:51:46 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5C8F54C040;
+        Wed,  6 Apr 2022 17:51:41 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.211.90.125])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  6 Apr 2022 17:51:40 +0000 (GMT)
+From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+To:     acme@kernel.org, jolsa@kernel.org, disgoel@linux.vnet.ibm.com
+Cc:     mpe@ellerman.id.au, linux-perf-users@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, maddy@linux.vnet.ibm.com,
+        rnsastry@linux.ibm.com, kjain@linux.ibm.com,
+        linux-kernel@vger.kernel.org, srikar@linux.vnet.ibm.com,
+        irogers@google.com
+Subject: [PATCH v2 4/4] tools/perf: Fix perf bench numa testcase to check if CPU used to bind task is online
+Date:   Wed,  6 Apr 2022 23:21:13 +0530
+Message-Id: <20220406175113.87881-5-atrajeev@linux.vnet.ibm.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
+References: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Z94Fa6rh7GGPCk_QPb0VIRZWRQ5zXAZw
+X-Proofpoint-ORIG-GUID: 5zuHFViFxtoaVLPnUmFfj3zwISZojtkT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-06_09,2022-04-06_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
+ bulkscore=0 clxscore=1015 priorityscore=1501 phishscore=0 adultscore=0
+ lowpriorityscore=0 impostorscore=0 malwarescore=0 mlxlogscore=999
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204060087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ding Tianhong <dingtianhong@huawei.com>
+Perf numa bench test fails with error:
 
-commit 16d10ef29f25aba923779234bb93a451b14d20e6 upstream.
+Testcase:
+./perf bench numa mem -p 2 -t 1 -P 1024 -C 0,8 -M 1,0 -s 20 -zZq
+--thp  1 --no-data_rand_walk
 
-Currently we have code inline in the arch timer probe path to cater for
-Freescale erratum A-008585, complete with ifdeffery. This is a little
-ugly, and will get worse as we try to add more errata handling.
+Failure snippet:
+<<>>
+ Running 'numa/mem' benchmark:
 
-This patch refactors the handling of Freescale erratum A-008585. Now the
-erratum is described in a generic arch_timer_erratum_workaround
-structure, and the probe path can iterate over these to detect errata
-and enable workarounds.
+ # Running main, "perf bench numa numa-mem -p 2 -t 1 -P 1024 -C 0,8
+-M 1,0 -s 20 -zZq --thp 1 --no-data_rand_walk"
 
-This will simplify the addition and maintenance of code handling
-Hisilicon erratum 161010101.
+perf: bench/numa.c:333: bind_to_cpumask: Assertion `!(ret)' failed.
+<<>>
 
-Signed-off-by: Ding Tianhong <dingtianhong@huawei.com>
-[Mark: split patch, correct Kconfig, reword commit message]
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The Testcases uses CPU’s 0 and 8. In function "parse_setup_cpu_list",
+There is check to see if cpu number is greater than max cpu’s possible
+in the system ie via "if (bind_cpu_0 >= g->p.nr_cpus ||
+bind_cpu_1 >= g->p.nr_cpus) {". But it could happen that system has
+say 48 CPU’s, but only number of online CPU’s is 0-7. Other CPU’s
+are offlined. Since "g->p.nr_cpus" is 48, so function will go ahead
+and set bit for CPU 8 also in cpumask ( td->bind_cpumask).
+
+bind_to_cpumask function is called to set affinity using
+sched_setaffinity and the cpumask. Since the CPU8 is not present,
+set affinity will fail here with EINVAL. Fix this issue by adding a
+check to make sure that, CPU’s provided in the input argument values
+are online before proceeding further and skip the test. For this,
+include new helper function "is_cpu_online" in
+"tools/perf/util/header.c".
+
+Since "BIT(x)" definition will get included from header.h, remove
+that from bench/numa.c
+
+Tested-by: Disha Goel <disgoel@linux.vnet.ibm.com>
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Reported-by: Disha Goel <disgoel@linux.vnet.ibm.com>
 ---
- arch/arm64/include/asm/arch_timer.h  |   40 +++++----------
- drivers/clocksource/Kconfig          |    4 +
- drivers/clocksource/arm_arch_timer.c |   90 ++++++++++++++++++++++++-----------
- 3 files changed, 80 insertions(+), 54 deletions(-)
+ tools/perf/bench/numa.c  |  8 ++++++--
+ tools/perf/util/header.c | 43 ++++++++++++++++++++++++++++++++++++++++
+ tools/perf/util/header.h |  1 +
+ 3 files changed, 50 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/include/asm/arch_timer.h
-+++ b/arch/arm64/include/asm/arch_timer.h
-@@ -29,41 +29,29 @@
+diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
+index 29e41e32bd88..7992d79b3e41 100644
+--- a/tools/perf/bench/numa.c
++++ b/tools/perf/bench/numa.c
+@@ -34,6 +34,7 @@
+ #include <linux/numa.h>
+ #include <linux/zalloc.h>
  
- #include <clocksource/arm_arch_timer.h>
++#include "../util/header.h"
+ #include <numa.h>
+ #include <numaif.h>
  
--#if IS_ENABLED(CONFIG_FSL_ERRATUM_A008585)
-+#if IS_ENABLED(CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND)
- extern struct static_key_false arch_timer_read_ool_enabled;
--#define needs_fsl_a008585_workaround() \
-+#define needs_unstable_timer_counter_workaround() \
- 	static_branch_unlikely(&arch_timer_read_ool_enabled)
- #else
--#define needs_fsl_a008585_workaround()  false
-+#define needs_unstable_timer_counter_workaround()  false
- #endif
- 
--u32 __fsl_a008585_read_cntp_tval_el0(void);
--u32 __fsl_a008585_read_cntv_tval_el0(void);
--u64 __fsl_a008585_read_cntvct_el0(void);
--
--/*
-- * The number of retries is an arbitrary value well beyond the highest number
-- * of iterations the loop has been observed to take.
-- */
--#define __fsl_a008585_read_reg(reg) ({			\
--	u64 _old, _new;					\
--	int _retries = 200;				\
--							\
--	do {						\
--		_old = read_sysreg(reg);		\
--		_new = read_sysreg(reg);		\
--		_retries--;				\
--	} while (unlikely(_old != _new) && _retries);	\
--							\
--	WARN_ON_ONCE(!_retries);			\
--	_new;						\
--})
-+
-+struct arch_timer_erratum_workaround {
-+	const char *id;		/* Indicate the Erratum ID */
-+	u32 (*read_cntp_tval_el0)(void);
-+	u32 (*read_cntv_tval_el0)(void);
-+	u64 (*read_cntvct_el0)(void);
-+};
-+
-+extern const struct arch_timer_erratum_workaround *timer_unstable_counter_workaround;
- 
- #define arch_timer_reg_read_stable(reg) 		\
- ({							\
- 	u64 _val;					\
--	if (needs_fsl_a008585_workaround())		\
--		_val = __fsl_a008585_read_##reg();	\
-+	if (needs_unstable_timer_counter_workaround())		\
-+		_val = timer_unstable_counter_workaround->read_##reg();\
- 	else						\
- 		_val = read_sysreg(reg);		\
- 	_val;						\
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -305,10 +305,14 @@ config ARM_ARCH_TIMER_EVTSTREAM
- 	  This must be disabled for hardware validation purposes to detect any
- 	  hardware anomalies of missing events.
- 
-+config ARM_ARCH_TIMER_OOL_WORKAROUND
-+	bool
-+
- config FSL_ERRATUM_A008585
- 	bool "Workaround for Freescale/NXP Erratum A-008585"
- 	default y
- 	depends on ARM_ARCH_TIMER && ARM64
-+	select ARM_ARCH_TIMER_OOL_WORKAROUND
- 	help
- 	  This option enables a workaround for Freescale/NXP Erratum
- 	  A-008585 ("ARM generic timer may contain an erroneous
---- a/drivers/clocksource/arm_arch_timer.c
-+++ b/drivers/clocksource/arm_arch_timer.c
-@@ -96,27 +96,58 @@ early_param("clocksource.arm_arch_timer.
-  */
- 
- #ifdef CONFIG_FSL_ERRATUM_A008585
--DEFINE_STATIC_KEY_FALSE(arch_timer_read_ool_enabled);
--EXPORT_SYMBOL_GPL(arch_timer_read_ool_enabled);
--
--static int fsl_a008585_enable = -1;
-+/*
-+ * The number of retries is an arbitrary value well beyond the highest number
-+ * of iterations the loop has been observed to take.
-+ */
-+#define __fsl_a008585_read_reg(reg) ({			\
-+	u64 _old, _new;					\
-+	int _retries = 200;				\
-+							\
-+	do {						\
-+		_old = read_sysreg(reg);		\
-+		_new = read_sysreg(reg);		\
-+		_retries--;				\
-+	} while (unlikely(_old != _new) && _retries);	\
-+							\
-+	WARN_ON_ONCE(!_retries);			\
-+	_new;						\
-+})
- 
--u32 __fsl_a008585_read_cntp_tval_el0(void)
-+static u32 notrace fsl_a008585_read_cntp_tval_el0(void)
- {
- 	return __fsl_a008585_read_reg(cntp_tval_el0);
- }
- 
--u32 __fsl_a008585_read_cntv_tval_el0(void)
-+static u32 notrace fsl_a008585_read_cntv_tval_el0(void)
- {
- 	return __fsl_a008585_read_reg(cntv_tval_el0);
- }
- 
--u64 __fsl_a008585_read_cntvct_el0(void)
-+static u64 notrace fsl_a008585_read_cntvct_el0(void)
- {
- 	return __fsl_a008585_read_reg(cntvct_el0);
- }
--EXPORT_SYMBOL(__fsl_a008585_read_cntvct_el0);
--#endif /* CONFIG_FSL_ERRATUM_A008585 */
-+#endif
-+
-+#ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
-+const struct arch_timer_erratum_workaround *timer_unstable_counter_workaround = NULL;
-+EXPORT_SYMBOL_GPL(timer_unstable_counter_workaround);
-+
-+DEFINE_STATIC_KEY_FALSE(arch_timer_read_ool_enabled);
-+EXPORT_SYMBOL_GPL(arch_timer_read_ool_enabled);
-+
-+static const struct arch_timer_erratum_workaround ool_workarounds[] = {
-+#ifdef CONFIG_FSL_ERRATUM_A008585
-+	{
-+		.id = "fsl,erratum-a008585",
-+		.read_cntp_tval_el0 = fsl_a008585_read_cntp_tval_el0,
-+		.read_cntv_tval_el0 = fsl_a008585_read_cntv_tval_el0,
-+		.read_cntvct_el0 = fsl_a008585_read_cntvct_el0,
-+	},
-+#endif
-+};
-+#endif /* CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND */
- 
- static __always_inline
- void arch_timer_reg_write(int access, enum arch_timer_reg reg, u32 val,
-@@ -267,8 +298,8 @@ static __always_inline void set_next_eve
- 	arch_timer_reg_write(access, ARCH_TIMER_REG_CTRL, ctrl, clk);
- }
- 
--#ifdef CONFIG_FSL_ERRATUM_A008585
--static __always_inline void fsl_a008585_set_next_event(const int access,
-+#ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
-+static __always_inline void erratum_set_next_event_generic(const int access,
- 		unsigned long evt, struct clock_event_device *clk)
- {
- 	unsigned long ctrl;
-@@ -286,20 +317,20 @@ static __always_inline void fsl_a008585_
- 	arch_timer_reg_write(access, ARCH_TIMER_REG_CTRL, ctrl, clk);
- }
- 
--static int fsl_a008585_set_next_event_virt(unsigned long evt,
-+static int erratum_set_next_event_virt(unsigned long evt,
- 					   struct clock_event_device *clk)
- {
--	fsl_a008585_set_next_event(ARCH_TIMER_VIRT_ACCESS, evt, clk);
-+	erratum_set_next_event_generic(ARCH_TIMER_VIRT_ACCESS, evt, clk);
- 	return 0;
- }
- 
--static int fsl_a008585_set_next_event_phys(unsigned long evt,
-+static int erratum_set_next_event_phys(unsigned long evt,
- 					   struct clock_event_device *clk)
- {
--	fsl_a008585_set_next_event(ARCH_TIMER_PHYS_ACCESS, evt, clk);
-+	erratum_set_next_event_generic(ARCH_TIMER_PHYS_ACCESS, evt, clk);
- 	return 0;
- }
--#endif /* CONFIG_FSL_ERRATUM_A008585 */
-+#endif /* CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND */
- 
- static int arch_timer_set_next_event_virt(unsigned long evt,
- 					  struct clock_event_device *clk)
-@@ -329,16 +360,16 @@ static int arch_timer_set_next_event_phy
- 	return 0;
- }
- 
--static void fsl_a008585_set_sne(struct clock_event_device *clk)
-+static void erratum_workaround_set_sne(struct clock_event_device *clk)
- {
--#ifdef CONFIG_FSL_ERRATUM_A008585
-+#ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
- 	if (!static_branch_unlikely(&arch_timer_read_ool_enabled))
- 		return;
- 
- 	if (arch_timer_uses_ppi == VIRT_PPI)
--		clk->set_next_event = fsl_a008585_set_next_event_virt;
-+		clk->set_next_event = erratum_set_next_event_virt;
- 	else
--		clk->set_next_event = fsl_a008585_set_next_event_phys;
-+		clk->set_next_event = erratum_set_next_event_phys;
- #endif
- }
- 
-@@ -371,7 +402,7 @@ static void __arch_timer_setup(unsigned
- 			BUG();
+@@ -616,6 +617,11 @@ static int parse_setup_cpu_list(void)
+ 			return -1;
  		}
  
--		fsl_a008585_set_sne(clk);
-+		erratum_workaround_set_sne(clk);
- 	} else {
- 		clk->features |= CLOCK_EVT_FEAT_DYNIRQ;
- 		clk->name = "arch_mem_timer";
-@@ -600,7 +631,7 @@ static void __init arch_counter_register
- 
- 		clocksource_counter.archdata.vdso_direct = true;
- 
--#ifdef CONFIG_FSL_ERRATUM_A008585
-+#ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
- 		/*
- 		 * Don't use the vdso fastpath if errata require using
- 		 * the out-of-line counter accessor.
-@@ -888,12 +919,15 @@ static int __init arch_timer_of_init(str
- 
- 	arch_timer_c3stop = !of_property_read_bool(np, "always-on");
- 
--#ifdef CONFIG_FSL_ERRATUM_A008585
--	if (fsl_a008585_enable < 0)
--		fsl_a008585_enable = of_property_read_bool(np, "fsl,erratum-a008585");
--	if (fsl_a008585_enable) {
--		static_branch_enable(&arch_timer_read_ool_enabled);
--		pr_info("Enabling workaround for FSL erratum A-008585\n");
-+#ifdef CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND
-+	for (i = 0; i < ARRAY_SIZE(ool_workarounds); i++) {
-+		if (of_property_read_bool(np, ool_workarounds[i].id)) {
-+			timer_unstable_counter_workaround = &ool_workarounds[i];
-+			static_branch_enable(&arch_timer_read_ool_enabled);
-+			pr_info("arch_timer: Enabling workaround for %s\n",
-+				timer_unstable_counter_workaround->id);
-+			break;
++		if (is_cpu_online(bind_cpu_0) != 1 || is_cpu_online(bind_cpu_1) != 1) {
++			printf("\nTest not applicable, bind_cpu_0 or bind_cpu_1 is offline\n");
++			return -1;
 +		}
- 	}
- #endif
++
+ 		BUG_ON(bind_cpu_0 < 0 || bind_cpu_1 < 0);
+ 		BUG_ON(bind_cpu_0 > bind_cpu_1);
  
-
+@@ -786,8 +792,6 @@ static int parse_nodes_opt(const struct option *opt __maybe_unused,
+ 	return parse_node_list(arg);
+ }
+ 
+-#define BIT(x) (1ul << x)
+-
+ static inline uint32_t lfsr_32(uint32_t lfsr)
+ {
+ 	const uint32_t taps = BIT(1) | BIT(5) | BIT(6) | BIT(31);
+diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
+index 6da12e522edc..3f5fcf5d4b3f 100644
+--- a/tools/perf/util/header.c
++++ b/tools/perf/util/header.c
+@@ -983,6 +983,49 @@ static int write_dir_format(struct feat_fd *ff,
+ 	return do_write(ff, &data->dir.version, sizeof(data->dir.version));
+ }
+ 
++#define SYSFS "/sys/devices/system/cpu/"
++
++/*
++ * Check whether a CPU is online
++ *
++ * Returns:
++ *     1 -> if CPU is online
++ *     0 -> if CPU is offline
++ *    -1 -> error case
++ */
++int is_cpu_online(unsigned int cpu)
++{
++	char sysfs_cpu[255];
++	char buf[255];
++	struct stat statbuf;
++	size_t len;
++	int fd;
++
++	snprintf(sysfs_cpu, sizeof(sysfs_cpu), SYSFS "cpu%u", cpu);
++
++	if (stat(sysfs_cpu, &statbuf) != 0)
++		return 0;
++
++	/*
++	 * Check if /sys/devices/system/cpu/cpux/online file
++	 * exists. In kernels without CONFIG_HOTPLUG_CPU, this
++	 * file won't exist.
++	 */
++	snprintf(sysfs_cpu, sizeof(sysfs_cpu), SYSFS "cpu%u/online", cpu);
++	if (stat(sysfs_cpu, &statbuf) != 0)
++		return 1;
++
++	fd = open(sysfs_cpu, O_RDONLY);
++	if (fd == -1)
++		return -1;
++
++	len = read(fd, buf, sizeof(buf) - 1);
++	buf[len] = '\0';
++	close(fd);
++
++	return strtoul(buf, NULL, 16);
++}
++
+ #ifdef HAVE_LIBBPF_SUPPORT
+ static int write_bpf_prog_info(struct feat_fd *ff,
+ 			       struct evlist *evlist __maybe_unused)
+diff --git a/tools/perf/util/header.h b/tools/perf/util/header.h
+index c9e3265832d9..0eb4bc29a5a4 100644
+--- a/tools/perf/util/header.h
++++ b/tools/perf/util/header.h
+@@ -158,6 +158,7 @@ int do_write(struct feat_fd *fd, const void *buf, size_t size);
+ int write_padded(struct feat_fd *fd, const void *bf,
+ 		 size_t count, size_t count_aligned);
+ 
++int is_cpu_online(unsigned int cpu);
+ /*
+  * arch specific callback
+  */
+-- 
+2.35.1
 
