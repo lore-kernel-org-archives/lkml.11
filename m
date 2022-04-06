@@ -2,116 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD1CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F003C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237315AbiDFQVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
+        id S237666AbiDFQXa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237478AbiDFQVO (ORCPT
+        with ESMTP id S238264AbiDFQW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:21:14 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236A01CFF82;
-        Tue,  5 Apr 2022 19:45:07 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KY84c40gZz4xXv;
-        Wed,  6 Apr 2022 12:45:04 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649213106;
-        bh=1+sqTb0wM2qZfgwqUDRrCmRK6iregCrgSZT9Fz4WIpY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=nx6MQaIXz9w7QZh9oAn32NiPKAKDRlblu6g/ms217t8xbnyMpiEzd+XdHgha8DLuE
-         5ucOKKt1oGy2TWe7Y9nHKypGd/RRweDE1gevZ14IHRWDyuNz7S3XhQX3QLR1VOUwc5
-         ENCHYmshfv87L2rqL7KTGmF1joEo8C4+rNUW5OXtWWY392qLdGLcOaUk8VmHCq2cCt
-         /x7U7j+BfloOTHUrHn8c9Wfo02ZWPV3+j1CQZtcmRK0Xyt2j4JMvACzZrQ6DzouNIb
-         npIORKWC0pbzSe7MgOPv3g1h/mhWOGwbYQLqesHHm4JcDtZtREeFhisQum11l+mNxq
-         qp0a5R2v9oqZQ==
-Date:   Wed, 6 Apr 2022 12:45:03 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Valentin Schneider <valentin.schneider@arm.com>
-Subject: linux-next: manual merge of the rcu tree with the tip tree
-Message-ID: <20220406124503.25e8ed68@canb.auug.org.au>
+        Wed, 6 Apr 2022 12:22:58 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B952300A9;
+        Tue,  5 Apr 2022 19:28:43 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KY7gh74X8zgYMQ;
+        Wed,  6 Apr 2022 10:26:56 +0800 (CST)
+Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
+ 2022 10:28:39 +0800
+From:   Liao Chang <liaochang1@huawei.com>
+To:     <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
+        <liaochang1@huawei.com>, <tglx@linutronix.de>, <nitesh@redhat.com>,
+        <edumazet@google.com>, <clg@kaod.org>, <tannerlove@google.com>,
+        <peterz@infradead.org>, <joshdon@google.com>,
+        <masahiroy@kernel.org>, <nathan@kernel.org>, <vbabka@suse.cz>,
+        <akpm@linux-foundation.org>, <gustavoars@kernel.org>,
+        <arnd@arndb.de>, <chris@chrisdown.name>,
+        <dmitry.torokhov@gmail.com>, <linux@rasmusvillemoes.dk>,
+        <daniel@iogearbox.net>, <john.ogness@linutronix.de>,
+        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <heying24@huawei.com>, <guohanjun@huawei.com>,
+        <weiyongjun1@huawei.com>
+Subject: [RFC 2/3] softirq: Do throttling when softirqs use up its bandwidth
+Date:   Wed, 6 Apr 2022 10:27:48 +0800
+Message-ID: <20220406022749.184807-3-liaochang1@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220406022749.184807-1-liaochang1@huawei.com>
+References: <20220406022749.184807-1-liaochang1@huawei.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/js5uG5LcJijHlYphM5dKCDW";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.53]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/js5uG5LcJijHlYphM5dKCDW
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+When kernel is about to handle pending softirqs, it will check firstly
+whether softirq already use up its CPU bandwidth, Once the total duration
+of softirq handling exceed the max value in the user-specified time window,
+softirq will be throttled for a while, the throttling will be removed
+when time window expires.
 
-Hi all,
+On then other hand, kernel will update the runtime of softirq on given CPU
+before __do_softirq() function returns.
 
-Today's linux-next merge of the rcu tree got conflicts in:
+Signed-off-by: Liao Chang <liaochang1@huawei.com>
+---
+ kernel/softirq.c | 70 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
 
-  kernel/sched/core.c
-  include/linux/sched.h
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index 8aac9e2631fd..6de6db794ac5 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -75,6 +75,49 @@ struct softirq_throttle {
+ 	raw_spinlock_t lock;
+ } si_throttle;
+ 
++struct softirq_runtime {
++	bool	throttled;
++	unsigned long	duration;
++	unsigned long	expires;
++	raw_spinlock_t lock;
++};
++static DEFINE_PER_CPU(struct softirq_runtime, softirq_runtime);
++
++static void forward_softirq_expires(struct softirq_runtime *si_runtime)
++{
++	si_runtime->throttled = false;
++	si_runtime->duration = 0UL;
++	si_runtime->expires = jiffies +
++		msecs_to_jiffies(si_throttle.period - si_throttle.runtime);
++}
++
++static void update_softirq_runtime(unsigned long duration)
++{
++	struct softirq_runtime *si_runtime = this_cpu_ptr(&softirq_runtime);
++
++	raw_spin_lock(&si_runtime->lock);
++	si_runtime->duration += jiffies_to_msecs(duration);
++	if ((si_runtime->duration >= si_throttle.runtime) &&
++		time_before(jiffies, si_runtime->expires)) {
++		si_runtime->throttled = true;
++	}
++	raw_spin_unlock(&si_runtime->lock);
++}
++
++static bool softirq_runtime_exceeded(void)
++{
++	struct softirq_runtime *si_runtime = this_cpu_ptr(&softirq_runtime);
++
++	if ((unsigned int)si_throttle.runtime >= si_throttle.period)
++		return false;
++
++	raw_spin_lock(&si_runtime->lock);
++	if (!time_before(jiffies, si_runtime->expires))
++		forward_softirq_expires(si_runtime);
++	raw_spin_unlock(&si_runtime->lock);
++	return si_runtime->throttled;
++}
++
+ static int softirq_throttle_validate(void)
+ {
+ 	if (((int)sysctl_softirq_period_ms <= 0) ||
+@@ -88,10 +131,18 @@ static int softirq_throttle_validate(void)
+ static void softirq_throttle_update(void)
+ {
+ 	unsigned long flags;
++	struct softirq_runtime *si_runtime;
+ 
+ 	raw_spin_lock_irqsave(&si_throttle.lock, flags);
+ 	si_throttle.period = sysctl_softirq_period_ms;
+ 	si_throttle.runtime = sysctl_softirq_runtime_ms;
++
++	for_each_possible_cpu(cpu, &) {
++		si_runtime = per_cpu_ptr(&softirq_runtime, cpu);
++		raw_spin_lock(&si_runtime->lock);
++		forward_softirq_expires(si_runtime);
++		raw_spin_unlock(&si_runtime->lock);
++	}
+ 	raw_spin_unlock_irqrestore(&si_throttle.lock, flags);
+ }
+ 
+@@ -129,9 +180,17 @@ int softirq_throttle_handler(struct ctl_table *table, int write, void *buffer,
+ 
+ static void softirq_throttle_init(void)
+ {
++	struct softirq_runtime *si_runtime;
++
+ 	si_throttle.period = sysctl_softirq_period_ms;
+ 	si_throttle.runtime = sysctl_softirq_runtime_ms;
+ 	raw_spin_lock_init(&si_throttle.lock);
++
++	for_each_possible_cpu(cpu) {
++		si_runtime = per_cpu_ptr(&softirq_runtime, cpu);
++		forward_softirq_expires(si_runtime);
++		raw_spin_lock_init(&si_runtime->lock);
++	}
+ }
+ #endif
+ 
+@@ -592,6 +651,13 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
+ 	__u32 pending;
+ 	int softirq_bit;
+ 
++#ifdef CONFIG_SOFTIRQ_THROTTLE
++	bool exceeded = softirq_runtime_exceeded();
++
++	if (exceeded)
++		return;
++#endif
++
+ 	/*
+ 	 * Mask out PF_MEMALLOC as the current task context is borrowed for the
+ 	 * softirq. A softirq handled, such as network RX, might set PF_MEMALLOC
+@@ -652,6 +718,10 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
+ 		wakeup_softirqd();
+ 	}
+ 
++#ifdef CONFIG_SOFTIRQ_THROTTLE
++	update_softirq_runtime(jiffies - (end - MAX_SOFTIRQ_TIME));
++#endif
++
+ 	account_softirq_exit(current);
+ 	lockdep_softirq_end(in_hardirq);
+ 	softirq_handle_end();
+-- 
+2.17.1
 
-between commit:
-
-  cfe43f478b79 ("preempt/dynamic: Introduce preemption model accessors")
-
-from the tip tree and commit:
-
-  42e3e3c6a774 ("EXP preempt/dynamic: Introduce preempt mode accessors")
-
-from the rcu tree.
-
-Well, this is just a pain.  Paul, please don't put expierimental things
-in you linuc-nect included branch.  I have dropped the rcu tree today.
-
-The rules I use for the linux-next tree are:
-
-"You will need to ensure that the patches/commits in your tree/series have
-been:
-     * submitted under GPL v2 (or later) and include the Contributor's
-        Signed-off-by,
-     * posted to the relevant mailing list,
-     * reviewed by you (or another maintainer of your subsystem tree),
-     * successfully unit tested, and=20
-     * destined for the current or next Linux merge window.
-
-Basically, this should be just what you would send to Linus (or ask him
-to fetch).  It is allowed to be rebased if you deem it necessary."
-
---=20
-Cheers,
-Stephen Rothwell=20
-sfr@canb.auug.org.au
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/js5uG5LcJijHlYphM5dKCDW
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJM/q8ACgkQAVBC80lX
-0Gxivgf+OuWWEyB8TtgNsIXnwXz6OpNaQiaTzj04k5qrP+a5xlFfVWrhh43GS8BR
-eqv0fVdli4tiZTpqqdKFVc3+t4H9cs1jIKmCxK61p/E0u5xx/eqPL0K6/bgtdWmV
-yK2w5HvrbxKA3eMt4M5or7Ehv+9HfyK2VlsrAVDVaGukXeqiAMkBVbD5p++o2zh4
-EWxuFsXwH3xf/nOPC45XNFfamrxAQguKMYZlhtyMKbYEXG9CrPg8BVtcxxNuBDca
-SOCjb2fadtXxnXYvORErWWxK0XEi91n6mEPOyVg2F7Il0M5dCwQgu7SUu6NBMjBr
-OgqGuRxoYxsmt3TPxfmfniu5FmCbKA==
-=QCxQ
------END PGP SIGNATURE-----
-
---Sig_/js5uG5LcJijHlYphM5dKCDW--
