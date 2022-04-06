@@ -2,344 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD53C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 050C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233560AbiDFNok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
+        id S233585AbiDFNqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:46:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233814AbiDFNoS (ORCPT
+        with ESMTP id S233516AbiDFNpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:44:18 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031A42B4B1D;
-        Wed,  6 Apr 2022 03:51:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649242306; x=1680778306;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=SbQ7s7usYgdViEJCRMQci2sW5ZOLoc7b2x5luUdH4zA=;
-  b=QXuFS85DRkb7afTEBEwmo2LyNhrb3IWe73TnvLlbIpHAzbtZpUq2dBxJ
-   QVqBSfMHlTKv/ciDkd75eTFx9804BWBigD+7EpNHHFQeWNaiZShzIFn5x
-   t20Lklwi++k3WoOIzvuuJZczMJpzbrDylD8dS7LeQIhf9/3EdnWA9c6BA
-   daa7eDlPCkAxFUVLQxiwAHk0Jr7vymWkami+SpnLymF8aQ8ymCxnp9stX
-   wC9pZOL1lHK9VW5QWlgRSx8M+8Dftno1ksrOou3K1VJjcbbd2sE0fpMZK
-   jV5LRJYmdAB9Xu0khKa/q7BkA4dhaMC4NtoyMnwbsQxQesG40jpsUNzzD
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260711181"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="260711181"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 03:51:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="658480707"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga004.jf.intel.com with ESMTP; 06 Apr 2022 03:51:03 -0700
-To:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     "Sandeep Maheswaram (Temp)" <quic_c_sanm@quicinc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Peter Chen <peter.chen@kernel.org>,
-        Pawel Laszczak <pawell@cadence.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_ppratap@quicinc.com,
-        quic_kriskura@quicinc.com
-References: <1648103831-12347-4-git-send-email-quic_c_sanm@quicinc.com>
- <YjxjxplpOpDC2JLs@kuha.fi.intel.com>
- <4c2a28ad-b866-1b65-e73a-4eda0596cea2@linux.intel.com>
- <Yj2nPa6/Y01P5aCY@kuha.fi.intel.com>
- <4619c75c-cd34-82f2-56e1-a8bcb6d97177@linux.intel.com>
- <Yj3h4p/kmZTvMz0O@kuha.fi.intel.com>
- <fae54b27-9ae2-ecfc-69ae-40e5f5e1afbe@quicinc.com>
- <bd694ef9-be57-79f1-e95e-5501c396be25@linux.intel.com>
- <YkWNpTLjh2weX9Mk@kuha.fi.intel.com>
- <20220404082516.GE29680@hu-pkondeti-hyd.qualcomm.com>
- <20220406062543.GA10801@hu-pkondeti-hyd.qualcomm.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH v3 3/3] usb: dwc: host: add xhci_plat_priv quirk
- XHCI_SKIP_PHY_INIT
-Message-ID: <1234f637-9420-77e2-dc61-7e702ac8abe0@linux.intel.com>
-Date:   Wed, 6 Apr 2022 13:52:56 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Wed, 6 Apr 2022 09:45:51 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2053.outbound.protection.outlook.com [40.107.244.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8E02F3D3A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:55:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l/+yO1RUMjJNCZMLWeV1nHL1K/rRA2VdVT78WhJJsNZqAf1M82aHY9GK28mTSSAJJ9fxrEdvdaYgEPR2kE7jLmZYtSAbRKBzTwokITHTUCN9mPuVqlIocalwZFngs4u6U21C6nb/4A3gs7a3Yi5q7wl46xHhtNj1EYUPPiVH3Rw7ECtqVc2mumJJQITLvNe9aL9CK/4LBxkqOjVOy9AQYVLmOkvOWcvwxu3Xd88oECZgeeNNa/cbCrY47UUS9fLtjAKafWcByL6rD2VTpXXxXr1AIdLE9Je3i7UDGzbb9KmFtmCFvxomsON6xlQ+AHEz6I8TWMYqvQ23EATcLefh2Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nO+jUIaGvM5ZJK+HD/Jm6o7kbY8rMhX74xWFDbh+/pM=;
+ b=gFB0csABya8HBFeG2F+ObM+Z1JoNNJFcvNfOcGFzq1pxrXCxaKDrtQLBnHNOTvtZ0UPe47BqyvqYw+WfiovhyoH6XXS6E1b8xiPYexpHSElSpnmu7+4y1NOMgn0Qf+ZGUImWwVrCToU3r6b53jxDHeho/WHI1BaG/SUKtLHXE/w5W6yDchb9RH7Stk0N+erGRIhrcbuGqXX+llfUYC6VyH764/8l3EQCeGUtbCqTyAL1RViaCktN27zKE6StCc8Am3esGILSdpJZ2ffYq/VCcHwBxwTY+3E9Elvz0qmBU3NZ5w27Sef3K6zuTIOL0jM/U1bn5+0igxBf3QA3qYT2aA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nO+jUIaGvM5ZJK+HD/Jm6o7kbY8rMhX74xWFDbh+/pM=;
+ b=szJieitmDNl8dAFz+c7qPD+f+bBsEcDkQNURDnxYWC7rypvV+ViO2FYfgmW9HEQujHf3Iqs0UGjCJyJQ3J6PqnRsrOoz24cx2VFu7O76c/A7NRZxbiXvewYvVbZKfxNFGm+aLzNZWguA4FRE8P9l7Vz/hX+sq5zR1h5ar7WRTx0=
+Received: from DS7PR03CA0115.namprd03.prod.outlook.com (2603:10b6:5:3b7::30)
+ by SN4PR0201MB3438.namprd02.prod.outlook.com (2603:10b6:803:48::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 10:55:37 +0000
+Received: from DM3NAM02FT019.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:3b7:cafe::5d) by DS7PR03CA0115.outlook.office365.com
+ (2603:10b6:5:3b7::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Wed, 6 Apr 2022 10:55:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT019.mail.protection.outlook.com (10.13.4.191) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5144.21 via Frontend Transport; Wed, 6 Apr 2022 10:55:37 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 6 Apr 2022 03:55:33 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 6 Apr 2022 03:55:33 -0700
+Envelope-to: linux-kernel@vger.kernel.org,
+ gregkh@linuxfoundation.org,
+ corbet@lwn.net,
+ linux-arm-kernel@lists.infradead.org,
+ arnd@arndb.de
+Received: from [172.19.2.243] (port=36060 helo=xsjwillw50.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <ronak.jain@xilinx.com>)
+        id 1nc3K1-0007fI-Fy; Wed, 06 Apr 2022 03:55:33 -0700
+From:   Ronak Jain <ronak.jain@xilinx.com>
+To:     <michal.simek@xilinx.com>, <linux-kernel@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <corbet@lwn.net>,
+        <linux-arm-kernel@lists.infradead.org>, <arnd@arndb.de>,
+        <lakshmi.sai.krishna.potthuri@xilinx.com>, <radheys@xilinx.com>,
+        Ronak Jain <ronak.jain@xilinx.com>
+Subject: [PATCH 1/4] firmware: xilinx: add support for IOCTL and QUERY ID feature check
+Date:   Wed, 6 Apr 2022 03:55:23 -0700
+Message-ID: <1649242526-17493-2-git-send-email-ronak.jain@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649242526-17493-1-git-send-email-ronak.jain@xilinx.com>
+References: <1649242526-17493-1-git-send-email-ronak.jain@xilinx.com>
 MIME-Version: 1.0
-In-Reply-To: <20220406062543.GA10801@hu-pkondeti-hyd.qualcomm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 79b984c1-245c-499b-fde0-08da17bbfb9f
+X-MS-TrafficTypeDiagnostic: SN4PR0201MB3438:EE_
+X-Microsoft-Antispam-PRVS: <SN4PR0201MB3438925D76E13933886E3CE2A4E79@SN4PR0201MB3438.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tsopqFQ5aNaPie63WnQuJXKjIUKAz45AdY9jC2FkR7S/LXNI3w+I6EZ+6a8+wN8K0KnEeB8JLCeZEOVQUi7/9BcQgFU+QDZBwL7Ttke+NLJW4YGkYzK5LoLsxPglq3LsF0RnpmcPsRkRMSy5HeYrUFKceWX8T8qWUGlsimUV6tkkJ4xB3xVrCB0234s5315TWyGH27ZyvQst4gPziS2+AFqpmdoXyy6DH885ESffXi6g2Z3YewSzXhkkvfF3MSCyO/dHTVfGn26J3IcyYJaq/SsZMcHg0b5tv7dcIoA4fl7kTlw+W5WFspXk0GoiZii4++Mbwpx3gSKA5YVeRu4wzD+Uwy7GhZtqt0DrtwmqDkcNQRW4ivW6L76ET/LvGANxzV0bl+6vtVEz2PVRhWCdsC70fN7CSOMK6vybdG5ROcv9MgHZcLXnupdvfQTjRwkOi856EZ7G1q3TENzslaJWEWSMH+emvM1fQEKETjzmMc5spZj4Ztm3zuH+2b5v5JHMpkSmYTwMKYPzPns5D1ICCHracbEVkIPb8tef0JaTOlk7RG39M/R1rxbyxEw/UhOHaIBqWDYlteoFEZg43eSSOh08JzkJsowgIwCfuwrlPfYwAusbx1MMeZc1rPBBgDVbzQTyu8mDXLqrdaG6jLplx6oFweGtv5Taabo9RYP0kxrfxKsAj0v01NXhdvxu7TcvPxTGkK1yTo1jZGKKwRd6kg==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(7636003)(107886003)(508600001)(6666004)(110136005)(44832011)(316002)(2616005)(5660300002)(336012)(83380400001)(426003)(54906003)(26005)(40460700003)(36756003)(82310400005)(7696005)(8676002)(2906002)(4326008)(70586007)(36860700001)(47076005)(356005)(70206006)(8936002)(186003)(9786002)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 10:55:37.3454
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79b984c1-245c-499b-fde0-08da17bbfb9f
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT019.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR0201MB3438
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+Add support to check if IOCTL ID or QUERY ID is supported in firmware
+or not.
 
-Sorry about the delayed response.
+Signed-off-by: Ronak Jain <ronak.jain@xilinx.com>
+---
+ drivers/firmware/xilinx/zynqmp.c     | 62 +++++++++++++++++++++++++++++++++++-
+ include/linux/firmware/xlnx-zynqmp.h | 11 +++++++
+ 2 files changed, 72 insertions(+), 1 deletion(-)
 
-
-On 6.4.2022 9.25, Pavan Kondeti wrote:
-> Hi Heikki/Mathias,
-> 
-> On Mon, Apr 04, 2022 at 01:55:16PM +0530, Pavan Kondeti wrote:
->> Hi Heikki,
->>
->> On Thu, Mar 31, 2022 at 02:16:53PM +0300, Heikki Krogerus wrote:
->>> On Wed, Mar 30, 2022 at 08:47:34PM +0300, Mathias Nyman wrote:
->>>> On 29.3.2022 12.18, Sandeep Maheswaram (Temp) wrote:
->>>>> Hi Mathias,Heikki
->>>>>
->>>>> On 3/25/2022 9:08 PM, Heikki Krogerus wrote:
->>>>>> On Fri, Mar 25, 2022 at 04:33:27PM +0200, Mathias Nyman wrote:
->>>>>>> On 25.3.2022 13.27, Heikki Krogerus wrote:
->>>>>>>> On Fri, Mar 25, 2022 at 12:36:22AM +0200, Mathias Nyman wrote:
->>>>>>>>> On 24.3.2022 14.27, Heikki Krogerus wrote:
->>>>>>>>>> On Thu, Mar 24, 2022 at 12:07:11PM +0530, Sandeep Maheswaram wrote:
->>>>>>>>>>> Currently the phy init is done from dwc3 and also xhci which makes the
->>>>>>>>>>> runtime_usage value 2 for the phy which causes issue during runtime
->>>>>>>>>>> suspend. When we run the below command the runtime_status still shows
->>>>>>>>>>> active.
->>>>>>>>>>> echo auto > /sys/bus/platform/devices/88e3000.phy/power/control
->>>>>>>>>>>
->>>>>>>>>>> dwc3 manages PHY by own DRD driver, so skip the management by
->>>>>>>>>>> HCD core by setting this quirk.
->>>>>>>>>>>
->>>>>>>>>>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
->>>>>>>>>>> ---
->>>>>>>>>>>   drivers/usb/dwc3/host.c | 13 +++++++++++++
->>>>>>>>>>>   1 file changed, 13 insertions(+)
->>>>>>>>>>>
->>>>>>>>>>> diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
->>>>>>>>>>> index eda8719..d4fcf06 100644
->>>>>>>>>>> --- a/drivers/usb/dwc3/host.c
->>>>>>>>>>> +++ b/drivers/usb/dwc3/host.c
->>>>>>>>>>> @@ -13,6 +13,12 @@
->>>>>>>>>>>   #include <linux/platform_device.h>
->>>>>>>>>>>     #include "core.h"
->>>>>>>>>>> +#include <linux/usb/xhci-plat.h>
->>>>>>>>>>> +#include <linux/usb/xhci-quirks.h>
->>>>>>>>>>> +
->>>>>>>>>>> +static const struct xhci_plat_priv xhci_plat_dwc3_xhci = {
->>>>>>>>>>> +    .quirks = XHCI_SKIP_PHY_INIT,
->>>>>>>>>>> +};
->>>>>>>>>>>     static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
->>>>>>>>>>>                       int irq, char *name)
->>>>>>>>>>> @@ -122,6 +128,13 @@ int dwc3_host_init(struct dwc3 *dwc)
->>>>>>>>>>>           }
->>>>>>>>>>>       }
->>>>>>>>>>>   +    ret = platform_device_add_data(xhci, &xhci_plat_dwc3_xhci,
->>>>>>>>>>> +            sizeof(xhci_plat_dwc3_xhci));
->>>>>>>>>>> +    if (ret) {
->>>>>>>>>>> +        dev_err(dwc->dev, "failed to add data to xHCI\n");
->>>>>>>>>>> +        goto err;
->>>>>>>>>>> +    }
->>>>>>>>>>> +
->>>>>>>>>>>       ret = platform_device_add(xhci);
->>>>>>>>>>>       if (ret) {
->>>>>>>>>>>           dev_err(dwc->dev, "failed to register xHCI device\n");
->>>>>>>>>> I think you should just use device property:
->>>>>>>>>>
->>>>>>>>> This was suggested in an earlier series, but was rejected as it also added
->>>>>>>>> the property as a device tree parameter.
->>>>>>>>>
->>>>>>>>> I think adding more device properties can be messy in the long run, especially if we
->>>>>>>>> need to add them for many of the existing xhci quirks.
->>>>>>>>> We also end up with a mix where some device properties are listed as device tree
->>>>>>>>> parameters, and some not.
->>>>>>>>>
->>>>>>>>> Defining xhci quirks and platform data structure in headers shared with dwc3 and cdns3
->>>>>>>>> allow those drivers to easily set any existing xhci quirk, or other possible optional
->>>>>>>>> callbacks.
->>>>>>>>>
->>>>>>>>> cdns3 driver is already doing this, but it includes the full xhci.h header.
->>>>>>>>> This series cleans up that a bit so cdns3 will only include xhci quirk bits and
->>>>>>>>> platform data structure.
->>>>>>>>>
->>>>>>>>> On the downside we add a couple xhci related header files to include/linux/usb/
->>>>>>>>> Let me know if you see any other issues I missed with this approach.
->>>>>>>> The problem here is that these drivers are now coupled together, and
->>>>>>>> that should not be taken lightly. We have a dependency hell in our
->>>>>>>> hands with a lot of drivers, and the culprit is always platform data.
->>>>>>>>
->>>>>>>> Build-in device properties may be messy, but I would still say they
->>>>>>>> are less messy than those quirk flags - you got to admit, they are a
->>>>>>>> mess. The benefit from build-in properties is in any case the fact
->>>>>>>> that they remove the need to couple these drivers together.
->>>>>>> Agree, quirk bits are messy. Any suggestion that would work with
->>>>>>> PCI xHCI devices, devicetree, and "pure" platform devices?
->>>>>> I think xHCI driver should always be able to rely on being able to
->>>>>> read this kind of information from the fwnode. If there is no actual
->>>>>> firmware node (DT or ACPI), or if it's missing some information, the
->>>>>> glue driver needs to populate software node for the xHCI.
->>>>>>
->>>>>> Right now I just want to avoid having to pass the quirks using
->>>>>> platform data from drivers such as drivers/usb/cdns3/host.c and
->>>>>> drivers/usb/dwc3/host.c to xHCI.
->>>>>>
->>>>>> One way we could do that is by defining compatibility ID for both of
->>>>>> them that we provide using a single device property (like I guess DT
->>>>>> does). Then based on that compatibility ID, xhci-plat.c can set the
->>>>>> actual "static" quirk flags. That we could already do easily. How
->>>>>> would that sound to you?
->>>>
->>>> Sounds good. 
->>>>
->>>>>
->>>>> This was my previous patch where I was using device tree property. Should we go ahead with this approach?
->>>>>
->>>>> https://patchwork.kernel.org/project/linux-arm-msm/cover/1636353710-25582-1-git-send-email-quic_c_sanm@quicinc.com/
->>>>>
->>>>> Any further changes to this ?
->>>>
->>>> By dropping the DT part of that series we get a similar built-in device property
->>>> solution as Heikki initially suggested.
->>>>
->>>> How about adding the compatibility ID device property that was just suggested?
->>>> Then matching the Id in xhci-plat.c against a static table containing Ids and
->>>> xhci_plat_priv structures, with the needed quirks for dwc3.
->>>
->>> There was a comment from Pavan. Is it still possible to get this
->>> detail from DT?
->>> I guess that would still be ideal, right?
->>>
->> I was suggesting if we can have device tree param like the patch sandeep
->> pointed out.
->>
->> How would adding a compatible index to usb_xhci_of_match[] would work
->> actually? I ask this because, dwc3/host.c creates platform device and
->> it is not associated with any of_node, so of_driver_match_device() called
->> from platform bus match method does not work. one way to achieve this would
->> be by matching against sysdev. Something like below. Is it acceptible?
->>
->> diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
->> index 649ffd8..bd5d055 100644
->> --- a/drivers/usb/host/xhci-plat.c
->> +++ b/drivers/usb/host/xhci-plat.c
->> @@ -126,6 +126,10 @@ static const struct xhci_plat_priv xhci_plat_brcm = {
->>  	.quirks = XHCI_RESET_ON_RESUME,
->>  };
->>  
->> +static const struct xhci_plat_priv xhci_plat_dwc3 = {
->> +	.quirks = XHCI_SKIP_PHY_INIT,
->> +};
->> +
->>  static const struct of_device_id usb_xhci_of_match[] = {
->>  	{
->>  		.compatible = "generic-xhci",
->> @@ -167,6 +171,9 @@ static const struct of_device_id usb_xhci_of_match[] = {
->>  	}, {
->>  		.compatible = "brcm,bcm7445-xhci",
->>  		.data = &xhci_plat_brcm,
->> +	}, {
->> +		.compatible = "snps,dwc3",
->> +		.data = &xhci_plat_dwc3,
->>  	},
-
-Isn't there a risk that xhci-plat now binds to the parent dwc3 device?
-competing with the similar of_match_table entry created in drivers/usb/dwc3/core.c
-
->>  	{},
->>  };
->> @@ -274,6 +281,15 @@ static int xhci_plat_probe(struct platform_device *pdev)
->>  	else
->>  		priv_match = dev_get_platdata(&pdev->dev);
->>  
->> +	/* allow private data mapping with the sysdev compatible */
->> +	if (!priv_match) {
->> +		struct of_device_id *match;
->> +
->> +		match = of_match_device(usb_xhci_of_match, sysdev);
->> +		if (match)
->> +			priv_match = match->data;
->> +	}
->> +
->>  	if (priv_match) {
->>  		priv = hcd_to_xhci_priv(hcd);
->>  		/* Just copy data for now */
->>
->>> I have another question. Can't we now just assume that if the sysdev
->>> is the parent (or grandparent), then the phy initialization should
->>> always be skipped? In that case we could just do something like this:
->>>
->>> diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
->>> index 649ffd861b44e..1018b33488046 100644
->>> --- a/drivers/usb/host/xhci-plat.c
->>> +++ b/drivers/usb/host/xhci-plat.c
->>> @@ -212,8 +212,12 @@ static int xhci_plat_probe(struct platform_device *pdev)
->>>  #endif
->>>         }
->>>  
->>> -       if (!sysdev)
->>> +       if (sysdev) {
->>> +               if (sysdev != &pdev->dev)
->>> +                       hcd->skip_phy_initialization = 1;
->>> +       } else {
->>>                 sysdev = &pdev->dev;
->>> +       }
->>>  
->>>         if (WARN_ON(!sysdev->dma_mask))
->>>                 /* Platform did not initialize dma_mask */
->>>
->>>
->>> I did not go through all the drivers that carefully, so I may have
->>> missed something, but it looks like the only drivers that can have the
->>> sysdev as the parent or grandparent are cdns3 and dwc3.
->>>
->> I cross checked and these are two drivers that are creating xhci-plat device.
->> So this patch would definitely work. However I am not sure in future if any
->> device created via device tree would want to use this feature. For now,
->> it looks good. It Mathias, Do you see any problem with this approach?
->>
-
-Would work for now but seems like a risk to assume this would hold for all future
-xhci platform devices. 
-
-> 
-> Can you please provide your suggestions on this? We have discussed about
-> 3 approaches here other than the whole platform data refactoring done.
-> 
-> (1) Introduce a new dT property and expect dwc3/host.c to set this property
-> to skip the phy initialization.
-
-Adding one more device property to swnode in dwc3/host.c starts
-to look like the best option for now even if it didn't appeal initially.
-
-The place creating the xhci platform device should have best info on what properties
-are needed for the platform device.
-
-So this would be just like Heikki's first suggestion, or Sandeep's patches 2/3 and 3/3 in:
-https://patchwork.kernel.org/project/linux-arm-msm/cover/1636353710-25582-1-git-send-email-quic_c_sanm@quicinc.com/
-but without the devicetree binding documentation part.
-
-> (2) Allow platform private data match based on the sysdev. The diff I sent
-> in the previous email
--Possible risk of binding parent dwc3 to incorrect driver (xhci-plat), haven't looked at details.
--Not working with ACPI dwc3 devices.
-
-Basic idea was similar to what I was thinking, but not matching with sysdev and
-misusing the of of_device_id table. Instead create a device property similar
-to "compatible".  But looks like we would need to reinvent the wheel and create
-a some kind of swnode_device_id table, and custom match functions.
-So option 1 looks better to get this case fixed
-
-> (3) Heikki's suggestion of relying on the fact that the users of phy skip
-> init can be tested with sysdev != &pdev->dev check.
-
-Looks like a risky assumption for future, but could work as temporary solution
+diff --git a/drivers/firmware/xilinx/zynqmp.c b/drivers/firmware/xilinx/zynqmp.c
+index f21ece56695e..41ca41697790 100644
+--- a/drivers/firmware/xilinx/zynqmp.c
++++ b/drivers/firmware/xilinx/zynqmp.c
+@@ -36,8 +36,16 @@
+ /* BOOT_PIN_CTRL_MASK- out_val[11:8], out_en[3:0] */
+ #define CRL_APB_BOOTPIN_CTRL_MASK	0xF0FU
  
-So I think option 1 looks best, option 3 possible
-
-I also realize I don't know details of of_node, fwnode, swnode and device properties so
-all comments from Heikki and other who know more about this are welcome.
-
-Thanks
--Mathias
++/* IOCTL/QUERY feature payload size */
++#define FEATURE_PAYLOAD_SIZE		2
++
++/* Firmware feature check version mask */
++#define FIRMWARE_VERSION_MASK		GENMASK(15, 0)
++
+ static bool feature_check_enabled;
+ static DEFINE_HASHTABLE(pm_api_features_map, PM_API_FEATURE_CHECK_MAX_ORDER);
++static u32 ioctl_features[FEATURE_PAYLOAD_SIZE];
++static u32 query_features[FEATURE_PAYLOAD_SIZE];
+ 
+ static struct platform_device *em_dev;
+ 
+@@ -168,7 +176,8 @@ static noinline int do_fw_call_hvc(u64 arg0, u64 arg1, u64 arg2,
+ }
+ 
+ /**
+- * zynqmp_pm_feature() - Check weather given feature is supported or not
++ * zynqmp_pm_feature() - Check whether given feature is supported or not and
++ *			 store supported IOCTL/QUERY ID mask
+  * @api_id:		API ID to check
+  *
+  * Return: Returns status, either success or error+reason
+@@ -208,11 +217,62 @@ int zynqmp_pm_feature(const u32 api_id)
+ 	feature_data->feature_status = ret;
+ 	hash_add(pm_api_features_map, &feature_data->hentry, api_id);
+ 
++	if (api_id == PM_IOCTL)
++		/* Store supported IOCTL IDs mask */
++		memcpy(ioctl_features, &ret_payload[2], FEATURE_PAYLOAD_SIZE * 4);
++	else if (api_id == PM_QUERY_DATA)
++		/* Store supported QUERY IDs mask */
++		memcpy(query_features, &ret_payload[2], FEATURE_PAYLOAD_SIZE * 4);
++
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(zynqmp_pm_feature);
+ 
+ /**
++ * zynqmp_pm_is_function_supported() - Check whether given IOCTL/QUERY function
++ *				       is supported or not
++ * @api_id:		PM_IOCTL or PM_QUERY_DATA
++ * @id:			IOCTL or QUERY function IDs
++ *
++ * Return: Returns status, either success or error+reason
++ */
++int zynqmp_pm_is_function_supported(const u32 api_id, const u32 id)
++{
++	int ret;
++	u32 *bit_mask;
++
++	/* Input arguments validation */
++	if (id >= 64 || (api_id != PM_IOCTL && api_id != PM_QUERY_DATA))
++		return -EINVAL;
++
++	/* Check feature check API version */
++	ret = zynqmp_pm_feature(PM_FEATURE_CHECK);
++	if (ret < 0)
++		return ret;
++
++	/* Check if feature check version 2 is supported or not */
++	if ((ret & FIRMWARE_VERSION_MASK) == PM_API_VERSION_2) {
++		/*
++		 * Call feature check for IOCTL/QUERY API to get IOCTL ID or
++		 * QUERY ID feature status.
++		 */
++		ret = zynqmp_pm_feature(api_id);
++		if (ret < 0)
++			return ret;
++
++		bit_mask = (api_id == PM_IOCTL) ? ioctl_features : query_features;
++
++		if ((bit_mask[(id / 32)] & BIT((id % 32))) == 0U)
++			return -EOPNOTSUPP;
++	} else {
++		return -ENODATA;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(zynqmp_pm_is_function_supported);
++
++/**
+  * zynqmp_pm_invoke_fn() - Invoke the system-level platform management layer
+  *			   caller function depending on the configuration
+  * @pm_api_id:		Requested PM-API call
+diff --git a/include/linux/firmware/xlnx-zynqmp.h b/include/linux/firmware/xlnx-zynqmp.h
+index 14f00a7672d1..1ec73d5352c3 100644
+--- a/include/linux/firmware/xlnx-zynqmp.h
++++ b/include/linux/firmware/xlnx-zynqmp.h
+@@ -29,6 +29,11 @@
+ 
+ /* SMC SIP service Call Function Identifier Prefix */
+ #define PM_SIP_SVC			0xC2000000
++
++/* PM API versions */
++#define PM_API_VERSION_2	2
++
++/* ATF only commands */
+ #define PM_GET_TRUSTZONE_VERSION	0xa03
+ #define PM_SET_SUSPEND_MODE		0xa02
+ #define GET_CALLBACK_DATA		0xa01
+@@ -460,6 +465,7 @@ int zynqmp_pm_load_pdi(const u32 src, const u64 address);
+ int zynqmp_pm_register_notifier(const u32 node, const u32 event,
+ 				const u32 wake, const u32 enable);
+ int zynqmp_pm_feature(const u32 api_id);
++int zynqmp_pm_is_function_supported(const u32 api_id, const u32 id);
+ int zynqmp_pm_set_feature_config(enum pm_feature_config_id id, u32 value);
+ int zynqmp_pm_get_feature_config(enum pm_feature_config_id id, u32 *payload);
+ #else
+@@ -678,6 +684,11 @@ static inline int zynqmp_pm_pinctrl_get_function(const u32 pin, u32 *id)
+ 	return -ENODEV;
+ }
+ 
++static inline int zynqmp_pm_is_function_supported(const u32 api_id, const u32 id)
++{
++	return -ENODEV;
++}
++
+ static inline int zynqmp_pm_pinctrl_set_function(const u32 pin, const u32 id)
+ {
+ 	return -ENODEV;
+-- 
+2.7.4
 
