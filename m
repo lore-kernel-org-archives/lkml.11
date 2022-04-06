@@ -2,87 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B84BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A332C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239513AbiDFIDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 04:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
+        id S1347176AbiDFID0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 04:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376957AbiDFH6V (ORCPT
+        with ESMTP id S1577417AbiDFIBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 03:58:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7B01C2A3C;
-        Tue,  5 Apr 2022 22:44:02 -0700 (PDT)
+        Wed, 6 Apr 2022 04:01:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3D03878D5;
+        Tue,  5 Apr 2022 18:13:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD6C161841;
-        Wed,  6 Apr 2022 05:44:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9477C385A1;
-        Wed,  6 Apr 2022 05:43:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95224B8202A;
+        Wed,  6 Apr 2022 01:13:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F295C385B5;
+        Wed,  6 Apr 2022 01:13:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649223841;
-        bh=yC36iEkxg58Jk7HR6Fw3kJOeOrW6HPs3LGEP1J9Hxkw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=aTawiqPlLmtbK7yWUuMuIqu1/TxtSQovS4CTRy4usxtr2MNVucy+iBU++5bkUcBKi
-         UzV+hBTDcfP9m7Zu+pNTPItLkrc0hX52568BmmspOz5sT3SehUTaQpuXk3TZiJ0CKW
-         U3rQCrrXIqsAMjLlOdjNbx9Y6L7mvqSn6yr56N5qj4aTFvuXgfIvDLOEwBnAqCJ54X
-         Ag7GXdp6zipXGImE+ZZMrThcaexgYqAbiljX1uBzZjB4Kt9HYCs7nIKE2OhhUk0EIl
-         pZ6E2jNcYwYzR/+dqMDDV5a5DgjMdXkuaaJ236rp7WWXdUteNlEJawdj9+Tq3GAoCW
-         z4qA4agVuXDsA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 08/11] mt76: Fix undefined behavior due to shift overflowing the constant
-References: <20220405151517.29753-1-bp@alien8.de>
-        <20220405151517.29753-9-bp@alien8.de>
-Date:   Wed, 06 Apr 2022 08:43:53 +0300
-In-Reply-To: <20220405151517.29753-9-bp@alien8.de> (Borislav Petkov's message
-        of "Tue, 5 Apr 2022 17:15:14 +0200")
-Message-ID: <87fsmqrckm.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        s=k20201202; t=1649207607;
+        bh=K2W88sa0e40FhxFM51hz1PVnPS6fYU/JKW4DlHd0JHk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=HYGAzAvDvERjww1332qf4HBWmEBr8lBkHk5nMmpuHlcrS5xNhnbKDRvGd28nZ+kpN
+         TyR2NMK9JSTMkmDUMQaAIe7sJuDWPs3BEWWckbImQOQQVb12qZhWymF9E6XURIGl3a
+         ywXDWYdzLFYuIqxnrYkVbVipI7/38HCnjQcchEcsY3kjjiFKEn/sLMMxn3BglHVeeM
+         CTPK108iZ1bfDOO75pm6RvAA1YcwofguWk2pYis7TDML2vBzhBJ34KsSC3mLhVZZoL
+         RvjsW2J22HTbg1jpz9AndAsh4y5a+5KueCNel9rddnbDEZXBMQY2wLAx8cB7K3Bdi8
+         GCpVhnbxbQaPg==
+Received: by mail-ua1-f41.google.com with SMTP id j9so949629uap.13;
+        Tue, 05 Apr 2022 18:13:27 -0700 (PDT)
+X-Gm-Message-State: AOAM531T555rIXPdxkj5Ghg328Wx6M2IqnznVf5Ai87HpmZwWR2EkB65
+        opRePyXrYgbnWaYanlaPaQzk+dW17QcMl2RG2Vw=
+X-Google-Smtp-Source: ABdhPJwdlBT6DWcyITpQFk0eYMxDLklydODShGdQh3Dhz3gy5pvAEE1D7qv3EMRUsxW3oJsG0Lv+XReYvs2gnjTTYBE=
+X-Received: by 2002:a67:efc3:0:b0:325:4fcf:60bf with SMTP id
+ s3-20020a67efc3000000b003254fcf60bfmr1892801vsp.51.1649207606157; Tue, 05 Apr
+ 2022 18:13:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <CAJF2gTQkGZnwXrXsbx8drL0AicVpOMW=JmOcrieuvyEf91XPhg@mail.gmail.com>
+ <mhng-cfa7bfb9-bab8-423c-85ad-ecd407d6e806@palmer-ri-x1c9>
+In-Reply-To: <mhng-cfa7bfb9-bab8-423c-85ad-ecd407d6e806@palmer-ri-x1c9>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Wed, 6 Apr 2022 09:13:15 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQgU=V+snWp7a8_txsX49BzAct1nkB18k-p4BZEd+s+eQ@mail.gmail.com>
+Message-ID: <CAJF2gTQgU=V+snWp7a8_txsX49BzAct1nkB18k-p4BZEd+s+eQ@mail.gmail.com>
+Subject: Re: [next] riscv: Linux next-20220404 riscv defconfig builds failed.
+To:     Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Guo Ren <guoren@linux.alibaba.com>,
+        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Borislav Petkov <bp@alien8.de> writes:
-
-> From: Borislav Petkov <bp@suse.de>
+On Wed, Apr 6, 2022 at 12:15 AM Palmer Dabbelt <palmer@rivosinc.com> wrote:
 >
-> Fix:
+> On Mon, 04 Apr 2022 22:17:24 PDT (-0700), guoren@kernel.org wrote:
+> > On Tue, Apr 5, 2022 at 12:57 AM Nathan Chancellor <nathan@kernel.org> wrote:
+> >>
+> >> On Mon, Apr 04, 2022 at 03:28:41PM +0530, Naresh Kamboju wrote:
+> >> > Linux next-20220404 riscv defconfig builds failed.
+> >> >
+> >> > Regressions found on riscv:
+> >> >    - riscv-riscv-clang-14-defconfig
+> >> >    - riscv-riscv-gcc-10-defconfig
+> >> >    - riscv-riscv-clang-13-defconfig
+> >> >    - riscv-riscv-clang-12-defconfig
+> >> >    - riscv-riscv-clang-11-defconfig
+> >> >    - riscv-riscv-gcc-11-defconfig
+> >> >    - riscv-riscv-gcc-8-defconfig
+> >> >    - riscv-riscv-gcc-9-defconfig
+> >> >    - riscv-riscv-clang-nightly-defconfig
+> >> >
+> >> >
+> >> > arch/riscv/kernel/compat_signal.c:7:10: fatal error:
+> >> > linux/tracehook.h: No such file or directory
+> >> >   7 | #include <linux/tracehook.h>
+> >> >     |          ^~~~~~~~~~~~~~~~~~~
+> >> > compilation terminated.
+> >> > make[3]: *** [scripts/Makefile.build:289:
+> >> > arch/riscv/kernel/compat_signal.o] Error 1
+> >>
+> >> For what it's worth, I also see:
+> >>
+> >> $ make -skj"$(nproc)" ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig all
+> >> arch/riscv/kernel/compat_vdso/compat_vdso.lds.S:3:10: fatal error: ../vdso/vdso.lds.S: No such file or directory
+> >>     3 | #include <../vdso/vdso.lds.S>
+> >>       |          ^~~~~~~~~~~~~~~~~~~~
+> >> compilation terminated.
+> >> make[2]: *** [scripts/Makefile.build:462: arch/riscv/kernel/compat_vdso/compat_vdso.lds] Error 1
+> >> arch/riscv/kernel/compat_vdso/rt_sigreturn.S:3:10: fatal error: ../vdso/rt_sigreturn.S: No such file or directory
+> >>     3 | #include <../vdso/rt_sigreturn.S>
+> >>       |          ^~~~~~~~~~~~~~~~~~~~~~~~
+> >> compilation terminated.
+> >> arch/riscv/kernel/compat_vdso/note.S:3:10: fatal error: ../vdso/note.S: No such file or directory
+> >>     3 | #include <../vdso/note.S>
+> >>       |          ^~~~~~~~~~~~~~~~
+> >> compilation terminated.
+> >> arch/riscv/kernel/compat_vdso/getcpu.S:3:10: fatal error: ../vdso/getcpu.S: No such file or directory
+> >>     3 | #include <../vdso/getcpu.S>
+> >>       |          ^~~~~~~~~~~~~~~~~~
+> >> compilation terminated.
+> >> make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/rt_sigreturn.o] Error 1
+> >> make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/note.o] Error 1
+> >> make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/getcpu.o] Error 1
+> >> arch/riscv/kernel/compat_vdso/flush_icache.S:3:10: fatal error: ../vdso/flush_icache.S: No such file or directory
+> >>     3 | #include <../vdso/flush_icache.S>
+> >>       |          ^~~~~~~~~~~~~~~~~~~~~~~~
+> >> compilation terminated.
+> >> make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/flush_icache.o] Error 1
+> >>
+> >> I am guessing this code was never tested with $(srctree) == $(objtree).
+> > Thx for pointing it out:
+> > I always use:
+> > make -skj"$(nproc)" ARCH=riscv
+> > CROSS_COMPILE=riscv64-unknown-linux-gnu- EXTRA_CFLAGS+=-g
+> > O=../build-riscv/ defconfig all
+> >
+> > When I change to:
+> > make -skj"$(nproc)" ARCH=riscv
+> > CROSS_COMPILE=riscv64-unknown-linux-gnu- EXTRA_CFLAGS+=-g defconfig
+> > all
+> >
+> > I got your problem.
 >
->   drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function =E2=80=98m=
-t76x2e_probe=E2=80=99:
->   ././include/linux/compiler_types.h:352:38: error: call to =E2=80=98__co=
-mpiletime_assert_946=E2=80=99 \
-> 	declared with attribute error: FIELD_PREP: mask is not constant
->     _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER_=
-_)
+> Just to be clear: this one wasn't supposed to go in via the csky tree,
+> and had other build issues that were being found by the autobuilders
+> (which is why it hadn't gone in via the riscv tree).  I do in-tree
+> builds somewhat regularly so that probably would have caught it if
+> nothing else did, but my guess is that some other autobuilder would have
+> found it first (some of the earlier patches
+The problem and other build issues (arm64 & 5.18-rc1 conflict) all
+have been solved in v12:
+https://lore.kernel.org/linux-riscv/20220405071314.3225832-1-guoren@kernel.org/
+
 >
-> See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-> details as to why it triggers with older gccs only.
->
-> Signed-off-by: Borislav Petkov <bp@suse.de>
+> Guo: please stop pushing things to linux-next that break the builds
+> and/or aren't aimed at your tree.  This just makes things unnecessarly
+> complicated.  If you don't want to deal with the build issues that's OK,
+> just LMK when you send the patch sets out and I'll deal with them, but
+> having linux-next's build break causes fallout for a lot of users.
+Yesterday, I made my
+https://github.com/c-sky/csky-linux/commits/linux-next with
+linux-5.18-rc1 tag commit version.
+So this only affected linux-next-20220404.
 
-As this fixes a compiler warning in Linus' tree, I would like to take
-this to wireless tree and I assigned this to myself in patchwork.
 
-Felix, ack?
+-- 
+Best Regards
+ Guo Ren
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+ML: https://lore.kernel.org/linux-csky/
