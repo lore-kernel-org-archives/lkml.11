@@ -2,70 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:09:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE607C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbiDFULl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49746 "EHLO
+        id S233780AbiDFULo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232429AbiDFULI (ORCPT
+        with ESMTP id S233313AbiDFULJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:11:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E410652FA;
-        Wed,  6 Apr 2022 11:13:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 317BEB8252B;
-        Wed,  6 Apr 2022 18:13:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555C0C385A3;
-        Wed,  6 Apr 2022 18:13:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649268819;
-        bh=QMVfExX2amMvHMtMH2GP6BV4ahQ74qFyqqVQ9KVADKw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nVLUe7kjQEhu47BJhERVDSXy36Yev3KQsjVkpGHx4Xhpkkjbfpx+xmOXrE0vwvRH1
-         izDi+3ku6R7AFPmW3NTCcJkcIWmMPWwHpQi5D65PUOkQaTLvTVm9zcgMF1Hzqcdrv/
-         apzPtGjoyfCVSk3vOs4spS75LuzT+ireuOcoiQ84=
-Date:   Wed, 6 Apr 2022 20:13:36 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     guoren@kernel.org
-Cc:     arnd@arndb.de, palmer@dabbelt.com, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Guo Ren <guoren@linux.alibaba.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH V3] riscv: patch_text: Fixup last cpu should be master
-Message-ID: <Yk3YUFfvEszb+cXT@kroah.com>
-References: <20220406141649.728971-1-guoren@kernel.org>
+        Wed, 6 Apr 2022 16:11:09 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1A732987
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 11:06:00 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id ch16-20020a17090af41000b001ca867ef52bso4766902pjb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 11:06:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nb6RuM1kQ3N1+wdD8MtdIAi3hVbOL3jme3zHG3d+zzY=;
+        b=Ax6btunV2GWM4qIC58kjn0rOZMU0+pEvioaMXdzKDhztkpzYIts0+adz+4TnJxKQrw
+         B3Z13q0QBt5g72zhD8eLKLqP9t1441t45A43Omp6GxCvRozvemOP9KEp5iE1sin1E0Kl
+         nehGTE1u2frFU+WfuL76n39et0FIdEIgB+uKiFF6DyiToiJLomGLW5GymGvM0M5VwSNK
+         cnVLLK+MYIoIru53z4eWJWVENC8kf1NVILOINWENWlr+TAkWaEtELVNugNKSjevRnCkB
+         EXu2Auy/ESyZq6ObI/+GXnjFScqup43IOVrXxnuAz0SpOGGIXKDgBKUTVKSu3Od+qmMj
+         HVRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nb6RuM1kQ3N1+wdD8MtdIAi3hVbOL3jme3zHG3d+zzY=;
+        b=iyjOWyAyI318MduY0y/zdseyO8CszXqWbu4Bdjd3jpOXu7XLqieZ4ug0eKS7bn2UF1
+         jiDs9WkwjsKviR9IZAqjj2s6a4//5kIr6soBf2h07GC7KwUXmGCULQnhE41/3xLGM3gM
+         RRauHZSqjlJAxvmrDXfPfGsGO/rTa8ZovIIdPDkgNvAiIRBFdiYPro4AQQ+RHIEoCxch
+         T5zjE1QMdzaYwP6iWepsno32qP9rzOu1xYM9/gjaqkbKMQnVxVPciZM9AEh3Sl7XsGjZ
+         19sRw/1RSYC/i8OwuN39/Hi6RJyKfEViwzFB0B2f+oByfXPvM8+QgonOiDcUiZyC23et
+         PQZg==
+X-Gm-Message-State: AOAM533WzID3EiGiM7kGf6ATDPw7xd9tDVHSmVLVXW8LnZAZyajjFn5w
+        O/DGVGvclbTEJIGLkmTq90FSCQ==
+X-Google-Smtp-Source: ABdhPJw0p+5J2gneCfqDwqAFCfqGhiieEpDsPCxk4p4DRvY8VKYeyeofjFLycg52d+QW1heqPFrqZA==
+X-Received: by 2002:a17:90a:e2c3:b0:1ca:75b7:63d5 with SMTP id fr3-20020a17090ae2c300b001ca75b763d5mr11183941pjb.111.1649268359396;
+        Wed, 06 Apr 2022 11:05:59 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id a11-20020a056a000c8b00b004fade889fb3sm21115809pfv.18.2022.04.06.11.05.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 11:05:58 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 18:05:55 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     kvm@vger.kernel.org, John Sperbeck <jsperbeck@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] KVM: SEV: Mark nested locking of vcpu->mutex
+Message-ID: <Yk3Wg3eZsGZKb3Wm@google.com>
+References: <20220405174637.2074319-1-pgonda@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220406141649.728971-1-guoren@kernel.org>
+In-Reply-To: <20220405174637.2074319-1-pgonda@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 10:16:49PM +0800, guoren@kernel.org wrote:
-> From: Guo Ren <guoren@linux.alibaba.com>
-> 
-> These patch_text implementations are using stop_machine_cpuslocked
-> infrastructure with atomic cpu_count. The original idea: When the
-> master CPU patch_text, the others should wait for it. But current
-> implementation is using the first CPU as master, which couldn't
-> guarantee the remaining CPUs are waiting. This patch changes the
-> last CPU as the master to solve the potential risk.
-> 
-> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> Signed-off-by: Guo Ren <guoren@kernel.org>
-> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-> Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-> Cc: <stable@vger.kernel.org>
-> ---
->  arch/riscv/kernel/patch.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, Apr 05, 2022, Peter Gonda wrote:
+> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> index 75fa6dd268f0..673e1ee2cfc9 100644
+> --- a/arch/x86/kvm/svm/sev.c
+> +++ b/arch/x86/kvm/svm/sev.c
+> @@ -1591,14 +1591,21 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
+>  	atomic_set_release(&src_sev->migration_in_progress, 0);
+>  }
+>  
+> +#define SEV_MIGRATION_SOURCE 0
+> +#define SEV_MIGRATION_TARGET 1
+>  
+> -static int sev_lock_vcpus_for_migration(struct kvm *kvm)
+> +/*
+> + * To avoid lockdep warnings callers should pass @vm argument with either
 
-What commit id does this change fix?
+I think it's important to call that these are false positives, saying "avoid
+lockdep warnings" suggests we're intentionally not fixing bugs :-)
+
+> + * SEV_MIGRATION_SOURCE or SEV_MIGRATE_TARGET. This allows subclassing of all
+> + * vCPU mutex locks.
+> + */
+
+If we use an enum, that'll make the param self-documenting.  And we can also use
+that to eliminate the remaining magic number '2'.  E.g. this as fixup.
+
+---
+ arch/x86/kvm/svm/sev.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 673e1ee2cfc9..1e07d5d3f85a 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -1591,21 +1591,27 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
+ 	atomic_set_release(&src_sev->migration_in_progress, 0);
+ }
+
+-#define SEV_MIGRATION_SOURCE 0
+-#define SEV_MIGRATION_TARGET 1
+
+ /*
+- * To avoid lockdep warnings callers should pass @vm argument with either
+- * SEV_MIGRATION_SOURCE or SEV_MIGRATE_TARGET. This allows subclassing of all
+- * vCPU mutex locks.
++ * To suppress lockdep false positives, subclass all vCPU mutex locks by
++ * assigning even numbers to the source vCPUs and odd numbers to destination
++ * vCPUs based on the vCPU's index.
+  */
+-static int sev_lock_vcpus_for_migration(struct kvm *kvm, int vm)
++enum sev_migration_role {
++	SEV_MIGRATION_SOURCE = 0,
++	SEV_MIGRATION_TARGET,
++	SEV_NR_MIGRATION_ROLES,
++};
++
++static int sev_lock_vcpus_for_migration(struct kvm *kvm,
++					enum sev_migration_role role)
+ {
+ 	struct kvm_vcpu *vcpu;
+ 	unsigned long i, j;
+
+ 	kvm_for_each_vcpu(i, vcpu, kvm) {
+-		if (mutex_lock_killable_nested(&vcpu->mutex, i * 2 + vm))
++		if (mutex_lock_killable_nested(&vcpu->mutex,
++					       i * SEV_NR_MIGRATION_ROLES + role))
+ 			goto out_unlock;
+ 	}
+
+
+base-commit: 6600ddafa53b35fd5c869aff4a5efb981ed06955
+--
 
