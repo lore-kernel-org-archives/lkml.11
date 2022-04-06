@@ -2,72 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A70C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232606AbiDFTtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
+        id S232302AbiDFTti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232358AbiDFTso (ORCPT
+        with ESMTP id S232300AbiDFTtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:48:44 -0400
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B354330DF6;
-        Wed,  6 Apr 2022 11:34:18 -0700 (PDT)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e2442907a1so3500733fac.8;
-        Wed, 06 Apr 2022 11:34:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MwdIaQzbBkp+/5EU9BR9ve1JKS4NpPyKI/2bRfhgI3A=;
-        b=BA8m8LakTUEyA/n2t/pwSuNOe50fI9ZHlTFc/+MQG6tPWAUtsodlSatWMIZ0/k/466
-         zMkrXiNHyyOvhddBDyJoh7P4HdNe95zqZum/4mVdJHJQIXUSKDCf/hQgGSnC6b1fWxFk
-         omCzl97nvWVgUTO3fLS6zyO4gTZxncwFKXgWWTuEAE+jbWlL3f2qOfA5t1jK04Hic8n2
-         jrHJkvN002zIjK0OR4PykCuUaqlz8aJdfyUkkNCtXM4xAzTEBI73jev1S9+Nf8jG2IpN
-         NuXFcdJKWPXPRNBqYNHQIa8pKdNpNi3GVSc9i9Ij0sORmsdpwWZHMhNzYJjozqGQQ1rV
-         +QTQ==
-X-Gm-Message-State: AOAM533IT4TRHPqkIrKN6dNm00B/Z+Lgc0FuFqC4W9gWk5Z5dvEBgVyq
-        NBk0JXXIA03wrHKd2sGyqA==
-X-Google-Smtp-Source: ABdhPJz091hVtxjPl1dTv65qEKLx42amDqNg+LIkiEhUs1vZjalw5jmdtXldZ84sUL4miSebhuT5bQ==
-X-Received: by 2002:a05:6870:f144:b0:da:b3f:2b88 with SMTP id l4-20020a056870f14400b000da0b3f2b88mr4542392oac.295.1649270057566;
-        Wed, 06 Apr 2022 11:34:17 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w1-20020a056808090100b002da82caced5sm6643535oih.3.2022.04.06.11.34.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:34:17 -0700 (PDT)
-Received: (nullmailer pid 2552073 invoked by uid 1000);
-        Wed, 06 Apr 2022 18:34:16 -0000
-Date:   Wed, 6 Apr 2022 13:34:16 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     nicolas.ferre@microchip.com, linux-arm-kernel@lists.infradead.org,
-        p.zabel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, alexandre.belloni@bootlin.com,
-        devicetree@vger.kernel.org, sre@kernel.org, robh+dt@kernel.org
-Subject: Re: [PATCH 3/8] dt-bindings: reset: atmel,at91sam9260-reset: add
- sama7g5 bindings
-Message-ID: <Yk3dKExnPUglpiwb@robh.at.kernel.org>
-References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
- <20220405112724.2760905-4-claudiu.beznea@microchip.com>
+        Wed, 6 Apr 2022 15:49:06 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BA02E0A5;
+        Wed,  6 Apr 2022 10:59:51 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9BD721EC058B;
+        Wed,  6 Apr 2022 19:59:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649267986;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=YX86Bq1CunXRltFfq1Z3H5gzQ1SRlqU01eVuZwQdMXc=;
+        b=WVxBypOwpwKvq+pR7jm4wlRIgMWZQnwObfcYnm98A9gi1Aa8VpZNrL6xHVa3bhkpk0HKWV
+        ELHqHpXpd2DmCneiLxU5Jbib/LZ6jAxzjKf0tSCjMlByYXzyyAbjmsmedW58Yv+9zXj5fr
+        WvpPpx0Xte3P5m5tuaPkBQejSrM/sy8=
+Date:   Wed, 6 Apr 2022 19:59:44 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-tip-commits@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Subject: Re: [tip: x86/build] x86/configs: Add x86 debugging Kconfig fragment
+ plus docs
+Message-ID: <Yk3VEM9LoHozLt2g@zn.tnic>
+References: <20220331175728.299103A0@davehans-spike.ostc.intel.com>
+ <164918891525.389.9920170532036101413.tip-bot2@tip-bot2>
+ <Yk3GCnyA8rhy1Syj@thelio-3990X>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220405112724.2760905-4-claudiu.beznea@microchip.com>
+In-Reply-To: <Yk3GCnyA8rhy1Syj@thelio-3990X>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Apr 2022 14:27:19 +0300, Claudiu Beznea wrote:
-> Add documentation for SAMA7G5 reset controller. Compared with previous
-> versions of reset controllers this one contains support for resetting
-> in SoC devices (e.g. USB PHYs).
+On Wed, Apr 06, 2022 at 09:55:38AM -0700, Nathan Chancellor wrote:
+> I am replying to this message versus the original patch because this
+> appears to be done during committing.
 > 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> ---
->  .../reset/atmel,at91sam9260-reset.yaml        | 23 +++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
+> This "CONFIG_DEBUG_INFO=y" will not do anything, as the debug info
+> Kconfig was turned into a choice in commit f9b3cd245784 ("Kconfig.debug:
+> make DEBUG_INFO selectable from a choice").
 > 
+> CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+> 
+> will do what "CONFIG_DEBUG_INFO=y" used to do.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Thanks Nathan, fixed.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
