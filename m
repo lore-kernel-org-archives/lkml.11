@@ -2,236 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 109FBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbiDFN4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35842 "EHLO
+        id S234127AbiDFN52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233952AbiDFN40 (ORCPT
+        with ESMTP id S233934AbiDFN5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:56:26 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDB8329258;
-        Tue,  5 Apr 2022 19:53:37 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KY89Y0XwBzBry1;
-        Wed,  6 Apr 2022 10:49:21 +0800 (CST)
-Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 10:53:30 +0800
-From:   Liao Chang <liaochang1@huawei.com>
-To:     <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
-        <liaochang1@huawei.com>, <tglx@linutronix.de>, <clg@kaod.org>,
-        <nitesh@redhat.com>, <edumazet@google.com>, <peterz@infradead.org>,
-        <joshdon@google.com>, <masahiroy@kernel.org>, <nathan@kernel.org>,
-        <akpm@linux-foundation.org>, <vbabka@suse.cz>,
-        <gustavoars@kernel.org>, <arnd@arndb.de>, <chris@chrisdown.name>,
-        <dmitry.torokhov@gmail.com>, <linux@rasmusvillemoes.dk>,
-        <daniel@iogearbox.net>, <john.ogness@linutronix.de>,
-        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <heying24@huawei.com>, <guohanjun@huawei.com>,
-        <weiyongjun1@huawei.com>
-Subject: [RFC 1/3] softirq: Add two parameters to control CPU bandwidth for use by softirq
-Date:   Wed, 6 Apr 2022 10:52:39 +0800
-Message-ID: <20220406025241.191300-2-liaochang1@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406025241.191300-1-liaochang1@huawei.com>
-References: <20220406025241.191300-1-liaochang1@huawei.com>
+        Wed, 6 Apr 2022 09:57:12 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AC6A35770F;
+        Wed,  6 Apr 2022 02:08:45 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 449E323A;
+        Wed,  6 Apr 2022 02:08:45 -0700 (PDT)
+Received: from [10.57.10.15] (unknown [10.57.10.15])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 41F193F718;
+        Wed,  6 Apr 2022 02:08:44 -0700 (PDT)
+Message-ID: <2dc4266f-02b1-0937-a884-dfa037cc7ffd@arm.com>
+Date:   Wed, 6 Apr 2022 10:08:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.53]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: perf tool: About "perf arm64: Inject missing frames when using
+ 'perf record --call-graph=fp'"
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, alexandre.truong@arm.com
+Cc:     linux-perf-users@vger.kernel.org,
+        "jolsa@kernel.org >> Jiri Olsa" <jolsa@kernel.org>,
+        german.gomez@arm.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+References: <5f1d8b3f-0afa-2724-4ff1-f061939c68c5@huawei.com>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <5f1d8b3f-0afa-2724-4ff1-f061939c68c5@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although kernel merely allow __do_softirq() run for 2ms at most, it does
-not control the total running time of softirqs on given CPU. In order to
-prevent softirqs from using up all CPU bandwidth and cause other task
-starved, Sofitrq Throttling mechanism introduces two parameters in the
-/proc file system:
 
-/proc/sys/kernel/sofitrq_period_ms
-  Defines the period in ms(millisecond) to be considered as 100% of CPU
-  bandwidth, the default value is 1,000 ms(1second). Changes to the
-  value of the period must be very well thought out, as too long or too
-  short are beyond one's expectation.
 
-/proc/sys/kernel/softirq_runtime_ms
-  Define the bandwidth available to softirqs on each CPU, the default
-  values is 950 ms(0.95 second) or, in other words, 95% of the CPU
-  bandwidth. Setting this value to -1 means that softirqs might use up
-  to 100% CPU cycles.
+On 05/04/2022 15:04, John Garry wrote:
+> Hi Alexandre,
+> 
+> I notice that with commit b9f6fbb3b2c2 ("perf arm64: Inject missing frames when using 'perf record --call-graph=fp'") that I get messages spewing the console when running perf record+report, as below:
+> 
+> john@ubuntu:~/linux$sudo tools/perf/perf record -ag fio null12.fio
+> john@ubuntu:~/linux$sudo tools/perf/perf report > report
+> unwind: can't read reg 29
+> unwind: can't read reg 29
+> unwind: can't read reg 29
+> unwind: can't read reg 29
+> ...
+> 
+> Do you know the possible cause? I haven't checked...
 
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
----
- include/linux/interrupt.h |  7 ++++
- init/Kconfig              | 10 ++++++
- kernel/softirq.c          | 74 +++++++++++++++++++++++++++++++++++++++
- kernel/sysctl.c           | 16 +++++++++
- 4 files changed, 107 insertions(+)
+Hi John,
 
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index 9367f1cb2e3c..de6973bf72e5 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -605,6 +605,13 @@ extern void __raise_softirq_irqoff(unsigned int nr);
- extern void raise_softirq_irqoff(unsigned int nr);
- extern void raise_softirq(unsigned int nr);
- 
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+extern unsigned int sysctl_softirq_period_ms;
-+extern int sysctl_softirq_runtime_ms;
-+int softirq_throttle_handler(struct ctl_table *table, int write, void *buffer,
-+		size_t *lenp, loff_t *ppos);
-+#endif
-+
- DECLARE_PER_CPU(struct task_struct *, ksoftirqd);
- 
- static inline struct task_struct *this_cpu_ksoftirqd(void)
-diff --git a/init/Kconfig b/init/Kconfig
-index e9119bf54b1f..a63ebc88a199 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -2393,3 +2393,13 @@ config ARCH_HAS_SYNC_CORE_BEFORE_USERMODE
- # <asm/syscall_wrapper.h>.
- config ARCH_HAS_SYSCALL_WRAPPER
- 	def_bool n
-+
-+config SOFTIRQ_THROTTLE
-+	bool "Softirq Throttling Feature"
-+	help
-+	  Allow to allocate bandwidth for use by softirq handling. This
-+	  saftguard machanism is known as softirq throttling and is controlled
-+	  by two parameters in the /proc/ file system:
-+
-+	  /proc/sysctl/kernel/softirq_period_ms
-+	  /proc/sysctl/kernel/softirq_runtime_ms
-diff --git a/kernel/softirq.c b/kernel/softirq.c
-index 41f470929e99..8aac9e2631fd 100644
---- a/kernel/softirq.c
-+++ b/kernel/softirq.c
-@@ -65,6 +65,76 @@ const char * const softirq_to_name[NR_SOFTIRQS] = {
- 	"TASKLET", "SCHED", "HRTIMER", "RCU"
- };
- 
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+unsigned int sysctl_softirq_period_ms = 1000;
-+int sysctl_softirq_runtime_ms = 950;
-+
-+struct softirq_throttle {
-+	unsigned int period;
-+	unsigned int runtime;
-+	raw_spinlock_t lock;
-+} si_throttle;
-+
-+static int softirq_throttle_validate(void)
-+{
-+	if (((int)sysctl_softirq_period_ms <= 0) ||
-+		((sysctl_softirq_runtime_ms != -1) &&
-+		 ((unsigned int)sysctl_softirq_runtime_ms > sysctl_softirq_period_ms)))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static void softirq_throttle_update(void)
-+{
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&si_throttle.lock, flags);
-+	si_throttle.period = sysctl_softirq_period_ms;
-+	si_throttle.runtime = sysctl_softirq_runtime_ms;
-+	raw_spin_unlock_irqrestore(&si_throttle.lock, flags);
-+}
-+
-+int softirq_throttle_handler(struct ctl_table *table, int write, void *buffer,
-+		size_t *lenp, loff_t *ppos)
-+{
-+	unsigned int old_period, old_runtime;
-+	static DEFINE_MUTEX(mutex);
-+	int ret;
-+
-+	mutex_lock(&mutex);
-+	old_period = sysctl_softirq_period_ms;
-+	old_runtime = sysctl_softirq_runtime_ms;
-+
-+	ret = proc_dointvec(table, write, buffer, lenp, ppos);
-+	if (ret)
-+		goto undo;
-+	if (!write)
-+		goto done;
-+
-+	ret = softirq_throttle_validate();
-+	if (ret)
-+		goto undo;
-+
-+	softirq_throttle_update();
-+	goto done;
-+
-+undo:
-+	sysctl_softirq_period_ms = old_period;
-+	sysctl_softirq_runtime_ms = old_runtime;
-+done:
-+	mutex_unlock(&mutex);
-+	return ret;
-+}
-+
-+static void softirq_throttle_init(void)
-+{
-+	si_throttle.period = sysctl_softirq_period_ms;
-+	si_throttle.runtime = sysctl_softirq_runtime_ms;
-+	raw_spin_lock_init(&si_throttle.lock);
-+}
-+#endif
-+
- /*
-  * we cannot loop indefinitely here to avoid userspace starvation,
-  * but we also don't want to introduce a worst case 1/HZ latency
-@@ -894,6 +964,10 @@ void __init softirq_init(void)
- {
- 	int cpu;
- 
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+	softirq_throttle_init();
-+#endif
-+
- 	for_each_possible_cpu(cpu) {
- 		per_cpu(tasklet_vec, cpu).tail =
- 			&per_cpu(tasklet_vec, cpu).head;
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 5ae443b2882e..e5a9ad391cca 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1771,6 +1771,22 @@ static struct ctl_table kern_table[] = {
- 		.extra1		= SYSCTL_ONE,
- 	},
- #endif
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+	{
-+		.procname	= "softirq_period_ms",
-+		.data		= &sysctl_softirq_period_ms,
-+		.maxlen		= sizeof(unsigned int),
-+		.mode		= 0644,
-+		.proc_handler	= softirq_throttle_handler,
-+	},
-+	{
-+		.procname	= "softirq_runtime_ms",
-+		.data		= &sysctl_softirq_runtime_ms,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= softirq_throttle_handler,
-+	},
-+#endif
- #if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
- 	{
- 		.procname	= "sched_energy_aware",
--- 
-2.17.1
+I'm going to look into this today. I expect the cause is because we only record
+the link register for this change and then do a best effort unwind to see if
+we can get the return address just from that. So I don't think this is a major issue,
+probably the outcome will be that I mask any of these errors just for this call
+to libunwind that we added. The other main call to libunwind should still print
+these errors.
 
+One thing that is interesting is why we didn't see this when we were testing
+the patch before, and we've also found it a little bit difficult to reproduce here.
+So there might be more to it than just masking the error, but I'm not sure yet.
+
+Either way, I don't expect that any unwinding is broken, just that it's
+printing an annoying message.
+
+James
+
+> 
+> Thanks,
+> john
