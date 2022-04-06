@@ -2,111 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A33EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C7CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239032AbiDFRne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
+        id S239749AbiDFRoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:44:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239952AbiDFRm6 (ORCPT
+        with ESMTP id S239481AbiDFRoF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:42:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0995B323884;
-        Wed,  6 Apr 2022 09:28:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7ABAB824CD;
-        Wed,  6 Apr 2022 16:28:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D9AFC385A3;
-        Wed,  6 Apr 2022 16:28:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649262501;
-        bh=RO6oFh4/G2Dex/wyHDpkixhfO/24KmgeZmhyqDepGCU=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=n85auwxTRUdd1nnTgXWAIcEu2FZwejkbMRK610T7d7+18gL80AOV7kUGrR7XQDhBM
-         +AEVH+sOg8R8zIi5VGn8OFqErztJnyMlyBHyu0iq0EuNWZ4wjD2+BmrYihhX5SOwLU
-         Ie6i3zPtGlPhrqsHGqAJ5PeB11zpcDuH6a34i65UhxF4kLAs5TCxbtT6QMG3fw8Qi4
-         mNi4KS4fbsbRAhktTS1kYhO/kbTUcymPEBf9RRrGtSaklPQ2WrCb1fP0lOHSa4D22W
-         2SkLWD4ULhOf0xPTBWEnABGhJoKwmSzfhmg+ZN6U+iAk+AggUJK+iPv0QvqcLU/+Iu
-         lS6JU5vWQDvUA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 110485C0B85; Wed,  6 Apr 2022 09:28:21 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 09:28:21 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Valentin Schneider <valentin.schneider@arm.com>
-Subject: Re: linux-next: manual merge of the rcu tree with the tip tree
-Message-ID: <20220406162821.GM4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220406124503.25e8ed68@canb.auug.org.au>
+        Wed, 6 Apr 2022 13:44:05 -0400
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245CE296899;
+        Wed,  6 Apr 2022 09:26:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649262373;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=/Yq+n6cNzT+gxBZbrCtn24poPh8ut1JXnQGOstsLGOc=;
+    b=jkAB9q+SB9vNysgSIZNi3GPEW3S+QAnQq2/gPBTKLq8V0nEokg0tSLcS/GbdD7vlCh
+    5/Y2Ob90/X94q+oh30hBRMip+vhYVeTGPjOiZUPLoX+kBK1NovlLaT1Gj66LglwCXSoe
+    7uEjGG4IiY+CkdfHYzYiwa7l9+sr5VL7QuLGqghn3t75tofLkg24tlkmg3R2r9piXdKK
+    tUhyJROIl4zoEvbXKd4Xl/uxnVn4CsqAImoN0Ws1jBsjKceAMuCxRa2mqinP+LHGCNi3
+    P14ZtC6gHTxPGG4ZBKQVLfHKYqOyHfc+dN3EbMzxFaGe8Nrw7BEt+qhccG7+FWTM+QNC
+    4tpQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbgcbPa"
+X-RZG-CLASS-ID: mo00
+Received: from iMac.fritz.box
+    by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
+    with ESMTPSA id k708cfy36GQDgVP
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 6 Apr 2022 18:26:13 +0200 (CEST)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+To:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Paul Boddie <paul@boddie.org.uk>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Maxime Ripard <maxime@cerno.tech>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc:     Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
+        letux-kernel@openphoenux.org
+Subject: [PATCH v17 3/6] drm/bridge: dw-hdmi: filter out YUV output formats when DVI
+Date:   Wed,  6 Apr 2022 18:26:05 +0200
+Message-Id: <92fce442c23ff855041bec2dfa4b4d4649c206be.1649262368.git.hns@goldelico.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <cover.1649262368.git.hns@goldelico.com>
+References: <cover.1649262368.git.hns@goldelico.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406124503.25e8ed68@canb.auug.org.au>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 12:45:03PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the rcu tree got conflicts in:
-> 
->   kernel/sched/core.c
->   include/linux/sched.h
-> 
-> between commit:
-> 
->   cfe43f478b79 ("preempt/dynamic: Introduce preemption model accessors")
-> 
-> from the tip tree and commit:
-> 
->   42e3e3c6a774 ("EXP preempt/dynamic: Introduce preempt mode accessors")
-> 
-> from the rcu tree.
-> 
-> Well, this is just a pain.  Paul, please don't put expierimental things
-> in you linuc-nect included branch.  I have dropped the rcu tree today.
+From: Neil Armstrong <narmstrong@baylibre.com>
 
-Gah!  Please accept my apologies for the hassle!
+When the display is not an HDMI sink, only the RGB output format is
+valid. Thus stop returning YUV output formats when sink is not HDMI.
 
-In the short term, I have reset rcu/next to the commit preceding
-42e3e3c6a774 ("EXP preempt/dynamic: Introduce preempt mode accessors").
-This could cause some trouble for a few corner-case -next users, but...
+Fixes: 6c3c719936da ("drm/bridge: synopsys: dw-hdmi: add bus format negociation")
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-Longer term, this is excellent news, because it means that I can drop
-that commit from my tree entirely and rebase my stack on top of the
-version of that same commit that is just now in -tip.
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index a563460f8d209..f50af40e10340 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -2538,6 +2538,7 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+ 	struct drm_connector *conn = conn_state->connector;
+ 	struct drm_display_info *info = &conn->display_info;
+ 	struct drm_display_mode *mode = &crtc_state->mode;
++	struct dw_hdmi *hdmi = bridge->driver_private;
+ 	u8 max_bpc = conn_state->max_requested_bpc;
+ 	bool is_hdmi2_sink = info->hdmi.scdc.supported ||
+ 			     (info->color_formats & DRM_COLOR_FORMAT_YCBCR420);
+@@ -2564,7 +2565,7 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+ 	 * If the current mode enforces 4:2:0, force the output but format
+ 	 * to 4:2:0 and do not add the YUV422/444/RGB formats
+ 	 */
+-	if (conn->ycbcr_420_allowed &&
++	if (hdmi->sink_is_hdmi && conn->ycbcr_420_allowed &&
+ 	    (drm_mode_is_420_only(info, mode) ||
+ 	     (is_hdmi2_sink && drm_mode_is_420_also(info, mode)))) {
+ 
+@@ -2595,36 +2596,36 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+ 	 */
+ 
+ 	if (max_bpc >= 16 && info->bpc == 16) {
+-		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
++		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
+ 			output_fmts[i++] = MEDIA_BUS_FMT_YUV16_1X48;
+ 
+ 		output_fmts[i++] = MEDIA_BUS_FMT_RGB161616_1X48;
+ 	}
+ 
+ 	if (max_bpc >= 12 && info->bpc >= 12) {
+-		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
++		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
+ 			output_fmts[i++] = MEDIA_BUS_FMT_UYVY12_1X24;
+ 
+-		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
++		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
+ 			output_fmts[i++] = MEDIA_BUS_FMT_YUV12_1X36;
+ 
+ 		output_fmts[i++] = MEDIA_BUS_FMT_RGB121212_1X36;
+ 	}
+ 
+ 	if (max_bpc >= 10 && info->bpc >= 10) {
+-		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
++		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
+ 			output_fmts[i++] = MEDIA_BUS_FMT_UYVY10_1X20;
+ 
+-		if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
++		if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
+ 			output_fmts[i++] = MEDIA_BUS_FMT_YUV10_1X30;
+ 
+ 		output_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
+ 	}
+ 
+-	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
++	if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
+ 		output_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
+ 
+-	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
++	if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
+ 		output_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
+ 
+ 	/* Default 8bit RGB fallback */
+-- 
+2.33.0
 
-> The rules I use for the linux-next tree are:
-> 
-> "You will need to ensure that the patches/commits in your tree/series have
-> been:
->      * submitted under GPL v2 (or later) and include the Contributor's
->         Signed-off-by,
->      * posted to the relevant mailing list,
->      * reviewed by you (or another maintainer of your subsystem tree),
->      * successfully unit tested, and 
->      * destined for the current or next Linux merge window.
-> 
-> Basically, this should be just what you would send to Linus (or ask him
-> to fetch).  It is allowed to be rebased if you deem it necessary."
-
-Understood, and thank you.
-
-The next time that I am forced to choose between propagating a bug into
--next on the one hand and precisely following the above rules on the
-other, I will consult with you beforehand.  Please accept my apologies
-for failing to have done so this time.
-
-							Thanx, Paul
