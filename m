@@ -2,105 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 158A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238465AbiDFREr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
+        id S238521AbiDFRFx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:05:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238403AbiDFREH (ORCPT
+        with ESMTP id S238255AbiDFRFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:04:07 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91753255C12
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:48:54 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id i27so4756067ejd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:48:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hWg5rr2A6nX4SfC/Pk1Y5oFdVdet7nrbWCNkMt2/CtE=;
-        b=ZJkoxABazYWZUfKwJQVJsQ/f/sTRqY4q7kgP+BmxaBH680bfL8NW5LK3KR7IA8F2ld
-         ulYkm89Hqy1x/SIN8TER5PEnWvE7HzxHAWRdzQKr1lRwAf5tY+bEmmuf7LwyLqeWJh6m
-         62DKI1uSzSGkDlIrZE4PkZXYW4TBAB3BtsW94v3Wn7SvAfnmBDCd83hhBZtEVmT2Surg
-         YqwCEMqxbPGHGHvU9FW/+KJvX5l9nL+lqWSkjfSp7tym1/sMBChf/UrMvHJQNbxBv/4d
-         M5js8KfZsABnGi+5pfUSk9E474jEhDICPLCgPY3/sikIHhZfb5uVBVp1wWOHJ3Quq0zd
-         uebw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hWg5rr2A6nX4SfC/Pk1Y5oFdVdet7nrbWCNkMt2/CtE=;
-        b=rNV4Kxm1A9HWAQYac8bFH0dCP08jyrFek7KdtOH7GTzNIX+g3Ly0ssIAIyeNp9WKU5
-         M46z2U32Vn7WPNiqRcp7JPWGWBFRxvek/A/WAaAutGH3Smuy5PNNz+3eNiVJPgD8dp6Q
-         yhkPKKvxh0niBj3HDsgWMRAsxkhExzsM4ty65A4tx8eqPNDXNbofWvDctODFhn1z+A7d
-         G5F7x1CNDGTr28TeY0YS6VcH+t6RktwjxC95INrbynF9Qpdo6eRnlBoj+/9N7NgKXDAk
-         aogovx/c1n8kwQO2et7RMHuwyycAc4/yn0uPj3AQSGmpEE4O45XE9ev3ZKGfn2e2YqGQ
-         2c/Q==
-X-Gm-Message-State: AOAM532GLbRFuc6B6rCewAkMZL/meAr/7WJsrJ3e2Rb7+xM5RVD71f0+
-        lJ6JIejFHBYsGbyjCxgcazx105EjZ6y25bHiNnQYAA==
-X-Google-Smtp-Source: ABdhPJwNgadfcl8AdRRaDfiaVyBHv4fyImm+NLtsG6q4Q83Avrp9z6SLWFvc1ZCKExavjB0TD/Gp9XyFA3ws9rxpwnQ=
-X-Received: by 2002:a17:906:3cf1:b0:6cf:86c6:8a12 with SMTP id
- d17-20020a1709063cf100b006cf86c68a12mr8739042ejh.202.1649256533034; Wed, 06
- Apr 2022 07:48:53 -0700 (PDT)
+        Wed, 6 Apr 2022 13:05:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151C34961FB;
+        Wed,  6 Apr 2022 07:28:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EA4EB82353;
+        Wed,  6 Apr 2022 14:28:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9470DC385A3;
+        Wed,  6 Apr 2022 14:28:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649255316;
+        bh=6ilL6lDyJxwwFSqe1lKQGv1TTtCGzwxuY6CWzqW3O/c=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hgjDMg8XINxqdmkR9f8AdMKEfhxzsrPumb8XbUGwhvsXdS8enBomrRCBxL1/fdeo5
+         HJXRIG5UrwQhajTiMS5314t15cGqDyjEvjRWm5qzPCBqqZ1f+lT9+TrWA0HWOjVclP
+         IA4bL8acXWbzqz2lbWLWN1OcqKnUVTpACzoQ8UL0ZJwB7KH9REsfITVpxRtYvIXmsJ
+         +okbrVHjHzaBSkbpT5+heKmhrQQfLxLFCFQVuj8mWVe7GC1QISj6XJhMA98RzCrJAq
+         atD8tYueuk2mvgnMMjuCNWsuJ3Ze9nxiNIZytrDh035g383swaQ/RKiqxAtRqvp9nQ
+         JkjUqGSadJQTA==
+From:   guoren@kernel.org
+To:     guoren@kernel.org, arnd@arndb.de, jcmvbkbc@gmail.com,
+        chris@zankel.net
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, Guo Ren <guoren@linux.alibaba.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH V3] xtensa: patch_text: Fixup last cpu should be master
+Date:   Wed,  6 Apr 2022 22:28:19 +0800
+Message-Id: <20220406142819.730238-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220405161114.1107745-1-arnaud.pouliquen@foss.st.com>
-In-Reply-To: <20220405161114.1107745-1-arnaud.pouliquen@foss.st.com>
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-Date:   Wed, 6 Apr 2022 08:48:40 -0600
-Message-ID: <CANLsYkzFr5Zfzz5YL+bOLijwsrWdGiM=zcyS4-G2+A+p9JdGEw@mail.gmail.com>
-Subject: Re: [PATCH v3] arm64: defconfig: Config that had RPMSG_CHAR now gets RPMSG_CTRL
-To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 at 10:12, Arnaud Pouliquen
-<arnaud.pouliquen@foss.st.com> wrote:
->
-> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
-> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
-> By default give everyone who had the old driver enabled the rpmsg_ctrl
-> driver too.
->
-> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> ---
->
-> This patch is extracted from the series [1] that has been partially
-> integrated in the Linux Kernel 5.18-rc1.
->
-> Update vs previous version:
-> - Add missing "---" separation marker after "Signed-off-by".
->
-> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
-> [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
-> ---
->  arch/arm64/configs/defconfig | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-> index 50aa3d75ab4f..3f8906b8a2ca 100644
-> --- a/arch/arm64/configs/defconfig
-> +++ b/arch/arm64/configs/defconfig
-> @@ -1053,6 +1053,7 @@ CONFIG_QCOM_Q6V5_PAS=m
->  CONFIG_QCOM_SYSMON=m
->  CONFIG_QCOM_WCNSS_PIL=m
->  CONFIG_RPMSG_CHAR=m
-> +CONFIG_RPMSG_CTRL=m
->  CONFIG_RPMSG_QCOM_GLINK_RPM=y
->  CONFIG_RPMSG_QCOM_GLINK_SMEM=m
->  CONFIG_RPMSG_QCOM_SMD=y
+From: Guo Ren <guoren@linux.alibaba.com>
 
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-> --
-> 2.25.1
->
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+---
+ arch/xtensa/kernel/jump_label.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/xtensa/kernel/jump_label.c b/arch/xtensa/kernel/jump_label.c
+index 0dde21e0d3de..ad1841cecdfb 100644
+--- a/arch/xtensa/kernel/jump_label.c
++++ b/arch/xtensa/kernel/jump_label.c
+@@ -40,7 +40,7 @@ static int patch_text_stop_machine(void *data)
+ {
+ 	struct patch *patch = data;
+ 
+-	if (atomic_inc_return(&patch->cpu_count) == 1) {
++	if (atomic_inc_return(&patch->cpu_count) == num_online_cpus()) {
+ 		local_patch_text(patch->addr, patch->data, patch->sz);
+ 		atomic_inc(&patch->cpu_count);
+ 	} else {
+-- 
+2.25.1
+
