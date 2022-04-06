@@ -2,171 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230161AbiDFT0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:26:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
+        id S229910AbiDFT0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231327AbiDFTZE (ORCPT
+        with ESMTP id S230214AbiDFTZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:25:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7967B231AFE;
-        Wed,  6 Apr 2022 11:27:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28936B82539;
-        Wed,  6 Apr 2022 18:27:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88C58C385A3;
-        Wed,  6 Apr 2022 18:27:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269623;
-        bh=cm+wZ4bD6mhTl9eg14j1NHQ6vt2bNfVB9Ejg2XBQRd4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hM9Of+cXBY8vnYXFCXnBD4Vn7qdXTq2DcTttX0wCA9cbaGDBPdrat2/L6gzaKFNrC
-         knEApTsj4QEv8czvCJEDUcsm/f7Xx+zuahcYZ03+nv0qLJaURf+xN4Fbv79KshsFLd
-         NLXcXT7LwMiKU9BG5ZYCnkyFmTSlnjNnwdCsr7mU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Dave Martin <dave.martin@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 10/43] arm64: Add helpers for checking CPU MIDR against a range
-Date:   Wed,  6 Apr 2022 20:26:19 +0200
-Message-Id: <20220406182436.984391315@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 6 Apr 2022 15:25:36 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9B01E7A55;
+        Wed,  6 Apr 2022 11:12:09 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id w127so3212752oig.10;
+        Wed, 06 Apr 2022 11:12:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rHx8DYluJ4kaShg551QjzvikhQaz62YjftzoTLZUGD0=;
+        b=ss1HUOv3FQCNYuLeoGDSm+cYFZi3eaZi18k8lx77Di00BQk2oQ/pjq6+U3Jo6A0snD
+         /GPv5Sn2iZcNDjmuCRciAfZQi3SnuTBOS8ONa1zCaYJTJASwzAsgWiGOYByG4N133Vlb
+         TV5YD3QuRFJ0Et6gtk3FsmTkAFMI+v1sPdjj9ZrJx39lJGMC/Qu7qQC0igYOc1SxZ6Zi
+         7+gslVHh9JwR4dCVWwtpsC3OPpMH3ept8icr+IuCSiw2/796r072mlZK0nbEKfRqXS7D
+         TubNmU/WMtjlvm/RV7LSeQx9u75tjUtFDEvQNIJds4hvLuxASpCLIMNDVNCsz1pdTM/e
+         nntA==
+X-Gm-Message-State: AOAM5327W6l8hrV+SF3BJ6kQNXQovnWbKboaHHhsPjlJrtwVTDC/FSP7
+        u99vnII8xEH7tE7GDsHKAQ==
+X-Google-Smtp-Source: ABdhPJyCevYeLyks6ifd963x0nEqiyqH12/VPQziDsd5gYIHmumRkZTptSxNrcMu3cJOGWA9Hsg7pQ==
+X-Received: by 2002:a05:6808:191a:b0:2ec:baa1:7b86 with SMTP id bf26-20020a056808191a00b002ecbaa17b86mr4105599oib.103.1649268728142;
+        Wed, 06 Apr 2022 11:12:08 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bc35-20020a05682016a300b00324e9bf46adsm380406oob.41.2022.04.06.11.12.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 11:12:07 -0700 (PDT)
+Received: (nullmailer pid 2520269 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:12:07 -0000
+Date:   Wed, 6 Apr 2022 13:12:07 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>, linux-spi@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: qcom: update maintainers (drop Akash and
+ Mukesh)
+Message-ID: <Yk3X94DwNR4AcPP4@robh.at.kernel.org>
+References: <20220405063724.12850-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405063724.12850-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
+On Tue, 05 Apr 2022 08:37:24 +0200, Krzysztof Kozlowski wrote:
+> Emails to Akash Asthana and Mukesh Savaliya bounce (550: Recipient
+> address rejected: User unknown in virtual alias table), so switch
+> maintainer to Bjorn (as active Qualcomm platform maintainer).
+> 
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> ---
+> 
+> Changes since v1:
+> 1. Add only Bjorn.
+> ---
+>  Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml  | 3 +--
+>  Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml | 3 +--
+>  2 files changed, 2 insertions(+), 4 deletions(-)
+> 
 
-[ Upstream commit 1df310505d6d544802016f6bae49aab836ae8510 ]
+Acked-by: Rob Herring <robh@kernel.org>
 
-Add helpers for checking if the given CPU midr falls in a range
-of variants/revisions for a given model.
-
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Reviewed-by: Dave Martin <dave.martin@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/include/asm/cpufeature.h |    4 ++--
- arch/arm64/include/asm/cputype.h    |   30 ++++++++++++++++++++++++++++++
- arch/arm64/kernel/cpu_errata.c      |   14 +++++---------
- 3 files changed, 37 insertions(+), 11 deletions(-)
-
---- a/arch/arm64/include/asm/cpufeature.h
-+++ b/arch/arm64/include/asm/cpufeature.h
-@@ -10,6 +10,7 @@
- #define __ASM_CPUFEATURE_H
- 
- #include <asm/cpucaps.h>
-+#include <asm/cputype.h>
- #include <asm/hwcap.h>
- #include <asm/sysreg.h>
- 
-@@ -229,8 +230,7 @@ struct arm64_cpu_capabilities {
- 	void (*cpu_enable)(const struct arm64_cpu_capabilities *cap);
- 	union {
- 		struct {	/* To be used for erratum handling only */
--			u32 midr_model;
--			u32 midr_range_min, midr_range_max;
-+			struct midr_range midr_range;
- 		};
- 
- 		struct {	/* Feature register checking */
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -114,6 +114,36 @@
- #define read_cpuid(reg)			read_sysreg_s(SYS_ ## reg)
- 
- /*
-+ * Represent a range of MIDR values for a given CPU model and a
-+ * range of variant/revision values.
-+ *
-+ * @model	- CPU model as defined by MIDR_CPU_MODEL
-+ * @rv_min	- Minimum value for the revision/variant as defined by
-+ *		  MIDR_CPU_VAR_REV
-+ * @rv_max	- Maximum value for the variant/revision for the range.
-+ */
-+struct midr_range {
-+	u32 model;
-+	u32 rv_min;
-+	u32 rv_max;
-+};
-+
-+#define MIDR_RANGE(m, v_min, r_min, v_max, r_max)		\
-+	{							\
-+		.model = m,					\
-+		.rv_min = MIDR_CPU_VAR_REV(v_min, r_min),	\
-+		.rv_max = MIDR_CPU_VAR_REV(v_max, r_max),	\
-+	}
-+
-+#define MIDR_ALL_VERSIONS(m) MIDR_RANGE(m, 0, 0, 0xf, 0xf)
-+
-+static inline bool is_midr_in_range(u32 midr, struct midr_range const *range)
-+{
-+	return MIDR_IS_CPU_MODEL_RANGE(midr, range->model,
-+				 range->rv_min, range->rv_max);
-+}
-+
-+/*
-  * The CPU ID never changes at run time, so we might as well tell the
-  * compiler that it's constant.  Use this function to read the CPU ID
-  * rather than directly reading processor_id or read_cpuid() directly.
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -27,10 +27,10 @@
- static bool __maybe_unused
- is_affected_midr_range(const struct arm64_cpu_capabilities *entry, int scope)
- {
-+	u32 midr = read_cpuid_id();
-+
- 	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
--	return MIDR_IS_CPU_MODEL_RANGE(read_cpuid_id(), entry->midr_model,
--				       entry->midr_range_min,
--				       entry->midr_range_max);
-+	return is_midr_in_range(midr, &entry->midr_range);
- }
- 
- static bool
-@@ -370,15 +370,11 @@ static bool has_ssbd_mitigation(const st
- 
- #define CAP_MIDR_RANGE(model, v_min, r_min, v_max, r_max)	\
- 	.matches = is_affected_midr_range,			\
--	.midr_model = model,					\
--	.midr_range_min = MIDR_CPU_VAR_REV(v_min, r_min),	\
--	.midr_range_max = MIDR_CPU_VAR_REV(v_max, r_max)
-+	.midr_range = MIDR_RANGE(model, v_min, r_min, v_max, r_max)
- 
- #define CAP_MIDR_ALL_VERSIONS(model)					\
- 	.matches = is_affected_midr_range,				\
--	.midr_model = model,						\
--	.midr_range_min = MIDR_CPU_VAR_REV(0, 0),			\
--	.midr_range_max = (MIDR_VARIANT_MASK | MIDR_REVISION_MASK)
-+	.midr_range = MIDR_ALL_VERSIONS(model)
- 
- #define MIDR_FIXED(rev, revidr_mask) \
- 	.fixed_revs = (struct arm64_midr_revidr[]){{ (rev), (revidr_mask) }, {}}
-
-
+Let me know if you'd rather me pick this up (and the pile of other QCom 
+bindings).
