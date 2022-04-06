@@ -2,85 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60170C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 929ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234281AbiDFOGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
+        id S234254AbiDFOG2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234059AbiDFOFv (ORCPT
+        with ESMTP id S234360AbiDFOGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:05:51 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EC2F61E4;
-        Wed,  6 Apr 2022 02:34:59 -0700 (PDT)
+        Wed, 6 Apr 2022 10:06:09 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27E2398880;
+        Wed,  6 Apr 2022 02:36:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649237699; x=1680773699;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=F8EHwKAPxB4tVNYC+KZTQjr5dJPjfv1BZL9j/72OqYE=;
-  b=f3N8A5IZcHGOjZG17WnfL4lWLylX2iChFGllOl/jVdYZ2Pdp2bk5859F
-   KO6YrX91a2AHkiNbzvp+OZQpJd/3wEyVRPhL8+Bv0ElfSuaLapTKmLi/9
-   C8d2JmSjFXLYYKQcdsEc1PFJ4tKH4+xQrq2sgccHpboRXu8DDT/G4C1aR
-   g=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Apr 2022 02:34:59 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 02:34:59 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 6 Apr 2022 02:34:58 -0700
-Received: from blr-ubuntu-525.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 6 Apr 2022 02:34:54 -0700
-From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-To:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <pure.logic@nexus-software.ie>,
-        <bjorn.andersson@linaro.org>, <greg@kroah.com>, <robh@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <quic_rjendra@quicinc.com>,
-        <quic_saipraka@quicinc.com>,
-        Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-Subject: [PATCH V0 2/2] arm64: dts: qcom: sc7280: Set the default dr_mode for usb2
-Date:   Wed, 6 Apr 2022 15:03:48 +0530
-Message-ID: <451392a942f90aa9805b00afad7dff894604d189.1649235218.git.quic_schowdhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1649235218.git.quic_schowdhu@quicinc.com>
-References: <cover.1649235218.git.quic_schowdhu@quicinc.com>
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649237796;
+  x=1680773796;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=sKttvewg13jPI0W2V5bQyh9PjPvGiCcvTJm9/+nsTOw=;
+  b=FVSGDEeByy6YZrQAJDkMgNa7hVyMMtb+zcdSqQEFHzm6hmQkaRMDJH9u
+   R3UAoa0EIXmg+I33VRrJiLiOj7nVifpSqQ0L6TMiKsRj5RtwHzjskeBAL
+   WIbm/KEBKKTzD1q3VaMTugPAn4SlRfQTu3++jHfSQyRmbAg/4d/LBc/us
+   q0gBpwGMYkRf3Jsaz6Tv38h7pebWZLwgvyyX4FvOX/UAr4jxt/9UyszNd
+   loiXUY5H/4+PBqK9u6PFIhMm5VnTC63c0EDcaoHhO6aCpHl8T7Bhb4WWE
+   HfgWihd6UL76ZMWxd0Qvn0dShedXkT3RvNt4dxqdmlmzi7oGUxycDeYK3
+   w==;
+From:   Camel Guo <camel.guo@axis.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Jonathan Corbet <corbet@lwn.net>
+CC:     <kernel@axis.com>, Camel Guo <camelg@axis.com>,
+        <linux-hwmon@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] hwmon: (tmp401) Support extended temperature range
+Date:   Wed, 6 Apr 2022 11:29:01 +0200
+Message-ID: <20220406092901.408861-1-camel.guo@axis.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set the default dr_mode for usb2 node to "otg" to enable
-role-switch for EUD(Embedded USB Debugger) connector node.
+From: Camel Guo <camelg@axis.com>
 
-Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+This patch only applies to tmp431 and devicetree configuration.
+
+Signed-off-by: Camel Guo <camelg@axis.com>
 ---
- arch/arm64/boot/dts/qcom/sc7280-idp.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/hwmon/tmp401.rst | 13 +++++++++++++
+ drivers/hwmon/tmp401.c         |  5 +++++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dts b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-index a7be133..6d3ff80 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-@@ -90,7 +90,7 @@
- };
+diff --git a/Documentation/hwmon/tmp401.rst b/Documentation/hwmon/tmp401.rst
+index 3aacf3d3bdf3..d12e9c9ba40f 100644
+--- a/Documentation/hwmon/tmp401.rst
++++ b/Documentation/hwmon/tmp401.rst
+@@ -78,3 +78,16 @@ some additional features.
  
- &usb_2_dwc3 {
--	dr_mode = "host";
-+	dr_mode = "otg";
- };
+ TMP432 is compatible with TMP401 and TMP431. It supports two external
+ temperature sensors.
++
++Device tree
++-----------
++TMP431 has support for the device tree parameter "extended-range" which enables
++the extended range in the chip.
++
++Example:
++
++main-temp@4c {
++  compatible = "ti,tmp431";
++  reg = <0x4c>;
++  extended-range;
++};
+diff --git a/drivers/hwmon/tmp401.c b/drivers/hwmon/tmp401.c
+index b86d9df7105d..6efd2475ffda 100644
+--- a/drivers/hwmon/tmp401.c
++++ b/drivers/hwmon/tmp401.c
+@@ -557,6 +557,11 @@ static int tmp401_init_client(struct tmp401_data *data)
+ 	config_orig = config;
+ 	config &= ~TMP401_CONFIG_SHUTDOWN;
  
- &usb_2_hsphy {
++	if (of_property_read_bool(data->client->dev.of_node, "extended-range")) {
++		/* Enable extended range */
++		config |= TMP401_CONFIG_RANGE;
++	}
++
+ 	data->extended_range = !!(config & TMP401_CONFIG_RANGE);
+ 
+ 	if (config != config_orig)
 -- 
-2.7.4
+2.30.2
 
