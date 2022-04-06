@@ -2,71 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B438CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C12C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234065AbiDFOCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48068 "EHLO
+        id S234144AbiDFODH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234186AbiDFOBN (ORCPT
+        with ESMTP id S234432AbiDFOCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:01:13 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E65B319A09
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:22:20 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4993F1EC0426;
-        Wed,  6 Apr 2022 11:22:05 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649236925;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=qP0C10N1CSNA2SJRmtWMahzNQ7X5qGdPNxvgqFFnb6c=;
-        b=m01wgMU7ym6Sa7x0LY2LRianZFz5B5Z2q5gISbqxwkXRCA5qIPeDRouXrQ0QEM8QJWbYEo
-        OUI6f/x6M6yjmIO8axsOyWlQ52CSDoL+RRxHi/mGwLHcfGcIwzbb1SFyVXxxXOTGrgA7JJ
-        U3k1FNj5Eyh4rgHxsyMTDm8nIIDGngU=
-Date:   Wed, 6 Apr 2022 11:22:03 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [RFC PATCH -next V2 1/7] x86: fix copy_mc_to_user compile error
-Message-ID: <Yk1bu88TcjXw/iU4@zn.tnic>
-References: <20220406091311.3354723-1-tongtiangen@huawei.com>
- <20220406091311.3354723-2-tongtiangen@huawei.com>
+        Wed, 6 Apr 2022 10:02:37 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822D6636E;
+        Wed,  6 Apr 2022 02:19:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649236785; x=1680772785;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=C30EsKSnyXniVsuHK+cXjwGqiqlPYMws48JZ2eTUz6s=;
+  b=XVA4uOShm3u9NeDWBVFvWvVJF9+G9O9GAGUOojkAAfYnbB2Vvarqrnpc
+   jHm+B3NwgAIXCkZVhGxd0MvVgdcwHsPtyLCoOKs2OxEu6YImUQRlXBfjf
+   49I4NBE+bKVf5bIP9ih/ELM9wkeiJJZ1kfzk7mVzweYcG54YmAxn4jlyr
+   o=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 06 Apr 2022 02:19:45 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 02:19:44 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Apr 2022 02:19:44 -0700
+Received: from [10.216.50.162] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Apr 2022
+ 02:19:39 -0700
+Subject: Re: [PATCH V9 3/6] mfd: pm8008: Add mfd cell struct to register LDOs
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_collinsd@quicinc.com>,
+        <quic_subbaram@quicinc.com>, <quic_jprakash@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-4-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n52hZy6ia3i0yv9U_1TnqDf-NAW3587RSS_qG+GRNhh3yg@mail.gmail.com>
+From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
+Message-ID: <738b87e0-85dd-70b4-178b-9c3a9c5a7468@quicinc.com>
+Date:   Wed, 6 Apr 2022 14:49:35 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220406091311.3354723-2-tongtiangen@huawei.com>
+In-Reply-To: <CAE-0n52hZy6ia3i0yv9U_1TnqDf-NAW3587RSS_qG+GRNhh3yg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 09:13:05AM +0000, Tong Tiangen wrote:
-> The follow patch
 
-There's no concept of "follow patch" in git - you need to explain this
-differently.
+On 4/6/2022 12:38 AM, Stephen Boyd wrote:
+> Quoting Satya Priya (2022-04-05 06:50:30)
+>> Add mfd cell struct to match with the "qcom,pm8008-regulator"
+>> driver and a separate probe to add pm8008_regulator_devs.
+>> This separate probe is required to ensure the regulators are
+>> registered only with the mfd device which contains regulators.
+> I don't get it. Shouldn't the pm8008-regulators compatible string be a
+> different i2c driver in drivers/regulator/ that matches the compatible
+> string for qcom,pm8008-regulators?
 
-> will add copy_mc_to_user to include/linux/uaccess.h, X86
-> must declare Implemented to avoid compile error.
 
-I don't know what that means. Try again pls.
+Initially we had it that way but as per Mark's suggestion here [1] I've 
+made these changes to register regulators directly through mfd driver.
 
--- 
-Regards/Gruss,
-    Boris.
+[1] 
+https://patchwork.kernel.org/project/linux-arm-msm/patch/1637314953-4215-3-git-send-email-quic_c_skakit@quicinc.com/#24618011
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+>> Add the reset-gpio toggling in the pm8008_probe() to bring
+>> pm8008 chip out of reset instead of doing it in DT node using
+>> "output-high" property.
+> Please split this part off to a different patch.
+
+
+Okay.
+
+
