@@ -2,256 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D62C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233453AbiDFUEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
+        id S233506AbiDFUEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234534AbiDFUDK (ORCPT
+        with ESMTP id S234313AbiDFUDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:03:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD9A181B12;
-        Wed,  6 Apr 2022 11:27:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28B63B8252B;
-        Wed,  6 Apr 2022 18:27:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66849C385A3;
-        Wed,  6 Apr 2022 18:26:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269618;
-        bh=Q0RYEjzeisjhD20Or2HKQ6z6h4FOwlY7X2OSh5h/0K8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=LFa5Yzg/qVPSO1xuaHeYbFtrBX3JgC3p5/0LIh//H+jhCgr1s7wkxOk7zdIPpy8c4
-         LyhGVoo5Z/Vk3lRYeKh+wyTrfNDDA6TmPqDxgsoO65aijQx5DZR+gHvST0g4z/EZR4
-         qIk67RsWZ75HrWiZBh3L6Xq/avUV4sJ2vRDC7fzY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.9 00/43] 4.9.310-rc1 review
-Date:   Wed,  6 Apr 2022 20:26:09 +0200
-Message-Id: <20220406182436.675069715@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 6 Apr 2022 16:03:02 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3290140F0;
+        Wed,  6 Apr 2022 10:26:06 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id s11so2546434pla.8;
+        Wed, 06 Apr 2022 10:26:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OpRrPrj0hVGfYMwxf5Njm8JCzZaHH6cAIbe6DteGsDY=;
+        b=Q3noOigSRWCUt3Sn1T0KaLFQwubfl/RXMDlGut9K9uWvUKnJScaPQpDT1pXWG8Acx4
+         tgOMUYEAR74LvDAEQ4TBM2J1H0bZxRRRf7fCwKGIsotvdFY9bgnhNxNMLCfSjchBRbaY
+         USb+sAB3TH0IbNWDLT/kHeL9cACLbRiTItaxbwfMc+HyPL7EruitIeDqSmddGm0i6aAy
+         tcnZ6q07F5DXkFdoRS2sTgAXloOreXd67Y1l6XyEwBYQzwdDZKlDx1BewqATmxiZtPdr
+         Gczr4obOne+6XFVgP7HnNUqwzsJdzo/6JXpfQ9J6AhVOS9jPcbxYLibu8nFRuKo1vMk7
+         uSPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OpRrPrj0hVGfYMwxf5Njm8JCzZaHH6cAIbe6DteGsDY=;
+        b=HX051TabEmTzVUenAaXwZEDDPwLqCdBKZVhMgc7+/rzIavEpDciKcKYzw9JaG5Fpaz
+         /8OUQMTDBZFUfEXyWR/CnbwS7Y+4WjnxTbSyKesLr4RavHg0yeLnIMngqwZMl3KD1U5l
+         ys0C6KAhY3hCzSIO7dsDzqTUyOKRJKJcaDWobq/7VM7i08NVOgtQXQBCKDMO/nyMYVo/
+         RDXRU3hoY437Wprp1O7LoAZINmY6UsKgv/dxHeq+ypxWtCaAJqdTmNQaYvLWugIWvSwX
+         CI/6a15iyv62Eo/AKj7IRxB7Cc1bhPn15P3dvoKxiGx8/eWxRl0faKSAdy0lg2jhGHtr
+         uy8g==
+X-Gm-Message-State: AOAM532WCr3N6MNLwW1rCdSeA2O6M7kq7HXjUuv7+r7Py9Y8+RKWfM74
+        2npGY8BeqssG7aGhX6ce7mU=
+X-Google-Smtp-Source: ABdhPJyuAn1ofLtL6gk+Bn7fzyGJkS9OnhmFYuQZlGUMIJSqFCazgZgRNODa8zyTv+hQDvikQKK/Vw==
+X-Received: by 2002:a17:902:ea52:b0:153:fd04:c158 with SMTP id r18-20020a170902ea5200b00153fd04c158mr9387286plg.83.1649265966314;
+        Wed, 06 Apr 2022 10:26:06 -0700 (PDT)
+Received: from jeffreyji1.c.googlers.com.com (180.145.227.35.bc.googleusercontent.com. [35.227.145.180])
+        by smtp.gmail.com with ESMTPSA id 132-20020a62168a000000b004f40e8b3133sm20222468pfw.188.2022.04.06.10.26.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 10:26:05 -0700 (PDT)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jeffrey Ji <jeffreyji@google.com>
+Subject: [PATCH net-next] net-core: rx_otherhost_dropped to core_stats
+Date:   Wed,  6 Apr 2022 17:26:00 +0000
+Message-Id: <20220406172600.1141083-1-jeffreyjilinux@gmail.com>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
 MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.310-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.310-rc1
-X-KernelTest-Deadline: 2022-04-08T18:24+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.310 release.
-There are 43 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Jeffrey Ji <jeffreyji@google.com>
 
-Responses should be made by Fri, 08 Apr 2022 18:24:27 +0000.
-Anything received after that time might be too late.
+Increment rx_otherhost_dropped counter when packet dropped due to
+mismatched dest MAC addr.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.310-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
+An example when this drop can occur is when manually crafting raw
+packets that will be consumed by a user space application via a tap
+device. For testing purposes local traffic was generated using trafgen
+for the client and netcat to start a server
 
-thanks,
+Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+with "{eth(daddr=$INCORRECT_MAC...}", verified that iproute2 showed the
+counter was incremented. (Also had to modify iproute2 to show the stat,
+additional patch for that coming next.)
 
-greg k-h
+Signed-off-by: Jeffrey Ji <jeffreyji@google.com>
+---
+ include/linux/netdevice.h    | 2 ++
+ include/uapi/linux/if_link.h | 5 +++++
+ net/core/dev.c               | 1 +
+ net/ipv4/ip_input.c          | 1 +
+ net/ipv6/ip6_input.c         | 1 +
+ 5 files changed, 10 insertions(+)
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.310-rc1
-
-James Morse <james.morse@arm.com>
-    arm64: Use the clearbhb instruction in mitigations
-
-James Morse <james.morse@arm.com>
-    arm64: add ID_AA64ISAR2_EL1 sys register
-
-James Morse <james.morse@arm.com>
-    KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
-
-James Morse <james.morse@arm.com>
-    arm64: Mitigate spectre style branch history side channels
-
-James Morse <james.morse@arm.com>
-    KVM: arm64: Add templates for BHB mitigation sequences
-
-James Morse <james.morse@arm.com>
-    arm64: Add percpu vectors for EL1
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add macro for reading symbol addresses from the trampoline
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add vectors that have the bhb mitigation sequences
-
-James Morse <james.morse@arm.com>
-    arm64: Move arm64_update_smccc_conduit() out of SSBD ifdef
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Allow the trampoline text to occupy multiple pages
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Make the kpti trampoline's kpti sequence optional
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Move trampoline macros out of ifdef'd section
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Don't assume tramp_vectors is the start of the vectors
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Move the trampoline data page before the text page
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Free up another register on kpti's tramp_exit path
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Make the trampoline cleanup optional
-
-James Morse <james.morse@arm.com>
-    arm64: entry.S: Add ventry overflow sanity checks
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: Add helper to decode register from instruction
-
-Anshuman Khandual <anshuman.khandual@arm.com>
-    arm64: Add Cortex-X2 CPU part definition
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
-
-Rob Herring <robh@kernel.org>
-    arm64: Add part number for Arm Cortex-A77
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: Add part number for Neoverse N1
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: Make ARM64_ERRATUM_1188873 depend on COMPAT
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: Add silicon-errata.txt entry for ARM erratum 1188873
-
-Arnd Bergmann <arnd@arndb.de>
-    arm64: arch_timer: avoid unused function warning
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: arch_timer: Add workaround for ARM erratum 1188873
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: arch_timer: Add erratum handler for CPU-specific capability
-
-Marc Zyngier <marc.zyngier@arm.com>
-    arm64: arch_timer: Add infrastructure for multiple erratum detection methods
-
-Ding Tianhong <dingtianhong@huawei.com>
-    clocksource/drivers/arm_arch_timer: Introduce generic errata handling infrastructure
-
-Ding Tianhong <dingtianhong@huawei.com>
-    clocksource/drivers/arm_arch_timer: Remove fsl-a008585 parameter
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: capabilities: Add support for checks based on a list of MIDRs
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: Add helpers for checking CPU MIDR against a range
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: capabilities: Clean up midr range helpers
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: capabilities: Add flags to handle the conflicts on late CPU
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: capabilities: Prepare for fine grained capabilities
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: capabilities: Move errata processing code
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: capabilities: Move errata work around check on boot CPU
-
-Dave Martin <dave.martin@arm.com>
-    arm64: capabilities: Update prototype for enable call back
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: Add MIDR encoding for Arm Cortex-A55 and Cortex-A35
-
-James Morse <james.morse@arm.com>
-    arm64: Remove useless UAO IPI and describe how this gets enabled
-
-Robert Richter <rrichter@cavium.com>
-    arm64: errata: Provide macro for major and minor cpu revisions
-
-
--------------
-
-Diffstat:
-
- Documentation/arm64/silicon-errata.txt |   1 +
- Documentation/kernel-parameters.txt    |   9 -
- Makefile                               |   4 +-
- arch/arm/include/asm/kvm_host.h        |   5 +
- arch/arm/kvm/psci.c                    |   4 +
- arch/arm64/Kconfig                     |  24 ++
- arch/arm64/include/asm/arch_timer.h    |  44 ++-
- arch/arm64/include/asm/assembler.h     |  34 ++
- arch/arm64/include/asm/cpu.h           |   1 +
- arch/arm64/include/asm/cpucaps.h       |   4 +-
- arch/arm64/include/asm/cpufeature.h    | 232 ++++++++++++-
- arch/arm64/include/asm/cputype.h       |  63 ++++
- arch/arm64/include/asm/fixmap.h        |   6 +-
- arch/arm64/include/asm/insn.h          |   2 +
- arch/arm64/include/asm/kvm_host.h      |   4 +
- arch/arm64/include/asm/kvm_mmu.h       |   2 +-
- arch/arm64/include/asm/mmu.h           |   8 +-
- arch/arm64/include/asm/processor.h     |   6 +-
- arch/arm64/include/asm/sections.h      |   6 +
- arch/arm64/include/asm/sysreg.h        |   5 +
- arch/arm64/include/asm/vectors.h       |  74 +++++
- arch/arm64/kernel/bpi.S                |  55 +++
- arch/arm64/kernel/cpu_errata.c         | 591 ++++++++++++++++++++++++++-------
- arch/arm64/kernel/cpufeature.c         | 167 +++++++---
- arch/arm64/kernel/cpuinfo.c            |   1 +
- arch/arm64/kernel/entry.S              | 197 ++++++++---
- arch/arm64/kernel/fpsimd.c             |   1 +
- arch/arm64/kernel/insn.c               |  29 ++
- arch/arm64/kernel/smp.c                |   6 -
- arch/arm64/kernel/traps.c              |   4 +-
- arch/arm64/kernel/vmlinux.lds.S        |   2 +-
- arch/arm64/kvm/hyp/hyp-entry.S         |   4 +
- arch/arm64/kvm/hyp/switch.c            |   9 +-
- arch/arm64/mm/fault.c                  |  17 +-
- arch/arm64/mm/mmu.c                    |  11 +-
- drivers/clocksource/Kconfig            |   4 +
- drivers/clocksource/arm_arch_timer.c   | 192 ++++++++---
- include/linux/arm-smccc.h              |   7 +
- 38 files changed, 1504 insertions(+), 331 deletions(-)
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 7b2a0b739684..9b2b9457e70f 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -202,6 +202,7 @@ struct net_device_core_stats {
+ 	local_t		rx_dropped;
+ 	local_t		tx_dropped;
+ 	local_t		rx_nohandler;
++	local_t		rx_otherhost_dropped;
+ } __aligned(4 * sizeof(local_t));
+ 
+ #include <linux/cache.h>
+@@ -3878,6 +3879,7 @@ static inline void dev_core_stats_##FIELD##_inc(struct net_device *dev)		\
+ DEV_CORE_STATS_INC(rx_dropped)
+ DEV_CORE_STATS_INC(tx_dropped)
+ DEV_CORE_STATS_INC(rx_nohandler)
++DEV_CORE_STATS_INC(rx_otherhost_dropped)
+ 
+ static __always_inline int ____dev_forward_skb(struct net_device *dev,
+ 					       struct sk_buff *skb,
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index cc284c048e69..d1e600816b82 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -211,6 +211,9 @@ struct rtnl_link_stats {
+  * @rx_nohandler: Number of packets received on the interface
+  *   but dropped by the networking stack because the device is
+  *   not designated to receive packets (e.g. backup link in a bond).
++ *
++ * @rx_otherhost_dropped: Number of packets dropped due to mismatch
++ *   in destination MAC address.
+  */
+ struct rtnl_link_stats64 {
+ 	__u64	rx_packets;
+@@ -243,6 +246,8 @@ struct rtnl_link_stats64 {
+ 	__u64	rx_compressed;
+ 	__u64	tx_compressed;
+ 	__u64	rx_nohandler;
++
++	__u64	rx_otherhost_dropped;
+ };
+ 
+ /* Subset of link stats useful for in-HW collection. Meaning of the fields is as
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d5a362d53b34..68680d8474c7 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10363,6 +10363,7 @@ struct rtnl_link_stats64 *dev_get_stats(struct net_device *dev,
+ 			storage->rx_dropped += local_read(&core_stats->rx_dropped);
+ 			storage->tx_dropped += local_read(&core_stats->tx_dropped);
+ 			storage->rx_nohandler += local_read(&core_stats->rx_nohandler);
++			storage->rx_otherhost_dropped += local_read(&core_stats->rx_otherhost_dropped);
+ 		}
+ 	}
+ 	return storage;
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index 95f7bb052784..b1165f717cd1 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -451,6 +451,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+ 	 * that it receives, do not try to analyse it.
+ 	 */
+ 	if (skb->pkt_type == PACKET_OTHERHOST) {
++		dev_core_stats_rx_otherhost_dropped_inc(skb->dev);
+ 		drop_reason = SKB_DROP_REASON_OTHERHOST;
+ 		goto drop;
+ 	}
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 5b5ea35635f9..b4880c7c84eb 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -150,6 +150,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 	struct inet6_dev *idev;
+ 
+ 	if (skb->pkt_type == PACKET_OTHERHOST) {
++		dev_core_stats_rx_otherhost_dropped_inc(skb->dev);
+ 		kfree_skb(skb);
+ 		return NULL;
+ 	}
+-- 
+2.35.1.1094.g7c7d902a7c-goog
 
