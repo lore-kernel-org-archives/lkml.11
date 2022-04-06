@@ -2,131 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E164C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231329AbiDFTZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44990 "EHLO
+        id S230285AbiDFTZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiDFTYK (ORCPT
+        with ESMTP id S230214AbiDFTYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:24:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A9F298C94;
-        Wed,  6 Apr 2022 11:28:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDAA2B8253A;
-        Wed,  6 Apr 2022 18:28:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1708AC385A6;
-        Wed,  6 Apr 2022 18:28:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269720;
-        bh=2vVMkLKKtoDEGqV4JxmKdLS68YjrOYjEzEXKZGmjmno=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dn0T/nChUKjCDqLzWnl0ptoKqg47bZ16SLUSxkawGYzNSmv++O+6PHs+vyzd9Zuh3
-         1OQhDPbOBmycZbby9y0lm5/4Ee53iCvaa3tTpKV8m8S9X4xigJz81TDt8i9ijwDlTT
-         Sxp/YYvDFk6djJb5nCXXQ4/6FRiE1IuLh7GUbgnQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 32/43] arm64: entry: Make the kpti trampolines kpti sequence optional
-Date:   Wed,  6 Apr 2022 20:26:41 +0200
-Message-Id: <20220406182437.613744275@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 6 Apr 2022 15:24:38 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7640AED9FD;
+        Wed,  6 Apr 2022 11:28:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649269693; x=1680805693;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=Rs79KJhe70Gy0XLPZF0IzThau8hzcUa246qSlKDLfaI=;
+  b=IM+A14nsHYV5nTRgK2huqHhx9t9lUtpDUokFlUHwaLnH/suIjsFmNGDE
+   VUqapIAJJIOshkeyJSQlYTr4/cWWoIbB6NiP+ezTe/qO98Kabel10PZwn
+   E/PnKMheTeZJyVX5JpVeFc4hOiF3jpoGges515i+u4psZJgpfk2LZDt/6
+   Q=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Apr 2022 11:28:13 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 11:28:13 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Apr 2022 11:28:12 -0700
+Received: from hu-ylal-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Apr 2022 11:28:10 -0700
+From:   Yogesh Lal <quic_ylal@quicinc.com>
+To:     <bjorn.andersson@linaro.org>, <quic_sibis@quicinc.com>
+CC:     <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Yogesh Lal <quic_ylal@quicinc.com>
+Subject: [PATCH] remoteproc: qcom: Add fallback mechanism for full coredump collection
+Date:   Wed, 6 Apr 2022 23:57:42 +0530
+Message-ID: <1649269662-20338-1-git-send-email-quic_ylal@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+In case remoteproc's firmware missing minidump support, during crash
+scenario coredump does not collected. This change adds a fallback
+mechanism for full coredump collection in the event of a crash.
 
-commit c47e4d04ba0f1ea17353d85d45f611277507e07a upstream.
-
-Spectre-BHB needs to add sequences to the vectors. Having one global
-set of vectors is a problem for big/little systems where the sequence
-is costly on cpus that are not vulnerable.
-
-Making the vectors per-cpu in the style of KVM's bh_harden_hyp_vecs
-requires the vectors to be generated by macros.
-
-Make the kpti re-mapping of the kernel optional, so the macros can be
-used without kpti.
-
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yogesh Lal <quic_ylal@quicinc.com>
 ---
- arch/arm64/kernel/entry.S |   17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/remoteproc/qcom_common.c   | 11 ++++++++---
+ drivers/remoteproc/qcom_q6v5_pas.c |  1 +
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -921,9 +921,10 @@ __ni_sys_trace:
- 	sub	\dst, \dst, PAGE_SIZE
- 	.endm
- 
--	.macro tramp_ventry, vector_start, regsize
-+	.macro tramp_ventry, vector_start, regsize, kpti
- 	.align	7
- 1:
-+	.if	\kpti == 1
- 	.if	\regsize == 64
- 	msr	tpidrro_el0, x30	// Restored in kernel_ventry
- 	.endif
-@@ -945,8 +946,12 @@ __ni_sys_trace:
- #endif
- 	prfm	plil1strm, [x30, #(1b - \vector_start)]
- 	msr	vbar_el1, x30
--	add	x30, x30, #(1b - \vector_start + 4)
- 	isb
-+	.else
-+	ldr	x30, =vectors
-+	.endif // \kpti == 1
+diff --git a/drivers/remoteproc/qcom_common.c b/drivers/remoteproc/qcom_common.c
+index 4b91e3c..68bd0bc 100644
+--- a/drivers/remoteproc/qcom_common.c
++++ b/drivers/remoteproc/qcom_common.c
+@@ -162,13 +162,18 @@ void qcom_minidump(struct rproc *rproc, unsigned int minidump_id)
+ 	 * is initialized in memory and encryption status is set.
+ 	 */
+ 	if (subsystem->regions_baseptr == 0 ||
+-	    le32_to_cpu(subsystem->status) != 1 ||
+-	    le32_to_cpu(subsystem->enabled) != MD_SS_ENABLED ||
+-	    le32_to_cpu(subsystem->encryption_status) != MD_SS_ENCR_DONE) {
++		le32_to_cpu(subsystem->status) != 1 ||
++		le32_to_cpu(subsystem->enabled) != MD_SS_ENABLED) {
++			return rproc_coredump(rproc);
++		}
 +
-+	add	x30, x30, #(1b - \vector_start + 4)
- 	ret
- .org 1b + 128	// Did we overflow the ventry slot?
- 	.endm
-@@ -963,15 +968,15 @@ __ni_sys_trace:
- 	eret
- 	.endm
++	if (le32_to_cpu(subsystem->encryption_status) != MD_SS_ENCR_DONE) {
+ 		dev_err(&rproc->dev, "Minidump not ready, skipping\n");
+ 		return;
+ 	}
  
--	.macro	generate_tramp_vector
-+	.macro	generate_tramp_vector,	kpti
- .Lvector_start\@:
- 	.space	0x400
- 
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 64
-+	tramp_ventry	.Lvector_start\@, 64, \kpti
- 	.endr
- 	.rept	4
--	tramp_ventry	.Lvector_start\@, 32
-+	tramp_ventry	.Lvector_start\@, 32, \kpti
- 	.endr
- 	.endm
- 
-@@ -982,7 +987,7 @@ __ni_sys_trace:
- 	.pushsection ".entry.tramp.text", "ax"
- 	.align	11
- ENTRY(tramp_vectors)
--	generate_tramp_vector
-+	generate_tramp_vector	kpti=1
- END(tramp_vectors)
- 
- ENTRY(tramp_exit_native)
-
++	rproc_coredump_cleanup(rproc);
++
+ 	ret = qcom_add_minidump_segments(rproc, subsystem);
+ 	if (ret) {
+ 		dev_err(&rproc->dev, "Failed with error: %d while adding minidump entries\n", ret);
+diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
+index 1ae47cc..40bf747 100644
+--- a/drivers/remoteproc/qcom_q6v5_pas.c
++++ b/drivers/remoteproc/qcom_q6v5_pas.c
+@@ -293,6 +293,7 @@ static const struct rproc_ops adsp_minidump_ops = {
+ 	.start = adsp_start,
+ 	.stop = adsp_stop,
+ 	.da_to_va = adsp_da_to_va,
++	.parse_fw = qcom_register_dump_segments,
+ 	.load = adsp_load,
+ 	.panic = adsp_panic,
+ 	.coredump = adsp_minidump,
+-- 
+2.7.4
 
