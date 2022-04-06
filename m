@@ -2,196 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8047C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240445AbiDFSW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
+        id S230040AbiDFSzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240490AbiDFSVm (ORCPT
+        with ESMTP id S229718AbiDFSwU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:21:42 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9CB1EC626;
-        Wed,  6 Apr 2022 09:59:15 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 236Gx8SV005281;
-        Wed, 6 Apr 2022 11:59:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649264348;
-        bh=3VZO4/0PzPfbJs6WPbUvzMv+Gx6ibqJm1iCdqi1fmqM=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=hKfVNaR8AqQ8Zqm5guu6PmYoFXu1MR+SoDqu/mRaMclbmh/JZzMVPw5SW/F9Ei/BQ
-         0u3Q7itZj3ercK4nq9g//nYxsKYTlQx84vWdu/Goa/jqokjK5CDD/Ll4osPYL9M51p
-         5G9xL8jDC0MgvXTVxqDY8Vt/rDtV4ScGQVmGeODA=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 236Gx8um011655
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 11:59:08 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 11:59:08 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 11:59:08 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 236Gx7fE107730;
-        Wed, 6 Apr 2022 11:59:07 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <nm@ti.com>
-CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>,
-        <r-ravikumar@ti.com>
-Subject: [PATCH v3 2/2] arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
-Date:   Wed, 6 Apr 2022 22:28:52 +0530
-Message-ID: <20220406165852.13026-3-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406165852.13026-1-r-ravikumar@ti.com>
-References: <20220406165852.13026-1-r-ravikumar@ti.com>
+        Wed, 6 Apr 2022 14:52:20 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038972CCAF;
+        Wed,  6 Apr 2022 11:14:01 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id t21so3214371oie.11;
+        Wed, 06 Apr 2022 11:14:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=H0QnhyvMcyeV2GoiwbyXURkXVFnwPb25uAf5GGlcDj8=;
+        b=yKEw84dgk95sVPIK6YmwK0pkGQdmw/v0sZr0CNdaN5JfFwktXkOw+uZf8ub+vO5IGr
+         vdkaQAjDFHFXZK2MlTF9Vy/zIpW6pM9nJubC4TOVEzSs6wyI2SHhIVX1qStZ3Og4Z90k
+         mTdxjga+eJXnsGHpdKLMS+VstKtzwMwvAPUOqmU1BamlMO7Y4yjRE3mLXuvYhVGJktwm
+         y6CuPJfsZawxYt72jpPXUJH4scEuJ11/Wnr08o2Ez5WZAFJJcJ3u+98yCTcVbS/Z5LPl
+         9VK247rKAEztBKQlWpZsPseKEBxkEXuFhtW5ic1sblWw4j2Xcbr+qm2NG7qlOpRVn+jg
+         vzwQ==
+X-Gm-Message-State: AOAM53089aNiK+pCilcBOSAAFJpiA7pXH0HnEmcOM/NGf/KDiJBgKuuW
+        qn1NML8Qe6xaj/FAsUec7w==
+X-Google-Smtp-Source: ABdhPJwOM1hhMXjwmrAos/oBCbAVRzpkNRe0dBmU8uisDOIEhohB6rSgPnkpQvD3BadEROZk3cMEuw==
+X-Received: by 2002:a05:6808:202:b0:2ef:8867:bffb with SMTP id l2-20020a056808020200b002ef8867bffbmr4315072oie.28.1649268841208;
+        Wed, 06 Apr 2022 11:14:01 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id o18-20020a9d7652000000b005cbf6f5d7c5sm7110203otl.21.2022.04.06.11.14.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 11:14:00 -0700 (PDT)
+Received: (nullmailer pid 2523072 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:14:00 -0000
+Date:   Wed, 6 Apr 2022 13:14:00 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: PCI: designware-ep: Increase maxItems
+ of reg and reg-names
+Message-ID: <Yk3YaAWPJ0bpLTHK@robh.at.kernel.org>
+References: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
+ <1649145062-29833-2-git-send-email-hayashi.kunihiko@socionext.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649145062-29833-2-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomi Valkeinen <tomi.valkeinen@ti.com>
+On Tue, Apr 05, 2022 at 04:51:00PM +0900, Kunihiko Hayashi wrote:
+> UniPhier PCIe EP controller has 5 register mappings (dbi, dbi2, link,
+> config and atu), so maxItems of "reg" and "reg-names" should allow 5.
 
-Add the endpoint nodes to describe connection from
-DSS => MHDP => DisplayPort connector.
-Also add the phy link node and required pinmux nodes
-for hotplug.
+Shouldn't that be 'addr_space' rather than 'config'? IIRC, 'config' is 
+only for the host.
 
-Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- .../dts/ti/k3-j721e-common-proc-board.dts     | 78 ++++++++++++++++++-
- 1 file changed, 74 insertions(+), 4 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-index f5ca8e26ed99..d9d791002609 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-@@ -148,6 +148,28 @@
- 		pinctrl-0 = <&main_mcan2_gpio_pins_default>;
- 		standby-gpios = <&main_gpio0 127 GPIO_ACTIVE_HIGH>;
- 	};
-+
-+	dp_pwr_3v3: regulator-dp-prw {
-+		compatible = "regulator-fixed";
-+		regulator-name = "dp-pwr";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		gpio = <&exp4 0 GPIO_ACTIVE_HIGH>; /* P0 - DP0_PWR_SW_EN */
-+		enable-active-high;
-+	};
-+
-+	dp0: connector {
-+		compatible = "dp-connector";
-+		label = "DP0";
-+		type = "full-size";
-+		dp-pwr-supply = <&dp_pwr_3v3>;
-+
-+		port {
-+			dp_connector_in: endpoint {
-+				remote-endpoint = <&dp0_out>;
-+			};
-+		};
-+	};
- };
- 
- &main_pmx0 {
-@@ -190,6 +212,12 @@
- 		>;
- 	};
- 
-+	dp0_pins_default: dp0-pins-default {
-+		pinctrl-single,pins = <
-+			J721E_IOPAD(0x1c4, PIN_INPUT, 5) /* SPI0_CS1.DP0_HPD */
-+		>;
-+	};
-+
- 	main_i2c1_exp4_pins_default: main-i2c1-exp4-pins-default {
- 		pinctrl-single,pins = <
- 			J721E_IOPAD(0x230, PIN_INPUT, 7) /* (U2) ECAP0_IN_APWM_OUT.GPIO1_11 */
-@@ -658,6 +686,41 @@
- 				 <&k3_clks 152 18>;	/* PLL23_HSDIV0 */
- };
- 
-+&dss_ports {
-+	port@0 {
-+		reg = <0>;
-+		dpi0_out: endpoint {
-+			remote-endpoint = <&dp0_in>;
-+		};
-+	};
-+};
-+
-+&mhdp {
-+	phys = <&torrent_phy_dp>;
-+	phy-names = "dpphy";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&dp0_pins_default>;
-+};
-+
-+&dp0_ports {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+
-+	port@0 {
-+		reg = <0>;
-+		dp0_in: endpoint {
-+			remote-endpoint = <&dpi0_out>;
-+		};
-+	};
-+
-+	port@4 {
-+		reg = <4>;
-+		dp0_out: endpoint {
-+			remote-endpoint = <&dp_connector_in>;
-+		};
-+	};
-+};
-+
- &mcasp0 {
- 	status = "disabled";
- };
-@@ -793,6 +856,17 @@
- 	};
- };
- 
-+&serdes4 {
-+	torrent_phy_dp: phy@0 {
-+		reg = <0>;
-+		resets = <&serdes_wiz4 1>;
-+		cdns,phy-type = <PHY_TYPE_DP>;
-+		cdns,num-lanes = <4>;
-+		cdns,max-bit-rate = <5400>;
-+		#phy-cells = <0>;
-+	};
-+};
-+
- &pcie0_rc {
- 	reset-gpios = <&exp1 6 GPIO_ACTIVE_HIGH>;
- 	phys = <&serdes0_pcie_link>;
-@@ -843,10 +917,6 @@
- 	status = "disabled";
- };
- 
--&dss {
--	status = "disabled";
--};
--
- &icssg0_mdio {
- 	status = "disabled";
- };
--- 
-2.17.1
-
+> 
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> ---
+>  Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+> index e59059ab5be0..03f97e7c4089 100644
+> --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+> +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+> @@ -28,11 +28,11 @@ properties:
+>        versions.
+>        For designware core version >= 4.80, it may contain ATU address space.
+>      minItems: 2
+> -    maxItems: 4
+> +    maxItems: 5
+>  
+>    reg-names:
+>      minItems: 2
+> -    maxItems: 4
+> +    maxItems: 5
+>      items:
+>        enum: [dbi, dbi2, config, atu, addr_space, link, atu_dma, appl]
+>  
+> -- 
+> 2.25.1
+> 
+> 
