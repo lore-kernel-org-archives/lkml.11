@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2056EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF08C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239459AbiDFRoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
+        id S239147AbiDFRoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239526AbiDFRoH (ORCPT
+        with ESMTP id S239312AbiDFRoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 13:44:07 -0400
-Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [85.215.255.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA871162BF;
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D662114099;
         Wed,  6 Apr 2022 09:26:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649262374;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649262372;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=KR13NrwR20zSnWj2ej7PoEMIq+O+MWSZlNAGuKlspIA=;
-    b=MaUqpElqHdAzdRvn1WMicaIyHDhkY7ObvP0u4Uy6X+ur1PgEUgdVIkFIn01ZOQhvJ2
-    YLT/vZG2GlmTFmgM+mja3HVE7MGJ/xw/Q1Kg/xToqAcFzfyRJUcSndMzyJHkguwYKuTf
-    CvU4IbL1ZLqHg744dKucD6Tc3JSva/PJT5/PmOKxu1VlA4DhfpOVWfe9Q4N3+NHBN0lU
-    uwE6zUeFXNVzLqf/6G6si29DAaROIHnFRyAUHVqcPJRuPLK+OQ6WL3PVlIMMi/yMTwaE
-    NmT67/5V4c+gMR2+XWI20SHaMd7yNFA7spf0Sju1PRTtV3oYRpIzpT2MYPibsfSkUcCC
-    lCMQ==
+    bh=mli3SbgeH19fgUBo5oZuvEr6dwkaZKlBs97YGkIQ7hs=;
+    b=nsU4EAHVPqOBc/UhjsucwxH7FmmTnqkrBcLV+5wU0lhjFkvbHGhmU8sO2OZkIp8jfc
+    8ZVolO/atWFtL6TudRpV2LzL7Q5gYYMQapaiW2PvgWOPh50RGg8NylbbdJeHm0dXAbeH
+    9IqW83C49wlZHqA906arnKfEdITXN2YDRFpQzPVHkxvWTN5uz7jOReup+maPRT6gSwps
+    ovWdCGcp1kh/8ACg+vPH9sTr3s1udEXB01JuRh/1J2VOtjr5Xk4cIuN/w1NByaI/twwl
+    gy/6uq9AEBArqiU8ZtBwO2aQUCcykCYyso2wWseVJPM8vdfeR96fxFt5gq34mvllcVIv
+    DH4w==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbgcbPa"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy36GQEgVR
+    with ESMTPSA id k708cfy36GQCgVN
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Wed, 6 Apr 2022 18:26:14 +0200 (CEST)
+    Wed, 6 Apr 2022 18:26:12 +0200 (CEST)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
@@ -52,9 +52,9 @@ To:     Andrzej Hajda <andrzej.hajda@intel.com>,
 Cc:     Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
         dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
         letux-kernel@openphoenux.org
-Subject: [PATCH v17 5/6] drm/bridge: dw-hdmi: add YCBCR formats only if CSC is available
-Date:   Wed,  6 Apr 2022 18:26:07 +0200
-Message-Id: <d5801eb7733a616df30fef1d192e88ad147afc1c.1649262368.git.hns@goldelico.com>
+Subject: [PATCH v17 1/6] drm/ingenic: Implement proper .atomic_get_input_bus_fmts
+Date:   Wed,  6 Apr 2022 18:26:03 +0200
+Message-Id: <ca7426ff9d5690488765822e3dae72e639241def.1649262368.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1649262368.git.hns@goldelico.com>
 References: <cover.1649262368.git.hns@goldelico.com>
@@ -64,32 +64,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-otherwise they will produce a black HDMI screen.
+From: Paul Cercueil <paul@crapouillou.net>
 
+The .atomic_get_input_bus_fmts() callback of our top bridge should
+return the possible input formats for a given output format. If the
+requested output format is not supported, then NULL should be returned,
+otherwise the bus format negociation will end with a bus format that the
+encoder does not support.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 28 ++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index b5a665c5e406e..ec40dd8865065 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -2628,10 +2628,12 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 		output_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
+diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+index a4f5a323f4906..8eb0ad501a7b9 100644
+--- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
++++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+@@ -833,6 +833,32 @@ static int ingenic_drm_bridge_atomic_check(struct drm_bridge *bridge,
  	}
+ }
  
--	if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
-+	if (hdmi->csc_available && hdmi->sink_is_hdmi &&
-+	    (info->color_formats & DRM_COLOR_FORMAT_YCBCR422))
- 		output_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
++static u32 *
++ingenic_drm_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
++					     struct drm_bridge_state *bridge_state,
++					     struct drm_crtc_state *crtc_state,
++					     struct drm_connector_state *conn_state,
++					     u32 output_fmt,
++					     unsigned int *num_input_fmts)
++{
++	switch (output_fmt) {
++	case MEDIA_BUS_FMT_RGB888_1X24:
++	case MEDIA_BUS_FMT_RGB666_1X18:
++	case MEDIA_BUS_FMT_RGB565_1X16:
++	case MEDIA_BUS_FMT_RGB888_3X8:
++	case MEDIA_BUS_FMT_RGB888_3X8_DELTA:
++		break;
++	default:
++		*num_input_fmts = 0;
++		return NULL;
++	}
++
++	return drm_atomic_helper_bridge_propagate_bus_fmt(bridge, bridge_state,
++							  crtc_state, conn_state,
++							  output_fmt,
++							  num_input_fmts);
++}
++
+ static irqreturn_t ingenic_drm_irq_handler(int irq, void *arg)
+ {
+ 	struct ingenic_drm *priv = drm_device_get_priv(arg);
+@@ -984,7 +1010,7 @@ static const struct drm_bridge_funcs ingenic_drm_bridge_funcs = {
+ 	.atomic_reset		= drm_atomic_helper_bridge_reset,
+ 	.atomic_duplicate_state	= drm_atomic_helper_bridge_duplicate_state,
+ 	.atomic_destroy_state	= drm_atomic_helper_bridge_destroy_state,
+-	.atomic_get_input_bus_fmts = drm_atomic_helper_bridge_propagate_bus_fmt,
++	.atomic_get_input_bus_fmts = ingenic_drm_bridge_atomic_get_input_bus_fmts,
+ };
  
--	if (hdmi->sink_is_hdmi && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
-+	if (hdmi->csc_available && hdmi->sink_is_hdmi &&
-+	    (info->color_formats & DRM_COLOR_FORMAT_YCBCR444))
- 		output_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
- 
- 	/* Default 8bit RGB fallback */
+ static const struct drm_mode_config_funcs ingenic_drm_mode_config_funcs = {
 -- 
 2.33.0
 
