@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66ED3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE90C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229972AbiDFMPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
+        id S232361AbiDFMPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231279AbiDFMOE (ORCPT
+        with ESMTP id S231726AbiDFMOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:14:04 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC111B60E1;
-        Wed,  6 Apr 2022 00:56:26 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9L0qp1_1649231779;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9L0qp1_1649231779)
+        Wed, 6 Apr 2022 08:14:08 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45411AEC9F;
+        Wed,  6 Apr 2022 00:56:30 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9KyhrA_1649231785;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9KyhrA_1649231785)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 15:56:20 +0800
+          Wed, 06 Apr 2022 15:56:26 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v8 04/20] cachefiles: notify user daemon when withdrawing cookie
-Date:   Wed,  6 Apr 2022 15:55:56 +0800
-Message-Id: <20220406075612.60298-5-jefflexu@linux.alibaba.com>
+Subject: [PATCH v8 08/20] erofs: make erofs_map_blocks() generally available
+Date:   Wed,  6 Apr 2022 15:56:00 +0800
+Message-Id: <20220406075612.60298-9-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
 References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
@@ -41,139 +41,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Notify user daemon that cookie is going to be withdrawn, providing a
-hint that the associated anon_fd can be closed. The anon_fd attached in
-the CLOSE request shall be same with that in the previous OPEN request.
-
-Be noted that this is only a hint. User daemon can close the anon_fd
-when receiving the CLOSE request, then it will receive another anon_fd
-if the cookie gets looked up. Or it can also ignore the CLOSE request,
-and keep writing data into the anon_fd. However the next time cookie
-gets looked up, the user daemon will still receive another anon_fd.
+... so that it can be used in the following introduced fscache mode.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/cachefiles/interface.c       |  2 ++
- fs/cachefiles/internal.h        |  5 +++++
- fs/cachefiles/ondemand.c        | 36 +++++++++++++++++++++++++++++++++
- include/uapi/linux/cachefiles.h |  5 +++++
- 4 files changed, 48 insertions(+)
+ fs/erofs/data.c     | 4 ++--
+ fs/erofs/internal.h | 2 ++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/cachefiles/interface.c b/fs/cachefiles/interface.c
-index ae93cee9d25d..a69073a1d3f0 100644
---- a/fs/cachefiles/interface.c
-+++ b/fs/cachefiles/interface.c
-@@ -362,6 +362,8 @@ static void cachefiles_withdraw_cookie(struct fscache_cookie *cookie)
- 		spin_unlock(&cache->object_list_lock);
- 	}
- 
-+	cachefiles_ondemand_clean_object(object);
-+
- 	if (object->file) {
- 		cachefiles_begin_secure(cache, &saved_cred);
- 		cachefiles_clean_up_object(object, cache);
-diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
-index 7d5c7d391fdb..8a397d4da560 100644
---- a/fs/cachefiles/internal.h
-+++ b/fs/cachefiles/internal.h
-@@ -279,6 +279,7 @@ extern int cachefiles_ondemand_copen(struct cachefiles_cache *cache,
- 				     char *args);
- 
- extern int cachefiles_ondemand_init_object(struct cachefiles_object *object);
-+extern void cachefiles_ondemand_clean_object(struct cachefiles_object *object);
- 
- #else
- static inline ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
-@@ -291,6 +292,10 @@ static inline int cachefiles_ondemand_init_object(struct cachefiles_object *obje
- {
- 	return 0;
- }
-+
-+static inline void cachefiles_ondemand_clean_object(struct cachefiles_object *object)
-+{
-+}
- #endif
- 
- /*
-diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
-index 75180d02af91..defd65124052 100644
---- a/fs/cachefiles/ondemand.c
-+++ b/fs/cachefiles/ondemand.c
-@@ -213,6 +213,12 @@ ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
- 		goto err_put_fd;
- 	}
- 
-+	/* CLOSE request has no reply */
-+	if (msg->opcode == CACHEFILES_OP_CLOSE) {
-+		xa_erase(&cache->reqs, id);
-+		complete(&req->done);
-+	}
-+
- 	return n;
- 
- err_put_fd:
-@@ -334,6 +340,28 @@ static int init_open_req(struct cachefiles_req *req, void *private)
+diff --git a/fs/erofs/data.c b/fs/erofs/data.c
+index 780db1e5f4b7..bc22642358ec 100644
+--- a/fs/erofs/data.c
++++ b/fs/erofs/data.c
+@@ -110,8 +110,8 @@ static int erofs_map_blocks_flatmode(struct inode *inode,
  	return 0;
  }
  
-+static int init_close_req(struct cachefiles_req *req, void *private)
-+{
-+	struct cachefiles_object *object = req->object;
-+	struct cachefiles_close *load = (void *)req->msg.data;
-+	int fd = object->fd;
-+
-+	if (fd == -1) {
-+		pr_info_once("CLOSE: anonymous fd closed prematurely.\n");
-+		return -EIO;
-+	}
-+
-+	/*
-+	 * It's possible if the cookie looking up phase failed before READ
-+	 * request has ever been sent.
-+	 */
-+	if (fd == 0)
-+		return -ENOENT;
-+
-+	load->fd = fd;
-+	return 0;
-+}
-+
- int cachefiles_ondemand_init_object(struct cachefiles_object *object)
+-static int erofs_map_blocks(struct inode *inode,
+-			    struct erofs_map_blocks *map, int flags)
++int erofs_map_blocks(struct inode *inode,
++		     struct erofs_map_blocks *map, int flags)
  {
- 	struct fscache_cookie *cookie = object->cookie;
-@@ -358,3 +386,11 @@ int cachefiles_ondemand_init_object(struct cachefiles_object *object)
- 					    CACHEFILES_OP_OPEN, data_len,
- 					    init_open_req, NULL);
- }
-+
-+void cachefiles_ondemand_clean_object(struct cachefiles_object *object)
-+{
-+	cachefiles_ondemand_send_req(object,
-+				     CACHEFILES_OP_CLOSE,
-+				     sizeof(struct cachefiles_close),
-+				     init_close_req, NULL);
-+}
-diff --git a/include/uapi/linux/cachefiles.h b/include/uapi/linux/cachefiles.h
-index 41492f2653c9..73397e142ab3 100644
---- a/include/uapi/linux/cachefiles.h
-+++ b/include/uapi/linux/cachefiles.h
-@@ -12,6 +12,7 @@
+ 	struct super_block *sb = inode->i_sb;
+ 	struct erofs_inode *vi = EROFS_I(inode);
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index 5298c4ee277d..fe9564e5091e 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -486,6 +486,8 @@ void *erofs_read_metabuf(struct erofs_buf *buf, struct super_block *sb,
+ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *dev);
+ int erofs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
+ 		 u64 start, u64 len);
++int erofs_map_blocks(struct inode *inode,
++		     struct erofs_map_blocks *map, int flags);
  
- enum cachefiles_opcode {
- 	CACHEFILES_OP_OPEN,
-+	CACHEFILES_OP_CLOSE,
- };
- 
- /*
-@@ -46,4 +47,8 @@ struct cachefiles_open {
- 	__u8  data[];
- };
- 
-+struct cachefiles_close {
-+	__u32 fd;
-+};
-+
- #endif
+ /* inode.c */
+ static inline unsigned long erofs_inode_hash(erofs_nid_t nid)
 -- 
 2.27.0
 
