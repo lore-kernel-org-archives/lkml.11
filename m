@@ -2,147 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D904C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:14:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiDFKPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44642 "EHLO
+        id S1357322AbiDFKQj (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358227AbiDFKOU (ORCPT
+        with ESMTP id S239848AbiDFKPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:14:20 -0400
+        Wed, 6 Apr 2022 06:15:35 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB512ED78;
-        Tue,  5 Apr 2022 20:01:27 -0700 (PDT)
-X-UUID: 6ea79548d8a24bd2802380acef4c276a-20220406
-X-UUID: 6ea79548d8a24bd2802380acef4c276a-20220406
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937203BD257;
+        Tue,  5 Apr 2022 20:32:24 -0700 (PDT)
+X-UUID: ee9315ccb60b4dfa9d5938f31a8092b2-20220406
+X-UUID: ee9315ccb60b4dfa9d5938f31a8092b2-20220406
 Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
+        (envelope-from <jia-wei.chang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1229837411; Wed, 06 Apr 2022 11:00:58 +0800
+        with ESMTP id 1518079559; Wed, 06 Apr 2022 11:32:19 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 6 Apr 2022 11:00:14 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 6 Apr 2022 11:32:18 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 11:00:14 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
-        <robh+dt@kernel.org>
-CC:     <krzysztof.kozlowski@canonical.com>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <jassisinghbrar@gmail.com>,
-        <fparent@baylibre.com>, <yongqiang.niu@mediatek.com>,
-        <hsinyi@chromium.org>, <devicetree@vger.kernel.org>,
+ Transport; Wed, 6 Apr 2022 11:32:18 +0800
+Message-ID: <41781640ceee45e763bb0f3d6c765fea76826fa5.camel@mediatek.com>
+Subject: Re: [PATCH 1/3] dt-bindings: devfreq: mediatek: add mtk cci devfreq
+ dt-bindings
+From:   Jia-Wei Chang <jia-wei.chang@mediatek.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+CC:     <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-kernel@vger.kernel.org>, <fan.chen@mediatek.com>,
+        <louis.yu@mediatek.com>, <roger.lu@mediatek.com>,
+        <Allen-yy.Lin@mediatek.com>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v10 4/4] drm/mediatek: add display support for MT8186
-Date:   Wed, 6 Apr 2022 11:00:09 +0800
-Message-ID: <20220406030009.2357-5-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220406030009.2357-1-rex-bc.chen@mediatek.com>
-References: <20220406030009.2357-1-rex-bc.chen@mediatek.com>
+        <hsinyi@google.com>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
+Date:   Wed, 6 Apr 2022 11:32:18 +0800
+In-Reply-To: <ac0e3336-f9eb-def9-68ea-ab49e2c467a1@kernel.org>
+References: <20220307122513.11822-1-jia-wei.chang@mediatek.com>
+         <20220307122513.11822-2-jia-wei.chang@mediatek.com>
+         <bf418e08-2e32-5e61-abd8-abb0d8f5c080@canonical.com>
+         <13482b1b4244df5c0c0a4d6a60cdb2a7ba88500a.camel@mediatek.com>
+         <aa34eccf-ef08-4a8f-7a6c-7fbd05bd54b6@kernel.org>
+         <126e0905c2eb9f22a0be46dd7aa8ac891622346d.camel@mediatek.com>
+         <ac0e3336-f9eb-def9-68ea-ab49e2c467a1@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongqiang Niu <yongqiang.niu@mediatek.com>
+On Sat, 2022-04-02 at 13:31 +0200, Krzysztof Kozlowski wrote:
+> On 01/04/2022 15:39, Jia-Wei Chang wrote:
+> > > > > 
+> > > > > > +
+> > > > > > +  operating-points-v2:
+> > > > > > +    description:
+> > > > > > +      For details, please refer to
+> > > > > > +      Documentation/devicetree/bindings/opp/opp-v2.yaml
+> > > > > > +
+> > > > > > +  opp-table: true
+> > > > > 
+> > > > > Same comments as your CPU freq bindings apply.
+> > > > 
+> > > > mtk-cci-devfreq is a new driver and its arch is same as
+> > > > mediatek-
+> > > > cpufreq so that the properties of mtk-cci are refer to
+> > > > mediatek-
+> > > > cpufreq 
+> > > > bindings.
+> > > > operating-point-v2 is used to determine the voltage and
+> > > > frequency
+> > > > of
+> > > > dvfs which is further utilized by mtk-cci-devfreq.
+> > > 
+> > > "operating-point-v2" is understood, but the same as in cpufreq
+> > > bindings,
+> > > I am questioning why do you have "opp-table: true". It's a bit
+> > > confusing, so maybe I miss something?
+> > 
+> > Yes, you're correct.
+> > "opp-table: true" should be removed.
+> > I messed it up.
+> 
+> No, I think I was wrong. The opp-table pretty frequently is embedded
+> in
+> the the device node itself. The operating-points-v2 references it.
+> 
+> You don't use it in the example, but it might be a valid usage, so it
+> can stay. Sorry for the confusion, it passed some time since I looked
+> at
+> OPP bindings.
 
-Add mmsys driver data and compatible for MT8186 in mtk_drm_drv.c.
+You remind me of "opp-table: true" and the reason why I use it here is
+exactly as you mentioned. Sorry I was not familiar enough with this to
+respond it clearly and confidently.
 
-Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/gpu/drm/mediatek/mtk_drm_drv.c | 33 ++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+I think it is proper to keep "opp-table: true" and add a complete opp
+table information in dts example here as well.
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index 247c6ff277ef..c5f88295b434 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-@@ -158,6 +158,24 @@ static const enum mtk_ddp_comp_id mt8183_mtk_ddp_ext[] = {
- 	DDP_COMPONENT_DPI0,
- };
- 
-+static const enum mtk_ddp_comp_id mt8186_mtk_ddp_main[] = {
-+	DDP_COMPONENT_OVL0,
-+	DDP_COMPONENT_RDMA0,
-+	DDP_COMPONENT_COLOR0,
-+	DDP_COMPONENT_CCORR,
-+	DDP_COMPONENT_AAL0,
-+	DDP_COMPONENT_GAMMA,
-+	DDP_COMPONENT_POSTMASK0,
-+	DDP_COMPONENT_DITHER,
-+	DDP_COMPONENT_DSI0,
-+};
-+
-+static const enum mtk_ddp_comp_id mt8186_mtk_ddp_ext[] = {
-+	DDP_COMPONENT_OVL_2L0,
-+	DDP_COMPONENT_RDMA1,
-+	DDP_COMPONENT_DPI0,
-+};
-+
- static const enum mtk_ddp_comp_id mt8192_mtk_ddp_main[] = {
- 	DDP_COMPONENT_OVL0,
- 	DDP_COMPONENT_OVL_2L0,
-@@ -221,6 +239,13 @@ static const struct mtk_mmsys_driver_data mt8183_mmsys_driver_data = {
- 	.ext_len = ARRAY_SIZE(mt8183_mtk_ddp_ext),
- };
- 
-+static const struct mtk_mmsys_driver_data mt8186_mmsys_driver_data = {
-+	.main_path = mt8186_mtk_ddp_main,
-+	.main_len = ARRAY_SIZE(mt8186_mtk_ddp_main),
-+	.ext_path = mt8186_mtk_ddp_ext,
-+	.ext_len = ARRAY_SIZE(mt8186_mtk_ddp_ext),
-+};
-+
- static const struct mtk_mmsys_driver_data mt8192_mmsys_driver_data = {
- 	.main_path = mt8192_mtk_ddp_main,
- 	.main_len = ARRAY_SIZE(mt8192_mtk_ddp_main),
-@@ -461,6 +486,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
- 	  .data = (void *)MTK_DISP_MUTEX },
- 	{ .compatible = "mediatek,mt8183-disp-mutex",
- 	  .data = (void *)MTK_DISP_MUTEX },
-+	{ .compatible = "mediatek,mt8186-disp-mutex",
-+	  .data = (void *)MTK_DISP_MUTEX },
- 	{ .compatible = "mediatek,mt8192-disp-mutex",
- 	  .data = (void *)MTK_DISP_MUTEX },
- 	{ .compatible = "mediatek,mt8173-disp-od",
-@@ -509,12 +536,16 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
- 	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt8183-dpi",
- 	  .data = (void *)MTK_DPI },
-+	{ .compatible = "mediatek,mt8186-dpi",
-+	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt2701-dsi",
- 	  .data = (void *)MTK_DSI },
- 	{ .compatible = "mediatek,mt8173-dsi",
- 	  .data = (void *)MTK_DSI },
- 	{ .compatible = "mediatek,mt8183-dsi",
- 	  .data = (void *)MTK_DSI },
-+	{ .compatible = "mediatek,mt8186-dsi",
-+	  .data = (void *)MTK_DSI },
- 	{ }
- };
- 
-@@ -531,6 +562,8 @@ static const struct of_device_id mtk_drm_of_ids[] = {
- 	  .data = &mt8173_mmsys_driver_data},
- 	{ .compatible = "mediatek,mt8183-mmsys",
- 	  .data = &mt8183_mmsys_driver_data},
-+	{ .compatible = "mediatek,mt8186-mmsys",
-+	  .data = &mt8186_mmsys_driver_data},
- 	{ .compatible = "mediatek,mt8192-mmsys",
- 	  .data = &mt8192_mmsys_driver_data},
- 	{ }
--- 
-2.18.0
+Thanks for your comments.
+
+> 
+> 
+> Best regards,
+> Krzysztof
 
