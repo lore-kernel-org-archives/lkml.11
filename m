@@ -2,212 +2,517 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:35:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA31C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236398AbiDFPhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
+        id S236396AbiDFPhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236348AbiDFPgK (ORCPT
+        with ESMTP id S236490AbiDFPgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:36:10 -0400
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1626923A38E;
-        Wed,  6 Apr 2022 05:50:11 -0700 (PDT)
-Received: by mail-ej1-f45.google.com with SMTP id ot30so3957640ejb.12;
-        Wed, 06 Apr 2022 05:50:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pt7TSd6r3SW8sWMAv1Z42CcZcZBRQY+EvLVZF6kLVQU=;
-        b=hDIvPV6La1NpZZdp3z0+Raf6hxISsksF3jFajI1oSi8tjYg2Fdv5li0Ox2rJ8cl2cV
-         RMbmMA/Qt8vJ9ZBCHXQg4oiBF42le6LjBRix9m62O+Zgp7XQ1D0LKzWgZCfkjBhhsPe0
-         b4nBi4pyGRCwUzVH2X3f6B0XTuH8/UePbSjKp71F1vMlaHd08E31Nr7PVOqGGkuU/Tb7
-         LT81vJnk3rqYUZaE1tOeWz1KSFHbEF4zLGdlKtCdztLDOvkiZ69A+n9N493RNiM7D6LT
-         8xws12oq5HTstIviXDrxRo1AQ5Rhfpe++FpkOg+QvX32jwNEs3yi2sAO9isyQd2wOBCX
-         StNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pt7TSd6r3SW8sWMAv1Z42CcZcZBRQY+EvLVZF6kLVQU=;
-        b=67KwtjZprayjPkzuv7u+B3jlOh6s3lSH8Lt0/w5+RBHvoXZHlzV78bnajQSxdsEl4Z
-         Xs7MVjmr+lDhakBR8UulbsXA0GdooNNgUL23Qo853C4hkjN/41cyDRgLZIH29ecwVKBO
-         RrSFguItCAwudoS+0Kt8UZ0jdOTgZF9Q87lETXovCAfsUzNAwtPaBN7RHG4w7rH6yulZ
-         VRU0veTViB2Djdxk6jzXNL/HkfjWUg5okTQW0kl9rqHqI/GqVWy4DqxGXWT1/K3m9lTg
-         8fKig4gJyOtMhYC35lfKnsloXJ5IuS4ac6+XS6Qm81blkeySrjo9oQH0fzVLTKx/8B2G
-         t3kA==
-X-Gm-Message-State: AOAM532jugdULJQUONzIWLL6H+OKK5tCsk1hgln1Y0fdlXcP+GhjpnEl
-        LBg7DRo3sOrpmM3UMuEaQ3o=
-X-Google-Smtp-Source: ABdhPJxLFYIz0sE8S4r3i6TpCZYTrcSl8W+cBteXQ8DWjDacZeW9QPvhkKGj6nXbo/mVoAHtGCzCHA==
-X-Received: by 2002:a17:906:9744:b0:6da:9e49:9fe3 with SMTP id o4-20020a170906974400b006da9e499fe3mr8142350ejy.319.1649249275204;
-        Wed, 06 Apr 2022 05:47:55 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id 22-20020a17090600d600b006dfbc46efabsm6553037eji.126.2022.04.06.05.47.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 05:47:54 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <1f1de653-4d6a-74f1-c14f-7a2268bc8dc0@redhat.com>
-Date:   Wed, 6 Apr 2022 14:47:52 +0200
+        Wed, 6 Apr 2022 11:36:53 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D7643D80A;
+        Wed,  6 Apr 2022 05:50:46 -0700 (PDT)
+Received: from [IPV6:2a01:e0a:120:3210:ff63:de1f:2a77:5241] (unknown [IPv6:2a01:e0a:120:3210:ff63:de1f:2a77:5241])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id A505D1F4563D;
+        Wed,  6 Apr 2022 13:50:44 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649249445;
+        bh=17cfmmVGQ82HNA7dPa8hidTTKBCM/ne8FqnOXQNxSAc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=A2hh/DbgNW20HUi4qjM6wv6DLFR7idwk3oSmrtocAQbS1VwX/qfPxJxG5CfFsK7aH
+         d/mSJgyeHbdEyUB4jXFa9+whKQC0s1ndLwdkc7djGcOdHbHFwhQLrwnS+nKw/bS2M+
+         tovWrh8FX66Kgk1l203kADo/CY/W8I/xZkeyID6p0BY8E8Hc4J7xI89E4Iogk4jQId
+         3UIHE+wOR8QQraNwti3F9ylxEY8msUsj9BYB1Y7nfn/a6y9/htGivUTCC25c7ho2AK
+         Fh1M7BC7bJxVHje1tFowGcPr+a/3Cl3g13CBzucJgeeMj8+ryo9UGKEWjTTvgaGEvS
+         /xZn2tt0+DNZg==
+Message-ID: <f495aa2b-81f7-a3cd-a6dd-cc5ae5f0a81f@collabora.com>
+Date:   Wed, 6 Apr 2022 14:50:42 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 080/104] KVM: TDX: Implement methods to inject NMI
+Subject: Re: [PATCH v4 00/15] Move HEVC stateless controls out of staging
 Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <c88c21250feaf720cc718ecfcd483d93b65819d3.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <c88c21250feaf720cc718ecfcd483d93b65819d3.1646422845.git.isaku.yamahata@intel.com>
+To:     Adam Ford <aford173@gmail.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com,
+        Chen-Yu Tsai <wens@csie.org>,
+        "jernej.skrabec" <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        linux-media <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev, kernel <kernel@collabora.com>,
+        knaerzche@gmail.com, jc@kynesim.co.uk
+References: <20220228140838.622021-1-benjamin.gaignard@collabora.com>
+ <eefa63b3-2a4d-4470-9a4e-517087ebcfaf@collabora.com>
+ <CAHCN7xL2uZTMy30FGfDkDK4Lym6wvfr_MTv7QwtchrkTXMQiuw@mail.gmail.com>
+ <79a9c925-d930-ad23-dc53-9ebc16d1328a@collabora.com>
+ <3f778844-f655-74a7-0a00-05caa84eca35@collabora.com>
+ <CAHCN7xLy2381AFLWhLxk5YuRV7C=OwLX=XPXONX8sbkg-SqMjA@mail.gmail.com>
+ <CAHCN7xJWQa-uXb0-+CSvAr1JhFmQYt80Q=uGvaY8uyptNcfbgw@mail.gmail.com>
+ <163202bd-ea51-e80a-1481-568fae25b045@collabora.com>
+ <CAHCN7x+AwNauiyaVL=NGARkmxWOL9uLS5-AO4TjkvLGNQ=3r+Q@mail.gmail.com>
+ <bb462ee8-7bf9-5574-7cc2-098cc66e5ef0@collabora.com>
+ <CAHCN7x+DTjeP7zQJYPyqzdz=hXWjz6Br0v1sWh4n1J3TJPb+9g@mail.gmail.com>
+ <8d23c99a-4ad0-e65a-0134-12f5d119e8bb@collabora.com>
+ <CAHCN7x+YuXFrMe6dYo_VhkG7ey1jcPTpOMCM1=qoTivZO9U2Rw@mail.gmail.com>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <CAHCN7x+YuXFrMe6dYo_VhkG7ey1jcPTpOMCM1=qoTivZO9U2Rw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
-> 
-> TDX vcpu control structure defines one bit for pending NMI for VMM to
-> inject NMI by setting the bit without knowing TDX vcpu NMI states.  Because
-> the vcpu state is protected, VMM can't know about NMI states of TDX vcpu.
-> The TDX module handles actual injection and NMI states transition.
-> 
-> Add methods for NMI and treat NMI can be injected always.
-> 
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->   arch/x86/kvm/vmx/main.c    | 62 +++++++++++++++++++++++++++++++++++---
->   arch/x86/kvm/vmx/tdx.c     |  5 +++
->   arch/x86/kvm/vmx/x86_ops.h |  2 ++
->   3 files changed, 64 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-> index 404a260796e4..aa84c13f8ee1 100644
-> --- a/arch/x86/kvm/vmx/main.c
-> +++ b/arch/x86/kvm/vmx/main.c
-> @@ -216,6 +216,58 @@ static void vt_flush_tlb_guest(struct kvm_vcpu *vcpu)
->   	vmx_flush_tlb_guest(vcpu);
->   }
->   
-> +static void vt_inject_nmi(struct kvm_vcpu *vcpu)
-> +{
-> +	if (is_td_vcpu(vcpu))
-> +		return tdx_inject_nmi(vcpu);
-> +
-> +	vmx_inject_nmi(vcpu);
-> +}
-> +
-> +static int vt_nmi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
-> +{
-> +	/*
-> +	 * The TDX module manages NMI windows and NMI reinjection, and hides NMI
-> +	 * blocking, all KVM can do is throw an NMI over the wall.
-> +	 */
-> +	if (is_td_vcpu(vcpu))
-> +		return true;
-> +
-> +	return vmx_nmi_allowed(vcpu, for_injection);
-> +}
-> +
-> +static bool vt_get_nmi_mask(struct kvm_vcpu *vcpu)
-> +{
-> +	/*
-> +	 * Assume NMIs are always unmasked.  KVM could query PEND_NMI and treat
-> +	 * NMIs as masked if a previous NMI is still pending, but SEAMCALLs are
-> +	 * expensive and the end result is unchanged as the only relevant usage
-> +	 * of get_nmi_mask() is to limit the number of pending NMIs, i.e. it
-> +	 * only changes whether KVM or the TDX module drops an NMI.
-> +	 */
-> +	if (is_td_vcpu(vcpu))
-> +		return false;
-> +
-> +	return vmx_get_nmi_mask(vcpu);
-> +}
-> +
-> +static void vt_set_nmi_mask(struct kvm_vcpu *vcpu, bool masked)
-> +{
-> +	if (is_td_vcpu(vcpu))
-> +		return;
-> +
-> +	vmx_set_nmi_mask(vcpu, masked);
-> +}
-> +
-> +static void vt_enable_nmi_window(struct kvm_vcpu *vcpu)
-> +{
-> +	/* Refer the comment in vt_get_nmi_mask(). */
-> +	if (is_td_vcpu(vcpu))
-> +		return;
-> +
-> +	vmx_enable_nmi_window(vcpu);
-> +}
-> +
->   static void vt_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa,
->   			int pgd_level)
->   {
-> @@ -366,14 +418,14 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
->   	.get_interrupt_shadow = vt_get_interrupt_shadow,
->   	.patch_hypercall = vmx_patch_hypercall,
->   	.set_irq = vt_inject_irq,
-> -	.set_nmi = vmx_inject_nmi,
-> +	.set_nmi = vt_inject_nmi,
->   	.queue_exception = vmx_queue_exception,
->   	.cancel_injection = vt_cancel_injection,
->   	.interrupt_allowed = vt_interrupt_allowed,
-> -	.nmi_allowed = vmx_nmi_allowed,
-> -	.get_nmi_mask = vmx_get_nmi_mask,
-> -	.set_nmi_mask = vmx_set_nmi_mask,
-> -	.enable_nmi_window = vmx_enable_nmi_window,
-> +	.nmi_allowed = vt_nmi_allowed,
-> +	.get_nmi_mask = vt_get_nmi_mask,
-> +	.set_nmi_mask = vt_set_nmi_mask,
-> +	.enable_nmi_window = vt_enable_nmi_window,
->   	.enable_irq_window = vt_enable_irq_window,
->   	.update_cr8_intercept = vmx_update_cr8_intercept,
->   	.set_virtual_apic_mode = vmx_set_virtual_apic_mode,
-> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-> index bdc658ca9e4f..273898de9f7a 100644
-> --- a/arch/x86/kvm/vmx/tdx.c
-> +++ b/arch/x86/kvm/vmx/tdx.c
-> @@ -763,6 +763,11 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
->   	return EXIT_FASTPATH_NONE;
->   }
->   
-> +void tdx_inject_nmi(struct kvm_vcpu *vcpu)
-> +{
-> +	td_management_write8(to_tdx(vcpu), TD_VCPU_PEND_NMI, 1);
-> +}
-> +
->   void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
->   {
->   	td_vmcs_write64(to_tdx(vcpu), SHARED_EPT_POINTER, root_hpa & PAGE_MASK);
-> diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-> index c3768a20347f..31be5e8a1d5c 100644
-> --- a/arch/x86/kvm/vmx/x86_ops.h
-> +++ b/arch/x86/kvm/vmx/x86_ops.h
-> @@ -150,6 +150,7 @@ void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu);
->   void tdx_apicv_post_state_restore(struct kvm_vcpu *vcpu);
->   void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
->   			   int trig_mode, int vector);
-> +void tdx_inject_nmi(struct kvm_vcpu *vcpu);
->   
->   int tdx_vm_ioctl(struct kvm *kvm, void __user *argp);
->   int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp);
-> @@ -180,6 +181,7 @@ static inline void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu) {}
->   static inline void tdx_apicv_post_state_restore(struct kvm_vcpu *vcpu) {}
->   static inline void tdx_deliver_interrupt(
->   	struct kvm_lapic *apic, int delivery_mode, int trig_mode, int vector) {}
-> +static inline void tdx_inject_nmi(struct kvm_vcpu *vcpu) {}
->   
->   static inline int tdx_vm_ioctl(struct kvm *kvm, void __user *argp) { return -EOPNOTSUPP; }
->   static inline int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp) { return -EOPNOTSUPP; }
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+Le 06/04/2022 à 14:46, Adam Ford a écrit :
+> On Wed, Apr 6, 2022 at 7:41 AM Benjamin Gaignard
+> <benjamin.gaignard@collabora.com> wrote:
+>>
+>> Le 06/04/2022 à 14:28, Adam Ford a écrit :
+>>> On Wed, Apr 6, 2022 at 1:56 AM Benjamin Gaignard
+>>> <benjamin.gaignard@collabora.com> wrote:
+>>>> Le 05/04/2022 à 23:27, Adam Ford a écrit :
+>>>>> On Mon, Apr 4, 2022 at 10:56 AM Benjamin Gaignard
+>>>>> <benjamin.gaignard@collabora.com> wrote:
+>>>>>> Le 02/04/2022 à 18:59, Adam Ford a écrit :
+>>>>>>> On Sat, Apr 2, 2022 at 11:22 AM Adam Ford <aford173@gmail.com> wrote:
+>>>>>>>> On Fri, Apr 1, 2022 at 8:18 AM Benjamin Gaignard
+>>>>>>>> <benjamin.gaignard@collabora.com> wrote:
+>>>>>>>>> Le 31/03/2022 à 08:53, Benjamin Gaignard a écrit :
+>>>>>>>>>> Le 30/03/2022 à 20:52, Adam Ford a écrit :
+>>>>>>>>>>> On Wed, Mar 30, 2022 at 2:53 AM Benjamin Gaignard
+>>>>>>>>>>> <benjamin.gaignard@collabora.com> wrote:
+>>>>>>>>>>>> Le 28/02/2022 à 15:08, Benjamin Gaignard a écrit :
+>>>>>>>>>>>>> This series aims to make HEVC uapi stable and usable for hardware
+>>>>>>>>>>>>> decoder. HEVC uapi is used by 2 mainlined drivers (Cedrus and Hantro)
+>>>>>>>>>>>>> and 2 out of the tree drivers (rkvdec and RPI).
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> After the remarks done on version 2, I have completely reworked to
+>>>>>>>>>>>>> patches
+>>>>>>>>>>>>> split so changelogs are meaningless. I have also drop "RFC" from the
+>>>>>>>>>>>>> titles.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Version 4:
+>>>>>>>>>>>>> - Add num_entry_point_offsets field in  struct
+>>>>>>>>>>>>> v4l2_ctrl_hevc_slice_params
+>>>>>>>>>>>>> - Fix V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS name
+>>>>>>>>>>>>> - Initialize control V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS
+>>>>>>>>>>>>> - Fix space/tab issue in kernel-doc
+>>>>>>>>>>>>> - Add patch to change data_bit_offset definition
+>>>>>>>>>>>>> - Fix hantro-media SPDX license
+>>>>>>>>>>>>> - put controls under stateless section in v4l2-ctrls-defs.c
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> At the end fluster tests results on IMX8MQ is 77/147 for HEVC codec.
+>>>>>>>>>>>> Dear reviewers,
+>>>>>>>>>>>>
+>>>>>>>>>>>> This series is waiting for your feedback,
+>>>>>>>>>>> I tried several times with the suggested repos for both the kernel and
+>>>>>>>>>>> g-streamer without success getting Fluster to pass any tests on the
+>>>>>>>>>>> imx8mq.  I can try again but I likely won't get to it until this
+>>>>>>>>>>> weekend.  If I can get it working, I'll test both the 8mq and 8mm.
+>>>>>>>>>> Thanks a lot for that.
+>>>>>>>>>>
+>>>>>>>>>> Benjamin
+>>>>>>>>> Adam,
+>>>>>>>>>
+>>>>>>>>> You may need to check if h265parse and v4l2slh265dec are available on your board.
+>>>>>>>> I ran gst-inspect to see what showed up with 265 in the name.
+>>>>>>>>
+>>>>>>>> # gst-inspect-1.0 |grep 265
+>>>>>>>> libav:  avdec_h265: libav HEVC (High Efficiency Video Coding) decoder
+>>>>>>>> rtp:  rtph265depay: RTP H265 depayloader
+>>>>>>>> rtp:  rtph265pay: RTP H265 payloader
+>>>>>>>> typefindfunctions: video/x-h265: h265, x265, 265
+>>>>>>>> v4l2codecs:  v4l2slh265dec: V4L2 Stateless H.265 Video Decoder
+>>>>>>>> videoparsersbad:  h265parse: H.265 parser
+>>>>>>>>
+>>>>>>>> It appears I have both h265parse and v4l2slh265dec.
+>>>>>>>>
+>>>>>>>>> fluster check if v4l2slh265dec is working fine with this command line:
+>>>>>>>>>
+>>>>>>>>> gst-launch-1.0 appsrc num-buffers=0 ! h265parse ! v4l2slh265dec ! fakesink
+>>>>>>>>>
+>>>>>>>>> so if one of them is missing it won't work.
+>>>>>>>> gst-launch-1.0 appsrc num-buffers=0 ! h265parse ! v4l2slh265dec ! fakesink
+>>>>>>>> Setting pipeline to PAUSED ...
+>>>>>>>> 0:00:00.098389938   526 0xaaaaf9d86ac0 ERROR     v4l2codecs-decoder
+>>>>>>>> gstv4l2decoder.c:725:gst_v4l2_decoder_get_controls:<v4l2decoder2>
+>>>>>>>> VIDIOC_G_EXT_CTRLS failed: Invalid argument
+>>>>>>>> ERROR: from element
+>>>>>>>> /GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0: Driver did not
+>>>>>>>> report framing and start code method.
+>>>>>>>> Additional debug info:
+>>>>>>>> ../subprojects/gst-plugins-bad/sys/v4l2codecs/gstv4l2codech265dec.c(155):
+>>>>>>>> gst_v4l2_codec_h265_dec_open ():
+>>>>>>>> /GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0:
+>>>>>>>> gst_v4l2_decoder_get_controls() failed: Invalid argument
+>>>>>>>> ERROR: pipeline doesn't want to preroll.
+>>>>>>>> ERROR: from element
+>>>>>>>> /GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0: Could not
+>>>>>>>> initialize supporting library.
+>>>>>>>> Additional debug info:
+>>>>>>>> ../subprojects/gst-plugins-base/gst-libs/gst/video/gstvideodecoder.c(2909):
+>>>>>>>> gst_video_decoder_change_state ():
+>>>>>>>> /GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0:
+>>>>>>>> Failed to open decoder
+>>>>>>>> ERROR: pipeline doesn't want to preroll.
+>>>>>>>> Failed to set pipeline to PAUSED.
+>>>>>>>> Setting pipeline to NULL ...
+>>>>>>>> Freeing pipeline ...
+>>>>>>>>
+>>>>>>>> Does this mean I have a wrong version of the kernel and/or incomplete patches?
+>>>>>>> I double checked the branches.
+>>>>>>>
+>>>>>>> Kernel:
+>>>>>>> https://gitlab.collabora.com/benjamin.gaignard/for-upstream.git
+>>>>>>> branch:  origin/HEVC_UAPI_V4
+>>>>>>>
+>>>>>>> Gstreamer:
+>>>>>>> https://gitlab.freedesktop.org/benjamin.gaignard1/gstreamer.git
+>>>>>>> branch:  origin/benjamin.gaignard1/gstreamer-HEVC_aligned_with_kernel_5.15
+>>>>>>>
+>>>>>>>
+>>>>>>> I am still not able to run h.265/HEVC tests.
+>>>>>> Hello Adam,
+>>>>>>
+>>>>>> I have updated the following branches with the versions I have used today:
+>>>>>>
+>>>>>> Kernel:
+>>>>>> https://gitlab.collabora.com/benjamin.gaignard/for-upstream.git
+>>>>>> branch: origin/HEVC_UAPI_V5 only one change in documentation vs version 4 but rebased in v5.18-rc1
+>>>>>>
+>>>>>> Gstreamer:
+>>>>>> https://gitlab.freedesktop.org/benjamin.gaignard1/gstreamer.git
+>>>>>> branch:  origin/benjamin.gaignard1/gstreamer-HEVC_aligned_with_kernel_5.15 updated on the latest GST main branch
+>>>>>>
+>>>>>> I hope this will work fine this time.
+>>>>> I wish I had better news for you:
+>>>>>
+>>>>> dmesg shows the hantro driver is being loaded:
+>>>>>
+>>>>> [   38.612243] hantro-vpu 38300000.video-codec: registered
+>>>>> nxp,imx8mq-vpu-g1-dec as /dev/video0
+>>>>> [   38.612618] hantro-vpu 38310000.video-codec: registered
+>>>>> nxp,imx8mq-vpu-g2-dec as /dev/video1
+>>>>>
+>>>>> # gst-inspect-1.0 |grep 265
+>>>>> libav:  avdec_h265: libav HEVC (High Efficiency Video Coding) decoder
+>>>>> rtp:  rtph265depay: RTP H265 depayloader
+>>>>> rtp:  rtph265pay: RTP H265 payloader
+>>>>> typefindfunctions: video/x-h265: h265, x265, 265
+>>>>> v4l2codecs:  v4l2slh265dec: V4L2 Stateless H.265 Video Decoder
+>>>>> videoparsersbad:  h265parse: H.265 parser
+>>>>>
+>>>>> Fluster reports:
+>>>>> GStreamer-H.265-V4L2SL-Gst1.0: GStreamer H.265 V4L2SL decoder for
+>>>>> GStreamer 1.0... ❌
+>>>> Still the same error about non supported control ?
+>>> # gst-lagst-launch-1.0 appsrc num-buffers=0 ! h265parse !
+>>> v4l2slh265dec ! fakesink
+>>> Setting pipeline to PAUSED ...
+>>> 0:00:01.704385508   420 0xaaaaec0a76c0 ERROR     v4l2codecs-decoder
+>>> gstv4l2decoder.c:725:gst_v4l2_decoder_get_controls:<v4l2decoder2>
+>>> VIDIOC_G_EXT_CTRLS failed: Invalid argument
+>>> ERROR: from element
+>>> /GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0: Driver did not
+>>> report framing and start code method.
+>>> Additional debug info:
+>>> ../subprojects/gst-plugins-bad/sys/v4l2codecs/gstv4l2codech265dec.c(155):
+>>> gst_v4l2_codec_h265_dec_open ():
+>>> /GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0:
+>>> gst_v4l2_decoder_get_controls() failed: Invalid argument
+>>> ERROR: pipeline doesn't want to preroll.
+>>> ERROR: from element
+>>> /GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0: Could not
+>>> initialize supporting library.
+>>> Additional debug info:
+>>> ../subprojects/gst-plugins-base/gst-libs/gst/video/gstvideodecoder.c(2909):
+>>> gst_video_decoder_change_state ():
+>>> /GstPipeline:pipeline0/v4l2slh265dec:v4l2slh265dec0:
+>>> Failed to open decoder
+>>> ERROR: pipeline doesn't want to preroll.
+>>> Failed to set pipeline to PAUSED.
+>>> Setting pipeline to NULL ...
+>>> Freeing pipeline ...
+>> What is the result of v4l2-ctl ?
+>> Here I have:
+>> v4l2-ctl --all -d 1
+>> Driver Info:
+>>          Driver name      : hantro-vpu
+>>          Card type        : nxp,imx8mq-vpu-g2-dec
+>>          Bus info         : platform: hantro-vpu
+>>          Driver version   : 5.18.0
+>>          Capabilities     : 0x84204000
+>>                  Video Memory-to-Memory Multiplanar
+>>                  Streaming
+>>                  Extended Pix Format
+>>                  Device Capabilities
+>>          Device Caps      : 0x04204000
+>>                  Video Memory-to-Memory Multiplanar
+>>                  Streaming
+>>                  Extended Pix Format
+>> Media Driver Info:
+>>          Driver name      : hantro-vpu
+>>          Model            : hantro-vpu
+>>          Serial           :
+>>          Bus info         : platform: hantro-vpu
+>>          Media version    : 5.18.0
+>>          Hardware revision: 0x00000000 (0)
+>>          Driver version   : 5.18.0
+>> Interface Info:
+>>          ID               : 0x0300000c
+>>          Type             : V4L Video
+>> Entity Info:
+>>          ID               : 0x00000001 (1)
+>>          Name             : nxp,imx8mq-vpu-g2-dec-source
+>>          Function         : V4L2 I/O
+>>          Pad 0x01000002   : 0: Source
+>>            Link 0x02000008: to remote pad 0x1000004 of entity 'nxp,imx8mq-vpu-g2-dec-proc': Data, Enabled, Immutable
+>> Priority: 2
+>> Format Video Capture Multiplanar:
+>>          Width/Height      : 48/48
+>>          Pixel Format      : 'VT12' (Y/CbCr 4:2:0 (4x4 Linear))
+>>          Field             : None
+>>          Number of planes  : 1
+>>          Flags             :
+>>          Colorspace        : JPEG
+>>          Transfer Function : Default
+>>          YCbCr/HSV Encoding: Default
+>>          Quantization      : Default
+>>          Plane 0           :
+>>             Bytes per Line : 48
+>>             Size Image     : 3600
+>> Format Video Output Multiplanar:
+>>          Width/Height      : 48/48
+>>          Pixel Format      : 'S265' (HEVC Parsed Slice Data)
+>>          Field             : None
+>>          Number of planes  : 1
+>>          Flags             :
+>>          Colorspace        : JPEG
+>>          Transfer Function : Default
+>>          YCbCr/HSV Encoding: Default
+>>          Quantization      : Default
+>>          Plane 0           :
+>>             Bytes per Line : 0
+>>             Size Image     : 4608
+>>
+>> User Controls
+>>
+>> hantro_hevc_slice_header_skip_b 0x00981a80 (int)    : min=0 max=256 step=1 default=0 value=0
+>>
+>> Codec Controls
+>>
+>>                      hevc_profile 0x00990b67 (menu)   : min=0 max=2 default=0 value=0
+>>                                  0: Main
+>>                                  1: Main Still Picture
+>>                                  2: Main 10
+>>                        hevc_level 0x00990b68 (menu)   : min=0 max=8 default=0 value=0
+>>                                  0: 1
+>>                                  1: 2
+>>                                  2: 2.1
+>>                                  3: 3
+>>                                  4: 3.1
+>>                                  5: 4
+>>                                  6: 4.1
+>>                                  7: 5
+>>                                  8: 5.1
+>>
+>> Stateless Codec Controls
+>>
+>>       vp9_frame_decode_parameters 0x00a40a2c (unknown): type=261 flags=has-payload
+>>         vp9_probabilities_updates 0x00a40a2d (unknown): type=260 flags=has-payload
+>>       hevc_sequence_parameter_set 0x00a40a90 (unknown): type=270 flags=has-payload
+>>        hevc_picture_parameter_set 0x00a40a91 (unknown): type=271 flags=has-payload
+>>               hevc_scaling_matrix 0x00a40a93 (unknown): type=273 flags=has-payload
+>>            hevc_decode_parameters 0x00a40a94 (unknown): type=274 flags=has-payload
+>>                  hevc_decode_mode 0x00a40a95 (menu)   : min=1 max=1 default=1 value=1
+>>                                  1: Frame-Based
+>>                   hevc_start_code 0x00a40a96 (menu)   : min=1 max=1 default=1 value=1
+>>                                  1: Annex B Start Code
+>>
+> Mine looks like:
+>
+> # v4l2-ctl --all -d 1
+> Driver Info:
+> Driver name      : hantro-vpu
+> Card type        : nxp,imx8mq-vpu-g2-dec
+> Bus info         : platform: hantro-vpu
+> Driver version   : 5.18.0
+> Capabilities     : 0x84204000
+> Video Memory-to-Memory Multiplanar
+> Streaming
+> Extended Pix Format
+> Device Capabilities
+> Device Caps      : 0x04204000
+> Video Memory-to-Memory Multiplanar
+> Streaming
+> Extended Pix Format
+> Media Driver Info:
+> Driver name      : hantro-vpu
+> Model            : hantro-vpu
+> Serial           :
+> Bus info         : platform: hantro-vpu
+> Media version    : 5.18.0
+> Hardware revision: 0x00000000 (0)
+> Driver version   : 5.18.0
+> Interface Info:
+> ID               : 0x0300000c
+> Type             : V4L Video
+> Entity Info:
+> ID               : 0x00000001 (1)
+> Name             : nxp,imx8mq-vpu-g2-dec-source
+> Function         : V4L2 I/O
+> Pad 0x01000002   : 0: Source
+>    Link 0x02000008: to remote pad 0x1000004 of entity
+> 'nxp,imx8mq-vpu-g2-dec-proc': Data, Enabled, Immutable
+> Priority: 2
+> Format Video Capture Multiplanar:
+> Width/Height      : 48/48
+> Pixel Format      : 'VT12' (Y/CbCr 4:2:0 (4x4 Linear))
+> Field             : None
+> Number of planes  : 1
+> Flags             :
+> Colorspace        : JPEG
+> Transfer Function : Default
+> YCbCr/HSV Encoding: Default
+> Quantization      : Default
+> Plane 0           :
+>     Bytes per Line : 48
+>     Size Image     : 3600
+> Format Video Output Multiplanar:
+> Width/Height      : 48/48
+> Pixel Format      : 'S265' (HEVC Parsed Slice Data)
+> Field             : None
+> Number of planes  : 1
+> Flags             :
+> Colorspace        : JPEG
+> Transfer Function : Default
+> YCbCr/HSV Encoding: Default
+> Quantization      : Default
+> Plane 0           :
+>     Bytes per Line : 0
+>     Size Image     : 4608
+>
+> User Controls
+>
+> hantro_hevc_slice_header_skip_b 0x00981a80 (int)    : min=0 max=256
+> step=1 default=0 value=0
+>
+> Codec Controls
+>
+>                     hevc_profile 0x00990b67 (menu)   : min=0 max=2
+> default=0 value=0
+> 0: Main
+> 1: Main Still Picture
+> 2: Main 10
+>                       hevc_level 0x00990b68 (menu)   : min=0 max=8
+> default=0 value=0
+> 0: 1
+> 1: 2
+> 2: 2.1
+> 3: 3
+> 4: 3.1
+> 5: 4
+> 6: 4.1
+> 7: 5
+> 8: 5.1
+>
+> Stateless Codec Controls
+>
+>      vp9_frame_decode_parameters 0x00a40a2c (unknown): type=261 flags=has-payload
+>        vp9_probabilities_updates 0x00a40a2d (unknown): type=260 flags=has-payload
+>      hevc_sequence_parameter_set 0x00a40a90 (unknown): type=270 flags=has-payload
+>       hevc_picture_parameter_set 0x00a40a91 (unknown): type=271 flags=has-payload
+>              hevc_scaling_matrix 0x00a40a93 (unknown): type=273 flags=has-payload
+>           hevc_decode_parameters 0x00a40a94 (unknown): type=274 flags=has-payload
+>                 hevc_decode_mode 0x00a40a95 (menu)   : min=1 max=1
+> default=1 value=1
+> 1: Frame-Based
+>                  hevc_start_code 0x00a40a96 (menu)   : min=1 max=1
+> default=1 value=1
+> 1: Annex B Start Code
+
+It is the same so that suggest the issue is coming from GStreamer plugin.
+
+>
+>>>> Benjamin
+>>>>
+>>>>> adam
+>>>>>> Benjamin
+>>>>>>
+>>>>>>> adam
+>>>>>>>> adam
+>>>>>>>>> Regards,
+>>>>>>>>> Benjamin
+>>>>>>>>>
+>>>>>>>>>>> adam
+>>>>>>>>>>>> Thanks,
+>>>>>>>>>>>> Benjamin
+>>>>>>>>>>>>
+>>>>>>>>>>>>> Benjamin
+>>>>>>>>>>>>>
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Benjamin Gaignard (12):
+>>>>>>>>>>>>>         media: uapi: HEVC: Add missing fields in HEVC controls
+>>>>>>>>>>>>>         media: uapi: HEVC: Rename HEVC stateless controls with STATELESS
+>>>>>>>>>>>>>           prefix
+>>>>>>>>>>>>>         media: uapi: HEVC: Add document uAPI structure
+>>>>>>>>>>>>>         media: uapi: HEVC: Define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS
+>>>>>>>>>>>>> as a
+>>>>>>>>>>>>>           dynamic array
+>>>>>>>>>>>>>         media: uapi: Move parsed HEVC pixel format out of staging
+>>>>>>>>>>>>>         media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS
+>>>>>>>>>>>>> control
+>>>>>>>>>>>>>         media: uapi: Move the HEVC stateless control type out of staging
+>>>>>>>>>>>>>         media: controls: Log HEVC stateless control in .std_log
+>>>>>>>>>>>>>         media: uapi: Create a dedicated header for Hantro control
+>>>>>>>>>>>>>         media: uapi: HEVC: fix padding in v4l2 control structures
+>>>>>>>>>>>>>         media: uapi: Change data_bit_offset definition
+>>>>>>>>>>>>>         media: uapi: move HEVC stateless controls out of staging
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Hans Verkuil (3):
+>>>>>>>>>>>>>         videodev2.h: add V4L2_CTRL_FLAG_DYNAMIC_ARRAY
+>>>>>>>>>>>>>         v4l2-ctrls: add support for dynamically allocated arrays.
+>>>>>>>>>>>>>         vivid: add dynamic array test control
+>>>>>>>>>>>>>
+>>>>>>>>>>>>>        .../userspace-api/media/drivers/hantro.rst    |   5 -
+>>>>>>>>>>>>>        .../media/v4l/ext-ctrls-codec-stateless.rst   | 833
+>>>>>>>>>>>>> ++++++++++++++++++
+>>>>>>>>>>>>>        .../media/v4l/ext-ctrls-codec.rst             | 780
+>>>>>>>>>>>>> ----------------
+>>>>>>>>>>>>>        .../media/v4l/pixfmt-compressed.rst           |   7 +-
+>>>>>>>>>>>>>        .../media/v4l/vidioc-g-ext-ctrls.rst          |  20 +
+>>>>>>>>>>>>>        .../media/v4l/vidioc-queryctrl.rst            |   8 +
+>>>>>>>>>>>>>        .../media/videodev2.h.rst.exceptions          |   5 +
+>>>>>>>>>>>>>        .../media/test-drivers/vivid/vivid-ctrls.c    |  15 +
+>>>>>>>>>>>>>        drivers/media/v4l2-core/v4l2-ctrls-api.c      | 103 ++-
+>>>>>>>>>>>>>        drivers/media/v4l2-core/v4l2-ctrls-core.c     | 198 ++++-
+>>>>>>>>>>>>>        drivers/media/v4l2-core/v4l2-ctrls-defs.c     |  37 +-
+>>>>>>>>>>>>>        drivers/media/v4l2-core/v4l2-ctrls-priv.h     |   3 +-
+>>>>>>>>>>>>>        drivers/media/v4l2-core/v4l2-ctrls-request.c  |  13 +-
+>>>>>>>>>>>>>        drivers/staging/media/hantro/hantro_drv.c     |  27 +-
+>>>>>>>>>>>>>        drivers/staging/media/hantro/hantro_hevc.c    |   8 +-
+>>>>>>>>>>>>>        drivers/staging/media/sunxi/cedrus/cedrus.c   |  24 +-
+>>>>>>>>>>>>>        .../staging/media/sunxi/cedrus/cedrus_dec.c   |  10 +-
+>>>>>>>>>>>>>        .../staging/media/sunxi/cedrus/cedrus_h265.c  |   2 +-
+>>>>>>>>>>>>>        include/media/hevc-ctrls.h                    | 250 ------
+>>>>>>>>>>>>>        include/media/v4l2-ctrls.h                    |  48 +-
+>>>>>>>>>>>>>        include/uapi/linux/hantro-media.h             |  19 +
+>>>>>>>>>>>>>        include/uapi/linux/v4l2-controls.h            | 439 +++++++++
+>>>>>>>>>>>>>        include/uapi/linux/videodev2.h                |  13 +
+>>>>>>>>>>>>>        23 files changed, 1697 insertions(+), 1170 deletions(-)
+>>>>>>>>>>>>>        delete mode 100644 include/media/hevc-ctrls.h
+>>>>>>>>>>>>>        create mode 100644 include/uapi/linux/hantro-media.h
+>>>>>>>>>>>>>
