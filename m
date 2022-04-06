@@ -2,116 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1978C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 185D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbiDFVIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36574 "EHLO
+        id S234592AbiDFVIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235180AbiDFVIS (ORCPT
+        with ESMTP id S235407AbiDFVIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:08:18 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92617C31C7
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:45:58 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id n18so2888900plg.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:45:58 -0700 (PDT)
+        Wed, 6 Apr 2022 17:08:16 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BC778FE9
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:45:52 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id w141so204927qkb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:45:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QR9VBOF3kjexQACzq2xyx6513mlIANmHO5eMnNtR5po=;
-        b=bT3Y0W3IY0MmXP4LbGQ7myD11Um/f2YwBybIgcW8/e4c9JpleLbA6fMIUTdyWsq/l/
-         QmvXqnGNGoGzXsZfEBfGRMR13NfFSEfDzAM5Qtkl20Tg7G/K80nI3UWpt95zVYe5+NI0
-         5ZErY1G03Yw+yaXfTkhXXqCrWnbJcxjyhgpOQ=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QrpjkiliU8wPY1XOQv+OUkzSsJhLMBGEY6gnsrt3l58=;
+        b=kxZaaA0a0zGP6wg8qCMsSM7Ow8BFElXrCpRHQgAp5FPFjUto5oZhr7nRL88c+WFvMB
+         nIHrrF7qWy8o70ZDCCV6hYbpzfH9cLJgPKx6KqeD+zMoxSg/At62gIKgd4GNdlenfy/N
+         CkKP/FGqJungTP3BiUOLrZ/Y9CmzcgKI1Fa4QgTS4gAYAFbPRkgKvXEG4lBDfckmbNMd
+         JgFmmojWoLEZ6hr0xSJNzrM6uupJgj2LC6gbj5dv/DLnLWrKCANN7QF5RCOKCmXAUcaI
+         6g4AdhPqhH7AJR0v2g5URzDtDsng0hdGf8TMBgeKyCXzRaLpSE6TkByavNh1RYeFcJav
+         ZbZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QR9VBOF3kjexQACzq2xyx6513mlIANmHO5eMnNtR5po=;
-        b=Lj64icFwUyRQ8KnW95HXqqDI9lCSNarXoeI6vlCBXRQL9yQ452hsrXOgD1ciBzM0+D
-         9NIfjjGMdUC/FRR8IVPCW0P7yn1r9I7M3kqD7BKA1t9D/GRvJ53xRlHYstz68PqxeobK
-         lwTb0zjbUzHmWw4eZYqEoa8uiNdtAmRi3Flc/MzLNiVU6leuUnP2HOju/FvRSL0wH66H
-         aj5DGR6Gn1ctTrvYDX8uaof8X8qO/jXb22H18tP+FbQtNkJxcxhFgRq7lZcHpyj2YUv7
-         oibcMpXVAjd3QKNpc9gw/OktGOx2K2XQGjepWN2CguJfEPzn+P0MVtMC1cnhYB6B2QPY
-         W1uQ==
-X-Gm-Message-State: AOAM531SmlGeoMfiWSlB8Bo4SfOKQbHLaFrongGrn4Glxxzz6xt2khPf
-        MragNQPemkmII0n/o/FMEfe6kQ==
-X-Google-Smtp-Source: ABdhPJyCWXEiXug5j/YhyTe7l4u20Ek1Ou2bigp3Nxso9GCPynFzuly95CtpgeKIIzozmjXBLpkCvA==
-X-Received: by 2002:a17:902:a9c5:b0:156:32bf:b526 with SMTP id b5-20020a170902a9c500b0015632bfb526mr10440281plr.46.1649274358106;
-        Wed, 06 Apr 2022 12:45:58 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id l4-20020a056a0016c400b004f79504ef9csm19854441pfc.3.2022.04.06.12.45.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 12:45:57 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 12:45:56 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     gregkh@linuxfoundation.org, Arnd Bergmann <arnd@arndb.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Russell King <linux@arm.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v4] /dev/mem: Revoke mappings when a driver claims the
- region
-Message-ID: <202204061243.FB134CA4B1@keescook>
-References: <159009507306.847224.8502634072429766747.stgit@dwillia2-desk3.amr.corp.intel.com>
- <202005211950.D56130B81@keescook>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QrpjkiliU8wPY1XOQv+OUkzSsJhLMBGEY6gnsrt3l58=;
+        b=6bUIezrO8w5MpelR05pmaH9UZh3yzNvWb+Y6LxcILLzITelCvKA6S9a3r6wYnx9uAd
+         oVxGQ1lBQMwp7MsQ6v486+GPM3leOnXvebDfGXe8OX4le5RXFjDn0NXY+smQ/xJOba8X
+         w1ax688ZLV7BQW3pDegtqN6rtmOcCiz3gsD1r+fy+wLSrRsHI7BfsESPkby2xSvf39D0
+         1dRrUgViXuQwDO5piRPRzEHEMFOJwg1Ikuz742ix6xktog4l/jSYowp6YdFDZVC5YOz5
+         cvfeyV0TSPCoU6p18KPqsxjkyseRRZa65YfcYLIP1+kKoZ8bIkK9yCVXLNS9XMQDFQ29
+         rDJQ==
+X-Gm-Message-State: AOAM530lQX/9BGRjJY7S5GTK20xd4WC9ltjCdeNSQUvbAIGcN165q1Qu
+        s8dmsMh0Qop1dxRPxXRQsRU6SdUqsvY=
+X-Google-Smtp-Source: ABdhPJzicqEcq6eaEnoZ7Brk+o2P9PjBdTaxIqml/OAOTSyY3KpAx2TFX5BYrsad4Gl+7Lx+cS5rGA==
+X-Received: by 2002:a05:620a:2699:b0:47d:753c:b8ff with SMTP id c25-20020a05620a269900b0047d753cb8ffmr6773415qkp.763.1649274351527;
+        Wed, 06 Apr 2022 12:45:51 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id bl22-20020a05620a1a9600b00680da570a5dsm11388415qkb.61.2022.04.06.12.45.50
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 12:45:50 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2eb888cf7e7so38209547b3.13
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:45:50 -0700 (PDT)
+X-Received: by 2002:a81:12c9:0:b0:2eb:83e7:c3fd with SMTP id
+ 192-20020a8112c9000000b002eb83e7c3fdmr8574499yws.351.1649274349858; Wed, 06
+ Apr 2022 12:45:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202005211950.D56130B81@keescook>
+References: <20220406192956.3291614-1-vladimir.oltean@nxp.com> <20220406192956.3291614-2-vladimir.oltean@nxp.com>
+In-Reply-To: <20220406192956.3291614-2-vladimir.oltean@nxp.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 6 Apr 2022 15:45:14 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdK4T7DBf9wi3GjXA6P9o+6X-7c5vh9V0BN40GwbKSeGw@mail.gmail.com>
+Message-ID: <CA+FuTSdK4T7DBf9wi3GjXA6P9o+6X-7c5vh9V0BN40GwbKSeGw@mail.gmail.com>
+Subject: Re: [PATCH 4.14 1/2] ipv6: add missing tx timestamping on IPPROTO_RAW
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-*thread necromancy*
+On Wed, Apr 6, 2022 at 3:30 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+>
+> From: Willem de Bruijn <willemb@google.com>
+>
+> [ Upstream commit fbfb2321e950918b430e7225546296b2dcadf725 ]
+>
+> Raw sockets support tx timestamping, but one case is missing.
+>
+> IPPROTO_RAW takes a separate packet construction path. raw_send_hdrinc
+> has an explicit call to sock_tx_timestamp, but rawv6_send_hdrinc does
+> not. Add it.
+>
+> Fixes: 11878b40ed5c ("net-timestamp: SOCK_RAW and PING timestamping")
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Hi Dan,
+For 4.14.y cherry-pick:
 
-I'm doing a KSPP bug scrub and am reviewing
-https://github.com/KSPP/linux/issues/74 again.
+Acked-by: Willem de Bruijn <willemb@google.com>
 
-Do you have a chance to look at this? I'd love a way to make mmap()
-behave the same way as read() for the first meg of /dev/mem.
-
--Kees
-
-On Thu, May 21, 2020 at 08:01:53PM -0700, Kees Cook wrote:
-> On Thu, May 21, 2020 at 02:06:17PM -0700, Dan Williams wrote:
-> > The typical usage of unmap_mapping_range() is part of
-> > truncate_pagecache() to punch a hole in a file, but in this case the
-> > implementation is only doing the "first half" of a hole punch. Namely it
-> > is just evacuating current established mappings of the "hole", and it
-> > relies on the fact that /dev/mem establishes mappings in terms of
-> > absolute physical address offsets. Once existing mmap users are
-> > invalidated they can attempt to re-establish the mapping, or attempt to
-> > continue issuing read(2) / write(2) to the invalidated extent, but they
-> > will then be subject to the CONFIG_IO_STRICT_DEVMEM checking that can
-> > block those subsequent accesses.
-> 
-> Nice!
-> 
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> 
-> And a thread hijack...   ;)
-> 
-> I think this is very close to providing a way to solve another issue
-> I've had with /dev/mem, which is to zero the view of the first 1MB of
-> /dev/mem via mmap. I only fixed the read/write accesses:
-> a4866aa81251 ("mm: Tighten x86 /dev/mem with zeroing reads")
-> I.e. the low 1MB range should be considered allowed, but any reads will see
-> zeros.
-> 
-> > +	unmap_mapping_range(inode->i_mapping, res->start, resource_size(res), 1);
-> 
-> Is unmap_mapping_range() sufficient for this? Would it need to happen
-> once during open_port() or something more special during mmap_mem()?
-> 
-> -- 
-> Kees Cook
-
--- 
-Kees Cook
+Might be good to point out that this is not only a clean cherry-pick
+of the one-line patch, but has to include part of commit a818f75e311c
+("net: ipv6: Hook into time based transmission") to plumb the
+sockcm_cookie. The rest of that patch is not a candidate for stable,
+so LGTM.
