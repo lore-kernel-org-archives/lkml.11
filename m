@@ -2,88 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 671E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B161C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232900AbiDFNeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
+        id S233520AbiDFNef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233257AbiDFNds (ORCPT
+        with ESMTP id S233456AbiDFNeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:33:48 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFAA7273807;
-        Wed,  6 Apr 2022 03:33:50 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8EAB223A;
-        Wed,  6 Apr 2022 03:32:23 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 923B13F718;
-        Wed,  6 Apr 2022 03:32:21 -0700 (PDT)
-Message-ID: <0c9a1581-728c-6a5c-b65d-80a4f0948d19@arm.com>
-Date:   Wed, 6 Apr 2022 11:32:16 +0100
+        Wed, 6 Apr 2022 09:34:11 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015B84B63E1
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:34:24 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id ot30so3258381ejb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 03:34:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iTXPlXz9Zr5EQou03o/EzBtB8wT2GGE1Oxj4KHnssrs=;
+        b=ayqp+jO7yOZ05GUhmKmLMJU9illW53IQuWYj97Bq0h7OEyqmw3078v9FFmpHAsDAsX
+         spKmsJURhryre2eQUlppZX9/HUMI+W6eoOizaX7iehhukxIce2QAtRFltzvot97mqi5g
+         wkzLHd/GXAJerFP3q1x2xzOele+vfbjGw1VTYhqxLnyW66oK1u7wRDE72iuiN53gsanI
+         rXtjHuLiferpfP6GaXR+e/2+55LTuT8kg2k0SD2i6I/8Spe3SQIHjv+mc1I1GC7cM2Bn
+         lfPpqaubm9GgEOe61Moi+rdCo7ZOQ3yLidHpWgZcNsZorkDZClOB35C15vOMByW5gWia
+         Ohgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iTXPlXz9Zr5EQou03o/EzBtB8wT2GGE1Oxj4KHnssrs=;
+        b=t+DdmCk+IRE2nI7zX0ArzPCwSZA3oc/SeFaUSzrmsKPxB/7F3KS2g4MWnJ/Q03gGCx
+         pRXqOZ+k9KK2qxF9u2V325BetyTL2eZgTdB/RPBucfNdCOychA9R9EE+kS1NiL7VbX6B
+         fokt2AuD/6sA8NDRPjCp/vEinLyj6NDWh0/7qSVY+YYzxlMZMfngZ2hXZkukheO/3gam
+         maTwXkDNQeu2izuX3hjKHAT0Y1lT8KOa8dJY8S6r0NihD81tJwwGuqplGCOnpJhG7igq
+         oyrMZF0LhE8Dqaeu7i8kdt7G7HKEzgcAGSloIkKAppi7VM3pX5XyHsktQvmHRGaNsfV7
+         or6Q==
+X-Gm-Message-State: AOAM530d+AacRA8aKlgUajXKBiUnymg5ZOtSwuZq1iQrL4winHAwJR7n
+        Rd1zy4p+XQU8BqRs539sucylnQ==
+X-Google-Smtp-Source: ABdhPJx9uNXrv9QkGvgAJYDqUioNGXqvB3w7Wp/JIXcWJjl7z4UKv44fp6VMiLyGHlZ2RnmerugK6g==
+X-Received: by 2002:a17:907:3f02:b0:6e7:7172:4437 with SMTP id hq2-20020a1709073f0200b006e771724437mr7358942ejc.361.1649241258989;
+        Wed, 06 Apr 2022 03:34:18 -0700 (PDT)
+Received: from google.com (30.171.91.34.bc.googleusercontent.com. [34.91.171.30])
+        by smtp.gmail.com with ESMTPSA id x3-20020a50d9c3000000b0041c8ce4bcd7sm6543091edj.63.2022.04.06.03.34.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 03:34:18 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 10:34:15 +0000
+From:   Quentin Perret <qperret@google.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <Yk1spw4zIxR73VX8@google.com>
+References: <YkQzfjgTQaDd2E2T@google.com>
+ <YkSaUQX89ZEojsQb@google.com>
+ <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
+ <YkcTTY4YjQs5BRhE@google.com>
+ <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
+ <YksIQYdG41v3KWkr@google.com>
+ <Ykslo2eo2eRXrpFR@google.com>
+ <eefc3c74-acca-419c-8947-726ce2458446@www.fastmail.com>
+ <Ykwbqv90C7+8K+Ao@google.com>
+ <YkyEaYiL0BrDYcZv@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 1/4] iommu: Introduce device_iommu_capable()
-Content-Language: en-GB
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     joro@8bytes.org, baolu.lu@linux.intel.com,
-        andreas.noever@gmail.com, michael.jamet@intel.com,
-        mika.westerberg@linux.intel.com, YehezkelShB@gmail.com,
-        iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mario.limonciello@amd.com
-References: <cover.1649089693.git.robin.murphy@arm.com>
- <37ec2f9f67098d0caf60dcec558fbe1756ea2621.1649089693.git.robin.murphy@arm.com>
- <20220406052812.GA10507@lst.de>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220406052812.GA10507@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkyEaYiL0BrDYcZv@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-06 06:28, Christoph Hellwig wrote:
-> On Tue, Apr 05, 2022 at 11:41:01AM +0100, Robin Murphy wrote:
->> iommu_capable() only really works for systems where all IOMMU instances
->> are completely homogeneous, and all devices are IOMMU-mapped. Implement
->> the new variant which can give an accurate answer for whichever device
->> the caller is actually interested in.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> v3: New patch; now that the dev_iommu_ops() work has landed we can go
->>      straight to a proper implementation. Also s/dev/device/ to match
->>      the precedent of device_iommu_mapped() for the public API.
+On Tuesday 05 Apr 2022 at 18:03:21 (+0000), Sean Christopherson wrote:
+> On Tue, Apr 05, 2022, Quentin Perret wrote:
+> > On Monday 04 Apr 2022 at 15:04:17 (-0700), Andy Lutomirski wrote:
+> > > >>  - it can be very useful for protected VMs to do shared=>private
+> > > >>    conversions. Think of a VM receiving some data from the host in a
+> > > >>    shared buffer, and then it wants to operate on that buffer without
+> > > >>    risking to leak confidential informations in a transient state. In
+> > > >>    that case the most logical thing to do is to convert the buffer back
+> > > >>    to private, do whatever needs to be done on that buffer (decrypting a
+> > > >>    frame, ...), and then share it back with the host to consume it;
+> > > >
+> > > > If performance is a motivation, why would the guest want to do two
+> > > > conversions instead of just doing internal memcpy() to/from a private
+> > > > page?  I would be quite surprised if multiple exits and TLB shootdowns is
+> > > > actually faster, especially at any kind of scale where zapping stage-2
+> > > > PTEs will cause lock contention and IPIs.
+> > > 
+> > > I don't know the numbers or all the details, but this is arm64, which is a
+> > > rather better architecture than x86 in this regard.  So maybe it's not so
+> > > bad, at least in very simple cases, ignoring all implementation details.
+> > > (But see below.)  Also the systems in question tend to have fewer CPUs than
+> > > some of the massive x86 systems out there.
+> > 
+> > Yep. I can try and do some measurements if that's really necessary, but
+> > I'm really convinced the cost of the TLBI for the shared->private
+> > conversion is going to be significantly smaller than the cost of memcpy
+> > the buffer twice in the guest for us.
 > 
-> I'm a little worrited about a method with a parameter than can be
-> NULL.
+> It's not just the TLB shootdown, the VM-Exits aren't free.
 
-FWIW, the intent is that that's only temporary.
+Ack, but we can at least work on the rest (number of exits, locking, ...).
+The cost of the memcpy and the TLBI are really incompressible.
 
-> Also usnic, vmd, and vdpa really want to use your new
-> device_iommu_capable as they check based on a device.  Just VFIO
-> is special as usual..
+> And barring non-trivial
+> improvements to KVM's MMU, e.g. sharding of mmu_lock, modifying the page tables will
+> block all other updates and MMU operations.  Taking mmu_lock for read, should arm64
+> ever convert to a rwlock, is not an option because KVM needs to block other
+> conversions to avoid races.
 
-Indeed, I have those patches in my stack already, I'm just waiting for 
-this to land before I think about posting them. Once the DMA ownership 
-series lands in parallel, VFIO can also get converted and 
-iommu_capable() goes away entirely. At that point I have a patch for the 
-Arm SMMU drivers to start actually using the new device argument, but 
-Jason's new proposal now puts a twist on that...
+FWIW the host mmu_lock isn't all that useful for pKVM. The host doesn't
+have _any_ control over guest page-tables, and the hypervisor can't
+safely rely on the host for locking, so we have hypervisor-level
+synchronization.
 
-On reflection, there's no real need for the internal method to change in 
-lock-step with the external interface. I've no objection to holding off 
-on adding that new parameter until it's reliably useful, and indeed now 
-that I'm looking at it outside the context of the entire cleanup 
-mission, that does sound like the right thing to do anyway :)
+> Hmm, though batching multiple pages into a single request would mitigate most of
+> the overhead.
 
-(also it turns out I need to respin this patch regardless since I 
-generated it from the wrong point in my branch, where iommu_present() 
-was already gone from the context in iommu.h...)
+Yep, there are a few tricks we can play to make this fairly efficient in
+the most common cases. And fine-grain locking at EL2 is really high up
+on the todo list :-)
 
-Cheers,
-Robin.
+Thanks,
+Quentin
