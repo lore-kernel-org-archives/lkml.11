@@ -2,146 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A226C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240413AbiDFSNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
+        id S239767AbiDFSNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240547AbiDFSMx (ORCPT
+        with ESMTP id S240430AbiDFSNN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:12:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBC2C1F9A3E
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:50:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649263817;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sQTT4EqOLRNQF0Ed2dIB0yr4+oIJIzcbTRQWujoh2kY=;
-        b=Ek/VubANinPC9h9ZGCSwBN5Dy2Bd73QKGhM2T4OwroZM/1bb9vVAESyDG+hH6qht4dZalw
-        qk1SwZF3VLvGdpwVqGvzfQJ33ENEltBbOYmLNUpUEIeWsz1qvK8ijQPvm2vnlItAp+xIlN
-        yOfgy2UhkPyLSrj1uiU4NwsGlQ/+no0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-446-f_Ly0toDM--tXyule_3RIw-1; Wed, 06 Apr 2022 12:50:14 -0400
-X-MC-Unique: f_Ly0toDM--tXyule_3RIw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 30F0F803D7C;
-        Wed,  6 Apr 2022 16:50:13 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-0-8.rdu2.redhat.com [10.22.0.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id CFF7B76C4;
-        Wed,  6 Apr 2022 16:49:56 +0000 (UTC)
-Date:   Wed, 6 Apr 2022 12:49:54 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     CGEL <cgel.zte@gmail.com>
-Cc:     Paul Moore <paul@paul-moore.com>, kbuild-all@lists.01.org,
-        Zeal Robot <zealci@zte.com.cn>, linux-kernel@vger.kernel.org,
-        eparis@redhat.com, dai.shixin@zte.com.cn,
-        Yang Yang <yang.yang29@zte.com.cn>, linux-audit@redhat.com,
-        ink@jurassic.park.msu.ru, huang.junhua@zte.com.cn,
-        guo.xiaofeng@zte.com.cn, mattst88@gmail.com
-Subject: Re: [PATCH] audit: do a quick exit when syscall number is invalid
-Message-ID: <Yk3Esn2Fu0lVX2SZ@madcap2.tricolour.ca>
-References: <20220326094654.2361956-1-yang.yang29@zte.com.cn>
- <CAHC9VhTaCNqfTOi8X5G3AheBFzTYCzGnt_-=fNFc5Z1o8gPm9Q@mail.gmail.com>
- <62465bf3.1c69fb81.d5424.365e@mx.google.com>
- <2777189.mvXUDI8C0e@x2>
- <CAHC9VhRYHhHPx42BKa0gp974uzwHoXZWqmwt9o=1rox7tHyy1w@mail.gmail.com>
- <624803f7.1c69fb81.972da.2dd0@mx.google.com>
- <YksVuhfv8weLCxX/@madcap2.tricolour.ca>
- <624cea8e.1c69fb81.422be.e03b@mx.google.com>
+        Wed, 6 Apr 2022 14:13:13 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DF213D49
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:50:53 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id f16so297674lfe.11
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:50:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7mcxCMUsY68b1C+y1FYJV5SZRpo8yl4CCyl7R2mFnT0=;
+        b=LCXDwOcQDeA5enlC7K6Ie77FKlqGpjFTFPq/iH0xIFNgegH0lHp95s3B+k5PMn1p/5
+         D75OJnHRVlBjkfYEjU5hiEStLBBWmsnq+vlJV/wJ2DaovZetBIyCfgo4YUqsa1CvJ7w3
+         kdQUr8kMDa2qI7EbHIxcPRqt68eA7k4Bl0zlKcog6azWtr9r4fpfXH7fE+9Ph459D6ve
+         cdOgD8Zjzi8jethjodBKELXCjaKfot89VjplCw28l6k9HK2APqZ5735RRtYm9Sw8nTU7
+         WLTvHCCfFpSeVql5Oi6KjsyyTTfgSySWDDbIcOH1l82MVLXbZWQ9vbpt8O5H6prPfYm/
+         AL1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7mcxCMUsY68b1C+y1FYJV5SZRpo8yl4CCyl7R2mFnT0=;
+        b=HPpEFLmn+fo1MmXQNBIwMw28DYkEiP6L1XdHJjMIQB7yrDq+0kNF/Rl4V4wGEvQd+7
+         5kZKEiFVu9IzF6qd4y6bWT+pPl7YR0KVCco24SaMEnbOZCina3kdi+RauTbUQoR6JirJ
+         QgsuMb1CWtEpgIpd2tZ+enI7Uy8T6GHRsXfk8B997nmmrsUlRDWsI+0e1zUb74aJaJTS
+         lipFBUSmVGuEZu9ImLORgQF5SiQ8neYPBDCSVj/SPS6RXE1sroHUdIes3zPZ+Lr2gZTg
+         V2wHt6Yqh6BF9wgouWpM9q7SWkKu1tpXTmEtfXKFH9/F3cgPNgf5ImKKUoVMesENR+84
+         jkcw==
+X-Gm-Message-State: AOAM531ejvFJ5ouKXTIPvP31TJTuxnWWIu2LFIZ6gepHugOR6mYBD8rw
+        OxPWryJKcSkNjF1LR9yhFHQ=
+X-Google-Smtp-Source: ABdhPJzPCpdf6bHUll904yF8Otv10ELarDhb1BAS3riXpkas1kvTZGd3KYrfieHGJ3plUkcvkm/2ZQ==
+X-Received: by 2002:a05:6512:108f:b0:44a:4317:a066 with SMTP id j15-20020a056512108f00b0044a4317a066mr6614576lfg.236.1649263851576;
+        Wed, 06 Apr 2022 09:50:51 -0700 (PDT)
+Received: from noname.. ([2a02:2698:8c2a:226e:6d9:f5ff:fecb:a8ab])
+        by smtp.googlemail.com with ESMTPSA id k9-20020a056512330900b0044a1be3bdbbsm1877872lfe.196.2022.04.06.09.50.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 09:50:51 -0700 (PDT)
+From:   Grigory Vasilyev <h0tc0d3@gmail.com>
+To:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Melissa Wen <mwen@igalia.com>
+Cc:     Grigory Vasilyev <h0tc0d3@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Guchun Chen <guchun.chen@amd.com>,
+        Joseph Greathouse <Joseph.Greathouse@amd.com>,
+        Evan Quan <evan.quan@amd.com>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/amdgpu: Fix code with incorrect enum type
+Date:   Wed,  6 Apr 2022 19:50:56 +0300
+Message-Id: <20220406165057.97492-1-h0tc0d3@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <624cea8e.1c69fb81.422be.e03b@mx.google.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-06 01:19, CGEL wrote:
-> On Mon, Apr 04, 2022 at 11:58:50AM -0400, Richard Guy Briggs wrote:
-> > On 2022-04-02 08:06, CGEL wrote:
-> > > On Fri, Apr 01, 2022 at 10:16:45AM -0400, Paul Moore wrote:
-> > > > On Fri, Apr 1, 2022 at 9:39 AM Steve Grubb <sgrubb@redhat.com> wrote:
-> > > > > On Thursday, March 31, 2022 9:57:05 PM EDT CGEL wrote:
-> > > > > > On Thu, Mar 31, 2022 at 10:16:23AM -0400, Paul Moore wrote:
-> > > > > > > On Wed, Mar 30, 2022 at 10:29 PM CGEL <cgel.zte@gmail.com> wrote:
-> > > > > > > > On Wed, Mar 30, 2022 at 10:48:12AM -0400, Paul Moore wrote:
-> > > > > > > > > If audit is not generating SYSCALL records, even for invalid/ENOSYS
-> > > > > > > > > syscalls, I would consider that a bug which should be fixed.
-> > > > > > > >
-> > > > > > > > If we fix this bug, do you think audit invalid/ENOSYS syscalls better
-> > > > > > > > be forcible or be a rule that can be configure? I think configure is
-> > > > > > > > better.
-> > > > > > >
-> > > > > > > It isn't clear to me exactly what you are asking, but I would expect
-> > > > > > > the existing audit syscall filtering mechanism to work regardless if
-> > > > > > > the syscall is valid or not.
-> > > > > >
-> > > > > > Thanks, I try to make it more clear. We found that auditctl would only
-> > > > > > set rule with syscall number (>=0 && <2047) ...
-> > > > 
-> > > > That is exactly why I wrote the warning below in my response ...
-> > > >
-> > > I think the question is more clear now.
-> > > 
-> > > 1) libaudit.c wants to forbid setting invalid syscall, but inconsistent
-> > > Currently way(>=0 && <2047) is inconsistent, syscall with number 2000 and
-> > > syscall with number 3000 are both invalid syscall. But 2000 can be set by
-> > > auditctl, and 3000 cannot be set by auditctl.
-> > > A better way to do this forbidden is to use __NR_syscalls(asm-generic/unistd.h).
-> > > 
-> > > 2) if libaudit.c do the right forbidden, kernel better ignore invalid syscall
-> > > See this patch.
-> > > 
-> > > If we want audit invalid syscall as you said before. libaudit.c should not
-> > > do the forbidden, auditctl should allow setting syscall rule with 'any' number.
-> > > So do you think we should fix libaudit.c?
-> > 
-> > I'm having a bit of trouble understanding what you've said above.
-> > 
-> > The kernel ultimately must protect itself from malice and mistakes, so
-> > it must verify all data sent to it.
-> > 
-> > Userspace can help by knowing what that kernel policy is so it can avoid
-> > violating that policy or provide useful feedback if it can't.  Userspace
-> > can be used to make things more efficient, but the kernel is the last
-> > step for security.
-> > 
-> > If userspace and the kernel are mismatched or out of sync, then the
-> > kernel enforces policy to protect itself.
->
-> Much appreciate for your interpretation. Have you get any idea of how
-> to solve the mismatched? From your viewpoint, I think it's better for
-> kernel to not handle syscall of syscall number<0, because it's invaild
-> of all arch, and has no value for attacker to probing for specific
-> syscall numbers.
+Instead of the 'amdgpu_ring_priority_level' type,
+the 'amdgpu_gfx_pipe_priority' type was used,
+which is an error when setting ring priority.
+This is a minor error, but may cause problems in the future.
 
-Going back to the very first quoted line above, if you can generate a
-test case that shows that audit is missing an auditable event, that is a
-bug that should be fixed.
+Instead of AMDGPU_RING_PRIO_2 = 2, we can use AMDGPU_RING_PRIO_MAX = 3,
+but AMDGPU_RING_PRIO_2 = 2 is used for compatibility with
+AMDGPU_GFX_PIPE_PRIO_HIGH = 2, and not change the behavior of the
+code.
 
-> > > > > > > to the audit syscall filter, which are unfortunately baked into the
-> > > > > > > current design/implementation, which may affect this to some extent.
-> > > > 
-> > > > -- 
-> > > > paul-moore.com
-> > 
-> > - RGB
+Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
+---
+ drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
+index 5554084ec1f1..9bc26395f833 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
+@@ -1929,7 +1929,7 @@ static int gfx_v8_0_compute_ring_init(struct amdgpu_device *adev, int ring_id,
+ 		+ ring->pipe;
+ 
+ 	hw_prio = amdgpu_gfx_is_high_priority_compute_queue(adev, ring) ?
+-			AMDGPU_GFX_PIPE_PRIO_HIGH : AMDGPU_RING_PRIO_DEFAULT;
++			AMDGPU_RING_PRIO_2 : AMDGPU_RING_PRIO_DEFAULT;
+ 	/* type-2 packets are deprecated on MEC, use type-3 instead */
+ 	r = amdgpu_ring_init(adev, ring, 1024, &adev->gfx.eop_irq, irq_type,
+ 			     hw_prio, NULL);
+-- 
+2.35.1
 
