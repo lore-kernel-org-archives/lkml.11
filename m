@@ -2,136 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD47C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5813CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236498AbiDFHP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50182 "EHLO
+        id S231702AbiDFHQ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 03:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380733AbiDFHEg (ORCPT
+        with ESMTP id S243310AbiDFHKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 03:04:36 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58850B3699;
-        Tue,  5 Apr 2022 22:30:10 -0700 (PDT)
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 2365TY6C002095;
-        Wed, 6 Apr 2022 14:29:35 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 2365TY6C002095
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649222975;
-        bh=cgPdZWVCb6IRSSlmY7h4O7BE/w3T5icCyWQEI+QOK8o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=F2XmJxsfAciKRhWS0WPTJJhAWGPS2iSwCBwb73YwKSv5+V5Ca5MJkosnyHHLjCTL8
-         QTQ2NIBxoE/b07Ga1omX2VQg+My/LXwooJo/6F+LaWDp+6yPYTmguLSIdFwesK50oy
-         ci+7Nwx/5FsH8WDoGCNAqFJtk9r4j82k3IaoNgqpDIylE7psdpr6ar3LdDAzEVM1K4
-         cjeBEDc84VbKbMQEURSDGvYl15VMARF3j6Nrgc9puyXyGVCM6JdiFPVqEhTa1KzUPe
-         cxdqZic2y1hvlRGkLOyAssnRi9i+iLiBp0k3/qJgoSaRBYFJduXFdT9eusO6Tq21KP
-         wc5l+uTu0HGJQ==
-X-Nifty-SrcIP: [209.85.216.42]
-Received: by mail-pj1-f42.google.com with SMTP id j20-20020a17090ae61400b001ca9553d073so1620804pjy.5;
-        Tue, 05 Apr 2022 22:29:35 -0700 (PDT)
-X-Gm-Message-State: AOAM5328mRnTr0/v1YIbieevrjCTyreFAf/wCJKDOAWKIWfKkrkiFcqx
-        OcPQNxW/XjUZpMyPsl0C0T/ZU6mhjQlduSwp7Kg=
-X-Google-Smtp-Source: ABdhPJzLsKiCp/v2xJ1WrG9HWnVaQC0FNsJIJb1jbJiI8YmlDUc3vB+W0TOUVJ+Vd9auxBAptPAaiHDEvPOWTG/3o+Q=
-X-Received: by 2002:a17:902:b183:b0:14f:c266:20d5 with SMTP id
- s3-20020a170902b18300b0014fc26620d5mr7043436plr.136.1649222974223; Tue, 05
- Apr 2022 22:29:34 -0700 (PDT)
+        Wed, 6 Apr 2022 03:10:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9EA7620E97C
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:32:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649223176;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8vMGwr2ZcpnAe+eNPSJFFMadFeqT5aD2vndagjKbi2A=;
+        b=Vl0a1vwBsF7MEOnH9qLsE2wwFZhVzb8Qj0WH/nwe/sChkEXTCyviouxOsgLUSly9hvgO1h
+        I7TnjY7NAbrlnWcnOqTlAAVYI0GmW+xLnoOhZTIdyh+fsZf94BcxUq6xx+CD9ell1Ortxu
+        P1Sf7dBGOypFDeYxdnwfmkcgSFPOiIA=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-518-63jZbRanNkSXXD0y9eZKSg-1; Wed, 06 Apr 2022 01:32:55 -0400
+X-MC-Unique: 63jZbRanNkSXXD0y9eZKSg-1
+Received: by mail-qt1-f198.google.com with SMTP id f3-20020ac84983000000b002e22396acfbso1656108qtq.18
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 22:32:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8vMGwr2ZcpnAe+eNPSJFFMadFeqT5aD2vndagjKbi2A=;
+        b=GMaQ3ctlZOXxEJQFm/swxLyI2JBtmrvs/D6ud34a4Oj/2Kk7Yi62a65ul9CRIctU9Y
+         bVySKS1CAOkdYgi52/M/RJzpbHluo/s3run51Vjc+1I6VIMMuphAxoUYN3TDtQfhPRJu
+         YZy2MyO8PaPZp1j+uQ7Q02Ig2n3tslWZgxSfXfO6f6KY1rH4EIRifh3SCietL8U8HQ10
+         OKlX6o302b+IJgxNSPrIq+Op2b8iqT0T2Sv+vAAF4viS7U+MmZU5/NuCev4GO5IzXa6L
+         6cGBIYSserkB+Gau/J6lE6YIEvHMQn3DQIVVviZP9dLgN7cB1p/zCUlM2dS9K0oTn56N
+         NSzg==
+X-Gm-Message-State: AOAM532ggjCl/Er5X/gD2LRIVUIdbsoPdy1aYNvPOTJopO7VNfiRXl9n
+        j/w2+T5SBLOGwPN6LylsJfqJYEGEWjENprkQ6E4Rh5W/8dhA32iKVPwSrgG9PpgydKexPWw2S7L
+        IfNiUbpAPDAwZraLN7vi96l2m
+X-Received: by 2002:a05:6214:5008:b0:441:547c:e75e with SMTP id jo8-20020a056214500800b00441547ce75emr6091251qvb.128.1649223174856;
+        Tue, 05 Apr 2022 22:32:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyDArzZsQST0q35Psaq4DH2TN0zwJqYR+LAkTq39xUbLh8CQFRzGFwbSET5A9m07rkkXPDZ9g==
+X-Received: by 2002:a05:6214:5008:b0:441:547c:e75e with SMTP id jo8-20020a056214500800b00441547ce75emr6091238qvb.128.1649223174611;
+        Tue, 05 Apr 2022 22:32:54 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id a23-20020a05620a16d700b0067e98304705sm8755689qkn.89.2022.04.05.22.32.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 22:32:54 -0700 (PDT)
+Date:   Tue, 5 Apr 2022 22:32:51 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, mbenes@suse.cz, x86@kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: drivers/gpu/drm/i915/i915.prelink.o: warning: objtool:
+ __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR:
+ vlv_allow_gt_wake.cold+0x0
+Message-ID: <20220406053251.6dyfxrjmmgdwocfc@treble>
+References: <202204041241.Hw855BWm-lkp@intel.com>
+ <YkxLqznOz0ldTz5a@hirez.programming.kicks-ass.net>
+ <20220406000500.5hlaqy5zrdqsg5mg@treble>
+ <87czhv11k1.ffs@tglx>
 MIME-Version: 1.0
-References: <20220405113359.2880241-1-masahiroy@kernel.org>
- <20220405113359.2880241-8-masahiroy@kernel.org> <YkyjkAWb56wqL3iK@fjasle.eu>
-In-Reply-To: <YkyjkAWb56wqL3iK@fjasle.eu>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 6 Apr 2022 14:28:45 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATUZesT6JsyrQu-ryU+PahwSwX3UVdxnJhyYDetnR_s1A@mail.gmail.com>
-Message-ID: <CAK7LNATUZesT6JsyrQu-ryU+PahwSwX3UVdxnJhyYDetnR_s1A@mail.gmail.com>
-Subject: Re: [PATCH v2 07/10] kbuild: get rid of duplication in the first line
- of *.mod files
-To:     Nicolas Schier <nicolas@fjasle.eu>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87czhv11k1.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 5:16 AM Nicolas Schier <nicolas@fjasle.eu> wrote:
->
-> On Tue, Apr 05, 2022 at 08:33:55PM +0900 Masahiro Yamada wrote:
-> > The first line of *.mod lists the member objects of the module.
-> > This list may contain duplication if the same object is added multiple
-> > times, like this:
+On Wed, Apr 06, 2022 at 02:46:22AM +0200, Thomas Gleixner wrote:
+> On Tue, Apr 05 2022 at 17:05, Josh Poimboeuf wrote:
+> > On Tue, Apr 05, 2022 at 04:01:15PM +0200, Peter Zijlstra wrote:
 > >
-> >   obj-m :=3D foo.o
-> >   foo-$(CONFIG_FOO1_X) +=3D foo1.o
-> >   foo-$(CONFIG_FOO1_Y) +=3D foo1.o
-> >   foo-$(CONFIG_FOO2_X) +=3D foo2.o
-> >   foo-$(CONFIG_FOO2_Y) +=3D foo2.o
+> > But objtool is complaining about a real problem (albeit with a cryptic
+> > warning).  I don't think we want to paper over that. See patch.
 > >
-> > This is probably not a big deal. As far as I know, the only small
-> > problem is scripts/mod/sumversion.c parses the same file over again.
-> > This can be avoided by adding $(sort ...). It has a side-effect that
-> > sorts the objects alphabetically, but it is not a big deal, either.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> > Changes in v2:
-> >   - new
-> >
-> >  scripts/Makefile.build | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> > index 3ef2373f0a57..63625877aeae 100644
-> > --- a/scripts/Makefile.build
-> > +++ b/scripts/Makefile.build
-> > @@ -307,8 +307,10 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
-> >       $(call if_changed,cc_prelink_modules)
-> >  endif
-> >
-> > +multi-m-prereqs =3D $(sort $(addprefix $(obj)/, $($*-objs) $($*-y) $($=
-*-m)))
-> > +
-> >  cmd_mod =3D { \
-> > -     echo $(if $($*-objs)$($*-y)$($*-m), $(addprefix $(obj)/, $($*-obj=
-s) $($*-y) $($*-m)), $(@:.mod=3D.o)); \
-> > +     echo $(if $(multi-m-prereqs), $(multi-m-prereqs), $(@:.mod=3D.o))=
-; \
->
-> I'd rather expected to see $(or) here, too, as in commit 5c8166419acf ("k=
-build:
-> replace $(if A,A,B) with $(or A,B)").
+> > Also, are in-tree users of trace_printk() even allowed??
+> 
+> See the comment in the header file you are patching:
+> 
+>  * This is intended as a debugging tool for the developer only.
+>  * Please refrain from leaving trace_printks scattered around in
+>  * your code. (Extra memory is used for special buffers that are
+>  * allocated when trace_printk() is used.)
 
-Ah, good catch.
+So what do we do ... send a nastygram?  
 
-I fixed it up locally.
+> > +	__ip = _THIS_IP_;						\
+> >  	if (__builtin_constant_p(fmt))					\
+> > -		__trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);	\
+> > +		__trace_bprintk(__ip, trace_printk_fmt, ##args);	\
+> >  	else								\
+> > -		__trace_printk(_THIS_IP_, fmt, ##args);			\
+> > +		__trace_printk(__ip, fmt, ##args);			\
+> >  } while (0)
+> >  
+> >  extern __printf(2, 3)
+> 
+> This covers the trace_printk() case which uses do_trace_printk(), but
+> the same problem exists in trace_puts() and ftrace_vprintk()...., no?
 
-Thanks for the review.
+Yes, though objtool didn't seem to complain about those yet.  They
+probably don't have the perfect storm required for the label to end up
+at the end of the function.  It might also need something like being
+invoked from within a macro which then does BUG() (see GEM_BUG_ON).
+
+More broadly, this issue could theoretically happen in some other places
+throughout the kernel tree, since _THIS_IP_ is fundamentally unreliable
+as currently written.
+
+So we could look at making _THIS_IP_ more predictable.
+
+Inline asm would work better ("lea 0(%rip), %[rip]"), but then you need
+an arch-dependent implementation...
+
+Or we could add a control dependency like the below ugliness...
+
+Thoughts?
 
 
->
-> Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
->
-> >       $(undefined_syms) echo; \
-> >       } > $@
-> >
-> > --
-> > 2.32.0
-> >
-> >
->
-> --
-> epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
-> =E2=86=B3 gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
->      -- frykten for herren er opphav til kunnskap --
+diff --git a/include/linux/instruction_pointer.h b/include/linux/instruction_pointer.h
+index cda1f706eaeb..3f2f0ebecca0 100644
+--- a/include/linux/instruction_pointer.h
++++ b/include/linux/instruction_pointer.h
+@@ -2,7 +2,9 @@
+ #ifndef _LINUX_INSTRUCTION_POINTER_H
+ #define _LINUX_INSTRUCTION_POINTER_H
+ 
++unsigned long __this_ip(void);
++
+ #define _RET_IP_		(unsigned long)__builtin_return_address(0)
+-#define _THIS_IP_  ({ __label__ __here; __here: (unsigned long)&&__here; })
++#define _THIS_IP_  __this_ip()
+ 
+ #endif /* _LINUX_INSTRUCTION_POINTER_H */
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index da03c15ecc89..8674c7434ead 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3781,3 +3781,8 @@ void __printk_cpu_unlock(void)
+ }
+ EXPORT_SYMBOL(__printk_cpu_unlock);
+ #endif /* CONFIG_SMP */
++
++unsigned long __this_ip(void)
++{
++	return _RET_IP_;
++}
 
-
-
---=20
-Best Regards
-Masahiro Yamada
