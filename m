@@ -2,138 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:49:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F39C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235061AbiDFOvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
+        id S235013AbiDFOvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235075AbiDFOuT (ORCPT
+        with ESMTP id S235334AbiDFOuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:50:19 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 085A846C6A4
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:22:49 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A5E1B23A;
-        Wed,  6 Apr 2022 04:22:49 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.10.98])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7B3B53F718;
-        Wed,  6 Apr 2022 04:22:47 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 12:22:43 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [RFC PATCH -next V2 5/7] arm64: add get_user to machine check
- safe
-Message-ID: <Yk14AwR92MX0LKqZ@FVFF77S0Q05N>
-References: <20220406091311.3354723-1-tongtiangen@huawei.com>
- <20220406091311.3354723-6-tongtiangen@huawei.com>
+        Wed, 6 Apr 2022 10:50:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2212B5E9860;
+        Wed,  6 Apr 2022 04:23:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 767D8B82014;
+        Wed,  6 Apr 2022 11:23:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2FBC385A3;
+        Wed,  6 Apr 2022 11:23:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649244208;
+        bh=SjcaJJhx4BXe6tnaJctHdMtT1mA4dYXjywpMRbdjPeA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N7tchrJdtzp4jeVjHtb9aLdDQoEL3gt3zjKdL4UzSzCFF6Xg1mW9TB0tAtjFWMIS5
+         IhpmUGk3sd9JLznarD+6dgCgpH7XT7sVQdm4RhxCGAhJH+16lwkCgGybxONSSm8CJb
+         ckrFdnTXxqUt7zLrcesjQ84WLYHk5LNKM02HG2k8SAfob4vwZQXmW2sOqE4jvprXR3
+         tWPBPCRUhaCU2jW5ALDmWFhWMq+rCxzWci8pH90PnV+Ewr+aRRMlYvisbpWrKO8NiL
+         rPTbLAfl954xdZM5ROBWBtHjd1Bg+qAatC8RsixNgzPhN7vTv7Qc3l2N2QU5sLwRkG
+         6n/g3YaDEFlQw==
+Date:   Wed, 6 Apr 2022 07:23:26 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: Re: [PATCH 5.15 746/913] ARM: ftrace: avoid redundant loads or
+ clobbering IP
+Message-ID: <Yk14LhswMSlPGrmJ@sashalap>
+References: <20220405070339.801210740@linuxfoundation.org>
+ <20220405070402.195698649@linuxfoundation.org>
+ <CAMj1kXFL4abn9xg1ZrNpFg54Pmw1Kw8OPbDpMevSjQDNg0r5Pg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220406091311.3354723-6-tongtiangen@huawei.com>
+In-Reply-To: <CAMj1kXFL4abn9xg1ZrNpFg54Pmw1Kw8OPbDpMevSjQDNg0r5Pg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 09:13:09AM +0000, Tong Tiangen wrote:
-> Add scenarios get_user to machine check safe. The processing of
-> EX_TYPE_UACCESS_ERR_ZERO and EX_TYPE_UACCESS_ERR_ZERO_UCE_RECOVERY is same
-> and both return -EFAULT.
+On Tue, Apr 05, 2022 at 12:01:19PM +0200, Ard Biesheuvel wrote:
+>On Tue, 5 Apr 2022 at 11:54, Greg Kroah-Hartman
+><gregkh@linuxfoundation.org> wrote:
+>>
+>> From: Ard Biesheuvel <ardb@kernel.org>
+>>
+>> [ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
+>>
+>> Tweak the ftrace return paths to avoid redundant loads of SP, as well as
+>> unnecessary clobbering of IP.
+>>
+>> This also fixes the inconsistency of using MOV to perform a function
+>> return, which is sub-optimal on recent micro-architectures but more
+>> importantly, does not perform an interworking return, unlike compiler
+>> generated function returns in Thumb2 builds.
+>>
+>> Let's fix this by popping PC from the stack like most ordinary code
+>> does.
+>>
+>> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+>> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
+>
+>Please drop all the 32-bit ARM patches authored by me from the stable
+>queues except the ones that have fixes tags. These are highly likely
 
-Which uaccess cases do we expect to *not* be recoverable?
+I can drop you from future selections as well.
 
-Naively I would assume that if we're going to treat a memory error on a uaccess
-as fatal to userspace we should be able to do that for *any* uacesses.
+>to cause an explosion of regressions, and they should have never been
+>selected, as I don't remember anyone proposing these for stable.
 
-The commit message should explain why we need the distinction between a
-recoverable uaccess and a non-recoverable uaccess.
+They were proposed by the bot last week
+(https://lore.kernel.org/lkml/20220330115005.1671090-22-sashal@kernel.org/).
 
+-- 
 Thanks,
-Mark.
-
-> 
-> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-> ---
->  arch/arm64/include/asm/asm-extable.h | 14 +++++++++++++-
->  arch/arm64/include/asm/uaccess.h     |  2 +-
->  arch/arm64/mm/extable.c              |  1 +
->  3 files changed, 15 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
-> index 74d1db74fd86..bfc2d224cbae 100644
-> --- a/arch/arm64/include/asm/asm-extable.h
-> +++ b/arch/arm64/include/asm/asm-extable.h
-> @@ -10,8 +10,11 @@
->  
->  /* _MC indicates that can fixup from machine check errors */
->  #define EX_TYPE_FIXUP_MC		5
-> +#define EX_TYPE_UACCESS_ERR_ZERO_MC	6
->  
-> -#define IS_EX_TYPE_MC(type) (type == EX_TYPE_FIXUP_MC)
-> +#define IS_EX_TYPE_MC(type)			\
-> +	(type == EX_TYPE_FIXUP_MC ||		\
-> +	 type == EX_TYPE_UACCESS_ERR_ZERO_MC)
->  
->  #ifdef __ASSEMBLY__
->  
-> @@ -77,6 +80,15 @@
->  #define EX_DATA_REG(reg, gpr)						\
->  	"((.L__gpr_num_" #gpr ") << " __stringify(EX_DATA_REG_##reg##_SHIFT) ")"
->  
-> +#define _ASM_EXTABLE_UACCESS_ERR_ZERO_MC(insn, fixup, err, zero)		\
-> +	__DEFINE_ASM_GPR_NUMS							\
-> +	__ASM_EXTABLE_RAW(#insn, #fixup,					\
-> +			  __stringify(EX_TYPE_UACCESS_ERR_ZERO_MC),		\
-> +			  "("							\
-> +			    EX_DATA_REG(ERR, err) " | "				\
-> +			    EX_DATA_REG(ZERO, zero)				\
-> +			  ")")
-> +
->  #define _ASM_EXTABLE_UACCESS_ERR_ZERO(insn, fixup, err, zero)		\
->  	__DEFINE_ASM_GPR_NUMS						\
->  	__ASM_EXTABLE_RAW(#insn, #fixup, 				\
-> diff --git a/arch/arm64/include/asm/uaccess.h b/arch/arm64/include/asm/uaccess.h
-> index e8dce0cc5eaa..24b662407fbd 100644
-> --- a/arch/arm64/include/asm/uaccess.h
-> +++ b/arch/arm64/include/asm/uaccess.h
-> @@ -236,7 +236,7 @@ static inline void __user *__uaccess_mask_ptr(const void __user *ptr)
->  	asm volatile(							\
->  	"1:	" load "	" reg "1, [%2]\n"			\
->  	"2:\n"								\
-> -	_ASM_EXTABLE_UACCESS_ERR_ZERO(1b, 2b, %w0, %w1)			\
-> +	_ASM_EXTABLE_UACCESS_ERR_ZERO_MC(1b, 2b, %w0, %w1)		\
->  	: "+r" (err), "=&r" (x)						\
->  	: "r" (addr))
->  
-> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
-> index f1134c88e849..7c05f8d2bce0 100644
-> --- a/arch/arm64/mm/extable.c
-> +++ b/arch/arm64/mm/extable.c
-> @@ -95,6 +95,7 @@ bool fixup_exception(struct pt_regs *regs, unsigned int esr)
->  	case EX_TYPE_BPF:
->  		return ex_handler_bpf(ex, regs);
->  	case EX_TYPE_UACCESS_ERR_ZERO:
-> +	case EX_TYPE_UACCESS_ERR_ZERO_MC:
->  		return ex_handler_uaccess_err_zero(ex, regs);
->  	case EX_TYPE_LOAD_UNALIGNED_ZEROPAD:
->  		return ex_handler_load_unaligned_zeropad(ex, regs);
-> -- 
-> 2.18.0.huawei.25
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Sasha
