@@ -2,238 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F70C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A226C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240197AbiDFSMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:12:15 -0400
+        id S240413AbiDFSNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:13:13 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240288AbiDFSMD (ORCPT
+        with ESMTP id S240547AbiDFSMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:12:03 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C51E1CEA70;
-        Wed,  6 Apr 2022 09:49:03 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236GmoeX027503;
-        Wed, 6 Apr 2022 16:48:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=J/ySBrEZ3U6k45cbB8swX7zNGgUHrk7eH1vaVC17t0E=;
- b=R1ucG1yEV2i7PrPyCyty1ruD/yff32pWEpfM73aDX1zBi/69radN+wD36jomZsp4OLPT
- QxN8sSV4axzfSMkQ9ZwGhm2ilffpq3lSFI7L2z2sqoytkK96xashtXsNtQS5AeJAcMTn
- pT/bWisvWMuFfwhPgMdz2D+1u/K8MdEfyLSEFzDLi3mCmCCeh1c8230X2bByVRY1+3Sw
- Y6OKJf4gEkczXnH0e7fKi0Mm/PkohCshh8kdv6PcIxxGgemW/1BqEMsXO9gGPBZ7VNOr
- AD/yWSTLFOFUvZJ6quO8td4PabOE5kvMv0XuHVBUentjDaeZzKXqDjmyOiuHFDVx3uaN bg== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f8txywub8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 16:48:56 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 236GhGI1007164;
-        Wed, 6 Apr 2022 16:44:42 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04fra.de.ibm.com with ESMTP id 3f6e48xrrx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 16:44:42 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 236Gikui45285744
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Apr 2022 16:44:46 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 008A14C052;
-        Wed,  6 Apr 2022 16:44:39 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3FCE64C044;
-        Wed,  6 Apr 2022 16:44:38 +0000 (GMT)
-Received: from [9.145.170.20] (unknown [9.145.170.20])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Apr 2022 16:44:38 +0000 (GMT)
-Message-ID: <6208840a-bb97-6b45-7b8e-80ad79849129@linux.ibm.com>
-Date:   Wed, 6 Apr 2022 18:44:37 +0200
-Subject: Re: [PATCH V2] s390: Simplify the calculation of variables
-Content-Language: en-US
-To:     Heiko Carstens <hca@linux.ibm.com>,
-        Haowen Bai <baihaowen@meizu.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <Ykq2H+POaGs0GHVU@osiris>
- <1649212651-32038-1-git-send-email-baihaowen@meizu.com>
- <Yk1TOpjLnmUcRQt3@osiris>
-From:   Peter Oberparleiter <oberpar@linux.ibm.com>
-In-Reply-To: <Yk1TOpjLnmUcRQt3@osiris>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: -zcfcv6cSSOWPx79FCW8EweoJJnrqR7M
-X-Proofpoint-ORIG-GUID: -zcfcv6cSSOWPx79FCW8EweoJJnrqR7M
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 6 Apr 2022 14:12:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBC2C1F9A3E
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649263817;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sQTT4EqOLRNQF0Ed2dIB0yr4+oIJIzcbTRQWujoh2kY=;
+        b=Ek/VubANinPC9h9ZGCSwBN5Dy2Bd73QKGhM2T4OwroZM/1bb9vVAESyDG+hH6qht4dZalw
+        qk1SwZF3VLvGdpwVqGvzfQJ33ENEltBbOYmLNUpUEIeWsz1qvK8ijQPvm2vnlItAp+xIlN
+        yOfgy2UhkPyLSrj1uiU4NwsGlQ/+no0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-446-f_Ly0toDM--tXyule_3RIw-1; Wed, 06 Apr 2022 12:50:14 -0400
+X-MC-Unique: f_Ly0toDM--tXyule_3RIw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 30F0F803D7C;
+        Wed,  6 Apr 2022 16:50:13 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-0-8.rdu2.redhat.com [10.22.0.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CFF7B76C4;
+        Wed,  6 Apr 2022 16:49:56 +0000 (UTC)
+Date:   Wed, 6 Apr 2022 12:49:54 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     Paul Moore <paul@paul-moore.com>, kbuild-all@lists.01.org,
+        Zeal Robot <zealci@zte.com.cn>, linux-kernel@vger.kernel.org,
+        eparis@redhat.com, dai.shixin@zte.com.cn,
+        Yang Yang <yang.yang29@zte.com.cn>, linux-audit@redhat.com,
+        ink@jurassic.park.msu.ru, huang.junhua@zte.com.cn,
+        guo.xiaofeng@zte.com.cn, mattst88@gmail.com
+Subject: Re: [PATCH] audit: do a quick exit when syscall number is invalid
+Message-ID: <Yk3Esn2Fu0lVX2SZ@madcap2.tricolour.ca>
+References: <20220326094654.2361956-1-yang.yang29@zte.com.cn>
+ <CAHC9VhTaCNqfTOi8X5G3AheBFzTYCzGnt_-=fNFc5Z1o8gPm9Q@mail.gmail.com>
+ <62465bf3.1c69fb81.d5424.365e@mx.google.com>
+ <2777189.mvXUDI8C0e@x2>
+ <CAHC9VhRYHhHPx42BKa0gp974uzwHoXZWqmwt9o=1rox7tHyy1w@mail.gmail.com>
+ <624803f7.1c69fb81.972da.2dd0@mx.google.com>
+ <YksVuhfv8weLCxX/@madcap2.tricolour.ca>
+ <624cea8e.1c69fb81.422be.e03b@mx.google.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_09,2022-04-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 clxscore=1011
- impostorscore=0 phishscore=0 bulkscore=0 spamscore=0 lowpriorityscore=0
- priorityscore=1501 adultscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204060079
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <624cea8e.1c69fb81.422be.e03b@mx.google.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06.04.2022 10:45, Heiko Carstens wrote:
-> On Wed, Apr 06, 2022 at 10:37:31AM +0800, Haowen Bai wrote:
->> Fix the following coccicheck warnings:
->> ./arch/s390/include/asm/scsw.h:695:47-49: WARNING
->>  !A || A && B is equivalent to !A || B
->>
->> I apply a readable version just to get rid of a warning.
->>
->> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
->> ---
->> V1->V2: apply a readable and simple version as suggestion.
->>
->>  arch/s390/include/asm/scsw.h | 47 ++++++++++++++++++++++++++++++--------------
->>  1 file changed, 32 insertions(+), 15 deletions(-)
-> 
-> [full quote below]
-> 
-> Vineeth, Peter, could one of you please Review and or ACK the patch
-> below?
+On 2022-04-06 01:19, CGEL wrote:
+> On Mon, Apr 04, 2022 at 11:58:50AM -0400, Richard Guy Briggs wrote:
+> > On 2022-04-02 08:06, CGEL wrote:
+> > > On Fri, Apr 01, 2022 at 10:16:45AM -0400, Paul Moore wrote:
+> > > > On Fri, Apr 1, 2022 at 9:39 AM Steve Grubb <sgrubb@redhat.com> wrote:
+> > > > > On Thursday, March 31, 2022 9:57:05 PM EDT CGEL wrote:
+> > > > > > On Thu, Mar 31, 2022 at 10:16:23AM -0400, Paul Moore wrote:
+> > > > > > > On Wed, Mar 30, 2022 at 10:29 PM CGEL <cgel.zte@gmail.com> wrote:
+> > > > > > > > On Wed, Mar 30, 2022 at 10:48:12AM -0400, Paul Moore wrote:
+> > > > > > > > > If audit is not generating SYSCALL records, even for invalid/ENOSYS
+> > > > > > > > > syscalls, I would consider that a bug which should be fixed.
+> > > > > > > >
+> > > > > > > > If we fix this bug, do you think audit invalid/ENOSYS syscalls better
+> > > > > > > > be forcible or be a rule that can be configure? I think configure is
+> > > > > > > > better.
+> > > > > > >
+> > > > > > > It isn't clear to me exactly what you are asking, but I would expect
+> > > > > > > the existing audit syscall filtering mechanism to work regardless if
+> > > > > > > the syscall is valid or not.
+> > > > > >
+> > > > > > Thanks, I try to make it more clear. We found that auditctl would only
+> > > > > > set rule with syscall number (>=0 && <2047) ...
+> > > > 
+> > > > That is exactly why I wrote the warning below in my response ...
+> > > >
+> > > I think the question is more clear now.
+> > > 
+> > > 1) libaudit.c wants to forbid setting invalid syscall, but inconsistent
+> > > Currently way(>=0 && <2047) is inconsistent, syscall with number 2000 and
+> > > syscall with number 3000 are both invalid syscall. But 2000 can be set by
+> > > auditctl, and 3000 cannot be set by auditctl.
+> > > A better way to do this forbidden is to use __NR_syscalls(asm-generic/unistd.h).
+> > > 
+> > > 2) if libaudit.c do the right forbidden, kernel better ignore invalid syscall
+> > > See this patch.
+> > > 
+> > > If we want audit invalid syscall as you said before. libaudit.c should not
+> > > do the forbidden, auditctl should allow setting syscall rule with 'any' number.
+> > > So do you think we should fix libaudit.c?
+> > 
+> > I'm having a bit of trouble understanding what you've said above.
+> > 
+> > The kernel ultimately must protect itself from malice and mistakes, so
+> > it must verify all data sent to it.
+> > 
+> > Userspace can help by knowing what that kernel policy is so it can avoid
+> > violating that policy or provide useful feedback if it can't.  Userspace
+> > can be used to make things more efficient, but the kernel is the last
+> > step for security.
+> > 
+> > If userspace and the kernel are mismatched or out of sync, then the
+> > kernel enforces policy to protect itself.
+>
+> Much appreciate for your interpretation. Have you get any idea of how
+> to solve the mismatched? From your viewpoint, I think it's better for
+> kernel to not handle syscall of syscall number<0, because it's invaild
+> of all arch, and has no value for attacker to probing for specific
+> syscall numbers.
 
-This patch changes scsw->cmd access to scsw->tm access, which is
-incorrect, so I cannot ACK them as is.
+Going back to the very first quoted line above, if you can generate a
+test case that shows that audit is missing an auditable event, that is a
+bug that should be fixed.
 
-Also I'm somewhat torn on the general question if these functions should
-be changed:
+> > > > > > > to the audit syscall filter, which are unfortunately baked into the
+> > > > > > > current design/implementation, which may affect this to some extent.
+> > > > 
+> > > > -- 
+> > > > paul-moore.com
+> > 
+> > - RGB
 
-- the current implementation is unreadable => change it
-- the current implementation works => keep it
-- improvement patches like this one seem to appear regularly and consume
-  time in reviewing => change it
+- RGB
 
-If there was a new version that really improved readability, this would
-be really welcome. The problem is that the definition of readability is
-special for these functions: each of these functions implement a
-validity check based on text from the s390 Principles of Operations
-(PoP) document [1]. "Readable" for myself would mean: I can easily
-correlate the code to the text from the PoP so that I can spot errors or
-adjust code to changed text.
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
 
-I'm adding some examples how that could look like below. My question to
-the original author would be, if this is something they could implement,
-or if we'd rather do that at some point in time in the future by ourselves.
-
->> diff --git a/arch/s390/include/asm/scsw.h b/arch/s390/include/asm/scsw.h
->> index a7c3ccf681da..b7e65f96de3c 100644
->> --- a/arch/s390/include/asm/scsw.h
->> +++ b/arch/s390/include/asm/scsw.h
->> @@ -508,9 +508,13 @@ static inline int scsw_cmd_is_valid_zcc(union scsw *scsw)
->>   */
->>  static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
->>  {
->> -	return (scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND) &&
->> -	       !(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) &&
->> -	       (scsw->cmd.stctl & SCSW_STCTL_ALERT_STATUS);
->> +	if (!(scsw->tm.stctl & SCSW_STCTL_STATUS_PEND))
->> +		return 0;
->> +	if (scsw->tm.stctl & SCSW_STCTL_INTER_STATUS)
->> +		return 0;
->> +	if (scsw->tm.stctl & SCSW_STCTL_ALERT_STATUS)
->> +		return 1;
->> +	return 0;
->>  }
-
-Here's the PoP text that is the base for this function (note ECTL=E):
-
-"The E bit is meaningful whenever the subchannel is status pending with
-alert status either alone or together with primary status, secondary
-status, or both."
-
-A readable version for me would therefore contain code that can easily
-be matched against that text, e.g. something like:
-
-/* Must be status pending. */
-if (!(scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND))
-  return 0;
-
-/* Must have alert status. */
-if (!(scsw->cmd.stctl & SCSW_STCTL_ALERT_STATUS))
-  return 0;
-
-/* Must be alone or together with primary, secondary or both,
- * => no intermediate status. */
-if (scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS)
-  return 0;
-
-return 1;
-
->>  /**
->> @@ -522,10 +526,15 @@ static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
->>   */
->>  static inline int scsw_cmd_is_valid_pno(union scsw *scsw)
->>  {
->> -	return (scsw->cmd.fctl != 0) &&
->> -	       (scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND) &&
->> -	       (!(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) ||
->> -		  (scsw->cmd.actl & SCSW_ACTL_SUSPENDED));
->> +	if (!scsw->tm.fctl)
->> +		return 0;
->> +	if (!(scsw->tm.stctl & SCSW_STCTL_STATUS_PEND))
->> +		return 0;
->> +	if (!(scsw->tm.stctl & SCSW_STCTL_INTER_STATUS))
->> +		return 1;
->> +	if (scsw->tm.actl & SCSW_ACTL_SUSPENDED)
->> +		return 1;
->> +	return 0;
->>  }
-
-Here's the associated PoP text for this function (note: PNO=N)
-
-"The N bit is meaningful whenever the status-control field contains any
-of the indications listed below and at least one basic I/O function is
-also indicated at the subchannel:
-- Status pending with any combination of primary, secondary, or alert
-  status
-- Status pending alone
-- Status pending with intermediate status when the subchannel is also
-  suspended"
-
-Again a readable version could look like:
-
-/* Must indicate at least one I/O function. */
-if (!scsw->cmd.fctl)
-  return 0;
-
-/* Must be status pending. */
-if (!(scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND))
-  return 0;
-
-/* Can be status pending alone, or with any combination of primary,
- * secondary and alert => no intermediate status. */
-if (!(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS))
-  return 1;
-
-/* If intermediate, must be suspended. */
-if (scsw->cmd.actl & SCSW_ACTL_SUSPENDED)
-  return 1;
-
-return 0;
-
-The _tm_ functions below should be changed in the exact same way, while
-accessing the corresponding data fields in scsw->tm instead of scsw->cmd.
-
->>  static inline int scsw_tm_is_valid_ectl(union scsw *scsw)
->>  static inline int scsw_tm_is_valid_pno(union scsw *scsw)
-
-[1] https://www.ibm.com/support/pages/zarchitecture-principles-operation
-
--- 
-Peter Oberparleiter
-Linux on IBM Z Development - IBM Germany R&D
