@@ -2,201 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E67C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:09:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 698BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:09:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235452AbiDFPLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
+        id S235408AbiDFPLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235362AbiDFPKq (ORCPT
+        with ESMTP id S235650AbiDFPKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:10:46 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B2DFFFB5;
-        Wed,  6 Apr 2022 05:10:48 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236BgTjv003534;
-        Wed, 6 Apr 2022 12:09:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=BmKJuJMODVttv+/lBaYf3hGEbzzMxoGNKuLFEm/ZpD4=;
- b=cQs2TctgJZPet3Mwn7W4WiuDwIeZipc+5OoPbN0Lgj4yIq5IBE5X83K+XKhqMk3rixx1
- pQF0vw7KGo9vAR0vTvqMmagDcjerpMR+XVGGjWX36rc/zE7A3VPLc43zyM0jPGMaCgru
- FKJZG5c4uWdXBEuoVKT2rTnLKzW/k0j+AndLlJzqSU8N48WesLv7VSk9rXoWa40gbgST
- HJqEZVVwqBKGycbW8x0K6Kc/pLQgCaR2X4vByGv6vaUgOMxa8GJbhVV6JI1c2lz5+fw7
- 422zsRb26fERlbTur4yWmiJ7REHPbjUYXDPzAVedMJR+W10kT1cRJwzZgqQEtkIqOja3 /Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f94js7nh8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 12:08:59 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 236BqC5Q010819;
-        Wed, 6 Apr 2022 12:08:59 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f94js7ng2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 12:08:59 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 236C3Hsg002663;
-        Wed, 6 Apr 2022 12:08:56 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3f6e48xcvf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 12:08:56 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 236C8sEn35324370
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Apr 2022 12:08:54 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4D0A352050;
-        Wed,  6 Apr 2022 12:08:54 +0000 (GMT)
-Received: from sig-9-65-95-173.ibm.com (unknown [9.65.95.173])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 7ED485204F;
-        Wed,  6 Apr 2022 12:08:53 +0000 (GMT)
-Message-ID: <35c38676a8b464a0fb7e4842de5108e08cb53380.camel@linux.ibm.com>
-Subject: Re: [PATCH v2] ima: remove the IMA_TEMPLATE Kconfig option
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     GUO Zihua <guozihua@huawei.com>, linux-integrity@vger.kernel.org
-Cc:     dmitry.kasatkin@gmail.com, roberto.sassu@huawei.com,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 06 Apr 2022 08:08:52 -0400
-In-Reply-To: <20220406061624.173584-1-guozihua@huawei.com>
-References: <20220406061624.173584-1-guozihua@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: zpShxX2sIuoOT1E96ea0mOmgaXLBxued
-X-Proofpoint-GUID: 8WkfBX0dsUk2htx-JqrPoZZgst7KIBa1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_04,2022-04-06_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- adultscore=0 mlxlogscore=999 malwarescore=0 mlxscore=0 phishscore=0
- bulkscore=0 suspectscore=0 impostorscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204060057
+        Wed, 6 Apr 2022 11:10:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98FAB26B0BD
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:10:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649246610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ze2TWxpmAqqDUL49E+XcPJ1705fMWUsu9cAskjBwj0E=;
+        b=RacFOQEcat13njQY1H5G4z9iwYtTTpW7qA+RG83eY2InK2bkrVrVV9B6t6xWlmqUwR5Poo
+        2Z1Sv6beARq6B4zM/cQwMtruxYW6tRlKAQQsqvjtVTU3MiME6zrBJmPK026S2ZbI0V4SpB
+        nk6zmP1xB1TiauxgATnci00L+wCQFR4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-183-3j_ILxw9Pe2DH7h12y0k-g-1; Wed, 06 Apr 2022 08:00:18 -0400
+X-MC-Unique: 3j_ILxw9Pe2DH7h12y0k-g-1
+Received: by mail-wm1-f69.google.com with SMTP id c19-20020a05600c4a1300b0038e6b4a104cso2863181wmp.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:00:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ze2TWxpmAqqDUL49E+XcPJ1705fMWUsu9cAskjBwj0E=;
+        b=YKiTDlw22i4LnmUwM+qAsYuD+X7tg7j8Na/jnWx5hQVpbL6lE9mCu6LVSY1PCCCMEq
+         tXzTErKIrl3xzsurH5Nv1uSFQr8yKVuphSkoc7vc3wtcnts8fO3U+wpFN/JMLy5o6h6v
+         hyxDiYw2Uch7Py5kSEssoTzrnIEQ91HUnIKBZwbL1dWCV4CY8MICong/WyzlRPIQ39Jz
+         vMQ3XdfL+RrxDynbySbupeSE1DY4G92CNu8sx1NP3gB6xmpjRz6sO0hQ2bef6Xgbg6S1
+         fLRMef99NmOrKY3haPZxbtSCCCG4bw1Ize3F6AN05MoECeMFWT9JifhhrQ8VOyxabqoA
+         ikqw==
+X-Gm-Message-State: AOAM530K9Yo7uB2AgyyO4qbgg6eBG3toZZmYVN2GijNgvnQduTWWFKSO
+        SlYKRX+vKZgNSP7yGB3fofC2JaKXQfDsm6jJWjZZcvY3jRuOKdTNtVCQ/Vrxa2knijzOxhsQo1V
+        NQT+ufDS3HU7se7kR+CwmBWQM
+X-Received: by 2002:adf:f10e:0:b0:206:1837:b5a9 with SMTP id r14-20020adff10e000000b002061837b5a9mr6235217wro.347.1649246417777;
+        Wed, 06 Apr 2022 05:00:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwAufotzexY7Jj8FBhbUyN69cKdArXStk+wlr/BcYVa/P4zN5BWio7QBwNF1ollNyzQV0IO1w==
+X-Received: by 2002:adf:f10e:0:b0:206:1837:b5a9 with SMTP id r14-20020adff10e000000b002061837b5a9mr6235196wro.347.1649246417519;
+        Wed, 06 Apr 2022 05:00:17 -0700 (PDT)
+Received: from redhat.com ([2.55.179.195])
+        by smtp.gmail.com with ESMTPSA id r12-20020a5d6c6c000000b00203ec2b1255sm18278692wrz.60.2022.04.06.05.00.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 05:00:17 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 08:00:13 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
+        peterz@infradead.org, sgarzare@redhat.com,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
+Message-ID: <20220406075952-mutt-send-email-mst@kernel.org>
+References: <20220406083538.16274-1-jasowang@redhat.com>
+ <20220406083538.16274-5-jasowang@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406083538.16274-5-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-06 at 14:16 +0800, GUO Zihua wrote:
-> It is discovered thatO allowing template "ima" as the compiled default
-> would cause the following issue: the boot command line option
-> "ima_hash=" must be behind "ima_template=", otherwise "ima_hash=" might
-> be rejected.
+On Wed, Apr 06, 2022 at 04:35:37PM +0800, Jason Wang wrote:
+> This patch implements PCI version of synchronize_vqs().
+> 
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-The format of a proper patch description describes the current status,
-provides a succinct problem description, followed by the solution.
+Please add implementations at least for ccw and mmio.
 
-The original 'ima' measurement list template contains a hash, defined
-as 20 bytes, and a null terminated pathname, limited to 255
-characters.  Other measurement list templates permit both larger hashes
-and longer pathnames.  When the "ima" template is configured as the
-default, a new measurement list template (ima_template=) must be
-specified before specifying a larger hash algorithm (ima_hash=) on the
-boot command line.
-
-To avoid this boot command line ordering issue, remove the legacy "ima"
-template configuration option, allowing it to still be specified on the
-boot command line.
-
-> 
-> The root cause of this issue is that during the processing of ima_hash,
-> we would try to check whether the hash algorithm is compatible with the
-> template. If the template is not set at the moment we do the check, we
-> check the algorithm against the compiled default template. If the
-> complied default template is "ima", then we reject any hash algorithm
-> other than sha1 and md5.
-> 
-> For example, if the compiled default template is "ima", and the default
-> algorithm is sha1 (which is the current default). In the cmdline, we put
-> in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
-> that ima starts with ima-ng as the template and sha256 as the hash
-> algorithm. However, during the processing of "ima_hash=",
-> "ima_template=" has not been processed yet, and hash_setup would check
-> the configured hash algorithm against the compiled default: ima, and
-> reject sha256. So at the end, the hash algorithm that is actually used
-> will be sha1.
-> 
-> With template "ima" removed from the compiled default, we ensure that
-> the default tempalte would at least be "ima-ng" which allows for
-> basically any hash algorithm. Users who needs to use "ima" template
-> could still do it by specifying "ima_template=ima" in boot command line.
-> 
-> This change would not break the algorithm compatibility checking for
-> IMA.
-> 
-> Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
-> Signed-off-by: GUO Zihua <guozihua@huawei.com>
 > ---
->  security/integrity/ima/Kconfig | 22 +++++++++-------------
->  1 file changed, 9 insertions(+), 13 deletions(-)
+>  drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
+>  drivers/virtio/virtio_pci_common.h |  2 ++
+>  drivers/virtio/virtio_pci_legacy.c |  1 +
+>  drivers/virtio/virtio_pci_modern.c |  2 ++
+>  4 files changed, 19 insertions(+)
 > 
-> diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
-> index f3a9cc201c8c..f392cac7a7d1 100644
-> --- a/security/integrity/ima/Kconfig
-> +++ b/security/integrity/ima/Kconfig
-> @@ -65,14 +65,11 @@ choice
->  	help
->  	  Select the default IMA measurement template.
+> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+> index d724f676608b..b78c8bc93a97 100644
+> --- a/drivers/virtio/virtio_pci_common.c
+> +++ b/drivers/virtio/virtio_pci_common.c
+> @@ -37,6 +37,20 @@ void vp_synchronize_vectors(struct virtio_device *vdev)
+>  		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+>  }
 >  
-> -	  The original 'ima' measurement list template contains a
-> -	  hash, defined as 20 bytes, and a null terminated pathname,
-> -	  limited to 255 characters.  The 'ima-ng' measurement list
-> -	  template permits both larger hash digests and longer
-> -	  pathnames.
-> -
-> -	config IMA_TEMPLATE
-> -		bool "ima"
-> +	  The 'ima-ng' measurement list template permits various hash
-> +	  digests and long pathnames. The compiled default template
-> +	  can be overwritten using the kernel command line
-> +	  'ima_template=' option.
+> +void vp_synchronize_vqs(struct virtio_device *vdev)
+> +{
+> +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+> +	int i;
 > +
-
-Other than perhaps changing "contains" to "contained", there's no
-reason for changing the text.  Adding an additional line is fine - The
-configured default template can be replaced by specifying
-"ima_template="  on the boot command line.
-
->  	config IMA_NG_TEMPLATE
->  		bool "ima-ng (default)"
->  	config IMA_SIG_TEMPLATE
-> @@ -82,7 +79,6 @@ endchoice
->  config IMA_DEFAULT_TEMPLATE
->  	string
->  	depends on IMA
-> -	default "ima" if IMA_TEMPLATE
->  	default "ima-ng" if IMA_NG_TEMPLATE
->  	default "ima-sig" if IMA_SIG_TEMPLATE
->  
-> @@ -102,19 +98,19 @@ choice
->  
->  	config IMA_DEFAULT_HASH_SHA256
->  		bool "SHA256"
-> -		depends on CRYPTO_SHA256=y && !IMA_TEMPLATE
-> +		depends on CRYPTO_SHA256=y
->  
->  	config IMA_DEFAULT_HASH_SHA512
->  		bool "SHA512"
-> -		depends on CRYPTO_SHA512=y && !IMA_TEMPLATE
-> +		depends on CRYPTO_SHA512=y
->  
->  	config IMA_DEFAULT_HASH_WP512
->  		bool "WP512"
-> -		depends on CRYPTO_WP512=y && !IMA_TEMPLATE
-> +		depends on CRYPTO_WP512=y
->  
->  	config IMA_DEFAULT_HASH_SM3
->  		bool "SM3"
-> -		depends on CRYPTO_SM3=y && !IMA_TEMPLATE
-> +		depends on CRYPTO_SM3=y
->  endchoice
->  
->  config IMA_DEFAULT_HASH
-
+> +	if (vp_dev->intx_enabled) {
+> +		synchronize_irq(vp_dev->pci_dev->irq);
+> +		return;
+> +	}
+> +
+> +	for (i = 0; i < vp_dev->msix_vectors; ++i)
+> +		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+> +}
+> +
+>  /* the notify function used when creating a virt queue */
+>  bool vp_notify(struct virtqueue *vq)
+>  {
+> diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virtio/virtio_pci_common.h
+> index eb17a29fc7ef..2b84d5c1b5bc 100644
+> --- a/drivers/virtio/virtio_pci_common.h
+> +++ b/drivers/virtio/virtio_pci_common.h
+> @@ -105,6 +105,8 @@ static struct virtio_pci_device *to_vp_device(struct virtio_device *vdev)
+>  void vp_synchronize_vectors(struct virtio_device *vdev);
+>  /* the notify function used when creating a virt queue */
+>  bool vp_notify(struct virtqueue *vq);
+> +/* synchronize with callbacks */
+> +void vp_synchronize_vqs(struct virtio_device *vdev);
+>  /* the config->del_vqs() implementation */
+>  void vp_del_vqs(struct virtio_device *vdev);
+>  /* the config->find_vqs() implementation */
+> diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
+> index 6f4e34ce96b8..5a9e62320edc 100644
+> --- a/drivers/virtio/virtio_pci_legacy.c
+> +++ b/drivers/virtio/virtio_pci_legacy.c
+> @@ -192,6 +192,7 @@ static const struct virtio_config_ops virtio_pci_config_ops = {
+>  	.reset		= vp_reset,
+>  	.find_vqs	= vp_find_vqs,
+>  	.del_vqs	= vp_del_vqs,
+> +	.synchronize_vqs = vp_synchronize_vqs,
+>  	.get_features	= vp_get_features,
+>  	.finalize_features = vp_finalize_features,
+>  	.bus_name	= vp_bus_name,
+> diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
+> index a2671a20ef77..584850389855 100644
+> --- a/drivers/virtio/virtio_pci_modern.c
+> +++ b/drivers/virtio/virtio_pci_modern.c
+> @@ -394,6 +394,7 @@ static const struct virtio_config_ops virtio_pci_config_nodev_ops = {
+>  	.reset		= vp_reset,
+>  	.find_vqs	= vp_modern_find_vqs,
+>  	.del_vqs	= vp_del_vqs,
+> +	.synchronize_vqs = vp_synchronize_vqs,
+>  	.get_features	= vp_get_features,
+>  	.finalize_features = vp_finalize_features,
+>  	.bus_name	= vp_bus_name,
+> @@ -411,6 +412,7 @@ static const struct virtio_config_ops virtio_pci_config_ops = {
+>  	.reset		= vp_reset,
+>  	.find_vqs	= vp_modern_find_vqs,
+>  	.del_vqs	= vp_del_vqs,
+> +	.synchronize_vqs = vp_synchronize_vqs,
+>  	.get_features	= vp_get_features,
+>  	.finalize_features = vp_finalize_features,
+>  	.bus_name	= vp_bus_name,
+> -- 
+> 2.25.1
 
