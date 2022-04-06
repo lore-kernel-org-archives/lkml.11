@@ -2,133 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 682A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbiDFLts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
+        id S230489AbiDFLup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230054AbiDFLt2 (ORCPT
+        with ESMTP id S230344AbiDFLuW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:49:28 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5987C588352;
-        Wed,  6 Apr 2022 01:47:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649234827; x=1680770827;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=D6uurLf636+ymW4i3C9iuhVPW35WF/OF/XxWwpCTNQY=;
-  b=P00h3mdCL+LDy1FiXqWgP8f61D+PmiZPUTCivSqWpzc9cShcNtFpf/I4
-   0jxqOhJqbp9vRMMCxpbfWkUH+AKJp71m+jnbw1eJ7JzT8IoYWKeUR4Ds1
-   8D8/3y3Izf0ZkEpjGlXR0DKJ/3HwpLrqeClCLQ+qunmKB9fKV4dQKJQKr
-   GQ9wQJCmifv4Cl2AuOovGzDR0l6F3ag6cCl7lQ4yVlC34f9Ju3XlOizbh
-   KsF+JLe+EPEwJsPn0NHZ9luIsrwLe9ChA0ExAvpBhOkts1xavWaN2wVZx
-   jeUPETeaLXASWfpBDHcmqXPKHYmgcbFZI1MDE0sl+Alezcze4Yyk9GUuu
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259822970"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="259822970"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:47:07 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="570417321"
-Received: from hott-mobl.ger.corp.intel.com ([10.249.44.209])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:47:04 -0700
-Date:   Wed, 6 Apr 2022 11:46:57 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 1/2] tty: Add lookahead param to receive_buf
-In-Reply-To: <7cb1cc42-ef98-cbbe-1779-107602747d07@kernel.org>
-Message-ID: <10263812-e52-9d8d-f9f0-75e5f0c85f60@linux.intel.com>
-References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com> <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com> <7cb1cc42-ef98-cbbe-1779-107602747d07@kernel.org>
+        Wed, 6 Apr 2022 07:50:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEABC5AB658
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:49:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48EF261380
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:49:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88C3EC385A3;
+        Wed,  6 Apr 2022 08:49:46 +0000 (UTC)
+Date:   Wed, 6 Apr 2022 09:49:42 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <Yk1UJs6eZMoIp3Eh@arm.com>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
+ <20220405135758.774016-8-catalin.marinas@arm.com>
+ <YkzJP6zmkAhc6CI9@gondor.apana.org.au>
+ <CAMj1kXEXhFmGc4VTTcJU1YFsHJhZN44OdJ5Suf2ONG5=LR29HQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1236514060-1649234826=:1612"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXEXhFmGc4VTTcJU1YFsHJhZN44OdJ5Suf2ONG5=LR29HQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1236514060-1649234826=:1612
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Wed, 6 Apr 2022, Jiri Slaby wrote:
-
-> On 05. 04. 22, 12:24, Ilpo Järvinen wrote:
-> > After lookahead for XON/XOFF characters is added by the next
-> > patch, the receive side needs to ensure the flow-control
-> > actions are not retaken later on when those same characters
-> > get read by TTY.
-> > 
-> > Thus, pass lookahead count to receive_buf and skip
-> > flow-control character actions if already taken for the
-> > character in question. Lookahead count will become live after
-> > the next patch.
-> ...
-> > --- a/include/linux/tty_ldisc.h
-> > +++ b/include/linux/tty_ldisc.h
-> > @@ -224,11 +224,11 @@ struct tty_ldisc_ops {
-> >   	 * The following routines are called from below.
-> >   	 */
-> >   	void	(*receive_buf)(struct tty_struct *tty, const unsigned char
-> > *cp,
-> > -			       const char *fp, int count);
-> > +			       const char *fp, int count, int
-> > lookahead_count);
-> >   	void	(*write_wakeup)(struct tty_struct *tty);
-> >   	void	(*dcd_change)(struct tty_struct *tty, unsigned int status);
-> >   	int	(*receive_buf2)(struct tty_struct *tty, const unsigned char
-> > *cp,
-> > -				const char *fp, int count);
-> > +				const char *fp, int count, int
-> > lookahead_count);
+On Wed, Apr 06, 2022 at 08:53:33AM +0200, Ard Biesheuvel wrote:
+> On Wed, 6 Apr 2022 at 00:57, Herbert Xu <herbert@gondor.apana.org.au> wrote:
+> > On Tue, Apr 05, 2022 at 02:57:55PM +0100, Catalin Marinas wrote:
+> > > ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
+> > > operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
+> > > alignment.
+> > >
+> > > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> > > Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > ---
+> > >  include/linux/crypto.h | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/include/linux/crypto.h b/include/linux/crypto.h
+> > > index 2324ab6f1846..654b9c355575 100644
+> > > --- a/include/linux/crypto.h
+> > > +++ b/include/linux/crypto.h
+> > > @@ -167,7 +167,7 @@
+> > >   * maintenance for non-coherent DMA (cache invalidation in particular) does not
+> > >   * affect data that may be accessed by the CPU concurrently.
+> > >   */
+> > > -#define CRYPTO_MINALIGN ARCH_KMALLOC_MINALIGN
+> > > +#define CRYPTO_MINALIGN ARCH_DMA_MINALIGN
+> >
+> > I think this should remain as ARCH_KMALLOC_MINALIGN with the
+> > comment above modified.  The reason is that we assume memory
+> > returned by kmalloc is already aligned to this value.
+> >
+> > Ard, you added the comment regarding the DMA requirement, so
+> > does anything actually rely on this? If they do, they now need
+> > to do their own alignment.
 > 
-> Please always use unsigned if you don't expect negative numbers. count should
-> be changed to unsigned in long term too.
+> This patch looks incorrect to me, as ARCH_DMA_MINALIGN is not
+> #define'd on all architectures.
 
-Ok. I had just used the same types as there were previously. The types are 
-a big mess, int and size_t conversions being done back and forth within 
-that callchain for count. And now that you mentioned unsigned it 
-seems that fp (flag ptr) is also inconsistent.
+It is after the first patch:
 
-> > diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-> > index 58e9619116b7..1871a6a9cb00 100644
-> > --- a/include/linux/tty_port.h
-> > +++ b/include/linux/tty_port.h
-> > @@ -39,7 +39,7 @@ struct tty_port_operations {
-> >   };
-> >     struct tty_port_client_operations {
-> > -	int (*receive_buf)(struct tty_port *port, const unsigned char *, const
-> > unsigned char *, size_t);
-> > +	int (*receive_buf)(struct tty_port *port, const unsigned char *, const
-> > unsigned char *, size_t, size_t);
-> 
-> Good, here it is unsigned and even of size_t size (I don't immediately see
-> why, but OK).
+https://lore.kernel.org/all/20220405135758.774016-2-catalin.marinas@arm.com/
 
-You mean that the flag ptr is now unsigned char * (which I didn't even 
-touch)?
+The series makes both ARCH_*_MINALIGN available irrespective of what an
+arch defines. If one needs guaranteed static alignment for DMA, use the
+DMA macro. If the minimum kmalloc() alignment is needed (e.g. to store
+some flags in the lower pointer bits), use the KMALLOC macro. I grep'ed
+through drivers/ and I've seen both cases (e.g.
+drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c for the latter use-case).
 
-Your comment leaves me to wonder though, what you now want for the 
-lookahead count (the last arg), size_t or unsigned int? Lookahead count 
-cannot be negative, and AFAICT, count neither because that would mean tty 
-has to return some characters back :-).
+> But I am fine with the intent: ARCH_DMA_MINALIGN will be >=
+> ARCH_KMALLOC_MINALIGN, and so the compile time layout of structs will
+> take the worst cast minimum DMA alignment into account, whereas their
+> placement in memory when they allocated dynamically may be aligned to
+> ARCH_KMALLOC_MINALIGN only. Since the latter will be based on the
+> actual cache geometry, this should be fine.
 
-...Maybe I'll do another patch post these fix ones to match/correct the 
-types.
+That's the idea.
+
+> Apart from the 'shash desc on stack' issue solved by the patch that
+> also introduced the above comment(660d2062190d), I've never looked
+> into the actual memory footprint of the crypto related data structures
+> resulting from this alignment, but it seems to me that /if/ this is
+> significant, we should be able to punt this to the drivers that
+> actually need this, rather than impose it for the whole system. (This
+> would involve over-allocating the context struct, and aligning up the
+> pointer in the various xxx_ctx() getters iff needed by the driver in
+> question)
+
+Since ARCH_KMALLOC_MINALIGN on arm64 prior to this series is 128, there
+is any change to the crypto code.
 
 -- 
- i.
-
---8323329-1236514060-1649234826=:1612--
+Catalin
