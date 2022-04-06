@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00663C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:38:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 333F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbiDFMjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33420 "EHLO
+        id S230386AbiDFMkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232144AbiDFMi3 (ORCPT
+        with ESMTP id S229510AbiDFMjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:38:29 -0400
+        Wed, 6 Apr 2022 08:39:07 -0400
 Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459D7576837
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:40:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 341DD26AE34
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:41:45 -0700 (PDT)
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4B3F11A13A5;
-        Wed,  6 Apr 2022 10:40:15 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CA5791A06DE;
+        Wed,  6 Apr 2022 10:40:13 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 00A8E1A129E;
-        Wed,  6 Apr 2022 10:40:15 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 802B81A129E;
+        Wed,  6 Apr 2022 10:40:13 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id CE566183AC4F;
-        Wed,  6 Apr 2022 16:40:12 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 663E1183AC8A;
+        Wed,  6 Apr 2022 16:40:11 +0800 (+08)
 From:   Sandor.yu@nxp.com
 To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         andrzej.hajda@intel.com, narmstrong@baylibre.com,
@@ -32,9 +32,9 @@ To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
 Cc:     Sandor.yu@nxp.com, shengjiu.wang@nxp.com, cai.huoqing@linux.dev,
         maxime@cerno.tech, harry.wentland@amd.com,
         hverkuil-cisco@xs4all.nl, amuel@sholland.org
-Subject: [PATCH v1 3/5] drm: bridge: dw_hdmi: Enable GCP only for Deep Color
-Date:   Wed,  6 Apr 2022 16:48:35 +0800
-Message-Id: <ebd9830fe35d79153cb0051bed0d255fb004fb63.1649230434.git.Sandor.yu@nxp.com>
+Subject: [PATCH v1 2/5] drm: bridge: dw_hdmi: enable overflow workaround for v2.13a
+Date:   Wed,  6 Apr 2022 16:48:34 +0800
+Message-Id: <5339589121b05c0db7ee4befdc48c7e4ab4f1653.1649230434.git.Sandor.yu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1649230434.git.Sandor.yu@nxp.com>
 References: <cover.1649230434.git.Sandor.yu@nxp.com>
@@ -47,36 +47,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sandor Yu <Sandor.yu@nxp.com>
 
-HDMI1.4b specification section 6.5.3:
-Source shall only send GCPs with non-zero CD to sinks
-that indicate support for Deep Color.
+iMX865 HDMI (v2.13a) have been identified as needing the workaround.
+Tests show that one iteration is enough.
 
-DW HDMI GPC default enabled, clear gpc_auto bit for bpp 24.
+Without the workaround, iMX865 HDMI audio may not work
+after cable plugout/in, because HDMI mode is not really set in
+register HDMI_FC_INVIDCONF.
 
 Signed-off-by: Sandor Yu <Sandor.yu@nxp.com>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index b11577de4836..c7b11582529e 100644
+index 4befc104d220..b11577de4836 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -1160,6 +1160,14 @@ static void hdmi_video_packetize(struct dw_hdmi *hdmi)
- 		HDMI_VP_PR_CD_DESIRED_PR_FACTOR_MASK);
- 	hdmi_writeb(hdmi, val, HDMI_VP_PR_CD);
- 
-+	val = hdmi_readb(hdmi, HDMI_FC_DATAUTO3);
-+	if (color_depth == 4)
-+		/* disable Auto GCP when bpp 24 */
-+		val &= ~0x4;
-+	else
-+		val |= 0x4;
-+	hdmi_writeb(hdmi, val, HDMI_FC_DATAUTO3);
-+
- 	hdmi_modb(hdmi, HDMI_VP_STUFF_PR_STUFFING_STUFFING_MODE,
- 		  HDMI_VP_STUFF_PR_STUFFING_MASK, HDMI_VP_STUFF);
- 
+@@ -2087,9 +2087,9 @@ static void dw_hdmi_clear_overflow(struct dw_hdmi *hdmi)
+ 	 *
+ 	 * The number of iterations matters and depends on the HDMI TX revision
+ 	 * (and possibly on the platform). So far i.MX6Q (v1.30a), i.MX6DL
+-	 * (v1.31a) and multiple Allwinner SoCs (v1.32a) have been identified
+-	 * as needing the workaround, with 4 iterations for v1.30a and 1
+-	 * iteration for others.
++	 * (v1.31a), iMX865(v2.13a) and multiple Allwinner SoCs (v1.32a)
++	 * have been identified as needing the workaround,
++	 * with 4 iterations for v1.30a and 1 iteration for others.
+ 	 * The Amlogic Meson GX SoCs (v2.01a) have been identified as needing
+ 	 * the workaround with a single iteration.
+ 	 * The Rockchip RK3288 SoC (v2.00a) and RK3328/RK3399 SoCs (v2.11a) have
+@@ -2106,6 +2106,7 @@ static void dw_hdmi_clear_overflow(struct dw_hdmi *hdmi)
+ 	case 0x201a:
+ 	case 0x211a:
+ 	case 0x212a:
++	case 0x213a:
+ 		count = 1;
+ 		break;
+ 	default:
 -- 
 2.25.1
 
