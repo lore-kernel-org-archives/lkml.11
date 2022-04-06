@@ -2,171 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3447CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 342EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234539AbiDFOMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43160 "EHLO
+        id S234303AbiDFOMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234577AbiDFOMP (ORCPT
+        with ESMTP id S234447AbiDFOMS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:12:15 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E372121A0DF;
-        Wed,  6 Apr 2022 03:06:28 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id p17so1511926plo.9;
-        Wed, 06 Apr 2022 03:06:28 -0700 (PDT)
+        Wed, 6 Apr 2022 10:12:18 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428CD12F6C2;
+        Wed,  6 Apr 2022 03:06:36 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id p189so1117736wmp.3;
+        Wed, 06 Apr 2022 03:06:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=57yP5txyEZyDXpbo8tIP1sloT8BEAgWzSMNPoATwlDg=;
-        b=ehDrXAaW3pMqUfx6zSCSo3ez2chyhCErGyezUVm9LK1/D0javYpCUbJcZIXfHfMvkN
-         8UIV/uwH0bb7zEJGYOseWq2ar1EmtgBpi8Gox+OQasCWLVzzBsysSGCPqZ7csA3+Td3B
-         dMru2IP9psWuiXdD27GLpcl1xK5YaKi5o5RfzDNfKouCSPisF0u0YDTQo/TtmxlmCNvR
-         I1PevTkDTfKigc4tGc7Gz67Yxo+M40RoOJfqCyycumlnyj3FL1bsLJ1kHzeIttwSzOLM
-         x9jMos0U8Pf4TpTu1/pxpqYsBWguWjQU56tBLryyJgVZR0EKx8yvXdBvYVnRMBKD41/W
-         UImw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=47pi7dvQzwfLX3ainw4cotVpAlhqEnPPur28m2DBYnI=;
+        b=oyRzTjU9Y5vVWWhJlEXWBmqOttlu6Wt5erI3pvi3Fx5Be/D9iwtxpOKRdMqP8MSnvV
+         JBJGNCltub8U7JXIZ9M5AUptIBltfbxi4nu/ZZCi8tXkbjKvPp+Epc3VQSPe52ylIXpy
+         ubB2jEtugsabOsmsf+PzZzpWaaV/LpZUIhPFv72C1ChcXPk/o3VCBcXs7tjofJaVJpqA
+         yC3Gaaecl3i9SCS0y10GBJEn1wndI7ziUMRs9XbXmODOmMaV4YAdNfaPbtVNPnY7mDVq
+         xpvGUcS/BLncMrjceqSCIxgkHqp31zclZ1gtlHQTFDVsVq+1Lql1hC9hId/rA59BKViW
+         fJuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=57yP5txyEZyDXpbo8tIP1sloT8BEAgWzSMNPoATwlDg=;
-        b=xA0DVpVJc7hrUhXdpCOlA/I6D0KEC/Y3ycaCU7ZiI36BrH7ZBJ6+wRBN1tKkMRMlQi
-         5KrheRv0/1b1I6ReksHd+OsH+vRhAPzh1gTkYFP4iUfzrEEtbfPBj5MxB/RROHuexlZR
-         c0eN6EbnogRSjhZrRoVApVzqXm4G08JBKYnh+Kas1f3AecO75BsD+uDIve8ym14iE6Fn
-         975twtJZNgEC8D5MwsHuL+rHZWG8dMQh1/b4MtAjUxq12JwCk1T5Sl0hWfotrJxBbAg4
-         JUbN6zhnml25FPrTgvCCyApH4jzgVbyt3EYopWInTZNbnPz7m1+DJNrba5NB94OOOe1b
-         y2DA==
-X-Gm-Message-State: AOAM533GIPrBITZBla72tDW7D/wuxvIctMjpsTDsVzpPN+/d3XwT7T9i
-        odc+UyJFJDK1eVXWl3FNqTk=
-X-Google-Smtp-Source: ABdhPJylhVZbCyCHSeSScbZqHALx+bT8I3PFeWGu4VLRdO069nloeoxBtQ1mNZowYRE80cEQdXbpCg==
-X-Received: by 2002:a17:90b:4c92:b0:1c7:a9a3:6274 with SMTP id my18-20020a17090b4c9200b001c7a9a36274mr8943122pjb.148.1649239587542;
-        Wed, 06 Apr 2022 03:06:27 -0700 (PDT)
-Received: from CHENGDONGLI-MB0.localdomain ([203.205.141.115])
-        by smtp.gmail.com with ESMTPSA id d16-20020a17090ad99000b001bcbc4247a0sm5144868pjv.57.2022.04.06.03.06.25
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 06 Apr 2022 03:06:26 -0700 (PDT)
-From:   Chengdong Li <brytonlee01@gmail.com>
-X-Google-Original-From: Chengdong Li <chengdongli@tencent.com>
-Received: by CHENGDONGLI-MB0.localdomain (Postfix, from userid 501)
-        id 2E2286C7A19C; Wed,  6 Apr 2022 18:06:22 +0800 (CST)
-To:     adrian.hunter@intel.com, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, peterz@infradead.org,
-        mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org
-Cc:     ak@linux.intel.com, likexu@tencent.com, chengdongli@tencent.com
-Subject: [PATCH v2] perf test tsc: Fix error message report when not supported.
-Date:   Wed,  6 Apr 2022 18:06:09 +0800
-Message-Id: <20220406100609.65239-1-chengdongli@tencent.com>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=47pi7dvQzwfLX3ainw4cotVpAlhqEnPPur28m2DBYnI=;
+        b=li/3TbjpWZHsrO+pbFpJmtXrij9rHnpV7KRyXW2Lz7jkUCar7FcAjsIc6tceNQsPN5
+         7TweOfbz2md+g3nTgA2JCOApSHNWfCYhQjcpw7h3/WG+/dFM8wCqBq1j0/Bfcf65mUx7
+         ssqDT066TvXeTQbgs7946m2i4ZTPiv9RFCamQn+TT8v17B5SHgeQ5MDwNy9QN4PkDyhK
+         EBV56EDNXSFbfHAwdgDJDcr51Of2fpycaevFq1CwNxQG3nZZlt+q6ps8zkocuT1ENZQ3
+         GvH7VbkgbbzdXk34swUil93BLj52npvhWg1HnINcoGFN7p+h0SxWssS/Aa8WbdB+C3Lm
+         ZsOA==
+X-Gm-Message-State: AOAM5327sjlCJ7E4ykCI0sLo8UfCfU7Hz54jC2GxxmXWSPiEhO/NEJRx
+        i2za2kx6msNbxP4PxR9Z3Dc=
+X-Google-Smtp-Source: ABdhPJwjEWxUDNSk8rXkcq9W0u0al0JkpQ7wIp2FGwbqxDUXcBGMVgOqvVjB2N3EDRLNfNHBWOY8ag==
+X-Received: by 2002:a05:600c:4f10:b0:38c:ae36:d305 with SMTP id l16-20020a05600c4f1000b0038cae36d305mr6818888wmq.34.1649239589575;
+        Wed, 06 Apr 2022 03:06:29 -0700 (PDT)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id l2-20020a5d5602000000b00206120e0b0fsm10793032wrv.18.2022.04.06.03.06.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 03:06:29 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 11:06:27 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
+Message-ID: <Yk1mIxYRSDSsIOyq@debian>
+References: <20220405070258.802373272@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By default `perf test tsc` does not return the error message
-when child process detected kernel does not support. Instead, child
-process print error message to stderr, unfortunately the stderr is
-redirected to /dev/null when verbose <= 0.
+Hi Greg,
 
-This patch did three things:
-- returns TEST_SKIP to parent process instead of TEST_OK when
-  perf_read_tsc_conversion() is not supported.
-- add a new subtest of testing if TSC is supported on current
-  architecture by moving exist code to a separate function.
-- extended test suite definition to contain above two subtests.
+On Tue, Apr 05, 2022 at 09:24:54AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.110 release.
+> There are 599 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
 
-Changes since v1 (thanks for the feedback from Adrian Hunter):
-- rebase commit to current source.
+Build test:
+mips (gcc version 11.2.1 20220314): 63 configs -> no failure
+arm (gcc version 11.2.1 20220314): 105 configs -> no new failure
+arm64 (gcc version 11.2.1 20220314): 3 configs -> no failure
+x86_64 (gcc version 11.2.1 20220314): 4 configs -> no failure
 
-Signed-off-by: Chengdong Li <chengdongli@tencent.com>
----
- tools/perf/tests/perf-time-to-tsc.c | 36 +++++++++++++++++++++--------
- 1 file changed, 27 insertions(+), 9 deletions(-)
+Boot test:
+x86_64: fails to boot on my test laptop. Detailed report at: https://lore.kernel.org/stable/Yky7RmYZnPp9HgzT@debian/
+x86_64: Booted on qemu. No regression. [1]
+arm64: Booted on rpi4b (4GB model). No regression. [2]
 
-diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
-index d12d0ad81801..fc7c380af5a0 100644
---- a/tools/perf/tests/perf-time-to-tsc.c
-+++ b/tools/perf/tests/perf-time-to-tsc.c
-@@ -47,6 +47,17 @@
- 	}					\
- }
- 
-+static int test__tsc_is_supported(struct test_suite *test __maybe_unused,
-+				  int subtest __maybe_unused)
-+{
-+	if (!TSC_IS_SUPPORTED) {
-+		pr_debug("Test not supported on this architecture");
-+		return TEST_SKIP;
-+	}
-+
-+	return TEST_OK;
-+}
-+
- /**
-  * test__perf_time_to_tsc - test converting perf time to TSC.
-  *
-@@ -70,7 +81,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	struct perf_cpu_map *cpus = NULL;
- 	struct evlist *evlist = NULL;
- 	struct evsel *evsel = NULL;
--	int err = -1, ret, i;
-+	int err = TEST_FAIL, ret, i;
- 	const char *comm1, *comm2;
- 	struct perf_tsc_conversion tc;
- 	struct perf_event_mmap_page *pc;
-@@ -79,10 +90,6 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	u64 test_time, comm1_time = 0, comm2_time = 0;
- 	struct mmap *md;
- 
--	if (!TSC_IS_SUPPORTED) {
--		pr_debug("Test not supported on this architecture");
--		return TEST_SKIP;
--	}
- 
- 	threads = thread_map__new(-1, getpid(), UINT_MAX);
- 	CHECK_NOT_NULL__(threads);
-@@ -124,8 +131,8 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	ret = perf_read_tsc_conversion(pc, &tc);
- 	if (ret) {
- 		if (ret == -EOPNOTSUPP) {
--			fprintf(stderr, " (not supported)");
--			return 0;
-+			pr_debug("perf_read_tsc_conversion is not supported in current kernel");
-+			err = TEST_SKIP;
- 		}
- 		goto out_err;
- 	}
-@@ -191,7 +198,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	    test_tsc >= comm2_tsc)
- 		goto out_err;
- 
--	err = 0;
-+	err = TEST_OK;
- 
- out_err:
- 	evlist__delete(evlist);
-@@ -200,4 +207,15 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	return err;
- }
- 
--DEFINE_SUITE("Convert perf time to TSC", perf_time_to_tsc);
-+static struct test_case time_to_tsc_tests[] = {
-+	TEST_CASE_REASON("TSC support", tsc_is_supported,
-+			 "This architecture does not support"),
-+	TEST_CASE_REASON("Perf time to TSC", perf_time_to_tsc,
-+			 "perf_read_tsc_conversion is not supported"),
-+	{ .name = NULL, }
-+};
-+
-+struct test_suite suite__perf_time_to_tsc = {
-+	.desc = "Convert perf time to TSC",
-+	.test_cases = time_to_tsc_tests,
-+};
--- 
-2.27.0
+[1]. https://openqa.qa.codethink.co.uk/tests/978
+[2]. https://openqa.qa.codethink.co.uk/tests/981
+
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
 
