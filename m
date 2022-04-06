@@ -2,223 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DADC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F07C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234697AbiDFOUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41034 "EHLO
+        id S234787AbiDFOVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234610AbiDFOTi (ORCPT
+        with ESMTP id S234614AbiDFOVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:19:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E258932925B;
-        Tue,  5 Apr 2022 19:53:37 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KY8DP23QhzgYMw;
-        Wed,  6 Apr 2022 10:51:49 +0800 (CST)
-Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 6 Apr 2022 10:21:09 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6493479AB;
+        Wed,  6 Apr 2022 03:27:06 -0700 (PDT)
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KYKvz0p6rz686vL;
+        Wed,  6 Apr 2022 18:08:15 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 12:11:12 +0200
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 10:53:32 +0800
-From:   Liao Chang <liaochang1@huawei.com>
-To:     <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
-        <liaochang1@huawei.com>, <tglx@linutronix.de>, <clg@kaod.org>,
-        <nitesh@redhat.com>, <edumazet@google.com>, <peterz@infradead.org>,
-        <joshdon@google.com>, <masahiroy@kernel.org>, <nathan@kernel.org>,
-        <akpm@linux-foundation.org>, <vbabka@suse.cz>,
-        <gustavoars@kernel.org>, <arnd@arndb.de>, <chris@chrisdown.name>,
-        <dmitry.torokhov@gmail.com>, <linux@rasmusvillemoes.dk>,
-        <daniel@iogearbox.net>, <john.ogness@linutronix.de>,
-        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <heying24@huawei.com>, <guohanjun@huawei.com>,
-        <weiyongjun1@huawei.com>
-Subject: [RFC 3/3] softirq: Introduce statistics about softirq throttling
-Date:   Wed, 6 Apr 2022 10:52:41 +0800
-Message-ID: <20220406025241.191300-4-liaochang1@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406025241.191300-1-liaochang1@huawei.com>
-References: <20220406025241.191300-1-liaochang1@huawei.com>
+ 2022 11:11:11 +0100
+Date:   Wed, 6 Apr 2022 11:11:10 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Ira Weiny <ira.weiny@intel.com>
+CC:     Lukas Wunner <lukas@wunner.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Dan Williams" <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V7 03/10] PCI: Create PCI library functions in support
+ of DOE mailboxes.
+Message-ID: <20220406111110.00000e72@Huawei.com>
+In-Reply-To: <YkzPIzIhfzQKIMe0@iweiny-desk3>
+References: <20220330235920.2800929-1-ira.weiny@intel.com>
+        <20220330235920.2800929-4-ira.weiny@intel.com>
+        <YkVBJ+nRA2g/WDxa@infradead.org>
+        <YkXGnKsTEUAe29io@iweiny-desk3>
+        <20220402144845.GA7822@wunner.de>
+        <YkzPIzIhfzQKIMe0@iweiny-desk3>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.53]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500012.china.huawei.com (7.221.188.12)
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch introduces counting the number of time spent on softirqs for
-each CPU and the number of time that softirqs has been throttled for
-each CPU, which are reported in /proc/softirqs, for example:
+On Tue, 5 Apr 2022 16:22:11 -0700
+Ira Weiny <ira.weiny@intel.com> wrote:
 
-$cat /proc/softirqs
-                    CPU0       CPU1       CPU2       CPU3
-          HI:          0          0          0          0
-       TIMER:       1088        855        197       4862
-      NET_TX:          0          0          0          0
-      NET_RX:         15          1          0          0
-       BLOCK:         14         11         86         75
-    IRQ_POLL:          0          0          0          0
-     TASKLET:    5926026    6133070    5646523    6149053
-       SCHED:      18061      15939      15746      16004
-     HRTIMER:          0          0          0          0
-         RCU:        668        778        939        720
-                    CPU0       CPU1       CPU2       CPU3
- DURATION_MS:      91556      69888      66784      73772
- THROTTLE_MS:      77820       7328       5828       8904
+> On Sat, Apr 02, 2022 at 04:48:45PM +0200, Lukas Wunner wrote:
+> > On Thu, Mar 31, 2022 at 08:19:56AM -0700, Ira Weiny wrote:  
+> > > On Wed, Mar 30, 2022 at 10:50:31PM -0700, Christoph Hellwig wrote:  
+> > > > On Wed, Mar 30, 2022 at 04:59:13PM -0700, ira.weiny@intel.com wrote:  
+> > > > > Introduced in a PCI v6.0[1], DOE provides a config space based mailbox
+> > > > > with standard protocol discovery.  Each mailbox is accessed through a
+> > > > > DOE Extended Capability.  
+> > > > 
+> > > > I really don't think this should be built unconditionally and bloat
+> > > > every single kernel built with PCI support.  
+> > > 
+> > > I can add a Kconfig.  
+> > 
+> > Ideally, that config option should live in the pcie/ subdirectory,
+> > i.e. in drivers/pci/pcie/Kconfig, alongside drivers/pci/pcie/doe.c,
+> > as we try to consolidate PCIe-specific features there and reserve
+> > core code in drivers/pci/*.c for functionality that also applies
+> > to Conventional PCI.  
+> 
+> Thanks for letting me know about this direction.  I was unaware of this.
 
-Row starts with "DURATION_MS:" indicates how many milliseconds used for
-softirqs on each CPU. Row starts with "THROTTLE_MS:" indicates how many
-milliseconds softirq throttling lasted on each CPU.
+We had this in the pcie directory, but Bjorn asked us to move it to the pci
+directory as there isn't anything specific to PCIe about DOE. You could
+implement it on pci-x (maybe 2.0?) I think even though it's in the PCIe specification.
 
-Notice: the rate of "THROTTLE_MS" increase is controlled by parameter
-"kernel.softirq_period_ms" and "kernel.softirq_runtime_ms", generally
-speaking, the smaller softirq CPU bandwidth is, the faster "THROTTLE_MS"
-increase, especially when pending softirq workload is very heavy.
+https://lore.kernel.org/linux-pci/20210413194927.GA2241331@bjorn-Precision-5520/
 
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
----
- fs/proc/softirqs.c          | 18 ++++++++++++++++++
- include/linux/kernel_stat.h | 27 +++++++++++++++++++++++++++
- kernel/softirq.c            | 15 +++++++++++++--
- 3 files changed, 58 insertions(+), 2 deletions(-)
+Thanks,
 
-diff --git a/fs/proc/softirqs.c b/fs/proc/softirqs.c
-index 12901dcf57e2..5ea3ede9833e 100644
---- a/fs/proc/softirqs.c
-+++ b/fs/proc/softirqs.c
-@@ -22,6 +22,24 @@ static int show_softirqs(struct seq_file *p, void *v)
- 			seq_printf(p, " %10u", kstat_softirqs_cpu(i, j));
- 		seq_putc(p, '\n');
- 	}
-+
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+	seq_puts(p, "                    ");
-+	for_each_possible_cpu(i)
-+		seq_printf(p, "CPU%-8d", i);
-+	seq_putc(p, '\n');
-+
-+	seq_printf(p, "%12s:", "DURATION_MS");
-+	for_each_possible_cpu(j)
-+		seq_printf(p, " %10lu", kstat_softirq_duration(j));
-+	seq_putc(p, '\n');
-+
-+	seq_printf(p, "%12s:", "THROTTLE_MS");
-+	for_each_possible_cpu(j)
-+		seq_printf(p, " %10lu", kstat_softirq_throttle(j));
-+	seq_putc(p, '\n');
-+#endif
-+
- 	return 0;
- }
- 
-diff --git a/include/linux/kernel_stat.h b/include/linux/kernel_stat.h
-index 69ae6b278464..bbb52c55aad4 100644
---- a/include/linux/kernel_stat.h
-+++ b/include/linux/kernel_stat.h
-@@ -38,6 +38,11 @@ struct kernel_cpustat {
- struct kernel_stat {
- 	unsigned long irqs_sum;
- 	unsigned int softirqs[NR_SOFTIRQS];
-+
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+	unsigned long softirq_duration;
-+	unsigned long softirq_throttle;
-+#endif
- };
- 
- DECLARE_PER_CPU(struct kernel_stat, kstat);
-@@ -64,6 +69,28 @@ static inline unsigned int kstat_softirqs_cpu(unsigned int irq, int cpu)
-        return kstat_cpu(cpu).softirqs[irq];
- }
- 
-+#ifdef CONFIG_SOFTIRQ_THROTTLE
-+static inline unsigned long kstat_softirq_duration(int cpu)
-+{
-+	return jiffies_to_msecs(kstat_cpu(cpu).softirq_duration);
-+}
-+
-+static inline unsigned long kstat_softirq_throttle(int cpu)
-+{
-+	return jiffies_to_msecs(kstat_cpu(cpu).softirq_throttle);
-+}
-+
-+static inline unsigned long kstat_incr_softirq_duration(unsigned long delta)
-+{
-+	return kstat_this_cpu->softirq_duration += delta;
-+}
-+
-+static inline unsigned long kstat_incr_softirq_throttle(unsigned long delta)
-+{
-+	return kstat_this_cpu->softirq_throttle += delta;
-+}
-+#endif
-+
- /*
-  * Number of interrupts per specific IRQ source, since bootup
-  */
-diff --git a/kernel/softirq.c b/kernel/softirq.c
-index 6de6db794ac5..7fc0dc39f788 100644
---- a/kernel/softirq.c
-+++ b/kernel/softirq.c
-@@ -79,6 +79,7 @@ struct softirq_runtime {
- 	bool	throttled;
- 	unsigned long	duration;
- 	unsigned long	expires;
-+	unsigned long	throttled_ts;
- 	raw_spinlock_t lock;
- };
- static DEFINE_PER_CPU(struct softirq_runtime, softirq_runtime);
-@@ -94,12 +95,16 @@ static void forward_softirq_expires(struct softirq_runtime *si_runtime)
- static void update_softirq_runtime(unsigned long duration)
- {
- 	struct softirq_runtime *si_runtime = this_cpu_ptr(&softirq_runtime);
-+	unsigned long now = jiffies;
-+
-+	kstat_incr_softirq_duration(duration);
- 
- 	raw_spin_lock(&si_runtime->lock);
- 	si_runtime->duration += jiffies_to_msecs(duration);
- 	if ((si_runtime->duration >= si_throttle.runtime) &&
--		time_before(jiffies, si_runtime->expires)) {
-+		time_before(now, si_runtime->expires)) {
- 		si_runtime->throttled = true;
-+		si_runtime->throttled_ts = now;
- 	}
- 	raw_spin_unlock(&si_runtime->lock);
- }
-@@ -107,13 +112,17 @@ static void update_softirq_runtime(unsigned long duration)
- static bool softirq_runtime_exceeded(void)
- {
- 	struct softirq_runtime *si_runtime = this_cpu_ptr(&softirq_runtime);
-+	unsigned long now = jiffies;
- 
- 	if ((unsigned int)si_throttle.runtime >= si_throttle.period)
- 		return false;
- 
- 	raw_spin_lock(&si_runtime->lock);
--	if (!time_before(jiffies, si_runtime->expires))
-+	if (!time_before(now, si_runtime->expires)) {
-+		if (si_runtime->throttled)
-+			kstat_incr_softirq_throttle(now - si_runtime->throttled_ts);
- 		forward_softirq_expires(si_runtime);
-+	}
- 	raw_spin_unlock(&si_runtime->lock);
- 	return si_runtime->throttled;
- }
-@@ -140,6 +149,8 @@ static void softirq_throttle_update(void)
- 	for_each_possible_cpu(cpu, &) {
- 		si_runtime = per_cpu_ptr(&softirq_runtime, cpu);
- 		raw_spin_lock(&si_runtime->lock);
-+		if (si_runtime->throttled)
-+			kstat_incr_softirq_throttle(jiffies - si_runtime->throttled_ts);
- 		forward_softirq_expires(si_runtime);
- 		raw_spin_unlock(&si_runtime->lock);
- 	}
--- 
-2.17.1
+Jonathan
+
+
+> 
+> I'll move the file no problem, thanks,
+> Ira
+> 
+> > 
+> > Thanks,
+> > 
+> > Lukas  
 
