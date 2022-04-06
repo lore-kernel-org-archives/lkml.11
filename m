@@ -2,113 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F23CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84798C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbiDFIOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 04:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
+        id S238951AbiDFIPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 04:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450381AbiDFIMP (ORCPT
+        with ESMTP id S241892AbiDFIMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:12:15 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F6B1255C01;
-        Tue,  5 Apr 2022 19:11:53 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id E711D1C80F56;
-        Wed,  6 Apr 2022 10:11:51 +0800 (CST)
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Wed, 6 Apr 2022
- 10:11:51 +0800
-Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS01.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Wed, 6 Apr 2022 10:11:51 +0800
-Message-ID: <5249221d-9959-391c-8e16-91470f1a4797@nuvoton.com>
-Date:   Wed, 6 Apr 2022 10:11:51 +0800
+        Wed, 6 Apr 2022 04:12:51 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D263917288B;
+        Tue,  5 Apr 2022 22:51:40 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KYDCv2qclz4xNp;
+        Wed,  6 Apr 2022 15:51:39 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649224299;
+        bh=FI2yK1w4BoxDLceAwBGSkRpmSZfiLC52c+HFR+YTcCk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tiaTpjp/qW7eHcK49V+/LajlejZwX3CwONOlMM6PuebxYbRAAEI868g8TzoBpowjd
+         PJD3ad4dNW3WiPGRjh/+0stYdae4f/eJRpLI1FIExaLVqho461FsBaSlGqMCg9P8XO
+         xKyG0bwXuoqlhm5HLpaExgaqfnSa5ukpJ4+v+Xa7F0jpu48bZ0CC5OLfuEpXRmLMRG
+         qIsaVlKvlSJUfyWZXZven0N1LTLHWtpP/3d4VjoUJNwaurUwXqx0o9ifBSwTfYclJO
+         niRGHo3ZP1GCINR4zjGIR6pgoWulrsBabtFNOu55xXFR7udAnH5awt3geuwrWm/NZ1
+         0nPnsWPoIhx+w==
+Date:   Wed, 6 Apr 2022 15:51:38 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>
+Cc:     Jani Nikula <jani.nikula@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings after merge of the drm-misc tree
+Message-ID: <20220406155138.61a8d85b@canb.auug.org.au>
+In-Reply-To: <20220406154431.567414c3@canb.auug.org.au>
+References: <20220406154431.567414c3@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/3] arm64: dts: nuvoton: Add initial support for MA35D1
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
-        "soc@kernel.org" <soc@kernel.org>, MS10 CFLi0 <CFLi0@nuvoton.com>
-References: <20220331024256.14762-1-ychuang3@nuvoton.com>
- <20220331024256.14762-4-ychuang3@nuvoton.com>
- <0c182962-0da0-c3b3-097a-090bf8d871e7@linaro.org>
-From:   Jacky Huang <ychuang3@nuvoton.com>
-In-Reply-To: <0c182962-0da0-c3b3-097a-090bf8d871e7@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/ICUojPUEsse9a.hRFPw8grO";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+--Sig_/ICUojPUEsse9a.hRFPw8grO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 2022/3/31 下午 02:32, Krzysztof Kozlowski wrote:
-> On 31/03/2022 04:42, Jacky Huang wrote:
->> Add the initial device tree files for Nuvoton MA35D1 Soc.
->>
->> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->> ---
->>   arch/arm64/boot/dts/Makefile               |   1 +
->>   arch/arm64/boot/dts/nuvoton/Makefile       |   2 +
->>   arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts |  23 +++++
->>   arch/arm64/boot/dts/nuvoton/ma35d1.dtsi    | 106 +++++++++++++++++++++
->>   4 files changed, 132 insertions(+)
->>   create mode 100644 arch/arm64/boot/dts/nuvoton/Makefile
->>   create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1-evb.dts
->>   create mode 100644 arch/arm64/boot/dts/nuvoton/ma35d1.dtsi
->>
->> diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
->> index 1ba04e31a438..87e9bda91276 100644
->> --- a/arch/arm64/boot/dts/Makefile
->> +++ b/arch/arm64/boot/dts/Makefile
->> @@ -31,3 +31,4 @@ subdir-y += tesla
->>   subdir-y += ti
->>   subdir-y += toshiba
->>   subdir-y += xilinx
->> +subdir-y += nuvoton
->> diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuvoton/Makefile
->> new file mode 100644
->> index 000000000000..e1e0c466bf5e
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/nuvoton/Makefile
->> @@ -0,0 +1,2 @@
->> +# SPDX-License-Identifier: GPL-2.0
->> +dtb-$(CONFIG_ARCH_NUVOTON) += ma35d1-evb.dtb
-> NAK
+On Wed, 6 Apr 2022 15:44:31 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
 >
-> This is actually some resend, but you did not version it, did not
-> provide changelog.
->
-> What is more - you ignored previously received comments.
->
-> We do not work like this. If you do not agree with a comment, please
-> keep discussion, not resend ignoring it.
->
-> Best regards,
-> Krzysztof
-Sorry, I am not familiar with text style e-mail operation.
-I only saw the replies at bottom of mail, but not notice the replies in 
-middle of mail.
-It's my fault.
-I will find comments from previous mail and have discussion there to fix 
-all issues before sending the next version.
+> After merging the drm-misc tree, today's linux-next build (KCONFIG_NAME)
 
-Best Regards,
+This was an "htmldocs" build.
 
-Jacky
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/ICUojPUEsse9a.hRFPw8grO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJNKmoACgkQAVBC80lX
+0GyYEwgAi2Imi3EmsiOg/zkGfnhxmHGLL2KeL8kX/wT/RCLY57XKvK2wt/Sc/PCu
+ZANpi2cD7vQa0UT93sHz03g07mzqI7UEnO8cP7uOD+9oSCcy2FaUDKAzcXsIIBPq
+nS3HLdn5UExItZxnkY685cAHWUY27rHgAT//lkqL0DXVO9kJGSkmtZGepvEZh4pa
+P9f/rzodnxaaT7eAuzmfLb1q9OtQb7N38QOX2S0ZTd9o5mh5sDAVhEdRug4Y+9nU
+tJ5Vj8qpTigEVk7HQtigjy6/17vv2Hjgv8aRTxWboTMfqXHgLDgHtyHKknA3ylX7
+c4FHkGeX1YnJ/pA4x5N/g30ZuNpWqA==
+=6WJm
+-----END PGP SIGNATURE-----
+
+--Sig_/ICUojPUEsse9a.hRFPw8grO--
