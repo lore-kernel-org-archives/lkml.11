@@ -2,132 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F272C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D33C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229990AbiDFMJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
+        id S230197AbiDFMKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232469AbiDFMI3 (ORCPT
+        with ESMTP id S231847AbiDFMKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:08:29 -0400
-Received: from ZXSHCAS1.zhaoxin.com (ZXSHCAS1.zhaoxin.com [203.148.12.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0A11A3949;
-        Tue,  5 Apr 2022 19:38:34 -0700 (PDT)
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS1.zhaoxin.com
- (10.28.252.161) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Wed, 6 Apr
- 2022 10:38:30 +0800
-Received: from [10.29.8.49] (10.29.8.49) by zxbjmbx1.zhaoxin.com
- (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Wed, 6 Apr
- 2022 10:38:29 +0800
-Message-ID: <bbd9148d-5970-2233-6ee9-625e961cd2f5@zhaoxin.com>
-Date:   Wed, 6 Apr 2022 10:38:28 +0800
+        Wed, 6 Apr 2022 08:10:33 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1B295A3C;
+        Wed,  6 Apr 2022 00:53:44 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B19C3E0016;
+        Wed,  6 Apr 2022 07:53:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649231623;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aEHF044mvurdicWAqWTz+vjeqtSmEBRXsYOuXWhcUIE=;
+        b=b/QN8+a5O6IuWnDPBGXJBxablmzOTzv3O3zC1Q5qYmh3hnM8Ben3qtFlLnjmilYYPoZVv+
+        LY1z0SEQVOIMkXV7ipnv5VOSpdmuPMGIgpJQaiKieocdxEj56RWgje4FOSa0ip6R2wdB3r
+        ynGdDdmiO0qdQjBk9C4syeIwccxxFr/xfi3F+f1583B8x9w6ovtdfN39Zyt8Qn/9R4rFfH
+        PD8r79eUMyGAQOVn43/Hm3fyl34B6BTvQH8tISWnl7kbDZLetK2yUU/9NYlWEIvHPQBdLB
+        PWtQD7zfNHLmK23EzE5z29fr2Ix3MyaM10BFYOWV2lbb49BxEHF/kfqBwvi19A==
+Date:   Wed, 6 Apr 2022 09:52:13 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Lizhi Hou <lizhi.hou@xilinx.com>,
+        Sonal Santan <sonal.santan@xilinx.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
+Message-ID: <20220406095213.21cf3ffb@fixe.home>
+In-Reply-To: <CAL_JsqL4xY-k4ZsJDuxX6Wbevv+aNRki4WfeiXg0R-4NkqPC1w@mail.gmail.com>
+References: <20220324141237.297207-1-clement.leger@bootlin.com>
+        <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
+        <20220405092434.6e424ed4@fixe.home>
+        <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
+        <20220405175120.23fc6b2a@fixe.home>
+        <CAL_JsqLdBcAw1KPnrATHqEngRWkx6moxDODH1xV67EKAufc6_w@mail.gmail.com>
+        <CAL_JsqL4xY-k4ZsJDuxX6Wbevv+aNRki4WfeiXg0R-4NkqPC1w@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] USB:Fix ehci infinite suspend-resume loop issue in
- zhaoxin
-Content-Language: en-US
-To:     Alan Stern <stern@rowland.harvard.edu>
-CC:     <gregkh@linuxfoundation.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <CobeChen@zhaoxin.com>,
-        <TimGuo@zhaoxin.com>, <tonywwang@zhaoxin.com>,
-        <weitaowang@zhaoxin.com>
-References: <3d0ae3ca-9dad-bb8f-5c41-45bdcb07b9cd@zhaoxin.com>
- <Yi9QIk+6VIWW6V/W@rowland.harvard.edu>
- <320584eb-ef89-3759-509c-e7e9cb10f983@zhaoxin.com>
- <YjCuOXRFZ8CjK9SD@rowland.harvard.edu>
- <ac40c227-ea26-bccd-d254-5a2034103184@zhaoxin.com>
- <YkxoHY2SVomGwGdh@rowland.harvard.edu>
-From:   "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
-In-Reply-To: <YkxoHY2SVomGwGdh@rowland.harvard.edu>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.29.8.49]
-X-ClientProxiedBy: ZXSHCAS2.zhaoxin.com (10.28.252.162) To
- zxbjmbx1.zhaoxin.com (10.29.252.163)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/6 00:02, Alan Stern wrote:
-> On Wed, Mar 16, 2022 at 10:18:39AM +0800, WeitaoWang-oc@zhaoxin.com wrote:
->> On 2022/3/15 11:18, Alan Stern wrote:
->>> On Tue, Mar 15, 2022 at 08:39:09PM +0800, WeitaoWang-oc@zhaoxin.com wrote:
->>>> I have encountered the following situation if EHCI runtime suspend is
->>>> enabled by default.
-> 
-> Some things about this still confuse me...
-> 
->>>> 1.Wake from system to disk and boot OS.
->>>
->>> You're talking about resuming after hibernation, right?
->>
->> You're right.
->>>> 2.EHCI will entry runtime suspend after enumerated by driver during boot
->>>> phase of suspend to disk
->>>
->>> I'm not sure what you mean by "boot phase of suspend to disk".  This is
->>> while the restore kernel is starting up at the beginning of resume from
->>> hibernation, right?
->>>
->> You understood exactly what I was saying.
-> 
-> Okay, so we're waking up from hibernation.
-> 
->>>> 3.EHCI will be placed to freeze state and ehci_resume is called after image
->>>> is loaded.
->>>
->>> ehci_resume is called to leave runtime suspend.  Going into the freeze
->>> state doesn't require any changes.
-> 
-> In fact, the resume kernel doesn't call ehci_resume at all.  Here's what
-> it does:
-> 
-> 	The resume kernel boots;
-> 
-> 	If your patch causes STS_PCD to be set at this point, the flag
-> 	should get cleared shortly afterward by ehci_irq;
-> 
-> 	ehci-hcd goes into runtime suspend;
-> 
-> 	The kernel reads the system image that was stored earlier when
-> 	hibernation began;
-> 
-> 	After the image is loaded, the system goes into the freeze
-> 	state (this does not call any routines in ehci-hcd);
-On this phase, pci_pm_freeze will be called for pci device. In this
-function, pm_runtime_resume will be called to resume already
-runtime-suspend devices. which will cause ehci_resume to be called.
-Thus STS_PCD flag will be set in ehci_resume function.
+Le Tue, 5 Apr 2022 16:28:02 -0500,
+Rob Herring <robh@kernel.org> a =C3=A9crit :
 
-Thanks
-Weitao Wang
-> 
-> 	The resume kernel transfers control to the image kernel;
-> 
-> Now the image kernel is running.  It goes into the restore state, which
-> involves calling ehci_resume.  Presumably your patch cases the STS_PCD
-> flag to get set at this point.
-> o
-> But that's all!  The system is now back up, out of hibernation, and
-> running normally.  There are no more calls to check_root_hub_suspended
-> 
->>>> 4.If PCD flag is set(caused by patch), then HCD_FLAG_RH_RUNNING will be set.
->>>>
->>>> 5.Pci_pm_freeze_noirq is called to check ehci root hub state and return
->>>> value is -EBUSY. which will cause
->>>>    quiesce phase of suspend to disk fail.
->>>
->>> You're talking about check_root_hub_suspended() in hcd-pci.c, right?
->>>
->> It's right.
-> 
-> So how can this happen, given that the image kernel doesn't call
-> pci_pm_freeze_noirq?
-> 
-> Alan Stern
-> .
+
+> >
+> > No, the kernel already maintains its own tree of devices. You just
+> > need to use that to generate the tree. That's really not much more
+> > than nodes with a 'reg' property encoding the device and function
+> > numbers.
+> >
+> > We already support matching a PCI device to a DT node. The PCI
+> > subsystem checks if there is a corresponding DT node for each PCI
+> > device created and sets the of_node pointer if there is. For
+> > OpenFirmware systems (PPC), there always is a node. For FDT, we
+> > generally don't have a node unless there are additional
+> > non-discoverable properties. Hikey960 is an example with PCI device
+> > nodes in the DT as it has a soldered down PCIe switch with downstream
+> > devices and non-discoverable properties (e.g. reset GPIO for each
+> > port). =20
+>=20
+> Here's a quick and dirty implementation creating DT nodes for PCI devices:
+>=20
+> git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git dt/pop-pci-n=
+odes
+
+Ok, thanks, after looking at the branch, it appears that you expect the
+PCI nodes matching the probed PCI devices should be created by the PCI
+subsystem itself. My previous comment saying that the node would be
+created by the PCI driver itself is then wrong and I understand what
+you meant.
+
+Then, there is still a bit of magic to do to correctly fill the ranges
+for translation and then the driver "simply" have to load the dtbo and
+apply it with of_overlay_fdt_apply().
+
+>=20
+> Rob
+
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
