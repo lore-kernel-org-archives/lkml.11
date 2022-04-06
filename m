@@ -2,171 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22390C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95F60C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358055AbiDFJcx (ORCPT
+        id S1444074AbiDFJeH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
+        Wed, 6 Apr 2022 05:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582058AbiDFJVn (ORCPT
+        with ESMTP id S1580385AbiDFJUz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:21:43 -0400
-Received: from out203-205-221-191.mail.qq.com (out203-205-221-191.mail.qq.com [203.205.221.191])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EFE1717B4
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:50:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649217050;
-        bh=NKBQjU5IhN7Smi6bhWovIayNOgoinAmwlLxAmwsJtL4=;
-        h=From:To:Cc:Subject:Date;
-        b=JwWrKzjxxAel84uiu5CHpI6cfZzbwbhhRZ7gMaEbdCw34yOr3W9hKL2gTeYfrEX0U
-         k+BJBGPaauwcoBxJktYekWXQPlD6+X3fms+1Hfz+/N2OWoc75LC3t7DpbrIV8sqVyi
-         yENDm9LbfsdYvjnrLfNJRpiHoUga52EaMXbqTS80=
-Received: from localhost.localdomain ([43.227.136.188])
-        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
-        id CAF15C39; Wed, 06 Apr 2022 11:50:47 +0800
-X-QQ-mid: xmsmtpt1649217047t2ia44wgy
-Message-ID: <tencent_4387F32851FE6B81C0329BE44E719450440A@qq.com>
-X-QQ-XMAILINFO: OaoBA5NOFC/jwAQ1vk4YzPONfF7qyLOhF15ze7ebY/CHnYf3KXrIF+PJDkOgyw
-         6fJ63tPd8vv8i0i7IvA+m380u3vlfSQQcBzpLNlmY+RWbpb6+nlEATw5DsgD39jpg2mUJfe6SNnA
-         pCsYkBCvN7qmUfHpirVNMYEBYr8tl8U7W+XTtJIFr9ebcZh6RmU4bPBxYJ7KXfna7wVpcjeN4gX8
-         IXMD7BEbYOjVsIZUMae9x7REpvDi8wEQis/bsCu54gbx3XOYQQ/cFr08Y4iQ21k+HhmEqvtkiomH
-         7U0VhYSj9Cho6a+MwpQaMoRPp/PmgdD/Ren77He3JhIpaEpfl4g/NsJXuNjEJ3rW0COgakzdzhe7
-         DRqodi31nv6PtxOk8aPwv1ge68JaG8EO4UoP6Bv2PGpZ+ubJlOfwN4GW+MI60168vEXF5lr6FRfm
-         8z6bRC9lyit+6ellocGyO1naSMGfaLv4Wi1iI0PMr4zbw6q3aIXPPd9oKXA2V/CVf2fa4apfd8gd
-         G15NkK6ELJJ6/qK2rsMq81ktprl3A/eNrm7QkbDb2bbaNPR6YoA52F4EtYl99gYoF5aUrVhprnKs
-         GUN2ELB5KjL65hFAJ6BOBut4uFGWCibQYcK9BOEhlBCXFGEzmFk5nzuC/7LIqEEY9pEDL0sCcuj1
-         s4GRV6v4EpazL+yCN3jjDXL1H5HnWAJ8apA82mbfjh6U+iGBkOiWlQhV3iV6DWamUfmgYAepM2Eo
-         TVREaOc4JpPPPqs8FAtkmgZV0xsap0ITiucDWss+lP/87HYQPVtiWl+xUJSLjdp6SkXP6BaMW7K+
-         AoLswbAT3JGqLSilD3nONWv2TCiXjG+OBtMjcFyVxDLWh4PC7/BmS4eWRlahay9uVLvj48DHhs41
-         EAFB1ykwEFmBaKLxQx/SqogyZ72MUWwKhva2Tuk1BPHR70H4f93q1EcCJLJ20/qdqvsEdV6qGeWd
-         S6Q//0g0NDBUpFscBADXDzrRIJW3Nv
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2] staging: rtl8723bs: fix potential memory leak in rtw_init_drv_sw()
-Date:   Wed,  6 Apr 2022 11:50:33 +0800
-X-OQ-MSGID: <20220406035033.12771-1-xkernel.wang@foxmail.com>
+        Wed, 6 Apr 2022 05:20:55 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763DC140DFF
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:26:44 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id g20so957239edw.6
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:26:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wVrhTvL07JA+qLuxrHPB76KlfjN/HKd1U84mtNSDmA0=;
+        b=T0BGJvEhCp1XVdquKEt/pKpKuXICocX/83Jn1wmpWHLF+zAcgvEjroM6jN40LltZzX
+         eMGubAQqVa1BAfUAJ6zJ44VHTiXyP35A/O3aT2a9JHsAVd9eFDNtGArHLbyUm08Qfrok
+         /pQJpFIXc2NeHopH7wDHcDYOA8JpjD92gDXmQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wVrhTvL07JA+qLuxrHPB76KlfjN/HKd1U84mtNSDmA0=;
+        b=v+6BF24mTxiEv9/3E1JyKpxfbgehq+1jeshRY1d6+nAGfRBTw5veESRp3i111wVYcF
+         fPQ5ri8xNQj+Vy8MBrTOnItmt6VMOBdKW4fThuR0F//6j7Y0YuHZM0NeQabYeYmu+gKA
+         rcu+flsALaq3OgHJeDfEzw1VrZCiOHM5mWKjAUKbZXK/7qL/nt+XtxNDHXOguz6P+V1i
+         PQn8w1J9Rvh6aSf+8cARLPQcpq18z6n+7I1kdXSCcJ+hQDMZ1nE6ZEk8F4cWvRVsX8yr
+         UWCvWBFArLc+KJO3W+YpumsaLhQvFyYnkM2hZsiTOzjIekL2dwyNi1HLOni/MwSuoNGf
+         MizQ==
+X-Gm-Message-State: AOAM532jMGuPnNmiJZz7/nOJXlGGOyaSXxVLIQVh8j62sw2n5/bXNaT+
+        4KcnVLTzZPSwuzotXs7Zkj5o11yNk+X65o3nrYw=
+X-Google-Smtp-Source: ABdhPJweee1NV8I+cn8MRIfg+U9lhogZHkKzOG5thGkldSQIVCGVSNoMveRbaFdY8w17tPDTptcZ8g==
+X-Received: by 2002:a50:9d47:0:b0:40f:9d3d:97b6 with SMTP id j7-20020a509d47000000b0040f9d3d97b6mr6523013edk.392.1649212002774;
+        Tue, 05 Apr 2022 19:26:42 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id v5-20020a50c405000000b004161123bf7asm7182389edf.67.2022.04.05.19.26.42
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 19:26:42 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id j12so1090570wrb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 19:26:42 -0700 (PDT)
+X-Received: by 2002:adf:e591:0:b0:206:1202:214 with SMTP id
+ l17-20020adfe591000000b0020612020214mr4789813wrm.342.1649212001620; Tue, 05
+ Apr 2022 19:26:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220406014842.2771799-1-briannorris@chromium.org> <20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid>
+In-Reply-To: <20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 5 Apr 2022 19:26:28 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Wdp5ax_MhGg-=ocSPS=cs1nUCRcz+E81Z2V-w_YVuzUw@mail.gmail.com>
+Message-ID: <CAD=FV=Wdp5ax_MhGg-=ocSPS=cs1nUCRcz+E81Z2V-w_YVuzUw@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during transitions
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Elaine Zhang <zhangqing@rock-chips.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Hi,
 
-In rtw_init_drv_sw(), there are various init functions are called to 
-populate the padapter structure and some checks for their return value.
-However, except for the first one error path, the other five error paths 
-do not properly release the previous allocated resources, which leads to 
-various memory leaks.
+On Tue, Apr 5, 2022 at 6:49 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> See the previous patch ("soc: rockchip: power-domain: Manage resource
+> conflicts with firmware") for a thorough explanation of the conflicts.
+> While ARM Trusted Firmware may be modifying memory controller and
+> power-domain states, we need to block the kernel's power-domain driver.
+>
+> If the power-domain driver is disabled, there is no resource conflict
+> and this becomes a no-op.
+>
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+>
+>  drivers/devfreq/rk3399_dmc.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
 
-This patch fixes this and keeps the success and error separate.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
-ChangeLog:
-v1->v2 update the description.
- drivers/staging/rtl8723bs/os_dep/os_intfs.c | 60 +++++++++++----------
- 1 file changed, 31 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/staging/rtl8723bs/os_dep/os_intfs.c b/drivers/staging/rtl8723bs/os_dep/os_intfs.c
-index 0a8c24e..1bf6fc0 100644
---- a/drivers/staging/rtl8723bs/os_dep/os_intfs.c
-+++ b/drivers/staging/rtl8723bs/os_dep/os_intfs.c
-@@ -664,51 +664,36 @@ void rtw_reset_drv_sw(struct adapter *padapter)
- 
- u8 rtw_init_drv_sw(struct adapter *padapter)
- {
--	u8 ret8 = _SUCCESS;
--
- 	rtw_init_default_value(padapter);
- 
- 	rtw_init_hal_com_default_value(padapter);
- 
--	if (rtw_init_cmd_priv(&padapter->cmdpriv)) {
--		ret8 = _FAIL;
--		goto exit;
--	}
-+	if (rtw_init_cmd_priv(&padapter->cmdpriv))
-+		return _FAIL;
- 
- 	padapter->cmdpriv.padapter = padapter;
- 
--	if (rtw_init_evt_priv(&padapter->evtpriv)) {
--		ret8 = _FAIL;
--		goto exit;
--	}
-+	if (rtw_init_evt_priv(&padapter->evtpriv))
-+		goto free_cmd_priv;
- 
--
--	if (rtw_init_mlme_priv(padapter) == _FAIL) {
--		ret8 = _FAIL;
--		goto exit;
--	}
-+	if (rtw_init_mlme_priv(padapter) == _FAIL)
-+		goto free_evt_priv;
- 
- 	init_mlme_ext_priv(padapter);
- 
--	if (_rtw_init_xmit_priv(&padapter->xmitpriv, padapter) == _FAIL) {
--		ret8 = _FAIL;
--		goto exit;
--	}
-+	if (_rtw_init_xmit_priv(&padapter->xmitpriv, padapter) == _FAIL)
-+		goto free_mlme_ext;
- 
--	if (_rtw_init_recv_priv(&padapter->recvpriv, padapter) == _FAIL) {
--		ret8 = _FAIL;
--		goto exit;
--	}
-+	if (_rtw_init_recv_priv(&padapter->recvpriv, padapter) == _FAIL)
-+		goto free_xmit_priv;
- 	/*  add for CONFIG_IEEE80211W, none 11w also can use */
- 	spin_lock_init(&padapter->security_key_mutex);
- 
- 	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by vzalloc(). */
- 	/* memset((unsigned char *)&padapter->securitypriv, 0, sizeof (struct security_priv)); */
- 
--	if (_rtw_init_sta_priv(&padapter->stapriv) == _FAIL) {
--		ret8 = _FAIL;
--		goto exit;
--	}
-+	if (_rtw_init_sta_priv(&padapter->stapriv) == _FAIL)
-+		goto free_recv_priv;
- 
- 	padapter->stapriv.padapter = padapter;
- 	padapter->setband = GHZ24_50;
-@@ -719,9 +704,26 @@ u8 rtw_init_drv_sw(struct adapter *padapter)
- 
- 	rtw_hal_dm_init(padapter);
- 
--exit:
-+	return _SUCCESS;
-+
-+free_recv_priv:
-+	_rtw_free_recv_priv(&padapter->recvpriv);
-+
-+free_xmit_priv:
-+	_rtw_free_xmit_priv(&padapter->xmitpriv);
-+
-+free_mlme_ext:
-+	free_mlme_ext_priv(&padapter->mlmeextpriv);
- 
--	return ret8;
-+	rtw_free_mlme_priv(&padapter->mlmepriv);
-+
-+free_evt_priv:
-+	rtw_free_evt_priv(&padapter->evtpriv);
-+
-+free_cmd_priv:
-+	rtw_free_cmd_priv(&padapter->cmdpriv);
-+
-+	return _FAIL;
- }
- 
- void rtw_cancel_all_timer(struct adapter *padapter)
--- 
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
