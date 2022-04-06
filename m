@@ -2,335 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7185EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:44:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237971AbiDFQnk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
+        id S238008AbiDFQqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238794AbiDFQnI (ORCPT
+        with ESMTP id S235870AbiDFQpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:43:08 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624262C9921
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:02:59 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 0F8D8210F4;
-        Wed,  6 Apr 2022 14:02:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649253778; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/Hj6TUYYZVqI6GTVl4sbxNDtJyuLH+USig48Poeuy3Y=;
-        b=ZTtJedVOuUUivWBiZNeXVIWGHPToy8INpeVzddkJzsi1tCJBwPt51ndB5o9nkTBFLul66N
-        F1EvY2APVGNLD2Smg9OYEiVxcsjIanFXSFHjYTFeQ9TNrCLLIZwQPGuCAaq3iayqNLG5zt
-        2dAmXrpaa9dCGQ3M2++RGe1FJRTaKSQ=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 780F6A3B88;
-        Wed,  6 Apr 2022 14:02:57 +0000 (UTC)
-Date:   Wed, 6 Apr 2022 16:02:53 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
+        Wed, 6 Apr 2022 12:45:50 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2075.outbound.protection.outlook.com [40.107.223.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B7319F46E;
+        Wed,  6 Apr 2022 08:00:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=efHec0WBDfRCWsmvTIOxW3QQRI6SlNCxuaFg97t5UCZSpZmjv/du+2NB7rqViQnc2BfOCOEs9rMg8OzTpyTstLLfyELaN+HamGcvFhcSphvocFOyESdhx7s2ljp1rCUL/eGJ4c0PkhOmCoV+wU87Tlw4/WOEbF4hL9gv0o2x1aBmenIW1WkYXyg6VKDVd5wSaqNc85+0dv2vKattx9W8OI/pL9si9diVOwnmaoi1UDS23mscr3MoYrwKYekeui/i0ht/pX9TKqRKNotvPDvGb7GI5XErKRzCO5rTB1vrdfQMLEJegvDErLw++m7/9mSX/JsCMfS5D+M/FK25Vn4VMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ahYDaq9ZR+P6mxI6wkgaTFY4XgAir/QkOo4z0BoaWls=;
+ b=aKiAt0Es1OZ+2RF6K6JPuYAU+n4Hin61UicU4HUkkvAwcIBvRJMqFh3QoAQLOJSYMjkymgDV0qc/8CLdkGw3/w4Om31QQLp66nkqN5bhjEh1d4PWAIATvoEOAsushbG0/xnwVJITOt3wvzDx2PlHb6WKzbmU4OIdY515xZjtN4xXXZB9uSxb89OsCZkJ31RNjaVaAhXhFDsGfqqIaPdX9xsoUwm3VKzgUBk7pd9Oj0hoCPmVX2iyINhd/Wlgg58hMhQEas1AkcN9dY1cxIX7Hy3ttDCSwYF9DjYoaPZNdR+nWtj3R2G7WMzk2/uEcxsevoCuPLGiwCIYFgCDjE8vLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ahYDaq9ZR+P6mxI6wkgaTFY4XgAir/QkOo4z0BoaWls=;
+ b=HshgILOg2qOPvmQt7U3NBzvOm56f2vYgD4HOiKezWZV8L4Ff8leu7Sypp/Eaeg194V+YucFX+JveF7M+Pie6uupcwmPauaZ0dD2d+zUxi3DaORVFqo0woE9cReQbvXj+qrDYLR/RnRbiU1MWMBIyYt8uFSp+pfbBxfMa3g2RUFObIfpCyICreip+M/mmePwkl/Nd9A9dJp5it1Wep0VbIahRQn+Y4UGbrSO3rNJfI1Ne/+cwXaKVQ6iEG/2QamNYY5rAZG2vnmOK41p1EorWzqFFjtBS+XJPDehtRlKo9hoy7nEs+OKg6n3edRCQCm85zPIwiyZ0n01cR2IKCyAJDA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
+ CY4PR12MB1336.namprd12.prod.outlook.com (2603:10b6:903:40::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5144.21; Wed, 6 Apr 2022 15:00:44 +0000
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::10ef:dc56:bb21:76f6]) by CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::10ef:dc56:bb21:76f6%4]) with mapi id 15.20.5123.031; Wed, 6 Apr 2022
+ 15:00:44 +0000
+Message-ID: <ba7c3271-20b7-a8a7-8fc4-293e8420e2ea@nvidia.com>
+Date:   Wed, 6 Apr 2022 16:00:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 8/8] ARM: config: multi v7: Enable NVIDIA Tegra video
+ decoder driver
+Content-Language: en-US
+To:     Dmitry Osipenko <digetx@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v2 06/12] printk: refactor and rework printing
- logic
-Message-ID: <Yk2djQKLg0syXqMF@alley>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
- <20220405132535.649171-7-john.ogness@linutronix.de>
+Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220220204623.30107-1-digetx@gmail.com>
+ <20220220204623.30107-9-digetx@gmail.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+In-Reply-To: <20220220204623.30107-9-digetx@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO2P123CA0104.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:139::19) To CO6PR12MB5444.namprd12.prod.outlook.com
+ (2603:10b6:5:35e::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405132535.649171-7-john.ogness@linutronix.de>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: da43a58e-a314-4907-6ee9-08da17de393c
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1336:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1336044C32A54A8040F15CD6D9E79@CY4PR12MB1336.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lUurKofeE542hsEnvUF4MDxTIljqeTXyu49SF0/2B56YSuox1NAmcW+UVKC4G7m/o0YjeZJQu3WKeAD1YTbLEQ1bk1xPAaJXuUcPIDYTQG9OBMj7Jo+URLFXC+b/GNcJPcAwC/+F6SeaalQ0MIntaPj6ItD2z5lSyLowLKr3fw7ELKh3QM4+criIsQVI0VP+dzYlT6PysxxeOzM9mAZvTyeZZO+s69DyiP+liju0hf1nPoQFkVJVoNFCi58IYrPKexSuo10X4ACLnR1onEe8zjZhYrQyMy8apyNk2RqjsbMjID+1ZVDYbSVFdxnmPOEYZ0pm47/IfAcOJ40FDN/TghsHSNUaPvJ3EvVQGR2W4voZXVlqxai/73vpoDBxE6eNLkD/bEWO8gLIkarQH7IT0NS1xYsXJAMwbzG/zchm07Fi1kOKhRY+fQv5xfXhskm/K6kzPNJU1e86BWAUCkv0gTIeyAnQ2jOFkIjrJjtedQ817GjHh5tCPMZlvCHswIxWpuwfKimMeH/lbM9f7zg6Zyg/odfkORuxACyfqIkWyXzKr/TReNVYsdpBu8mnWqpMip1Czs8HK908Vvf6oiF2C5qTMEwajl20tGbQOFHn6ICIsKD0H0Knxc9J+ktgJykChsrb2e+G69K9SUBBiSM4kqaUnLMwK2RoSngSR03cf1tMrohDmHbH/9a/TSuQ7xCPLmhpU39qZDgR6HklpRPksRjxxDE2IGpuM8S2lzVOxQEXIeiR+yWA3Zttqtb+bUBZ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(186003)(316002)(2616005)(110136005)(53546011)(508600001)(6486002)(55236004)(6512007)(6666004)(6506007)(38100700002)(31696002)(86362001)(31686004)(4326008)(2906002)(8676002)(36756003)(66476007)(66556008)(66946007)(4744005)(7416002)(8936002)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UEJsZDc2S1k5QnprZDQ2RkJ6OW1PTUhGUlZkTzBOWlhPVDlYNmRGcDdpWVI1?=
+ =?utf-8?B?WG5XTGRzOXdBWWs3RVpXbzB5SDZmZjAvb1BtdlNXdW5RU2ZpTEU5WDNGazFT?=
+ =?utf-8?B?L0xJZTc5NVovQXY0NGtVdXRTYjdUREg1UVRTMlhlRERNWUZZWWlhaC9weHF1?=
+ =?utf-8?B?eTFVK0tHSENWNmRReW5MMGJNMzhyZXNESnNFN01qUmZzOUprbWZaRTRJWWxH?=
+ =?utf-8?B?Qms2OGVUYnNVeml2RytYUVVOMkxTQXppSzFNZVJxZExlY3BJaTJhTnJNTWR0?=
+ =?utf-8?B?MDFvekJnbWRjcVAxdnkvZy80aU1COVRCVUtGd0JtMkFGdngzQnFRdmY2QUJS?=
+ =?utf-8?B?bE9zbzJZd1Y1RkpCMmlQdmFlcUpuR1ZkckM1U01Yd00ra3U2MkJncFVhUEp6?=
+ =?utf-8?B?TktlU0U0VnpDb1l2RkZVaExmcWt5L0djRFpjT0E2M21GemFnZENPU0NOZHI5?=
+ =?utf-8?B?MnBYNzJvMzJ4U0NoZWhmMFJQaHJ2cUxtV3NFSzlBUDc4V3NaaVVSM0RyTlFE?=
+ =?utf-8?B?ZVIvR0IrdWRmTmFzZGF2cmlxYmhkU3pFeUlGUWdVOUgvbEU5cEtIT0ZjZW5k?=
+ =?utf-8?B?VTArSzl0YyszcU1GS2tIVmlTcHZPU2Z1dWswM0N5OGZUaHo2aEhNbFJYbnlW?=
+ =?utf-8?B?UUtXaHRkVnBmRElFZ3hydW9JSkhhVWR5b08zWWFTeUNjbkN4MGNhNkhlMUlp?=
+ =?utf-8?B?VFg2RkVTYU95Y0xwWHNVTVNNM2RSaWQ3YlhXUys1L1I5d25YRHlRMUZUK2pX?=
+ =?utf-8?B?Ylp5bG5VbVY4QkJiR0pDTEFtVEZHV210M0RrNWlCUXMxbC80cm90ektrNWE3?=
+ =?utf-8?B?RGVWYzByODc0Zyt0c3VJRzNuek9SM0dIQVVFa0JDd0pINHdzY0J2UVZobHBQ?=
+ =?utf-8?B?R0JVZlg2K3JUQ1pDREZTNFdGQnV0akJIUFVaZmRlMThTR2IyMjVKcUtCZGs0?=
+ =?utf-8?B?Ylg1VlMzQkZuY2xQWlhzbUtTNmhDWm91QUkrL0I1YXM4R0FUeWVWSWlaTVJv?=
+ =?utf-8?B?ZGpWL2F6WmRJZjQ3eUJBMmphZi9qOWRmbzJPUUg3U1lWUU9DNEJ4dkw0ZFVS?=
+ =?utf-8?B?WDRHQUM0QnFSQnozVmhPRUFjUWxwQW1Fc3hrelZMVE9YdFRIa3lpN1BVWWc2?=
+ =?utf-8?B?MnF4T0E5R3NUOWNpMXJLQlJtMGtjVFNKaDZBdmp3anM0cFE3eHZ2c1lRVUJN?=
+ =?utf-8?B?Wnl6d3VzWGlTek9MSFlYcmFSWWlWd1JCYXhzZVl4bFhvVk9aZnlybmowMy9n?=
+ =?utf-8?B?UGM0OXJwdWhkb0NncTBUV0FZSitEVFZaYzY3VGVNNTcvSHd0ZDZtSllMMWc5?=
+ =?utf-8?B?WjduOHZUWVZUTWpaUmNvZDlvSzJPakVQMmtLZ0tjTnhrT2JwaTMvOVgzTjBk?=
+ =?utf-8?B?YXFjWEc5eE84aCtLc2ZMNkkyRXl3NHpzeFJrZ2VrZUpoaWExMjFRbnZMbWZx?=
+ =?utf-8?B?WU1xYnFKd0o0SVdmdUF5R0ZuYUVWOFZ3TG0rZXliK1NWQ2pSVDFoOUcyUHdu?=
+ =?utf-8?B?Zmp6MjBBWkpHSW5qdmRMNTRNUVFmbk9rM2wxbHRiRTVodEFIKzVSQVgyMDJL?=
+ =?utf-8?B?NjhzcE5FWVkvb291UkZHeGVBaVhqOWpEaGtzUDhUOVFpQkJqQUhKZGQ5VlZR?=
+ =?utf-8?B?SlNSb0s3YVBYbURrQXA0TzZxYTA3dVVIajJGUjA1VFE5UzBEUHkvajc1cUZX?=
+ =?utf-8?B?RldmV1o3OG8zdjBDdElVTG1vYi9BRFNtbmJJeXdBTW5SRFBIQmJUOElJYUE5?=
+ =?utf-8?B?SmpsQWNWbE5MOHh2V1BaelhqTzQ2dFIvTmJINHo0ZmFDaWNUZXpHUXNEMjk0?=
+ =?utf-8?B?KzBlNHFGRUU1Y1FvNnlUWlhTK2p0TXFMSVJyZHR3Uy8wRm0yRU9yek1SaVBX?=
+ =?utf-8?B?cHJ6QlJQQ01Qck0xZWJtbnJlV253MW44SGNCaURLTndVK1VaRzdMNnUyMTdJ?=
+ =?utf-8?B?eTBrWnViNGx6eHFmYnYzcmtrYWpDR2pHVjVuU3Q0bjhhR3FTMFZzRTlXV1RM?=
+ =?utf-8?B?UllEV0Zpc2JlWXhhQzNSV2ZRU1RkdDM3bXpVUjJRT1JoMU5RV0pmUEw1RTIz?=
+ =?utf-8?B?bFJMSmFZSEdJamlNSll1Nng1WVlNbmwxVWxoN1ltR0k0WHNwOEFOeFFFd0VV?=
+ =?utf-8?B?c2QxSGlSMDlVaHZaRW41NHVwcXBISzg5QjlHTlBLajBwRjZ0dHp6SUwwdjVu?=
+ =?utf-8?B?cCsra3EyRk1rY0Y3emtmd2lZMDhhVVZFOHZWdmM3MTR6NmJYWUp3cDhTREFI?=
+ =?utf-8?B?ZWlmSjU2M1dsblM0elBlanNERXBqaDdMTm01V256cENZRWduUWF6U3pJT1RM?=
+ =?utf-8?B?bklHRllmZXgrRlloUDFadVlBcCtsYlV5Tk96MEtnekVmejdtWExEZ2x0L0dO?=
+ =?utf-8?Q?cQJaSATRY0+NHlSY=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: da43a58e-a314-4907-6ee9-08da17de393c
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 15:00:43.9755
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NrZ/UJjLYfZU0J90JERCYZ4KpauuRCb75erbAVRyO/4oTvczJEnIbD17P0QlgmPkcxc9ffrMYmzFH3vQD56hmA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1336
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-04-05 15:31:29, John Ogness wrote:
-> Refactor/rework printing logic in order to prepare for moving to
-> threaded console printing.
+
+On 20/02/2022 20:46, Dmitry Osipenko wrote:
+> Enable NVIDIA Tegra V4L2 video decoder driver.
 > 
-> - Move @console_seq into struct console so that the current
->   "position" of each console can be tracked individually.
+> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+> ---
+>   arch/arm/configs/multi_v7_defconfig | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> - Move @console_dropped into struct console so that the current drop
->   count of each console can be tracked individually.
-> 
-> - Modify printing logic so that each console independently loads,
->   prepares, and prints its next record.
-> 
-> - Remove exclusive_console logic. Since console positions are
->   handled independently, replaying past records occurs naturally.
-> 
-> - Update the comments explaining why preemption is disabled while
->   printing from printk() context.
-> 
-> With these changes, there is a change in behavior: the console
-> replaying the log (formerly exclusive console) will no longer block
-> other consoles. New messages appear on the other consoles while the
-> newly added console is still replaying.
-> 
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> +/*
-> + * Print out all remaining records to all consoles.
-> + *
-> + * Requires the console_lock.
+> diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+> index dc0581deea9f..8a360d7f517e 100644
+> --- a/arch/arm/configs/multi_v7_defconfig
+> +++ b/arch/arm/configs/multi_v7_defconfig
+> @@ -669,6 +669,7 @@ CONFIG_VIDEO_STI_DELTA=m
+>   CONFIG_VIDEO_RENESAS_FDP1=m
+>   CONFIG_VIDEO_RENESAS_JPU=m
+>   CONFIG_VIDEO_RENESAS_VSP1=m
+> +CONFIG_VIDEO_TEGRA_VDE=m
+>   CONFIG_V4L_TEST_DRIVERS=y
+>   CONFIG_VIDEO_VIVID=m
+>   CONFIG_VIDEO_ADV7180=m
 
-It would be nice to document @do_cond_resched, something like:
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
 
- * @do_cond_resched is set by the caller. It can be true only in
-   schedulable context.
+Jon
 
-> + *
-> + * Returns true if a console was available for flushing, otherwise false.
-
-It is not completely true after adding abandon_console_lock_in_panic().
-But it is actually a chance to slightly change the meaning. I suggest
-to define it as:
-
- * Returns true when there was at least one usable console and all
-   messages were flushed to all usable consoles.
-
-It will help to better define @next_seq meaning. And it is exactly
-the meaning that we need in console_unlock(), see below.
-
-> + *
-> + * @next_seq is set to the highest sequence number of all of the consoles that
-> + * were flushed.
-
-The value is meaningful only when all consoles were flushed. It would
-be nice to make it more clear. If we changed the return value meaning
-than we could say:
-
- * @next_seq is the sequence number after the last available record.
- * The value is valid only when this function returns true. It means
- * that usable consoles are completely flushed.
-
-
-> + *
-> + * @handover will be set to true if a printk waiter has taken over the
-> + * console_lock, in which case the caller is no longer holding the
-> + * console_lock. Otherwise it is set to false.
-> + */
-> +static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handover)
-> +{
-> +	bool any_usable = false;
-> +	struct console *con;
-> +	bool any_progress;
-> +
-> +	*next_seq = 0;
-> +	*handover = false;
-> +
-> +	do {
-> +		any_progress = false;
-> +
-> +		for_each_console(con) {
-> +			bool progress;
-> +
-> +			if (!console_is_usable(con))
-> +				continue;
-> +			any_usable = true;
-> +
-> +			progress = console_emit_next_record(con, handover);
-> +			if (*handover)
-> +				return true;
-
-The return value is not used in this case. I would return "false"
-here and update the meaning as suggested above.
-
-> +			/* Track the highest seq flushed. */
-> +			if (con->seq > *next_seq)
-> +				*next_seq = con->seq;
-> +
-> +			if (!progress)
-> +				continue;
-> +			any_progress = true;
-> +
-> +			/* Allow panic_cpu to take over the consoles safely */
-> +			if (abandon_console_lock_in_panic())
-> +				return false;
-> +
-> +			if (do_cond_resched)
-> +				cond_resched();
-> +		}
-> +	} while (any_progress);
-> +
-> +	return any_usable;
->  }
->  
->  /**
-> @@ -2686,125 +2790,33 @@ void console_unlock(void)
->  	 * between lines if allowable.  Not doing so can cause a very long
->  	 * scheduling stall on a slow console leading to RCU stall and
->  	 * softlockup warnings which exacerbate the issue with more
-> -	 * messages practically incapacitating the system.
-> -	 *
-> -	 * console_trylock() is not able to detect the preemptive
-> -	 * context reliably. Therefore the value must be stored before
-> -	 * and cleared after the "again" goto label.
-> +	 * messages practically incapacitating the system. Therefore, create
-> +	 * a local to use for the printing loop.
->  	 */
->  	do_cond_resched = console_may_schedule;
-> -again:
-> -	console_may_schedule = 0;
-> -
-> -	/*
-> -	 * We released the console_sem lock, so we need to recheck if
-> -	 * cpu is online and (if not) is there at least one CON_ANYTIME
-> -	 * console.
-> -	 */
-> -	if (!can_use_console()) {
-> -		console_locked = 0;
-> -		up_console_sem();
-> -		return;
-> -	}
->  
-> -	for (;;) {
-> -		size_t ext_len = 0;
-> -		int handover;
-> -		size_t len;
-> +	do {
-> +		console_may_schedule = 0;
->  
-> -skip:
-> -		if (!prb_read_valid(prb, console_seq, &r))
-> +		flushed = console_flush_all(do_cond_resched, &next_seq, &handover);
-> +		if (handover)
->  			break;
->  
-> -		if (console_seq != r.info->seq) {
-> -			console_dropped += r.info->seq - console_seq;
-> -			console_seq = r.info->seq;
-> -			if (panic_in_progress() && panic_console_dropped++ > 10) {
-> -				suppress_panic_printk = 1;
-> -				pr_warn_once("Too many dropped messages. Suppress messages on non-panic CPUs to prevent livelock.\n");
-> -			}
-> -		}
-> -
-> -		if (suppress_message_printing(r.info->level)) {
-> -			/*
-> -			 * Skip record we have buffered and already printed
-> -			 * directly to the console when we received it, and
-> -			 * record that has level above the console loglevel.
-> -			 */
-> -			console_seq++;
-> -			goto skip;
-> -		}
-> -
-> -		/* Output to all consoles once old messages replayed. */
-> -		if (unlikely(exclusive_console &&
-> -			     console_seq >= exclusive_console_stop_seq)) {
-> -			exclusive_console = NULL;
-> -		}
-> +		__console_unlock();
->  
-> -		/*
-> -		 * Handle extended console text first because later
-> -		 * record_print_text() will modify the record buffer in-place.
-> -		 */
-> -		if (nr_ext_console_drivers) {
-> -			ext_len = info_print_ext_header(ext_text,
-> -						sizeof(ext_text),
-> -						r.info);
-> -			ext_len += msg_print_ext_body(ext_text + ext_len,
-> -						sizeof(ext_text) - ext_len,
-> -						&r.text_buf[0],
-> -						r.info->text_len,
-> -						&r.info->dev_info);
-> -		}
-> -		len = record_print_text(&r,
-> -				console_msg_format & MSG_FORMAT_SYSLOG,
-> -				printk_time);
-> -		console_seq++;
-> +		/* Were there any consoles available for flushing? */
-
-The value is false also when abandon_console_lock_in_panic() returned
-true. We basically want to break here when we could not do the job.
-I would write something like:
-
-		/*
-		 * Do not try again when couldn't do the job. It avoids
-		 * an infinite loop.
-		 */
-
-> +		if (!flushed)
-> +			break;
->  
->  		/*
-> -		 * While actively printing out messages, if another printk()
-> -		 * were to occur on another CPU, it may wait for this one to
-> -		 * finish. This task can not be preempted if there is a
-> -		 * waiter waiting to take over.
-> -		 *
-> -		 * Interrupts are disabled because the hand over to a waiter
-> -		 * must not be interrupted until the hand over is completed
-> -		 * (@console_waiter is cleared).
-> +		 * Some context may have added new records after
-> +		 * console_flush_all() but before unlocking the console.
-> +		 * Re-check if there is a new record to flush. If the trylock
-> +		 * fails, another context is already handling the printing.
->  		 */
-> -		printk_safe_enter_irqsave(flags);
-> -		console_lock_spinning_enable();
-> -
-> -		stop_critical_timings();	/* don't trace print latency */
-> -		call_console_drivers(ext_text, ext_len, text, len);
-> -		start_critical_timings();
-> -
-> -		handover = console_lock_spinning_disable_and_check();
-> -		printk_safe_exit_irqrestore(flags);
-> -		if (handover)
-> -			return;
-> -
-> -		/* Allow panic_cpu to take over the consoles safely */
-> -		if (abandon_console_lock_in_panic())
-> -			break;
-> -
-> -		if (do_cond_resched)
-> -			cond_resched();
-> -	}
-> -
-> -	/* Get consistent value of the next-to-be-used sequence number. */
-> -	next_seq = console_seq;
-> -
-> -	console_locked = 0;
-> -	up_console_sem();
-> -
-> -	/*
-> -	 * Someone could have filled up the buffer again, so re-check if there's
-> -	 * something to flush. In case we cannot trylock the console_sem again,
-> -	 * there's a new owner and the console_unlock() from them will do the
-> -	 * flush, no worries.
-> -	 */
-> -	retry = prb_read_valid(prb, next_seq, NULL);
-> -	if (retry && !abandon_console_lock_in_panic() && console_trylock())
-> -		goto again;
-> +	} while (prb_read_valid(prb, next_seq, NULL) &&
-> +		 !abandon_console_lock_in_panic() &&
-
-This is not longer needed. Either all messages are proceed or
-we are not here because console_flush_all() returned false.
-
-Another motivation to remove it that it is bit racy here. The state
-could change only under the console lock.
-
-It is not a big deal. But I would prefer to remove it because it makes
-false assumptions about the logic.
-
-> +		 console_trylock());
->  }
->  EXPORT_SYMBOL(console_unlock);
-
-
-Summary: All the proposed changes are cosmetic. And I like the new code.
-
-Best Regards,
-Petr
+-- 
+nvpublic
