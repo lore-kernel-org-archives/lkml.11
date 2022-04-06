@@ -2,80 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD01C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 636CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233161AbiDFNs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
+        id S233689AbiDFNse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233671AbiDFNr5 (ORCPT
+        with ESMTP id S233489AbiDFNsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:47:57 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E9E3C8101
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:04:29 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2366Aowd008097;
-        Wed, 6 Apr 2022 04:54:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=ZWtYtEP6ksjFQqnyEmmOpZ3NxAIAdcKEON9VScCRpts=;
- b=kS8JququnS/P433jjj4yjCHo3EvYeF/l6X80KjiVJ+H48moB8mHAU6LHqBwAC3eSlFVf
- mSUvu3vyqMiKN7FcJLCq1+baEy7bOAXI6B3m3mxE0SL9dEuatMUoNEaZfE6XB5qplrOh
- y6ppnN5EFutCLbuJ1Lri4ovPNYVNSGqozOdoPPT8kTUSYjRgNLKAk1W8HNNhuoN7yrZl
- jpa6BXX+E0FkWYtaie8TxKyaBBuQ/dZzoqVXjmVB57Tpx33o69zBda70L4Vs1ULYLMkp
- cVP7VM0e9d9CNM1rGg4F7B4g4C/Q6Yys7y2HSt5ohwU2W4H5whtTaUZPfVMe0IEr/g8D Wg== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f6kw2d06t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 06 Apr 2022 04:54:24 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 10:54:22 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Wed, 6 Apr 2022 10:54:22 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 095912C5;
-        Wed,  6 Apr 2022 09:54:22 +0000 (UTC)
-Date:   Wed, 6 Apr 2022 09:54:22 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Stephen Kitt <steve@sk2.org>
-CC:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <patches@opensource.cirrus.com>, Wolfram Sang <wsa@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] ASoC: wm*: use simple i2c probe function
-Message-ID: <20220406095422.GU38351@ediswmail.ad.cirrus.com>
-References: <20220405122411.2096387-1-steve@sk2.org>
+        Wed, 6 Apr 2022 09:48:07 -0400
+X-Greylist: delayed 6968 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 04:04:44 PDT
+Received: from qproxy3-pub.mail.unifiedlayer.com (qproxy3-pub.mail.unifiedlayer.com [67.222.38.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E31C52E54D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:04:44 -0700 (PDT)
+Received: from alt-proxy28.mail.unifiedlayer.com (alt-proxy28.mail.unifiedlayer.com [74.220.216.123])
+        by qproxy3.mail.unifiedlayer.com (Postfix) with ESMTP id 4339A803B0DB
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:08:36 +0000 (UTC)
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway1.mail.pro1.eigbox.com (Postfix) with ESMTP id 063B71003F401
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:08:35 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id c1eUnbjfuQs3Cc1eUnhkQD; Wed, 06 Apr 2022 09:08:35 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=A+Opg4aG c=1 sm=1 tr=0 ts=624d5893
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=z0gMJWrwH1QA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=ZeFZwYX2NddpyQBIYx0A:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:In-Reply-To:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=nUVhw/DqtI6TDwW5cKdD/Hgy36VOLAfB37jUTelqyT0=; b=2OdqUEzwUwjNtbtDmCfCQVr7lK
+        I2ROf5jZLGQAMWWpikDu2+e3dZfCQTXAOWwHZJKAs+toYpinfL44rriMzoAxVA4oSxrFTUhMG5BmK
+        qY3UfCFs1FIE0FAJMTFp1rOuSZ06lnUMnB39w5ZzrVYL6ugcPR0t2sZZocrTjSOj3NTjdVtIG5C6i
+        P1GrUqh56Yr84ww2xTGGD17axlGYv6HwFEPyezpE8ebUbRMwYE6+DTm+aPgRPi7V6AQ4kE9Wqgz+H
+        acqouceVpbhAtmjy04Ueg3g86wP0n6j23Q30h+qM6VMD4Lhivkw3UmerdYz4vtyuHGg6xVjHKj/oG
+        +93pBoIA==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:36032 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nc1eT-003WtS-BE; Wed, 06 Apr 2022 03:08:33 -0600
+Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220405070407.513532867@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+Message-ID: <957affaf-ff9a-db30-d089-6db9750e1d13@w6rz.net>
+Date:   Wed, 6 Apr 2022 02:08:31 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220405122411.2096387-1-steve@sk2.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: J7OSmPskFQrUtpATmrtUgfaSwannSLbK
-X-Proofpoint-GUID: J7OSmPskFQrUtpATmrtUgfaSwannSLbK
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nc1eT-003WtS-BE
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:36032
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 02:24:11PM +0200, Stephen Kitt wrote:
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
-> 
-> wm8731.c is excluded and will be submitted separately.
-> 
-> This avoids scanning the identifier tables during probes.
-> 
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-> ---
+On 4/5/22 12:12 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.2 release.
+> There are 1126 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.2-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Thanks,
-Charles
+Tested-by: Ron Economos <re@w6rz.net>
+
