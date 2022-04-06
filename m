@@ -2,314 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4523C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9887EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231751AbiDFMx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
+        id S231189AbiDFMy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231405AbiDFMwM (ORCPT
+        with ESMTP id S231448AbiDFMyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:52:12 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5FB2CE01;
-        Wed,  6 Apr 2022 01:54:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1649235283; x=1680771283;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8Pubj1dDiUwibywXxkRjHfOE8N365AkZr19hsnqKjAw=;
-  b=XJwk/F6ihXtv3IsOcIC9BstkLRfXJODnYxmqTcOjmQG/JNTf0HY8jfIA
-   9Wu2KNCU6qTSC0e6HSAMiY3ZzZyYoUUfoFgenf81bqAqXZwyg/kFAi5yn
-   hwZ8qOw+5kalObxWHDrGIPXfhGcmxFxN9PdOsZuOGGtiZS864NA7Sh+kh
-   2f930lQJmCbGnLe5YLwfrs2mHiPY62ufx8MUaXqUbXEn6RlZ+eieWMG4q
-   PyzkA0z9cCguMn0qGj4fQpOIHsmiLyy8juBvu0Be2yT/XxC/DnfAy4SMf
-   Xqkweu5X6Qeu6Xs8HUnnEUr+ppPzooX0Kp25FEaJrYfVjusKC8iP6aTUr
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,239,1643670000"; 
-   d="scan'208";a="23123437"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 06 Apr 2022 10:54:40 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Wed, 06 Apr 2022 10:54:40 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Wed, 06 Apr 2022 10:54:40 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1649235280; x=1680771280;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8Pubj1dDiUwibywXxkRjHfOE8N365AkZr19hsnqKjAw=;
-  b=J+DT2M047zqAESv4v7c+N9cvsJttfG7cEyLRBPRj0TuC8b/eSSJiEIeq
-   vZ3LzmIO0pAwDDdOmHEp6KMAak7aKLB5H1eK3pYMOz8KgK0mRYPDKhatM
-   Skh9Z3WSOevY3V6hTFxJAQ48XUvl/VW5paT3avLFe1eiCknR25bBAoTXl
-   30UP/cSlZ7Eg2T/ev/6J47xu1D4hUtWX7dquHNENut8IpVB2AzGkt8aKH
-   U2tNnVE9LCMW/sTcagPJxeNUHbD1/fJhgPrc+6aKtnySUACeV3mLSoaMJ
-   Vh1JZccQGt6R9ysm9gmJQVna1zTTN4+73D3NT9kRomfLhX/jHhrlIsMc0
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,239,1643670000"; 
-   d="scan'208";a="23123436"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 06 Apr 2022 10:54:40 +0200
-Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.49.14])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 027D5280065;
-        Wed,  6 Apr 2022 10:54:39 +0200 (CEST)
-Message-ID: <170e086e24860c37897825e7f2599efc78de5a38.camel@ew.tq-group.com>
-Subject: Re: [PATCH] spi: cadence-quadspi: fix protocol setup for non-1-1-X
- operations
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Pratyush Yadav <p.yadav@ti.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ramuthevar Vadivel Murugan 
-        <vadivel.muruganx.ramuthevar@linux.intel.com>,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 06 Apr 2022 10:54:37 +0200
-In-Reply-To: <20220405193721.5jf3umfn3dvv6fxd@ti.com>
-References: <20220331110819.133392-1-matthias.schiffer@ew.tq-group.com>
-         <20220401100606.iz52jbrdcz6pd5sg@ti.com>
-         <6b2bfa6614fbb9339b94a191ab933a2c25b8b4d7.camel@ew.tq-group.com>
-         <20220405193721.5jf3umfn3dvv6fxd@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        Wed, 6 Apr 2022 08:54:15 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0A5388C60;
+        Wed,  6 Apr 2022 01:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649235486; x=1680771486;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=p8nBEB+MNXhz5UaO1/EM6bxXdwDLzhXQjFRAKQlIL8A=;
+  b=bDsmAURJulz3qvXTukFLpsecKZSulv3Z6K31WeVy1fjSif1vNEPGFQa0
+   tabQWoWlhd5KOx/6kj/BgFUzvVRMUVY9jlZE2vCJdEeV3Vzdzf+KA4czJ
+   qdRS/MqjI5/KA1L6Bz6b1A6Htif8sOBEDN7rIKtE1m3BExXDqrNqpaiqq
+   H8fbJIF8xJfB4Jg0sF1qRUCH/6qFN6RYtGifrW6BOlEA6EjaoYmHcqQ83
+   k5bgv1wiSeam7dCy7+TZq4UorKCEFaAfMc2pGlfwpAz/j81CUxvBkKRBg
+   reYGGZjRNBdepk4v+3huAijg6KFKgMUf3/HlgJ4Ylg/Vrb598e3C3dEHJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="241576990"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="241576990"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:57:40 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="608812355"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:57:38 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nc1SR-000BIE-Aj;
+        Wed, 06 Apr 2022 11:56:07 +0300
+Date:   Wed, 6 Apr 2022 11:56:07 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 2/2] tty: Implement lookahead to process XON/XOFF timely
+Message-ID: <Yk1Vp+nQQBRE+MjN@smile.fi.intel.com>
+References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
+ <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com>
+ <YkxqGDsURPpkDM5W@smile.fi.intel.com>
+ <fce9c28e-a334-3c70-3a6a-8812f11d8fc7@kernel.org>
+ <Yk1VLWMmMu6jJEWo@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yk1VLWMmMu6jJEWo@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-06 at 01:07 +0530, Pratyush Yadav wrote:
-> On 01/04/22 12:20PM, Matthias Schiffer wrote:
-> > On Fri, 2022-04-01 at 15:36 +0530, Pratyush Yadav wrote:
-> > > Hi Matthias,
+On Wed, Apr 06, 2022 at 11:54:05AM +0300, Andy Shevchenko wrote:
+> On Wed, Apr 06, 2022 at 10:21:12AM +0200, Jiri Slaby wrote:
+> > On 05. 04. 22, 18:11, Andy Shevchenko wrote:
+> > > On Tue, Apr 05, 2022 at 01:24:37PM +0300, Ilpo Järvinen wrote:
+
+> > > > +	if (c == START_CHAR(tty)) {
+> > > > +		if (!lookahead_done) {
+> > > > +			start_tty(tty);
+> > > > +			process_echoes(tty);
+> > > > +		}
+> > > > +		return true;
+> > > > +	}
+> > > > +	if (c == STOP_CHAR(tty)) {
+> > > > +		if (!lookahead_done)
+> > > > +			stop_tty(tty);
+> > > > +		return true;
+> > > > +	}
+
+> > > Looking into this I would first make a preparatory patch that splits out
+> > > current code into something like
 > > > 
-> > > On 31/03/22 01:08PM, Matthias Schiffer wrote:
-> > > > cqspi_set_protocol() only set the data width, but ignored the
-> > > > command
-> > > > and address width (except for 8-8-8 DTR ops), leading to
-> > > > corruption
-> > > > of
-> > > > all transfers using 1-X-X or X-X-X ops. Fix by setting the
-> > > > other
-> > > > two
-> > > > widths as well.
-> > > > 
-> > > > While we're at it, simplify the code a bit by replacing the
-> > > > CQSPI_INST_TYPE_* constants with ilog2().
-> > > > 
-> > > > Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash
-> > > > with 1-
-> > > > 4-4
-> > > > read and write operations.
-> > > > 
-> > > > Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to
-> > > > use
-> > > > spi-mem framework")
+> > > static bool __n_tty_receive_char_special_no_lookahead(struct tty_struct *tty, unsigned char c)
+> > > {
+> > > 	...current code...
+> > > }
 > > > 
-> > > I think a fixes tag is wrong here. The old driver did not support
-> > > 1-
-> > > X-X 
-> > > modes either. So you are not fixing anything, you are adding a
-> > > new 
-> > > feature. I don't think we should backport this patch to stable.
-> > 
-> > Giving a precise fixes tag is a bit difficult. The referenced
-> > commit
-> > made the driver (accidentally) accept commands like 1-4-4 without
-> > handing them correctly, causing data corruption for flashs that
-> > support
-> > these modes. The data corruption is fixed by my patch.
-> 
-> Ah, you're right. I missed the fact that the original driver
-> explicitly 
-> checked for 1-1-1, 1-1-4, and 1-1-8, and returned an error for the
-> rest. 
-> So your patch does indeed fix a bug.
-> 
-> > As the change was unintended, one option would be to split this
-> > patch
-> > into two parts: One fix patch that makes cqspi_set_protocol()
-> > -EINVAL
-> > again for all commands that are not 1-1-X, and one feature patch
-> > that
-> > adds actual support for these commands.
-> > 
-> > My thought process was that making these commands work correctly
-> > can't
-> > break anything that is not already broken in current stable
-> > kernels.
-> > But if you prefer the minimal change, I can send a v2 that splits
-> > the
-> > patch.
-> 
-> Yes, but as I commented below, I would prefer you rework the driver
-> to 
-> drop cqspi_set_protocol() entirely. For doing that the 2 patch
-> approach 
-> would work best so we don't end up getting the new code backported
-> to 
-> stable as well.
-
-Okay, I tried to split my patch, however I found
-that cqspi_set_protocol() is not the right place to check for
-unsupported operations at all - if the driver ever reaches a path where
-cqspi_set_protocol() returns -EINVAL, something has already gone wrong
-(and the attemption operation will fail altogether rather than falling
-back to a slower command).
-
-I think that these checks - including the check that only 8-8-8 is
-supported with DTR - should actually happen in cqspi_supports_mem_op().
-Does that sound right?
-
-Regards,
-Matthias
-
-
-
-> 
-> > Regards,
-> > Matthias
-> > 
-> > 
-> > 
-> > > > Signed-off-by: Matthias Schiffer <
-> > > > matthias.schiffer@ew.tq-group.com
-> > > > ---
-> > > >  drivers/spi/spi-cadence-quadspi.c | 46 ++++++++---------------
-> > > > ----
-> > > > ----
-> > > >  1 file changed, 12 insertions(+), 34 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/spi/spi-cadence-quadspi.c
-> > > > b/drivers/spi/spi-
-> > > > cadence-quadspi.c
-> > > > index b0c9f62ccefb..616ada891974 100644
-> > > > --- a/drivers/spi/spi-cadence-quadspi.c
-> > > > +++ b/drivers/spi/spi-cadence-quadspi.c
-> > > > @@ -19,6 +19,7 @@
-> > > >  #include <linux/iopoll.h>
-> > > >  #include <linux/jiffies.h>
-> > > >  #include <linux/kernel.h>
-> > > > +#include <linux/log2.h>
-> > > >  #include <linux/module.h>
-> > > >  #include <linux/of_device.h>
-> > > >  #include <linux/of.h>
-> > > > @@ -102,12 +103,6 @@ struct cqspi_driver_platdata {
-> > > >  #define CQSPI_TIMEOUT_MS			500
-> > > >  #define CQSPI_READ_TIMEOUT_MS			10
-> > > >  
-> > > > -/* Instruction type */
-> > > > -#define CQSPI_INST_TYPE_SINGLE			0
-> > > > -#define CQSPI_INST_TYPE_DUAL			1
-> > > > -#define CQSPI_INST_TYPE_QUAD			2
-> > > > -#define CQSPI_INST_TYPE_OCTAL			3
-> > > > -
-> > > >  #define CQSPI_DUMMY_CLKS_PER_BYTE		8
-> > > >  #define CQSPI_DUMMY_BYTES_MAX			4
-> > > >  #define CQSPI_DUMMY_CLKS_MAX			31
-> > > > @@ -376,10 +371,6 @@ static unsigned int cqspi_calc_dummy(const
-> > > > struct spi_mem_op *op, bool dtr)
-> > > >  static int cqspi_set_protocol(struct cqspi_flash_pdata
-> > > > *f_pdata,
-> > > >  			      const struct spi_mem_op *op)
-> > > >  {
-> > > > -	f_pdata->inst_width = CQSPI_INST_TYPE_SINGLE;
-> > > > -	f_pdata->addr_width = CQSPI_INST_TYPE_SINGLE;
-> > > > -	f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
-> > > > -
-> > > >  	/*
-> > > >  	 * For an op to be DTR, cmd phase along with every
-> > > > other non-
-> > > > empty
-> > > >  	 * phase should have dtr field set to 1. If an op phase
-> > > > has
-> > > > zero
-> > > > @@ -389,32 +380,23 @@ static int cqspi_set_protocol(struct
-> > > > cqspi_flash_pdata *f_pdata,
-> > > >  		       (!op->addr.nbytes || op->addr.dtr) &&
-> > > >  		       (!op->data.nbytes || op->data.dtr);
-> > > >  
-> > > > -	switch (op->data.buswidth) {
-> > > > -	case 0:
-> > > > -		break;
-> > > > -	case 1:
-> > > > -		f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
-> > > > -		break;
-> > > > -	case 2:
-> > > > -		f_pdata->data_width = CQSPI_INST_TYPE_DUAL;
-> > > > -		break;
-> > > > -	case 4:
-> > > > -		f_pdata->data_width = CQSPI_INST_TYPE_QUAD;
-> > > > -		break;
-> > > > -	case 8:
-> > > > -		f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
-> > > > -		break;
-> > > > -	default:
-> > > > -		return -EINVAL;
-> > > > -	}
-> > > > +	f_pdata->inst_width = 0;
-> > > > +	if (op->cmd.buswidth)
-> > > > +		f_pdata->inst_width = ilog2(op->cmd.buswidth);
-> > > > +
-> > > > +	f_pdata->addr_width = 0;
-> > > > +	if (op->addr.buswidth)
-> > > > +		f_pdata->addr_width = ilog2(op->addr.buswidth);
-> > > > +
-> > > > +	f_pdata->data_width = 0;
-> > > > +	if (op->data.buswidth)
-> > > > +		f_pdata->data_width = ilog2(op->data.buswidth);
+> > > Then in the patch 1 you add
 > > > 
-> > > Honestly, I think we should get rid of cqspi_set_protocol()
-> > > entirely.
-> > > I 
-> > > see no need to store f_pdata->{instr,addr,data}_width since we 
-> > > recalculate those for each op execution anyway. So why not just
-> > > use
-> > > the 
-> > > spi_mem_op to get those values directly and be rid of all this
-> > > mess?
+> > > static bool __n_tty_receive_char_special_lookahead(struct tty_struct *tty, unsigned char c)
+> > > {
+> > > 	...
+> > > }
 > > > 
-> > > >  
-> > > >  	/* Right now we only support 8-8-8 DTR mode. */
-> > > >  	if (f_pdata->dtr) {
-> > > >  		switch (op->cmd.buswidth) {
-> > > >  		case 0:
-> > > > -			break;
-> > > >  		case 8:
-> > > > -			f_pdata->inst_width =
-> > > > CQSPI_INST_TYPE_OCTAL;
-> > > >  			break;
-> > > >  		default:
-> > > >  			return -EINVAL;
-> > > > @@ -422,9 +404,7 @@ static int cqspi_set_protocol(struct
-> > > > cqspi_flash_pdata *f_pdata,
-> > > >  
-> > > >  		switch (op->addr.buswidth) {
-> > > >  		case 0:
-> > > > -			break;
-> > > >  		case 8:
-> > > > -			f_pdata->addr_width =
-> > > > CQSPI_INST_TYPE_OCTAL;
-> > > >  			break;
-> > > >  		default:
-> > > >  			return -EINVAL;
-> > > > @@ -432,9 +412,7 @@ static int cqspi_set_protocol(struct
-> > > > cqspi_flash_pdata *f_pdata,
-> > > >  
-> > > >  		switch (op->data.buswidth) {
-> > > >  		case 0:
-> > > > -			break;
-> > > >  		case 8:
-> > > > -			f_pdata->data_width =
-> > > > CQSPI_INST_TYPE_OCTAL;
-> > > >  			break;
-> > > >  		default:
-> > > >  			return -EINVAL;
-> > > > -- 
-> > > > 2.25.1
-> > > > 
+> > > static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
+> > > 					 bool lookahead_done)
+> > 
+> > This should be dubbed better. Maybe n_tty_receive_char_flow_control()?
+> > 
+> > And I would place the if (I_IXON(tty)) to the caller. I am a bit lost in
+> > this pseudo code, so maybe this doesn't make sense in your proposal. I have
+> > something like in my mind:
+> > 
+> > if (I_IXON(tty))
+> >   return n_tty_receive_char_flow_control();
+> 
+> My point to have three helpers which make each change cleaner:
+> 
+>   .-> n_tty_receive_char_flow_control_lah()
+>   |
+>   |  .-> n_tty_receive_char_flow_control_no_lah()
+>   |  |
+>   `- + -- n_tty_receive_char_flow_control()
+> 
+> Where no_lah variant can be split as preparatory patch prepending the current
+> series.
+
+Another possibility to keep one function, but split it first in a separate
+patch and then modify.
+
+> And yes, calling I_IXON at the caller seems better.
+> 
+> > Historically, these n_tty_receive* function names were a big mess. Don't
+> > produce more of that by simply prepending only "__".
+> > 
+> > > {
+> > > 	if (!I_IXON(tty))
+> > > 		return false;
+> > > 
+> > > 	if (lookahead_done)
+> > > 		return _lookahead();
+> > > 
+> > > 	return _no_lookahead();
+> > > }
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
