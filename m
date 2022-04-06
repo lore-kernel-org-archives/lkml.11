@@ -2,123 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 697CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235689AbiDFPJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
+        id S235794AbiDFPJo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235776AbiDFPIt (ORCPT
+        with ESMTP id S235777AbiDFPJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:08:49 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898213B93A6
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:02:51 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id g20so2328768edw.6
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:02:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version:content-transfer-encoding;
-        bh=whOdS+ZcH7sIpEntYe8CJFTcnKkZdKG28Xb/p70XMvo=;
-        b=JsHKfdW83fLPaATYi8d9V3sljgvsb0oN7RRpWT6JB80/10uDk+SQamUjz4rob4ZZS0
-         gpka4IkmpVK6jnRr8X2aNLtGHqzOjKiM0WQE3+Uy9zMVEejPzHP+aTUse0FLHKtxo317
-         Rh4ephi89YgTP7m13Ladzc1N+VqpWWIaw76MYLR5gPZqVY4jnvJ55WcIK2D4KbzCEtNU
-         +JV6+V1KVZ/izMtnIZqPqWqhJmXK7Qeo7Vc1i7RSdjLG9qqq6Uo0xHbhojxwh6mP4S2f
-         8oeJHaXtzLyGDYh4waFsXrD37rwYqLPmR5fdTDK7kVDH/zVBJxSQsRx6DatNT+8FnZsU
-         IozQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version:content-transfer-encoding;
-        bh=whOdS+ZcH7sIpEntYe8CJFTcnKkZdKG28Xb/p70XMvo=;
-        b=DTwKG3X081yEyd1TuVP2+aEv/6zGuABAbi1dssUkcQa41pcdDifXo7ypXhQKFbS+Pu
-         5BkojhSJsoFDFjyDf2mVrGbsFo0yv+Ij3dagjTovtgsPX+PaVe/Gal7Q9c1qSBZ67lvR
-         bsyq4Lozzp9D0+AUxbgMhMerVARuBZ2BVRDQtA1FR8+ek85aIGPC8mcAawvDDL6ddnF1
-         En+qkPpjWiRHso07mLim6XCmHPiG0QPW+z+66nm/8Z4RVfDM0ZB3HV46acw46ECqS1UZ
-         AiCBXdkB6k0uYBtzpkaHvmLjGuAWMKYKPWcgBvD+tGXwvkigcbmM+KNfOwXUBiYLhVPF
-         rxYg==
-X-Gm-Message-State: AOAM5302YAqMcTGHChT5ozXQxS4e5b3tBDBdfpmrb7OZN71PrLy2DEyB
-        5L9ml8oQSS/LaJjEb0F7gIBTY0mGAVKxEA==
-X-Google-Smtp-Source: ABdhPJxWPoa96Rp6WyUCbZqG8Rc+VbSNKHl6bbF4sy2t/iT60ay3eCLeVu4In006GQNqNwkQToMQvA==
-X-Received: by 2002:a05:6402:51d4:b0:410:a328:3c86 with SMTP id r20-20020a05640251d400b00410a3283c86mr8318099edd.55.1649246062857;
-        Wed, 06 Apr 2022 04:54:22 -0700 (PDT)
-Received: from zen.linaroharston ([51.148.130.216])
-        by smtp.gmail.com with ESMTPSA id j8-20020aa7c0c8000000b0041934547989sm7922351edp.55.2022.04.06.04.54.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 04:54:21 -0700 (PDT)
-Received: from zen (localhost [127.0.0.1])
-        by zen.linaroharston (Postfix) with ESMTP id 179711FFB7;
-        Wed,  6 Apr 2022 12:54:21 +0100 (BST)
-References: <20220405093759.1126835-1-alex.bennee@linaro.org>
- <8b3ce88f65fd11523a4d2daab3c617f7089eb1ce.camel@gmail.com>
- <87r16bk013.fsf@linaro.org>
- <aeb64d1c4bbddfd8463c07a40ab1fc78be0d158d.camel@gmail.com>
-User-agent: mu4e 1.7.12; emacs 28.1.50
-From:   Alex =?utf-8?Q?Benn=C3=A9e?= <alex.bennee@linaro.org>
-To:     Bean Huo <huobean@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, maxim.uvarov@linaro.org,
-        joakim.bech@linaro.org, ulf.hansson@linaro.org,
-        ilias.apalodimas@linaro.org, arnd@linaro.org,
-        ruchika.gupta@linaro.org, tomas.winkler@intel.com,
-        yang.huang@intel.com, bing.zhu@intel.com,
-        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
-        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH  v2 0/4] rpmb subsystem, uapi and virtio-rpmb driver
-Date:   Wed, 06 Apr 2022 12:22:00 +0100
-In-reply-to: <aeb64d1c4bbddfd8463c07a40ab1fc78be0d158d.camel@gmail.com>
-Message-ID: <87ee2ajuky.fsf@linaro.org>
+        Wed, 6 Apr 2022 11:09:37 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED39F472F07
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:04:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649246650; x=1680782650;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=uEpWVDG9mHAzC3vQt8/6DshQkU5+A/w706L6sIKCmZ4=;
+  b=Wbo+Z5XO48d1xnJXvfuaF9Ew3HN9KKbRGwSeqCDE5SC+gRzfLuHDjslQ
+   rO0TgXP1ZRWVAMlXTUk9CSyhST1CzYjOhXlWswSbGZi9s2gmYHOqoJoKM
+   HAOHjdpODydczu6xYKYnFzG74d1SR6XNATIhMFPC+hKP+Ue5gFE+mv0TU
+   hbOMQ4jICPF+M8Ae2TONoAlUQc9vzS5BfANfsuBRuqXI4syZXhyvuY1wk
+   S0PLleJy8eFWbakFc3MZpRIFEO/6X0ILqrdPjaSvxX/oM5iskvMYloB7K
+   lmoTsw+zPmRn7Lv91UROVHHzLTeJ8+f4lBrDmdxk4RV4H5UgGsKBvmMM5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240958360"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="240958360"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 04:54:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="722484316"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 06 Apr 2022 04:54:00 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nc4Ea-0004NR-32;
+        Wed, 06 Apr 2022 11:54:00 +0000
+Date:   Wed, 6 Apr 2022 19:53:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Walker Chen <walker.chen@starfivetech.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Michael Yan <michael.yan@starfivetech.com>,
+        Jenny Zhang <jenny.zhang@starfivetech.com>
+Subject: [esmil:visionfive 39/55] sound/soc/starfive/pwmdac.h:145:6: warning:
+ no previous prototype for 'sf_pwmdac_pcm_push_tx'
+Message-ID: <202204061929.5OKjyPph-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/esmil/linux visionfive
+head:   7ff84520cb688edd6028a4ac3de3ed684eb22794
+commit: 46f456a9a328b4f2904920484bb3cf5afb654cdc [39/55] ASoC: starfive: Add StarFive JH7100 audio drivers
+config: h8300-randconfig-r004-20220406 (https://download.01.org/0day-ci/archive/20220406/202204061929.5OKjyPph-lkp@intel.com/config)
+compiler: h8300-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/esmil/linux/commit/46f456a9a328b4f2904920484bb3cf5afb654cdc
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout 46f456a9a328b4f2904920484bb3cf5afb654cdc
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=h8300 SHELL=/bin/bash sound/soc/
 
-Bean Huo <huobean@gmail.com> writes:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> On Tue, 2022-04-05 at 16:43 +0100, Alex Benn=C3=A9e wrote:
->>=20
->> Bean Huo <huobean@gmail.com> writes:
->>=20
->> > Hi Alex,
->> >=20
->> > Thanks for this unified RPMB interface, I wanted to verify this on
->> > our
->> > UFS, it seems you didn't add the UFS access interface in this
->> > version=20
->> > from your userspace tools, right?
->>=20
->> No I didn't but it should be easy enough to add some function pointer
->> redirection everywhere one of the op_* functions calls a vrpmb_*
->> function. Do you already have a UFS RPMB device driver?
->>=20
->
-> Hi Alex,
-> Thanks for your feedback.
->
-> We now access UFS RPMB through the RPMB LUN BSG device, RPMB is a well-
-> known LU and we have a userspace tool to access it.
->
-> I see that if we're going to use your interface, "static struct
-> rpmb_ops" should be registered from a lower-level driver, for example
-> in a UFS driver, yes there should be no problem with this registration,
-> but I don't know with the current way Compared, what are the advantages
-> to add a driver. maybe the main advantage is that we will have an
-> unified user space tool for RPMB. right?
+All warnings (new ones prefixed by >>):
 
-Pretty much. The main issue for virtio-rpmb is it doesn't really fit
-neatly into the block stack because all it does is the RPMB part so a
-non-block orientate API makes sense.
+   In file included from include/linux/err.h:5,
+                    from include/linux/clk.h:12,
+                    from sound/soc/starfive/pwmdac.c:7:
+   include/linux/scatterlist.h: In function 'sg_set_buf':
+   include/asm-generic/page.h:89:51: warning: ordered comparison of pointer with null pointer [-Wextra]
+      89 | #define virt_addr_valid(kaddr)  (((void *)(kaddr) >= (void *)PAGE_OFFSET) && \
+         |                                                   ^~
+   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
+      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+         |                                             ^
+   include/linux/scatterlist.h:160:9: note: in expansion of macro 'BUG_ON'
+     160 |         BUG_ON(!virt_addr_valid(buf));
+         |         ^~~~~~
+   include/linux/scatterlist.h:160:17: note: in expansion of macro 'virt_addr_valid'
+     160 |         BUG_ON(!virt_addr_valid(buf));
+         |                 ^~~~~~~~~~~~~~~
+   In file included from sound/soc/starfive/pwmdac.c:19:
+   sound/soc/starfive/pwmdac.h: At top level:
+>> sound/soc/starfive/pwmdac.h:145:6: warning: no previous prototype for 'sf_pwmdac_pcm_push_tx' [-Wmissing-prototypes]
+     145 | void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~
+>> sound/soc/starfive/pwmdac.h:146:6: warning: no previous prototype for 'sf_pwmdac_pcm_pop_rx' [-Wmissing-prototypes]
+     146 | void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev) { }
+         |      ^~~~~~~~~~~~~~~~~~~~
+>> sound/soc/starfive/pwmdac.h:147:5: warning: no previous prototype for 'sf_pwmdac_pcm_register' [-Wmissing-prototypes]
+     147 | int sf_pwmdac_pcm_register(struct platform_device *pdev)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
 
-Can you point be to where the UFS driver does it's current RPMB stuff?
-
->
-> Kind regards,
-> Bean
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
+   Depends on HAS_IOMEM && DRM && MMU
+   Selected by
+   - DRM_SSD130X && HAS_IOMEM && DRM
 
 
---=20
-Alex Benn=C3=A9e
+vim +/sf_pwmdac_pcm_push_tx +145 sound/soc/starfive/pwmdac.h
+
+   137	
+   138	
+   139	
+   140	#if IS_ENABLED(CONFIG_SND_STARFIVE_PWMDAC_PCM)
+   141	void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev);
+   142	void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev);
+   143	int sf_pwmdac_pcm_register(struct platform_device *pdev);
+   144	#else
+ > 145	void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev) { }
+ > 146	void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev) { }
+ > 147	int sf_pwmdac_pcm_register(struct platform_device *pdev)
+   148	{
+   149		return -EINVAL;
+   150	}
+   151	#endif
+   152	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
