@@ -2,165 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 403C7C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 468B5C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236960AbiDFVkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47018 "EHLO
+        id S237055AbiDFVkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236839AbiDFVhp (ORCPT
+        with ESMTP id S237885AbiDFVip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:37:45 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA605149D24
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 13:52:36 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n18so3038859plg.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 13:52:36 -0700 (PDT)
+        Wed, 6 Apr 2022 17:38:45 -0400
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED3A217982;
+        Wed,  6 Apr 2022 14:00:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xkFjUfhGoQ34kJyACGIdw2JI7HA9Qbq4djiPovTr3nU=;
-        b=V8fNKwMdF/78RolOKcFf3ZhsNoC2OOtHtdeW5d4KTeh6iZ082KMBgGMOrUBMe/NoAk
-         +hYS8r+McENQQu6k7QLmoTfZZhz0LTvbBhIwc1ZI7jxz1W+5c5WWXRyy1o7L2cBuaII1
-         NmyILt6XWSnRiLW7ZHhxOJQEiTaLQ9Eq5FsY0JtXgTZsjhSPvufEaufsobiiryXZJNz+
-         iBucEWrK4ZyDbDEQsCwa80KUqwk5B3Yq0AUdwErNvl0NPJKwNJbrvt4iLP9RJaDs1tw8
-         9doJwoCrBACSmeYA61WBSRyiqNZQ+DLpu8wV1DHZqxvoH2bn9xvtpXh9i1JHl+qFC86h
-         PacA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xkFjUfhGoQ34kJyACGIdw2JI7HA9Qbq4djiPovTr3nU=;
-        b=5oCrUkU0Dmmv2doBAYmaXgLbB55ofAxiKTRbALTa0x6CQz5P1jC18L+k5A2vaqyC45
-         T0BDgTp0fI1A2Vm/tD0s/nSlrHNydAYgqLMz1locE61NEvmRs+baNMgrx6xemC56mQTS
-         MStyrPUahOwifWa/eFseISUAINgl+acdBFD/uNGMwcQ5ErxPHjvhIeZUWL2ZVkUSWSCn
-         hsLJdLfi8m+9c0Js2ZzmJFeAUljn/e9a0PBW1RWIwGawnccDYlRgqaSwvKpywJz3OR+l
-         Ki5xPTkR3fYIreX5O0XwSw1BkqxORT9sYhiFpjKRWMPU/KyoCGB6kF5hdPoPRPBaTYr+
-         wL5A==
-X-Gm-Message-State: AOAM533ADFyNrpT7pYGReQXD/v+p1BewGngmfEVTTz/YsVK++XwUSkKa
-        OJehAXX2AKY102W/l5UFgRzozw==
-X-Google-Smtp-Source: ABdhPJxKhnEQV5VqEbY+JvX8VIw//fdN/sZciPCv9KuPGbSdvYgXpIcb2nA5fqbPdQp5BKAl6Hw2OQ==
-X-Received: by 2002:a17:902:76ca:b0:157:1c6:5660 with SMTP id j10-20020a17090276ca00b0015701c65660mr703844plt.105.1649278356074;
-        Wed, 06 Apr 2022 13:52:36 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id a16-20020a17090a6d9000b001c9c3e2a177sm6421301pjk.27.2022.04.06.13.52.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 13:52:35 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 20:52:31 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying
- the instruction
-Message-ID: <Yk39j8f81+iDOsDG@google.com>
-References: <20220402010903.727604-6-seanjc@google.com>
- <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
- <YkshgrUaF4+MrrXf@google.com>
- <7caee33a-da0f-00be-3195-82c3d1cd4cb4@maciej.szmigiero.name>
- <YkzxXw1Aznv4zX0a@google.com>
- <eed1cea4-409a-f03e-5c31-e82d49bb2101@maciej.szmigiero.name>
- <Yk3Jd6xAfgVoFgLc@google.com>
- <5135b502-ce2e-babb-7812-4d4c431a5252@maciej.szmigiero.name>
- <Yk3uh6f+0nOdybd3@google.com>
- <cd348e77-cb40-a64c-6b82-24e9a9158946@maciej.szmigiero.name>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1649278833; x=1680814833;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=S/RUYgJiJDHB7xj8zcZPP8Nba0qoMBr1iDzWuUq4ooM=;
+  b=BFG+AfrLxKrsTOM2H2eEXEg/F3vjones0/CYf+6wxFzUD1OvyS0Z7x55
+   QTUPQUHhuxe2SmUxBcGdRCN74gP/Jbe7bhFb6roVthpcmJFEEEGWiIho4
+   K0cF/w9eUBBn64D9cKCduvVWOe/ZLdvVRKEiUo/XixN0Dkvpr2rESB10s
+   U=;
+X-IronPort-AV: E=Sophos;i="5.90,240,1643673600"; 
+   d="scan'208";a="77373843"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-54c9d11f.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 06 Apr 2022 21:00:30 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-54c9d11f.us-east-1.amazon.com (Postfix) with ESMTPS id BF0E7C0271;
+        Wed,  6 Apr 2022 21:00:24 +0000 (UTC)
+Received: from EX13D02UWB002.ant.amazon.com (10.43.161.160) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Wed, 6 Apr 2022 21:00:24 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D02UWB002.ant.amazon.com (10.43.161.160) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Wed, 6 Apr 2022 21:00:23 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
+ Server id 15.0.1497.32 via Frontend Transport; Wed, 6 Apr 2022 21:00:23 +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id 134A62510; Wed,  6 Apr 2022 21:00:22 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <leo.yan@linaro.org>
+CC:     <Nick.Forrington@arm.com>, <acme@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <alisaidi@amazon.com>,
+        <andrew.kilroy@arm.com>, <benh@kernel.crashing.org>,
+        <german.gomez@arm.com>, <james.clark@arm.com>,
+        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
+        <lihuafei1@huawei.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
+        <mingo@redhat.com>, <namhyung@kernel.org>, <peterz@infradead.org>,
+        <will@kernel.org>
+Subject: Re: [PATCH v4 2/4] perf arm-spe: Use SPE data source for neoverse cores
+Date:   Wed, 6 Apr 2022 21:00:17 +0000
+Message-ID: <20220406210017.11887-1-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220404151218.GA898573@leoy-ThinkPad-X240s>
+References: <20220404151218.GA898573@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cd348e77-cb40-a64c-6b82-24e9a9158946@maciej.szmigiero.name>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022, Maciej S. Szmigiero wrote:
-> On 6.04.2022 21:48, Sean Christopherson wrote:
-> > On Wed, Apr 06, 2022, Maciej S. Szmigiero wrote:
-> > > On 6.04.2022 19:10, Sean Christopherson wrote:
-> > > > On Wed, Apr 06, 2022, Maciej S. Szmigiero wrote:
-> > > And what if it's L0 that is trying to inject a NMI into L2?
-> > > In this case is_guest_mode() is true, but the full NMI injection machinery
-> > > should be used.
+On Mon, 4 Apr 2022 15:12:18  +0000, Leo Yan wrote:
+> On Sun, Apr 03, 2022 at 08:33:37PM +0000, Ali Saidi wrote:
+
+[...]
+
+> > The latter logic is why I think it's perfectly acceptable to use HITM to
+> > indicate a peer cache-to-cache transfer, however since others don't feel that way
+> > let me propose a single additional snooping type PERF_MEM_SNOOP_PEER that
+> > indicates some peer of the hierarchy below the originating core sourced the
+> > data.  This clears up the definition that line came from from a peer and may or
+> > may not have been modified, but it doesn't add a lot of implementation dependant
+> > functionality into the SNOOP API. 
 > > 
-> > Gah, you're right, I got misled by a benign bug in nested_vmx_l1_wants_exit() and
-> > was thinking that NMIs always exit.  The "L1 wants" part should be conditioned on
-> > NMI exiting being enabled.  It's benign because KVM always wants "real" NMIs, and
-> > so the path is never encountered.
-> > 
-> > @@ -5980,7 +6005,7 @@ static bool nested_vmx_l1_wants_exit(struct kvm_vcpu *vcpu,
-> >          switch ((u16)exit_reason.basic) {
-> >          case EXIT_REASON_EXCEPTION_NMI:
-> >                  intr_info = vmx_get_intr_info(vcpu);
-> > -               if (is_nmi(intr_info))
-> > +               if (is_nmi(intr_info) && nested_cpu_has_nmi_exiting(vmcs12))
-> >                          return true;
-> >                  else if (is_page_fault(intr_info))
-> >                          return true;
-> > 
+> > We could use the mem-level to indicate the level of the cache hierarchy we had
+> > to get to before the snoop traveled upward, which seems like what x86 is doing
+> > here.
 > 
-> I guess you mean "benign" when having KVM as L1, since other hypervisors may
-> let their L2s handle NMIs themselves.
+> It makes sense to me that to use the highest cache level as mem-level.
+> Please add comments in the code for this, this would be useful for
+> understanding the code.
 
-No, this one's truly benign.  The nVMX exit processing is:
+Ok.
 
-	if (nested_vmx_l0_wants_exit())
-		handle in L0 / KVM;
-
-	if (nested_vmx_l1_wants_exit())
-		handle in L1
-
-	handle in L0 / KVM
-
-Since this is for actual hardware NMIs, the first "L0 wants" check always returns
-true for NMIs, so the fact that KVM screws up L1's wants is a non-issue.
- 
-> > > It is also incorrect to block L1 -> L2 NMI injection because either L1
-> > > or L2 is currently under NMI blocking: the first case is obvious,
-> > > the second because it's L1 that is supposed to take care of proper NMI
-> > > blocking for L2 when injecting an NMI there.
-> > 
-> > Yep, but I don't think there's a bug here.  At least not for nVMX.
+> > PEER_CORE -> MEM_SNOOP_PEER + L2
+> > PEER_CLSTR -> MEM_SNOOP_PEER + L3
+> > PEER_LCL_CLSTR -> MEM_SNOOP_PEER + L3 (since newer neoverse cores don't support
+> > the clusters and the existing commercial implementations don't have them).
 > 
-> I agree this scenario should currently work (including on nSVM) - mentioned
-> it just as a constraint on solution space.
+> Generally, this idea is fine for me.
+
+Great.  
+
+Now the next tricky thing. Since we're not using HITM for recording the memory
+events, the question becomes for the c2c output should we output the SNOOP_PEER
+events as if they are HITM events with a clarification in the perf-c2c man page
+or effectively duplicate all the lcl_hitm logic, which is a fair amount,  in
+perf c2c to add a column and sort option? 
+
+> Following your suggestion, if we connect the concepts PoC and PoU in Arm
+> reference manual, we can extend the snooping mode with MEM_SNOOP_POU
+> (for PoU) and MEM_SNOOP_POC (for PoC), so:
 > 
-> > > > > With the code in my previous patch set I planned to use
-> > > > > exit_during_event_injection() to detect such case, but if we implement
-> > > > > VMCB12 EVENTINJ parsing we can simply add a flag that the relevant event
-> > > > > comes from L1, so its normal injection side-effects should be skipped.
-> > > > 
-> > > > Do we still need a flag based on the above?  Honest question... I've been staring
-> > > > at all this for the better part of an hour and may have lost track of things.
-> > > 
-> > > If checking just is_guest_mode() is not enough due to reasons I described
-> > > above then we need to somehow determine in the NMI / IRQ injection handler
-> > > whether the event to be injected into L2 comes from L0 or L1.
-> > > For this (assuming we do VMCB12 EVENTINJ parsing) I think we need an extra flag.
-> > 
-> > Yes :-(  And I believe the extra flag would need to be handled by KVM_{G,S}ET_VCPU_EVENTS.
-> > 
+> PEER_CORE -> MEM_SNOOP_POU + L2
+> PEER_LCL_CLSTR -> MEM_SNOOP_POU + L3
+> PEER_CLSTR -> MEM_SNOOP_POC + L3
 > 
-> Another option for saving and restoring a VM would be to add it to
-> KVM_{GET,SET}_NESTED_STATE somewhere (maybe as a part of the saved VMCB12
-> control area?).
+> Seems to me, we could consider for this.  If this is over complexity or
+> even I said any wrong concepts for this, please use your method.
 
-Ooh.  What if we keep nested_run_pending=true until the injection completes?  Then
-we don't even need an extra flag because nested_run_pending effectively says that
-any and all injected events are for L1=>L2.  In KVM_GET_NESTED_STATE, shove the
-to-be-injected event into the normal vmc*12 injection field, and ignore all
-to-be-injected events in KVM_GET_VCPU_EVENTS if nested_run_pending=true.
+I think this adds a lot of complexity and reduces clarity. Some systems
+implement coherent icaches and the PoU would be the L1 cache, others don't so
+that would be the L2 (or wherever there is a unified cache). Similarly, with the
+point of coherency, some systems would consider that dram, but other systems
+have transparent LLCs and it would be the LLC. 
 
-That should work even for migrating to an older KVM, as keeping nested_run_pending
-will cause the target to reprocess the event injection as if it were from nested
-VM-Enter, which it technically is.
+Thanks,
+Ali
 
-We could probably get away with completely dropping the intermediate event as
-the vmc*12 should still have the original event, but that technically could result
-in architecturally incorrect behavior, e.g. if vectoring up to the point of
-interception sets A/D bits in the guest.
