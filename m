@@ -2,185 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B24C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E4CC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237358AbiDFQQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        id S237398AbiDFQSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237307AbiDFQQV (ORCPT
+        with ESMTP id S238163AbiDFQSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:16:21 -0400
-Received: from out203-205-221-236.mail.qq.com (out203-205-221-236.mail.qq.com [203.205.221.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3343E165AB3
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649217014;
-        bh=zJFkZzqZthfWKrX/zbSrPfFnqxzqHvVv4Csfy9NuN4g=;
-        h=From:To:Cc:Subject:Date;
-        b=yJ+LF8vfyaqqCWNCZAQD/bwYpIR7a3dOh8yorG9RK/8Uk9Zd8OSQSirxQEul03TEj
-         y/kI7GG8INx4q6eVh5p4FQawCvypNO6jLuUpr4jCKqtNBs0ZV86kZ542TNwtqIM0Lf
-         ebtJPmw3RqZBS4YHQ08PJVfAaKTNl2AtIIxkqoT0=
-Received: from localhost.localdomain ([43.227.136.188])
-        by newxmesmtplogicsvrsza8.qq.com (NewEsmtp) with SMTP
-        id C8B2E245; Wed, 06 Apr 2022 11:50:11 +0800
-X-QQ-mid: xmsmtpt1649217011tba63epip
-Message-ID: <tencent_0D2E31C704054CF88F12F6FF114803B34106@qq.com>
-X-QQ-XMAILINFO: OJV4F5WcWfWafbtek9ZeR1+BxzU4H4LqqfBQzbRUrASnC0l5H8Io4igjpzafji
-         84wV1JwjWN33McDWy4ILmtIDT7dxOaLGjPvX+RoCby4d8cn2z/pYiNqI7DjmGymK1jcYWaAZboQ5
-         /dyK+9lPw4jCzShkVve2Vsod9vZix5+6Bnlh92E3RjvbxY8Khk5E4TXGi4vJZFmvHSidkd/ILWsx
-         wNVS6aUeAhOIemejsFmfXhNyZvlp6RuOBUQ1Rj6zKFPhyK3cbkAD9lmUDktVNEZzTF+N7FgG8l56
-         t+9zCgtX2/suAxCnUeOCOI7UcdT12xOh+yxC4r2oITifegyQtsAt/lTrNxmhgyXksMEgrm1agzh+
-         DT5gZ/16jHv3pcqoGj6+L/40TnhcnwPBnimrkS4VNTWeAZ0e33gqhnh/WMlKazLjOtkssErNX07j
-         gDJBXb1YGJes9QoJO+rg26kxVQ0gZKF7379kwCz69kyoTKSWTSUL/Lg6XizVbJkcgR4h7EfgoTEc
-         cZgNTeoQBNNdWZHBEu28luuG1hHNR+JgQOcqXqsEbjhPnOFebspihnx4tOiTFLPzs6PbDoakzP+a
-         Fk8EQApApQGdChzDUm5TJeOxda7t6GJld4tKBfc2ypVKrdbVM4q2/OujrpEOuiMnSHoZumi6DswX
-         vTgig5tcSWGt7ivxGPUP2fq2JJAZL+4Cb1QPb9FZFghiZqgU3ERI623fiVoVRJ95pVi6KxQVXuuO
-         AxXUSCnmz8cNXuLMNkSSQPpt8Vu6sd8sOVmwNrL8Z654ABwDKYibmaFOlke4FykjntZRbMVcy0l0
-         P180k+m3bDhrb3TghdZNsesvMCnOdSL7Z9iL+c17vP49oNZFvkhD1WBAS9IdsUMYGfjuvUZVNcDV
-         G2DYJD3hoKyEMVHO3BhHBIWrzAJj4z/l9CzMr3vpF58WSUEFs15CBiOY8Vh6DEIWkktlU+PEGEXm
-         lBK45r5jujTh9KqkhUNlif8nUFLQ/j
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2] staging: rtl8723bs: fix potential memory leak in _rtw_init_xmit_priv()
-Date:   Wed,  6 Apr 2022 11:50:01 +0800
-X-OQ-MSGID: <20220406035001.12744-1-xkernel.wang@foxmail.com>
+        Wed, 6 Apr 2022 12:18:32 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D578E37;
+        Tue,  5 Apr 2022 20:00:57 -0700 (PDT)
+X-UUID: ca96f587cad449019ecec13c658c76e9-20220406
+X-UUID: ca96f587cad449019ecec13c658c76e9-20220406
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1613377218; Wed, 06 Apr 2022 11:00:35 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 6 Apr 2022 11:00:13 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 11:00:13 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <krzysztof.kozlowski@canonical.com>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>, <jassisinghbrar@gmail.com>,
+        <fparent@baylibre.com>, <yongqiang.niu@mediatek.com>,
+        <hsinyi@chromium.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v10 1/4] dt-bindings: display: mediatek: revise enum to const
+Date:   Wed, 6 Apr 2022 11:00:06 +0800
+Message-ID: <20220406030009.2357-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220406030009.2357-1-rex-bc.chen@mediatek.com>
+References: <20220406030009.2357-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+There won't be more than 1 fallback for these bindings, so we modify
+them to use const instead of enum.
 
-In _rtw_init_xmit_priv(), there are seven error paths for allocation  
-failures without releasing the resources but directly goto `exit`, while   
-the exit section only executes `return res;`, which leads to various 
-memory leaks.
-
-To properly release them, this patch unifies the error handlers of 
-_rtw_init_xmit_priv() and several error handling paths are added.
-According to the allocation sequence, each error will jump to its 
-corresponding error handling tag.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
-ChangeLog:
-v1->v2 update the description.
- drivers/staging/rtl8723bs/core/rtw_xmit.c | 50 +++++++++++++++++------
- 1 file changed, 37 insertions(+), 13 deletions(-)
+ .../devicetree/bindings/display/mediatek/mediatek,aal.yaml  | 3 +--
+ .../bindings/display/mediatek/mediatek,ccorr.yaml           | 3 +--
+ .../bindings/display/mediatek/mediatek,color.yaml           | 6 ++----
+ .../bindings/display/mediatek/mediatek,dither.yaml          | 3 +--
+ .../bindings/display/mediatek/mediatek,gamma.yaml           | 3 +--
+ .../devicetree/bindings/display/mediatek/mediatek,ovl.yaml  | 6 ++----
+ .../devicetree/bindings/display/mediatek/mediatek,rdma.yaml | 6 ++----
+ 7 files changed, 10 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_xmit.c b/drivers/staging/rtl8723bs/core/rtw_xmit.c
-index 528f920..b288b04 100644
---- a/drivers/staging/rtl8723bs/core/rtw_xmit.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_xmit.c
-@@ -112,7 +112,7 @@ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+index 61f0ed1e388f..cdb6d0819cca 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+@@ -29,8 +29,7 @@ properties:
+               - mediatek,mt8183-disp-aal
+               - mediatek,mt8192-disp-aal
+               - mediatek,mt8195-disp-aal
+-          - enum:
+-              - mediatek,mt8173-disp-aal
++          - const: mediatek,mt8173-disp-aal
  
- 	if (!pxmitpriv->pallocated_xmitbuf) {
- 		res = _FAIL;
--		goto exit;
-+		goto free_frame_buf;
- 	}
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
+index 0ed53b6238f0..7766c806c102 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
+@@ -28,8 +28,7 @@ properties:
+       - items:
+           - enum:
+               - mediatek,mt8195-disp-ccorr
+-          - enum:
+-              - mediatek,mt8192-disp-ccorr
++          - const: mediatek,mt8192-disp-ccorr
  
- 	pxmitpriv->pxmitbuf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitpriv->pallocated_xmitbuf), 4);
-@@ -132,7 +132,7 @@ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 			msleep(10);
- 			res = rtw_os_xmit_resource_alloc(padapter, pxmitbuf, (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ), true);
- 			if (res == _FAIL)
--				goto exit;
-+				goto free_xmitbuf;
- 		}
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
+index 3ad842eb5668..0c9095b0411e 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
+@@ -32,15 +32,13 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-color
+               - mediatek,mt2712-disp-color
+-          - enum:
+-              - mediatek,mt2701-disp-color
++          - const: mediatek,mt2701-disp-color
+       - items:
+           - enum:
+               - mediatek,mt8183-disp-color
+               - mediatek,mt8192-disp-color
+               - mediatek,mt8195-disp-color
+-          - enum:
+-              - mediatek,mt8173-disp-color
++          - const: mediatek,mt8173-disp-color
+   reg:
+     maxItems: 1
  
- 		pxmitbuf->phead = pxmitbuf->pbuf;
-@@ -162,7 +162,7 @@ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 	if (!pxmitpriv->xframe_ext_alloc_addr) {
- 		pxmitpriv->xframe_ext = NULL;
- 		res = _FAIL;
--		goto exit;
-+		goto free_xmitbuf;
- 	}
- 	pxmitpriv->xframe_ext = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitpriv->xframe_ext_alloc_addr), 4);
- 	pxframe = (struct xmit_frame *)pxmitpriv->xframe_ext;
-@@ -195,7 +195,7 @@ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
+index 6657549af165..8180ed0a89ff 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
+@@ -28,8 +28,7 @@ properties:
+           - enum:
+               - mediatek,mt8192-disp-dither
+               - mediatek,mt8195-disp-dither
+-          - enum:
+-              - mediatek,mt8183-disp-dither
++          - const: mediatek,mt8183-disp-dither
  
- 	if (!pxmitpriv->pallocated_xmit_extbuf) {
- 		res = _FAIL;
--		goto exit;
-+		goto free_xframe_ext;
- 	}
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
+index 78442339314f..5f1825b4512b 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
+@@ -29,8 +29,7 @@ properties:
+           - enum:
+               - mediatek,mt8192-disp-gamma
+               - mediatek,mt8195-disp-gamma
+-          - enum:
+-              - mediatek,mt8183-disp-gamma
++          - const: mediatek,mt8183-disp-gamma
  
- 	pxmitpriv->pxmit_extbuf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitpriv->pallocated_xmit_extbuf), 4);
-@@ -210,10 +210,8 @@ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 		pxmitbuf->buf_tag = XMITBUF_MGNT;
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
+index f77094e61443..51f8235f1b1b 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
+@@ -33,13 +33,11 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-ovl
+               - mediatek,mt2712-disp-ovl
+-          - enum:
+-              - mediatek,mt2701-disp-ovl
++          - const: mediatek,mt2701-disp-ovl
+       - items:
+           - enum:
+               - mediatek,mt8195-disp-ovl
+-          - enum:
+-              - mediatek,mt8183-disp-ovl
++          - const: mediatek,mt8183-disp-ovl
  
- 		res = rtw_os_xmit_resource_alloc(padapter, pxmitbuf, MAX_XMIT_EXTBUF_SZ + XMITBUF_ALIGN_SZ, true);
--		if (res == _FAIL) {
--			res = _FAIL;
--			goto exit;
--		}
-+		if (res == _FAIL)
-+			goto free_xmit_extbuf;
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
+index e8c72afa0630..9a6756f185ee 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
+@@ -35,13 +35,11 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-rdma
+               - mediatek,mt2712-disp-rdma
+-          - enum:
+-              - mediatek,mt2701-disp-rdma
++          - const: mediatek,mt2701-disp-rdma
+       - items:
+           - enum:
+               - mediatek,mt8192-disp-rdma
+-          - enum:
+-              - mediatek,mt8183-disp-rdma
++          - const: mediatek,mt8183-disp-rdma
  
- 		pxmitbuf->phead = pxmitbuf->pbuf;
- 		pxmitbuf->pend = pxmitbuf->pbuf + MAX_XMIT_EXTBUF_SZ;
-@@ -240,10 +238,8 @@ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 			pxmitbuf->buf_tag = XMITBUF_CMD;
- 
- 			res = rtw_os_xmit_resource_alloc(padapter, pxmitbuf, MAX_CMDBUF_SZ+XMITBUF_ALIGN_SZ, true);
--			if (res == _FAIL) {
--				res = _FAIL;
--				goto exit;
--			}
-+			if (res == _FAIL)
-+				goto free_cmd_xmitbuf;
- 
- 			pxmitbuf->phead = pxmitbuf->pbuf;
- 			pxmitbuf->pend = pxmitbuf->pbuf + MAX_CMDBUF_SZ;
-@@ -255,7 +251,7 @@ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 
- 	res = rtw_alloc_hwxmits(padapter);
- 	if (res == _FAIL)
--		goto exit;
-+		goto free_cmd_xmitbuf;
- 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
- 
- 	for (i = 0; i < 4; i++)
-@@ -267,6 +263,34 @@ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 
- 	rtw_hal_init_xmit_priv(padapter);
- 
-+	return res;
-+
-+free_cmd_xmitbuf:
-+	while (i-- > 0) {
-+		pxmitbuf = &pxmitpriv->pcmd_xmitbuf[i];
-+		if (pxmitbuf)
-+			rtw_os_xmit_resource_free(padapter, pxmitbuf, MAX_CMDBUF_SZ + XMITBUF_ALIGN_SZ, true);
-+	}
-+	i = NR_XMIT_EXTBUFF;
-+free_xmit_extbuf:
-+	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmit_extbuf;
-+	while (i-- > 0) {
-+		rtw_os_xmit_resource_free(padapter, pxmitbuf, (MAX_XMIT_EXTBUF_SZ + XMITBUF_ALIGN_SZ), true);
-+		pxmitbuf++;
-+	}
-+	vfree(pxmitpriv->pallocated_xmit_extbuf);
-+free_xframe_ext:
-+	vfree(pxmitpriv->xframe_ext_alloc_addr);
-+	i = NR_XMITBUFF;
-+free_xmitbuf:
-+	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmitbuf;
-+	while (i-- > 0) {
-+		rtw_os_xmit_resource_free(padapter, pxmitbuf, (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ), true);
-+		pxmitbuf++;
-+	}
-+	vfree(pxmitpriv->pallocated_xmitbuf);
-+free_frame_buf:
-+	vfree(pxmitpriv->pallocated_frame_buf);
- exit:
- 	return res;
- }
+   reg:
+     maxItems: 1
 -- 
+2.18.0
+
