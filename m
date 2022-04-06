@@ -2,118 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:04:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F83CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231980AbiDFNGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
+        id S231276AbiDFNGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231888AbiDFNGP (ORCPT
+        with ESMTP id S231740AbiDFNGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:06:15 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB3F41FD07
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:48:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1649209693; x=1680745693;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VuoVmwsM1kjAIgmEzd4iWUN0hXYBPqUPYmlYGxx90q0=;
-  b=gpvrCNsmTmfW/cXQ+nQCVquU/8tcBIfxMUbDV/oa/zfnOiTYaS8/Th7x
-   XrJzOykZ74ZB3tUxJySl1pg8ymyWCJkuloAQSih3z4XOKcpNelq/BWx0U
-   VXPLAKfGwDkx0Rnqg78IAxjmhMcH3glMKISWooYmfJZ7KFRJZtOWlTF1Z
-   dzVHjoqMpw2HMZP0GN4LKwZnnDqEzeqgLILFz4rnwVZwFZ16g6Pko5Z7P
-   37sRKhw2MfHaIIqwnvtVAmC8bxu8qIaH35r/f2wk+5Er24FuQYbAMLaRf
-   Aiceg859qK/byZ0tG8iMhZbsVkweFQY1FkOfEtNAdcZWOn/Fy3X/yUrYQ
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,238,1643644800"; 
-   d="scan'208";a="202037232"
-Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 06 Apr 2022 09:48:06 +0800
-IronPort-SDR: YYT6ODKAVJo7ucncVjl9vKjgaQLgQNC8X3mHPcZGuhjT+Qi8m9L5Tgpq9ZOpDYOof3MQbM+buO
- 6uZCf8ki72FNOYfLb/y6F8c1T+56EMGVfe/6LbhJwYqqz8Myg8yRP4jQh5yRCEQSmaaE8iqjbi
- uejsfsoag0mKMpIZyM90JoIv2sYE/mOIJr7USwU21OPtIwjMbOFAIZV87fh9Gc1yUl7K+rAIDC
- GBxOjhWCagcHo7jKeX2IDcVigsyCyvCPjmWt1HHmu+pr0YtcGyhrCO2+6F036Q5gVfmDuthFzr
- GevYmk98E4dXn7mX0ZVbZYh9
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Apr 2022 18:18:49 -0700
-IronPort-SDR: Z8TzV4KQr29ZzqbnvJ6olDsbWoj7lzZVvf3Mj7zPwTBY0NjO5hQexC/CwxuJ8GWNP4RC4SvY6q
- 6UFfeApI3iuCwbrL4dmo/UbHiCwRvHZMYVVvD4qN+04BnVG6EqCE2uggrkF1KqP7RKJLQFdF94
- sdHrrnvl3dBaucfWc61cY+TDSfCNBtk43oFamQ9YNjOhC5xl8adwKdYFc0uH3Lv+8NssonHnVN
- ILNzvSrBUnVOcWEpt5rRyCRThkNZsTQ5W/Gq19E10ilKc6vYj0y+/0UqG8qSRKIrqP3WgAxUng
- Afs=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 05 Apr 2022 18:48:06 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KY6ps4pBfz1SVnx
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 18:48:05 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1649209685; x=1651801686; bh=VuoVmwsM1kjAIgmEzd4iWUN0hXYBPqUPYml
-        YGxx90q0=; b=E4UOnw8BjAuFsxgUNz1JVDSZoX8yQLctisFANLe1Z/7C0dFuEJk
-        LfdRZDbW8aSOdPPRAKOLeHbtE6mmG+YYKwab0H3EYIozRVzMTdKBgE2ik7HJHuwe
-        1b/tZXQrhQEBKn14uwEUh3KXtkYU3AwYxZb/cftSIWs4sLb5Ii1/2OmbJOA5JmTM
-        pMTGewU2Q4eeocqSTsJgcr3aFdUI/EEHKR3ZwRZqyhl210d7gKEwFqJzkMZnFvWx
-        sVkMFEpQFSvwkCv/cyub/aWGqmuHgeyvyl77QlJzkoPLP94S2ray/pI2ibZtgHr6
-        MBrtS9l0xhBIHxhWo4d1BYM4S1B2CX7v4tQ==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id js7mOVg80Fvw for <linux-kernel@vger.kernel.org>;
-        Tue,  5 Apr 2022 18:48:05 -0700 (PDT)
-Received: from [10.149.53.254] (washi.fujisawa.hgst.com [10.149.53.254])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KY6pr31hmz1Rvlx;
-        Tue,  5 Apr 2022 18:48:04 -0700 (PDT)
-Message-ID: <f7bbb09f-562f-fce2-cd16-a1c67fc334b5@opensource.wdc.com>
-Date:   Wed, 6 Apr 2022 10:48:03 +0900
+        Wed, 6 Apr 2022 09:06:12 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB064301299;
+        Tue,  5 Apr 2022 18:44:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=CDt6O1qEIdlN6ztswL/r+3cOb6tC6ktRTDJ0omZJKrQ=; b=qPsGmF5ZPZE2DUAk22ClY4MeTT
+        nF8oxwYaifG12VYjqBpWuT9bOZx9MFD8fNtiItf5hmuTT/9S+r4lzFaU0qUywZnG4BLASwdy2hwi9
+        85KS5nUxJ0jvXgxds2u5+uIAYbabEOLSnsN4AI2kJ8jqFFBDDdyzkrAOKPd1xfuhKotTBWJr8VDQD
+        qNmURL5qlrbpOVpDmNi+PBeEPxFhtLtNDo7grok8bL8qT8OlH9LJHD1f2JG57k9Dy2kO0KmLuoJr0
+        8RSwHJlANh0Cos+mZzmuwrN/QJGsNEH+7a4dndpGYW/55xfPuJ8XiqoBRSLgrZ1ExvNtJUbxF7ss8
+        6gL6mwew==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbuj8-003G2g-5q; Wed, 06 Apr 2022 01:44:54 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>, Jann Horn <jannh@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        linux-security-module@vger.kernel.org
+Subject: [PATCH v2] keys: remove __user annotation from function prototype
+Date:   Tue,  5 Apr 2022 18:44:53 -0700
+Message-Id: <20220406014453.32091-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] libata: Inline ata_qc_new_init() in
- ata_scsi_qc_new()
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>, John Garry <john.garry@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-scsi@vger.kernel.org
-References: <1649083990-207133-1-git-send-email-john.garry@huawei.com>
- <1649083990-207133-3-git-send-email-john.garry@huawei.com>
- <20220405055252.GA23698@lst.de>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220405055252.GA23698@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/5/22 14:52, Christoph Hellwig wrote:
-> On Mon, Apr 04, 2022 at 10:53:10PM +0800, John Garry wrote:
->> From: Christoph Hellwig <hch@lst.de>
->>
->> It is a bit pointless to have ata_qc_new_init() in libata-core.c since it
->> pokes scsi internals, so inline it in ata_scsi_qc_new() (in libata-scsi.c).
->>
->> <Christoph, please provide signed-off-by>
->> [jpg, Take Christoph's change from list and form into a patch]
->> Signed-off-by: John Garry <john.garry@huawei.com>
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> 
-> Although I still think merging the two patches into one to avoid all
-> the churn would be much better.
+Remove a missed __user annotation from the prototype for
+keyring_read(). This cures a sparse warning when it complains about
+the difference in the prototype and the function definition.
 
-I agree. Let's merge these 2 patches.
+security/keys/keyring.c:481:13: sparse:    long static [signed] [toplevel] keyring_read( ... )
+security/keys/keyring.c:81:13: sparse:    long static [addressable] [signed] [toplevel] keyring_read( ... )
 
+Fixes: 796e46f9e2cb ("keys: Remove outdated __user annotations").
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: keyrings@vger.kernel.org
+Cc: James Morris <jmorris@namei.org>
+Cc: "Serge E. Hallyn" <serge@hallyn.com>
+Cc: linux-security-module@vger.kernel.org
+---
+v2: rebase/resend; add more Cc:s
 
--- 
-Damien Le Moal
-Western Digital Research
+ security/keys/keyring.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/security/keys/keyring.c
++++ b/security/keys/keyring.c
+@@ -79,7 +79,7 @@ static void keyring_revoke(struct key *k
+ static void keyring_destroy(struct key *keyring);
+ static void keyring_describe(const struct key *keyring, struct seq_file *m);
+ static long keyring_read(const struct key *keyring,
+-			 char __user *buffer, size_t buflen);
++			 char *buffer, size_t buflen);
+ 
+ struct key_type key_type_keyring = {
+ 	.name		= "keyring",
