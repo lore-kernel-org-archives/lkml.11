@@ -2,142 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B0A0C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B585C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376438AbiDFKTs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
+        id S243641AbiDFKUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239477AbiDFKQ0 (ORCPT
+        with ESMTP id S1377788AbiDFKSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:16:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69EFDAFF9;
-        Tue,  5 Apr 2022 23:44:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8279061685;
-        Wed,  6 Apr 2022 06:44:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3BEC385A3;
-        Wed,  6 Apr 2022 06:44:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649227451;
-        bh=BJfgiIoQUQYLiIMc6u/jkdzzSqCbxhlaeFQX+3zNbYg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HYjekCYckPQzlYNTIu2rKllAWs8+5lcZdBvpLZ9xI5S8TRTJdcr5ttJmpzrvgTHqq
-         eBOI+yY11Z3TJfcpG2JyiFMML5RGLQZJsboe9I9cTJW2Ci/Keo8fzQZrlMX9+bPIxk
-         AneKP08C/7KyS3208//LaXSwa3QQlgkeONwROWpgAiYNlAFxBuTIrw8A3WPWPvibxK
-         HsSwUsWha+bf7a+9bZ0PSFRY3uXveqsQ8JsThOC8+cr4nY85wQurMMEQ5RP1cJlBgD
-         8RLXoGCs8CFKCBH9Jm/YxFpfluX7bvVavRQrfH460j6li/IMFTeYAGgBTxFJMxa/rE
-         gvsdmmG1GQPOA==
-Date:   Wed, 6 Apr 2022 12:14:07 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: Re: [PATCH v6 14/14] drm/msm/dsi: Add support for DSC configuration
-Message-ID: <Yk02t+sZS0I7heY3@matsya>
-References: <20220404163436.956875-1-vkoul@kernel.org>
- <20220404163436.956875-15-vkoul@kernel.org>
- <f5fc9704-5c22-8c95-b6d6-e2c20145672c@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f5fc9704-5c22-8c95-b6d6-e2c20145672c@linaro.org>
+        Wed, 6 Apr 2022 06:18:46 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918DA127585;
+        Tue,  5 Apr 2022 20:56:03 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id o10so886026ple.7;
+        Tue, 05 Apr 2022 20:56:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=S2Mrxod2ITgWYTN04g5x9FPQTpq7BfhJLFyLK5OxcvE=;
+        b=Q2HPjZrJAOUw3d6ApjMSFPkwq1oi2IIv1t5HPdFBZTbPNFE7ki+367dgP8rUtuaULA
+         whMJA2ZEZryQ0DTAvO4caIpoJViiIrU2urjAQCQiUpXn8rnqZoE8pMwjsTYf00LYylOK
+         1kse5KDOg+/pXMPwG0dqA6oLNUofWqfF4wue69e3zRGT0NqvvhBnXgIyHJi5nl3oorGo
+         E0niSWqKljoLehFWw/3rb7gdFEDUohZVKl8Nz2QUgUIANOk5UjFyOO+0NtN1WEJmwT27
+         Tp1QcUleliDm9EyAcXxhRUGDpC7pD14omPO87GrFLcg+8fRmg6z2NThdH+W48Tf5QTa2
+         n4IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=S2Mrxod2ITgWYTN04g5x9FPQTpq7BfhJLFyLK5OxcvE=;
+        b=c4aPBdkcnlpsm+WFYiElR1zFu68c0unY1FMe5Gf9a4/tRrhiQ6csbIWzypIbHCSHK1
+         EXGEllQ2E2HLV3qRFPfIKwNGBeoIovRjXalO+4VDilVHMuL2ZSk33f7A27DZQrbvnOub
+         ACa1zlENqpGs1grYhywlVMfytE3Gk4rMcRrI+9lOmjiqT3th3Npm7qrnGFrg2sAYESQ1
+         Ii02EeIzjmXu85XeBesOlmgFjx/3PyL0F5Yb34T/oDUsy1GWrGCKE7AeSAtI0iK3SMCw
+         SATIZaAxcUYeDDSPc+uDvlCQkswypXIC6MtW1pRinoto9BeyRLITksti0mdJH2zn/iV7
+         FLPg==
+X-Gm-Message-State: AOAM530al4CuIiJ8LMm3lhWfEq+FN1wxoR84rRyc6+YNPOloh/3NUWDP
+        MK3v4UoplD0ouzEwI4VJOmA=
+X-Google-Smtp-Source: ABdhPJzKjQL395BwiPaZzTXSWdTdQXcmoXkAdWxmDnCrmEwIUBuEuvMGTyhf76hKsr4/sfZZQH1skA==
+X-Received: by 2002:a17:90b:915:b0:1ca:b584:8241 with SMTP id bo21-20020a17090b091500b001cab5848241mr7708111pjb.46.1649217363132;
+        Tue, 05 Apr 2022 20:56:03 -0700 (PDT)
+Received: from localhost.localdomain ([119.3.119.18])
+        by smtp.gmail.com with ESMTPSA id fw15-20020a17090b128f00b001ca93a34d0dsm3611087pjb.19.2022.04.05.20.56.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 20:56:02 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [PATCH v3] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
+Date:   Wed,  6 Apr 2022 11:55:56 +0800
+Message-Id: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06-04-22, 02:42, Dmitry Baryshkov wrote:
-> On 04/04/2022 19:34, Vinod Koul wrote:
-> > When DSC is enabled, we need to configure DSI registers accordingly and
-> > configure the respective stream compression registers.
-> > 
-> > Add support to calculate the register setting based on DSC params and
-> > timing information and configure these registers.
-> > 
-> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > Signed-off-by: Vinod Koul <vkoul@kernel.org>
-> > ---
-> >   drivers/gpu/drm/msm/dsi/dsi_host.c | 98 +++++++++++++++++++++++++++++-
-> >   1 file changed, 97 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> > index eb0be34add45..f3ed6c40b9e1 100644
-> > --- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-> > +++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> > @@ -912,6 +912,65 @@ static void dsi_ctrl_config(struct msm_dsi_host *msm_host, bool enable,
-> >   		dsi_write(msm_host, REG_DSI_CPHY_MODE_CTRL, BIT(0));
-> >   }
-> > +static void dsi_update_dsc_timing(struct msm_dsi_host *msm_host, bool is_cmd_mode, u32 hdisplay)
-> > +{
-> > +	struct msm_display_dsc_config *dsc = msm_host->dsc;
-> > +	u32 reg, intf_width, reg_ctrl, reg_ctrl2;
-> > +	u32 slice_per_intf, total_bytes_per_intf;
-> > +	u32 pkt_per_line;
-> > +	u32 bytes_in_slice;
-> > +	u32 eol_byte_num;
-> > +
-> > +	/* first calculate dsc parameters and then program
-> > +	 * compress mode registers
-> > +	 */
-> > +	intf_width = hdisplay;
-> > +	slice_per_intf = DIV_ROUND_UP(intf_width, dsc->drm->slice_width);
-> > +
-> > +	/* If slice_per_pkt is greater than slice_per_intf
-> > +	 * then default to 1. This can happen during partial
-> > +	 * update.
-> > +	 */
-> > +	if (slice_per_intf > dsc->drm->slice_count)
-> > +		dsc->drm->slice_count = 1;
-> > +
-> > +	slice_per_intf = DIV_ROUND_UP(hdisplay, dsc->drm->slice_width);
-> > +	bytes_in_slice = DIV_ROUND_UP(dsc->drm->slice_width * dsc->drm->bits_per_pixel, 8);
-> > +
-> > +	dsc->drm->slice_chunk_size = bytes_in_slice;
-> > +
-> > +	total_bytes_per_intf = bytes_in_slice * slice_per_intf;
-> > +
-> > +	eol_byte_num = total_bytes_per_intf % 3;
-> > +	pkt_per_line = slice_per_intf / dsc->drm->slice_count;
-> > +
-> > +	if (is_cmd_mode) /* packet data type */
-> > +		reg = DSI_COMMAND_COMPRESSION_MODE_CTRL_STREAM0_DATATYPE(MIPI_DSI_DCS_LONG_WRITE);
-> > +	else
-> > +		reg = DSI_VIDEO_COMPRESSION_MODE_CTRL_DATATYPE(MIPI_DSI_COMPRESSED_PIXEL_STREAM);
-> > +
-> > +	/* DSI_VIDEO_COMPRESSION_MODE & DSI_COMMAND_COMPRESSION_MODE
-> > +	 * registers have similar offsets, so for below common code use
-> > +	 * DSI_VIDEO_COMPRESSION_MODE_XXXX for setting bits
-> > +	 */
-> > +	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_PKT_PER_LINE(pkt_per_line >> 1);
-> > +	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EOL_BYTE_NUM(eol_byte_num);
-> > +	reg |= DSI_VIDEO_COMPRESSION_MODE_CTRL_EN;
-> > +
-> > +	if (is_cmd_mode) {
-> > +		reg_ctrl = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL);
-> > +		reg_ctrl2 = dsi_read(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL2);
-> > +
-> > +		reg_ctrl |= reg;
-> > +		reg_ctrl2 |= DSI_COMMAND_COMPRESSION_MODE_CTRL2_STREAM0_SLICE_WIDTH(bytes_in_slice);
-> > +
-> > +		dsi_write(msm_host, REG_DSI_COMMAND_COMPRESSION_MODE_CTRL, reg);
-> 
-> reg_ctrl, as reported by testing robot
+All remaining skbs should be released when myri10ge_xmit fails to
+transmit a packet. Fix it within another skb_list_walk_safe.
 
-Yes, I did run W=1 check for the patches, with gcc I do not see this
-warning :(
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
 
-I have fixed and will send updated revision shortly
+changes since v2:
+ - free all remaining skbs. (Xiaomeng Tong)
 
+changes since v1:
+ - remove the unneeded assignmnets. (Xiaomeng Tong)
+
+v2:https://lore.kernel.org/lkml/20220405000553.21856-1-xiam0nd.tong@gmail.com/
+v1:https://lore.kernel.org/lkml/20220319052350.26535-1-xiam0nd.tong@gmail.com/
+
+---
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 50ac3ee2577a..21d2645885ce 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -2903,11 +2903,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+ 		status = myri10ge_xmit(curr, dev);
+ 		if (status != 0) {
+ 			dev_kfree_skb_any(curr);
+-			if (segs != NULL) {
+-				curr = segs;
+-				segs = next;
++			skb_list_walk_safe(next, curr, next) {
+ 				curr->next = NULL;
+-				dev_kfree_skb_any(segs);
++				dev_kfree_skb_any(curr);
+ 			}
+ 			goto drop;
+ 		}
 -- 
-~Vinod
+2.17.1
+
