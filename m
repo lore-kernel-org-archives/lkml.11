@@ -2,101 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DADC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234648AbiDFOUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
+        id S234697AbiDFOUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235792AbiDFOTF (ORCPT
+        with ESMTP id S234610AbiDFOTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:19:05 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44131DEC2A
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:42:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649212967; x=1680748967;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=XqZiME2WI/xF09uZoYLGxX4vJjPqXlqi0xTQO1zAkVo=;
-  b=It20CEUDRw+DziUT5eySlzw+xryTC4OvuJnmBJE70fla5rIix18dFuOJ
-   D8WJDHEFUB5QbuKERqdfSzcJo0N78XI6WnMXgX8z7vs3ZwcDx6X5K+ue4
-   B+4KOpCx8QUlFCJ3ivaVUlhnn9FElcYXJ6tbG27gVjD7QKXA34oe80HZy
-   3UH8IdlumdJQg88m5i9I/6zNhZEWwP80haRnrhljWIBogqYCNfo9zpYbB
-   ZL6n5N1mwuPbHd+zCRqGkMu7AVQdAWtq/QHuceGER5vN5vberMrjbpch+
-   Dao6DEj466EIuTu0GVkqKwFZqBLvc9wIZxoa1gYfab/UBO3RvDlSjChfQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="260926160"
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="260926160"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 19:42:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
-   d="scan'208";a="523739696"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 05 Apr 2022 19:42:46 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nbvd7-000400-FO;
-        Wed, 06 Apr 2022 02:42:45 +0000
-Date:   Wed, 6 Apr 2022 10:42:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Omar Sandoval <osandov@fb.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [hnaz-mm:master 16/188] mm/vmalloc.c:1747:6: warning: no previous
- prototype for 'iounmap_purge_vmap_area'
-Message-ID: <202204061005.jSc4B5gA-lkp@intel.com>
+        Wed, 6 Apr 2022 10:19:38 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E258932925B;
+        Tue,  5 Apr 2022 19:53:37 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KY8DP23QhzgYMw;
+        Wed,  6 Apr 2022 10:51:49 +0800 (CST)
+Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
+ 2022 10:53:32 +0800
+From:   Liao Chang <liaochang1@huawei.com>
+To:     <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
+        <liaochang1@huawei.com>, <tglx@linutronix.de>, <clg@kaod.org>,
+        <nitesh@redhat.com>, <edumazet@google.com>, <peterz@infradead.org>,
+        <joshdon@google.com>, <masahiroy@kernel.org>, <nathan@kernel.org>,
+        <akpm@linux-foundation.org>, <vbabka@suse.cz>,
+        <gustavoars@kernel.org>, <arnd@arndb.de>, <chris@chrisdown.name>,
+        <dmitry.torokhov@gmail.com>, <linux@rasmusvillemoes.dk>,
+        <daniel@iogearbox.net>, <john.ogness@linutronix.de>,
+        <will@kernel.org>, <dave@stgolabs.net>, <frederic@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <heying24@huawei.com>, <guohanjun@huawei.com>,
+        <weiyongjun1@huawei.com>
+Subject: [RFC 3/3] softirq: Introduce statistics about softirq throttling
+Date:   Wed, 6 Apr 2022 10:52:41 +0800
+Message-ID: <20220406025241.191300-4-liaochang1@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220406025241.191300-1-liaochang1@huawei.com>
+References: <20220406025241.191300-1-liaochang1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.53]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/hnaz/linux-mm master
-head:   71e0d841ccd1c91e7038d385825e26342e87d198
-commit: 56de161065643707f3a3a0fd0cc2c9e747148eae [16/188] mm/vmalloc: fix spinning drain_vmap_work after reading from /proc/vmcore
-config: um-x86_64_defconfig (https://download.01.org/0day-ci/archive/20220406/202204061005.jSc4B5gA-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/hnaz/linux-mm/commit/56de161065643707f3a3a0fd0cc2c9e747148eae
-        git remote add hnaz-mm https://github.com/hnaz/linux-mm
-        git fetch --no-tags hnaz-mm master
-        git checkout 56de161065643707f3a3a0fd0cc2c9e747148eae
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=um SUBARCH=x86_64 SHELL=/bin/bash
+This patch introduces counting the number of time spent on softirqs for
+each CPU and the number of time that softirqs has been throttled for
+each CPU, which are reported in /proc/softirqs, for example:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+$cat /proc/softirqs
+                    CPU0       CPU1       CPU2       CPU3
+          HI:          0          0          0          0
+       TIMER:       1088        855        197       4862
+      NET_TX:          0          0          0          0
+      NET_RX:         15          1          0          0
+       BLOCK:         14         11         86         75
+    IRQ_POLL:          0          0          0          0
+     TASKLET:    5926026    6133070    5646523    6149053
+       SCHED:      18061      15939      15746      16004
+     HRTIMER:          0          0          0          0
+         RCU:        668        778        939        720
+                    CPU0       CPU1       CPU2       CPU3
+ DURATION_MS:      91556      69888      66784      73772
+ THROTTLE_MS:      77820       7328       5828       8904
 
-All warnings (new ones prefixed by >>):
+Row starts with "DURATION_MS:" indicates how many milliseconds used for
+softirqs on each CPU. Row starts with "THROTTLE_MS:" indicates how many
+milliseconds softirq throttling lasted on each CPU.
 
->> mm/vmalloc.c:1747:6: warning: no previous prototype for 'iounmap_purge_vmap_area' [-Wmissing-prototypes]
-    1747 | void iounmap_purge_vmap_area(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
+Notice: the rate of "THROTTLE_MS" increase is controlled by parameter
+"kernel.softirq_period_ms" and "kernel.softirq_runtime_ms", generally
+speaking, the smaller softirq CPU bandwidth is, the faster "THROTTLE_MS"
+increase, especially when pending softirq workload is very heavy.
 
+Signed-off-by: Liao Chang <liaochang1@huawei.com>
+---
+ fs/proc/softirqs.c          | 18 ++++++++++++++++++
+ include/linux/kernel_stat.h | 27 +++++++++++++++++++++++++++
+ kernel/softirq.c            | 15 +++++++++++++--
+ 3 files changed, 58 insertions(+), 2 deletions(-)
 
-vim +/iounmap_purge_vmap_area +1747 mm/vmalloc.c
-
-  1744	
-  1745	#ifdef CONFIG_X86_64
-  1746	/* Called after iounmap() to immediately free vm_area_struct's. */
-> 1747	void iounmap_purge_vmap_area(void)
-  1748	{
-  1749		mutex_lock(&vmap_purge_lock);
-  1750		__purge_vmap_area_lazy(ULONG_MAX, 0);
-  1751		mutex_unlock(&vmap_purge_lock);
-  1752	}
-  1753	#endif /* CONFIG_X86_64 */
-  1754	
-
+diff --git a/fs/proc/softirqs.c b/fs/proc/softirqs.c
+index 12901dcf57e2..5ea3ede9833e 100644
+--- a/fs/proc/softirqs.c
++++ b/fs/proc/softirqs.c
+@@ -22,6 +22,24 @@ static int show_softirqs(struct seq_file *p, void *v)
+ 			seq_printf(p, " %10u", kstat_softirqs_cpu(i, j));
+ 		seq_putc(p, '\n');
+ 	}
++
++#ifdef CONFIG_SOFTIRQ_THROTTLE
++	seq_puts(p, "                    ");
++	for_each_possible_cpu(i)
++		seq_printf(p, "CPU%-8d", i);
++	seq_putc(p, '\n');
++
++	seq_printf(p, "%12s:", "DURATION_MS");
++	for_each_possible_cpu(j)
++		seq_printf(p, " %10lu", kstat_softirq_duration(j));
++	seq_putc(p, '\n');
++
++	seq_printf(p, "%12s:", "THROTTLE_MS");
++	for_each_possible_cpu(j)
++		seq_printf(p, " %10lu", kstat_softirq_throttle(j));
++	seq_putc(p, '\n');
++#endif
++
+ 	return 0;
+ }
+ 
+diff --git a/include/linux/kernel_stat.h b/include/linux/kernel_stat.h
+index 69ae6b278464..bbb52c55aad4 100644
+--- a/include/linux/kernel_stat.h
++++ b/include/linux/kernel_stat.h
+@@ -38,6 +38,11 @@ struct kernel_cpustat {
+ struct kernel_stat {
+ 	unsigned long irqs_sum;
+ 	unsigned int softirqs[NR_SOFTIRQS];
++
++#ifdef CONFIG_SOFTIRQ_THROTTLE
++	unsigned long softirq_duration;
++	unsigned long softirq_throttle;
++#endif
+ };
+ 
+ DECLARE_PER_CPU(struct kernel_stat, kstat);
+@@ -64,6 +69,28 @@ static inline unsigned int kstat_softirqs_cpu(unsigned int irq, int cpu)
+        return kstat_cpu(cpu).softirqs[irq];
+ }
+ 
++#ifdef CONFIG_SOFTIRQ_THROTTLE
++static inline unsigned long kstat_softirq_duration(int cpu)
++{
++	return jiffies_to_msecs(kstat_cpu(cpu).softirq_duration);
++}
++
++static inline unsigned long kstat_softirq_throttle(int cpu)
++{
++	return jiffies_to_msecs(kstat_cpu(cpu).softirq_throttle);
++}
++
++static inline unsigned long kstat_incr_softirq_duration(unsigned long delta)
++{
++	return kstat_this_cpu->softirq_duration += delta;
++}
++
++static inline unsigned long kstat_incr_softirq_throttle(unsigned long delta)
++{
++	return kstat_this_cpu->softirq_throttle += delta;
++}
++#endif
++
+ /*
+  * Number of interrupts per specific IRQ source, since bootup
+  */
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index 6de6db794ac5..7fc0dc39f788 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -79,6 +79,7 @@ struct softirq_runtime {
+ 	bool	throttled;
+ 	unsigned long	duration;
+ 	unsigned long	expires;
++	unsigned long	throttled_ts;
+ 	raw_spinlock_t lock;
+ };
+ static DEFINE_PER_CPU(struct softirq_runtime, softirq_runtime);
+@@ -94,12 +95,16 @@ static void forward_softirq_expires(struct softirq_runtime *si_runtime)
+ static void update_softirq_runtime(unsigned long duration)
+ {
+ 	struct softirq_runtime *si_runtime = this_cpu_ptr(&softirq_runtime);
++	unsigned long now = jiffies;
++
++	kstat_incr_softirq_duration(duration);
+ 
+ 	raw_spin_lock(&si_runtime->lock);
+ 	si_runtime->duration += jiffies_to_msecs(duration);
+ 	if ((si_runtime->duration >= si_throttle.runtime) &&
+-		time_before(jiffies, si_runtime->expires)) {
++		time_before(now, si_runtime->expires)) {
+ 		si_runtime->throttled = true;
++		si_runtime->throttled_ts = now;
+ 	}
+ 	raw_spin_unlock(&si_runtime->lock);
+ }
+@@ -107,13 +112,17 @@ static void update_softirq_runtime(unsigned long duration)
+ static bool softirq_runtime_exceeded(void)
+ {
+ 	struct softirq_runtime *si_runtime = this_cpu_ptr(&softirq_runtime);
++	unsigned long now = jiffies;
+ 
+ 	if ((unsigned int)si_throttle.runtime >= si_throttle.period)
+ 		return false;
+ 
+ 	raw_spin_lock(&si_runtime->lock);
+-	if (!time_before(jiffies, si_runtime->expires))
++	if (!time_before(now, si_runtime->expires)) {
++		if (si_runtime->throttled)
++			kstat_incr_softirq_throttle(now - si_runtime->throttled_ts);
+ 		forward_softirq_expires(si_runtime);
++	}
+ 	raw_spin_unlock(&si_runtime->lock);
+ 	return si_runtime->throttled;
+ }
+@@ -140,6 +149,8 @@ static void softirq_throttle_update(void)
+ 	for_each_possible_cpu(cpu, &) {
+ 		si_runtime = per_cpu_ptr(&softirq_runtime, cpu);
+ 		raw_spin_lock(&si_runtime->lock);
++		if (si_runtime->throttled)
++			kstat_incr_softirq_throttle(jiffies - si_runtime->throttled_ts);
+ 		forward_softirq_expires(si_runtime);
+ 		raw_spin_unlock(&si_runtime->lock);
+ 	}
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
