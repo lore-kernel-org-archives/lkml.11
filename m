@@ -2,75 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C16BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F62C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234280AbiDFUVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57042 "EHLO
+        id S233158AbiDFUVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232301AbiDFUU2 (ORCPT
+        with ESMTP id S231738AbiDFUU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:20:28 -0400
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B281DF86F;
-        Wed,  6 Apr 2022 11:17:10 -0700 (PDT)
-Received: by mail-oi1-f170.google.com with SMTP id z8so3270023oix.3;
-        Wed, 06 Apr 2022 11:17:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=T6gGX1JeafegCBbM2c9piMtf7ay+mZ2pbbpD9LOI+Ak=;
-        b=ca9mM081Zau2l05BylUKdUtYuwdNedgl39ltZnWRlP97HWhkPw3lg/WVr6tFilGRsx
-         3UIcm1IFgLMzzaSCBj6VtXvzeLURK1hOAJ+BxOGyME8btAVs0z7dt1Ee2buo1k5HDgW4
-         0QMAqfzrhKtgSbMS9eGsFVfhHGFccGoXJgNSrmBCJvTqY6VDwQ+5tG9r/PVsCvzH9JKF
-         y+uSNe/T5KCSV6zHkn3OIzXawkiYs70BNWR2wf7QdSIndllqeWDgoe5njjVJlaPJ1gU9
-         zOp4El708hgyuf+CddAmgk9DO730X8u+wrPQdsu1/2NHWtLuvAy/jpRaybb7BDHTXzmR
-         SzKg==
-X-Gm-Message-State: AOAM530fin9lCrVly0yhAR10ym+H/uFFPn2OWRYhjBmC7wA2POGDs7YM
-        imo4I3U/TrhJWHKUCs3iQw==
-X-Google-Smtp-Source: ABdhPJwfpvF0tXlBwNI9AWhehhWEr+8ujcczl865A4l9Y+c9W2djLeJTG6CYjERcm6c4EjcWSg1ocA==
-X-Received: by 2002:a05:6808:120d:b0:2d9:a01a:4895 with SMTP id a13-20020a056808120d00b002d9a01a4895mr4342004oil.224.1649269029656;
-        Wed, 06 Apr 2022 11:17:09 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l18-20020a4a3512000000b00324add481b1sm6391334ooa.9.2022.04.06.11.17.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:17:09 -0700 (PDT)
-Received: (nullmailer pid 2527774 invoked by uid 1000);
-        Wed, 06 Apr 2022 18:17:08 -0000
-Date:   Wed, 6 Apr 2022 13:17:08 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: regulator: uniphier: Clean up clocks,
- resets, and their names using compatible string
-Message-ID: <Yk3ZJOotL22jZM/+@robh.at.kernel.org>
-References: <1649145303-30221-1-git-send-email-hayashi.kunihiko@socionext.com>
- <1649145303-30221-2-git-send-email-hayashi.kunihiko@socionext.com>
+        Wed, 6 Apr 2022 16:20:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D69220E6;
+        Wed,  6 Apr 2022 11:26:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 607DEB8252B;
+        Wed,  6 Apr 2022 18:26:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 947C9C385A3;
+        Wed,  6 Apr 2022 18:26:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269616;
+        bh=EG86lUMKTGds4UWGtqE3tllOSx9i5zBcjo9UGNZOtQU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dAwaEtcT6NpXgrGL2ac1I7tjX5a0AhK1MwM+leBERA9a/dCL024gn7QEpQXd2Vpva
+         vGca3RRPtsF8Pd2br0AOltk8xD88NX3oBzRf0CmCfxAEfALKFYJmu5LMI27WDkHZYY
+         Aej9O+T7tZVfQdWvkPCsR6kZSDmvE4HQ3WRp5CWc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Robert Richter <rrichter@cavium.com>,
+        Will Deacon <will.deacon@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 01/43] arm64: errata: Provide macro for major and minor cpu revisions
+Date:   Wed,  6 Apr 2022 20:26:10 +0200
+Message-Id: <20220406182436.719643148@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649145303-30221-2-git-send-email-hayashi.kunihiko@socionext.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Apr 2022 16:55:02 +0900, Kunihiko Hayashi wrote:
-> Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
-> resets, and their names that can be taken by the compatible string.
-> 
-> The order of clock-names and reset-names doesn't change here.
-> 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> ---
->  .../socionext,uniphier-regulator.yaml         | 55 +++++++++++++------
->  1 file changed, 38 insertions(+), 17 deletions(-)
-> 
+From: Robert Richter <rrichter@cavium.com>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+commit fa5ce3d1928c441c3d241c34a00c07c8f5880b1a upstream
+
+Definition of cpu ranges are hard to read if the cpu variant is not
+zero. Provide MIDR_CPU_VAR_REV() macro to describe the full hardware
+revision of a cpu including variant and (minor) revision.
+
+Signed-off-by: Robert Richter <rrichter@cavium.com>
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+[ morse: some parts of this patch were already backported as part of
+  b8c320884eff003581ee61c5970a2e83f513eff1 ]
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/kernel/cpu_errata.c |   15 +++++++++------
+ arch/arm64/kernel/cpufeature.c |    8 +++-----
+ 2 files changed, 12 insertions(+), 11 deletions(-)
+
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -408,8 +408,9 @@ const struct arm64_cpu_capabilities arm6
+ 	/* Cortex-A57 r0p0 - r1p2 */
+ 		.desc = "ARM erratum 832075",
+ 		.capability = ARM64_WORKAROUND_DEVICE_LOAD_ACQUIRE,
+-		MIDR_RANGE(MIDR_CORTEX_A57, 0x00,
+-			   (1 << MIDR_VARIANT_SHIFT) | 2),
++		MIDR_RANGE(MIDR_CORTEX_A57,
++			   MIDR_CPU_VAR_REV(0, 0),
++			   MIDR_CPU_VAR_REV(1, 2)),
+ 	},
+ #endif
+ #ifdef CONFIG_ARM64_ERRATUM_834220
+@@ -417,8 +418,9 @@ const struct arm64_cpu_capabilities arm6
+ 	/* Cortex-A57 r0p0 - r1p2 */
+ 		.desc = "ARM erratum 834220",
+ 		.capability = ARM64_WORKAROUND_834220,
+-		MIDR_RANGE(MIDR_CORTEX_A57, 0x00,
+-			   (1 << MIDR_VARIANT_SHIFT) | 2),
++		MIDR_RANGE(MIDR_CORTEX_A57,
++			   MIDR_CPU_VAR_REV(0, 0),
++			   MIDR_CPU_VAR_REV(1, 2)),
+ 	},
+ #endif
+ #ifdef CONFIG_ARM64_ERRATUM_845719
+@@ -442,8 +444,9 @@ const struct arm64_cpu_capabilities arm6
+ 	/* Cavium ThunderX, T88 pass 1.x - 2.1 */
+ 		.desc = "Cavium erratum 27456",
+ 		.capability = ARM64_WORKAROUND_CAVIUM_27456,
+-		MIDR_RANGE(MIDR_THUNDERX, 0x00,
+-			   (1 << MIDR_VARIANT_SHIFT) | 1),
++		MIDR_RANGE(MIDR_THUNDERX,
++			   MIDR_CPU_VAR_REV(0, 0),
++			   MIDR_CPU_VAR_REV(1, 1)),
+ 	},
+ 	{
+ 	/* Cavium ThunderX, T81 pass 1.0 */
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -728,13 +728,11 @@ static bool has_useable_gicv3_cpuif(cons
+ static bool has_no_hw_prefetch(const struct arm64_cpu_capabilities *entry, int __unused)
+ {
+ 	u32 midr = read_cpuid_id();
+-	u32 rv_min, rv_max;
+ 
+ 	/* Cavium ThunderX pass 1.x and 2.x */
+-	rv_min = 0;
+-	rv_max = (1 << MIDR_VARIANT_SHIFT) | MIDR_REVISION_MASK;
+-
+-	return MIDR_IS_CPU_MODEL_RANGE(midr, MIDR_THUNDERX, rv_min, rv_max);
++	return MIDR_IS_CPU_MODEL_RANGE(midr, MIDR_THUNDERX,
++		MIDR_CPU_VAR_REV(0, 0),
++		MIDR_CPU_VAR_REV(1, MIDR_REVISION_MASK));
+ }
+ 
+ static bool runs_at_el2(const struct arm64_cpu_capabilities *entry, int __unused)
+
+
