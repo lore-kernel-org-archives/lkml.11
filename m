@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E10F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233441AbiDFH51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
+        id S1349456AbiDFH5z (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 03:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377821AbiDFHoi (ORCPT
+        with ESMTP id S1573418AbiDFH4e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 03:44:38 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D981F635C;
-        Tue,  5 Apr 2022 22:47:40 -0700 (PDT)
-X-UUID: 4f93afbe5bbf4477864d2213634df7ae-20220406
-X-UUID: 4f93afbe5bbf4477864d2213634df7ae-20220406
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <jianjun.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 726767342; Wed, 06 Apr 2022 13:47:36 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 6 Apr 2022 13:47:35 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 13:47:34 +0800
-Message-ID: <06c9f2f8236f8dab6b27da9db0332b4ca45a1039.camel@mediatek.com>
-Subject: Re: [PATCH v5 0/2] phy: mediatek: Add PCIe PHY driver
-From:   Jianjun Wang <jianjun.wang@mediatek.com>
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-CC:     Wei-Shun Chang <weishunc@google.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
-        <randy.wu@mediatek.com>, <jieyy.yang@mediatek.com>,
-        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
-        <jian.yang@mediatek.com>
-Date:   Wed, 6 Apr 2022 13:47:34 +0800
-In-Reply-To: <20220326022728.2969-1-jianjun.wang@mediatek.com>
-References: <20220326022728.2969-1-jianjun.wang@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 6 Apr 2022 03:56:34 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2B7193168;
+        Tue,  5 Apr 2022 22:44:34 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KYD3h2RjGz4xXv;
+        Wed,  6 Apr 2022 15:44:32 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649223873;
+        bh=XaEydd0v9rzsjJ13ImPTLIrQlLhXxeytXQhVXvFUX7o=;
+        h=Date:From:To:Cc:Subject:From;
+        b=avGYXP2CPTvwcCNmlWuD4lLUQkgt7Lg78rxV6FIqIuSLvfNYYnCWP9JREZV++p7zZ
+         hqVkzof54G7BdHanWlkP/e3VflnYsjlBI9NzuvSj2WoNE9TVAhTzWO5W4VPmTdL20g
+         RAJ7Kt0i8RBrRS+MDWs6BkdLnK9HHKuoDm1xHC9r2z8posznVWEMbye5mPSwAbajN1
+         o46vazQKvaGn9X4QtKi65jJZWn7WgM2p0jp0IspOE5u153gr9inFKFyWyOAo44EUdl
+         1rV4j1VDgR1glZ/AVXwmJl4eKnNFQvi/0jl5IITVyrOjMFfyEWkSAHY0dWvD6Xv4Ck
+         CyHOhn+UxD0/Q==
+Date:   Wed, 6 Apr 2022 15:44:31 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>
+Cc:     Jani Nikula <jani.nikula@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warnings after merge of the drm-misc tree
+Message-ID: <20220406154431.567414c3@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: multipart/signed; boundary="Sig_/WJiKREXF3Ec+2vEZl7GyBMA";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Maintainers,
+--Sig_/WJiKREXF3Ec+2vEZl7GyBMA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Is there anything I can do to get these patches merged?
+Hi all,
 
-Thanks.
+After merging the drm-misc tree, today's linux-next build (KCONFIG_NAME)
+produced these warnings:
 
-On Sat, 2022-03-26 at 10:27 +0800, Jianjun Wang wrote:
-> These series patches add support for PCIe PHY driver on MediaTek
-> chipsets.
-> 
-> Changes in v5:
-> 1. Fix typo in kerneldoc: "eFues" => "eFuse".
-> 
-> Changes in v4:
-> 1. Fix no return when calling dev_err_probe.
-> 
-> Changes in v3:
-> 1. Add introductions for structure members;
-> 2. Add SoC dependent data;
-> 3. Dynamically allocate efuse data;
-> 4. Check return value if it's an -EPROBE_DEFER.
-> 
-> Changes in v2:
-> 1. Add specific compatible name;
-> 2. Read NVMEM data at probe time;
-> 3. Fix typos.
-> 
-> Jianjun Wang (2):
->   dt-bindings: phy: mediatek: Add YAML schema for PCIe PHY
->   phy: mediatek: Add PCIe PHY driver
-> 
->  .../bindings/phy/mediatek,pcie-phy.yaml       |  75 +++++
->  drivers/phy/mediatek/Kconfig                  |  11 +
->  drivers/phy/mediatek/Makefile                 |   1 +
->  drivers/phy/mediatek/phy-mtk-pcie.c           | 272
-> ++++++++++++++++++
->  4 files changed, 359 insertions(+)
->  create mode 100644
-> Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
->  create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
-> 
+drivers/gpu/drm/drm_edid.c:1589: warning: Function parameter or member '_ed=
+id' not described in 'drm_edid_header_is_valid'
+drivers/gpu/drm/drm_edid.c:1589: warning: Excess function parameter 'raw_ed=
+id' description in 'drm_edid_header_is_valid'
+drivers/gpu/drm/drm_edid.c:1737: warning: Function parameter or member '_bl=
+ock' not described in 'drm_edid_block_valid'
+drivers/gpu/drm/drm_edid.c:1737: warning: Excess function parameter 'raw_ed=
+id' description in 'drm_edid_block_valid'
 
+Introduced by commits
+
+  6d987ddd6843 ("drm/edid: make drm_edid_header_is_valid() accept void poin=
+ter")
+  1f221284ab63 ("drm/edid: split drm_edid_block_valid() to check and act pa=
+rts")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/WJiKREXF3Ec+2vEZl7GyBMA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJNKL8ACgkQAVBC80lX
+0Gzakwf/SzB8dszFDecGzZx/RB+HDNQ/knJlKX/GG/8apJdnYOwkU+45eA+15CJn
+yuNnfUipmpuzawrtEmcZtbChiUGux2dSz5tTHeqDtJFEVW57BjZIG9+HskxdsH9x
+H7ztoESQiFtU5xh2+CQ3RpDGhadTLB22fQrHdSYH+GItBSFI8OlFuOfKqWS7a5sU
+7YmiiOdlXxJ7clC6NacS+xYsg0KWHuCbZtNXNg/qI/L8to3lyWZryWUuvpspG7fK
++bom6Bsf3sEyPYo6n4cf7UShEt/FnlB7OKIpw84lJgO/cWD6qOhMDAUUq/m38mp8
+INlfF6/c76XQpp/vT1IGb5idycWzYA==
+=eirQ
+-----END PGP SIGNATURE-----
+
+--Sig_/WJiKREXF3Ec+2vEZl7GyBMA--
