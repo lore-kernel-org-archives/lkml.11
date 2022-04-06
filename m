@@ -2,102 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5213DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240525AbiDFSPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
+        id S240238AbiDFSRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240487AbiDFSO4 (ORCPT
+        with ESMTP id S240530AbiDFSQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:14:56 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33D4239313;
-        Wed,  6 Apr 2022 09:52:38 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id h11so4069758ljb.2;
-        Wed, 06 Apr 2022 09:52:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hivMJCrPDEZ4f+6hmVn6hj8p1TUlQCQz9AqY1gEV4jw=;
-        b=hACzY332OhkbK68D5QIPTEzAVPoRFXE8oksSkVa9KtQBEdACNqGv72zJEHLEI9QZXM
-         5QbmA8jMYkJAMi6wxongOZTVHNuxKsQzpl93lNvMqD+v361Bl2v1ughzSO3jjiy0zxFq
-         MizUaFtb9P8OElMN3GdLUk5Ip4XauCy6D5JePUfqKonY0w4LDDCF1tzvLJQqsda70lv5
-         gYK7y3Lzv0sl81d1wGpL9v/a3kt9bO4nRouZRxAXPmLxgtv8gG8QRUPgFcq2CQDaITSr
-         9SkrFbz8AfeNW7avb566/PPsHGBqO6BnSJsg3b7Fc0w2MZv0GGPgmP3NDX8pl6V0nY7H
-         W3lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hivMJCrPDEZ4f+6hmVn6hj8p1TUlQCQz9AqY1gEV4jw=;
-        b=WKPGK/pVvjQMJrYSDF1bF0LgeJHMaGlW6JoRwTJJeJSvMnksi4HiJM+9+lkZxvgZSC
-         /EdNoZAmdih/l5i/Utq6GyuKPm7++W/fZ1E8v98SEdc8byrk0YR1qLLkp54PHCWCsGqC
-         l0Yi3Y9N5ErG7Uvgii7uZde9TlN2714vfFpkgfwMFc8gLQ9M3ZT+Q3NOV+mguF9G2Wd8
-         HiWKUaVtGVZ+RVMxQtv4KtmjZkIuKu+3aE/mSkaDuEBpqOUXcKyXuisF+2TQCQ1yuGId
-         Zz3WHAcrcnhirqoDvMZvu3x3APBLbl1GcT6rT3IeNC7JHfoq70p+ZVfGuoiZd9Dw3Npm
-         B8Rw==
-X-Gm-Message-State: AOAM532c2fC/HMrOkM4oRoRRLUH0DkoT35bhQFpxro21EvBWx/NVPpO2
-        5ed6ij9f4IFEt4g+HfpY+EA=
-X-Google-Smtp-Source: ABdhPJzVbE2XPzujOfnuB8RNCRrD7x9ttQeAciO1x5BAFgV/ApAg7IheulSAKOAU4qCPuEQLGzyqog==
-X-Received: by 2002:a2e:9e43:0:b0:24b:3c6:3832 with SMTP id g3-20020a2e9e43000000b0024b03c63832mr5707412ljk.63.1649263956916;
-        Wed, 06 Apr 2022 09:52:36 -0700 (PDT)
-Received: from reki (broadband-95-84-198-152.ip.moscow.rt.ru. [95.84.198.152])
-        by smtp.gmail.com with ESMTPSA id k19-20020a056512331300b0044a8470fe29sm1883995lfe.19.2022.04.06.09.52.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 09:52:35 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 19:52:34 +0300
-From:   Maxim Devaev <mdevaev@gmail.com>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] usb: gadget: f_mass_storage: break IO operations via
- configfs
-Message-ID: <20220406195234.4f63cb4a@reki>
-In-Reply-To: <Yk2wvhSTMKTLFK6c@rowland.harvard.edu>
-References: <20220406092445.215288-1-mdevaev@gmail.com>
- <Yk2wvhSTMKTLFK6c@rowland.harvard.edu>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Wed, 6 Apr 2022 14:16:59 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2049.outbound.protection.outlook.com [40.107.243.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D7C213539
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:04:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dIVp2H2OG1sRNTO+TkERPBGZqbB8TQfHCVbqedl3QWgoya9qz1mCLcz7ZmnPkM9leRJ7eNThlnndji8ZB9KjQD/kECKPXeQiYw3/buDuSHvt91UcqIjw92CnpPm9TrTi0ffXhEpgHaDSMaI3GuRymwbUNMdOPl1Lg0UpGszmJ2evD2Z0LDPZx3XiIK2KELTa4dy01DnKmCdgQLMARlbbaO400YMt611HgyOzweTU5zncxlX8UAy9Eh4X+2YhzW3WJPkqpIbz2y58tWXLxI/iUMEGL8D2tfqTAoZIhF6riee+a27p5Gg+DIgqiMuSZtO99yF77Afa4u9IDmhWvmhjTQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XfvxcTQDTgDqhSc2wFi5vCho5d93bIDpD3o+coql27M=;
+ b=ExwzzFpPjpdwKS9wEdfd69qQEJNaQUxTQqjjzSiuaY6My8V30Dg9eBSnvauil19xp7LV8/p9KHaUPMyutYFdkIL1waH+waUQIh7IrFcrhBy/A8M5zHwNr/nGU8addA+8ifcgc3zo7p/1W4mpYIpBiKF1F3vsz4FT3+YFZdAa+xst54JScE5iNKwJHI3T0URFyQ0T8n/gEzot3I89YFEZBLi49NLJ+61bssBufOtUl6niSmiEPPeHpnmqc843GMH8iVzQeq78Ti4ik881ay414IFdl4UFMgkQDK/Kz9PBDw5kIyl8CddojK9jbITyTpvI4dAHmWqj/dECobvUUz62Bw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XfvxcTQDTgDqhSc2wFi5vCho5d93bIDpD3o+coql27M=;
+ b=Taz1LlkAfJfMmu0ohFE7wW84S+ugCzD1OFtpnEnXRbXxDISgAkP44TLMGtfQXgaix5HkKjb/OS7JgRaWAlz3U9rdEYR/ztyRvFfhsnodptXIaUIxYxRAjvKQF2a+1pLtbq4HO3YtvLfnorJacgZlNJprbRg6Gscwifcyz+kisTc=
+Received: from BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
+ by BN8PR12MB3346.namprd12.prod.outlook.com (2603:10b6:408:45::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Wed, 6 Apr
+ 2022 17:04:52 +0000
+Received: from BL1PR12MB5157.namprd12.prod.outlook.com
+ ([fe80::70d6:f6dd:3e14:3c2d]) by BL1PR12MB5157.namprd12.prod.outlook.com
+ ([fe80::70d6:f6dd:3e14:3c2d%5]) with mapi id 15.20.5144.019; Wed, 6 Apr 2022
+ 17:04:52 +0000
+From:   "Limonciello, Mario" <Mario.Limonciello@amd.com>
+To:     Christoph Hellwig <hch@infradead.org>
+CC:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
+        "Hegde, Vasant" <Vasant.Hegde@amd.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 1/2] iommu/amd: Enable swiotlb in all cases
+Thread-Topic: [PATCH v2 1/2] iommu/amd: Enable swiotlb in all cases
+Thread-Index: AQHYSGU4VLqCQ4qdF0CtZP84uy0tRKzgu/wAgAJi57A=
+Date:   Wed, 6 Apr 2022 17:04:52 +0000
+Message-ID: <BL1PR12MB5157E55F2F469E66B46157CDE2E79@BL1PR12MB5157.namprd12.prod.outlook.com>
+References: <20220404204723.9767-1-mario.limonciello@amd.com>
+ <20220404204723.9767-2-mario.limonciello@amd.com>
+ <YkvGwMlrv8JKjHJQ@infradead.org>
+In-Reply-To: <YkvGwMlrv8JKjHJQ@infradead.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Enabled=true;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SetDate=2022-04-06T17:02:57Z;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Method=Privileged;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Name=Public-AIP 2.0;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ActionId=d64b452b-3851-497e-a185-0de296ea80cc;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ContentBits=1
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_enabled: true
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_setdate: 2022-04-06T17:04:51Z
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_method: Privileged
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_name: Public-AIP 2.0
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_actionid: a3888b1f-c219-49cd-9dc0-3a9e3f46fab4
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_contentbits: 0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f8376250-633b-49d0-5ea7-08da17ef9128
+x-ms-traffictypediagnostic: BN8PR12MB3346:EE_
+x-microsoft-antispam-prvs: <BN8PR12MB334685E1927BE2003EF3B946E2E79@BN8PR12MB3346.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PWiB5hEXev8QfOVdDRgjSuNY8gaStVErcgmrhovicCaYkouR2j2ZOizf+7V7sbWSf7ECCHkLqjuZL099C/W5vSpZKwflKpat9zYb4eBAFFHXsJ8qtcavjvVV6qJ2Y1eSqvLyiZDjgQ0BXjcRFEyoqNxBVFRs0SCRN1YrC9POXRSjJ7msvFfnsQ258Eg584/DAXvfjm4XMpuWvQ0xFQTA4WlySTJ9K3E4ekEQzPBQxHsb46VlGUlj145od1+u4luIcrQgGgo6vnoPLDsZgDarwxmL3tbTboMw2L9xRA/oQlJPtHclt4P+TNCXBAO2Zbij/9JQ48Lu/qbsM85IpJgp+GhJk4TANrXudySgbxVgP8VfiZEyas61Z/0i50U2Ih1zVV/ekGz/BP3ezw0/NP52yHj5+iNT+wnZxiBicWsAxVCvCHjwQlBkbwSKBy1iRdSMI0H1hc66wqH+g0QuYNm1mlJJFMoWnibyoDePhiBI7LvqubYsffsxuKcuFK2HO57bf+MpgDlgrNOoU6+zZ6nzmTqLIkMbUpNunJ+Li6PDYmDdg92VdS16qFbtvHeEh0V2Zyq0sSaKSgH2PoI+QxYsHOVRJqkZxTpTTqkDo0551wsq2I0vD1yZ0TKiPuE6xw+DLGrmFOHxtM4Tj72tBU8DsU53yTAbddH3G4PMlJQ3GML6Zdp9+KYQOp/6ppcT23OEwVe7bHh09LegesW6eG47jw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5157.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(4744005)(83380400001)(2906002)(53546011)(6506007)(7696005)(5660300002)(9686003)(508600001)(186003)(86362001)(8936002)(316002)(52536014)(38100700002)(54906003)(122000001)(38070700005)(66446008)(64756008)(6916009)(76116006)(66556008)(71200400001)(66476007)(4326008)(66946007)(55016003)(8676002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 2
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9K4hBYLhszwIiv6QoDHZJJCCqdbxEeuNrgT8LigEqTcZZ7M5cy5cdmGyVDVa?=
+ =?us-ascii?Q?Wy7kbHIceuOrO+WT65KHGnKNX0qnPvVlcP7cyO/PQi1WdxOd+S4620RidWr9?=
+ =?us-ascii?Q?gwsUdqwUK8HVPkU2HDYnS7EqFdOxUtguRCYZvy7GfobWDMq4Stm0f5ggrAnx?=
+ =?us-ascii?Q?Hm040QBEOEHDL0GVPFpzDZGQKn15zNIRSs4rRnDufrEsYPked8BJ0xZ2iVpf?=
+ =?us-ascii?Q?VUv0i+BLW7scenPDsN/UxPQFqsmfAE/krvb6eI02SMDAMFzshySRMjXjZ/zq?=
+ =?us-ascii?Q?wQlHRpCWk9aF/Ay6Czw1gs8AAGTPaYCq6zjWiOH24LbgmrXk6WTwNt77Fnu7?=
+ =?us-ascii?Q?y67ZPHvKNz/JQkzXnuJmegVzk1dMtByfVZRKRYDGrx3tqEyB5bo9khqAgase?=
+ =?us-ascii?Q?EryfDqvoyu3cdKftPBf6WgA7egFHEp1b/3dVh0a3KOzB7b+7FVrAPN3JP1SP?=
+ =?us-ascii?Q?zwx9YvI7p+00W61HfEUFVQ2++dRi43CIdHnPIKHl5YX04ebd2Bpij8lwJ2Ia?=
+ =?us-ascii?Q?6dRDti4pILvv1tz7FayCH0Q3j9+9MSZgjfN+R0+aJm2Dc5irun+fx9AM5vCu?=
+ =?us-ascii?Q?KJ5DtNtMwTRN+YPYAWoO0YRaFzG92IPWkC/N0zokbk6J+KvYqg+gXSUfs8Gg?=
+ =?us-ascii?Q?5/GH1pPC0r2MNFdar+1iQW2TDpJyzDJauEGOelc17j3J2RiT14oDq8MVcG7Q?=
+ =?us-ascii?Q?RekwURiZDwntCiOeBY/VT7110atf0xx3clELe8IEfovVThQTe0q2mCzAjZ4T?=
+ =?us-ascii?Q?27cWYMf1tC75lMq7wfuJ7xELoVMBoLVaDlFVDqoeSH1J2ShUq7M4N6jKSCAr?=
+ =?us-ascii?Q?MdvPf6OdQdrE0vylKUhUmIoXFGDBUHUbsDFu3cCoXS7TzyfXGeHQpFL/Inop?=
+ =?us-ascii?Q?Kpx+D0Nwbtm7wJs5d1FYC/xnJXaL2ljSnF9I50nx/wDeIHTa6hzbZ1UAXoa3?=
+ =?us-ascii?Q?sbT2cpnrW+9nFaHu6+WLGcbjhwMcgvoXQJB7MtP0279ISu+Y9w/ol9G+lF7D?=
+ =?us-ascii?Q?KBV1Pu6RLyB0HlB1sjUEEFg8qoJORZv6Q5jK1iR9cvSkFC1vRmfdFp2HbLIc?=
+ =?us-ascii?Q?gdpoa9Gv6GCz++dCgNEEpDUQ1jSzq7HNmQ22EHrERGu9ZTtrGbf6bL24HwKn?=
+ =?us-ascii?Q?BjB0Fqn2RkRFVqE8E6vVgmpbyJ3WYtbxnSXA5VpfwWwaR4WQuRD/dVXC+vaC?=
+ =?us-ascii?Q?ZmPTDYyUdPS7cYo5HDrWWsUB/gUsSczsTwQiDwxL0SeFIpZXyvqZTZ07ChHE?=
+ =?us-ascii?Q?PmWEyDI2NpA6OOEKohx5gLIXH2hG4JlmGSw/r/zoQ5hw6wy68+pqyvFv3MxH?=
+ =?us-ascii?Q?QZcBZK5eT/0fvmorjDQEuVe+SAtVUf0f7ipCGI3miApb4noJm32EcLefbngb?=
+ =?us-ascii?Q?Nao1LFX3RC91wnNGio1gpk4mUgUgCOn6YpcSExyp4a0yEoKZH4fOr9qjlIlp?=
+ =?us-ascii?Q?IYw0f5+eSckd67Xeq7RQQxfuKwgP04loHLoDJ+5YNHoXKk+e7ag2oK4iUAEO?=
+ =?us-ascii?Q?eSyIMBCnylaDPcorsCZqwlr3kqKe/4rpZa/1kZN6p8nKCBvjwO5P/izkhmur?=
+ =?us-ascii?Q?9KFvQobJ42W7e7yIAqtizahHdJlVi70Unik3cDdgyt6Ituza104lusrZWZR9?=
+ =?us-ascii?Q?SBBf0Si0HMnq6qV4Bvq4JPUsFIk29Ey5xC6MeatBjzWGvD77cHV2MHOQJ6+5?=
+ =?us-ascii?Q?I8C7eh1OlYU88A0pp1/It3nQRw+cbuVZjkjkvPIjQ2XaGYMxlWUIr52cVAgu?=
+ =?us-ascii?Q?gqMeIn2hJTXlbUULxICUbZ+STr4nwe4+rTrlAsIrp2SHyNp0XcRIO8bbCbO5?=
+x-ms-exchange-antispam-messagedata-1: 62zUx0ub/bggBA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5157.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8376250-633b-49d0-5ea7-08da17ef9128
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2022 17:04:52.5686
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lNi+5skjDNcZtR9S5088UKp4kLRx3oBkmK7c+nWKZbMEOv8v38o562R0hKY3hGaiB8xTTftWpbHq3SAb5Q92fA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3346
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> It's not clear to me how breaking I/O operations allows you to do a 
-> "force eject".  It seems that what you would need is something like 
-> fsg_store_file() that omits the curlun->prevent_medium_removal check.
-> Interrupting a lengthy I/O operation doesn't really have anything to do 
-> with this.
+[Public]
 
-Perhaps I chose the wrong path, it's just how my userspace code works now.
-If the drive is connected to a Linux host, then in order to clear
-the "file" and extract the image, I sent a SIGUSR1 signal to the "file-storage"
-thread. This interrupted long IO operations, reset curlun->prevent_medium_removal
-and I got the ability to extract.
 
-It was done in our KVM-over-IP project and worked for several years,
-just now I want to do it without searching for procfs and the need
-to use sudo helpers like this:
-https://github.com/pikvm/kvmd/blob/1b3a2cc/kvmd/helpers/otgmsd/unlock/__init__.py
 
-Maybe it's worth introducing some option that will allow us to ignore
-curlun->prevent_medium_removal and perform a forced extraction?
-Something like "allow_force_eject" on the same lavel with "stall".
-Will masking the curlun->prevent_medium_removal flag be enough?
+> -----Original Message-----
+> From: Christoph Hellwig <hch@infradead.org>
+> Sent: Monday, April 4, 2022 23:34
+> To: Limonciello, Mario <Mario.Limonciello@amd.com>
+> Cc: Joerg Roedel <joro@8bytes.org>; Will Deacon <will@kernel.org>;
+> Christoph Hellwig <hch@infradead.org>; Marek Szyprowski
+> <m.szyprowski@samsung.com>; Robin Murphy <robin.murphy@arm.com>;
+> open list:IOMMU DRIVERS <iommu@lists.linux-foundation.org>;
+> Suthikulpanit, Suravee <Suravee.Suthikulpanit@amd.com>; Hegde, Vasant
+> <Vasant.Hegde@amd.com>; open list <linux-kernel@vger.kernel.org>
+> Subject: Re: [PATCH v2 1/2] iommu/amd: Enable swiotlb in all cases
+>=20
+> Looks good:
+>=20
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
 
-> Or to keep this ability restricted to the superuser, if that is desired.
+Thanks!
 
-Indeed.
+Considering before this fix effectively swiotlb was turned off on most AMD
+systems, when this is picked up I think y'all should consider to add a:
 
-> You should not call send_sig_info() directly; instead call 
-> raise_exception().  It already does the work you need (including some 
-> things you left out).
+Cc: stable@vger.kernel.org # 5.11+
 
-raise_exception() assumes the setting of a new state, and I did not want to do this,
-since the same does not happen when throwing a signal from userspace.
+As well.
