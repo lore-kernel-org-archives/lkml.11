@@ -2,90 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59AB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiDFTBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43898 "EHLO
+        id S230517AbiDFTCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230146AbiDFS6U (ORCPT
+        with ESMTP id S229927AbiDFTAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:58:20 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADC21F6217
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:53:35 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id s7so5684728qtk.6
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:53:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UiC0JZZNX3Tmz74Za2QGi0YjgPWaNriTzAia+mIG/oY=;
-        b=C8Z9DYmcvxvJu8NY+MYMQtX06XDHFQ8K7wmWpgt+e7UvuTJ9kBW6rgJ4m96ItAT6bC
-         agSP0mlkb7pnOPpK4P5qXOxdL3bq3763M5W3mQub8hSZw4EHWvaiGixVMKZjjpkduDrG
-         /01OoPFxfig9PKbGV/F3KE1OujzAGwrfqLQiAruhJhtDtf9ijrhVvcQB6SLC0vb+q3qf
-         8Vl9LEL+vckhVErsWsETDcjgIWL4qfXEq9DCiY2YNiB3pdXE+lO4IuMvWvz1EfPk6J/t
-         DV0ZhLSsIxbw3Pqo48d1dCeDRNuY0lzlWrixn45pwenckWRpx7+MZxNkmc5uxMQamJBA
-         Bm8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UiC0JZZNX3Tmz74Za2QGi0YjgPWaNriTzAia+mIG/oY=;
-        b=ErpzmZQzutElDQ2b0Xmf7qcL0nAvSl/FlTWcxLmKJ7cbxtKsOv9PIZ2uN9M/pTjyOF
-         26XRdg6scNklGoUEgghbCB0nCLuZeLSE18f4UpnN80s3wsEy1vIGryietx8hopSJXezM
-         PkpYo2t9RZPOXJ25QlVUfWDps4bOf/95CqEph54wxTRBoPC7PGOVcWR3x4Eg3rH3Ijgv
-         aGRY5/glc73xPNMnbi571IXYRZH8OW6Jw4mSqTQMnUcXYfT5ZVbrs5zk9APQmb3dGvNd
-         0ENNtk0V90wrUXJoTbxTGY3b9phYKi5IW+pepikj7OmVNjg/T422Q5RHJofb5j44iRDp
-         JCsw==
-X-Gm-Message-State: AOAM533EAfuEAvVnHo3MZR4qTUNq98eaX+GUAPOrxAcH4zfhuJRb5W52
-        fKYRlycDkbTqM7YJxhn2brJIHBriF83ucg+ziAEXZg==
-X-Google-Smtp-Source: ABdhPJwOnUHmEK3nL1Hw0/iJrblnXqISxL1gjp5QrgobTxIRsSlbBb1hCnBusAh4f2TNJVRB/0hdR0CBT2U4iymcC9w=
-X-Received: by 2002:a05:622a:610:b0:2e2:694:38c6 with SMTP id
- z16-20020a05622a061000b002e2069438c6mr8559136qta.458.1649267614742; Wed, 06
- Apr 2022 10:53:34 -0700 (PDT)
+        Wed, 6 Apr 2022 15:00:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37275DA7F;
+        Wed,  6 Apr 2022 11:28:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 800A861B89;
+        Wed,  6 Apr 2022 18:28:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93C6BC385A1;
+        Wed,  6 Apr 2022 18:28:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649269714;
+        bh=exiXNA1MO5/MztigFZQV7CS5/yR+3l8J3hwduGMGaT8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pkCiE2+m69oDqQ+BawcGbOut+gBvIKVkqgVKlgZkgM8WtLOdkPF7r+02dQYWWSKsH
+         r30Tm/4hn/YLOfV+o0Od8qR38y2URRL3Ga1g4w1LsbeXAxx5IZlHSX3/u7cCPtRrEC
+         Qzu4am0S6Qii/iaX+jpUqGWgCeT9k6IWFrNJ6CwE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 30/43] arm64: entry: Dont assume tramp_vectors is the start of the vectors
+Date:   Wed,  6 Apr 2022 20:26:39 +0200
+Message-Id: <20220406182437.556792297@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
+References: <20220406182436.675069715@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220330164306.2376085-1-pgonda@google.com> <CAL715W+S-SJwXBhYO=_T-9uAPLt6cQ-Hn+_+ehefAh6+kQ_zOA@mail.gmail.com>
- <YkYdlfYM/FWlMqMg@google.com>
-In-Reply-To: <YkYdlfYM/FWlMqMg@google.com>
-From:   Mingwei Zhang <mizhang@google.com>
-Date:   Wed, 6 Apr 2022 10:53:23 -0700
-Message-ID: <CAL715WLhy7EkJCyO7vzak3O8iw8GDRHkPF8aRtDedPXO1vx_Qw@mail.gmail.com>
-Subject: Re: [PATCH] KVM: SEV: Add cond_resched() to loop in sev_clflush_pages()
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Peter Gonda <pgonda@google.com>, kvm <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sean,
+From: James Morse <james.morse@arm.com>
 
-> > > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> > > index 75fa6dd268f0..c2fe89ecdb2d 100644
-> > > --- a/arch/x86/kvm/svm/sev.c
-> > > +++ b/arch/x86/kvm/svm/sev.c
-> > > @@ -465,6 +465,7 @@ static void sev_clflush_pages(struct page *pages[], unsigned long npages)
-> > >                 page_virtual = kmap_atomic(pages[i]);
-> > >                 clflush_cache_range(page_virtual, PAGE_SIZE);
-> > >                 kunmap_atomic(page_virtual);
-> > > +               cond_resched();
-> >
-> > If you add cond_resched() here, the frequency (once per 4K) might be
-> > too high. You may want to do it once per X pages, where X could be
-> > something like 1G/4K?
->
-> No, every iteration is perfectly ok.  The "cond"itional part means that this will
-> reschedule if and only if it actually needs to be rescheduled, e.g. if the task's
-> timeslice as expired.  The check for a needed reschedule is cheap, using
-> cond_resched() in tight-ish loops is ok and intended, e.g. KVM does a reched
-> check prior to enterring the guest.
+commit ed50da7764535f1e24432ded289974f2bf2b0c5a upstream.
 
-Double check on the code again. I think the point is not about flag
-checking. Obviously branch prediction could really help. The point I
-think is the 'call' to cond_resched(). Depending on the kernel
-configuration, cond_resched() may not always be inlined, at least this
-is my understanding so far? So if that is true, then it still might
-not always be the best to call cond_resched() that often.
+The tramp_ventry macro uses tramp_vectors as the address of the vectors
+when calculating which ventry in the 'full fat' vectors to branch to.
+
+While there is one set of tramp_vectors, this will be true.
+Adding multiple sets of vectors will break this assumption.
+
+Move the generation of the vectors to a macro, and pass the start
+of the vectors as an argument to tramp_ventry.
+
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/kernel/entry.S |   30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
+
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -926,7 +926,7 @@ __ni_sys_trace:
+ 	sub	\dst, \dst, PAGE_SIZE
+ 	.endm
+ 
+-	.macro tramp_ventry, regsize = 64
++	.macro tramp_ventry, vector_start, regsize
+ 	.align	7
+ 1:
+ 	.if	\regsize == 64
+@@ -948,9 +948,9 @@ __ni_sys_trace:
+ #else
+ 	ldr	x30, =vectors
+ #endif
+-	prfm	plil1strm, [x30, #(1b - tramp_vectors)]
++	prfm	plil1strm, [x30, #(1b - \vector_start)]
+ 	msr	vbar_el1, x30
+-	add	x30, x30, #(1b - tramp_vectors + 4)
++	add	x30, x30, #(1b - \vector_start + 4)
+ 	isb
+ 	ret
+ .org 1b + 128	// Did we overflow the ventry slot?
+@@ -968,19 +968,21 @@ __ni_sys_trace:
+ 	eret
+ 	.endm
+ 
+-	.align	11
+-ENTRY(tramp_vectors)
++	.macro	generate_tramp_vector
++.Lvector_start\@:
+ 	.space	0x400
+ 
+-	tramp_ventry
+-	tramp_ventry
+-	tramp_ventry
+-	tramp_ventry
+-
+-	tramp_ventry	32
+-	tramp_ventry	32
+-	tramp_ventry	32
+-	tramp_ventry	32
++	.rept	4
++	tramp_ventry	.Lvector_start\@, 64
++	.endr
++	.rept	4
++	tramp_ventry	.Lvector_start\@, 32
++	.endr
++	.endm
++
++	.align	11
++ENTRY(tramp_vectors)
++	generate_tramp_vector
+ END(tramp_vectors)
+ 
+ ENTRY(tramp_exit_native)
+
+
