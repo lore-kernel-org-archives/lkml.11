@@ -2,103 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238943AbiDFRXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
+        id S238866AbiDFRYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239499AbiDFRXC (ORCPT
+        with ESMTP id S238768AbiDFRYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:23:02 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502AF140DF3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:22:13 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id t25so4678055lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 08:22:13 -0700 (PDT)
+        Wed, 6 Apr 2022 13:24:33 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0414B4BB6
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:23:12 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so3248256fac.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 08:23:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uTfG28cRodiq/+2LJPZqP5fNSiZIDmn4jveiK6bxlps=;
-        b=XI8nDaN0YTRRNOuuWDmD8ZTIYZbINFcKXcZ1ur9Xcei88v3/EKSmM8tCwJMOQ3TfmC
-         RyeuZDtXfUgVT55tcrcFqV3NaqcLriA2zG0gxqu+y7xA9c1+M3ZfRdh+SozpG5YadYWX
-         +05bbdM9jD1n3FYWXPjTNyFW2xjzqT+etMHWvHo60SOBQ85ceGIF1aT6EChLR0EPZjVi
-         hwnMsa00bl0U5Ar0ZNXYxFjTqQbOai5YDm6RsOVUbH9+EMA8zKTxk6QDKrI4psvh9OT0
-         tdtFHR7UCohyPOfPRX+srh53WrkZpWZFdvOlvYzO0pjU5a0DR42aYRKl3AyoYIn6SeHe
-         VrTg==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=hiSfOStXccjbf1AYzjiGRDT1g1SFjOKXyv+eLAAqR4I=;
+        b=S8QZvZFAQKRsGAYTUOeGLbGgTqU9p6NgODt08xv+GJQH6OOxo3vbZVmfWMHv4CQsrv
+         sreWgOA4uSXOeHZ5H4VFNs55oW3/EjipqQkJxdYnWoYkoxWoERMNuYKEBMxwI2KmYcWG
+         PGRDKJx7La2RUWEju8pyKfnGl4dktn6Ha0V5M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uTfG28cRodiq/+2LJPZqP5fNSiZIDmn4jveiK6bxlps=;
-        b=WTqSIwKdWrXp/4ttou+XI4MmDEPFrtk3l8K2jwOOkJX8CqJE5Wkr2I6WWEiB3vrAYq
-         vAI5nuze9tDfxHNbsRTpdy566WI90KGLR64DhBy69WnfWES6lqV3y1Bz8mXWIZJjUTTe
-         DfiPEjM11BvaRbd4wCDCCgbKz4xkk2c/OfiAB/2Fvh3A4exkuDoZYb/VikmwAEOp+jN0
-         UVsQTjcTEEUrpzxhXN/uwKEo3o3rwIFRPvVohU9HOeyrukQ5KhwJurI/a7cYOQD5lmsc
-         s9b3UOrML0f2dHalH76zs+2QLvV4Y1QXHChzkgj/P36eP/nWdxq6snPc6HMmECAioY8D
-         LqEQ==
-X-Gm-Message-State: AOAM531cuHu8P8DeBqLTDbNxXRls8s8QjuamNn6sOPEqunkh0GBnT6yZ
-        IDLqS2m/UwvvGoXKAgfA6DSx1wnf8alcNqKPlp1GyA==
-X-Google-Smtp-Source: ABdhPJzsC6htLHc6A2/+kZT4bQJxCHdpcaZojKgrHPwgl3D8qEq+Zb8UlKmQKu0ryToG3Gwrpq9AfLEiPzDPsf9WPqY=
-X-Received: by 2002:ac2:5f19:0:b0:44a:f3de:58bd with SMTP id
- 25-20020ac25f19000000b0044af3de58bdmr6480353lfq.645.1649258530121; Wed, 06
- Apr 2022 08:22:10 -0700 (PDT)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=hiSfOStXccjbf1AYzjiGRDT1g1SFjOKXyv+eLAAqR4I=;
+        b=ZXdko3VPc7ybGMq365MWIy13P2OR1ijPiww7fLHRCiRPfWBl4RG+XTDFfxSlpRvs3m
+         aXKxuo+x9Tnf8tIxIonPkQiNui43C5AZ8ctcLP7Mw8eJyw8Pb2eGCuS5RD31DqBwdUf8
+         8KCj7arLvoGc3h6VXFu7/K/rj2I8ss0tfJX4JTAu/HAxtspPuTb4/0BAxJ+8lltygW26
+         c4pIeMhWMgp4jrd3/5rnYzBYj9XlAK5N4N7NOuJV50XQ+1ZCU024rvStaXOuY6dKyS+y
+         Ki/SML12S8gkwsWLTbIT9wSerJfBYJBvN35ZbZ9Q/NroGB2fREfUPQrauUIn0OR+fW6Z
+         99uQ==
+X-Gm-Message-State: AOAM530USN1gm3VZI9IpqBngOmo3cgtfhz1iUSgxqOK4ZnvOEA0KIVrU
+        Xu6qKm6qY2nc/kzuTaONLSCszpGO7jd6NlbmGr+/JQ==
+X-Google-Smtp-Source: ABdhPJyAXhv6StedGOtJuWf7fO5MgYIPzySA3+7UPCtieqRLefs7juSZxzHlMkcvHchGKDyCITgazKVuobCc5PuwwYA=
+X-Received: by 2002:a05:6870:e314:b0:e1:e5f0:d777 with SMTP id
+ z20-20020a056870e31400b000e1e5f0d777mr3969864oad.193.1649258591945; Wed, 06
+ Apr 2022 08:23:11 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 6 Apr 2022 08:23:11 -0700
 MIME-Version: 1.0
-References: <1649239025-10010-1-git-send-email-zgpeng@tencent.com>
-In-Reply-To: <1649239025-10010-1-git-send-email-zgpeng@tencent.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Wed, 6 Apr 2022 17:21:58 +0200
-Message-ID: <CAKfTPtCv=pBDsvWDguFXtf_YZDf2Yx+xrpc3hDevQFz6BoadJA@mail.gmail.com>
-Subject: Re: [PATCH] sched/fair: Move calculate of avg_load to a better location
-To:     zgpeng <zgpeng.linux@gmail.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org
+In-Reply-To: <Yk1B4f51WMGIV9WB@sirena.org.uk>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com> <Yk1B4f51WMGIV9WB@sirena.org.uk>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 6 Apr 2022 08:23:11 -0700
+Message-ID: <CAE-0n53Cv_bR92M64dhdnDge_=_jeOs4VZzDhUkksN90Y7rgog@mail.gmail.com>
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008 PMIC
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022 at 11:57, zgpeng <zgpeng.linux@gmail.com> wrote:
+Quoting Mark Brown (2022-04-06 00:31:45)
+> On Tue, Apr 05, 2022 at 02:09:06PM -0500, Stephen Boyd wrote:
+> > Quoting Satya Priya (2022-04-05 06:50:31)
 >
-> In calculate_imbalance function, when the value of local->avg_load is
-> greater than or equal to busiest->avg_load, the calculated sds->avg_load is
-> not used. So this calculation can be placed in a more appropriate position.
+> > > +static struct platform_driver pm8008_regulator_driver = {
 >
-> Signed-off-by: zgpeng <zgpeng@tencent.com>
-> Reviewed-by: Samuel Liao <samuelliao@tencent.com>
+> > Why isn't this an i2c driver?
+>
+> It's a MFD function driver isn't it?
 
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-
-> ---
->  kernel/sched/fair.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index d4bd299..601f8bd 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -9460,8 +9460,6 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
->                 local->avg_load = (local->group_load * SCHED_CAPACITY_SCALE) /
->                                   local->group_capacity;
->
-> -               sds->avg_load = (sds->total_load * SCHED_CAPACITY_SCALE) /
-> -                               sds->total_capacity;
->                 /*
->                  * If the local group is more loaded than the selected
->                  * busiest group don't try to pull any tasks.
-> @@ -9470,6 +9468,9 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
->                         env->imbalance = 0;
->                         return;
->                 }
-> +
-> +               sds->avg_load = (sds->total_load * SCHED_CAPACITY_SCALE) /
-> +                               sds->total_capacity;
->         }
->
->         /*
-> --
-> 2.9.5
->
+The DT binding shows a single i2c node at i2c address 0x9. The
+compatible for it is "qcom,pm8008-regulators". It looks like an i2c
+device that is dedicated to providing regulators. I'd only expect to see
+an MFD if the device responding at i2c address 0x9 supported more than
+just regulators.
