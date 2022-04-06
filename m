@@ -2,96 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2A8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95792C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443831AbiDFFyh (ORCPT
+        id S1444891AbiDFFyu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
+        Wed, 6 Apr 2022 01:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442417AbiDFF1c (ORCPT
+        with ESMTP id S1455683AbiDFFHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 01:27:32 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BF61D788C;
-        Tue,  5 Apr 2022 17:58:31 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Wed, 6 Apr 2022 01:07:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6563E340891;
+        Tue,  5 Apr 2022 17:51:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KY5jd3mCZz4xgX;
-        Wed,  6 Apr 2022 10:58:29 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649206710;
-        bh=pi9XiXNOUCWDkzxj0K1TVRkwxuLVNRPtWNUbObBWuwc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=lfud6uyclEmjYXOZX/GX/MCHGDXZ0PdazufiH3wBaM4Z9yeBlmq/Ab1gmiG2COzL/
-         eevGdFWUWov+Wu2QDnRa+PJkkCVHFqBe94gHNCmaPuaYkeP60E2Rsw2o486RpZBqx+
-         jVBoHI4HLmuzfZ/Ob47L6gkCzjh054cV9E2nMS/6sA7g2VfPdECaidfnM+cIX1gUM/
-         vklirSaonTk+V/VSxzKHSCb0j6cQBuaFX8l76+C4O1NRZVhN3WiWOObB4Zag+/tIl1
-         dS0f1YkM7CC5Y/SHbnsuuItn/b9gLbJhljBMeFkZm8cjERtULNBGaecaKzIPOXPw6/
-         TpwyZ9oFxtIKg==
-Date:   Wed, 6 Apr 2022 10:58:28 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>
-Cc:     Marek Vasut <marex@denx.de>, Robert Foss <robert.foss@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the drm-misc tree
-Message-ID: <20220406105828.6d238651@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85B8E6174A;
+        Wed,  6 Apr 2022 00:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A13C385A6;
+        Wed,  6 Apr 2022 00:51:22 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hIYaCWog"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649206280;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uouxkXGt9ycAh2w6r1rTvJWeUR8k4JberlBMTjKHJDU=;
+        b=hIYaCWog3ufYJF8fi+Nqrc/DStqXujrKuPnBerdcQRO+fmFdXQ2WISfN62Wfz4+Nl+CQI1
+        2gQAsgz3a+onmtIL1apt2OygDKTHH+mrbuEkt4OZ5VgTluoZgjCYiEOmQMuFc6Obcc66Ua
+        1KM/qFhTZYs0b59EKnMN4G5wE4q+Rc4=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4753b291 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 6 Apr 2022 00:51:20 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jann Horn <jannh@google.com>, Theodore Ts'o <tytso@mit.edu>
+Subject: [PATCH] random: check for signals every PAGE_SIZE chunk of /dev/[u]random
+Date:   Wed,  6 Apr 2022 02:51:01 +0200
+Message-Id: <20220406005101.200148-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/8khWjiccJo17txCVA+lH=D+";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/8khWjiccJo17txCVA+lH=D+
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+In a651a7ba294c ("random: check for signal_pending() outside of
+need_resched() check"), Jann pointed out that we previously were only
+checking the TIF_NOTIFY_SIGNAL and TIF_SIGPENDING flags if the process
+had TIF_NEED_RESCHED set, which meant in practice, super long reads to
+/dev/[u]random would delay signal handling by a long time. I tried this,
+and indeed I wasn't able to interrupt a /dev/urandom read until after
+several megabytes had been read. The bug he fixed has always been there,
+and so code that reads from /dev/urandom without checking the return
+value of read() has mostly worked for a long time, for most sizes, not
+just for <= 256.
 
-Hi all,
+Maybe it makes sense to keep that code working. The reason it was so
+small prior, ignoring the fact that it didn't work anyway, was likely
+because /dev/random used to block, and that could happen for pretty
+large lengths of time while entropy was gathered. But now, it's just a
+chacha20 call, which is extremely fast and is just operating on pure
+data, without having to wait for some external event. In that sense,
+/dev/[u]random is a lot more like /dev/zero.
 
-After merging the drm-misc tree, today's linux-next build (x86_64
-allmodconfig) produced this warning:
+Taking a page out of /dev/zero's read_zero() function, it always returns
+at least one chunk, and then checks for signals after each chunk. Chunk
+sizes there are of length PAGE_SIZE. Let's just copy the same thing for
+/dev/[u]random, and check for signals and cond_resched() for every
+PAGE_SIZE amount of data. This makes the behavior more consistent with
+expectations, and should mitigate the impact of Jann's fix for the
+age-old signal check bug.
 
-WARNING: modpost: drivers/gpu/drm/bridge/chipone-icn6211.prelink.o(.exit.da=
-ta+0x0): Section mismatch in reference from the variable __cfi_jt_cleanup_m=
-odule to the function .init.text:cleanup_module()
-The variable __exitdata __cfi_jt_cleanup_module references
-a function __init cleanup_module().
-This is often seen when error handling in the exit function
-uses functionality in the init path.
-The fix is often to remove the __init annotation of
-cleanup_module() so it may be used outside an init section.
+Cc: Jann Horn <jannh@google.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/random.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-Introduced by commit
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 7f0253455d4e..e8a578af619a 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -523,7 +523,6 @@ EXPORT_SYMBOL(get_random_bytes);
+ 
+ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ {
+-	bool large_request = nbytes > 256;
+ 	ssize_t ret = 0;
+ 	size_t len;
+ 	u32 chacha_state[CHACHA_STATE_WORDS];
+@@ -540,15 +539,6 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ 	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
+ 
+ 	do {
+-		if (large_request) {
+-			if (signal_pending(current)) {
+-				if (!ret)
+-					ret = -ERESTARTSYS;
+-				break;
+-			}
+-			cond_resched();
+-		}
+-
+ 		chacha20_block(chacha_state, output);
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+@@ -562,6 +552,13 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ 		nbytes -= len;
+ 		buf += len;
+ 		ret += len;
++
++		BUILD_BUG_ON(PAGE_SIZE % CHACHA_BLOCK_SIZE != 0);
++		if (!(ret % PAGE_SIZE) && nbytes) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
+ 	} while (nbytes);
+ 
+ 	memzero_explicit(chacha_state, sizeof(chacha_state));
+-- 
+2.35.1
 
-  8dde6f7452a1 ("drm: bridge: icn6211: Add I2C configuration support")
-
-The chipone_exit function should not be marked __init.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/8khWjiccJo17txCVA+lH=D+
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJM5bQACgkQAVBC80lX
-0Gyl4ggAoejsSpMqlTgpt87ppk4jvpqqjuMoEk7wVlY0xo9FQQvjbxbboiHZUn8v
-fIWdbVjL9LTDkiduXGG+1JLMLMqUT8VmPr3dXnbp34Y4/kqS5Vh966ItFTtprmxV
-DrA83Q1DXZ1gNJO4XUjjgS62csfi2cqF8BYY099nH9jtJLinxJKWtvkj1+yb8OD/
-W33SLXoMxAN1FtlDOZunCeKDImk4+QKQoVV9ORqasGtjNmgOET3ybpGdAzrdhGfw
-MYT/B/cRFhfFB+EQIBZLGoCh8/7vcerzj0Kg0LWuMR1YaXVMdr59pliyOFsZCzz9
-mnAfCh13W0BGtJ//UJQKQQnqBZojLg==
-=/2nT
------END PGP SIGNATURE-----
-
---Sig_/8khWjiccJo17txCVA+lH=D+--
