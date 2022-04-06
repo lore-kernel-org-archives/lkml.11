@@ -2,160 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F1D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:05:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22524C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231892AbiDFNHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33116 "EHLO
+        id S231477AbiDFNH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232118AbiDFNGf (ORCPT
+        with ESMTP id S230152AbiDFNHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:06:35 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777DC5DE2AC
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:40:43 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id f38so3063065ybi.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 02:40:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kYMTnVbKZb14hTPQbaLRIxPgj7UusTT0smTXojvT54o=;
-        b=H2heIrruY2WXCA/JBhDLFuyEyB5W29rhEE9oasb272qSCTotofpqCps+Scq0e4bMEP
-         rgxQUChZSnFNhksIND8MJq0KLteGG+5nrTpEafuYKQJg+k/RviLceA47vA/9kPKy92xz
-         fflBWWfh/ylypIV2F2ZRicDKfbjM5gEjwkuReNiLEPkUzHgXv51xtwCpuDWS7i8ff3um
-         wcS8xyypVPVCDp0AV4JzWWvehCzJTwXpOFGXIlDHHJwxvUG41ogibesLUfwsrQ8FvFzf
-         fL2TOl+XGNpfd3/QnG4sMbh8yx7c4bv4Ew46ZqI6cjM8rPV426F/dnlvgyG44+ehMCFR
-         fM4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kYMTnVbKZb14hTPQbaLRIxPgj7UusTT0smTXojvT54o=;
-        b=bzp0XqOvGVETuAysPbDWa8bG6bH+L5KILI5CbZesRZlh43GzwvIqkW26tUza261KVs
-         Y55UJFhxy2tilBzpzZR+AQv9raaLzXI7IxdyAqKraYAMldKRr7QNl+7Pj8U0MJeCosfv
-         xFAi1ea8y95LMpoyeR2OOEGAVY8dhgK3tpyfLI2u+qcR+NZA2Gx/nlZ0mQQKc6lV63Jq
-         2DiPcuYMY/mi+VpPTxsLGxVG/mzbhGd1xBE/pllz30kmuL7naE3oT8yXFhtzqfXdQf96
-         oKSeAdgU2v4cfCZAwzuddLGiODoi0dwHW4KJmkwE3rMzU6v+R4NkHwQ32oFx8Km1SyDf
-         /VnQ==
-X-Gm-Message-State: AOAM531O3ySCIlbZAP5FZuhM7n8AMti7v4o7q5guuNgR6IGCJBB6Xvyr
-        0q3k0z5T+DhLEfHf/TxZWBD4QHiEBj2GdzBsq0QBUQ==
-X-Google-Smtp-Source: ABdhPJy8rfzJ/R3bJ36z4knt9034VlzfxKLGhEmCeGO21EoalFxtZqpYUAvNRh7lfsjSV1vvT6eTKi7fItQ03MoXGXQ=
-X-Received: by 2002:a05:6902:1028:b0:639:7ca3:84db with SMTP id
- x8-20020a056902102800b006397ca384dbmr5986894ybt.357.1649237877980; Wed, 06
- Apr 2022 02:37:57 -0700 (PDT)
+        Wed, 6 Apr 2022 09:07:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B872C2EDC;
+        Wed,  6 Apr 2022 02:41:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A560613E2;
+        Wed,  6 Apr 2022 09:40:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 420C5C385A3;
+        Wed,  6 Apr 2022 09:40:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649238041;
+        bh=LFn4Z3HJtRBtsjdig33zpL7sM5WeXwuOfvZWCki7ZKc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sPeeV1K8kmQwqk2m5P4+Edcr+WImbyZwE5h/m079H9QkDrG6cWX1Q3VaSyFQWGwY+
+         dhCikRrG45VGXuggy5iOD+HqWMWk5Y6d5ghz7XuIWmThZuyA9i9fRP4gKCalK6bJLC
+         K49XlpO9ccjrNciVm7PMpWAFurimkdh9i5ONxnC3+Es5di1a/FqL/tR97/IOegSa7t
+         bdzgf4DB6+ClwxOlxo2jj/FnpKjWs7mi0r/QJXm/aWyvphk+pGnFsfSS71FmAZuDMl
+         cyT/OXHQB+SNYprnoc4Fnn/68i7JKaVsfK0NUmLuQ8Xq925FfFm2MZr23+Heuz3iWs
+         HxayYCOOL2G/g==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [PATCH v7 00/14] drm/msm: Add Display Stream Compression Support
+Date:   Wed,  6 Apr 2022 15:10:17 +0530
+Message-Id: <20220406094031.1027376-1-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220405070354.155796697@linuxfoundation.org> <9882445d-ef29-689a-33de-ce66dfc79d31@linuxfoundation.org>
- <CADYN=9+pshm3PGa0+JY=yR3bTQySUxdTUVtNraKXOS_ZDTXWsw@mail.gmail.com>
-In-Reply-To: <CADYN=9+pshm3PGa0+JY=yR3bTQySUxdTUVtNraKXOS_ZDTXWsw@mail.gmail.com>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Wed, 6 Apr 2022 11:37:47 +0200
-Message-ID: <CADYN=9JcNwpPmJ0Y4zTTOAAm-2BuBEqjUfpHBt8ND-tc+mO4Fg@mail.gmail.com>
-Subject: Re: [PATCH 5.16 0000/1017] 5.16.19-rc1 review
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        ranjani.sridharan@linux.intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022 at 11:30, Anders Roxell <anders.roxell@linaro.org> wrote=
-:
->
-> On Wed, 6 Apr 2022 at 01:03, Shuah Khan <skhan@linuxfoundation.org> wrote=
-:
-> >
-> > On 4/5/22 1:15 AM, Greg Kroah-Hartman wrote:
-> > > This is the start of the stable review cycle for the 5.16.19 release.
-> > > There are 1017 patches in this series, all will be posted as a respon=
-se
-> > > to this one.  If anyone has any issues with these being applied, plea=
-se
-> > > let me know.
-> > >
-> > > Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> > > Anything received after that time might be too late.
-> > >
-> > > The whole patch series can be found in one patch at:
-> > >       https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patc=
-h-5.16.19-rc1.gz
-> > > or in the git tree and branch at:
-> > >       git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stab=
-le-rc.git linux-5.16.y
-> > > and the diffstat can be found below.
-> > >
-> > > thanks,
-> > >
-> > > greg k-h
-> > >
-> >
-> > Build failed on my system. The following is the problem commit. There
-> > are no changes to the config between 5.16.18 and this build.
-> >
-> > Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> >      ASoC: SOF: Intel: hda: Remove link assignment limitation
->
-> I saw the same build error, after applying the following patches it
-> builds fine again.
+Display Stream Compression (DSC) compresses the display stream in host which
+is later decoded by panel. This series enables this for Qualcomm msm driver.
+This was tested on Google Pixel3 phone which use LGE SW43408 panel.
+ 
+The changes include DSC data and hardware block enabling for DPU1 then
+support in encoder. We also add support in DSI and introduce required
+topology changes.
+ 
+In order for panel to set the DSC parameters we add dsc in drm_panel and
+pass the dsc configuration from the panel driver
 
-I'm sorry managed to grab the wrong commit, This is the two commits:
-a792bfc1c2bc ("ASoC: SOF: Intel: hda-stream: limit PROCEN workaround")
-81ed6770ba67 ("ASoC: SOF: Intel: hda: expose get_chip_info()")
+Complete changes which enable this for Pixel3 along with panel driver (not
+part of this series) and DT changes can be found at:
+git.linaro.org/people/vinod.koul/kernel.git pixel/dsc_v7
+ 
+Comments welcome!
 
+Changes since v6:
+ - Fix warning reported by kbuild bot
+ - Add r-b by Dmitry
 
->
-> Cheers,
-> Anders
->
-> >
-> >    CC [M]  sound/soc/sof/intel/hda-dai.o
-> > sound/soc/sof/intel/hda-dai.c: In function =E2=80=98hda_link_stream_ass=
-ign=E2=80=99:
-> > sound/soc/sof/intel/hda-dai.c:86:24: error: implicit declaration of fun=
-ction =E2=80=98get_chip_info=E2=80=99; did you mean =E2=80=98get_group_info=
-=E2=80=99? [-Werror=3Dimplicit-function-declaration]
-> >     86 |                 chip =3D get_chip_info(sdev->pdata);
-> >        |                        ^~~~~~~~~~~~~
-> >        |                        get_group_info
-> > sound/soc/sof/intel/hda-dai.c:86:22: error: assignment to =E2=80=98cons=
-t struct sof_intel_dsp_desc *=E2=80=99 from =E2=80=98int=E2=80=99 makes poi=
-nter from integer without a cast [-Werror=3Dint-conversion]
-> >     86 |                 chip =3D get_chip_info(sdev->pdata);
-> >        |                      ^
-> > sound/soc/sof/intel/hda-dai.c:94:35: error: =E2=80=98const struct sof_i=
-ntel_dsp_desc=E2=80=99 has no member named =E2=80=98quirks=E2=80=99
-> >     94 |                         if (!(chip->quirks & SOF_INTEL_PROCEN_=
-FMT_QUIRK)) {
-> >        |                                   ^~
-> > sound/soc/sof/intel/hda-dai.c:94:46: error: =E2=80=98SOF_INTEL_PROCEN_F=
-MT_QUIRK=E2=80=99 undeclared (first use in this function)
-> >     94 |                         if (!(chip->quirks & SOF_INTEL_PROCEN_=
-FMT_QUIRK)) {
-> >        |                                              ^~~~~~~~~~~~~~~~~=
-~~~~~~~~~
-> > sound/soc/sof/intel/hda-dai.c:94:46: note: each undeclared identifier i=
-s reported only once for each function it appears in
-> > cc1: all warnings being treated as errors
-> > make[4]: *** [scripts/Makefile.build:287: sound/soc/sof/intel/hda-dai.o=
-] Error 1
-> > make[3]: *** [scripts/Makefile.build:549: sound/soc/sof/intel] Error 2
-> > make[2]: *** [scripts/Makefile.build:549: sound/soc/sof] Error 2
-> > make[1]: *** [scripts/Makefile.build:549: sound/soc] Error 2
-> > make: *** [Makefile:1846: sound] Error 2
-> >
-> > thanks,
-> > -- Shuah
->
-> --
-> Linaro LKFT
-> https://lkft.linaro.org
+Changes since v5:
+ - rebase on msm-next
+ - use generated header patch from mesa for dsc registers
+ - use generated header macros for dsc register calculation
+ - remove msm dsc struct (Dmitry)
+
+Changes since v4:
+ - Use new apprach based on Abhinav suggestion for dsc with 3d-merge
+ - Make common function for dsc timing caln and call that from video and cmd
+   mode
+ - update description for patch "Pass DSC params to drm_panel"
+ - update couple of typos as pointed by Marijn
+ - drop dpu_encoder_dsc_pclk_param_calc() as that was duplicating the caln
+   done in dsi timing
+ - Update copyright to 2022 to new files
+ - Update Abhinav's email to new quic one
+
+Changes since v3:
+ - Merge changes from Dmitry to have dsc per encoder instance
+ - add warning for dsc and mode3d enabled together
+ - set dsc in dpu_encoder_phys_vid as well
+ - remove dsc hardcoded mask
+ - use devm_kzalloc for memory allocation for dsc
+
+Changes since v2:
+ - Fix comments by Dimitry except the dsc being global.
+ - Move RM patch later for dependency on topology now
+ - Add patch for mode valid callback for dsi_mgr
+ - Add missing structure documentation patch
+ - Fix errors in mode_3d changes
+ - Rebase on v5.16-rc1 and test
+
+Changes since v1:
+ - Fix various issues spotted by kbuildbot
+ - Rebase to v5.15-rc3
+ - Remove unused fields and duplicate defines
+ - Enable DSC blocks only when DSC is enabled
+ - remove sdm845 feature mask, use 0
+ - Check for DSC in hw_ctl
+
+Changes since RFC:
+ - Drop the DT binding patch as we derive the configuration from panel
+ - Drop the drm api patch as we no longer need it (use pps drm api)
+ - Fix comments raised by Dimitry
+ - Add dsc parameters calculation from downstream
+
+Dmitry Baryshkov (1):
+  drm/msm/dpu: don't use merge_3d if DSC merge topology is used
+
+Vinod Koul (13):
+  drm/msm/dsi: add support for dsc data
+  drm/msm/dsi: Pass DSC params to drm_panel
+  drm/msm/disp/dpu1: Add support for DSC
+  drm/msm/disp/dpu1: Add support for DSC in pingpong block
+  drm/msm/disp/dpu1: Add DSC for SDM845 to hw_catalog
+  drm/msm/disp/dpu1: Add DSC support in hw_ctl
+  drm/msm/disp/dpu1: Add support for DSC in encoder
+  drm/msm: Add missing num_dspp field documentation
+  drm/msm/disp/dpu1: Add support for DSC in topology
+  drm/msm/disp/dpu1: Add DSC support in RM
+  drm/msm/dsi: add mode valid callback for dsi_mgr
+  drm/msm: Update generated headers
+  drm/msm/dsi: Add support for DSC configuration
+
+ drivers/gpu/drm/msm/Makefile                  |   1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c   | 157 +++++++++-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h   |   8 +
+ .../gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h  |  12 +-
+ .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c    |  20 ++
+ .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h    |  13 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c    |  11 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h    |   2 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.c    | 215 ++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.h    |  80 +++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_mdss.h   |  13 +
+ .../gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.c   |  32 ++
+ .../gpu/drm/msm/disp/dpu1/dpu_hw_pingpong.h   |  14 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |   2 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h       |   1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c        |  56 ++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h        |   1 +
+ drivers/gpu/drm/msm/dsi/dsi.c                 |   5 +
+ drivers/gpu/drm/msm/dsi/dsi.h                 |   3 +
+ drivers/gpu/drm/msm/dsi/dsi.xml.h             |  80 +++++
+ drivers/gpu/drm/msm/dsi/dsi_host.c            | 276 +++++++++++++++++-
+ drivers/gpu/drm/msm/dsi/dsi_manager.c         |  12 +
+ drivers/gpu/drm/msm/msm_drv.h                 |  15 +
+ include/drm/drm_panel.h                       |   7 +
+ 24 files changed, 1032 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.c
+ create mode 100644 drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.h
+
+-- 
+2.34.1
+
