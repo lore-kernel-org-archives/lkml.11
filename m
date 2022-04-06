@@ -2,97 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E95CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236237AbiDFVvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
+        id S232049AbiDFVvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236520AbiDFVuz (ORCPT
+        with ESMTP id S236365AbiDFVvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:50:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DEE06AA63;
-        Wed,  6 Apr 2022 14:39:54 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 91C0212FC;
-        Wed,  6 Apr 2022 14:39:54 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 50ABB3F718;
-        Wed,  6 Apr 2022 14:39:53 -0700 (PDT)
-Message-ID: <87075d61-c51c-8d94-9263-17aa40f7d70e@arm.com>
-Date:   Wed, 6 Apr 2022 22:39:47 +0100
+        Wed, 6 Apr 2022 17:51:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 262008BE20
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 14:40:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649281252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HYliOFP5D5aEhYg/JNms+LtE3G2AOKbcjH7HxyHb8vw=;
+        b=dYWr3V0/ImRW8fUQa2rxvy/atfliw5zGCuc8lxlRiCVXGIWhk1o7Itg+FiFqwpZx0iQ4PP
+        W2JnoX0Uw2ggpiKTsMFFVTr54rH8XpPmIk3j+l5TVgJQir+OOGloUAfny/Bu2EJ4ifqk5K
+        k+sbhl1Q4ylHPiO0jyJcfJpZ2w2nhzU=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-658-tyvoNc6iPM27azh2PPaxTQ-1; Wed, 06 Apr 2022 17:40:51 -0400
+X-MC-Unique: tyvoNc6iPM27azh2PPaxTQ-1
+Received: by mail-wm1-f72.google.com with SMTP id v62-20020a1cac41000000b0038cfe6edf3fso3534343wme.5
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 14:40:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HYliOFP5D5aEhYg/JNms+LtE3G2AOKbcjH7HxyHb8vw=;
+        b=o+MgPw/BtCYNNzf22gZnYKxIrayRt/E7q+jhq4Bzoc3SO14PqTiVUzgJ/nNza2diT1
+         NqzKLFyUXiTOVDWyjX88F48rqXVi+hvB7pfto/BUcwrRlbya4b5lmK3BDtFwM4bFnjix
+         57iJn3v4Q9R6ywOVLH1TAXnra05CMiwK63bM/vXT/e2OsrSU1NbUF/4t4DHbD2kYUOsn
+         FWSsg5TjevdfTBK+UpwrrOEEDXH8Ov2t9ZXNabyZPTl4X2aWHEFbyCJ9JUE77CA74DaV
+         4/RJp/IXvQd4L6Y/yuqPEWjTnUhy0GwLmTMRTl5I+cTUwIPySMAlMcBJnMfm3M6kk801
+         oYbQ==
+X-Gm-Message-State: AOAM533uKOu2qP7jP8gxXmw2hy6zf2OTGUUV673WpH9KjGytfl98bODf
+        zrb6Mbho8oMu2JTTYZiGROTQ9IgyGg+27jmUOgtnaRjOR/rmmaDGSSsfcMtCrCC/mA6cNuswXrk
+        j4HPaf5i2XNpmJ930n/jUGsLX+0a8bkqq6QqWQt8PrP1qmu4JicD9dcP70I1/ZqKMgtmHM3uCaC
+        U=
+X-Received: by 2002:a7b:c111:0:b0:38e:7077:e650 with SMTP id w17-20020a7bc111000000b0038e7077e650mr9147339wmi.114.1649281250433;
+        Wed, 06 Apr 2022 14:40:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz6hhwgShELHlodQTRxrKt29AWUJxRNlWgookBuUhICSyykfZrbEYfYfVmqPCNphwSJ5AP/dw==
+X-Received: by 2002:a7b:c111:0:b0:38e:7077:e650 with SMTP id w17-20020a7bc111000000b0038e7077e650mr9147307wmi.114.1649281250073;
+        Wed, 06 Apr 2022 14:40:50 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id o29-20020a05600c511d00b0038e3532b23csm5876020wms.15.2022.04.06.14.40.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 14:40:49 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     dri-devel@lists.freedesktop.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Borislav Petkov <bp@suse.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Helge Deller <deller@gmx.de>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Peter Jones <pjones@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Zheyu Ma <zheyuma97@gmail.com>, linux-fbdev@vger.kernel.org
+Subject: [RESEND RFC PATCH 0/5] Fix some race conditions that exists between fbmem and sysfb
+Date:   Wed,  6 Apr 2022 23:39:14 +0200
+Message-Id: <20220406213919.600294-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] RDMA/usnic: Refactor usnic_uiom_alloc_pd()
-Content-Language: en-GB
-To:     kernel test robot <lkp@intel.com>, benve@cisco.com,
-        neescoba@cisco.com, jgg@ziepe.ca
-Cc:     kbuild-all@lists.01.org, linux-rdma@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <ef607cb3f5a09920b86971b8c8e60af8c647457e.1649169359.git.robin.murphy@arm.com>
- <202204070316.vOzwORw5-lkp@intel.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <202204070316.vOzwORw5-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-06 20:54, kernel test robot wrote:
-> Hi Robin,
-> 
-> I love your patch! Yet something to improve:
-> 
-> [auto build test ERROR on rdma/for-next]
-> [also build test ERROR on v5.18-rc1 next-20220406]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
+[ resend since dri-devel wasn't Cc'ed on all patches, sorry for the noise ]
 
-Oops, I failed to notice that this does actually depend on the other 
-patch I sent cleaning up iommu_present()[1] - I should have sent them 
-together as a series, sorry about that.
+Hello,
 
-Thanks,
-Robin.
+The patches in this series are mostly changes suggested by Daniel Vetter
+to fix some race conditions that exists between the fbdev core (fbmem)
+and sysfb with regard to device registration and removal.
 
-[1] 
-https://lore.kernel.org/linux-iommu/f707b4248e1d33b6d2c7f1d7c94febb802cf9890.1649161199.git.robin.murphy@arm.com/
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Robin-Murphy/RDMA-usnic-Refactor-usnic_uiom_alloc_pd/20220406-133657
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git for-next
-> config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220407/202204070316.vOzwORw5-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-> reproduce (this is a W=1 build):
->          # https://github.com/intel-lab-lkp/linux/commit/0aa6215010a083081b26ccb23d0aa2b4089bbbfd
->          git remote add linux-review https://github.com/intel-lab-lkp/linux
->          git fetch --no-tags linux-review Robin-Murphy/RDMA-usnic-Refactor-usnic_uiom_alloc_pd/20220406-133657
->          git checkout 0aa6215010a083081b26ccb23d0aa2b4089bbbfd
->          # save the config file to linux build tree
->          mkdir build_dir
->          make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
->     drivers/infiniband/hw/usnic/usnic_uiom.c: In function 'usnic_uiom_init':
->>> drivers/infiniband/hw/usnic/usnic_uiom.c:561:29: error: 'pci_bus_type' undeclared (first use in this function); did you mean 'bus_type'?
->       561 |         if (!iommu_present(&pci_bus_type)) {
->           |                             ^~~~~~~~~~~~
->           |                             bus_type
->     drivers/infiniband/hw/usnic/usnic_uiom.c:561:29: note: each undeclared identifier is reported only once for each function it appears in
-> 
-> 
-> vim +561 drivers/infiniband/hw/usnic/usnic_uiom.c
-> 
-> e3cf00d0a87f02 Upinder Malhi 2013-09-10  558
-> e3cf00d0a87f02 Upinder Malhi 2013-09-10  559  int usnic_uiom_init(char *drv_name)
-> e3cf00d0a87f02 Upinder Malhi 2013-09-10  560  {
-> e3cf00d0a87f02 Upinder Malhi 2013-09-10 @561  	if (!iommu_present(&pci_bus_type)) {
-> 
+For example, it is currently possible for sysfb to register a platform
+device after a real DRM driver was registered and requested to remove the
+conflicting framebuffers.
+
+A symptom of this issue, was worked around with by commit fb561bf9abde
+("fbdev: Prevent probing generic drivers if a FB is already registered")
+but that's really a hack and should be reverted.
+
+This series attempt to fix it more properly and reverted the mentioned
+hack. This will also unblock a pending patch to not make num_registered_fb
+visible to drivers anymore, since that's really internal to fbdev core.
+
+Patch #1 is just a trivial preparatory change.
+
+Patch #2 add sysfb_disable() and sysfb_try_unregister() helpers for fbmem
+to use them.
+
+Patch #3 changes how is dealt with conflicting framebuffers unregistering,
+rather than having a variable to determine if a lock should be take, it
+just drops the lock before unregistering the platform device.
+
+Patch #4 fixes the mentioned race conditions and finally patch #5 is the
+revert patch that was posted by Daniel before but he dropped from his set.
+
+The patches were tested on a rpi4 using different video configurations:
+(simpledrm -> vc4 both builtin, only vc4 builtin, only simpledrm builtin
+and simpledrm builtin with vc4 built as a module).
+
+I'm sending as an RFC since there are many changes to the locking scheme
+and that is always tricky to get right. Please let me know what you think.
+
+Best regards,
+Javier
+
+
+Daniel Vetter (1):
+  Revert "fbdev: Prevent probing generic drivers if a FB is already
+    registered"
+
+Javier Martinez Canillas (4):
+  firmware: sysfb: Make sysfb_create_simplefb() return a pdev pointer
+  firmware: sysfb: Add helpers to unregister a pdev and disable
+    registration
+  fbdev: Restart conflicting fb removal loop when unregistering devices
+  fbdev: Fix some race conditions between fbmem and sysfb
+
+ drivers/firmware/sysfb.c          | 51 ++++++++++++++++++++++++++-----
+ drivers/firmware/sysfb_simplefb.c | 24 +++++++++------
+ drivers/video/fbdev/core/fbmem.c  | 38 ++++++++++++++++++-----
+ drivers/video/fbdev/efifb.c       | 11 -------
+ drivers/video/fbdev/simplefb.c    | 11 -------
+ include/linux/fb.h                |  1 -
+ include/linux/sysfb.h             | 29 +++++++++++++++---
+ 7 files changed, 112 insertions(+), 53 deletions(-)
+
+-- 
+2.35.1
+
