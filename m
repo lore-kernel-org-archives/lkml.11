@@ -2,121 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84AB6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1732C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378902AbiDFJdL (ORCPT
+        id S1356308AbiDFJcd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
+        Wed, 6 Apr 2022 05:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581107AbiDFJVY (ORCPT
+        with ESMTP id S1582881AbiDFJWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:21:24 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7113115CB75;
-        Tue,  5 Apr 2022 19:48:13 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=27;SR=0;TI=SMTPD_---0V9JnNS5_1649213273;
-Received: from 30.39.96.171(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0V9JnNS5_1649213273)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 10:47:55 +0800
-Message-ID: <b8c08e6f-bb34-7266-0dbc-1e673b6a965c@linux.alibaba.com>
-Date:   Wed, 6 Apr 2022 10:47:53 +0800
+        Wed, 6 Apr 2022 05:22:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7186A3A1423;
+        Tue,  5 Apr 2022 20:07:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAEA7B8200E;
+        Wed,  6 Apr 2022 03:07:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3483C385A0;
+        Wed,  6 Apr 2022 03:07:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649214467;
+        bh=eIlEQwsG6t17hOwXn8NqVS/jaWXyCYIUFSVCEzvWWTE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SOXe812cr3deZum/nx2E3cPdah6SKXLSX202QJbEA0BFO0C0dM7kZUCV9iZzGu5G+
+         Z4ApptDbZKcbz8T33brz3W9nG8hQzYIUby9aTTYnz94ENwVrhzOqjwfBY5D4Y0SyIW
+         7yUtF8b3ubaYN+5mA5jsvFU7TarTIRdRAotSSTL0cy7vUVn7pYEsUexvA0dpfHjSiU
+         TWT7AnpkI6ZsZHqFaUeNvNsWqcVHvzX+aZeFurWMxQtzvkqj1oiIBO2c5Y2jksyejQ
+         xfxM1fsMs8FOZ6iZ9ip/ZssmeNzIPvYkvfyPwZJ7gJaNOS353H6GwkGCl98jXsv9a9
+         IzRgad6jFe11w==
+Date:   Wed, 6 Apr 2022 03:07:43 +0000
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Fabio Baltieri <fabiobaltieri@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] drivers: pwm: pwm-cros-ec: add channel type
+ support
+Message-ID: <Yk0D/4vzOfR8H+YD@google.com>
+References: <20220331125818.3776912-1-fabiobaltieri@chromium.org>
+ <20220331125818.3776912-3-fabiobaltieri@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v2 0/4] Introduce group balancer
-Content-Language: en-US
-To:     Zefan Li <lizefan.x@bytedance.com>, Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Tejun Heo <tj@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michael Wang <yun.wang@linux.alibaba.com>,
-        Cruz Zhao <cruzzhao@linux.alibaba.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Miguel Ojeda <ojeda@kernel.org>,
-        Chris Down <chris@chrisdown.name>,
-        Vipin Sharma <vipinsh@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
-References: <20220308092629.40431-1-dtcccc@linux.alibaba.com>
-From:   Tianchen Ding <dtcccc@linux.alibaba.com>
-In-Reply-To: <20220308092629.40431-1-dtcccc@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331125818.3776912-3-fabiobaltieri@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ping~
-Any idea for this patchset? :-)
+On Thu, Mar 31, 2022 at 12:58:16PM +0000, Fabio Baltieri wrote:
+> Add support for EC_PWM_TYPE_DISPLAY_LIGHT and EC_PWM_TYPE_KB_LIGHT pwm
+> types to the PWM cros_ec_pwm driver. This allows specifying one of these
+> PWM channel by functionality, and let the EC firmware pick the correct
+> channel, thus abstracting the hardware implementation from the kernel
+> driver.
+> 
+> Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
 
-On 2022/3/8 17:26, Tianchen Ding wrote:
-> Modern platform are growing fast on CPU numbers. To achieve better
-> utility of CPU resource, multiple apps are starting to sharing the CPUs.
-> 
-> What we need is a way to ease confliction in share mode,
-> make groups as exclusive as possible, to gain both performance
-> and resource efficiency.
-> 
-> The main idea of group balancer is to fulfill this requirement
-> by balancing groups of tasks among groups of CPUs, consider this
-> as a dynamic demi-exclusive mode. Task trigger work to settle it's
-> group into a proper partition (minimum predicted load), then try
-> migrate itself into it. To gradually settle groups into the most
-> exclusively partition.
-> 
-> GB can be seen as an optimize policy based on load balance,
-> it obeys the main idea of load balance and makes adjustment
-> based on that.
-> 
-> Our test on ARM64 platform with 128 CPUs shows that,
-> throughput of sysbench memory is improved about 25%,
-> and redis-benchmark is improved up to about 10%.
-> 
-> See each patch for detail:
-> The 1st patch introduces infrastructure.
-> The 2nd patch introduces detail about partition info.
-> The 3rd patch is the main part of group balancer.
-> The 4th patch is about stats.
-> 
-> v2:
-> Put partition info and period settings to cpuset subsys of cgroup_v2.
-> 
-> v1: https://lore.kernel.org/all/98f41efd-74b2-198a-839c-51b785b748a6@linux.alibaba.com/
-> 
-> Michael Wang (1):
->    sched: Introduce group balancer
-> 
-> Tianchen Ding (3):
->    sched, cpuset: Introduce infrastructure of group balancer
->    cpuset: Handle input of partition info for group balancer
->    cpuset, gb: Add stat for group balancer
-> 
->   include/linux/cpuset.h   |   5 +
->   include/linux/sched.h    |   5 +
->   include/linux/sched/gb.h |  70 ++++++
->   init/Kconfig             |  12 +
->   kernel/cgroup/cpuset.c   | 405 +++++++++++++++++++++++++++++++-
->   kernel/sched/Makefile    |   1 +
->   kernel/sched/core.c      |   5 +
->   kernel/sched/debug.c     |  10 +-
->   kernel/sched/fair.c      |  26 ++-
->   kernel/sched/gb.c        | 487 +++++++++++++++++++++++++++++++++++++++
->   kernel/sched/sched.h     |  14 ++
->   11 files changed, 1037 insertions(+), 3 deletions(-)
->   create mode 100644 include/linux/sched/gb.h
->   create mode 100644 kernel/sched/gb.c
-> 
+Taking `git log --oneline drivers/pwm/pwm-cros-ec.c` as examples, suggest to
+remove "drivers: " prefix from the commit title.
 
+Otherwise,
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
