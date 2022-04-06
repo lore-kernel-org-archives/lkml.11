@@ -2,300 +2,549 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 164C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF41C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233114AbiDFNOS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39506 "EHLO
+        id S233145AbiDFNOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233206AbiDFNMa (ORCPT
+        with ESMTP id S233651AbiDFNMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:12:30 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19824362320;
-        Wed,  6 Apr 2022 02:46:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649238380; x=1680774380;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=grvBVhtF61GB3iuu9MjOrXTcDAD8fwQYjtFqIs4kDsk=;
-  b=as6lgQ09YBOs0aw4EUNBlJglIPeJvOL8VemL9XEXcehOSqqpa410vil7
-   Z9DnQREOrJO7z6eTQKXTvRQv9BdD6iUimktxTxYHa4sHDe73Tq6mPnkl/
-   YVs0FBGv6JsRKOOd9rcw1852txHy/LLAVdBuRjarqPFFdOWF43ZaRHTTV
-   1iNcSRgoznyCXXE2HS6sKJlOATKqtYxFK9fR1MDJwWZIXwE8kdW96+ddX
-   Z0nhqc0xi8t0u1Q/M/g31cWEqQ2wg1noHFG2HPr3Mwk+0d2WO+e9iQ5N9
-   nT2Kraa8HW+wun8OeA1hItf2zgzV/3QY37/884Og5W1PzTxx976g6DEYC
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,239,1643698800"; 
-   d="scan'208";a="151711684"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Apr 2022 02:44:07 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 6 Apr 2022 02:44:06 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
- Transport; Wed, 6 Apr 2022 02:44:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gBjOu3gYZn2qpm0Dl4g8gYH2PoYP/MtERmR7XoGKssleOf92ueVkMoQeW9vIXyW9VyajhwzW1NMOlHQBNLL9sUURnYduTkDIR/OPmhSc4LVFkiL7kphQvmdKZkp8O4ENc5+eBidJ0rxU9xDReIWH6EMURf6KXxBJvliJWpPsAZgqmgKFzICr6I3szQUTnOwIlB2ByspmpDTflF9BhkaDn2us7CVq78JIY8GJacUYcFNE/vdUC2RZ5aAKWsLCQD2zxLgDQK13Ku37tam9mAbYWVNsBb3pPEZG/3UdoQWf4yJgONpre2J/JlJf4oQcu9Y6q+12IcG9uHOp396nLYkReQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=grvBVhtF61GB3iuu9MjOrXTcDAD8fwQYjtFqIs4kDsk=;
- b=evu1b9c42IKopGxNkqGMND2lnOtWnrl5VrLCqDR30p/UTnAbQz2hpaLHxta+58Afbq7e5ZSdNFoWlA2orEQ+xYyxjHwHhJKw67v4yBiJd2kNLSAlV36AUCiiHLTgKLjj2kt6RLEAGK+GMQGme67yaCoeyvBdY+lYhG3QnnPimA88wdW9pe+qcpm3c0Q7UIAYGKVF2ncaB2tlbSjSwXQNYxhSHiT/atOnGg37LBST2JPuC1fmQdHIC9VguiUWE4RqsXRI1id099TqhcZT7A9BHVxDnR8K3t6fmIaeraCqRp7cSRMFelZKNDDEtojGOhiGNXC6XAs1R4GcAtmDJv3fOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=grvBVhtF61GB3iuu9MjOrXTcDAD8fwQYjtFqIs4kDsk=;
- b=WjNGFlZ/1Am2qQQ18QntATGe6nCx1QW5pT7a7qKfsbagORYK3slEv/WTs9f2/MOwCrzKffohBfWmHfSyqNqrl6iFVr3PE6qVAWZPjNPiaxF9a1G2x/qLuhp9hEE0C4BOm0odma1Hw/YAR4aPkqCodIy0zkRoG9XaiXZQwj0rxk0=
-Received: from CO1PR11MB4769.namprd11.prod.outlook.com (2603:10b6:303:91::21)
- by BYAPR11MB2535.namprd11.prod.outlook.com (2603:10b6:a02:be::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
- 2022 09:44:04 +0000
-Received: from CO1PR11MB4769.namprd11.prod.outlook.com
- ([fe80::6d66:3f1d:7b05:660b]) by CO1PR11MB4769.namprd11.prod.outlook.com
- ([fe80::6d66:3f1d:7b05:660b%7]) with mapi id 15.20.5144.021; Wed, 6 Apr 2022
- 09:44:04 +0000
-From:   <Claudiu.Beznea@microchip.com>
-To:     <michael@walle.cc>, <Kavyasree.Kotagiri@microchip.com>,
-        <Nicolas.Ferre@microchip.com>
-CC:     <arnd@arndb.de>, <olof@lixom.net>, <soc@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <alexandre.belloni@bootlin.com>, <Tudor.Ambarus@microchip.com>
-Subject: Re: [PATCH v3 7/7] ARM: dts: lan966x: add basic Kontron KSwitch D10
- support
-Thread-Topic: [PATCH v3 7/7] ARM: dts: lan966x: add basic Kontron KSwitch D10
- support
-Thread-Index: AQHYSZrat2xSBiOycU217Z0NmwmCGw==
-Date:   Wed, 6 Apr 2022 09:44:04 +0000
-Message-ID: <ee039d8a-fe91-d0a8-5b8f-5fc879e6aa8d@microchip.com>
-References: <20220405160837.4093563-1-michael@walle.cc>
- <20220405160837.4093563-8-michael@walle.cc>
-In-Reply-To: <20220405160837.4093563-8-michael@walle.cc>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8dc94c65-8f05-47bf-f7f8-08da17b1fcc8
-x-ms-traffictypediagnostic: BYAPR11MB2535:EE_
-x-microsoft-antispam-prvs: <BYAPR11MB25357C2D394B57A3DCB582B687E79@BYAPR11MB2535.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7JAJBUiOZj25Uhooa2atFJKivWpXEnDC4PGLFoxQbXRC4OPfT5JQ24a5u6Byo9MEzuZ6eBTPVZVU9o+8UsRWN2fcpPXYlbGi0eKRgBgTRLHDkHU4teZmrDwxCzDtQJigxyJ18jCjl6Fc5oAcVbvIeSDp9nE1LnwkfHGfBvu6kdH92VtkicB7XQfTtPcwhfqcbSriy7nJ041qQ6pEq21Nk12W7QGCAV/HfHX1cUdgqDLD5R3IypyTSPVh95D+Q/nctz0JhnVjrBOFClGYiUw4/Oo1KOA9xLG2YCA07Moiy9lPhiSAz0EhgsyecCNS/5pvGWBKhSWV4oC99IGR4M/fMvw8lVObJpg6l2vlyEBCX8Y2vLFl1TOBC753C1bgkxoem24rUE6W41jZzjnY016VQY7XLJxP7XMPr2Fe0TNgfcqK6c12iu8fsu4yWGSU2fXh0soMht3k/JngcAgbFP0nM11jd4kky8vgMgID2JGQhdpU+KjALLlNHTbiV7gK6F7oYdb9sJxfeVr4LpQGmTBgPdLLMFbuBJtGkPcWeCEB62yZ5DCE+UpTIkbEJqNB+qHPZBp5aHw4a2NWdqKNE08q+Ywp89EfXRv0S5jsPe0RkKS2HgNlVdD5ffSW7+WxWKMXNWY/ib7g9jnIwuxWr50k5m2URr03Iu6gSZDAkCuolypMoTsPL8kF6U5diGd6LyJM22mPGW3ZfkRtwhhflP0NKeXjQBoB/g9/pYuh52MQdlHgNqf7LrwgTkwFhNsSBv4Y6PHVEiI7yFyoPCeJSyHsTw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4769.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(76116006)(6636002)(53546011)(8936002)(7416002)(4326008)(86362001)(107886003)(6512007)(6506007)(8676002)(31696002)(5660300002)(508600001)(91956017)(2616005)(186003)(26005)(66446008)(66476007)(316002)(66946007)(66556008)(71200400001)(36756003)(64756008)(6486002)(54906003)(38100700002)(122000001)(2906002)(38070700005)(110136005)(83380400001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?c09MRDdmcU9iVkN4RzNRaklabHFnSktPcE5pWkJnbFE2Q1Nrb3hNUFI2QUhD?=
- =?utf-8?B?S0NORXRrK0w0TVh0Tmlwa0xkcWswYld0NGo0L2grcUJORFc1cXh3eklHekxD?=
- =?utf-8?B?MjY5KzBxNFlReFh4cmZZTk1RY1YrdTJBY2NXZzNpajJuRlQ4bGNwSTFwbVVS?=
- =?utf-8?B?Vmh6MnB5d2pzcjlickVtV01ZbjJUR3BFUVNtN1lTVmNWbkljSXJNOTJTUmtH?=
- =?utf-8?B?UlhaYTY5UXJYZmN0ZzNCZmVHTnhvTEdJTWZFZ1dQYWxUQ2V2SW5GZnFVc2tr?=
- =?utf-8?B?aVQydzhhaG1yakZHdVREMVc2RnZjR1RkMExSQ3dOOEw4bmlDdHpXdHhjaWIz?=
- =?utf-8?B?ZnduTmJTMEhDTE45eXZmTEFjZ0htZy85NkxrZ0RJY0JpUTZKVVE2RU84UTZL?=
- =?utf-8?B?QThnYWxOUmVhU3RObzNzYzdIK3pDK1JwdTZJODcxL3hyV0NzSGNKZk5lNjVO?=
- =?utf-8?B?ZEJOaUIzYVIxaUppUHRaUHFkM29SY0NaMVVjVVhnelNvd2djVEdBRW9PY1Vi?=
- =?utf-8?B?QnNvZStOREswUkxxa3JDTjNDQ2ZkVXZYcnVrbXBOMnJNeDFZVDVDb3c1cDlw?=
- =?utf-8?B?MFRoR042OGloNGhwLzR4aVNkeVVQTGZDTWgwa0xPNkdlampVM3BVZFE0YU16?=
- =?utf-8?B?RGVxSUY2aEU2blF5UnZ2TzhUblhEdGJqcVlsbFdJRDBqaUJySjIwamdEdUNJ?=
- =?utf-8?B?dkRiQm43c0tZVVAyYlpNNEpzdGJaSzNXM3NybnNkV3QzMHp3NG5JSDRxQ2xl?=
- =?utf-8?B?V2VHQjJHK1MzYXl1LzE5T0pyZnd4VGVUL3o4K3JnNW1MVkVkakxaOFdmeWtl?=
- =?utf-8?B?NDBVZlRLTDhjdTQ4ME5aU0xaTHFLMkNJTll6MUMzZFpHZ210T2ZYQXFENGs1?=
- =?utf-8?B?VTh3ejBFeFNsWDY2SlNOa24weEYwMXpUUEpKYTlyZlhpRXA2RXNoSjUzaHBt?=
- =?utf-8?B?SDVVM0lVcGhDeGRGdDFQMWxhNENURHZMTVNKSXVwTTgzZUJ5VG8wREt3MFBs?=
- =?utf-8?B?ZUovSUNKZWs3SStQNnArSW52dTBjcGZsQUdFZEdscEVqcUlWK3hXWURSa3FX?=
- =?utf-8?B?QjByQzBnVHltS1ZjNUlMVVIvcGEzOGU1ZE53bDBmeWdqRzhaUmxXRW52c0lv?=
- =?utf-8?B?YXRMcFZBZlJZSTc0VWR0SDNCOXJsWklhQmNYUU82WWlEUGY2bkJoY0FiT1Vn?=
- =?utf-8?B?dmhvb21JOGwvQnlHd3YvakpNTjU1NHJKMkhSV0VSUU5NVk9KWHdyamIrQTFi?=
- =?utf-8?B?UlBsT2d5ZHFNY3pZdG42eTd5NmRoUzJ3aVdPY3N2ZllnMHVyYXFaOVdOSXl3?=
- =?utf-8?B?RWY2Lzh1RGhtTjRnWVdGSmtJV2hWKzJ1amxkWTExRU1KbWJwd2NnMnN1ZUFi?=
- =?utf-8?B?UlFaRmVsd1c3NjFuamYyNXFKbkJwM0dRMEZ6NmRHdkpydVJTcytoUVk4aHNa?=
- =?utf-8?B?bzJ2RzhCVE5Xa2o0eWxQVEMrdFZOQjVlbnV6L0tCT29icjFlWlMzdWV1bUtm?=
- =?utf-8?B?SHBqUG9ESkMwV3dwMHpaWEZrWENiQ0lyQm1Uend5WTdKK1lnNUJ4ZkRublVn?=
- =?utf-8?B?SkJoYkJXQm04YjhLdXMwVC9tMkJDUUtMZ0E1QTRSTXMxRTl3NkRJL2s0ZThD?=
- =?utf-8?B?bjZOZUtjN3gzVGtBVkRDQXNtVHlLdzZ2dk5UNVZYbGZLdWZLdFdsV0dYZkY5?=
- =?utf-8?B?VUZrTGw4cFk3blR4RENONkg4cGgzVDdLb29YdmlDVXk0WXZaUHVIRHFxMEUy?=
- =?utf-8?B?M1k2YTQwR1lPV1BGd3VaQUhXTmJsZkZ5bExTRGFrYVhDQXhRMnV2d1lxRGV5?=
- =?utf-8?B?UmVOTXBZWnhCRUh4WEFjVjlVTW5yUTlXc3IxbW9HWUl2eU9qV1hXamtvOFFt?=
- =?utf-8?B?Y3hsOGNwYlZ4V0hYS0taZTRvY0FYTWprR1Y5SWhVNXpNc0tDK1BBdkcxaUMv?=
- =?utf-8?B?ckpWdWlyMC94b2pzdklyOHR1TTFLdU9zYlMvejJoeExCSnVnRjVzVWhTYnN6?=
- =?utf-8?B?QTdGVUo2ajFPUndZQmVHRTNEbDhjZXJ1aVllY2FGSGNTdUpTcjNDR1pBSUF2?=
- =?utf-8?B?TDhLaHZqZzVnaklHWXpQMXpSdjhXTU42NXFxZjRFcnQ4ZHlRQnpGUFUrYUFh?=
- =?utf-8?B?Tk5MM2g5Y1ZtSXMyR1hySGMwaENTSDUyaUFiOXUrSlpXb1dCWG9EeE5ldlky?=
- =?utf-8?B?cTNHYTV1eGhJMU9tL1lLbkpPOWVlVERKWVVHSHR5TGhqOTRhcTlJRzBtZGsw?=
- =?utf-8?B?QlU0YmIyaUdZRVljSTR0MUFjdEVoWFRaVllHTkREVEN5SHBEMzlCVWw0ZjFE?=
- =?utf-8?B?RzZBdy9aeUN6dGVqdFgydk9rNW5xam9QN3p5cmV1V1h3QkZXdTJOM0R3Q1ZX?=
- =?utf-8?Q?0kA4pxEmnVqOlcl4=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0B752C615F787B46AEEA70D3F9DA2DD9@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Wed, 6 Apr 2022 09:12:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C162A7BBF;
+        Tue,  5 Apr 2022 21:12:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A05FBB8204C;
+        Wed,  6 Apr 2022 04:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F34EBC385A6;
+        Wed,  6 Apr 2022 04:12:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649218352;
+        bh=JrVHkMAOKL3qRjknLTbBXdlnZhQOEW6z4jC5g7aZ/c8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TTdcNwQH2HwaFjlpHl6Ym9dppJymq0plZXcKC0zut8AgAyhQwTncJGAtoa+siEqfK
+         cA6wa8b8QyAffF6E/268XKWsJVtu/IBB7NALH1cphCO9BAFehjb1vtqowyEQ+xS2VI
+         2ptxO+SWovEAqo8E9NmaTdukuOr5YX8SAGxvMLJV2BbDVctpovDHuB1SMg4uIZ2SI3
+         fD0Y6lGaXaXIPqTlg+bySbR57Qcf+LUmeG5q/dmFQWuG6tgii9UhlgYZZlVOLgR3I+
+         oNCMTv7L2TzuxmUNi8Wust/rjDB2BMhkBCl8Rgnbu2f0VaktWWLLx4gbhKcB6tJc8N
+         Y10y6ykyCJzMg==
+Date:   Tue, 5 Apr 2022 21:12:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <michael@walle.cc>
+Subject: Re: [PATCH net-next v3 3/4] net: lan966x: Add FDMA functionality
+Message-ID: <20220405211230.4a1a868d@kernel.org>
+In-Reply-To: <20220404130655.4004204-4-horatiu.vultur@microchip.com>
+References: <20220404130655.4004204-1-horatiu.vultur@microchip.com>
+        <20220404130655.4004204-4-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4769.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8dc94c65-8f05-47bf-f7f8-08da17b1fcc8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2022 09:44:04.2620
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VctffJAa38SijLGv2vr4A/qCJtpFgIoUlVr7MF9KK+5XyxqTvimMbS7F+1zDHGIOA/1YfJujcPAOVClGKrXpQ9w9TDMS0gd1X41QvTULtxo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2535
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMDUuMDQuMjAyMiAxOTowOCwgTWljaGFlbCBXYWxsZSB3cm90ZToNCj4gRVhURVJOQUwgRU1B
-SUw6IERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3Uga25v
-dyB0aGUgY29udGVudCBpcyBzYWZlDQo+IA0KPiBBZGQgYmFzaWMgc3VwcG9ydCBmb3IgdGhlIEtv
-bnRyb24gS1N3aXRjaCBEMTAgTU1ULiBJdCBjb21lcyBpbiB0d28NCj4gdmFyaWFudHM6ICI2Ry0y
-R1MiIHdoaWNoIGZlYXR1cmVzIDYgR2lnYWJpdCBjb3BwZXIgcG9ydHMgYW5kIHR3byBTRlANCj4g
-Y2FnZXMgYW5kICI4RyIgd2hpY2ggZmVhdHVyZXMgNiBHaWdiYWJpdCBjb3BwZXIgcG9ydHMgKHdo
-ZXJlIHR3byBhcmUNCj4gMi41RyBjYXBhYmxlKS4NCj4gDQo+IEZvciBub3cgdGhlIGZvbGxvd2lu
-ZyBpcyBzdXBwb3J0ZWQgYW5kIHdvcmtpbmc6DQo+ICAtIEtlcm5lbCBjb25zb2xlDQo+ICAtIFNG
-UCBjYWdlcyBJMkMgYnVzIGFuZCBtdXgNCj4gIC0gU1BJDQo+ICAtIFNHUElPDQo+ICAtIFdhdGNo
-ZG9nDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBNaWNoYWVsIFdhbGxlIDxtaWNoYWVsQHdhbGxlLmNj
-Pg0KDQpSZXZpZXdlZC1ieTogQ2xhdWRpdSBCZXpuZWEgPGNsYXVkaXUuYmV6bmVhQG1pY3JvY2hp
-cC5jb20+DQoNCg0KPiAtLS0NCj4gIGFyY2gvYXJtL2Jvb3QvZHRzL01ha2VmaWxlICAgICAgICAg
-ICAgICAgICAgICB8ICA0ICstDQo+ICAuLi5sYW45NjZ4LWtvbnRyb24ta3N3aXRjaC1kMTAtbW10
-LTZnLTJncy5kdHMgfCA3NyArKysrKysrKysrKysrKysrKysrDQo+ICAuLi4vbGFuOTY2eC1rb250
-cm9uLWtzd2l0Y2gtZDEwLW1tdC04Zy5kdHMgICAgfCAxMyArKysrDQo+ICAuLi4vZHRzL2xhbjk2
-Nngta29udHJvbi1rc3dpdGNoLWQxMC1tbXQuZHRzaSAgfCA3NSArKysrKysrKysrKysrKysrKysN
-Cj4gIDQgZmlsZXMgY2hhbmdlZCwgMTY4IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4g
-IGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL2FybS9ib290L2R0cy9sYW45NjZ4LWtvbnRyb24ta3N3
-aXRjaC1kMTAtbW10LTZnLTJncy5kdHMNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL2FybS9i
-b290L2R0cy9sYW45NjZ4LWtvbnRyb24ta3N3aXRjaC1kMTAtbW10LThnLmR0cw0KPiAgY3JlYXRl
-IG1vZGUgMTAwNjQ0IGFyY2gvYXJtL2Jvb3QvZHRzL2xhbjk2Nngta29udHJvbi1rc3dpdGNoLWQx
-MC1tbXQuZHRzaQ0KPiANCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2Jvb3QvZHRzL01ha2VmaWxl
-IGIvYXJjaC9hcm0vYm9vdC9kdHMvTWFrZWZpbGUNCj4gaW5kZXggN2MxNmY4YTJiNzM4Li41NGJl
-ZWY3YzE4MTAgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRzL01ha2VmaWxlDQo+ICsr
-KyBiL2FyY2gvYXJtL2Jvb3QvZHRzL01ha2VmaWxlDQo+IEBAIC03NDIsNyArNzQyLDkgQEAgZHRi
-LSQoQ09ORklHX1NPQ19JTVg3VUxQKSArPSBcDQo+ICAgICAgICAgaW14N3VscC1jb20uZHRiIFwN
-Cj4gICAgICAgICBpbXg3dWxwLWV2ay5kdGINCj4gIGR0Yi0kKENPTkZJR19TT0NfTEFOOTY2KSAr
-PSBcDQo+IC0gICAgICAgbGFuOTY2eC1wY2I4MjkxLmR0Yg0KPiArICAgICAgIGxhbjk2NngtcGNi
-ODI5MS5kdGIgXA0KPiArICAgICAgIGxhbjk2Nngta29udHJvbi1rc3dpdGNoLWQxMC1tbXQtNmct
-MmdzLmR0YiBcDQo+ICsgICAgICAgbGFuOTY2eC1rb250cm9uLWtzd2l0Y2gtZDEwLW1tdC04Zy5k
-dGINCj4gIGR0Yi0kKENPTkZJR19TT0NfTFMxMDIxQSkgKz0gXA0KPiAgICAgICAgIGxzMTAyMWEt
-bW94YS11Yy04NDEwYS5kdGIgXA0KPiAgICAgICAgIGxzMTAyMWEtcWRzLmR0YiBcDQo+IGRpZmYg
-LS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9sYW45NjZ4LWtvbnRyb24ta3N3aXRjaC1kMTAtbW10
-LTZnLTJncy5kdHMgYi9hcmNoL2FybS9ib290L2R0cy9sYW45NjZ4LWtvbnRyb24ta3N3aXRjaC1k
-MTAtbW10LTZnLTJncy5kdHMNCj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAwMDAw
-MDAwMDAwLi45Y2YwYjc5MWEzNTUNCj4gLS0tIC9kZXYvbnVsbA0KPiArKysgYi9hcmNoL2FybS9i
-b290L2R0cy9sYW45NjZ4LWtvbnRyb24ta3N3aXRjaC1kMTAtbW10LTZnLTJncy5kdHMNCj4gQEAg
-LTAsMCArMSw3NyBAQA0KPiArLy8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IChHUEwtMi4wKyBP
-UiBNSVQpDQo+ICsvKg0KPiArICogRGV2aWNlIFRyZWUgZmlsZSBmb3IgdGhlIEtvbnRyb24gS1N3
-aXRjaCBEMTAgTU1UIDZHLTJHUw0KPiArICovDQo+ICsNCj4gKy9kdHMtdjEvOw0KPiArI2luY2x1
-ZGUgImxhbjk2Nngta29udHJvbi1rc3dpdGNoLWQxMC1tbXQuZHRzaSINCj4gKw0KPiArLyB7DQo+
-ICsgICAgICAgbW9kZWwgPSAiS29udHJvbiBLU3dpdGNoIEQxMCBNTVQgNkctMkdTIjsNCj4gKyAg
-ICAgICBjb21wYXRpYmxlID0gImtvbnRyb24sa3N3aXRjaC1kMTAtbW10LTZnLTJncyIsICJrb250
-cm9uLHMxOTIxIiwNCj4gKyAgICAgICAgICAgICAgICAgICAgIm1pY3JvY2hpcCxsYW45NjY4Iiwg
-Im1pY3JvY2hpcCxsYW45NjYiOw0KPiArDQo+ICsgICAgICAgaTJjbXV4IHsNCj4gKyAgICAgICAg
-ICAgICAgIGNvbXBhdGlibGUgPSAiaTJjLW11eC1ncGlvIjsNCj4gKyAgICAgICAgICAgICAgICNh
-ZGRyZXNzLWNlbGxzID0gPDE+Ow0KPiArICAgICAgICAgICAgICAgI3NpemUtY2VsbHMgPSA8MD47
-DQo+ICsgICAgICAgICAgICAgICBtdXgtZ3Bpb3MgPSA8JnNncGlvX291dCAzIDIgR1BJT19BQ1RJ
-VkVfSElHSD4sDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICA8JnNncGlvX291dCAzIDMg
-R1BJT19BQ1RJVkVfSElHSD47DQo+ICsgICAgICAgICAgICAgICBpMmMtcGFyZW50ID0gPCZpMmM0
-PjsNCj4gKw0KPiArICAgICAgICAgICAgICAgaTJjNF8wOiBpMmNAMSB7DQo+ICsgICAgICAgICAg
-ICAgICAgICAgICAgIHJlZyA9IDwxPjsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgI2FkZHJl
-c3MtY2VsbHMgPSA8MT47DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICNzaXplLWNlbGxzID0g
-PDA+Ow0KPiArICAgICAgICAgICAgICAgfTsNCj4gKw0KPiArICAgICAgICAgICAgICAgaTJjNF8x
-OiBpMmNAMiB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAgIHJlZyA9IDwyPjsNCj4gKyAgICAg
-ICAgICAgICAgICAgICAgICAgI2FkZHJlc3MtY2VsbHMgPSA8MT47DQo+ICsgICAgICAgICAgICAg
-ICAgICAgICAgICNzaXplLWNlbGxzID0gPDA+Ow0KPiArICAgICAgICAgICAgICAgfTsNCj4gKyAg
-ICAgICB9Ow0KPiArDQo+ICsgICAgICAgc2ZwMDogc2ZwMCB7DQo+ICsgICAgICAgICAgICAgICBj
-b21wYXRpYmxlID0gInNmZixzZnAiOw0KPiArICAgICAgICAgICAgICAgaTJjLWJ1cyA9IDwmaTJj
-NF8wPjsNCj4gKyAgICAgICAgICAgICAgIGxvcy1ncGlvcyA9IDwmc2dwaW9faW4gMSAwIEdQSU9f
-QUNUSVZFX0hJR0g+Ow0KPiArICAgICAgICAgICAgICAgbW9kLWRlZjAtZ3Bpb3MgPSA8JnNncGlv
-X2luIDEgMSBHUElPX0FDVElWRV9MT1c+Ow0KPiArICAgICAgICAgICAgICAgbWF4aW11bS1wb3dl
-ci1taWxsaXdhdHQgPSA8MjUwMD47DQo+ICsgICAgICAgICAgICAgICB0eC1kaXNhYmxlLWdwaW9z
-ID0gPCZzZ3Bpb19vdXQgMyAwIEdQSU9fQUNUSVZFX0xPVz47DQo+ICsgICAgICAgICAgICAgICB0
-eC1mYXVsdC1ncGlvcyA9IDwmc2dwaW9faW4gMCAyIEdQSU9fQUNUSVZFX0hJR0g+Ow0KPiArICAg
-ICAgICAgICAgICAgcmF0ZS1zZWxlY3QwLWdwaW9zID0gPCZzZ3Bpb19vdXQgMiAwIEdQSU9fQUNU
-SVZFX0hJR0g+Ow0KPiArICAgICAgICAgICAgICAgcmF0ZS1zZWxlY3QxLWdwaW9zID0gPCZzZ3Bp
-b19vdXQgMiAxIEdQSU9fQUNUSVZFX0hJR0g+Ow0KPiArICAgICAgIH07DQo+ICsNCj4gKyAgICAg
-ICBzZnAxOiBzZnAxIHsNCj4gKyAgICAgICAgICAgICAgIGNvbXBhdGlibGUgPSAic2ZmLHNmcCI7
-DQo+ICsgICAgICAgICAgICAgICBpMmMtYnVzID0gPCZpMmM0XzE+Ow0KPiArICAgICAgICAgICAg
-ICAgbG9zLWdwaW9zID0gPCZzZ3Bpb19pbiAxIDIgR1BJT19BQ1RJVkVfSElHSD47DQo+ICsgICAg
-ICAgICAgICAgICBtb2QtZGVmMC1ncGlvcyA9IDwmc2dwaW9faW4gMSAzIEdQSU9fQUNUSVZFX0xP
-Vz47DQo+ICsgICAgICAgICAgICAgICBtYXhpbXVtLXBvd2VyLW1pbGxpd2F0dCA9IDwyNTAwPjsN
-Cj4gKyAgICAgICAgICAgICAgIHR4LWRpc2FibGUtZ3Bpb3MgPSA8JnNncGlvX291dCAzIDEgR1BJ
-T19BQ1RJVkVfTE9XPjsNCj4gKyAgICAgICAgICAgICAgIHR4LWZhdWx0LWdwaW9zID0gPCZzZ3Bp
-b19pbiAwIDMgR1BJT19BQ1RJVkVfSElHSD47DQo+ICsgICAgICAgICAgICAgICByYXRlLXNlbGVj
-dDAtZ3Bpb3MgPSA8JnNncGlvX291dCAyIDIgR1BJT19BQ1RJVkVfSElHSD47DQo+ICsgICAgICAg
-ICAgICAgICByYXRlLXNlbGVjdDEtZ3Bpb3MgPSA8JnNncGlvX291dCAyIDMgR1BJT19BQ1RJVkVf
-SElHSD47DQo+ICsgICAgICAgfTsNCj4gK307DQo+ICsNCj4gKyZmbHg0IHsNCj4gKyAgICAgICBh
-dG1lbCxmbGV4Y29tLW1vZGUgPSA8QVRNRUxfRkxFWENPTV9NT0RFX1RXST47DQo+ICsgICAgICAg
-c3RhdHVzID0gIm9rYXkiOw0KPiArDQo+ICsgICAgICAgaTJjNDogaTJjQDYwMCB7DQo+ICsgICAg
-ICAgICAgICAgICBwaW5jdHJsLTAgPSA8JmZjNF9iX3BpbnM+Ow0KPiArICAgICAgICAgICAgICAg
-cGluY3RybC1uYW1lcyA9ICJkZWZhdWx0IjsNCj4gKyAgICAgICAgICAgICAgIHN0YXR1cyA9ICJv
-a2F5IjsNCj4gKyAgICAgICB9Ow0KPiArfTsNCj4gKw0KPiArJmdwaW8gew0KPiArICAgICAgIGZj
-NF9iX3BpbnM6IGZjNC1iLWkyYy1waW5zIHsNCj4gKyAgICAgICAgICAgICAgIC8qIFNDTCwgU0RB
-ICovDQo+ICsgICAgICAgICAgICAgICBwaW5zID0gIkdQSU9fNTciLCAiR1BJT181OCI7DQo+ICsg
-ICAgICAgICAgICAgICBmdW5jdGlvbiA9ICJmYzRfYiI7DQo+ICsgICAgICAgfTsNCj4gK307DQo+
-IGRpZmYgLS1naXQgYS9hcmNoL2FybS9ib290L2R0cy9sYW45NjZ4LWtvbnRyb24ta3N3aXRjaC1k
-MTAtbW10LThnLmR0cyBiL2FyY2gvYXJtL2Jvb3QvZHRzL2xhbjk2Nngta29udHJvbi1rc3dpdGNo
-LWQxMC1tbXQtOGcuZHRzDQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+IGluZGV4IDAwMDAwMDAw
-MDAwMC4uNGIzNWY2YzQ2ZTdmDQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvYXJjaC9hcm0vYm9v
-dC9kdHMvbGFuOTY2eC1rb250cm9uLWtzd2l0Y2gtZDEwLW1tdC04Zy5kdHMNCj4gQEAgLTAsMCAr
-MSwxMyBAQA0KPiArLy8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IChHUEwtMi4wKyBPUiBNSVQp
-DQo+ICsvKg0KPiArICogRGV2aWNlIFRyZWUgZmlsZSBmb3IgdGhlIEtvbnRyb24gS1N3aXRjaCBE
-MTAgTU1UIDhHDQo+ICsgKi8NCj4gKw0KPiArL2R0cy12MS87DQo+ICsjaW5jbHVkZSAibGFuOTY2
-eC1rb250cm9uLWtzd2l0Y2gtZDEwLW1tdC5kdHNpIg0KPiArDQo+ICsvIHsNCj4gKyAgICAgICBt
-b2RlbCA9ICJLb250cm9uIEtTd2l0Y2ggRDEwIE1NVCA4RyI7DQo+ICsgICAgICAgY29tcGF0aWJs
-ZSA9ICJrb250cm9uLGtzd2l0Y2gtZDEwLW1tdC04ZyIsICJrb250cm9uLHMxOTIxIiwNCj4gKyAg
-ICAgICAgICAgICAgICAgICAgIm1pY3JvY2hpcCxsYW45NjY4IiwgIm1pY3JvY2hpcCxsYW45NjYi
-Ow0KPiArfTsNCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2Jvb3QvZHRzL2xhbjk2Nngta29udHJv
-bi1rc3dpdGNoLWQxMC1tbXQuZHRzaSBiL2FyY2gvYXJtL2Jvb3QvZHRzL2xhbjk2Nngta29udHJv
-bi1rc3dpdGNoLWQxMC1tbXQuZHRzaQ0KPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiBpbmRleCAw
-MDAwMDAwMDAwMDAuLjQxNzhmYjBiZDljNQ0KPiAtLS0gL2Rldi9udWxsDQo+ICsrKyBiL2FyY2gv
-YXJtL2Jvb3QvZHRzL2xhbjk2Nngta29udHJvbi1rc3dpdGNoLWQxMC1tbXQuZHRzaQ0KPiBAQCAt
-MCwwICsxLDc1IEBADQo+ICsvLyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogKEdQTC0yLjArIE9S
-IE1JVCkNCj4gKy8qDQo+ICsgKiBDb21tb24gcGFydCBvZiB0aGUgZGV2aWNlIHRyZWUgZm9yIHRo
-ZSBLb250cm9uIEtTd2l0Y2ggRDEwIE1NVA0KPiArICovDQo+ICsNCj4gKy9kdHMtdjEvOw0KPiAr
-I2luY2x1ZGUgImxhbjk2NnguZHRzaSINCj4gKw0KPiArLyB7DQo+ICsgICAgICAgYWxpYXNlcyB7
-DQo+ICsgICAgICAgICAgICAgICBzZXJpYWwwID0gJnVzYXJ0MDsNCj4gKyAgICAgICB9Ow0KPiAr
-DQo+ICsgICAgICAgY2hvc2VuIHsNCj4gKyAgICAgICAgICAgICAgIHN0ZG91dC1wYXRoID0gInNl
-cmlhbDA6MTE1MjAwbjgiOw0KPiArICAgICAgIH07DQo+ICsNCj4gKyAgICAgICBncGlvLXJlc3Rh
-cnQgew0KPiArICAgICAgICAgICAgICAgY29tcGF0aWJsZSA9ICJncGlvLXJlc3RhcnQiOw0KPiAr
-ICAgICAgICAgICAgICAgZ3Bpb3MgPSA8JmdwaW8gNTYgR1BJT19BQ1RJVkVfTE9XPjsNCj4gKyAg
-ICAgICAgICAgICAgIHByaW9yaXR5ID0gPDIwMD47DQo+ICsgICAgICAgfTsNCj4gK307DQo+ICsN
-Cj4gKyZmbHgwIHsNCj4gKyAgICAgICBhdG1lbCxmbGV4Y29tLW1vZGUgPSA8QVRNRUxfRkxFWENP
-TV9NT0RFX1VTQVJUPjsNCj4gKyAgICAgICBzdGF0dXMgPSAib2theSI7DQo+ICsNCj4gKyAgICAg
-ICB1c2FydDA6IHNlcmlhbEAyMDAgew0KPiArICAgICAgICAgICAgICAgcGluY3RybC0wID0gPCZ1
-c2FydDBfcGlucz47DQo+ICsgICAgICAgICAgICAgICBwaW5jdHJsLW5hbWVzID0gImRlZmF1bHQi
-Ow0KPiArICAgICAgICAgICAgICAgc3RhdHVzID0gIm9rYXkiOw0KPiArICAgICAgIH07DQo+ICt9
-Ow0KPiArDQo+ICsmZ3BpbyB7DQo+ICsgICAgICAgdXNhcnQwX3BpbnM6IHVzYXJ0MC1waW5zIHsN
-Cj4gKyAgICAgICAgICAgICAgIC8qIFJYRCwgVFhEICovDQo+ICsgICAgICAgICAgICAgICBwaW5z
-ID0gIkdQSU9fMjUiLCAiR1BJT18yNiI7DQo+ICsgICAgICAgICAgICAgICBmdW5jdGlvbiA9ICJm
-YzBfYiI7DQo+ICsgICAgICAgfTsNCj4gKw0KPiArICAgICAgIHNncGlvX2FfcGluczogc2dwaW8t
-YS1waW5zIHsNCj4gKyAgICAgICAgICAgICAgIC8qIFNDSywgRDAsIEQxICovDQo+ICsgICAgICAg
-ICAgICAgICBwaW5zID0gIkdQSU9fMzIiLCAiR1BJT18zMyIsICJHUElPXzM0IjsNCj4gKyAgICAg
-ICAgICAgICAgIGZ1bmN0aW9uID0gInNncGlvX2EiOw0KPiArICAgICAgIH07DQo+ICsNCj4gKyAg
-ICAgICBzZ3Bpb19iX3BpbnM6IHNncGlvLWItcGlucyB7DQo+ICsgICAgICAgICAgICAgICAvKiBM
-RCAqLw0KPiArICAgICAgICAgICAgICAgcGlucyA9ICJHUElPXzY0IjsNCj4gKyAgICAgICAgICAg
-ICAgIGZ1bmN0aW9uID0gInNncGlvX2IiOw0KPiArICAgICAgIH07DQo+ICt9Ow0KPiArDQo+ICsm
-c2dwaW8gew0KPiArICAgICAgIHBpbmN0cmwtMCA9IDwmc2dwaW9fYV9waW5zPiwgPCZzZ3Bpb19i
-X3BpbnM+Ow0KPiArICAgICAgIHBpbmN0cmwtbmFtZXMgPSAiZGVmYXVsdCI7DQo+ICsgICAgICAg
-YnVzLWZyZXF1ZW5jeSA9IDw4MDAwMDAwPjsNCj4gKyAgICAgICAvKiBhcmJpdHJhcnkgcmFuZ2Ug
-YmVjYXVzZSBhbGwgR1BJT3MgYXJlIGluIHNvZnR3YXJlIG1vZGUgKi8NCj4gKyAgICAgICBtaWNy
-b2NoaXAsc2dwaW8tcG9ydC1yYW5nZXMgPSA8MCAxMT47DQo+ICsgICAgICAgc3RhdHVzID0gIm9r
-YXkiOw0KPiArDQo+ICsgICAgICAgc2dwaW9faW46IGdwaW9AMCB7DQo+ICsgICAgICAgICAgICAg
-ICBuZ3Bpb3MgPSA8MTI4PjsNCj4gKyAgICAgICB9Ow0KPiArDQo+ICsgICAgICAgc2dwaW9fb3V0
-OiBncGlvQDEgew0KPiArICAgICAgICAgICAgICAgbmdwaW9zID0gPDEyOD47DQo+ICsgICAgICAg
-fTsNCj4gK307DQo+ICsNCj4gKyZ3YXRjaGRvZyB7DQo+ICsgICAgICAgc3RhdHVzID0gIm9rYXki
-Ow0KPiArfTsNCj4gLS0NCj4gMi4zMC4yDQo+IA0KDQo=
+On Mon, 4 Apr 2022 15:06:54 +0200 Horatiu Vultur wrote:
+> Ethernet frames can be extracted or injected to or from the device's
+> DDR memory. There is one channel for injection and one channel for
+> extraction. Each of these channels contain a linked list of DCBs which
+> contains DB. The DCB contains only 1 DB for both the injection and
+> extraction. Each DB contains a frame. Every time when a frame is received
+> or transmitted an interrupt is generated.
+> 
+> It is not possible to use both the FDMA and the manual
+> injection/extraction of the frames. Therefore the FDMA has priority over
+> the manual because of better performance values.
+> 
+> FDMA:
+> iperf -c 192.168.1.1
+> [  5]   0.00-10.02  sec   420 MBytes   352 Mbits/sec    0 sender
+> [  5]   0.00-10.03  sec   420 MBytes   351 Mbits/sec      receiver
+> 
+> iperf -c 192.168.1.1 -R
+> [  5]   0.00-10.01  sec   528 MBytes   442 Mbits/sec    0 sender
+> [  5]   0.00-10.00  sec   524 MBytes   440 Mbits/sec      receiver
+> 
+> Manual:
+> iperf -c 192.168.1.1
+> [  5]   0.00-10.02  sec  93.8 MBytes  78.5 Mbits/sec    0 sender
+> [  5]   0.00-10.03  sec  93.8 MBytes  78.4 Mbits/sec      receiver
+> 
+> ipers -c 192.168.1.1 -R
+> [  5]   0.00-10.03  sec   121 MBytes   101 Mbits/sec    0 sender
+> [  5]   0.00-10.01  sec   118 MBytes  99.0 Mbits/sec      receiver
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+
+> +static struct sk_buff *lan966x_fdma_rx_alloc_skb(struct lan966x_rx *rx,
+> +						 struct lan966x_db *db)
+> +{
+> +	struct lan966x *lan966x = rx->lan966x;
+> +	struct sk_buff *skb;
+> +	dma_addr_t dma_addr;
+> +	struct page *page;
+> +	void *buff_addr;
+> +
+> +	page = dev_alloc_pages(rx->page_order);
+> +	if (unlikely(!page))
+> +		return NULL;
+> +
+> +	dma_addr = dma_map_page(lan966x->dev, page, 0,
+> +				PAGE_SIZE << rx->page_order,
+> +				DMA_FROM_DEVICE);
+> +	if (unlikely(dma_mapping_error(lan966x->dev, dma_addr)))
+> +		goto free_page;
+> +
+> +	buff_addr = page_address(page);
+> +	skb = build_skb(buff_addr, PAGE_SIZE << rx->page_order);
+
+build_skb() after the packet comes in rather than upfront, that way 
+the skb will be in the CPU cache already when sent up the stack.
+
+> +	if (unlikely(!skb))
+> +		goto unmap_page;
+> +
+> +	db->dataptr = dma_addr;
+> +
+> +	return skb;
+> +
+> +unmap_page:
+> +	dma_unmap_page(lan966x->dev, dma_addr,
+> +		       PAGE_SIZE << rx->page_order,
+> +		       DMA_FROM_DEVICE);
+> +
+> +free_page:
+> +	__free_pages(page, rx->page_order);
+> +	return NULL;
+> +}
+
+> +static int lan966x_fdma_tx_alloc(struct lan966x_tx *tx)
+> +{
+> +	struct lan966x *lan966x = tx->lan966x;
+> +	struct lan966x_tx_dcb *dcb;
+> +	struct lan966x_db *db;
+> +	int size;
+> +	int i, j;
+> +
+> +	tx->dcbs_buf = kcalloc(FDMA_DCB_MAX, sizeof(struct lan966x_tx_dcb_buf),
+> +			       GFP_ATOMIC);
+> +	if (!tx->dcbs_buf)
+> +		return -ENOMEM;
+> +
+> +	/* calculate how many pages are needed to allocate the dcbs */
+> +	size = sizeof(struct lan966x_tx_dcb) * FDMA_DCB_MAX;
+> +	size = ALIGN(size, PAGE_SIZE);
+> +	tx->dcbs = dma_alloc_coherent(lan966x->dev, size, &tx->dma, GFP_ATOMIC);
+
+This functions seems to only be called from probe, so GFP_KERNEL 
+is better.
+
+> +	if (!tx->dcbs)
+> +		goto out;
+> +
+> +	/* Now for each dcb allocate the db */
+> +	for (i = 0; i < FDMA_DCB_MAX; ++i) {
+> +		dcb = &tx->dcbs[i];
+> +
+> +		for (j = 0; j < FDMA_TX_DCB_MAX_DBS; ++j) {
+> +			db = &dcb->db[j];
+> +			db->dataptr = 0;
+> +			db->status = 0;
+> +		}
+> +
+> +		lan966x_fdma_tx_add_dcb(tx, dcb);
+> +	}
+> +
+> +	return 0;
+> +
+> +out:
+> +	kfree(tx->dcbs_buf);
+> +	return -ENOMEM;
+> +}
+
+> +static void lan966x_fdma_wakeup_netdev(struct lan966x *lan966x)
+> +{
+> +	struct lan966x_port *port;
+> +	int i;
+> +
+> +	for (i = 0; i < lan966x->num_phys_ports; ++i) {
+> +		port = lan966x->ports[i];
+> +		if (!port)
+> +			continue;
+> +
+> +		if (netif_queue_stopped(port->dev))
+> +			netif_wake_queue(port->dev);
+> +	}
+> +}
+> +
+> +static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
+> +{
+> +	struct lan966x_tx *tx = &lan966x->tx;
+> +	struct lan966x_tx_dcb_buf *dcb_buf;
+> +	struct lan966x_db *db;
+> +	unsigned long flags;
+> +	bool clear = false;
+> +	int i;
+> +
+> +	spin_lock_irqsave(&lan966x->tx_lock, flags);
+> +	for (i = 0; i < FDMA_DCB_MAX; ++i) {
+> +		dcb_buf = &tx->dcbs_buf[i];
+> +
+> +		if (!dcb_buf->used)
+> +			continue;
+> +
+> +		db = &tx->dcbs[i].db[0];
+> +		if (!(db->status & FDMA_DCB_STATUS_DONE))
+> +			continue;
+> +
+> +		dcb_buf->dev->stats.tx_packets++;
+> +		dcb_buf->dev->stats.tx_bytes += dcb_buf->skb->len;
+> +
+> +		dcb_buf->used = false;
+> +		dma_unmap_single(lan966x->dev,
+> +				 dcb_buf->dma_addr,
+> +				 dcb_buf->skb->len,
+> +				 DMA_TO_DEVICE);
+> +		if (!dcb_buf->ptp)
+> +			dev_kfree_skb_any(dcb_buf->skb);
+> +
+> +		clear = true;
+> +	}
+> +	spin_unlock_irqrestore(&lan966x->tx_lock, flags);
+> +
+> +	if (clear)
+> +		lan966x_fdma_wakeup_netdev(lan966x);
+
+You may want to keep this call inside the lock so that the tx path
+doesn't kick in between unlock and wake and fill up the queues.
+
+> +}
+> +
+> +static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx)
+> +{
+> +	struct lan966x *lan966x = rx->lan966x;
+> +	u64 src_port, timestamp;
+> +	struct lan966x_db *db;
+> +	struct sk_buff *skb;
+> +
+> +	/* Check if there is any data */
+> +	db = &rx->dcbs[rx->dcb_index].db[rx->db_index];
+> +	if (unlikely(!(db->status & FDMA_DCB_STATUS_DONE)))
+> +		return NULL;
+> +
+> +	/* Get the received frame and unmap it */
+> +	skb = rx->skb[rx->dcb_index][rx->db_index];
+> +	dma_unmap_single(lan966x->dev, (dma_addr_t)db->dataptr,
+> +			 FDMA_DCB_STATUS_BLOCKL(db->status),
+> +			 DMA_FROM_DEVICE);
+> +
+> +	skb_put(skb, FDMA_DCB_STATUS_BLOCKL(db->status));
+> +
+> +	lan966x_ifh_get_src_port(skb->data, &src_port);
+> +	lan966x_ifh_get_timestamp(skb->data, &timestamp);
+> +
+> +	WARN_ON(src_port >= lan966x->num_phys_ports);
+> +
+> +	skb->dev = lan966x->ports[src_port]->dev;
+> +	skb_pull(skb, IFH_LEN * sizeof(u32));
+> +
+> +	if (likely(!(skb->dev->features & NETIF_F_RXFCS)))
+> +		skb_trim(skb, skb->len - ETH_FCS_LEN);
+> +
+> +	lan966x_ptp_rxtstamp(lan966x, skb, timestamp);
+> +	skb->protocol = eth_type_trans(skb, skb->dev);
+> +
+> +	if (lan966x->bridge_mask & BIT(src_port)) {
+> +		skb->offload_fwd_mark = 1;
+> +
+> +		skb_reset_network_header(skb);
+> +		if (!lan966x_hw_offload(lan966x, src_port, skb))
+> +			skb->offload_fwd_mark = 0;
+> +	}
+> +
+> +	skb->dev->stats.rx_bytes += skb->len;
+> +	skb->dev->stats.rx_packets++;
+> +
+> +	return skb;
+> +}
+> +
+> +static int lan966x_fdma_napi_poll(struct napi_struct *napi, int weight)
+> +{
+> +	struct lan966x *lan966x = container_of(napi, struct lan966x, napi);
+> +	struct lan966x_rx *rx = &lan966x->rx;
+> +	int dcb_reload = rx->dcb_index;
+> +	struct lan966x_rx_dcb *old_dcb;
+> +	struct lan966x_db *db;
+> +	struct sk_buff *skb;
+> +	int counter = 0;
+> +	u64 nextptr;
+> +
+> +	lan966x_fdma_tx_clear_buf(lan966x, weight);
+> +
+> +	/* Get all received skb */
+> +	while (counter < weight) {
+> +		skb = lan966x_fdma_rx_get_frame(rx);
+> +		if (!skb)
+> +			break;
+> +		napi_gro_receive(&lan966x->napi, skb);
+> +
+> +		rx->skb[rx->dcb_index][rx->db_index] = NULL;
+> +
+> +		rx->dcb_index++;
+> +		rx->dcb_index &= FDMA_DCB_MAX - 1;
+> +		counter++;
+> +	}
+> +
+> +	/* Allocate new skbs and map them */
+> +	while (dcb_reload != rx->dcb_index) {
+> +		db = &rx->dcbs[dcb_reload].db[rx->db_index];
+> +		skb = lan966x_fdma_rx_alloc_skb(rx, db);
+> +		if (unlikely(!skb))
+> +			break;
+> +		rx->skb[dcb_reload][rx->db_index] = skb;
+> +
+> +		old_dcb = &rx->dcbs[dcb_reload];
+> +		dcb_reload++;
+> +		dcb_reload &= FDMA_DCB_MAX - 1;
+> +
+> +		nextptr = rx->dma + ((unsigned long)old_dcb -
+> +				     (unsigned long)rx->dcbs);
+> +		lan966x_fdma_rx_add_dcb(rx, old_dcb, nextptr);
+> +		lan966x_fdma_rx_reload(rx);
+> +	}
+> +
+> +	if (counter < weight && napi_complete_done(napi, counter))
+> +		lan_wr(0xff, lan966x, FDMA_INTR_DB_ENA);
+> +
+> +	return counter;
+> +}
+> +
+> +irqreturn_t lan966x_fdma_irq_handler(int irq, void *args)
+> +{
+> +	struct lan966x *lan966x = args;
+> +	u32 db, err, err_type;
+> +
+> +	db = lan_rd(lan966x, FDMA_INTR_DB);
+> +	err = lan_rd(lan966x, FDMA_INTR_ERR);
+> +
+> +	if (db) {
+> +		lan_wr(0, lan966x, FDMA_INTR_DB_ENA);
+> +		lan_wr(db, lan966x, FDMA_INTR_DB);
+> +
+> +		napi_schedule(&lan966x->napi);
+> +	}
+> +
+> +	if (err) {
+> +		err_type = lan_rd(lan966x, FDMA_ERRORS);
+> +
+> +		WARN(1, "Unexpected error: %d, error_type: %d\n", err, err_type);
+> +
+> +		lan_wr(err, lan966x, FDMA_INTR_ERR);
+> +		lan_wr(err_type, lan966x, FDMA_ERRORS);
+> +	}
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int lan966x_fdma_get_next_dcb(struct lan966x_tx *tx)
+> +{
+> +	struct lan966x_tx_dcb_buf *dcb_buf;
+> +	int i;
+> +
+> +	for (i = 0; i < FDMA_DCB_MAX; ++i) {
+> +		dcb_buf = &tx->dcbs_buf[i];
+> +		if (!dcb_buf->used && i != tx->last_in_use)
+> +			return i;
+> +	}
+> +
+> +	return -1;
+> +}
+> +
+> +int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
+> +{
+> +	struct lan966x_port *port = netdev_priv(dev);
+> +	struct lan966x *lan966x = port->lan966x;
+> +	struct lan966x_tx_dcb_buf *next_dcb_buf;
+> +	struct lan966x_tx_dcb *next_dcb, *dcb;
+> +	struct lan966x_tx *tx = &lan966x->tx;
+> +	struct lan966x_db *next_db;
+> +	int needed_headroom;
+> +	int needed_tailroom;
+> +	dma_addr_t dma_addr;
+> +	int next_to_use;
+> +	int err;
+> +
+> +	/* Get next index */
+> +	next_to_use = lan966x_fdma_get_next_dcb(tx);
+> +	if (next_to_use < 0) {
+> +		netif_stop_queue(dev);
+> +		return NETDEV_TX_BUSY;
+> +	}
+> +
+> +	if (skb_put_padto(skb, ETH_ZLEN)) {
+> +		dev->stats.tx_dropped++;
+> +		return NETDEV_TX_OK;
+> +	}
+> +
+> +	/* skb processing */
+> +	needed_headroom = max_t(int, IFH_LEN * sizeof(u32) - skb_headroom(skb), 0);
+> +	needed_tailroom = max_t(int, ETH_FCS_LEN - skb_tailroom(skb), 0);
+> +	if (needed_headroom || needed_tailroom || skb_header_cloned(skb)) {
+> +		err = pskb_expand_head(skb, needed_headroom, needed_tailroom,
+> +				       GFP_ATOMIC);
+> +		if (unlikely(err)) {
+> +			dev->stats.tx_dropped++;
+> +			err = NETDEV_TX_OK;
+> +			goto release;
+> +		}
+> +	}
+> +
+> +	skb_tx_timestamp(skb);
+
+This could move down after the dma mapping, so it's closer to when 
+the devices gets ownership.
+
+> +	skb_push(skb, IFH_LEN * sizeof(u32));
+> +	memcpy(skb->data, ifh, IFH_LEN * sizeof(u32));
+> +	skb_put(skb, 4);
+> +
+> +	dma_addr = dma_map_single(lan966x->dev, skb->data, skb->len,
+> +				  DMA_TO_DEVICE);
+> +	if (dma_mapping_error(lan966x->dev, dma_addr)) {
+> +		dev->stats.tx_dropped++;
+> +		err = NETDEV_TX_OK;
+> +		goto release;
+> +	}
+> +
+> +	/* Setup next dcb */
+> +	next_dcb = &tx->dcbs[next_to_use];
+> +	next_dcb->nextptr = FDMA_DCB_INVALID_DATA;
+> +
+> +	next_db = &next_dcb->db[0];
+> +	next_db->dataptr = dma_addr;
+> +	next_db->status = FDMA_DCB_STATUS_SOF |
+> +			  FDMA_DCB_STATUS_EOF |
+> +			  FDMA_DCB_STATUS_INTR |
+> +			  FDMA_DCB_STATUS_BLOCKO(0) |
+> +			  FDMA_DCB_STATUS_BLOCKL(skb->len);
+> +
+> +	/* Fill up the buffer */
+> +	next_dcb_buf = &tx->dcbs_buf[next_to_use];
+> +	next_dcb_buf->skb = skb;
+> +	next_dcb_buf->dma_addr = dma_addr;
+> +	next_dcb_buf->used = true;
+> +	next_dcb_buf->ptp = false;
+> +	next_dcb_buf->dev = dev;
+> +
+> +	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
+> +	    LAN966X_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
+> +		next_dcb_buf->ptp = true;
+> +
+> +	if (likely(lan966x->tx.activated)) {
+> +		/* Connect current dcb to the next db */
+> +		dcb = &tx->dcbs[tx->last_in_use];
+> +		dcb->nextptr = tx->dma + (next_to_use *
+> +					  sizeof(struct lan966x_tx_dcb));
+> +
+> +		lan966x_fdma_tx_reload(tx);
+> +	} else {
+> +		/* Because it is first time, then just activate */
+> +		lan966x->tx.activated = true;
+> +		lan966x_fdma_tx_activate(tx);
+> +	}
+> +
+> +	/* Move to next dcb because this last in use */
+> +	tx->last_in_use = next_to_use;
+> +
+> +	return NETDEV_TX_OK;
+> +
+> +release:
+> +	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP &&
+> +	    LAN966X_SKB_CB(skb)->rew_op == IFH_REW_OP_TWO_STEP_PTP)
+> +		lan966x_ptp_txtstamp_release(port, skb);
+> +
+> +	dev_kfree_skb_any(skb);
+> +	return err;
+> +}
+> +
+> +void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev)
+> +{
+> +	if (lan966x->fdma_ndev)
+> +		return;
+> +
+> +	lan966x->fdma_ndev = dev;
+> +	netif_napi_add(dev, &lan966x->napi, lan966x_fdma_napi_poll,
+> +		       FDMA_WEIGHT);
+
+Just use NAPI_POLL_WEIGHT. We should just remove the last argument 
+to netif_napi_add() completely but that's another story..
+
+> +	napi_enable(&lan966x->napi);
+> +}
+
+> +
+> +	if (lan966x->fdma_irq) {
+> +		disable_irq(lan966x->fdma_irq);
+
+You don't add any enable_irq() calls, maybe devm_free_irq() is a better
+choice?
+
+> +		lan966x->fdma_irq = -ENXIO;
+
+Semantics of lan966x->fdma_irq are pretty unclear.
+Why is the condition not "> 0" for this block?
+
+> +	}
+>  }
+>  
+>  static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+> @@ -790,12 +801,12 @@ static void lan966x_init(struct lan966x *lan966x)
+>  	/* Do byte-swap and expect status after last data word
+>  	 * Extraction: Mode: manual extraction) | Byte_swap
+>  	 */
+> -	lan_wr(QS_XTR_GRP_CFG_MODE_SET(1) |
+> +	lan_wr(QS_XTR_GRP_CFG_MODE_SET(lan966x->fdma ? 2 : 1) |
+>  	       QS_XTR_GRP_CFG_BYTE_SWAP_SET(1),
+>  	       lan966x, QS_XTR_GRP_CFG(0));
+>  
+>  	/* Injection: Mode: manual injection | Byte_swap */
+> -	lan_wr(QS_INJ_GRP_CFG_MODE_SET(1) |
+> +	lan_wr(QS_INJ_GRP_CFG_MODE_SET(lan966x->fdma ? 2 : 1) |
+>  	       QS_INJ_GRP_CFG_BYTE_SWAP_SET(1),
+>  	       lan966x, QS_INJ_GRP_CFG(0));
+>  
+> @@ -1017,6 +1028,17 @@ static int lan966x_probe(struct platform_device *pdev)
+>  		lan966x->ptp = 1;
+>  	}
+>  
+> +	lan966x->fdma_irq = platform_get_irq_byname(pdev, "fdma");
+> +	if (lan966x->fdma_irq > 0) {
+> +		err = devm_request_irq(&pdev->dev, lan966x->fdma_irq,
+> +				       lan966x_fdma_irq_handler, 0,
+> +				       "fdma irq", lan966x);
+> +		if (err)
+> +			return dev_err_probe(&pdev->dev, err, "Unable to use fdma irq");
+> +
+> +		lan966x->fdma = true;
+> +	}
+> +
+>  	/* init switch */
+>  	lan966x_init(lan966x);
+>  	lan966x_stats_init(lan966x);
+> @@ -1055,8 +1077,15 @@ static int lan966x_probe(struct platform_device *pdev)
+>  	if (err)
+>  		goto cleanup_fdb;
+>  
+> +	err = lan966x_fdma_init(lan966x);
+
+At at quick read it's unclear why this call is not conditional 
+on lan988x->fdma ?
+
+> +	if (err)
+> +		goto cleanup_ptp;
