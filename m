@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE52C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE13C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238313AbiDFQvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42060 "EHLO
+        id S238110AbiDFQwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238233AbiDFQvn (ORCPT
+        with ESMTP id S238252AbiDFQvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 12:51:43 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF47C1CA39F
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:15:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C52B9192353
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:15:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649254518;
+        s=mimecast20190719; t=1649254519;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=o5D1jVQxb/RiXN5ItDFOnU6Wu4Tbka/jZzEb29hae+E=;
-        b=CC+LRhbEJSdL2tYSG4vyMfNGmtZ/+hk2M4SPcVWh4V+Y2IxB3Rmyc22t/fxgTg/XKZPzOy
-        KI/td8+wRFc50uKJFdWlrs1q4CgADpArwATVVwhtU0h+PAGrMLahtT2uuXdP2gDnYL0J+0
-        ebU2xL4+0jWmoyABGdITGCKRMb+4ANc=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B/9v7EvyeQVdxL6+ycCK8oWp79yiagX56JF400xUvCc=;
+        b=LXUjjDGJtTmqMt0GJLI5Q43ethg/b/Gj75Put7hvykFZSk2lKuXVWvDoRjR6gJKwB5JYNK
+        2jZtdgXGoWwBgwK3TU23AqK1QGNrhn7Su3YrE62ce7xosp1CIkgivM8G1rlBLljk0q5Pfq
+        cvL9Iabeg40WURbSh46NKqz3tK9/xM4=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-645-99D1abUgM0qaxdjxK7yeUA-1; Wed, 06 Apr 2022 10:15:16 -0400
-X-MC-Unique: 99D1abUgM0qaxdjxK7yeUA-1
-Received: by mail-wr1-f72.google.com with SMTP id l22-20020adfa396000000b0020612097035so547188wrb.8
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:15:16 -0700 (PDT)
+ us-mta-115-Grn5-yD9OJCGvla4H8h2fA-1; Wed, 06 Apr 2022 10:15:18 -0400
+X-MC-Unique: Grn5-yD9OJCGvla4H8h2fA-1
+Received: by mail-wm1-f70.google.com with SMTP id c19-20020a05600c4a1300b0038e6b4a104cso3017837wmp.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:15:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o5D1jVQxb/RiXN5ItDFOnU6Wu4Tbka/jZzEb29hae+E=;
-        b=Glwp90/h+P7qUVFQrlrxIMiMlO+Ov9qjrKEeQKA1Nm2ex9IymumtE+VyhkhXywr2fz
-         3ViiODKqnW/mLZRKNgr56Dw+6mCWJlygfBAPASurgX6iIqW9et6ZPMMP9JkJRmn2cc7z
-         4BHA+AelDFyz+9Jdi6v8kUzM6lwV3078beyYby7cLeyXFirqp8KIXRucX4Z7iqfGOeXx
-         qjqlHS+RneyZv6AhPduBraY3BEZ7tyqefnC80dEFZgFkr20h/TsntOcgP1Sb9V+3XB0c
-         I7L4mVnPrDIpqZLlNWHYVdOwf4drsg9nauOvSyxmFINzFtDNrJI9T65gjzLPEpPD7kXB
-         xwaQ==
-X-Gm-Message-State: AOAM533e5f7mv0Tvelx/cb27xUIapmudnxF7qCzaoCOFZDCVA9j05MpW
-        EQjKcGsjG5cBE7dcJ/f8mYd750c13LWj/02PDlz9g1QNhMcUftnnYmE5d8hU9Uo2T2JHunBEvQI
-        YGbbUTpDXwLyNNgajWQg/KdxN4qL/qLAyszdoR/6kOgr3IXvvO36033e4nruKLGgX4a0uWs3q62
-        OX
-X-Received: by 2002:a05:6000:188b:b0:204:109a:fbed with SMTP id a11-20020a056000188b00b00204109afbedmr7019086wri.569.1649254515446;
-        Wed, 06 Apr 2022 07:15:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyXWOrnzTRFMhV48JM7o7ypwRqRswg+8mtdEDt5G3GaCDjYRZK0NmwA9STVVfjzNghj2gEqrg==
-X-Received: by 2002:a05:6000:188b:b0:204:109a:fbed with SMTP id a11-20020a056000188b00b00204109afbedmr7019060wri.569.1649254515235;
-        Wed, 06 Apr 2022 07:15:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=B/9v7EvyeQVdxL6+ycCK8oWp79yiagX56JF400xUvCc=;
+        b=jTMOtipfSHcq3nXFbvgUVkeikeGePIYg4X6vXup0YaMUmf4tUIp26PSomgOblzFG6B
+         +gDMaI0/ZZ8GGQSN6M+tnSfBDyEMkBx8+m793QmpaKrfU3Pbv2165uDZKzxZVdi+zR6t
+         uw/6a2RUoNI5vTEWFkrpIVZ7CIMEtc+GYht9qpJcluvwJQ+wMkfTfVis64LiC7KAUlq2
+         4/+WpUyTJfvEZcA5cLiRWEPpRrbqKi5rW7qcm/4CO3R0Z8m8/uy4TWdnaFXkVo+tmwhh
+         yX1hyxNrpSJVMVE2TLJq6UmZBO4FJdqiY8VAr5ilvIkz0bYkcQzSmcQq7L9juFBDas/R
+         3tag==
+X-Gm-Message-State: AOAM531IpdK6wmlwrivOb1L8XQpVDd3QZueo9WEpA22XfblzriRYkx1g
+        BxN97YmzAVX7hzNUpI7fUMTW5U7xFWR4fr0++MbmRASQqVYqfw9EOsvpOg8+uQs92AarzECBrij
+        Rl5KFgwvr4VggodTDnNG+GIcCIdVwi2FIA5+WYoTj7DOBqZgVvToZg3LaFkDJVImMKPu/aNt0gf
+        8c
+X-Received: by 2002:a5d:60c9:0:b0:204:aca5:8379 with SMTP id x9-20020a5d60c9000000b00204aca58379mr6681792wrt.341.1649254517485;
+        Wed, 06 Apr 2022 07:15:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy4kY6R9V8y3Ut31Z5CfSKmgCaI1oXgfkZiXihzO3ODREQOnSj1JAAnC8f7AmJ1BEaSKmYijg==
+X-Received: by 2002:a5d:60c9:0:b0:204:aca5:8379 with SMTP id x9-20020a5d60c9000000b00204aca58379mr6681763wrt.341.1649254517237;
+        Wed, 06 Apr 2022 07:15:17 -0700 (PDT)
 Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id p15-20020a05600c358f00b0038cc046cb2esm7708788wmq.32.2022.04.06.07.15.13
+        by smtp.gmail.com with ESMTPSA id p15-20020a05600c358f00b0038cc046cb2esm7708788wmq.32.2022.04.06.07.15.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 07:15:14 -0700 (PDT)
+        Wed, 06 Apr 2022 07:15:16 -0700 (PDT)
 From:   Valentin Schneider <vschneid@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@redhat.com>,
@@ -68,38 +69,40 @@ Cc:     Ingo Molnar <mingo@redhat.com>,
         Lukasz Luba <lukasz.luba@arm.com>,
         Ionela Voinescu <ionela.voinescu@arm.com>,
         Daniel Bristot de Oliveira <bristot@redhat.com>
-Subject: [PATCH 0/2] MAINTAINERS, mailmap: tweaks for yours truly
-Date:   Wed,  6 Apr 2022 15:13:13 +0100
-Message-Id: <20220406141315.732473-1-vschneid@redhat.com>
+Subject: [PATCH 2/2] mailmap: Update my email address to @redhat.com
+Date:   Wed,  6 Apr 2022 15:13:15 +0100
+Message-Id: <20220406141315.732473-3-vschneid@redhat.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220406141315.732473-1-vschneid@redhat.com>
+References: <20220406141315.732473-1-vschneid@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi folks,
+I've brok^D contributed to a few different files in my time at Arm, so
+get_maintainer.pl spits out my name from time to time when it's using the
+git stats. Make that show an email address that's actually in use.
 
-I've had a nice long shoreleave inbetween switching ships, but it's time I got
-back to work!
+Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+---
+ .mailmap | 1 +
+ 1 file changed, 1 insertion(+)
 
-I faintly recall some objections to editing the mailmap if one isn't named in
-either a file header or in MAINTAINERS itself. The only files I can remember
-creating are include/linux/sched/sd_flags.h and
-Documentation/scheduler/sched-capacity.rst, which now that I look at it aren't
-covered by any MAINTAINERS entry...
-
-Anywho, I do want to keep a presence on the list, and this gives me an excuse to
-mess with the mailmap :)
-
-Valentin Schneider (2):
-  MAINTAINERS: Add myself as scheduler topology reviewer
-  mailmap: Update my email address to @redhat.com
-
- .mailmap    | 1 +
- MAINTAINERS | 1 +
- 2 files changed, 2 insertions(+)
-
---
+diff --git a/.mailmap b/.mailmap
+index b9d358217586..b76882fcc14a 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -391,6 +391,7 @@ Uwe Kleine-König <ukleinek@strlen.de>
+ Uwe Kleine-König <ukl@pengutronix.de>
+ Uwe Kleine-König <Uwe.Kleine-Koenig@digi.com>
+ Valdis Kletnieks <Valdis.Kletnieks@vt.edu>
++Valentin Schneider <vschneid@redhat.com> <valentin.schneider@arm.com>
+ Vinod Koul <vkoul@kernel.org> <vinod.koul@intel.com>
+ Vinod Koul <vkoul@kernel.org> <vinod.koul@linux.intel.com>
+ Vinod Koul <vkoul@kernel.org> <vkoul@infradead.org>
+-- 
 2.27.0
 
