@@ -2,84 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 682AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233563AbiDFULW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        id S233938AbiDFULe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234061AbiDFUKz (ORCPT
+        with ESMTP id S233906AbiDFUK5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:10:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA3726F929;
-        Wed,  6 Apr 2022 11:27:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE3CE61C57;
-        Wed,  6 Apr 2022 18:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4FD0C385A5;
-        Wed,  6 Apr 2022 18:27:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269654;
-        bh=He5wpN2K61rN0aW8YwOVvM2cmVmHcFS7KdICBew3aCQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gc/V8GWi7akfddhE/gLZGkMCV0/xgukODcp+UnZvlcwo1pi8D/VdSRe27w2m0DOB6
-         FcWDQxX8lY/wiVruK37t/UQZKKenN1q8jkpjhnVFX+2lnX6eyOTjiUIIGFKf0B9hW9
-         XbNcjhrcWVXB0Lzm8gmrCRycedy1X7yB7SFyFnP4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 20/43] arm64: Add part number for Neoverse N1
-Date:   Wed,  6 Apr 2022 20:26:29 +0200
-Message-Id: <20220406182437.269599770@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 6 Apr 2022 16:10:57 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 821741B60E2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:51:41 -0700 (PDT)
+Received: (qmail 195999 invoked by uid 1000); 6 Apr 2022 13:51:40 -0400
+Date:   Wed, 6 Apr 2022 13:51:40 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Maxim Devaev <mdevaev@gmail.com>
+Cc:     linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] usb: gadget: f_mass_storage: break IO operations via
+ configfs
+Message-ID: <Yk3TLPKyaQDsnuD4@rowland.harvard.edu>
+References: <20220406092445.215288-1-mdevaev@gmail.com>
+ <Yk2wvhSTMKTLFK6c@rowland.harvard.edu>
+ <20220406195234.4f63cb4a@reki>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406195234.4f63cb4a@reki>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <marc.zyngier@arm.com>
+On Wed, Apr 06, 2022 at 07:52:34PM +0300, Maxim Devaev wrote:
+> > It's not clear to me how breaking I/O operations allows you to do a 
+> > "force eject".  It seems that what you would need is something like 
+> > fsg_store_file() that omits the curlun->prevent_medium_removal check.
+> > Interrupting a lengthy I/O operation doesn't really have anything to do 
+> > with this.
+> 
+> Perhaps I chose the wrong path, it's just how my userspace code works now.
+> If the drive is connected to a Linux host, then in order to clear
+> the "file" and extract the image, I sent a SIGUSR1 signal to the "file-storage"
+> thread. This interrupted long IO operations, reset curlun->prevent_medium_removal
+> and I got the ability to extract.
 
-commit 0cf57b86859c49381addb3ce47be70aadf5fd2c0 upstream.
+Oh, I see.  That's kind of an unintended side effect of not calling 
+raise_exception().
 
-New CPU, new part number. You know the drill.
+And while it does interrupt long I/O operations, it does so in 
+non-sanctioned way.  To the host it will appear as though the gadget's 
+firmware has crashed, since the gadget will stop sending or receiving 
+data.  Eventually the host will time out and reset the gadget.
 
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/include/asm/cputype.h |    2 ++
- 1 file changed, 2 insertions(+)
+Maybe that's the sort of thing you want, but I rather doubt it.
 
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -86,6 +86,7 @@
- #define ARM_CPU_PART_CORTEX_A35		0xD04
- #define ARM_CPU_PART_CORTEX_A55		0xD05
- #define ARM_CPU_PART_CORTEX_A76		0xD0B
-+#define ARM_CPU_PART_NEOVERSE_N1	0xD0C
- 
- #define APM_CPU_PART_POTENZA		0x000
- 
-@@ -104,6 +105,7 @@
- #define MIDR_CORTEX_A35 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35)
- #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
- #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
-+#define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
- #define MIDR_CAVIUM_THUNDERX2 MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX2)
+> It was done in our KVM-over-IP project and worked for several years,
+> just now I want to do it without searching for procfs and the need
+> to use sudo helpers like this:
+> https://github.com/pikvm/kvmd/blob/1b3a2cc/kvmd/helpers/otgmsd/unlock/__init__.py
+> 
+> Maybe it's worth introducing some option that will allow us to ignore
+> curlun->prevent_medium_removal and perform a forced extraction?
+> Something like "allow_force_eject" on the same lavel with "stall".
 
+Or have a separate sysfs file where any write at all will be interpreted 
+as a forced eject.  Either way would work.
 
+> Will masking the curlun->prevent_medium_removal flag be enough?
+
+I think so.  But it will be blocked to some extent by long-running I/O 
+operations, because those operations acquire the filesem rw-semaphore 
+for reading.
+
+More precisely, each individual command holds the rw-semaphore.  But the 
+semaphore is dropped between commands, and a long-running I/O operation 
+typically consists of many separate commands.  So the blocking may be 
+acceptable.
+
+> > Or to keep this ability restricted to the superuser, if that is desired.
+> 
+> Indeed.
+> 
+> > You should not call send_sig_info() directly; instead call 
+> > raise_exception().  It already does the work you need (including some 
+> > things you left out).
+> 
+> raise_exception() assumes the setting of a new state, and I did not want to do this,
+> since the same does not happen when throwing a signal from userspace.
+
+Userspace isn't supposed to send the USR1 signal, only the INT, TERM, or 
+KILL signals.  USR1 is supposed to be reserved for the driver's internal 
+use.  Unfortunately, AFAIK there's no way to allow the driver to send a 
+signal to itself without also allowing the signal to be sent by 
+userspace.  :-(
+
+And sending the signal _does_ set a new state, whether you intended to 
+or not.  Although in this case, the new state is always the same as the 
+old state, i.e., FSG_STATE_NORMAL.
+
+Alan Stern
