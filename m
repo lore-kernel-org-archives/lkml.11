@@ -2,65 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4148C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 834AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233601AbiDFNnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50356 "EHLO
+        id S233758AbiDFNna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233633AbiDFNma (ORCPT
+        with ESMTP id S233516AbiDFNnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:42:30 -0400
-Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C2B50D257
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:49:34 -0700 (PDT)
-Received: from omf18.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay10.hostedemail.com (Postfix) with ESMTP id 05BE2872;
-        Wed,  6 Apr 2022 09:54:32 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id B021B32;
-        Wed,  6 Apr 2022 09:54:31 +0000 (UTC)
-Message-ID: <e56d9ca89544ad015c6cfabaf2859027c0dd50e5.camel@perches.com>
-Subject: Re: [PATCH 1/5] staging: r8188eu: use round_up() instead of RND4()
-From:   Joe Perches <joe@perches.com>
-To:     Michael Straube <straube.linux@gmail.com>,
-        gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Date:   Wed, 06 Apr 2022 02:54:30 -0700
-In-Reply-To: <20220406061859.9011-2-straube.linux@gmail.com>
-References: <20220406061859.9011-1-straube.linux@gmail.com>
-         <20220406061859.9011-2-straube.linux@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Wed, 6 Apr 2022 09:43:07 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ABDE6AB4A7;
+        Wed,  6 Apr 2022 03:50:36 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id B58CF210EE;
+        Wed,  6 Apr 2022 10:50:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649242232; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0VPqKsepdHjXuh5eCVq2lcW8r7HHaKzIHYylD0wcWMA=;
+        b=18shT1nJv+kZLrU/iP0drYE3s73dWDbXuvufc06nIlhJ1NRCoWQl6NK2x7zEg3zZsqygMy
+        km46y2DyRcJK0y0JoLRwW/odLdwAZrfzTmFRXA4T4I5sbhCgzdDjg+q0I7h2taC0ws1jWW
+        7wZFA0kywvl6J9YUlYcMk+Tt44Bkalc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649242232;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0VPqKsepdHjXuh5eCVq2lcW8r7HHaKzIHYylD0wcWMA=;
+        b=O8FpfxrA4R79/fkzjy9v7QLR0ytKcUOPGT+VtRmGM7irghX5SIz7OXTeK4A0mp05eWuvMW
+        Jl7HmADMD2tENuDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5A69C13A8E;
+        Wed,  6 Apr 2022 10:50:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 9C0vE3hwTWLIMAAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Wed, 06 Apr 2022 10:50:32 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id a2e9b2cc;
+        Wed, 6 Apr 2022 10:50:56 +0000 (UTC)
+From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
+To:     Xiubo Li <xiubli@redhat.com>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
+ inodes
+References: <20220401133243.1075-1-lhenriques@suse.de>
+        <5146f7a8-94c1-a7aa-db2d-d3ae98c5b83a@redhat.com>
+Date:   Wed, 06 Apr 2022 11:50:56 +0100
+In-Reply-To: <5146f7a8-94c1-a7aa-db2d-d3ae98c5b83a@redhat.com> (Xiubo Li's
+        message of "Wed, 6 Apr 2022 13:24:33 +0800")
+Message-ID: <87fsmqa3jj.fsf@brahms.olymp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: B021B32
-X-Stat-Signature: 9p4n6hp4bwzyho9dbps5m731my6skqgq
-X-Rspamd-Server: rspamout03
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18hEanTJvaHZuwtmlEzInomiVMehvlXBqI=
-X-HE-Tag: 1649238871-371560
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-06 at 08:18 +0200, Michael Straube wrote:
-> Use in-kernel round_up() instead of custom RND4().
-[]
-> diff --git a/drivers/staging/r8188eu/core/rtw_security.c b/drivers/staging/r8188eu/core/rtw_security.c
-[]
-> @@ -63,7 +63,7 @@ void rtw_wep_encrypt(struct adapter *padapter, struct xmit_frame *pxmitframe)
->  				arc4_crypt(ctx, payload + length, crc.f1, 4);
->  
->  				pframe += pxmitpriv->frag_len;
-> -				pframe = (u8 *)RND4((size_t)(pframe));
-> +				pframe = (u8 *)round_up((size_t)pframe, 4);
+Xiubo Li <xiubli@redhat.com> writes:
 
-Perhaps use PTR_ALIGN
+> On 4/1/22 9:32 PM, Lu=C3=ADs Henriques wrote:
+>> When doing DIO on an encrypted node, we need to invalidate the page cach=
+e in
+>> the range being written to, otherwise the cache will include invalid dat=
+a.
+>>
+>> Signed-off-by: Lu=C3=ADs Henriques <lhenriques@suse.de>
+>> ---
+>>   fs/ceph/file.c | 11 ++++++++++-
+>>   1 file changed, 10 insertions(+), 1 deletion(-)
+>>
+>> Changes since v1:
+>> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
+>> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+>>
+>> Note: I'm not really sure this last change is required, it doesn't really
+>> affect generic/647 result, but seems to be the most correct.
+>>
+>> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+>> index 5072570c2203..b2743c342305 100644
+>> --- a/fs/ceph/file.c
+>> +++ b/fs/ceph/file.c
+>> @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_ite=
+r *from, loff_t pos,
+>>   	if (ret < 0)
+>>   		return ret;
+>>   -	ceph_fscache_invalidate(inode, false);
+>> +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
+>>   	ret =3D invalidate_inode_pages2_range(inode->i_mapping,
+>>   					    pos >> PAGE_SHIFT,
+>>   					    (pos + count - 1) >> PAGE_SHIFT);
+>> @@ -1895,6 +1895,15 @@ ceph_sync_write(struct kiocb *iocb, struct iov_it=
+er *from, loff_t pos,
+>>   		req->r_inode =3D inode;
+>>   		req->r_mtime =3D mtime;
+>>   +		if (IS_ENCRYPTED(inode) && (iocb->ki_flags & IOCB_DIRECT)) {
+>> +			ret =3D invalidate_inode_pages2_range(
+>> +				inode->i_mapping,
+>> +				write_pos >> PAGE_SHIFT,
+>> +				(write_pos + write_len - 1) >> PAGE_SHIFT);
+>> +			if (ret < 0)
+>> +				dout("invalidate_inode_pages2_range returned %d\n", ret);
+>> +		}
+>
+> Shouldn't we fail it if the 'invalidate_inode_pages2_range()' fails here ?
 
-				pframe = PTR_ALIGN(pframe, 4);
+Yeah, I'm not really sure.  I'm simply following the usual pattern where
+an invalidate_inode_pages2_range() failure is logged and ignored.  And
+this is not ceph-specific, other filesystems seem to do the same thing.
 
-etc...
+Cheers,
+--=20
+Lu=C3=ADs
 
-
+>
+> -- Xiubo
+>
+>> +
+>>   		/* Set up the assertion */
+>>   		if (rmw) {
+>>   			/*
+>>
+>
