@@ -2,101 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D697C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:22:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECD4C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:22:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234608AbiDFOYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41034 "EHLO
+        id S234788AbiDFOYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234797AbiDFOYF (ORCPT
+        with ESMTP id S234915AbiDFOYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:24:05 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB1AF3A7C
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:22:36 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 9B1932C099C;
-        Wed,  6 Apr 2022 03:22:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1649215353;
-        bh=seiZ/zSp40ediZ6FUmAYZUa2TlaIBma6k+oU9iypC9Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=p7kUNgincIv8zKjRb34f5nPBGVG90YYSEtTUwz7W9x48PS6ccq4ecNp+Iwbx3x9P2
-         iSotw5k7jId6xOeiJM5AiDSrbX7qE/5eBzW+T7oeNci5iTsuV0TnEod1jOBIKCemta
-         eK+CtEizFevPRQpzW6QYI1ILysq/M2nlh5Lw7V4q0cbYONrZfNRGjuqXOfrvxsfl49
-         f5aWQEt09mqqiXHDru3j5uQgoLNz8CRAGBR5y35vddijh3/UIlj/otEjJOFl3XES+s
-         gIkbiKh4p6nY6A5+Ys9JXZ5YpnhAy00wjAFg+9L0HGeMgRXmE0h1/ftIwxOXYkuDaX
-         Nq8gV5gYWEXlQ==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B624d07790000>; Wed, 06 Apr 2022 15:22:33 +1200
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 3D98013EE37;
-        Wed,  6 Apr 2022 15:22:33 +1200 (NZST)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id A97D62A2679; Wed,  6 Apr 2022 15:22:28 +1200 (NZST)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     linus.walleij@linaro.org, robh+dt@kernel.org,
-        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        kostap@marvell.com, robert.marko@sartura.hr
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v3 0/4] arm64: mvebu: Support for Marvell 98DX2530 (and variants)
-Date:   Wed,  6 Apr 2022 15:21:54 +1200
-Message-Id: <20220406032158.1449049-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
+        Wed, 6 Apr 2022 10:24:18 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88AE21A889;
+        Tue,  5 Apr 2022 21:00:13 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id i7so1213426oie.7;
+        Tue, 05 Apr 2022 21:00:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RNgdmhlHV2YaSa/8H1LqQR7tgjnE4yKMr+9iZaYLTy0=;
+        b=CNXSfdN0vlC+dcxnEiGotzlyZ3nX8n5QmGM4NQ1xPcl+h6NXek2ZH1Iz7i/G/wcHTg
+         DKcedZk24zwH4K2CpZDUhNCVAfNtnML3GDWIeRuzZHhk7fTC5LHms+MYfmaLFZt3GSiO
+         zw6In0OYiewjcP6bE5VGN1rQA4U2jE9Tm2tCmG80P65W59aNvXXpCIRa3UPHmTFQ6qxt
+         wrcpwI+Z7P3PKYWeVCWPXG+ABXiVTIxU1IRL0tkxKIMK/eA57xnhhtUODrU90TIybiHQ
+         kffSrPedlRQHjTBfbIEkc1RNpvrSNQgPzqMbi+LZ2ju46ijSxEFnDiJbBG0H1k9Z1UhP
+         7y6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RNgdmhlHV2YaSa/8H1LqQR7tgjnE4yKMr+9iZaYLTy0=;
+        b=OPStaCFapyNlQCD11hq3ANJJiWJb7n7uJS/VIH+CcxsqTxu8EKCyb6Kugemh7ifGxU
+         QFXCTU+oKcF2jeElZ+YBlx3m0dkvcyIKhsRih7NZof5SpGdRwJzdTTx2oUPvpjdzV8r5
+         1b2do2EC35uNrZaeXhbY7R1SB76Ee/DgXCWkH1QJFi0ybOeTAE2JTlzTUbTiAAfaEyyo
+         a0haQqn4Rw0yDiZHuw76orXlyRV32WTdxvt1JbnhV56myHHhdVJ2WeWb06UC44U+XshZ
+         Fya9LEVnCepCAi56FJwnWewFYpylDiBOh8zCLcgfe2oZVZJVU3rEcDz659xJAZAm3S9r
+         b84g==
+X-Gm-Message-State: AOAM533MqO/BuGHjmTcwSDSRph/3VN4lw/QX7JrrPv9sbtyul8p4GoIQ
+        PdCrYNeD/AAu46SdvKica10=
+X-Google-Smtp-Source: ABdhPJwBP63iKmYCkyaS8cxnP7aItx5dZ69nnJCiisBuK5RtmB5pZuoUHTSPJMwn0czM4ZAFOlGMZg==
+X-Received: by 2002:a05:6808:ab1:b0:2ec:a6fa:7251 with SMTP id r17-20020a0568080ab100b002eca6fa7251mr2709381oij.180.1649217613364;
+        Tue, 05 Apr 2022 21:00:13 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id w22-20020acaad16000000b002d9c98e551bsm5926097oie.36.2022.04.05.21.00.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 21:00:12 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <074eef95-05b5-1e29-32ed-c2fe13d88c1d@roeck-us.net>
+Date:   Tue, 5 Apr 2022 21:00:10 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=JcrCUnCV c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=jGREw9QuPlHGdXEqdN8A:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.10 000/599] 5.10.110-rc1 review
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Sasha Levin <sashal@kernel.org>
+References: <20220405070258.802373272@linuxfoundation.org>
+ <20220406010749.GA1133386@roeck-us.net>
+ <20220406023025.GA1926389@roeck-us.net>
+ <20220405225212.061852f9@gandalf.local.home>
+ <20220405230812.2feca4ed@gandalf.local.home>
+ <20220405232413.6b38e966@gandalf.local.home>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220405232413.6b38e966@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds support for the Marvell 98DX2530 SoC which is the Contro=
-l and
-Management CPU integrated into the AlleyCat5/AlleyCat5X series of Marvell
-switches.
+On 4/5/22 20:24, Steven Rostedt wrote:
+> On Tue, 5 Apr 2022 23:08:12 -0400
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+> 
+>> Here's a thought, if you decide to backport a patch to stable, and you see
+>> that there's another commit with a "Fixes" tag to the automatically
+>> selected commit. DO NOT BACKPORT IF THE FIXES PATCH FAILS TO GO BACK TOO!
+> 
+> Seriously. This should be the case for *all* backported patches, not just
+> the AUTOSEL ones.
+> 
+> Otherwise you are backporting a commit to "stable" that is KNOWN TO BE
+> BROKEN!
+> 
 
-The CPU core is an ARM Cortex-A55 with neon, simd and crypto extensions.
+Agreed.
 
-This is fairly similar to the Armada-3700 SoC so most of the required
-peripherals are already supported. This series adds a devicetree and pinc=
-trl
-driver for the SoC and the RD-AC5X-32G16HVG6HLG reference board.
-
-In the v3 series I've dropped out a few patches. The MMC stuff is more
-complicated than just adding a compatible string. The mvneta changes have=
- gone
-in via net-next.
-
-Chris Packham (4):
-  dt-bindings: pinctrl: mvebu: Document bindings for AC5
-  pinctrl: mvebu: pinctrl driver for 98DX2530 SoC
-  arm64: dts: marvell: Add Armada 98DX2530 SoC and RD-AC5X board
-  arm64: marvell: enable the 98DX2530 pinctrl driver
-
- .../bindings/pinctrl/marvell,ac5-pinctrl.yaml |  72 +++++
- arch/arm64/Kconfig.platforms                  |   2 +
- arch/arm64/boot/dts/marvell/Makefile          |   1 +
- .../boot/dts/marvell/armada-98dx2530.dtsi     | 302 ++++++++++++++++++
- arch/arm64/boot/dts/marvell/rd-ac5x.dts       |  74 +++++
- drivers/pinctrl/mvebu/Kconfig                 |   4 +
- drivers/pinctrl/mvebu/Makefile                |   1 +
- drivers/pinctrl/mvebu/pinctrl-ac5.c           | 261 +++++++++++++++
- 8 files changed, 717 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pinctrl/marvell,ac5=
--pinctrl.yaml
- create mode 100644 arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
- create mode 100644 arch/arm64/boot/dts/marvell/rd-ac5x.dts
- create mode 100644 drivers/pinctrl/mvebu/pinctrl-ac5.c
-
---=20
-2.35.1
-
+Guenter
