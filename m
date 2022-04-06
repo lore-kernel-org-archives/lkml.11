@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF745C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C1E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbiDFT3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
+        id S231449AbiDFT3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbiDFT1C (ORCPT
+        with ESMTP id S231404AbiDFT1C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 15:27:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266722706C8;
-        Wed,  6 Apr 2022 11:27:48 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CE329AD11;
+        Wed,  6 Apr 2022 11:28:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5CF1B8253D;
-        Wed,  6 Apr 2022 18:27:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15EEAC385A1;
-        Wed,  6 Apr 2022 18:27:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22EC3B8253C;
+        Wed,  6 Apr 2022 18:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A5A3C385A1;
+        Wed,  6 Apr 2022 18:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269665;
-        bh=D8VjMSLV7J+BhyvDpS/RzYuVt06tHFYRtIsaCv/TRl0=;
+        s=korg; t=1649269728;
+        bh=0q7wD0vcPl/Ff02yht4/GoSLWsNAhcDXnV/2urXfmmE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1C9n8kuCwAMn+rqRALD+EYJXtSPB7tSmYYFIGctPu+bhYq5DGewgWrtZTEft3hgQ
-         GRVuvhtlbh8HJz5wcWRslR88t8ud73QOG1wHcoJkxRdw+ZziQaVzJW22Tg2hfiF0o1
-         /0zwhM4Kup1APOtUb0CaWIORGf7AyJI8T9VugIkE=
+        b=TUxdlVpA/AXolIuwTGrDp1rHijLB+1FEd3iDwGzJUjnw3SqeTilWNkByU9HpT+9qO
+         Wj+Zd9Ioa/QGw299oWMI7FIC3aKlZXP62G2uE32BpZvnMTJzbic2W2bw8vFh30Fnci
+         yu2dn2gck8Zoev2htPNMrt8ANqRc0BTgKLG+Eg0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 24/43] arm64: Add helper to decode register from instruction
-Date:   Wed,  6 Apr 2022 20:26:33 +0200
-Message-Id: <20220406182437.383541735@linuxfoundation.org>
+        stable@vger.kernel.org, James Morse <james.morse@arm.com>
+Subject: [PATCH 4.9 35/43] arm64: Move arm64_update_smccc_conduit() out of SSBD ifdef
+Date:   Wed,  6 Apr 2022 20:26:44 +0200
+Message-Id: <20220406182437.700348181@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
 References: <20220406182436.675069715@linuxfoundation.org>
@@ -51,74 +47,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
+From: James Morse <james.morse@arm.com>
 
-commit 8c2dcbd2c4443bad0b4242fb62baa47b260b8f79 upstream.
+arm64_update_smccc_conduit() is an alternative callback that patches
+HVC/SMC. Currently the only user is SSBD. To use this for Spectre-BHB,
+it needs to be moved out of the SSBD #ifdef region.
 
-Add a helper to extract the register field from a given
-instruction.
-
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/insn.h |    2 ++
- arch/arm64/kernel/insn.c      |   29 +++++++++++++++++++++++++++++
- 2 files changed, 31 insertions(+)
+ arch/arm64/kernel/cpu_errata.c |   44 ++++++++++++++++++++---------------------
+ 1 file changed, 22 insertions(+), 22 deletions(-)
 
---- a/arch/arm64/include/asm/insn.h
-+++ b/arch/arm64/include/asm/insn.h
-@@ -332,6 +332,8 @@ bool aarch64_insn_is_branch(u32 insn);
- u64 aarch64_insn_decode_immediate(enum aarch64_insn_imm_type type, u32 insn);
- u32 aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
- 				  u32 insn, u64 imm);
-+u32 aarch64_insn_decode_register(enum aarch64_insn_register_type type,
-+					 u32 insn);
- u32 aarch64_insn_gen_branch_imm(unsigned long pc, unsigned long addr,
- 				enum aarch64_insn_branch_type type);
- u32 aarch64_insn_gen_comp_branch_imm(unsigned long pc, unsigned long addr,
---- a/arch/arm64/kernel/insn.c
-+++ b/arch/arm64/kernel/insn.c
-@@ -418,6 +418,35 @@ u32 __kprobes aarch64_insn_encode_immedi
- 	return insn;
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -204,6 +204,28 @@ enable_smccc_arch_workaround_1(const str
  }
+ #endif	/* CONFIG_HARDEN_BRANCH_PREDICTOR */
  
-+u32 aarch64_insn_decode_register(enum aarch64_insn_register_type type,
-+					u32 insn)
++void __init arm64_update_smccc_conduit(struct alt_instr *alt,
++				       __le32 *origptr, __le32 *updptr,
++				       int nr_inst)
 +{
-+	int shift;
++	u32 insn;
 +
-+	switch (type) {
-+	case AARCH64_INSN_REGTYPE_RT:
-+	case AARCH64_INSN_REGTYPE_RD:
-+		shift = 0;
++	BUG_ON(nr_inst != 1);
++
++	switch (psci_ops.conduit) {
++	case PSCI_CONDUIT_HVC:
++		insn = aarch64_insn_get_hvc_value();
 +		break;
-+	case AARCH64_INSN_REGTYPE_RN:
-+		shift = 5;
-+		break;
-+	case AARCH64_INSN_REGTYPE_RT2:
-+	case AARCH64_INSN_REGTYPE_RA:
-+		shift = 10;
-+		break;
-+	case AARCH64_INSN_REGTYPE_RM:
-+		shift = 16;
++	case PSCI_CONDUIT_SMC:
++		insn = aarch64_insn_get_smc_value();
 +		break;
 +	default:
-+		pr_err("%s: unknown register type encoding %d\n", __func__,
-+		       type);
-+		return 0;
++		return;
 +	}
 +
-+	return (insn >> shift) & GENMASK(4, 0);
++	*updptr = cpu_to_le32(insn);
 +}
 +
- static u32 aarch64_insn_encode_register(enum aarch64_insn_register_type type,
- 					u32 insn,
- 					enum aarch64_insn_register reg)
+ #ifdef CONFIG_ARM64_SSBD
+ DEFINE_PER_CPU_READ_MOSTLY(u64, arm64_ssbd_callback_required);
+ 
+@@ -239,28 +261,6 @@ static int __init ssbd_cfg(char *buf)
+ }
+ early_param("ssbd", ssbd_cfg);
+ 
+-void __init arm64_update_smccc_conduit(struct alt_instr *alt,
+-				       __le32 *origptr, __le32 *updptr,
+-				       int nr_inst)
+-{
+-	u32 insn;
+-
+-	BUG_ON(nr_inst != 1);
+-
+-	switch (psci_ops.conduit) {
+-	case PSCI_CONDUIT_HVC:
+-		insn = aarch64_insn_get_hvc_value();
+-		break;
+-	case PSCI_CONDUIT_SMC:
+-		insn = aarch64_insn_get_smc_value();
+-		break;
+-	default:
+-		return;
+-	}
+-
+-	*updptr = cpu_to_le32(insn);
+-}
+-
+ void __init arm64_enable_wa2_handling(struct alt_instr *alt,
+ 				      __le32 *origptr, __le32 *updptr,
+ 				      int nr_inst)
 
 
