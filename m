@@ -2,87 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1BD2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:39:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232283AbiDFTkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
+        id S229799AbiDFTlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231934AbiDFTjf (ORCPT
+        with ESMTP id S229506AbiDFTks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:39:35 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62EB1A3967;
-        Wed,  6 Apr 2022 10:45:13 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e1dcc0a327so3746539fac.1;
-        Wed, 06 Apr 2022 10:45:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=L5TvrQjpMWSCvDIj2tp5HdoUF6y6vYimFqx2SemcKe8=;
-        b=U8EDWZGrOhyYcDyd0nLKND9znK9AbRVolGZ8Nf/mIbB+8XJvs3EWdYjLxFehq+14z3
-         ZZzG1qrZW2bI8voW7Q7JHk1N833DoP+LqKUaDNRXZBVWnDzybUnX0KMl3w/TTarlSjRs
-         AAzgwpOj/46iHJ4IZG/yF/7bG24IgdHGK1jDmPRjR0m5DW/QKjtXQb8FPo79lw3ZiPnE
-         fRGXWt5T9Z92SvIGKuBjmi0YYowGVBlLouGOTVMZVMOj2L/4PtglqeXiExxjYMn7BJJO
-         h6slRrskX9TSs4+rId56jpuPCiwfAuofW5TEILdr9/UUe55oMOlNBVqTVduhgX1VNWua
-         R/7w==
-X-Gm-Message-State: AOAM531VtMy+yroPWIWLTn9ccR+x4LQE+I5m9i9pzprfUybomeIZMsj6
-        K9TvERxkDVtrhCU9B9m6nA==
-X-Google-Smtp-Source: ABdhPJxevK8UXw8048KxmB62o7gsRRl5YC6His46gPTV8+KpOCTt5xixSjhRHKnoLPd4JALpA8l/5w==
-X-Received: by 2002:a05:6870:210b:b0:de:6ec1:3f59 with SMTP id f11-20020a056870210b00b000de6ec13f59mr4505084oae.171.1649267112959;
-        Wed, 06 Apr 2022 10:45:12 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id hg14-20020a056870790e00b000e1c070a73asm6082977oab.55.2022.04.06.10.45.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:45:11 -0700 (PDT)
-Received: (nullmailer pid 2481762 invoked by uid 1000);
-        Wed, 06 Apr 2022 17:45:10 -0000
-Date:   Wed, 6 Apr 2022 12:45:10 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     devicetree@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>, Andy Gross <agross@kernel.org>
-Subject: Re: [PATCH v3 2/2] dt-bindings: qcom: qcom,geni-se: refer to
- dtschema for SPI
-Message-ID: <Yk3RpmKj0eRKnCdU@robh.at.kernel.org>
-References: <20220404064017.68634-1-krzysztof.kozlowski@linaro.org>
- <20220404064017.68634-2-krzysztof.kozlowski@linaro.org>
+        Wed, 6 Apr 2022 15:40:48 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B872619531F;
+        Wed,  6 Apr 2022 11:13:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649268823; x=1680804823;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=BXJ0GIop+UGWRaFV2rjdj0GKaXIQVFtY0SlM5haDrWY=;
+  b=E8Zv7mLGURkFsCxLUiVXMQOxCUZxhxhLbe++Uwipe7x3cWscrzswCZ07
+   L3h/rzg0PO+MfuxZt0dnen+2RNZReJcT6rw8cWsMRGw74H7gPRN1IaDc7
+   i1Zr3SiOTI8GZIJ6wKWXKg+GFA/M0yU9sC0JNOAR3kXtD87vzBqQjXhVF
+   8=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 06 Apr 2022 11:13:35 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 11:13:20 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Apr 2022 11:13:20 -0700
+Received: from [10.110.72.142] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Apr 2022
+ 11:13:19 -0700
+Message-ID: <960102bb-2944-4be0-ab09-7cd2eb0c2cf9@quicinc.com>
+Date:   Wed, 6 Apr 2022 11:13:18 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404064017.68634-2-krzysztof.kozlowski@linaro.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 7/7] kbuild: read *.mod to get objects passed to $(LD) or
+ $(AR)
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        <linux-kbuild@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+References: <20220406153023.500847-1-masahiroy@kernel.org>
+ <20220406153023.500847-8-masahiroy@kernel.org>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <20220406153023.500847-8-masahiroy@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 04 Apr 2022 08:40:17 +0200, Krzysztof Kozlowski wrote:
-> After adding DT schema for the SPI controller, the Qualcomm GENI Serial
-> Engine QUP Wrapper Controller bindings can reference it directly for
-> full schema validation.
+On 4/6/2022 8:30 AM, Masahiro Yamada wrote:
+> ld and ar support @file, which command-line options are read from.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+> Now that *.mod lists the member objects in the correct order, without
+> duplication, it is ready to be passed to ld and ar.
 > 
+> By using the @file syntax, people will not be worried about the pitfall
+> described in the NOTE.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 > ---
 > 
-> Changes since v2:
-> 1. Add tag.
+>   scripts/Makefile.build | 10 +++-------
+>   1 file changed, 3 insertions(+), 7 deletions(-)
 > 
-> Changes since v1:
-> 1. None
-> 
-> Patch depends on previous patch (DT schema conversion).
-> ---
->  .../bindings/soc/qcom/qcom,geni-se.yaml       | 22 +------------------
->  1 file changed, 1 insertion(+), 21 deletions(-)
-> 
+> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> index 3da731cf6978..f6a506318795 100644
+> --- a/scripts/Makefile.build
+> +++ b/scripts/Makefile.build
+> @@ -450,22 +450,18 @@ quiet_cmd_ar_lib = AR      $@
+>   $(obj)/lib.a: $(lib-y) FORCE
+>   	$(call if_changed,ar_lib)
+>   
+> -# NOTE:
+> -# Do not replace $(filter %.o,^) with $(real-prereqs). When a single object
+> -# module is turned into a multi object module, $^ will contain header file
+> -# dependencies recorded in the .*.cmd file.
+>   ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
+>   quiet_cmd_link_multi-m = AR [M]  $@
+>   cmd_link_multi-m =						\
+>   	$(cmd_update_lto_symversions);				\
+>   	rm -f $@; 						\
+> -	$(AR) cDPrsT $@ $(filter %.o,$^)
+> +	$(AR) cDPrsT $@ @$(patsubst %.o,%.mod,$@)
+>   else
+>   quiet_cmd_link_multi-m = LD [M]  $@
+> -      cmd_link_multi-m = $(LD) $(ld_flags) -r -o $@ $(filter %.o,$^)
+> +      cmd_link_multi-m = $(LD) $(ld_flags) -r -o $@ @$(patsubst %.o,%.mod,$@)
+>   endif
+>   
+> -$(multi-obj-m): FORCE
+> +$(multi-obj-m): %.o: %.mod FORCE
+>   	$(call if_changed,link_multi-m)
+>   $(call multi_depend, $(multi-obj-m), .o, -objs -y -m)
+>   
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Looks like this also addresses the out-of-tree issue described in 
+<https://lore.kernel.org/linux-kbuild/1610500731-30960-2-git-send-email-jjohnson@codeaurora.org/>
+
+:)
+
+/jeff
