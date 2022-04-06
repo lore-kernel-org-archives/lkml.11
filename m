@@ -2,133 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B00C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C719DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiDFHHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52860 "EHLO
+        id S235366AbiDFHIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 03:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448776AbiDFGjw (ORCPT
+        with ESMTP id S232673AbiDFGZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:39:52 -0400
-Received: from out203-205-221-164.mail.qq.com (out203-205-221-164.mail.qq.com [203.205.221.164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13205186482
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 21:30:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649219450;
-        bh=6rBElJ0qW4HDdHbJHceH6b2ehGQNwWjmaMG9691pNhQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=ZAFWaEMI1RiujXRoNw419i7o1zIlAZkBH/12rYyTAbTO3itjb/Pl9dugzIZiJP9x/
-         sZZtxiiXm8j60CU/Np/JSSU007569fVS2PIxxBIY2BBB1sGgVOIZfNfzyUf5XkCcqq
-         7okkI/Clkqw4eBzbcw/1HqXU4RbqD8Pchs5QEaL0=
-Received: from localhost.localdomain ([43.227.138.48])
-        by newxmesmtplogicsvrszc6.qq.com (NewEsmtp) with SMTP
-        id 7AF8D06E; Wed, 06 Apr 2022 12:30:47 +0800
-X-QQ-mid: xmsmtpt1649219447tssay7uu7
-Message-ID: <tencent_15C23F2EC8197361EE200714C54E78B45206@qq.com>
-X-QQ-XMAILINFO: NMGzQWUSIfvTbni/KihziXXGqr+Qs2lNBeV/C6dUBbYXHX3sJ6jYnkKoDKKL98
-         cutp4kam/yeBVRMQ2IcecP2o87TyIbfktM469wXQYOr/EXA5xU8FXmZHupXg3fVd6lp4rh9muiGl
-         SUkCxDZppdU1WEafV+1ptsUHU3kQb1juAXFnJrtOisw/Gr8ZkTLhaU/yN+LxX91rCoOwg5N6TfMG
-         3dV7hBuB0U3cUqohwWc+AyYsMyMp1Q4zogKDFXB001tvQXEn+B99bZkPsfEZb5szUJb+Av6NQR43
-         Gj5N1/51vuFN9uLVn09zBTrH5aw1rPxauIpTG1B7Hkg7r/LOMo30NhwZ69BGeIO9bv2PQvbwObNP
-         qJbuaigqTyHGH4N7hH7AcY+IrVGBUm7q5qMxx66/DLInfJZy/Dzpkrrqv0VVd8nDXyF1V4vu3Cg3
-         rnj7ebkI9FCY9Qz8GHZS1t3BFBpBej8r+c4O49FwkqWrWt8bmnRaMZuefRaLDyBg81ea+N3rxRss
-         lbQuJiu8aNlgRb1YwpPIiITTnMySzHB4Au9ZxVM5k65JZnhoWYnHOqu07RRojr6EvQEtNXQRcHSc
-         Iw7wn79bOgOLCuTPFF87E9bsUxa9DFmPLV/gdGhodyRnpho6HddUkCBNZ6DoTi+Uj55UHSjb/468
-         q8qFFxTGUPkZOuJ+WoYdAud66TWXLhWM+OrP1DGwpZgEioynISQEFwvfXpMFwDEth5mIO4beEy4x
-         ab+mCMaG0+zz1pP2u3qj19nftyDufewG0KFd+DBm5uaAsl/Ni18RkBZ0NjblghGN49FuFk7hiKvr
-         9pjqMqKlVKWLhDvGxjph6HicmipYEWeg6ubn7zVwH4RIiQFQter+Vyty3CuhQaIZTa6JnJkao20M
-         un9NHbjAjreHX4i9F6TGrXLAx1eDeN21WTVf1AHSz6AAr9Wrey55y3zJ/73CmkBFqms7ZjrSLd4M
-         locErS4lax8vBfenHbF2ikSiUarEYAWSSs+ofe/sv8kDwoIM05HQ==
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2 2/2] staging: r8188eu: check the return of kzalloc()
-Date:   Wed,  6 Apr 2022 12:30:32 +0800
-X-OQ-MSGID: <20220406043032.13393-1-xkernel.wang@foxmail.com>
-In-Reply-To: <tencent_5AB92A7786438342357C5669E7BF0C249505@qq.com>
-References: <tencent_5AB92A7786438342357C5669E7BF0C249505@qq.com>
+        Wed, 6 Apr 2022 02:25:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE7AA4A51D0
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:24:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649222682;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=huf2PKqN+sIoLvexLuqlbsgpQJkarDnuScbIKuVkilk=;
+        b=Rhn4qTtML6bPwFh++s6QBJnOOGNrUKEFoq75dm++v4qxQ6hBPv4TaTU2oJCipvnHOMLc1o
+        KoQCsSym9sa5YbEizWuCUR7d4ommWCeBQ2FT+fs0smeV2g+ggQSmrUi3HJGp4gOP2AJpU0
+        /hXebR8tjcnCqfkQmhBeRbSwAu+QMlw=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-60-PKEESI0ZMsySipjdBIilMQ-1; Wed, 06 Apr 2022 01:24:41 -0400
+X-MC-Unique: PKEESI0ZMsySipjdBIilMQ-1
+Received: by mail-pj1-f71.google.com with SMTP id oj16-20020a17090b4d9000b001c7552b7546so3092363pjb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 22:24:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=huf2PKqN+sIoLvexLuqlbsgpQJkarDnuScbIKuVkilk=;
+        b=QDe8hdDl1QALipedVS4kLGWi8LcGZq1E6cn4EMe+S8GIt3Oaiucf2L/L+xPsgCva2e
+         +2sNkSp4W0vlAIkHmpMqLlCjDKtkIeFXS7HbMmlDQxXeTe924fLsTQS0E1osXp7qY2XP
+         bSHLci6njGbi5DW7muWin4j/Tp9+pAW0KNyAkDPAVWgoraDVfGz0NVuAfnE/icbzR9t+
+         AYM4oeNoofMv8v1yOWGDvEvinvca9NbQLphPKRYsR63CEklBdzi1hLUfbtxbY4aNwU1d
+         jTxWOVBSs9u1cTrGhQjhdLEWGWBkK8tA8lhmyGe9DWtuMGuL3GKjWjVWhyoHtmRsKMcO
+         h8OA==
+X-Gm-Message-State: AOAM5308wJKL6Bv50t/tqT+dvCDZtOSMtkdyTsJK5genzewq8vFZ/t7c
+        0JGJiQ9wzOlW3DRxJ65/JhDOw373GF8hX1mf1NyXmOW6TI/ZUBgiBEKh6ssRXw6zrwB8sU6Q2jl
+        CSP8w/DZRwUvYtAy5zlVaKc3pQAj7TNHg3py4q9RDan8sDGaxdjP7qFzcjz9elfnfa+IxY9Xc2w
+        ==
+X-Received: by 2002:a63:6a88:0:b0:398:54fb:85ba with SMTP id f130-20020a636a88000000b0039854fb85bamr5779114pgc.88.1649222680384;
+        Tue, 05 Apr 2022 22:24:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx5kMQCqiOjFSx0LMWpJ63fH2khDgzJ4KLeeovNhYeXBYYMYVTDzKjet77CSVAFFBQaXEsTfA==
+X-Received: by 2002:a63:6a88:0:b0:398:54fb:85ba with SMTP id f130-20020a636a88000000b0039854fb85bamr5779095pgc.88.1649222680048;
+        Tue, 05 Apr 2022 22:24:40 -0700 (PDT)
+Received: from [10.72.13.31] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w22-20020a17090aea1600b001ca91b7542esm3873061pjy.51.2022.04.05.22.24.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 22:24:39 -0700 (PDT)
+Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
+ inodes
+To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220401133243.1075-1-lhenriques@suse.de>
+From:   Xiubo Li <xiubli@redhat.com>
+Message-ID: <5146f7a8-94c1-a7aa-db2d-d3ae98c5b83a@redhat.com>
+Date:   Wed, 6 Apr 2022 13:24:33 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
+In-Reply-To: <20220401133243.1075-1-lhenriques@suse.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to handle the return
-of it to prevent potential wrong memory access.
+On 4/1/22 9:32 PM, Luís Henriques wrote:
+> When doing DIO on an encrypted node, we need to invalidate the page cache in
+> the range being written to, otherwise the cache will include invalid data.
+>
+> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+> ---
+>   fs/ceph/file.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
+>
+> Changes since v1:
+> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
+> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+>
+> Note: I'm not really sure this last change is required, it doesn't really
+> affect generic/647 result, but seems to be the most correct.
+>
+> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+> index 5072570c2203..b2743c342305 100644
+> --- a/fs/ceph/file.c
+> +++ b/fs/ceph/file.c
+> @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
+>   	if (ret < 0)
+>   		return ret;
+>   
+> -	ceph_fscache_invalidate(inode, false);
+> +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
+>   	ret = invalidate_inode_pages2_range(inode->i_mapping,
+>   					    pos >> PAGE_SHIFT,
+>   					    (pos + count - 1) >> PAGE_SHIFT);
+> @@ -1895,6 +1895,15 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
+>   		req->r_inode = inode;
+>   		req->r_mtime = mtime;
+>   
+> +		if (IS_ENCRYPTED(inode) && (iocb->ki_flags & IOCB_DIRECT)) {
+> +			ret = invalidate_inode_pages2_range(
+> +				inode->i_mapping,
+> +				write_pos >> PAGE_SHIFT,
+> +				(write_pos + write_len - 1) >> PAGE_SHIFT);
+> +			if (ret < 0)
+> +				dout("invalidate_inode_pages2_range returned %d\n", ret);
+> +		}
 
-Besides, to propagate the error to the caller, the type of
-rtw_alloc_hwxmits() is changed and another check is added in its caller.
-Then if kzalloc() fails, the caller will properly jump to the
-corresponding error hanlding code.
+Shouldn't we fail it if the 'invalidate_inode_pages2_range()' fails here ?
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
-ChangeLog:
-v1->v2 update the description and adjust the sequence of patches.
- drivers/staging/r8188eu/core/rtw_xmit.c    | 10 ++++++++--
- drivers/staging/r8188eu/include/rtw_xmit.h |  2 +-
- 2 files changed, 9 insertions(+), 3 deletions(-)
+-- Xiubo
 
-diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-index 865b2fc..92a1ad3 100644
---- a/drivers/staging/r8188eu/core/rtw_xmit.c
-+++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-@@ -176,7 +176,9 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 
- 	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
- 
--	rtw_alloc_hwxmits(padapter);
-+	res = rtw_alloc_hwxmits(padapter);
-+	if (res == _FAIL)
-+		goto free_xmit_extbuf;
- 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
- 
- 	for (i = 0; i < 4; i++)
-@@ -1490,7 +1492,7 @@ s32 rtw_xmit_classifier(struct adapter *padapter, struct xmit_frame *pxmitframe)
- 	return res;
- }
- 
--void rtw_alloc_hwxmits(struct adapter *padapter)
-+s32 rtw_alloc_hwxmits(struct adapter *padapter)
- {
- 	struct hw_xmit *hwxmits;
- 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-@@ -1498,6 +1500,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
- 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
- 
- 	pxmitpriv->hwxmits = kzalloc(sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry, GFP_KERNEL);
-+	if (!pxmitpriv->hwxmits)
-+		return _FAIL;
- 
- 	hwxmits = pxmitpriv->hwxmits;
- 
-@@ -1514,6 +1518,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
- 		hwxmits[3] .sta_queue = &pxmitpriv->bk_pending;
- 	} else {
- 	}
-+
-+	return _SUCCESS;
- }
- 
- void rtw_free_hwxmits(struct adapter *padapter)
-diff --git a/drivers/staging/r8188eu/include/rtw_xmit.h b/drivers/staging/r8188eu/include/rtw_xmit.h
-index b2df148..fa35776 100644
---- a/drivers/staging/r8188eu/include/rtw_xmit.h
-+++ b/drivers/staging/r8188eu/include/rtw_xmit.h
-@@ -341,7 +341,7 @@ s32 rtw_txframes_sta_ac_pending(struct adapter *padapter,
- void rtw_init_hwxmits(struct hw_xmit *phwxmit, int entry);
- s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter);
- void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv);
--void rtw_alloc_hwxmits(struct adapter *padapter);
-+s32 rtw_alloc_hwxmits(struct adapter *padapter);
- void rtw_free_hwxmits(struct adapter *padapter);
- s32 rtw_xmit(struct adapter *padapter, struct sk_buff **pkt);
- 
--- 
+> +
+>   		/* Set up the assertion */
+>   		if (rmw) {
+>   			/*
+>
+
