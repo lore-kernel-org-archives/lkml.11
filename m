@@ -2,119 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C45C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2062AC4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232592AbiDFM2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35400 "EHLO
+        id S232897AbiDFM2O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232921AbiDFM1K (ORCPT
+        with ESMTP id S232784AbiDFM1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:27:10 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB793B120E;
-        Wed,  6 Apr 2022 01:17:05 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id y38so2724931ybi.8;
-        Wed, 06 Apr 2022 01:17:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vrgQWoWyB5y62bEoUfojWKqj8rDJrUtN2w1+bXGXRNI=;
-        b=NKy9MbIr/mGh2TiFzd/eiHPj42EQXvCCaQeuYu/RvH7JJTLZdVUH0VcMDNsMMDfKfe
-         CrfWbqUshjJ1nYkUjy1oBFQESesK2xslFONY1luaUl0a6TP/oAk8Hcn//gITAXlHNHEj
-         oslvzJXMqjJgdssfKkxushn5ALO4npvXdNlMKR017hHxxyHTXjBRXuuik7ij9AAiTa9c
-         3yRx5BS8/OLXN3DOVG5/40nJhr7DMmMGXv3O4SOOfJKlKLIIvpJg1C/cjYxZpfBmzxo6
-         d6g5jCMsfKzPyDfqt0b0U12xjhh0dPmqMiNLYf3yo3F/RuqEeWmmqPev1TTtWpa963z0
-         onmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vrgQWoWyB5y62bEoUfojWKqj8rDJrUtN2w1+bXGXRNI=;
-        b=3SAQ6KKhn0mlkMaT/rzSjx9x1wGLJEvKiVXNhTMoyfw01goGEzvAA5Oeu80ecAHDHi
-         rs69YutNB6pi0vfM64GUoVzTTPQq5jbuNowAqs9gao95K52Ygl8251drisKABvJ9yaFu
-         foTzot71E8rc+LlV6714LtVf8BLa6ob/OX8YqeUhKmw06RWGEfElwSH359aqrbtvr2Hq
-         FZZ/bK/oLKWSbH8OhA8FmASf+mYHoDIg+5dLiPm+KXUnLVRtcgsHusnO+t4mL8TWvCm/
-         FNHZtN901Kx2jniLVPxNFFVfPsVK9bgl1UL+j7uUcXggQ10ZJ9+hlz/nRC2WxPxqu9Sv
-         fxFw==
-X-Gm-Message-State: AOAM530lKhZevOQvld3TyxkJTx/QHgzPx8F25ldLL2dd62MZMpI/bE/Q
-        UDD2y+crQkivpU88XmgEIHhamjJU9ldrv2EoxNY=
-X-Google-Smtp-Source: ABdhPJzIGX4X6wQ3/0KaVtUXKipS8SltQuKn2tGDJJTtWysBh46/b/bDrEbDdoAAe1895xTV1smSrAMigR3+jtt64cY=
-X-Received: by 2002:a25:e0d3:0:b0:63d:c615:afb8 with SMTP id
- x202-20020a25e0d3000000b0063dc615afb8mr5380270ybg.182.1649233024822; Wed, 06
- Apr 2022 01:17:04 -0700 (PDT)
+        Wed, 6 Apr 2022 08:27:11 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BB23E148C;
+        Wed,  6 Apr 2022 01:19:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
+        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=aEB6aphFsgS6tcwbtUgdYyeAKuuzYXM7RIsKLxa8uvA=; b=Pnmfz+p3TpVQv30t+iXKOy9HP1
+        IshLmKi2yNidJiLsGu1rxD8klUHG+h5ZfAsdjD5L4N6iEwAzug4A3fZuJOazknB+HBbriHZ2JvTXI
+        cQQ4udex4fEwlGMN5WwHwoOlDn0BIxj/6XHLZ8KoQEEoztSIVbYUuCsIjN+UUrsFR6hk=;
+Received: from p200300daa70ef200456864e8b8d10029.dip0.t-ipconnect.de ([2003:da:a70e:f200:4568:64e8:b8d1:29] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nc0sP-0003Ng-8L; Wed, 06 Apr 2022 10:18:53 +0200
+Message-ID: <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
+Date:   Wed, 6 Apr 2022 10:18:52 +0200
 MIME-Version: 1.0
-References: <20220406072417.14185-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <6419fd7b-8213-3a51-268b-a9602c770991@linaro.org>
-In-Reply-To: <6419fd7b-8213-3a51-268b-a9602c770991@linaro.org>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 6 Apr 2022 09:16:38 +0100
-Message-ID: <CA+V-a8sZdrpYMy-FSbaZzbKw_F_jEhTpOExPXr8_jDXD4_pooA@mail.gmail.com>
-Subject: Re: [PATCH] clocksource/drivers/renesas-ostm: Add support for RZ/V2L SoC
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220405195755.10817-1-nbd@nbd.name>
+ <20220405195755.10817-5-nbd@nbd.name>
+ <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH v2 04/14] dt-bindings: arm: mediatek: document WED binding
+ for MT7622
+In-Reply-To: <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
 
-On Wed, Apr 6, 2022 at 9:03 AM Daniel Lezcano <daniel.lezcano@linaro.org> w=
-rote:
->
-> On 06/04/2022 09:24, Lad Prabhakar wrote:
-> > The OSTM block is identical on Renesas RZ/G2L and RZ/V2L SoC's, so inst=
-ead
-> > of adding dependency for each SoC's add dependency on ARCH_RZG2L. The
-> > ARCH_RZG2L config option is already selected by ARCH_R9A07G044 and
-> > ARCH_R9A07G054.
-> >
-> > With the above change OSTM will be enabled on RZ/V2L SoC.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >   drivers/clocksource/renesas-ostm.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/clocksource/renesas-ostm.c b/drivers/clocksource/r=
-enesas-ostm.c
-> > index 21d1392637b8..8da972dc1713 100644
-> > --- a/drivers/clocksource/renesas-ostm.c
-> > +++ b/drivers/clocksource/renesas-ostm.c
-> > @@ -224,7 +224,7 @@ static int __init ostm_init(struct device_node *np)
-> >
-> >   TIMER_OF_DECLARE(ostm, "renesas,ostm", ostm_init);
-> >
-> > -#ifdef CONFIG_ARCH_R9A07G044
-> > +#ifdef CONFIG_ARCH_RZG2L
->
-> I'm not finding this option anywhere
->
-ARCH_RZG2L config option is part of v5.18-rc1 [0]
+On 06.04.22 10:09, Krzysztof Kozlowski wrote:
+> On 05/04/2022 21:57, Felix Fietkau wrote:
+>> From: Lorenzo Bianconi <lorenzo@kernel.org>
+>> 
+>> Document the binding for the Wireless Ethernet Dispatch core on the MT7622
+>> SoC, which is used for Ethernet->WLAN offloading
+>> Add related info in mediatek-net bindings.
+>> 
+>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> 
+> Thank you for your patch. There is something to discuss/improve.
+> 
+>> ---
+>>  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 50 +++++++++++++++++++
+>>  .../devicetree/bindings/net/mediatek-net.txt  |  2 +
+>>  2 files changed, 52 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+> 
+> Don't store drivers in arm directory. See:
+> https://lore.kernel.org/linux-devicetree/YkJa1oLSEP8R4U6y@robh.at.kernel.org/
+> 
+> Isn't this a network offload engine? If yes, then probably it should be
+> in "net/".
+It's not a network offload engine by itself. It's a SoC component that 
+connects to the offload engine and controls a MTK PCIe WLAN device, 
+intercepting interrupts and DMA rings in order to be able to inject 
+packets coming in from the offload engine.
+Do you think it still belongs in net, or maybe in soc instead?
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree=
-/drivers/soc/renesas/Kconfig?h=3Dv5.18-rc1#n43
+>> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+>> new file mode 100644
+>> index 000000000000..787d6673f952
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+>> @@ -0,0 +1,50 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,mt7622-wed.yaml#"
+>> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+>> +
+>> +title: MediaTek Wireless Ethernet Dispatch Controller for MT7622
+>> +
+>> +maintainers:
+>> +  - Lorenzo Bianconi <lorenzo@kernel.org>
+>> +  - Felix Fietkau <nbd@nbd.name>
+>> +
+>> +description:
+>> +  The mediatek wireless ethernet dispatch controller can be configured to
+>> +  intercept and handle access to the WLAN DMA queues and PCIe interrupts
+>> +  and implement hardware flow offloading from ethernet to WLAN.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    items:
+>> +      - enum:
+>> +          - mediatek,mt7622-wed
+>> +      - const: syscon
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - interrupts
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+>> +    #include <dt-bindings/interrupt-controller/irq.h>
+>> +    soc {
+>> +      #address-cells = <2>;
+>> +      #size-cells = <2>;
+>> +      wed0: wed@1020a000 {
+> 
+> Generic node name, "wed" is specific. Maybe "network-offload"? Or
+> "network-accelerator"? You probably know better what this device does,
+> so maybe come with some generic name?
+wed stands for "wireless ethernet dispatch". Both network-offload and 
+network-accelerator don't really fit. Would it make sense to spell it 
+out, or do you have any better naming ideas?
 
-Cheers,
-Prabhakar
->
-> >   static int __init ostm_probe(struct platform_device *pdev)
-> >   {
-> >       struct device *dev =3D &pdev->dev;
->
->
-> --
-> <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software for AR=
-M SoCs
->
-> Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-> <http://twitter.com/#!/linaroorg> Twitter |
-> <http://www.linaro.org/linaro-blog/> Blog
+Thanks,
+
+- Felix
