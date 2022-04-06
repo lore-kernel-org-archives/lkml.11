@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC73AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91987C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240326AbiDFSJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
+        id S240334AbiDFSJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240483AbiDFSH7 (ORCPT
+        with ESMTP id S240493AbiDFSIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 14:07:59 -0400
+        Wed, 6 Apr 2022 14:08:02 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47F9E140F7;
-        Wed,  6 Apr 2022 09:46:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B7E34FC62;
+        Wed,  6 Apr 2022 09:46:22 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2ED7223A;
-        Wed,  6 Apr 2022 09:46:20 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E6E521516;
+        Wed,  6 Apr 2022 09:46:21 -0700 (PDT)
 Received: from eglon.cambridge.arm.com (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 819993F73B;
-        Wed,  6 Apr 2022 09:46:19 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 45B043F73B;
+        Wed,  6 Apr 2022 09:46:21 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     James Morse <james.morse@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>
-Subject: [stable:PATCH v4.9.309 20/43] arm64: Add part number for Neoverse N1
-Date:   Wed,  6 Apr 2022 17:45:23 +0100
-Message-Id: <20220406164546.1888528-20-james.morse@arm.com>
+Subject: [stable:PATCH v4.9.309 22/43] arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
+Date:   Wed,  6 Apr 2022 17:45:25 +0100
+Message-Id: <20220406164546.1888528-22-james.morse@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220406164546.1888528-1-james.morse@arm.com>
 References: <0220406164217.1888053-1-james.morse@arm.com>
@@ -38,36 +38,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <marc.zyngier@arm.com>
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-commit 0cf57b86859c49381addb3ce47be70aadf5fd2c0 upstream.
+commit 2d0d656700d67239a57afaf617439143d8dac9be upstream.
 
-New CPU, new part number. You know the drill.
+Add the CPU Partnumbers for the new Arm designs.
 
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Will Deacon <will.deacon@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20211019163153.3692640-2-suzuki.poulose@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
- arch/arm64/include/asm/cputype.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/include/asm/cputype.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
-index 76b551e83f2d..ae467bc65aab 100644
+index eec5d0aceb50..1a1c9ecc9fcc 100644
 --- a/arch/arm64/include/asm/cputype.h
 +++ b/arch/arm64/include/asm/cputype.h
-@@ -86,6 +86,7 @@
- #define ARM_CPU_PART_CORTEX_A35		0xD04
- #define ARM_CPU_PART_CORTEX_A55		0xD05
+@@ -88,6 +88,8 @@
  #define ARM_CPU_PART_CORTEX_A76		0xD0B
-+#define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
++#define ARM_CPU_PART_CORTEX_A710	0xD47
++#define ARM_CPU_PART_NEOVERSE_N2	0xD49
  
  #define APM_CPU_PART_POTENZA		0x000
  
-@@ -104,6 +105,7 @@
- #define MIDR_CORTEX_A35 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35)
- #define MIDR_CORTEX_A55 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55)
+@@ -108,6 +110,8 @@
  #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
-+#define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
++#define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
++#define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
  #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
  #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
  #define MIDR_CAVIUM_THUNDERX2 MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX2)
