@@ -2,76 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 044FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiDFTiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
+        id S230266AbiDFTjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231926AbiDFTg7 (ORCPT
+        with ESMTP id S232117AbiDFTip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:36:59 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760B71CD7C8;
-        Wed,  6 Apr 2022 10:37:43 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id j83so3129242oih.6;
-        Wed, 06 Apr 2022 10:37:43 -0700 (PDT)
+        Wed, 6 Apr 2022 15:38:45 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC3E16C0A6;
+        Wed,  6 Apr 2022 11:35:28 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-dacc470e03so3871579fac.5;
+        Wed, 06 Apr 2022 11:35:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=bWQxY5qyzsRtNQUVZiKXQsEQFjbMtJVPZxjBRNS4c44=;
-        b=tu9pAKPhJmXFM+fWqdsFCValc43P9KWfM7AT2a6ckxloUTaHgxcM84PjJXvsl/D4jw
-         wQF0lMGbgpSYysNniqoh5hSFu8F2mb/okXPehU2c0eiTmnGrMFAEPJ6S9tb384kpVt/0
-         v/OtglcBlB5aMKFPLiBkj3js6z+pOIA+SU6aYc5igtqD5Bxcldz/48ifuG0jwt0NniEj
-         PyzAWqVRGbcKT4OUcWnPnbZDgbirOg1OyhvEyPOaTWr9iClOCun6R+Fazs8W3opdcO2s
-         61DLV9lGo38vyNz1uuw+kPbnnhN5Yo5lP+AXZ4twTLZ9SJhJz+ugdyLV7ixcT5Vv+wBN
-         JyZw==
-X-Gm-Message-State: AOAM530+xk1uG5MvvMnrUxVahhNWL71lEvzF10v9u/bkvhGsUBDfcPad
-        6pvMPwr0Cek2prx7e5VISw==
-X-Google-Smtp-Source: ABdhPJyzi7wqXV7P6dcUFRdbsbYuHW2em5UAKJdXRpZAl/Zz7UV2IAa4hpbuDLSTquX/lfirapIvOA==
-X-Received: by 2002:a05:6808:218d:b0:2da:7a2e:8607 with SMTP id be13-20020a056808218d00b002da7a2e8607mr4070817oib.145.1649266662694;
-        Wed, 06 Apr 2022 10:37:42 -0700 (PDT)
+        bh=lD3vW2QdGSWkKUsKxJuFURV13Koj8siq3oYJ/ytEFRo=;
+        b=ib4XIvJ+nySd+s1q1nM26YobQgdS55ZLej6sFMq8/dKMRwUVQHxW7XIkLOIiO7tZCU
+         7Ga4sA6ML4xzoqMj4PJLg2cjyy2ekhZ4x5fAjNemKCC28bZIQM8vFYk+Gu6jKffkz3ar
+         o++xg7vFsk8h/osGPqZolGqTaIDP/UfVTiyYWakspmpRJ9WqNW6/h6LjbGoTTQl4QlDn
+         GdsZTv4pmCILao7tGgl/Ylma7hosEy3McEJ6O/48L2ufuNxrMVAO5Ll86nVcwYdFyje1
+         4Jub54THZkKMgnI8jpQmugFeZbAGaLUbFwmu86N5VY7wAe0kBXbjscpsi+hnuCRKFhKb
+         Pwzg==
+X-Gm-Message-State: AOAM531PpnqtWhIxmmcFLt0KhqbVIesFjR+MH6JptpdnoC2k0H+fyUqr
+        sZnkjo4vecSwhMA+QZot4A==
+X-Google-Smtp-Source: ABdhPJxZfNHQbZVonm6pbv+IB1gXixb8G0bFeIOVvzzRZDh2xSgW5e7ma6OONn0J94OxYNFNfV++cA==
+X-Received: by 2002:a05:6870:c109:b0:d9:e74e:d09a with SMTP id f9-20020a056870c10900b000d9e74ed09amr4482067oad.142.1649270127937;
+        Wed, 06 Apr 2022 11:35:27 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l1-20020a056830268100b005c93e625b9dsm7901393otu.46.2022.04.06.10.37.41
+        by smtp.gmail.com with ESMTPSA id p14-20020a9d744e000000b005b235f5cf92sm7159488otk.65.2022.04.06.11.35.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:37:42 -0700 (PDT)
-Received: (nullmailer pid 2470965 invoked by uid 1000);
-        Wed, 06 Apr 2022 17:37:41 -0000
-Date:   Wed, 6 Apr 2022 12:37:41 -0500
+        Wed, 06 Apr 2022 11:35:27 -0700 (PDT)
+Received: (nullmailer pid 2553861 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:35:26 -0000
+Date:   Wed, 6 Apr 2022 13:35:26 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Dongjin Yang <dj76.yang@samsung.com>
-Cc:     Moon-Ki Jun <moonki.jun@samsung.com>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: net: snps: remove duplicate name
-Message-ID: <Yk3P5b1uNln8TK60@robh.at.kernel.org>
-References: <CGME20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6>
- <20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        p.zabel@pengutronix.de, sre@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH 4/8] dt-bindings: reset: add sama7g5 definitions
+Message-ID: <Yk3dbop92OBvwrCt@robh.at.kernel.org>
+References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+ <20220405112724.2760905-5-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6>
+In-Reply-To: <20220405112724.2760905-5-claudiu.beznea@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 04 Apr 2022 11:28:57 +0900, Dongjin Yang wrote:
-> snps,dwmac has duplicated name for loongson,ls2k-dwmac and
-> loongson,ls7a-dwmac.
+On Tue, Apr 05, 2022 at 02:27:20PM +0300, Claudiu Beznea wrote:
+> Add reset bindings for SAMA7G5. At the moment only USB PHYs are
+> included.
 > 
-> Signed-off-by: Dongjin Yang <dj76.yang@samsung.com>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 > ---
->  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+>  include/dt-bindings/reset/sama7g5-reset.h | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+>  create mode 100644 include/dt-bindings/reset/sama7g5-reset.h
 > 
+> diff --git a/include/dt-bindings/reset/sama7g5-reset.h b/include/dt-bindings/reset/sama7g5-reset.h
+> new file mode 100644
+> index 000000000000..670d8075f463
+> --- /dev/null
+> +++ b/include/dt-bindings/reset/sama7g5-reset.h
+> @@ -0,0 +1,10 @@
+> +/* SPDX-License-Identifier: GPL-2.0+ */
 
-Applied, thanks!
+Dual license and GPL-2.0-only is preferred.
+
+> +
+> +#ifndef __DT_BINDINGS_RESET_SAMA7G5_H
+> +#define __DT_BINDINGS_RESET_SAMA7G5_H
+> +
+> +#define RESET_USB_PHY1		4
+> +#define RESET_USB_PHY2		5
+> +#define RESET_USB_PHY3		6
+> +
+> +#endif /* __DT_BINDINGS_RESET_SAMA7G5_H */
+> -- 
+> 2.32.0
+> 
+> 
