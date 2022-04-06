@@ -2,103 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7037C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229589AbiDFLsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36156 "EHLO
+        id S229825AbiDFLsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbiDFLrQ (ORCPT
+        with ESMTP id S232701AbiDFLsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:47:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5ADD9596CB3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:36:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649234149;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=AKDoheaBR9lQHEGAq6e93WppQz6rpnOwI9HzRDlIjX0=;
-        b=AF4GLzb05mGv0ypfz2JGbzFy25JwR/93RqDmtasMREXT9U3T5tyt47ejJLntC8ITKk1Mjk
-        WFdwvWVHF16+NftVT2lj4qJFDgaXtOa05e4Su/zg2B0cbCLVVGbIYZC/xfXrh9qxxVpCe1
-        T77AkaZXAXL+DP6ZGLndaozpU1iUR9w=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-591-Jl9pZcUwP5eIAeitqjb2Zg-1; Wed, 06 Apr 2022 04:35:46 -0400
-X-MC-Unique: Jl9pZcUwP5eIAeitqjb2Zg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C4A0B2800940;
-        Wed,  6 Apr 2022 08:35:45 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-12-58.pek2.redhat.com [10.72.12.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 99C591121319;
-        Wed,  6 Apr 2022 08:35:42 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, sgarzare@redhat.com
-Subject: [PATCH V2 0/5] rework on the IRQ hardening of virtio
-Date:   Wed,  6 Apr 2022 16:35:33 +0800
-Message-Id: <20220406083538.16274-1-jasowang@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+        Wed, 6 Apr 2022 07:48:14 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5E030F9DD
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:40:15 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AB9C21A1755;
+        Wed,  6 Apr 2022 10:40:10 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 60A761A1746;
+        Wed,  6 Apr 2022 10:40:10 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 425D7183ACDE;
+        Wed,  6 Apr 2022 16:40:08 +0800 (+08)
+From:   Sandor.yu@nxp.com
+To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        andrzej.hajda@intel.com, narmstrong@baylibre.com,
+        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, jernej.skrabec@gmail.com
+Cc:     Sandor.yu@nxp.com, shengjiu.wang@nxp.com, cai.huoqing@linux.dev,
+        maxime@cerno.tech, harry.wentland@amd.com,
+        hverkuil-cisco@xs4all.nl, amuel@sholland.org
+Subject: [PATCH v1 0/5] DRM: Bridge: DW_HDMI: Add new features and bug fix
+Date:   Wed,  6 Apr 2022 16:48:32 +0800
+Message-Id: <cover.1649230434.git.Sandor.yu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All:
+From: Sandor Yu <Sandor.yu@nxp.com>
 
-This is a rework on the IRQ hardening for virtio which is done
-previously by the following commits are reverted:
+It is new features and bug fix patch set for DW_HDMI DRM bridge driver
+that has verified by NXP iMX865.
+Three new feature added:
+1. Add GP Audio interface for DW_HDMI.
+2. Add CEC PM functions to restore CEC status when device suspend/resume
+3. New API for reset PHY Gen1.
+Two bugs fixed:
+1. Enable overflow workaround for v2.13a.
+2. Clear GPC_Auto bit for 24bit bpp to pass CTS.
 
-9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
-080cd7c3ac87 ("virtio-pci: harden INTX interrupts")
+Sandor Yu (5):
+  drm: bridge: dw_hdmi: cec: Add cec suspend/resume function
+  drm: bridge: dw_hdmi: enable overflow workaround for v2.13a
+  drm: bridge: dw_hdmi: Enable GCP only for Deep Color
+  drm: bridge: dw_hdmi: add reset function for PHY GEN1
+  drm: bridge: dw_hdmi: Audio: Add General Parallel Audio (GPA) driver
 
-The reason is that it depends on the IRQF_NO_AUTOEN which may conflict
-with the assumption of the affinity managed IRQ that is used by some
-virtio drivers. And what's more, it is only done for virtio-pci but
-not other transports.
-
-In this rework, I try to implement a general virtio solution which
-borrows the idea of the INTX hardening by introducing a boolean for
-virtqueue callback enabling and toggle it in virtio_device_ready()
-and virtio_reset_device(). Then vring_interrupt() can simply check and
-return early if the driver is not ready.
-
-Please review.
-
-Changes since v1:
-
-- Use transport specific irq synchronization method when possible
-- Drop the module parameter and enable the hardening unconditonally
-- Tweak the barrier/ordering facilities used in the code
-- Reanme irq_soft_enabled to driver_ready
-- Avoid unnecssary IRQ synchornization (e.g during boot)
-
-Jason Wang (4):
-  virtio: use virtio_reset_device() when possible
-  virtio: introduce config op to synchronize vring callbacks
-  virtio-pci: implement synchronize_vqs()
-  virtio: harden vring IRQ
-
-Stefano Garzarella (1):
-  virtio: use virtio_device_ready() in virtio_device_restore()
-
- drivers/virtio/virtio.c            | 20 ++++++++++++++++----
- drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
- drivers/virtio/virtio_pci_common.h |  2 ++
- drivers/virtio/virtio_pci_legacy.c |  1 +
- drivers/virtio/virtio_pci_modern.c |  2 ++
- drivers/virtio/virtio_ring.c       |  9 ++++++++-
- include/linux/virtio.h             |  2 ++
- include/linux/virtio_config.h      | 24 ++++++++++++++++++++++++
- 8 files changed, 69 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/Kconfig       |  11 +
+ drivers/gpu/drm/bridge/synopsys/Makefile      |   1 +
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.c |  35 +++
+ .../drm/bridge/synopsys/dw-hdmi-gp-audio.c    | 199 ++++++++++++++++++
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c     | 157 +++++++++++++-
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.h     |  13 +-
+ drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c        |   2 +-
+ include/drm/bridge/dw_hdmi.h                  |   9 +-
+ 8 files changed, 416 insertions(+), 11 deletions(-)
+ create mode 100644 drivers/gpu/drm/bridge/synopsys/dw-hdmi-gp-audio.c
 
 -- 
 2.25.1
